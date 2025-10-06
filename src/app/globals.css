@@ -3,6 +3,8 @@
 
 @theme {
   --color-primary: #12cd69;
+  --color-headingTextColor: #0f1613;
+  --color-subTextColor: #505553; 
   --color-borderColor: #dce3e3; 
   --color-textGray: #505553; 
 }

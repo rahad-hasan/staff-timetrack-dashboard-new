@@ -37,7 +37,9 @@ export default function RootLayout({
         </div>
         <div className=" bg-white w-full border-2 rounded-[12px] my-3 mr-3">
           <Header></Header>
-          {children}
+          <div className="p-5">
+            {children}
+          </div>
         </div>
       </body>
     </html >
