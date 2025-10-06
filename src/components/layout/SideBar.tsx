@@ -28,7 +28,7 @@ const SideBar = () => {
     };
 
     return (
-        <div className=" w-[320px]  min-h-screen py-5">
+        <div className=" w-[320px]  min-h-screen py-5 sticky top-0">
             <div className=' flex items-center justify-between bg-white px-4 py-2  mx-3 rounded-2xl border-2'>
                 <div className=' flex items-center gap-1.5 '>
                     <Image src={logo.src} alt="Logo" width={0} height={0} className="w-12 h-12 " />
