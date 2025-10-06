@@ -30,6 +30,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased flex bg-[#f6f7f9]`}
         data-new-gr-c-s-check-loaded="14.1256.0"
         data-gr-ext-installed=""
+        cz-shortcut-listen="true"
       >
         <div className="">
           <SideBar></SideBar>
