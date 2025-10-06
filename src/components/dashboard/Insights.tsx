@@ -1,6 +1,7 @@
 import { EllipsisVertical, Info } from "lucide-react";
 import { Button } from "../ui/button";
 import OverallActivityChart from "./insights/OverallActivityChart";
+import CoreWorkMembers from "./insights/CoreWorkMembers";
 
 const Insights = () => {
     const classificationData = [
@@ -70,6 +71,7 @@ const Insights = () => {
                     <OverallActivityChart></OverallActivityChart>
                 </div>
             </div>
+            <CoreWorkMembers></CoreWorkMembers>
         </div>
     );
 };
