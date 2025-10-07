@@ -31,6 +31,8 @@ export default function RootLayout({
         data-new-gr-c-s-check-loaded="14.1256.0"
         data-gr-ext-installed=""
         cz-shortcut-listen="true"
+        monica-id="ofpnmcalabcbjgholdjcjblkibolbppb"
+        monica-version="7.9.7"
       >
         <div className="">
           <SideBar></SideBar>

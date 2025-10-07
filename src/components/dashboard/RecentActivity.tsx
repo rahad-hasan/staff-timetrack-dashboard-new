@@ -39,7 +39,7 @@ const RecentActivity = () => {
                             key={p.id}
                             className="relative"
                         >
-                            <Image src={p.img.src} width={200} height={200} className=" rounded-lg w-full" alt="screenshort" />
+                            <Image src={p.img} width={200} height={200} className=" rounded-lg w-full" alt="screenshort" />
                             {p.progress && (
                                 <span
                                     className={`absolute top-1 right-2 text-xs font-semibold text-white px-2 py-0.5 rounded-full ${p.color}`}
@@ -68,7 +68,7 @@ const RecentActivity = () => {
                             key={p.id}
                             className="relative"
                         >
-                            <Image src={p.img.src} width={200} height={200} className=" rounded-lg w-full" alt="screenshort" />
+                            <Image src={p.img} width={200} height={200} className=" rounded-lg w-full" alt="screenshort" />
                             {p.progress && (
                                 <span
                                     className={`absolute top-1 right-2 text-xs font-semibold text-white px-2 py-0.5 rounded-full ${p.color}`}
@@ -97,7 +97,7 @@ const RecentActivity = () => {
                             key={p.id}
                             className="relative"
                         >
-                            <Image src={p.img.src} width={200} height={200} className=" rounded-lg w-full" alt="screenshort" />
+                            <Image src={p.img} width={200} height={200} className=" rounded-lg w-full" alt="screenshort" />
                             {p.progress && (
                                 <span
                                     className={`absolute top-1 right-2 text-xs font-semibold text-white px-2 py-0.5 rounded-full ${p.color}`}

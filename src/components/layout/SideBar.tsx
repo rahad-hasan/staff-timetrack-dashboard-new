@@ -1,7 +1,7 @@
 "use client"
 import Image from 'next/image';
 import logo from '../../assets/logo.svg'
-import fit from '../../assets/fit.svg'
+// import fit from '../../assets/fit.svg'
 import { useState } from 'react';
 import SidebarItem from './sidebar/SidebarItem';
 import SubItem from './sidebar/SubItem';
@@ -25,7 +25,8 @@ const SideBar = () => {
     const [openMenu, setOpenMenu] = useState<string | null>('');
     const [activeSubItem, setActiveSubItem] = useState<string>('');
     const [isCollapsed, setIsCollapsed] = useState(false);
-
+    console.log(openMenu);
+    console.log(activeSubItem);
     const toggleMenu = (menu: string) => {
         setOpenMenu((prev) => (prev === menu ? null : menu));
     };
@@ -41,7 +42,7 @@ const SideBar = () => {
                         }`}
                 >
                     <Image
-                        src={logo.src}
+                        src={logo}
                         alt="Logo"
                         width={0}
                         height={0}
@@ -68,7 +69,14 @@ const SideBar = () => {
                     <h2 className="text-xs uppercase text-gray-400 mb-3">Main menu</h2>
                 )}
 
-                <SidebarItem icon={LayoutDashboard} label="Dashboard" href="#" isCollapsed={isCollapsed} />
+                <SidebarItem
+                    icon={LayoutDashboard}
+                    label="Dashboard"
+                    isOpen={openMenu === 'Dashboard'}
+                    onClick={() => toggleMenu('Dashboard')}
+                    href="#" isCollapsed={isCollapsed}
+                />
+
                 <SidebarItem
                     icon={Clock4}
                     label="Timesheets"
@@ -161,8 +169,8 @@ const SideBar = () => {
 
                 <SidebarItem
                     icon={AlarmClock} label="Time and Attendance"
-                    isOpen={openMenu === 'Time and Attendance'}
-                    onClick={() => toggleMenu('Time and Attendance')}
+                    isOpen={openMenu === 'TimeAndAttendance'}
+                    onClick={() => toggleMenu('TimeAndAttendance')}
                     href="#"
                     isCollapsed={isCollapsed}
                 />

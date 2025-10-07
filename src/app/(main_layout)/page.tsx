@@ -6,6 +6,7 @@ import { useState } from "react";
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState<"Daily" | "Weekly" | "Monthly">("Daily");
+  console.log("Dashboard Rendered", activeTab);
 
   const handleTabClick = (tab: "Daily" | "Weekly" | "Monthly") => {
     setActiveTab(tab);

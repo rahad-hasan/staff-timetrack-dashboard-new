@@ -10,6 +10,7 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import Image from "next/image";
+import { useMemo } from "react";
 
 const CoreWorkMembers = () => {
     type Member = {
@@ -19,38 +20,15 @@ const CoreWorkMembers = () => {
         total_work: string;
     };
 
-    const memberData: Member[] = [
-        {
-            name: "Kalki Noland",
-            image: "https://avatar.iran.liara.run/public/18",
-            productivity: "78%",
-            total_work: "24:08:00"
-        },
-        {
-            name: "Minakshi Devi",
-            image: "https://avatar.iran.liara.run/public/19",
-            productivity: "78%",
-            total_work: "12:08:00"
-        },
-        {
-            name: "Dani Wolvarin",
-            image: "https://avatar.iran.liara.run/public/20",
-            productivity: "35%",
-            total_work: "08:00:00"
-        },
-        {
-            name: "Alex Johnson",
-            image: "https://avatar.iran.liara.run/public/22",
-            productivity: "92%",
-            total_work: "45:15:00"
-        },
-        // {
-        //     name: "Sarah Chen",
-        //     image: "https://avatar.iran.liara.run/public/15",
-        //     productivity: "61%",
-        //     total_work: "18:40:00"
-        // }
-    ];
+    const memberData = useMemo(
+        () => [
+            { name: "Kalki Noland", image: "https://avatar.iran.liara.run/public/18", productivity: "78%", total_work: "24:08:00" },
+            { name: "Minakshi Devi", image: "https://avatar.iran.liara.run/public/25", productivity: "78%", total_work: "12:08:00" },
+            { name: "Dani Wolvarin", image: "https://avatar.iran.liara.run/public/20", productivity: "35%", total_work: "08:00:00" },
+            { name: "Alex Johnson", image: "https://avatar.iran.liara.run/public/22", productivity: "92%", total_work: "45:15:00" },
+        ],
+        []
+    );
     const columns: ColumnDef<Member>[] = [
         {
             accessorKey: "name",
