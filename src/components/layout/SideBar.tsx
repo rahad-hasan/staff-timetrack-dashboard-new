@@ -16,37 +16,66 @@ import {
     CalendarDays,
     AlarmClock,
     Settings,
+    ChevronRight,
+    ChevronLeft,
 } from 'lucide-react';
 import TrialCart from './sidebar/TrialCart';
 
 const SideBar = () => {
     const [openMenu, setOpenMenu] = useState<string | null>('');
     const [activeSubItem, setActiveSubItem] = useState<string>('');
+    const [isCollapsed, setIsCollapsed] = useState(false);
 
     const toggleMenu = (menu: string) => {
         setOpenMenu((prev) => (prev === menu ? null : menu));
     };
 
     return (
-        <div className=" w-[320px]  min-h-screen py-5 sticky top-0">
-            <div className=' flex items-center justify-between bg-white px-4 py-2  mx-3 rounded-2xl border-2'>
-                <div className=' flex items-center gap-1.5 '>
-                    <Image src={logo.src} alt="Logo" width={0} height={0} className="w-12 h-12 " />
-                    <h2 className=' text-2xl font-bold'>Tracker</h2>
+        <div className={`${isCollapsed ? "w-[90px]" : "w-[320px]"} min-h-screen py-5  z-50 sticky top-0 flex flex-col transition-all duration-300`}>
+            <div
+                className={`flex items-center justify-between bg-white px-4 py-2 mx-3 rounded-2xl border-2 ${isCollapsed ? "flex-col" : "flex-row"
+                    } transition-all duration-300`}
+            >
+                <div
+                    className={`flex items-center ${isCollapsed ? "flex-col gap-0" : "gap-1.5"
+                        }`}
+                >
+                    <Image
+                        src={logo.src}
+                        alt="Logo"
+                        width={0}
+                        height={0}
+                        className={`w-12 h-12`}
+                    />
+                    {!isCollapsed && <h2 className="text-2xl font-bold">Tracker</h2>}
                 </div>
-                <Image src={fit.src} alt="Logo" width={0} height={0} className="w-8 h-8 " />
+
+                {/* Collapse Toggle */}
+                <button
+                    onClick={() => setIsCollapsed((prev) => !prev)}
+                    className="p-2 rounded-lg hover:bg-gray-100 transition cursor-pointer"
+                >
+                    {isCollapsed ? (
+                        <ChevronRight size={22} />
+                    ) : (
+                        <ChevronLeft size={22} />
+                    )}
+                </button>
             </div>
 
             <aside className=" px-5 mt-6">
-                <h2 className="text-xs uppercase text-gray-400 mb-3">Main menu</h2>
+                {!isCollapsed && (
+                    <h2 className="text-xs uppercase text-gray-400 mb-3">Main menu</h2>
+                )}
 
-                <SidebarItem icon={LayoutDashboard} label="Dashboard" href="#" />
+                <SidebarItem icon={LayoutDashboard} label="Dashboard" href="#" isCollapsed={isCollapsed} />
                 <SidebarItem
                     icon={Clock4}
                     label="Timesheets"
                     collapsible
                     isOpen={openMenu === 'timesheets'}
                     onClick={() => toggleMenu('timesheets')}
+                    isCollapsed={isCollapsed}
                 >
                 </SidebarItem>
 
@@ -56,22 +85,28 @@ const SideBar = () => {
                     collapsible
                     isOpen={openMenu === 'SquareActivity'}
                     onClick={() => toggleMenu('SquareActivity')}
+                    isCollapsed={isCollapsed}
                 >
-                    <SubItem
-                        label="Screenshot"
-                        active={activeSubItem === 'Screenshot'}
-                        onClick={() => setActiveSubItem('Screenshot')}
-                    />
-                    <SubItem
-                        label="App"
-                        active={activeSubItem === 'App'}
-                        onClick={() => setActiveSubItem('App')}
-                    />
-                    <SubItem
-                        label="URLs"
-                        active={activeSubItem === 'URLs'}
-                        onClick={() => setActiveSubItem('URLs')}
-                    />
+                    <div className={`${isCollapsed ? " absolute left-24 bg-white shadow-2xl rounded-2xl" : "block"} p-3 mt-2 flex flex-col gap-1  transition-all duration-300`}>
+                        <SubItem
+                            label="Screenshot"
+                            active={activeSubItem === 'Screenshot'}
+                            isCollapsed={isCollapsed}
+                            onClick={() => setActiveSubItem('Screenshot')}
+                        />
+                        <SubItem
+                            label="App"
+                            active={activeSubItem === 'App'}
+                            isCollapsed={isCollapsed}
+                            onClick={() => setActiveSubItem('App')}
+                        />
+                        <SubItem
+                            label="URLs"
+                            active={activeSubItem === 'URLs'}
+                            isCollapsed={isCollapsed}
+                            onClick={() => setActiveSubItem('URLs')}
+                        />
+                    </div>
                 </SidebarItem>
 
                 <SidebarItem
@@ -80,6 +115,7 @@ const SideBar = () => {
                     collapsible
                     isOpen={openMenu === 'Lightbulb'}
                     onClick={() => toggleMenu('Lightbulb')}
+                    isCollapsed={isCollapsed}
                 />
 
                 <SidebarItem
@@ -88,6 +124,7 @@ const SideBar = () => {
                     collapsible
                     isOpen={openMenu === 'project'}
                     onClick={() => toggleMenu('project')}
+                    isCollapsed={isCollapsed}
                 />
 
                 <SidebarItem
@@ -96,39 +133,49 @@ const SideBar = () => {
                     collapsible
                     isOpen={openMenu === 'report'}
                     onClick={() => toggleMenu('report')}
+                    isCollapsed={isCollapsed}
                 />
 
                 <SidebarItem
                     icon={Users} label="Teams"
                     isOpen={openMenu === 'Teams'}
                     onClick={() => toggleMenu('Teams')}
-                    href="#" />
+                    href="#"
+                    isCollapsed={isCollapsed}
+                />
+
             </aside>
 
             <div className=" mx-5 pt-3 border-t-2 border-borderColor">
-                <h2 className="text-xs uppercase text-gray-400 mb-4">Others</h2>
-
+                {!isCollapsed && (
+                    <h2 className="text-xs uppercase text-gray-400 mb-4">Others</h2>
+                )}
                 <SidebarItem
                     icon={CalendarDays}
                     label="Calendar"
                     collapsible
                     isOpen={openMenu === 'Calendar'}
                     onClick={() => toggleMenu('Calendar')}
+                    isCollapsed={isCollapsed}
                 />
 
                 <SidebarItem
                     icon={AlarmClock} label="Time and Attendance"
                     isOpen={openMenu === 'Time and Attendance'}
                     onClick={() => toggleMenu('Time and Attendance')}
-                    href="#" />
+                    href="#"
+                    isCollapsed={isCollapsed}
+                />
                 <SidebarItem
                     icon={Settings} label="Settings"
                     isOpen={openMenu === 'Settings'}
                     onClick={() => toggleMenu('Settings')}
-                    href="#" />
+                    href="#"
+                    isCollapsed={isCollapsed}
+                />
             </div>
 
-            <TrialCart></TrialCart>
+            {!isCollapsed && <TrialCart />}
         </div>
     );
 };

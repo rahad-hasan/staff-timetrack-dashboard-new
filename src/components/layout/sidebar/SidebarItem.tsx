@@ -5,11 +5,12 @@ import {
 import Link from 'next/link';
 import clsx from 'clsx';
 
-const SidebarItem =({
+const SidebarItem = ({
   icon: Icon,
   label,
   href,
   collapsible = false,
+  isCollapsed,
   isOpen = false,
   onClick,
   children,
@@ -18,23 +19,33 @@ const SidebarItem =({
   label: string;
   href?: string;
   collapsible?: boolean;
+  isCollapsed?: boolean;
   isOpen?: boolean;
   onClick?: () => void;
   children?: React.ReactNode;
 }) => {
-  const baseClasses =
-    'flex items-center justify-between w-full text-md text-gray-700 hover:text-primary';
+
   const content = (
     <div
       onClick={onClick}
-      className={clsx(baseClasses, 'py-2 cursor-pointer', isOpen && 'text-primary')}
+      className={clsx('flex items-center justify-between w-full text-md text-gray-700 hover:text-primary transition-all', 
+          isCollapsed ? "justify-center" : "", 'py-2 cursor-pointer', isOpen && 'text-primary')}
     >
       <div className="flex items-center gap-2">
         <Icon size={20} />
-        <span>{label}</span>
+        {!isCollapsed &&
+          <span>{label}</span>
+        }
       </div>
-      {collapsible &&
-        (isOpen ? <Minus size={18} /> : <Plus size={18} />)}
+      {
+        !isCollapsed &&
+        <div>
+          {collapsible &&
+            (isOpen ? <Minus size={18} /> : <Plus size={18} />)}
+
+        </div>
+      }
+
     </div>
   );
 
