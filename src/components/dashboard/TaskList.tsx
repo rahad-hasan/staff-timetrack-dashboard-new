@@ -70,7 +70,19 @@ const TaskList = () => {
     const columns: ColumnDef<Task>[] = [
         {
             accessorKey: "taskName",
-            header: "Task Name",
+            header: ({ column }) => {
+                return (
+                    <div>
+                        <span
+                            className=" cursor-pointer flex items-center gap-1"
+                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                        >
+                            Task Name
+                            <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </span>
+                    </div>
+                )
+            },
             cell: ({ row }) => {
                 const task = row.getValue("taskName") as string;
                 const project = row.original.project;
@@ -85,7 +97,19 @@ const TaskList = () => {
         },
         {
             accessorKey: "assignee",
-            header: "Assignee",
+            header: ({ column }) => {
+                return (
+                    <div>
+                        <span
+                            className=" cursor-pointer flex items-center gap-1"
+                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                        >
+                            Assignee
+                            <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </span>
+                    </div>
+                )
+            },
             cell: ({ row }) => {
                 const assignee = row.getValue("assignee") as string;
                 const image = row.original.image;
@@ -108,8 +132,7 @@ const TaskList = () => {
             // header: () => <div className="">Time Worked</div>,
             header: ({ column }) => {
                 return (
-                    <div
-                    >
+                    <div>
                         <span
                             className=" cursor-pointer flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
@@ -117,9 +140,7 @@ const TaskList = () => {
                             Time Worked
                             <ArrowUpDown className="ml-2 h-4 w-4" />
                         </span>
-
                     </div>
-
                 )
             },
             cell: ({ row }) => {
@@ -129,7 +150,20 @@ const TaskList = () => {
         },
         {
             accessorKey: "priority",
-            header: "Priority",
+            // header: "Priority",
+            header: ({ column }) => {
+                return (
+                    <div>
+                        <span
+                            className=" cursor-pointer flex items-center gap-1"
+                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                        >
+                            Priority
+                            <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </span>
+                    </div>
+                )
+            },
             cell: ({ row }) => {
                 const project = row.getValue("priority") as string;
                 return <span>{project}</span>;
@@ -138,8 +172,21 @@ const TaskList = () => {
         {
             accessorKey: "status",
             // header: "Status",
-            header: () => <div className=" text-right">Status</div>,
-            cell: ({ row, table }) => {
+            // header: () => <div className=" text-right">Status</div>,
+            header: ({ column }) => {
+                return (
+                    <div className=" flex justify-end">
+                        <span
+                            className=" cursor-pointer flex items-center gap-1"
+                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                        >
+                            Status
+                            <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </span>
+                    </div>
+                )
+            },
+            cell: ({ row }) => {
                 const status = row.getValue("status") as string;
 
                 const statusClass =
