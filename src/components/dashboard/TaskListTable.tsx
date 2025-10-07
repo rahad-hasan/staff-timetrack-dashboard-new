@@ -11,10 +11,16 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "../ui/button";
-import { ArrowUpDown, EllipsisVertical } from "lucide-react";
+import { ArrowUpDown, ChevronDown, EllipsisVertical } from "lucide-react";
+import lowFlag from '../../assets/dashboard/lowFlag.svg'
+import mediumFlag from '../../assets/dashboard/mediumFlag.svg'
+import noneFlag from '../../assets/dashboard/noneFlag.svg'
+import { Checkbox } from "@/components/ui/checkbox"
 
-const TaskList = () => {
-
+const TaskListTable = () => {
+    const [sorting, setSorting] = useState<SortingState>([])
+    const [rowSelection, setRowSelection] = useState({})
+    console.log(rowSelection);
     interface Task {
         taskName: string;
         project: string;
@@ -69,6 +75,30 @@ const TaskList = () => {
 
     const columns: ColumnDef<Task>[] = [
         {
+            id: "select",
+            header: ({ table }) => (
+                <Checkbox
+                    checked={
+                        table.getIsAllPageRowsSelected() ||
+                        (table.getIsSomePageRowsSelected() && "indeterminate")
+                    }
+                    onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+                    aria-label="Select all"
+                    className=" cursor-pointer"
+                />
+            ),
+            cell: ({ row }) => (
+                <Checkbox
+                    checked={row.getIsSelected()}
+                    onCheckedChange={(value) => row.toggleSelected(!!value)}
+                    aria-label="Select row"
+                    className=" cursor-pointer"
+                />
+            ),
+            enableSorting: false,
+            enableHiding: false,
+        },
+        {
             accessorKey: "taskName",
             header: ({ column }) => {
                 return (
@@ -86,7 +116,6 @@ const TaskList = () => {
             cell: ({ row }) => {
                 const task = row.getValue("taskName") as string;
                 const project = row.original.project;
-                console.log(row);
                 return (
                     <div className="flex flex-col">
                         <span className="font-medium">{task}</span>
@@ -165,8 +194,14 @@ const TaskList = () => {
                 )
             },
             cell: ({ row }) => {
-                const project = row.getValue("priority") as string;
-                return <span>{project}</span>;
+                const priority = row.getValue("priority") as string;
+                const flagImage = priority === "Low" ? lowFlag : priority === "Medium" ? mediumFlag : noneFlag;
+                return (
+                    <div className="flex items-center gap-2">
+                        <Image src={flagImage} width={100} height={100} alt="flag" className="w-4" />
+                        <span>{priority}</span>
+                    </div>
+                );
             }
         },
         {
@@ -204,9 +239,11 @@ const TaskList = () => {
                             <DropdownMenuTrigger asChild>
                                 <Button
                                     variant="outline2"
-                                    className={`px-2 py-1 rounded-full text-sm font-medium ${statusClass}`}
+                                    className={`px-2 py-1.5 rounded-full text-sm font-medium ${statusClass}`}
                                 >
+                                    <span className={` w-2 h-2 rounded-full ${status === "In Progress" ? "bg-blue-300" : "bg-gray-300"}`}></span>
                                     {status}
+                                    <ChevronDown />
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
@@ -223,7 +260,7 @@ const TaskList = () => {
             },
         }
     ];
-    const [sorting, setSorting] = useState<SortingState>([])
+
 
     const table = useReactTable({
         data: taskList,
@@ -231,9 +268,10 @@ const TaskList = () => {
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,
         getSortedRowModel: getSortedRowModel(),
-
+        onRowSelectionChange: setRowSelection,
         state: {
             sorting,
+            rowSelection,
         },
     });
 
@@ -284,4 +322,4 @@ const TaskList = () => {
     );
 };
 
-export default TaskList;
+export default TaskListTable; 

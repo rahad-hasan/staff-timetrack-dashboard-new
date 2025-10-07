@@ -2,7 +2,7 @@
 
 import Insights from "@/components/dashboard/Insights";
 import RecentActivity from "@/components/dashboard/RecentActivity";
-import TaskList from "@/components/dashboard/TaskList";
+import TaskListTable from "@/components/dashboard/TaskListTable";
 import { useState } from "react";
 
 export default function Dashboard() {
@@ -43,7 +43,7 @@ export default function Dashboard() {
         <RecentActivity></RecentActivity>
         <Insights></Insights>
       </div>
-      <TaskList></TaskList>
+      <TaskListTable></TaskListTable>
     </div>
   );
 }
