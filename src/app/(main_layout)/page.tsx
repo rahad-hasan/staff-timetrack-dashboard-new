@@ -1,6 +1,8 @@
 "use client";
 
+import AppsAndUrl from "@/components/dashboard/AppsAndUrl";
 import Insights from "@/components/dashboard/Insights";
+import Members from "@/components/dashboard/Members";
 import ProjectListTable from "@/components/dashboard/ProjectListTable";
 import RecentActivity from "@/components/dashboard/RecentActivity";
 import TaskListTable from "@/components/dashboard/TaskListTable";
@@ -40,9 +42,14 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="flex gap-5 ">
+      <div className="flex gap-5 mb-5">
         <RecentActivity></RecentActivity>
         <Insights></Insights>
+      </div>
+
+      <div className="flex gap-5 ">
+        <Members></Members>
+        <AppsAndUrl></AppsAndUrl>
       </div>
       <TaskListTable></TaskListTable>
       <ProjectListTable></ProjectListTable>
