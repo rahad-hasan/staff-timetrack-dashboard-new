@@ -9,13 +9,19 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 import { BellOff, ChevronDown, CreditCard, Headset, LogOut, Plug, Share2, User, UserPlus } from "lucide-react";
+import StartTimer from "./Header/StartTimer";
 
 const Header = () => {
-
+    console.log('header rendered');
     return (
         <div className=" border-b-2 border-borderColor py-5 px-5 flex items-center justify-between">
             <div>
-                <Button variant={'outline2'}><Image src={startTimerIcon} width={0} height={0} className="w-5" alt="download" />Start Timer</Button>
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <Button variant={'outline2'}><Image src={startTimerIcon} width={0} height={0} className="w-5" alt="download" />Start Timer</Button>
+                    </PopoverTrigger>
+                    <StartTimer></StartTimer>
+                </Popover>
             </div>
 
             <div className=" flex items-center gap-4">
@@ -37,7 +43,7 @@ const Header = () => {
                     <PopoverTrigger asChild>
                         <Button variant={'outline2'} className=" py-[5px]"><Image src={`https://avatar.iran.liara.run/public/18`} width={200} height={200} className="w-8 rounded-full" alt="download" />Dannielis Vettori <ChevronDown size={20} /></Button>
                     </PopoverTrigger>
-                    <PopoverContent>
+                    <PopoverContent  side="bottom" align="end">
                         <div className="flex items-center gap-3 mb-4">
                             <Image
                                 src="https://avatar.iran.liara.run/public/18"
