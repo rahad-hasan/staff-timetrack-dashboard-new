@@ -32,10 +32,10 @@ const Header = () => {
                     </div>
                 </div>
                 <Button variant={'outline'}><Image src={downloadIcon} width={0} height={0} className="w-5" alt="download" />Download App</Button>
-                <Popover>
+                {/* <Popover>
                     <PopoverTrigger><Button variant={'outline2'} className=" py-[5px]"><Image src={`https://avatar.iran.liara.run/public/18`} width={200} height={200} className="w-8 rounded-full" alt="download" />Dannielis Vettori <ChevronDown size={20} /></Button></PopoverTrigger>
                     <PopoverContent>Place content for the popover here.</PopoverContent>
-                </Popover>
+                </Popover> */}
             </div>
 
         </div >

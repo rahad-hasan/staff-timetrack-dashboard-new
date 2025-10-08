@@ -1,6 +1,7 @@
 "use client";
 
 import Insights from "@/components/dashboard/Insights";
+import ProjectListTable from "@/components/dashboard/ProjectListTable";
 import RecentActivity from "@/components/dashboard/RecentActivity";
 import TaskListTable from "@/components/dashboard/TaskListTable";
 import { useState } from "react";
@@ -44,6 +45,7 @@ export default function Dashboard() {
         <Insights></Insights>
       </div>
       <TaskListTable></TaskListTable>
+      <ProjectListTable></ProjectListTable>
     </div>
   );
 }
