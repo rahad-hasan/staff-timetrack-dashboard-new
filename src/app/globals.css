@@ -8,7 +8,7 @@
   --color-borderColor: #dce3e3; 
   --color-textGray: #505553; 
 }
-
+@plugin "tailwindcss-animate";
 @custom-variant dark (&:is(.dark *));
 
 :root {
