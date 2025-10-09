@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/popover"
 import { BellOff, ChevronDown, CreditCard, Headset, LogOut, Plug, Share2, User, UserPlus } from "lucide-react";
 import StartTimer from "./Header/StartTimer";
+import Link from "next/link";
 
 const Header = () => {
     console.log('header rendered');
@@ -43,7 +44,7 @@ const Header = () => {
                     <PopoverTrigger asChild>
                         <Button variant={'outline2'} className=" py-[5px]"><Image src={`https://avatar.iran.liara.run/public/18`} width={200} height={200} className="w-8 rounded-full" alt="download" />Dannielis Vettori <ChevronDown size={20} /></Button>
                     </PopoverTrigger>
-                    <PopoverContent  side="bottom" align="end">
+                    <PopoverContent side="bottom" align="end">
                         <div className="flex items-center gap-3 mb-4">
                             <Image
                                 src="https://avatar.iran.liara.run/public/18"
@@ -84,9 +85,11 @@ const Header = () => {
                             <button className="flex items-center gap-2 text-sm hover:bg-gray-100 px-2 py-2 rounded-md cursor-pointer">
                                 <BellOff size={16} /> Pause notification
                             </button>
-                            <button className="flex items-center gap-2 text-sm hover:bg-gray-100 px-2 py-2 rounded-md cursor-pointer">
-                                <LogOut size={16} /> Sign out
-                            </button>
+                            <Link className="hover:bg-gray-100 rounded-md cursor-pointer" href={`/auth/signIn`}>
+                                <button className="flex items-center gap-2 text-sm hover:bg-gray-100 px-2 py-2 rounded-md cursor-pointer">
+                                    <LogOut size={16} /> Sign out
+                                </button>
+                            </Link>
                         </div>
                     </PopoverContent>
                 </Popover>
