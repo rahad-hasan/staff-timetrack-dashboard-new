@@ -31,6 +31,91 @@ const SideBar = () => {
         setOpenMenu((prev) => (prev === menu ? null : menu));
     };
 
+    const sidebarItems = [
+        {
+            icon: LayoutDashboard,
+            label: 'Dashboard',
+            key: 'Dashboard',
+            collapsible: false,
+            subItems: [],
+        },
+        {
+            icon: Clock4,
+            label: 'Timesheets',
+            key: 'timesheets',
+            collapsible: true,
+            subItems: [],
+        },
+        {
+            icon: SquareActivity,
+            label: 'SquareActivity',
+            key: 'SquareActivity',
+            collapsible: true,
+            subItems: [
+                { label: 'Screenshot', key: 'Screenshot' },
+                { label: 'App', key: 'App' },
+                { label: 'URLs', key: 'URLs' },
+            ],
+        },
+        {
+            icon: Lightbulb,
+            label: 'Insights',
+            key: 'Lightbulb',
+            collapsible: true,
+            subItems: [],
+        },
+        {
+            icon: BriefcaseBusiness,
+            label: 'Project Management',
+            key: 'project',
+            collapsible: true,
+            subItems: [],
+        },
+        {
+            icon: BarChart,
+            label: 'Report',
+            key: 'report',
+            collapsible: true,
+            subItems: [],
+        },
+        {
+            icon: Users,
+            label: 'Teams',
+            key: 'Teams',
+            collapsible: false,
+            subItems: [],
+        },
+
+    ];
+
+    const othersSidebarItems = [
+        {
+            icon: CalendarDays,
+            label: 'Calendar',
+            key: 'Calendar',
+            collapsible: true,
+            subItems: [
+                { label: 'Screenshot', key: 'Screenshot' },
+                { label: 'App', key: 'App' },
+                { label: 'URLs', key: 'URLs' },
+            ],
+        },
+        {
+            icon: AlarmClock,
+            label: 'Time and Attendance',
+            key: 'TimeAndAttendance',
+            collapsible: false,
+            subItems: [],
+        },
+        {
+            icon: Settings,
+            label: 'Settings',
+            key: 'Settings',
+            collapsible: false,
+            subItems: [],
+        },
+    ]
+
     return (
         <div className={`${isCollapsed ? "w-[90px]" : "w-[320px]"} min-h-screen py-5  z-50 sticky top-0 flex flex-col transition-all duration-300`}>
             <div
@@ -69,88 +154,32 @@ const SideBar = () => {
                     <h2 className="text-xs uppercase text-gray-400 mb-3">Main menu</h2>
                 )}
 
-                <SidebarItem
-                    icon={LayoutDashboard}
-                    label="Dashboard"
-                    isOpen={openMenu === 'Dashboard'}
-                    onClick={() => toggleMenu('Dashboard')}
-                    href="#" isCollapsed={isCollapsed}
-                />
-
-                <SidebarItem
-                    icon={Clock4}
-                    label="Timesheets"
-                    collapsible
-                    isOpen={openMenu === 'timesheets'}
-                    onClick={() => toggleMenu('timesheets')}
-                    isCollapsed={isCollapsed}
-                >
-                </SidebarItem>
-
-                <SidebarItem
-                    icon={SquareActivity}
-                    label="SquareActivity"
-                    collapsible
-                    isOpen={openMenu === 'SquareActivity'}
-                    onClick={() => toggleMenu('SquareActivity')}
-                    isCollapsed={isCollapsed}
-                >
-                    <div className={`${isCollapsed ? " absolute left-24 bg-white shadow-2xl rounded-2xl" : "block"} p-3 mt-2 flex flex-col gap-1  transition-all duration-300`}>
-                        <SubItem
-                            label="Screenshot"
-                            active={activeSubItem === 'Screenshot'}
+                {sidebarItems.map((item) => (
+                    <div key={item.key}>
+                        <SidebarItem
+                            icon={item.icon}
+                            label={item.label}
+                            collapsible={item.collapsible}
+                            isOpen={openMenu === item.key}
+                            onClick={() => toggleMenu(item.key)}
                             isCollapsed={isCollapsed}
-                            onClick={() => setActiveSubItem('Screenshot')}
-                        />
-                        <SubItem
-                            label="App"
-                            active={activeSubItem === 'App'}
-                            isCollapsed={isCollapsed}
-                            onClick={() => setActiveSubItem('App')}
-                        />
-                        <SubItem
-                            label="URLs"
-                            active={activeSubItem === 'URLs'}
-                            isCollapsed={isCollapsed}
-                            onClick={() => setActiveSubItem('URLs')}
-                        />
+                        >
+                            {item.subItems.length > 0 && (
+                                <div className={`${isCollapsed ? "absolute left-24 bg-white shadow-2xl rounded-2xl" : "block"} p-3 mt-2 flex flex-col gap-1 transition-all duration-300`}>
+                                    {item.subItems.map((subItem) => (
+                                        <SubItem
+                                            key={subItem.key}
+                                            label={subItem.label}
+                                            active={activeSubItem === subItem.key}
+                                            isCollapsed={isCollapsed}
+                                            onClick={() => setActiveSubItem(subItem.key)}
+                                        />
+                                    ))}
+                                </div>
+                            )}
+                        </SidebarItem>
                     </div>
-                </SidebarItem>
-
-                <SidebarItem
-                    icon={Lightbulb}
-                    label="Insights"
-                    collapsible
-                    isOpen={openMenu === 'Lightbulb'}
-                    onClick={() => toggleMenu('Lightbulb')}
-                    isCollapsed={isCollapsed}
-                />
-
-                <SidebarItem
-                    icon={BriefcaseBusiness}
-                    label="Project Management"
-                    collapsible
-                    isOpen={openMenu === 'project'}
-                    onClick={() => toggleMenu('project')}
-                    isCollapsed={isCollapsed}
-                />
-
-                <SidebarItem
-                    icon={BarChart}
-                    label="Report"
-                    collapsible
-                    isOpen={openMenu === 'report'}
-                    onClick={() => toggleMenu('report')}
-                    isCollapsed={isCollapsed}
-                />
-
-                <SidebarItem
-                    icon={Users} label="Teams"
-                    isOpen={openMenu === 'Teams'}
-                    onClick={() => toggleMenu('Teams')}
-                    href="#"
-                    isCollapsed={isCollapsed}
-                />
+                ))}
 
             </aside>
 
@@ -158,29 +187,32 @@ const SideBar = () => {
                 {!isCollapsed && (
                     <h2 className="text-xs uppercase text-gray-400 mb-4">Others</h2>
                 )}
-                <SidebarItem
-                    icon={CalendarDays}
-                    label="Calendar"
-                    collapsible
-                    isOpen={openMenu === 'Calendar'}
-                    onClick={() => toggleMenu('Calendar')}
-                    isCollapsed={isCollapsed}
-                />
-
-                <SidebarItem
-                    icon={AlarmClock} label="Time and Attendance"
-                    isOpen={openMenu === 'TimeAndAttendance'}
-                    onClick={() => toggleMenu('TimeAndAttendance')}
-                    href="#"
-                    isCollapsed={isCollapsed}
-                />
-                <SidebarItem
-                    icon={Settings} label="Settings"
-                    isOpen={openMenu === 'Settings'}
-                    onClick={() => toggleMenu('Settings')}
-                    href="#"
-                    isCollapsed={isCollapsed}
-                />
+                {othersSidebarItems.map((item) => (
+                    <div key={item.key}>
+                        <SidebarItem
+                            icon={item.icon}
+                            label={item.label}
+                            collapsible={item.collapsible}
+                            isOpen={openMenu === item.key}
+                            onClick={() => toggleMenu(item.key)}
+                            isCollapsed={isCollapsed}
+                        >
+                            {item.subItems.length > 0 && (
+                                <div className={`${isCollapsed ? "absolute left-24 bg-white shadow-2xl rounded-2xl" : "block"} p-3 mt-2 flex flex-col gap-1 transition-all duration-300`}>
+                                    {item.subItems.map((subItem) => (
+                                        <SubItem
+                                            key={subItem.key}
+                                            label={subItem.label}
+                                            active={activeSubItem === subItem.key}
+                                            isCollapsed={isCollapsed}
+                                            onClick={() => setActiveSubItem(subItem.key)}
+                                        />
+                                    ))}
+                                </div>
+                            )}
+                        </SidebarItem>
+                    </div>
+                ))}
             </div>
 
             {!isCollapsed && <TrialCart />}
