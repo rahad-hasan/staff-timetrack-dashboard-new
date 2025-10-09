@@ -1,7 +1,7 @@
+import CoreWorkMembers from "@/components/dashboard/insights/CoreWorkMembers";
+import OverallActivityChart from "@/components/dashboard/insights/OverallActivityChart";
+import { Button } from "@/components/ui/button";
 import { EllipsisVertical, Info } from "lucide-react";
-import { Button } from "../ui/button";
-import OverallActivityChart from "./insights/OverallActivityChart";
-import CoreWorkMembers from "./insights/CoreWorkMembers";
 
 const Insights = () => {
     const classificationData = [

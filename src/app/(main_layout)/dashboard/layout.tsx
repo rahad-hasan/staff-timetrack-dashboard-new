@@ -1,15 +1,20 @@
-import AppsAndUrl from "@/components/dashboard/AppsAndUrl";
-import Insights from "@/components/dashboard/Insights";
-import Members from "@/components/dashboard/Members";
-import ProjectListTable from "@/components/dashboard/ProjectListTable";
-import TaskListTable from "@/components/dashboard/TaskListTable";
 
 export default function DashboardLayout({
     children,
     recentActivity,
+    insights,
+    members,
+    appsAndUrl,
+    projectListTable,
+    taskListTable,
 }: Readonly<{
     children: React.ReactNode;
     recentActivity: React.ReactNode,
+    insights: React.ReactNode,
+    members: React.ReactNode,
+    appsAndUrl: React.ReactNode,
+    projectListTable: React.ReactNode,
+    taskListTable: React.ReactNode,
 }>) {
     return (
         <div
@@ -19,15 +24,15 @@ export default function DashboardLayout({
             {children}
             <div className="flex gap-5 mb-5">
                 {recentActivity}
-                <Insights></Insights>
+                {insights}
             </div>
 
             <div className="flex gap-5 ">
-                <Members></Members>
-                <AppsAndUrl></AppsAndUrl>
+                {members}
+                {appsAndUrl}
             </div>
-            <TaskListTable></TaskListTable>
-            <ProjectListTable></ProjectListTable>
+            {taskListTable}
+            {projectListTable}
         </div>
     );
 }

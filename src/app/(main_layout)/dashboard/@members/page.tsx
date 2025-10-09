@@ -1,18 +1,19 @@
 "use client"
 import { EllipsisVertical } from "lucide-react";
-import { Button } from "../ui/button";
 import { useMemo } from "react";
 import Image from "next/image";
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
-import SmallChart from "./SmallChart/SmallChart";
+import SmallChart from "@/components/dashboard/SmallChart/SmallChart";
+import { Button } from "@/components/ui/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
-const AppsAndUrl = () => {
+
+const Members = () => {
     type Member = {
         name: string;
         project: string;
         progress: string;
-        soft: string;
+        task: string;
         lastActive: string;
         image: string;
         productivity: string
@@ -22,11 +23,10 @@ const AppsAndUrl = () => {
 
     const memberData = useMemo(
         () => [
-            { name: "Microsoft Teams", project: "Orbit Technology's project", progress: "20%", soft: "Web", lastActive: "1h ago", image: "https://avatar.iran.liara.run/public/18", productivity: "78%", week_work: "24:08:00", today_work: "7:08:00" },
-            { name: "VS Code", project: "Orbit Technology's project", progress: "75%", soft: "App", lastActive: "1d ago", image: "https://avatar.iran.liara.run/public/25", productivity: "78%", week_work: "12:08:00", today_work: "4:00:00" },
-            { name: "Microsoft Teams", project: "Orbit Technology's project", progress: "100%", soft: "Web", lastActive: "5h ago", image: "https://avatar.iran.liara.run/public/20", productivity: "35%", week_work: "08:00:00", today_work: "5:12:00" },
-            { name: "figma.com", project: "Orbit Technology's project", progress: "100%", soft: "App", lastActive: "5h ago", image: "https://avatar.iran.liara.run/public/20", productivity: "35%", week_work: "08:00:00", today_work: "5:12:00" },
-            { name: "VS Code", project: "Orbit Technology's project", progress: "50%", soft: "App", lastActive: "3h ago", image: "https://avatar.iran.liara.run/public/22", productivity: "92%", week_work: "45:15:00", today_work: "8:05:00" },
+            { name: "Kalki Noland", project: "Orbit Technology's project", progress: "20%", task: "No task assigned", lastActive: "1h ago", image: "https://avatar.iran.liara.run/public/18", productivity: "78%", week_work: "24:08:00", today_work: "7:08:00" },
+            { name: "Minakshi Devi", project: "Orbit Technology's project", progress: "75%", task: "No task assigned", lastActive: "1d ago", image: "https://avatar.iran.liara.run/public/25", productivity: "78%", week_work: "12:08:00", today_work: "4:00:00" },
+            { name: "Dani Wolvarin", project: "Orbit Technology's project", progress: "100%", task: "No task assigned", lastActive: "5h ago", image: "https://avatar.iran.liara.run/public/20", productivity: "35%", week_work: "08:00:00", today_work: "5:12:00" },
+            { name: "Alex Johnson", project: "Orbit Technology's project", progress: "50%", task: "No task assigned", lastActive: "3h ago", image: "https://avatar.iran.liara.run/public/22", productivity: "92%", week_work: "45:15:00", today_work: "8:05:00" },
         ],
         []
     );
@@ -35,11 +35,12 @@ const AppsAndUrl = () => {
         {
             accessorKey: "name",
             // header: "Name",
-            header: () => <div className="">App or Site</div>,
+            header: () => <div className="">Member info</div>,
             cell: ({ row }) => {
                 const name = row.getValue("name") as string
                 const image = row.original.image
-                const soft = row.original.soft
+                const project = row.original.project
+                const task = row.original.task
                 return (
                     <div className="flex items-center gap-3">
                         <Image
@@ -51,7 +52,8 @@ const AppsAndUrl = () => {
                         />
                         <div className="flex flex-col">
                             <span className="font-medium">{name}</span>
-                            <span className="">{soft}</span>
+                            <span className="font-medium">{project}</span>
+                            <span className="">{task}</span>
                         </div>
                     </div>
                 )
@@ -61,10 +63,22 @@ const AppsAndUrl = () => {
             accessorKey: "today_work",
             header: () => <div className="">Today</div>,
             cell: ({ row }) => {
+                const progress = row.original.progress
                 const today_work = row.original.today_work
+
+                const progressValue = parseInt(progress.replace("%", ""));
+                let bgColor = "bg-red-500";
+                if (progressValue >= 75) {
+                    bgColor = "bg-[#5db0f1]";
+                } else if (progressValue >= 25) {
+                    bgColor = "bg-yellow-500";
+                }
                 return (
                     <div className="flex items-center gap-3">
-                        <span className="">{today_work}</span>
+                        <div className="flex flex-col">
+                            <span className={` ${bgColor} rounded-full text-center text-white px-1  text-sm mb-0.5`}>{progress}</span>
+                            <span className="">{today_work}</span>
+                        </div>
                     </div>
                 )
             }
@@ -75,6 +89,7 @@ const AppsAndUrl = () => {
             cell: ({ row }) => {
                 const progress = row.original.progress
                 const week_work = row.original.week_work
+                const lastActive = row.original.lastActive
 
                 const progressValue = parseInt(progress.replace("%", ""));
                 let bgColor = "bg-red-500";
@@ -84,11 +99,14 @@ const AppsAndUrl = () => {
                     bgColor = "bg-yellow-500";
                 }
                 return (
-                    <div className=" flex justify-end">
-                        <div className=" flex justify-center items-center">
-                            <span className="">{week_work}</span>
+                    <div className=" flex justify-end gap-0">
+                        <div className=" flex flex-col items-start">
+                            <span className={` ${bgColor} rounded-full text-center text-white px-2  text-sm mb-0.5`}>{progress}</span>
+                            <div className="flex flex-col">
+                                <span className=" font-semibold">{week_work}</span>
+                                <span className="">Last Active {lastActive}</span>
+                            </div>
                         </div>
-
                         <div className="">
                             <SmallChart></SmallChart>
                         </div>
@@ -108,10 +126,10 @@ const AppsAndUrl = () => {
     return (
         <div className=" border-2 border-borderColor p-3 rounded-[12px] w-full">
             <div className=" flex justify-between items-center">
-                <h2 className=" text-lg">APPS & URL</h2>
+                <h2 className=" text-lg">MEMBERS</h2>
                 <div className=" flex items-center gap-3">
                     <Button variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
-                    <Button size={'sm'}>View Report</Button>
+                    <Button size={'sm'}>All Member</Button>
                 </div>
             </div>
             <div className=" mt-5">
@@ -162,4 +180,4 @@ const AppsAndUrl = () => {
     );
 };
 
-export default AppsAndUrl;
+export default Members;

@@ -10,23 +10,25 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Button } from "../ui/button";
-import { ArrowUpDown, ChevronDown, EllipsisVertical } from "lucide-react";
-// import lowFlag from '../../assets/dashboard/lowFlag.svg'
-// import mediumFlag from '../../assets/dashboard/mediumFlag.svg'
-// import noneFlag from '../../assets/dashboard/noneFlag.svg'
-import { Checkbox } from "@/components/ui/checkbox"
 
-const ProjectListTable = () => {
+import { ArrowUpDown, ChevronDown, EllipsisVertical } from "lucide-react";
+import lowFlag from '../../../../assets/dashboard/lowFlag.svg'
+import mediumFlag from '../../../../assets/dashboard/mediumFlag.svg'
+import noneFlag from '../../../../assets/dashboard/noneFlag.svg'
+import { Checkbox } from "@/components/ui/checkbox"
+import { Button } from "@/components/ui/button";
+
+const TaskListTable = () => {
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
     console.log(rowSelection);
     interface Task {
         taskName: string;
-        date: string;
+        project: string;
         image: string;
-        manager: string;
+        assignee: string;
         timeWorked: string;
+        priority: string;
         status: string;
     }
 
@@ -34,34 +36,38 @@ const ProjectListTable = () => {
         () => [
             {
                 taskName: "Do the Logic for Orbit Home page project",
-                date: "From 12 Aug, 2025",
+                project: "Orbit Technology's project",
                 image: "https://avatar.iran.liara.run/public/25",
-                manager: "Juyed Ahmed",
+                assignee: "Juyed Ahmed",
                 timeWorked: "12:03:00",
+                priority: "Low",
                 status: "In Progress"
             },
             {
                 taskName: "Marketing Tools",
-                date: "From 12 Aug, 2025",
+                project: "Orbit Technology's project",
                 image: "https://avatar.iran.liara.run/public/22",
-                manager: "Cameron Williamson",
+                assignee: "Cameron Williamson",
                 timeWorked: "12:03:00",
+                priority: "Medium",
                 status: "Pending"
             },
             {
                 taskName: "Design Idea",
-                date: "From 12 Aug, 2025",
+                project: "Orbit Technology's project",
                 image: "https://avatar.iran.liara.run/public/26",
-                manager: "Jenny Wilson",
+                assignee: "Jenny Wilson",
                 timeWorked: "11:03:00",
+                priority: "None",
                 status: "In Progress"
             },
             {
                 taskName: "Do the Logic for Orbit Home page project wi...",
-                date: "From 12 Aug, 2025",
+                project: "Orbit Technology's project",
                 image: "https://avatar.iran.liara.run/public/27",
-                manager: "Esther Howard",
+                assignee: "Esther Howard",
                 timeWorked: "10:03:00",
+                priority: "Medium",
                 status: "Pending"
             }
         ],
@@ -110,45 +116,13 @@ const ProjectListTable = () => {
             },
             cell: ({ row }) => {
                 const task = row.getValue("taskName") as string;
-                const date = row.original.date;
+                const project = row.original.project;
                 return (
                     <div className="flex flex-col">
                         <span className="font-medium">{task}</span>
-                        <span className="">{date}</span>
+                        <span className="">{project}</span>
                     </div>
                 )
-            }
-        },
-        {
-            accessorKey: "manager",
-            header: ({ column }) => {
-                return (
-                    <div>
-                        <span
-                            className=" cursor-pointer flex items-center gap-1"
-                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        >
-                            Manager
-                            <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </span>
-                    </div>
-                )
-            },
-            cell: ({ row }) => {
-                const manager = row.getValue("manager") as string;
-                const image = row.original.image;
-                return (
-                    <div className="flex items-center gap-2">
-                        <Image
-                            src={image}
-                            width={40}
-                            height={40}
-                            alt={manager}
-                            className="rounded-full w-10"
-                        />
-                        <span>{manager}</span>
-                    </div>
-                );
             }
         },
         {
@@ -167,22 +141,18 @@ const ProjectListTable = () => {
                 )
             },
             cell: ({ row }) => {
+                const assignee = row.getValue("assignee") as string;
                 const image = row.original.image;
                 return (
-                    <div className="flex items-center">
-                        {[image, image, image].map((imgSrc, index) => (
-                            <Image
-                                key={index}
-                                src={imgSrc}
-                                width={40}
-                                height={40}
-                                alt={`Assignee ${index + 1}`}
-                                className="rounded-full w-10 -ml-3 border-2 border-white"
-                            />
-                        ))}
-                        <div className="w-10 h-10 -ml-3 rounded-full bg-[#ede7ff] flex items-center justify-center text-sm font-semibold text-[#926fef] border-2 border-white">
-                            10+
-                        </div>
+                    <div className="flex items-center gap-2">
+                        <Image
+                            src={image}
+                            width={40}
+                            height={40}
+                            alt={assignee}
+                            className="rounded-full w-10"
+                        />
+                        <span>{assignee}</span>
                     </div>
                 );
             }
@@ -207,6 +177,33 @@ const ProjectListTable = () => {
                 const timeWorked = row.getValue("timeWorked") as string;
                 return <div className="">{timeWorked}</div>;
             },
+        },
+        {
+            accessorKey: "priority",
+            // header: "Priority",
+            header: ({ column }) => {
+                return (
+                    <div>
+                        <span
+                            className=" cursor-pointer flex items-center gap-1"
+                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                        >
+                            Priority
+                            <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </span>
+                    </div>
+                )
+            },
+            cell: ({ row }) => {
+                const priority = row.getValue("priority") as string;
+                const flagImage = priority === "Low" ? lowFlag : priority === "Medium" ? mediumFlag : noneFlag;
+                return (
+                    <div className="flex items-center gap-2">
+                        <Image src={flagImage} width={100} height={100} alt="flag" className="w-4" />
+                        <span>{priority}</span>
+                    </div>
+                );
+            }
         },
         {
             accessorKey: "status",
@@ -282,10 +279,10 @@ const ProjectListTable = () => {
     return (
         <div className="mt-5 border-2 border-borderColor p-3 rounded-[12px]">
             <div className=" flex justify-between items-center mb-5">
-                <h2 className=" text-lg">Project list</h2>
+                <h2 className=" text-lg">TASK LIST</h2>
                 <div className=" flex items-center gap-3">
                     <Button variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
-                    <Button size={'sm'}>All Project</Button>
+                    <Button size={'sm'}>All Task</Button>
                 </div>
             </div>
             <Table>
@@ -326,4 +323,4 @@ const ProjectListTable = () => {
     );
 };
 
-export default ProjectListTable; 
+export default TaskListTable;
