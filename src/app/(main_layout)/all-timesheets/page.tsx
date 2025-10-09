@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import DailyTable from "@/components/AllTimesheets/DailyTable";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Plus, SlidersHorizontal } from "lucide-react";
-import { useState } from "react";
+import { Calendar, ChevronLeft, ChevronRight, Plus, SlidersHorizontal } from "lucide-react";
+import { useCallback, useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -38,6 +39,28 @@ const AllTimeSheets = () => {
         { start: 18, end: 20 }, // Active from 6 PM to 8 PM
     ];
 
+    // date picker
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const formatDate = (date: any) => {
+        return date.toLocaleDateString('en-US', {
+            weekday: 'short', // Mon
+            month: 'short',   // Oct
+            day: 'numeric',   // 9
+            year: 'numeric',  // 2025
+        });
+    };
+
+    const handleNavigate = useCallback((days:any) => {
+        setSelectedDate(prevDate => {
+            const newDate = new Date(prevDate);
+            // setDate(getDate() + days) moves the date by the specified number of days
+            newDate.setDate(newDate.getDate() + days);
+            return newDate;
+        });
+    }, []);
+
+    const dateDisplay = formatDate(selectedDate);
+
     return (
         <div>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5">
@@ -69,8 +92,12 @@ const AllTimeSheets = () => {
             <div className=" mb-5 flex justify-between">
                 <div className=" flex gap-3">
                     <div className="flex">
-                        <ChevronLeft size={45} className="border p-2.5 border-borderColor rounded-lg cursor-pointer" />
-                        <ChevronRight size={45} className="border p-2.5 border-borderColor rounded-lg cursor-pointer" />
+                        <ChevronLeft onClick={() => handleNavigate(-1)} size={45} className="border p-2.5 border-borderColor rounded-lg cursor-pointer" />
+                        <div className=" flex items-center gap-2 border rounded-md px-4 mx-3">
+                            <Calendar className=" text-primary" />
+                            <span>{dateDisplay}</span>
+                        </div>
+                        <ChevronRight onClick={() => handleNavigate(1)} size={45} className="border p-2.5 border-borderColor rounded-lg cursor-pointer" />
                     </div>
                     <Button variant={'outline2'}>
                         <SlidersHorizontal className="" /> Filters
@@ -141,7 +168,7 @@ const AllTimeSheets = () => {
                                     <div>
                                         <h2 className=" text-[15px] mb-2">Project: Orbit Technology’s Project</h2>
                                         <h2 className=" text-[15px] mb-2">Task: Front End Development</h2>
-                                        <h2 className=" text-[15px]">Duration: 2:00:00</h2> 
+                                        <h2 className=" text-[15px]">Duration: 2:00:00</h2>
                                     </div>
                                 </TooltipContent>
                             </Tooltip>
