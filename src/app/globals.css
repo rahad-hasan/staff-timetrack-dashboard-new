@@ -6,7 +6,8 @@
   --color-headingTextColor: #0f1613;
   --color-subTextColor: #505553; 
   --color-borderColor: #dce3e3; 
-  --color-textGray: #505553; 
+  --color-textGray: #505553;
+  /* --shadow-greenShadow: '0px 10px 30px rgba(18, 205, 105, 0.5)' */
 }
 @plugin "tailwindcss-animate";
 @custom-variant dark (&:is(.dark *));

@@ -19,6 +19,7 @@ import logo from '../../../assets/logo.svg'
 import signInImage from '../../../assets/auth/signImage.webp'
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import Link from "next/link";
 
 const SignIn = () => {
     const [showPassword, setShowPassword] = useState(false);
@@ -113,7 +114,9 @@ const SignIn = () => {
                                         <FormItem>
                                             <div className=" flex items-center justify-between">
                                                 <FormLabel>Password</FormLabel>
-                                                <p className=" text-sm text-primary cursor-pointer">Forgot Password?</p>
+                                                <Link href={`/auth/forgot-password`}>
+                                                    <p className=" text-sm text-primary cursor-pointer">Forgot Password?</p>
+                                                </Link>
                                             </div>
 
                                             <FormControl>
