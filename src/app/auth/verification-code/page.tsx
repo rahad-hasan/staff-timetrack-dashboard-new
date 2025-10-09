@@ -4,9 +4,25 @@ import Image from "next/image";
 import logo from '../../../assets/logo.svg'
 import roundedEmail from '../../../assets/auth/roundedEmail.svg'
 import OtpInput from "react-otp-input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
 
 const VerificationCode = () => {
+    const [width, setWidth] = useState("50px");
+
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth >= 640) {
+                setWidth("50px");
+            } else {
+                setWidth("40px");
+            }
+        };
+
+        window.addEventListener("resize", handleResize);
+        handleResize();
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
     const [otp, setOtp] = useState<string>("");
 
@@ -42,27 +58,29 @@ const VerificationCode = () => {
                     <div className=" flex flex-col items-center mb-5">
                         <Image src={roundedEmail} width={200} height={200} alt="icon" className=" w-16" />
                         <h2 className=" text-2xl font-semibold mt-4 mb-2">Enter your code</h2>
-                        <p className="">Enter your 6 digit code in your email.</p>
+                        <p className="">Enter your 5 digit code in your email.</p>
                     </div>
                     <div className="flex justify-center">
                         <div className="flex gap-2 mb-4">
                             <OtpInput
                                 value={otp}
                                 onChange={(value: string) => setOtp(value)}
-                                numInputs={6}
-                                renderSeparator={<span className="w-4" />}
+                                numInputs={5}
+                                renderSeparator={<span className="w-2 md:w-4" />}
                                 renderInput={(props) => (
                                     <input
                                         {...props}
-                                        style={{ width: "50px" }}
-                                        className="w-12 h-12 border-2 border-borderColor rounded-md text-center text-lg focus:border-primary focus:outline-none"
+                                        style={{ width: width }}
+                                        className="responsive-otp-input w-12 h-10 md:h-12 border-2 border-borderColor rounded-md text-center text-lg focus:border-primary focus:outline-none"
                                     />
                                 )}
                             />
                         </div>
                     </div>
-                    <Button onClick={onSent} className=" w-full" size={'sm'} type="button">Verify</Button>
-                    <h3 className=" text-center">Didn’t received code? <span className=" text-primary cursor-pointer">Resent</span></h3>
+                    <Link href={`/auth/create-new-password`}>
+                        <Button onClick={onSent} className=" w-full" type="button">Verify</Button>
+                    </Link>
+                    <h3 className=" text-center mt-3">Didn’t received code? <span className=" text-primary cursor-pointer">Resent</span></h3>
                 </div>
 
             </div>

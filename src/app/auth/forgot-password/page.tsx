@@ -64,7 +64,7 @@ const ForgotPassword = () => {
                             )}
                         />
                         <Link href={`/auth/verification-code`}>
-                            <Button className=" w-full" size={'sm'} type="submit">Send Code</Button>
+                            <Button className=" w-full" type="submit">Send Code</Button>
                         </Link>
                         <h3 className=" text-center mt-3">Don’t have a account? <span className=" text-primary cursor-pointer">Sign Up</span></h3>
                     </form>

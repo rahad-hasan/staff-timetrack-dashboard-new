@@ -139,7 +139,7 @@ const SignIn = () => {
                                         </FormItem>
                                     )}
                                 />
-                                <Button className=" w-full" size={'sm'} type="submit">Sign in</Button>
+                                <Button className=" w-full" type="submit">Sign in</Button>
                                 <h3 className=" text-center">Don’t have a account? <span className=" text-primary cursor-pointer">Sign Up</span></h3>
                             </form>
                         </Form>

@@ -181,3 +181,22 @@
     @apply bg-background text-foreground;
   }
 }
+/* custom css */
+
+/* css for otp input */
+/* styles.css */
+/* .responsive-otp-input {
+  width: 50px;
+}
+
+@media (max-width: 640px) {
+  .responsive-otp-input {
+    width: 35px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .responsive-otp-input {
+    width: 50px;
+  }
+} */
