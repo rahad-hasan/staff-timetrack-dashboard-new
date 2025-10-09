@@ -1,11 +1,5 @@
 "use client";
 
-import AppsAndUrl from "@/components/dashboard/AppsAndUrl";
-import Insights from "@/components/dashboard/Insights";
-import Members from "@/components/dashboard/Members";
-import ProjectListTable from "@/components/dashboard/ProjectListTable";
-import RecentActivity from "@/components/dashboard/RecentActivity";
-import TaskListTable from "@/components/dashboard/TaskListTable";
 import { useState } from "react";
 
 export default function Dashboard() {
@@ -17,7 +11,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="">
+
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5">
         <div>
           <h1 className="text-3xl font-semibold text-headingTextColor">Dashboard</h1>
@@ -42,17 +36,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="flex gap-5 mb-5">
-        <RecentActivity></RecentActivity>
-        <Insights></Insights>
-      </div>
 
-      <div className="flex gap-5 ">
-        <Members></Members>
-        <AppsAndUrl></AppsAndUrl>
-      </div>
-      <TaskListTable></TaskListTable>
-      <ProjectListTable></ProjectListTable>
-    </div>
   );
 }

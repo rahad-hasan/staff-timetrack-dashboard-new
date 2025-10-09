@@ -1,3 +1,4 @@
+"use client"
 import { Button } from "@/components/ui/button";
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { ChevronDown, Info } from "lucide-react";

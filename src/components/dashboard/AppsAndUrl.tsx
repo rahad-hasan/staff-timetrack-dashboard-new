@@ -1,3 +1,4 @@
+"use client"
 import { EllipsisVertical } from "lucide-react";
 import { Button } from "../ui/button";
 import { useMemo } from "react";
