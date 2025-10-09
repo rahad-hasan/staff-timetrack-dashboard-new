@@ -9,6 +9,7 @@ import { useForm } from "react-hook-form";
 import Image from "next/image";
 import logo from '../../../assets/logo.svg'
 import roundedEmail from '../../../assets/auth/roundedEmail.svg'
+import Link from "next/link";
 
 const ForgotPassword = () => {
 
@@ -62,8 +63,10 @@ const ForgotPassword = () => {
                                 </FormItem>
                             )}
                         />
-                        <Button className=" w-full" size={'sm'} type="submit">Send Code</Button>
-                        <h3 className=" text-center">Don’t have a account? <span className=" text-primary cursor-pointer">Sign Up</span></h3>
+                        <Link href={`/auth/verification-code`}>
+                            <Button className=" w-full" size={'sm'} type="submit">Send Code</Button>
+                        </Link>
+                        <h3 className=" text-center mt-3">Don’t have a account? <span className=" text-primary cursor-pointer">Sign Up</span></h3>
                     </form>
                 </Form>
             </div>
