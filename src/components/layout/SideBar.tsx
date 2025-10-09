@@ -29,13 +29,14 @@ const SideBar = () => {
     console.log(activeSubItem);
     const toggleMenu = (menu: string) => {
         setOpenMenu((prev) => (prev === menu ? null : menu));
+        setActiveSubItem('')
     };
 
     const sidebarItems = [
         {
             icon: LayoutDashboard,
             label: 'Dashboard',
-            key: 'Dashboard',
+            key: 'dashboard',
             collapsible: false,
             subItems: [],
         },
@@ -44,7 +45,10 @@ const SideBar = () => {
             label: 'Timesheets',
             key: 'timesheets',
             collapsible: true,
-            subItems: [],
+            subItems: [
+                { label: 'All timesheets', key: 'all-timesheets' },
+                { label: 'Manual requests', key: 'Manual requests' },
+            ],
         },
         {
             icon: SquareActivity,
@@ -159,6 +163,7 @@ const SideBar = () => {
                         <SidebarItem
                             icon={item.icon}
                             label={item.label}
+                            href={item.subItems.length > 0 ? undefined : item.key}
                             collapsible={item.collapsible}
                             isOpen={openMenu === item.key}
                             onClick={() => toggleMenu(item.key)}
@@ -170,6 +175,7 @@ const SideBar = () => {
                                         <SubItem
                                             key={subItem.key}
                                             label={subItem.label}
+                                            href={subItem.key}
                                             active={activeSubItem === subItem.key}
                                             isCollapsed={isCollapsed}
                                             onClick={() => setActiveSubItem(subItem.key)}

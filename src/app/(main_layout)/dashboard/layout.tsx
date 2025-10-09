@@ -20,7 +20,6 @@ export default function DashboardLayout({
         <div
             className={` w-full`}
         >
-
             {children}
             <div className="flex gap-5 mb-5">
                 {recentActivity}
