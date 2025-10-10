@@ -1,13 +1,13 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import WeeklyTimeSheetsTable from "./WeeklyTimeSheetsTable";
-import { Button } from "../../ui/button";
-import { Calendar, ChevronLeft, ChevronRight, SlidersHorizontal } from "lucide-react";
-import { useCallback, useState } from "react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
+"use client"
+import ManualRequestsTable from "@/components/TimeSheets/ManualRequests/ManualRequestsTable";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Plus, SlidersHorizontal } from "lucide-react";
+import { useState } from "react";
 
-const WeeklyTimeSheets = () => {
+const Manualequests = () => {
     const users = [
         { name: "Juyed Ahmed", avatar: "https://avatar.iran.liara.run/public/18" },
         { name: "Cameron Williamson", avatar: "https://avatar.iran.liara.run/public/19" },
@@ -20,67 +20,22 @@ const WeeklyTimeSheets = () => {
 
     const filteredUsers = users.filter(t => t.name.toLowerCase().includes(userSearch.toLowerCase()));
     const selectedUser = users.find((u) => u.name === user);
-
-    // date picker
-    const [centerDate, setCenterDate] = useState(new Date());
-
-    const formatDate = (date: any) => {
-        return date.toLocaleDateString('en-US', {
-            weekday: 'short', // Mon
-            month: 'short',   // Oct
-            day: 'numeric',   // 9
-            year: 'numeric',  // 2025
-        });
-    }; 
-
-    const handleNavigate = useCallback((weeks: number) => {
-        setCenterDate(prevDate => {
-            const newDate = new Date(prevDate);
-            newDate.setDate(newDate.getDate() + (weeks * 7));
-            return newDate;
-        });
-    }, []);
-
-    const getWeekRange = (centerDate: Date) => {
-        const date = new Date(centerDate.getTime());
-        console.log('date', date);
-        const dayOfWeek = date.getDay();
-        console.log('getDay', dayOfWeek);
-
-        const diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-
-        // Sunday 0, Monday 1, Tuesday 2, Wednesday 3, Thursday 4, Friday 5, and Saturday 6
-        // 3-1 = 2 
-
-        const startOfWeek = new Date(date.setDate(date.getDate() - diffToMonday));
-        startOfWeek.setHours(0, 0, 0, 0);
-
-        const endOfWeek = new Date(startOfWeek);
-        endOfWeek.setDate(startOfWeek.getDate() + 6);
-        endOfWeek.setHours(23, 59, 59, 999);
-
-        return { startOfWeek, endOfWeek };
-    };
-
-    const { startOfWeek, endOfWeek } = getWeekRange(centerDate);
-
-    const dateDisplay = `${formatDate(startOfWeek)} - ${formatDate(endOfWeek)}`;
-
-    console.log("Start Date:", startOfWeek.toISOString());
-    console.log("End Date:", endOfWeek.toISOString());
-
     return (
         <div>
-            <div className=" mb-5 flex justify-between">
-                <div className=" flex gap-3">
-                    <div className="flex">
-                        <ChevronLeft onClick={() => handleNavigate(-1)} size={45} className="border p-2.5 border-borderColor rounded-lg cursor-pointer" />
-                        <div className=" flex items-center gap-2 border rounded-md px-4 mx-3">
-                            <Calendar className=" text-primary" />
-                            <span>{dateDisplay}</span>
-                        </div>
-                        <ChevronRight onClick={() => handleNavigate(1)} size={45} className="border p-2.5 border-borderColor rounded-lg cursor-pointer" />
-                    </div>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5">
+                <div>
+                    <h1 className="text-3xl font-semibold text-headingTextColor">Manual requests</h1>
+                    <p className="text-sm text-subTextColor mt-2">
+                        All the timesheet by team member who completed is displayed here
+                    </p>
+                </div>
+
+                <div className="">
+                    <Button><Plus size={20} />Add Time</Button>
+                </div>
+            </div>
+            <div className=" flex justify-between items-center mb-5">
+                <div className="">
                     <Button variant={'outline2'}>
                         <SlidersHorizontal className="" /> Filters
                     </Button>
@@ -122,10 +77,9 @@ const WeeklyTimeSheets = () => {
                     </Select>
                 </div>
             </div>
-
-            <WeeklyTimeSheetsTable></WeeklyTimeSheetsTable>
+            <ManualRequestsTable></ManualRequestsTable>
         </div>
     );
 };
 
-export default WeeklyTimeSheets;
+export default Manualequests;

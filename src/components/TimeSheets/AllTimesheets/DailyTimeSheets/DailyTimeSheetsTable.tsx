@@ -2,7 +2,7 @@
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { ArrowUpDown, Check, EllipsisVertical } from "lucide-react";
 import { useMemo, useState } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../ui/table";
 import { Button } from "@/components/ui/button";
 
 const DailyTimeSheetsTable = () => {
@@ -65,7 +65,7 @@ const DailyTimeSheetsTable = () => {
                             className=" cursor-pointer flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                         >
-                            Task Name
+                            Project
                             <ArrowUpDown className="ml-2 h-4 w-4" />
                         </span>
                     </div>

@@ -36,7 +36,7 @@ const SideBar = () => {
         {
             icon: LayoutDashboard,
             label: 'Dashboard',
-            key: 'dashboard',
+            key: '/dashboard',
             collapsible: false,
             subItems: [],
         },
@@ -46,8 +46,8 @@ const SideBar = () => {
             key: 'timesheets',
             collapsible: true,
             subItems: [
-                { label: 'All timesheets', key: 'all-timesheets' },
-                { label: 'Manual requests', key: 'Manual requests' },
+                { label: 'All timesheets', key: '/timesheets/all-timesheets' },
+                { label: 'Manual requests', key: '/timesheets/manual-requests' },
             ],
         },
         {
@@ -138,7 +138,7 @@ const SideBar = () => {
                         className={`w-12 h-12`}
                     />
                     {!isCollapsed && <h2 className="text-2xl font-bold">Tracker</h2>}
-                </div>
+                </div> 
 
                 {/* Collapse Toggle */}
                 <button

@@ -1,18 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button } from "../../ui/button";
+import WeeklyTimeSheetsTable from "./WeeklyTimeSheetsTable";
+import { Button } from "../../../ui/button";
 import { Calendar, ChevronLeft, ChevronRight, SlidersHorizontal } from "lucide-react";
 import { useCallback, useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipTrigger,
-} from "@/components/ui/tooltip"
-import DailyTimeSheetsTable from "./DailyTimeSheetsTable";
 
-const DailyTimeSheets = () => {
+const WeeklyTimeSheets = () => {
     const users = [
         { name: "Juyed Ahmed", avatar: "https://avatar.iran.liara.run/public/18" },
         { name: "Cameron Williamson", avatar: "https://avatar.iran.liara.run/public/19" },
@@ -26,14 +21,9 @@ const DailyTimeSheets = () => {
     const filteredUsers = users.filter(t => t.name.toLowerCase().includes(userSearch.toLowerCase()));
     const selectedUser = users.find((u) => u.name === user);
 
-    const activePeriods = [
-        { start: 5, end: 7 }, // Active from 5 AM to 7 AM
-        { start: 13, end: 16 }, // Active from 1 PM to 4 PM
-        { start: 18, end: 20 }, // Active from 6 PM to 8 PM
-    ];
-
     // date picker
-    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [centerDate, setCenterDate] = useState(new Date());
+
     const formatDate = (date: any) => {
         return date.toLocaleDateString('en-US', {
             weekday: 'short', // Mon
@@ -43,19 +33,44 @@ const DailyTimeSheets = () => {
         });
     };
 
-    const handleNavigate = useCallback((days: any) => {
-        setSelectedDate(prevDate => {
+    const handleNavigate = useCallback((weeks: number) => {
+        setCenterDate(prevDate => {
             const newDate = new Date(prevDate);
-            // setDate(getDate() + days) moves the date by the specified number of days
-            newDate.setDate(newDate.getDate() + days);
+            newDate.setDate(newDate.getDate() + (weeks * 7));
             return newDate;
         });
     }, []);
 
-    const dateDisplay = formatDate(selectedDate);
+    const getWeekRange = (centerDate: Date) => {
+        const date = new Date(centerDate.getTime());
+        console.log('date', date);
+        const dayOfWeek = date.getDay();
+        console.log('getDay', dayOfWeek);
+
+        const diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+
+        // Sunday 0, Monday 1, Tuesday 2, Wednesday 3, Thursday 4, Friday 5, and Saturday 6
+        // 3-1 = 2 
+
+        const startOfWeek = new Date(date.setDate(date.getDate() - diffToMonday));
+        startOfWeek.setHours(0, 0, 0, 0);
+
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 6);
+        endOfWeek.setHours(23, 59, 59, 999);
+
+        return { startOfWeek, endOfWeek };
+    };
+
+    const { startOfWeek, endOfWeek } = getWeekRange(centerDate);
+
+    const dateDisplay = `${formatDate(startOfWeek)} - ${formatDate(endOfWeek)}`;
+
+    console.log("Start Date:", startOfWeek.toISOString());
+    console.log("End Date:", endOfWeek.toISOString());
 
     return (
-        <>
+        <div>
             <div className=" mb-5 flex justify-between">
                 <div className=" flex gap-3">
                     <div className="flex">
@@ -108,50 +123,9 @@ const DailyTimeSheets = () => {
                 </div>
             </div>
 
-            <div className=" mb-5">
-                <div className=" flex gap-2 mb-2">
-                    <h1 className=" font-bold">Today:</h1>
-                    <p className="">6:00:00</p>
-                </div>
-                <div className="relative h-5 bg-[#f6f7f9] rounded-4xl border border-borderColor">
-                    {activePeriods.map((period, index) => {
-                        const startPercent = (period.start / 24) * 100;
-                        const endPercent = (period.end / 24) * 100;
-                        const width = endPercent - startPercent;
-
-                        return (
-                            <Tooltip key={index}>
-                                <TooltipTrigger asChild>
-                                    <div
-                                        key={index}
-                                        className="absolute h-5 bg-green-400 rounded-4xl"
-                                        style={{
-                                            left: `${startPercent}%`,
-                                            width: `${width}%`,
-                                        }}
-                                    ></div>
-                                </TooltipTrigger>
-                                <TooltipContent className=" bg-[#868686] p-3">
-                                    <div>
-                                        <h2 className=" text-[15px] mb-2">Project: Orbit Technology’s Project</h2>
-                                        <h2 className=" text-[15px] mb-2">Task: Front End Development</h2>
-                                        <h2 className=" text-[15px]">Duration: 2:00:00</h2>
-                                    </div>
-                                </TooltipContent>
-                            </Tooltip>
-
-                        );
-                    })}
-                </div>
-                <div className=" flex justify-between mt-[2px]">
-                    {Array.from({ length: 24 }, (_, i) => (
-                        <span className=" text-sm text-gray-400" key={i}>{i + 1}h</span>
-                    ))}
-                </div>
-            </div>
-            <DailyTimeSheetsTable></DailyTimeSheetsTable>
-        </>
+            <WeeklyTimeSheetsTable></WeeklyTimeSheetsTable>
+        </div>
     );
 };
 
-export default DailyTimeSheets;
+export default WeeklyTimeSheets;

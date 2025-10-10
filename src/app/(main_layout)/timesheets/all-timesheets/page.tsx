@@ -1,9 +1,10 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import DailyTimeSheets from "@/components/AllTimesheets/DailyTimeSheets/DailyTimeSheets";
 import { Plus } from "lucide-react";
-import WeeklyTimeSheets from "@/components/AllTimesheets/WeeklyTimeSheets/WeeklyTimeSheets";
+import DailyTimeSheets from "@/components/TimeSheets/AllTimesheets/DailyTimeSheets/DailyTimeSheets";
+import WeeklyTimeSheets from "@/components/TimeSheets/AllTimesheets/WeeklyTimeSheets/WeeklyTimeSheets";
+import MonthlyTimeSheets from "@/components/TimeSheets/AllTimesheets/MonthlyTimeSheets/MonthlyTimeSheets";
 
 const AllTimeSheets = () => {
     const [activeTab, setActiveTab] = useState<"Daily" | "Weekly" | "Monthly">("Daily");
@@ -48,6 +49,11 @@ const AllTimeSheets = () => {
             {
                 activeTab === "Weekly" &&
                 <WeeklyTimeSheets></WeeklyTimeSheets>
+            }
+
+            {
+                activeTab === "Monthly" &&
+                <MonthlyTimeSheets></MonthlyTimeSheets>
             }
 
         </div>
