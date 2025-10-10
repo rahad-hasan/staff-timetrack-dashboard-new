@@ -1,5 +1,5 @@
-import CoreWorkMembers from "@/components/dashboard/insights/CoreWorkMembers";
-import OverallActivityChart from "@/components/dashboard/insights/OverallActivityChart";
+import CoreWorkMembers from "@/components/Dashboard/Insights/CoreWorkMembers";
+import OverallActivityChart from "@/components/Dashboard/Insights/OverallActivityChart";
 import { Button } from "@/components/ui/button";
 import { EllipsisVertical, Info } from "lucide-react";
 

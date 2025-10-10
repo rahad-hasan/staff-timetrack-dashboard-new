@@ -6,6 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, SlidersHorizontal } from "lucide-react";
 import { useState } from "react";
+import {
+    Dialog,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+import AddManualTimeModal from "@/components/TimeSheets/ManualRequests/AddManualTimeModal";
 
 const Manualequests = () => {
     const users = [
@@ -31,7 +36,13 @@ const Manualequests = () => {
                 </div>
 
                 <div className="">
-                    <Button><Plus size={20} />Add Time</Button>
+                    <Dialog>
+                        <DialogTrigger asChild>
+                            <Button><Plus size={20} />Add Time</Button>
+                        </DialogTrigger>
+                        <AddManualTimeModal></AddManualTimeModal>
+                    </Dialog>
+
                 </div>
             </div>
             <div className=" flex justify-between items-center mb-5">

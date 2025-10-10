@@ -3,7 +3,7 @@ import { EllipsisVertical } from "lucide-react";
 import { useMemo } from "react";
 import Image from "next/image";
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import SmallChart from "@/components/dashboard/SmallChart/SmallChart";
+import SmallChart from "@/components/Dashboard/SmallChart/SmallChart";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 

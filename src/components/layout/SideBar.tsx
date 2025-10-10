@@ -3,8 +3,8 @@ import Image from 'next/image';
 import logo from '../../assets/logo.svg'
 // import fit from '../../assets/fit.svg'
 import { useState } from 'react';
-import SidebarItem from './sidebar/SidebarItem';
-import SubItem from './sidebar/SubItem';
+import SidebarItem from './Sidebar/SidebarItem';
+import SubItem from './Sidebar/SubItem';
 import {
     SquareActivity,
     BarChart,
@@ -19,7 +19,7 @@ import {
     ChevronRight,
     ChevronLeft,
 } from 'lucide-react';
-import TrialCart from './sidebar/TrialCart';
+import TrialCart from './Sidebar/TrialCart';
 
 const SideBar = () => {
     const [openMenu, setOpenMenu] = useState<string | null>('');
