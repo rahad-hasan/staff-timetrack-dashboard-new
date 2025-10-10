@@ -2,10 +2,10 @@
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { ArrowUpDown, Check, EllipsisVertical } from "lucide-react";
 import { useMemo, useState } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
-import { Button } from "../ui/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../ui/table";
+import { Button } from "@/components/ui/button";
 
-const DailyTable = () => {
+const DailyTimeSheetsTable = () => {
     const [sorting, setSorting] = useState<SortingState>([])
 
     interface DailyData {
@@ -17,6 +17,7 @@ const DailyTable = () => {
         totalTime: string,
     }
 
+    // table
     const DailyDataList: DailyData[] = useMemo(
         () => [
             {
@@ -179,41 +180,43 @@ const DailyTable = () => {
     });
 
     return (
-        <Table>
-            <TableHeader>
-                {table.getHeaderGroups().map(headerGroup => (
-                    <TableRow key={headerGroup.id}>
-                        {headerGroup.headers.map(header => (
-                            <TableHead key={header.id}>
-                                {header.isPlaceholder
-                                    ? null
-                                    : flexRender(header.column.columnDef.header, header.getContext())}
-                            </TableHead>
-                        ))}
-                    </TableRow>
-                ))}
-            </TableHeader>
-            <TableBody>
-                {table.getRowModel().rows?.length ? (
-                    table.getRowModel().rows.map(row => (
-                        <TableRow key={row.id}>
-                            {row.getVisibleCells().map(cell => (
-                                <TableCell key={cell.id}>
-                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                </TableCell>
+        <div className="border-2 border-borderColor p-3 rounded-[12px]">
+            <Table>
+                <TableHeader>
+                    {table.getHeaderGroups().map(headerGroup => (
+                        <TableRow key={headerGroup.id}>
+                            {headerGroup.headers.map(header => (
+                                <TableHead key={header.id}>
+                                    {header.isPlaceholder
+                                        ? null
+                                        : flexRender(header.column.columnDef.header, header.getContext())}
+                                </TableHead>
                             ))}
                         </TableRow>
-                    ))
-                ) : (
-                    <TableRow>
-                        <TableCell colSpan={columns.length} className="h-24 text-center">
-                            No tasks found.
-                        </TableCell>
-                    </TableRow>
-                )}
-            </TableBody>
-        </Table>
+                    ))}
+                </TableHeader>
+                <TableBody>
+                    {table.getRowModel().rows?.length ? (
+                        table.getRowModel().rows.map(row => (
+                            <TableRow key={row.id}>
+                                {row.getVisibleCells().map(cell => (
+                                    <TableCell key={cell.id}>
+                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                    </TableCell>
+                                ))}
+                            </TableRow>
+                        ))
+                    ) : (
+                        <TableRow>
+                            <TableCell colSpan={columns.length} className="h-24 text-center">
+                                No tasks found.
+                            </TableCell>
+                        </TableRow>
+                    )}
+                </TableBody>
+            </Table>
+        </div>
     );
 };
 
-export default DailyTable;
+export default DailyTimeSheetsTable;
