@@ -16,3 +16,14 @@ export const createNewPasswordSchema = z.object({
     message: "Passwords do not match",
     path: ["confirmPassword"],
 })
+
+export const addManualTimeSchema = z.object({
+    project: z.string().min(1, "Project is required"),
+    task: z.string().min(1, "Task is required"),
+    date: z.date().refine(date => !isNaN(date.getTime()), {
+        message: "Date is required",
+    }),
+    timeFrom: z.string().min(1, "Start time is required"),
+    timeTo: z.string().min(1, "End time is required"),
+    message: z.string().optional(),
+});
