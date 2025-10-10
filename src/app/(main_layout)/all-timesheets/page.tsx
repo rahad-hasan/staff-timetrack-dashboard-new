@@ -1,9 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import DailyTimeSheets from "@/components/AllTimesheets/DailyTimeSheets/DailyTimeSheets";
 import { Plus } from "lucide-react";
+import WeeklyTimeSheets from "@/components/AllTimesheets/WeeklyTimeSheets/WeeklyTimeSheets";
 
 const AllTimeSheets = () => {
     const [activeTab, setActiveTab] = useState<"Daily" | "Weekly" | "Monthly">("Daily");
@@ -40,8 +40,15 @@ const AllTimeSheets = () => {
                     <Button><Plus size={20} />Add Time</Button>
                 </div>
             </div>
+            {
+                activeTab === "Daily" &&
+                <DailyTimeSheets></DailyTimeSheets>
+            }
 
-            <DailyTimeSheets></DailyTimeSheets>
+            {
+                activeTab === "Weekly" &&
+                <WeeklyTimeSheets></WeeklyTimeSheets>
+            }
 
         </div>
     );
