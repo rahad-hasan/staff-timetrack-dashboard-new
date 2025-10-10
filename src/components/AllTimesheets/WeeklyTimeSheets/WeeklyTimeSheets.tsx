@@ -22,7 +22,8 @@ const WeeklyTimeSheets = () => {
     const selectedUser = users.find((u) => u.name === user);
 
     // date picker
-    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [centerDate, setCenterDate] = useState(new Date());
+
     const formatDate = (date: any) => {
         return date.toLocaleDateString('en-US', {
             weekday: 'short', // Mon
@@ -30,19 +31,44 @@ const WeeklyTimeSheets = () => {
             day: 'numeric',   // 9
             year: 'numeric',  // 2025
         });
-    };
+    }; 
 
-    const handleNavigate = useCallback((days: any) => {
-        setSelectedDate(prevDate => {
+    const handleNavigate = useCallback((weeks: number) => {
+        setCenterDate(prevDate => {
             const newDate = new Date(prevDate);
-            // setDate(getDate() + days) moves the date by the specified number of days
-            newDate.setDate(newDate.getDate() + days);
+            newDate.setDate(newDate.getDate() + (weeks * 7));
             return newDate;
         });
     }, []);
 
-    const dateDisplay = formatDate(selectedDate);
-    
+    const getWeekRange = (centerDate: Date) => {
+        const date = new Date(centerDate.getTime());
+        console.log('date', date);
+        const dayOfWeek = date.getDay();
+        console.log('getDay', dayOfWeek);
+
+        const diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+
+        // Sunday 0, Monday 1, Tuesday 2, Wednesday 3, Thursday 4, Friday 5, and Saturday 6
+        // 3-1 = 2 
+
+        const startOfWeek = new Date(date.setDate(date.getDate() - diffToMonday));
+        startOfWeek.setHours(0, 0, 0, 0);
+
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 6);
+        endOfWeek.setHours(23, 59, 59, 999);
+
+        return { startOfWeek, endOfWeek };
+    };
+
+    const { startOfWeek, endOfWeek } = getWeekRange(centerDate);
+
+    const dateDisplay = `${formatDate(startOfWeek)} - ${formatDate(endOfWeek)}`;
+
+    console.log("Start Date:", startOfWeek.toISOString());
+    console.log("End Date:", endOfWeek.toISOString());
+
     return (
         <div>
             <div className=" mb-5 flex justify-between">
