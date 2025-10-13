@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+import AllScreenShorts from "@/components/Activity/ScreenShorts/AllScreenShorts";
 import Every10Mins from "@/components/Activity/ScreenShorts/Every10Mins";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -217,6 +218,11 @@ const ScreenShorts = () => {
             {
                 activeTab === "Every 10 min" &&
                 <Every10Mins></Every10Mins>
+            }
+
+            {
+                activeTab === "All Screenshots" &&
+                <AllScreenShorts></AllScreenShorts>
             }
 
         </div>
