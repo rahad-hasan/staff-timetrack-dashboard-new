@@ -52,11 +52,11 @@ const SideBar = () => {
         },
         {
             icon: SquareActivity,
-            label: 'SquareActivity',
-            key: 'SquareActivity',
+            label: 'Activity',
+            key: 'Activity',
             collapsible: true,
             subItems: [
-                { label: 'Screenshot', key: 'Screenshot' },
+                { label: 'Screenshot', key: '/activity/screenshorts' },
                 { label: 'App', key: 'App' },
                 { label: 'URLs', key: 'URLs' },
             ],
@@ -138,7 +138,7 @@ const SideBar = () => {
                         className={`w-12 h-12`}
                     />
                     {!isCollapsed && <h2 className="text-2xl font-bold">Tracker</h2>}
-                </div> 
+                </div>
 
                 {/* Collapse Toggle */}
                 <button
