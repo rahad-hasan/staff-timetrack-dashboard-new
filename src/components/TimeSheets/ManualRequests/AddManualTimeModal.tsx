@@ -13,7 +13,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AppWindow, CalendarDays, ChevronDownIcon, ClipboardList, Clock8Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -24,6 +24,11 @@ import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { addManualTimeSchema } from "@/zod/schema";
+
+interface TimePeriod {
+    start: number;
+    end: number;
+}
 
 const AddManualTimeModal = () => {
     const form = useForm<z.infer<typeof addManualTimeSchema>>({
@@ -37,6 +42,18 @@ const AddManualTimeModal = () => {
         },
     });
 
+    const timeToDecimal = (time: string): number => {
+        const parts = time.split(':');
+        // Nullish Coalescing Operator
+        // f parts[0] is null or undefined (which are called nullish values)
+        // parseInt(..., 10)	This is the standard JavaScript function that takes a string and converts it into an integer (a whole number). 
+        // The 10 specifies that the conversion should use base 10 (decimal) counting.
+        // By using ?? '0', you ensure that parseInt always receives a string that it can attempt to convert.
+        const hours = parseInt(parts[0] ?? '0', 10);
+        const minutes = parseInt(parts[1] ?? '0', 10);
+        return hours + minutes / 60;
+    };
+
     const projects = ["Orbit Project", "App Redesign", "Marketing Campaign", "New Website"];
     const tasks = ["Website Design", "Working on App Design", "New Landing Page", "Work on helsenist Project"];
     const [taskSearch, setTaskSearch] = useState("");
@@ -47,25 +64,46 @@ const AddManualTimeModal = () => {
 
     const [open, setOpen] = useState(false);
     const [date, setDate] = useState<Date | undefined>(undefined);
-    const [activePeriods, setActivePeriods] = useState<Array<{ start: number; end: number }> | undefined>(undefined);
+    const [activePeriods, setActivePeriods] = useState<TimePeriod[] | undefined>(undefined);
+    const [totalTime, setTotalTime] = useState<string>("1:00:00");
+
+
+    const timeFrom = form.watch("timeFrom"); // form.watch, getting real time data like onChange from react hook form
+    const timeTo = form.watch("timeTo");
+
+
+    useEffect(() => {
+        if (timeFrom && timeTo) {
+            const startTimeDecimal = timeToDecimal(timeFrom);
+            const endTimeDecimal = timeToDecimal(timeTo);
+            console.log(startTimeDecimal);
+            console.log(endTimeDecimal);
+            if (endTimeDecimal > startTimeDecimal) {
+                setActivePeriods([
+                    { start: startTimeDecimal, end: endTimeDecimal },
+                ]);
+
+                const durationInHours = endTimeDecimal - startTimeDecimal;
+                const hours = Math.floor(durationInHours);
+                const minutes = Math.round((durationInHours - hours) * 60);
+
+                const formattedTime = `${hours.toString().padStart(1, '0')}:${minutes.toString().padStart(2, '0')}:00`;
+                setTotalTime(formattedTime);
+
+            } else {
+                setActivePeriods(undefined);
+                setTotalTime("0:00:00");
+            }
+        } else {
+            setActivePeriods(undefined);
+            setTotalTime("0:00:00");
+        }
+    }, [timeFrom, timeTo]);
 
 
     const onSubmit = (data: z.infer<typeof addManualTimeSchema>) => {
         console.log(data);
-        const timeToDecimal = (time: string) => {
-            const [hours, minutes] = time.split(':').map(Number);
-            return hours + minutes / 60;
-        };
-
-        const startTimeDecimal = timeToDecimal(data.timeFrom);
-        const endTimeDecimal = timeToDecimal(data.timeTo);
-       setActivePeriods( [
-            { start: startTimeDecimal, end: endTimeDecimal },
-        ])
     };
-    // const activePeriods = [
-    //     { start: 13, end: 16 },
-    // ];
 
     return (
         <DialogContent>
@@ -189,9 +227,9 @@ const AddManualTimeModal = () => {
                                         </FormItem>
                                     )}
                                 />
+
                                 <FormLabel className="-mb-1">Time</FormLabel>
                                 <div className=" flex gap-3 items-center">
-                                    {/* Time From */}
                                     <FormField
                                         control={form.control}
                                         name="timeFrom"
@@ -201,7 +239,7 @@ const AddManualTimeModal = () => {
                                                     <div className='relative'>
                                                         <div className='text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 peer-disabled:opacity-50'>
                                                             <Clock8Icon className='size-4' />
-                                                            <span className='sr-only'>User</span>
+                                                            <span className='sr-only'>Time From</span>
                                                         </div>
                                                         <Input
                                                             type='time'
@@ -218,7 +256,7 @@ const AddManualTimeModal = () => {
                                     />
 
                                     <span className="px-2">TO</span>
-                                    {/* Time To */}
+
                                     <FormField
                                         control={form.control}
                                         name="timeTo"
@@ -228,7 +266,7 @@ const AddManualTimeModal = () => {
                                                     <div className='relative'>
                                                         <div className='text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 peer-disabled:opacity-50'>
                                                             <Clock8Icon className='size-4' />
-                                                            <span className='sr-only'>User</span>
+                                                            <span className='sr-only'>Time To</span>
                                                         </div>
                                                         <Input
                                                             type='time'
@@ -244,24 +282,27 @@ const AddManualTimeModal = () => {
                                         )}
                                     />
                                 </div>
-                                <FormLabel className="-mb-1 mt-2">Total Time: 1:00:00</FormLabel>
+
+                                <FormLabel className="-mb-1 mt-2">Total Time: {totalTime}</FormLabel>
                                 <div className="relative h-5 bg-[#f6f7f9] rounded-4xl border border-borderColor">
                                     {activePeriods?.map((period, index) => {
                                         const startPercent = (period.start / 24) * 100;
                                         const endPercent = (period.end / 24) * 100;
                                         const width = endPercent - startPercent;
 
-                                        return (
-
-                                            <div
-                                                key={index}
-                                                className="absolute h-5 bg-green-400 rounded-4xl"
-                                                style={{
-                                                    left: `${startPercent}%`,
-                                                    width: `${width}%`,
-                                                }}
-                                            ></div>
-                                        );
+                                        if (width > 0) {
+                                            return (
+                                                <div
+                                                    key={index}
+                                                    className="absolute h-5 bg-green-400 rounded-4xl"
+                                                    style={{
+                                                        left: `${startPercent}%`,
+                                                        width: `${width}%`,
+                                                    }}
+                                                ></div>
+                                            );
+                                        }
+                                        return null;
                                     })}
                                 </div>
                                 <div className=" flex justify-between -mt-2">
@@ -272,7 +313,6 @@ const AddManualTimeModal = () => {
                                     <span className=" text-sm text-gray-400">24h</span>
                                 </div>
 
-                                {/* Message */}
                                 <FormField
                                     control={form.control}
                                     name="message"
