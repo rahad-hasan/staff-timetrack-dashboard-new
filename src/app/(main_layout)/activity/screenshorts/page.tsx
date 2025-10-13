@@ -11,9 +11,30 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { BriefcaseBusiness, CalendarDays, ChevronLeft, ChevronRight, ClipboardList, NotepadText, SlidersHorizontal, SquareActivity, TrendingDown, TrendingUp, UsersRound } from "lucide-react";
 // import { Button } from "@/components/ui/button";
 import { useCallback, useState } from "react";
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+import AllNotesModal from "@/components/Activity/ScreenShorts/AllNotes";
 
 const ScreenShorts = () => {
     const [activeTab, setActiveTab] = useState<"Every 10 min" | "All Screenshots">("Every 10 min");
+    // Filter
+    const [project, setProject] = useState<string | null>(null);
+    const [task, setTask] = useState<string | null>(null);
+    const [taskSearch, setTaskSearch] = useState("");
+    const [projectSearch, setProjectSearch] = useState("");
+    const projects = ["Orbit Project", "App Redesign", "Marketing Campaign", "New Website"];
+    const tasks = ["Website Design", "Working on App Design", "New Landing Page", "Work on helsenist Project"];
+    // Filtered options
+    const filteredProjects = projects.filter(p => p.toLowerCase().includes(projectSearch.toLowerCase()));
+    const filteredTasks = tasks.filter(t => t.toLowerCase().includes(taskSearch.toLowerCase()));
 
     const handleTabClick = (tab: "Every 10 min" | "All Screenshots") => {
         setActiveTab(tab);
@@ -85,6 +106,7 @@ const ScreenShorts = () => {
                 </div>
             </div>
             <div className=" mb-5 flex justify-between">
+
                 <div className=" flex gap-3">
                     <div className="flex">
                         <ChevronLeft onClick={() => handleNavigate(-1)} size={45} className="border p-2.5 border-borderColor rounded-lg cursor-pointer" />
@@ -110,14 +132,111 @@ const ScreenShorts = () => {
                         </Popover>
                         <ChevronRight onClick={() => handleNavigate(1)} size={45} className="border p-2.5 border-borderColor rounded-lg cursor-pointer" />
                     </div>
-                    <Button variant={'outline2'}>
-                        <SlidersHorizontal className="" /> Filters
-                    </Button>
+                    {/* Filter */}
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button variant={'outline2'}>
+                                <SlidersHorizontal className="" /> Filters
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent side="bottom" align="start" className="w-80">
+                            {
+                                <div className="flex flex-col gap-4 mt-4">
+                                    {/* Project Select with Search */}
+                                    <p className=" -mb-2">Member</p>
+                                    <Select onValueChange={setUser} value={user ?? undefined}>
+                                        <SelectTrigger size={'lg'} className="w-full">
+                                            {selectedUser ? (
+                                                <div className="flex items-center gap-2">
+                                                    <Avatar className="w-6 h-6">
+                                                        <AvatarImage src={selectedUser.avatar} alt={selectedUser.name} />
+                                                        <AvatarFallback>{selectedUser.name.charAt(0)}</AvatarFallback>
+                                                    </Avatar>
+                                                    <span>{selectedUser.name}</span>
+                                                </div>
+                                            ) : (
+                                                <SelectValue placeholder="Select user" />
+                                            )}
+                                        </SelectTrigger>
+
+                                        <SelectContent>
+                                            <Input
+                                                type="text"
+                                                placeholder="Search user..."
+                                                className="flex-1 border-none focus:ring-0 focus:outline-none"
+                                                value={userSearch}
+                                                onChange={(e) => setUserSearch(e.target.value)}
+                                            />
+                                            {filteredUsers.map(t => (
+                                                <SelectItem className="px-3 flex items-center gap-2" key={t.name} value={t.name}>
+                                                    <Avatar className="w-6 h-6">
+                                                        <AvatarImage src={t.avatar} alt={t.name} />
+                                                        <AvatarFallback>{t.name.charAt(0)}</AvatarFallback>
+                                                    </Avatar>
+                                                    <span className="ml-2">{t.name}</span>
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <p className=" -mb-2">Project</p>
+                                    <Select onValueChange={setProject}>
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Select Project" />
+                                        </SelectTrigger>
+                                        <SelectContent className="flex items-center">
+
+                                            <Input
+                                                type="text"
+                                                placeholder="Search project..."
+                                                className="flex-1 border-none focus:ring-0 focus:outline-none"
+                                                value={projectSearch}
+                                                onChange={(e) => setProjectSearch(e.target.value)}
+                                            />
+
+                                            {filteredProjects.map(p => (
+                                                <SelectItem className="px-3" key={p} value={p}>{p}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+
+                                    {/* Task Select with Search */}
+                                    <p className=" -mb-2">Task</p>
+                                    <Select onValueChange={setTask}>
+                                        <SelectTrigger className="w-full">
+                                            <SelectValue placeholder="Select Task" />
+                                        </SelectTrigger>
+
+                                        <SelectContent>
+                                            <Input
+                                                type="text"
+                                                placeholder="Search task..."
+                                                className="flex-1 border-none focus:ring-0 focus:outline-none"
+                                                value={taskSearch}
+                                                onChange={(e) => setTaskSearch(e.target.value)}
+                                            />
+                                            {filteredTasks.map(t => (
+                                                <SelectItem className="px-3" key={t} value={t}>{t}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            }
+                        </PopoverContent>
+                    </Popover>
                 </div>
                 <div className=" flex items-center gap-3">
-                    <Button variant={'outline2'}>
-                        <NotepadText className="" /> All Notes
-                    </Button>
+
+                    <Dialog>
+                        <form>
+                            <DialogTrigger asChild>
+                                <Button variant={'outline2'}>
+                                    <NotepadText className="" /> All Notes
+                                </Button>
+                            </DialogTrigger>
+                            <AllNotesModal></AllNotesModal>
+                        </form>
+                    </Dialog>
+
                     <div className=" w-[250px]">
                         <Select onValueChange={setUser} value={user ?? undefined}>
                             <SelectTrigger size={'lg'} className="w-full">

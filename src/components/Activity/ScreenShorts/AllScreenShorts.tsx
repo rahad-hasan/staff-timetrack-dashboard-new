@@ -1,20 +1,10 @@
-import { Circle, Pencil } from "lucide-react";
+import { Circle } from "lucide-react";
 import screenshort1 from "../../../assets/dashboard/screenshort1.png";
 import screenshort2 from "../../../assets/dashboard/screenshort2.png";
 import screenshort3 from "../../../assets/dashboard/screenshort3.png";
 import Image, { StaticImageData } from "next/image";
-import { Slider } from "@/components/ui/slider"
-import {
-    Carousel,
-    CarouselContent,
-    CarouselItem,
-} from "@/components/ui/carousel"
-import { useState } from "react";
-import ScreenShortsModal from "./ScreenShortsModal";
 
 const AllScreenShorts = () => {
-    const [selectedImage, setSelectedImage] = useState<string | StaticImageData>();
-    const [modalOpen, setModalOpen] = useState<boolean>(false);
 
     interface IScreenShortsTimely {
         _id: number;
@@ -115,10 +105,6 @@ const AllScreenShorts = () => {
 
                                 <Image
                                     src={screenShort.screenShort}
-                                    onClick={() => {
-                                        setSelectedImage(screenShort.screenShort)
-                                        setModalOpen(!modalOpen)
-                                    }}
                                     width={300}
                                     height={300}
                                     className="rounded-lg w-full transition-transform duration-300 hover:scale-[1.01]"
@@ -164,10 +150,6 @@ const AllScreenShorts = () => {
 
                                 <Image
                                     src={screenShort.screenShort}
-                                    onClick={() => {
-                                        setSelectedImage(screenShort.screenShort)
-                                        setModalOpen(!modalOpen)
-                                    }}
                                     width={300}
                                     height={300}
                                     className="rounded-lg w-full transition-transform duration-300 hover:scale-[1.01]"

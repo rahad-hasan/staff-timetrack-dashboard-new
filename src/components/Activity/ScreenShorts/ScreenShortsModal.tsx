@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { X } from "lucide-react";
 import Image from "next/image";
-import screenshort1 from "../../../assets/dashboard/screenshort1.png";
-import screenshort2 from "../../../assets/dashboard/screenshort2.png";
-import screenshort3 from "../../../assets/dashboard/screenshort3.png";
+// import screenshort1 from "../../../assets/dashboard/screenshort1.png";
+// import screenshort2 from "../../../assets/dashboard/screenshort2.png";
+// import screenshort3 from "../../../assets/dashboard/screenshort3.png";
 import {
     Carousel,
     CarouselContent,
