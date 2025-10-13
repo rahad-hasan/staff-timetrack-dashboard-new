@@ -7,7 +7,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CalendarDays, ChevronLeft, ChevronRight, NotepadText, SlidersHorizontal } from "lucide-react";
+import { BriefcaseBusiness, CalendarDays, ChevronLeft, ChevronRight, ClipboardList, NotepadText, SlidersHorizontal, SquareActivity, TrendingDown, TrendingUp, UsersRound } from "lucide-react";
 // import { Button } from "@/components/ui/button";
 import { useCallback, useState } from "react";
 
@@ -67,7 +67,7 @@ const ScreenShorts = () => {
 
                 <div className="flex gap-3">
                     <div className="flex mt-3 sm:mt-0 bg-[#f6f7f9] rounded-lg overflow-hidden">
-                        {["Every 10 min", "All Screenshots", "Monthly"].map((tab) => (
+                        {["Every 10 min", "All Screenshots"].map((tab) => (
                             <button
                                 key={tab}
                                 onClick={() => handleTabClick(tab as "Every 10 min" | "All Screenshots")}
@@ -152,6 +152,64 @@ const ScreenShorts = () => {
                                 ))}
                             </SelectContent>
                         </Select>
+                    </div>
+                </div>
+            </div>
+            <div className=" mb-4 flex gap-5">
+                <div className=" border-2 border-borderColor rounded-2xl w-full">
+                    <div className=" flex items-center gap-2 px-3 py-5">
+                        <SquareActivity size={40} className=" border-2 border-borderColor rounded-lg p-1.5" />
+                        <div>
+                            <h2 className=" text-xl font-semibold">48%</h2>
+                            <h3 className=" text-textGray">AVG ACTIVITY</h3>
+                        </div>
+                    </div>
+                    <div className=" bg-[#f6f7f9] rounded-b-2xl px-3 py-3 flex items-center gap-2">
+                        <TrendingDown size={20} className=" text-red-500" />
+                        <p className=" text-primary">+1.5%</p>
+                        <p>last Monday</p>
+                    </div>
+                </div>
+                <div className=" border-2 border-borderColor rounded-2xl w-full">
+                    <div className=" flex items-center gap-2 px-3 py-5">
+                        <BriefcaseBusiness size={40} className=" border-2 border-borderColor rounded-lg p-1.5" />
+                        <div>
+                            <h2 className=" text-xl font-semibold">48%</h2>
+                            <h3 className=" text-textGray">WORKED TIME</h3>
+                        </div>
+                    </div>
+                    <div className=" bg-[#f6f7f9] rounded-b-2xl px-3 py-3 flex items-center gap-2">
+                        <TrendingUp size={20} className=" text-green-500" />
+                        <p className=" text-primary">+1.5%</p>
+                        <p>last Monday</p>
+                    </div>
+                </div>
+                <div className=" border-2 border-borderColor rounded-2xl w-full">
+                    <div className=" flex items-center gap-2 px-3 py-5">
+                        <ClipboardList size={40} className=" border-2 border-borderColor rounded-lg p-1.5" />
+                        <div>
+                            <h2 className=" text-xl font-semibold">48%</h2>
+                            <h3 className=" text-textGray">FOCUS TIME</h3>
+                        </div>
+                    </div>
+                    <div className=" bg-[#f6f7f9] rounded-b-2xl px-3 py-3 flex items-center gap-2">
+                        <TrendingDown size={20} className=" text-red-500" />
+                        <p className=" text-primary">+1.5%</p>
+                        <p>last Monday</p>
+                    </div>
+                </div>
+                <div className=" border-2 border-borderColor rounded-2xl w-full">
+                    <div className=" flex items-center gap-2 px-3 py-5">
+                        <UsersRound size={40} className=" border-2 border-borderColor rounded-lg p-1.5" />
+                        <div>
+                            <h2 className=" text-xl font-semibold">48%</h2>
+                            <h3 className=" text-textGray">CORE WORK</h3>
+                        </div>
+                    </div>
+                    <div className=" bg-[#f6f7f9] rounded-b-2xl px-3 py-3 flex items-center gap-2">
+                        <TrendingUp size={20} className=" text-green-500" />
+                        <p className=" text-primary">+1.5%</p>
+                        <p>last Monday</p>
                     </div>
                 </div>
             </div>
