@@ -8,9 +8,18 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
-import { BellOff, ChevronDown, CreditCard, Headset, LogOut, Plug, Share2, User, UserPlus } from "lucide-react";
+import { BellOff, ChevronDown, CreditCard, Headset, LogOut, Menu, Plug, Share2, User, UserPlus } from "lucide-react";
 import StartTimer from "./Header/StartTimer";
 import Link from "next/link";
+import {
+    Sheet,
+    SheetContent,
+    SheetDescription,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
+} from "@/components/ui/sheet"
+import MobileSidebar from "./MobileSidebar";
 
 const Header = () => {
     console.log('header rendered');
@@ -25,7 +34,7 @@ const Header = () => {
                 </Popover>
             </div>
 
-            <div className=" flex items-center gap-4">
+            <div className=" hidden md:flex items-center gap-4">
                 <div className="border-x-2 border-borderColor px-3">
                     <div className="relative w-7 h-7 cursor-pointer">
                         <Image
@@ -93,6 +102,13 @@ const Header = () => {
                         </div>
                     </PopoverContent>
                 </Popover>
+            </div>
+            <div className=" block md:hidden">
+                <Sheet>
+                    <SheetTrigger asChild><Menu className=" cursor-pointer" size={25} /></SheetTrigger>
+                    <MobileSidebar></MobileSidebar>
+                </Sheet>
+
             </div>
 
         </div >

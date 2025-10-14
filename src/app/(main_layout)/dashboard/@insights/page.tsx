@@ -31,8 +31,8 @@ const Insights = () => {
                     <Info size={18} className=" cursor-pointer" />
                 </div>
             </div>
-            <div className=" flex gap-5 border-b-2 border-borderColor">
-                <div className=" mt-5 w-1/2">
+            <div className=" flex flex-col sm:flex-row gap-5 border-b-2 border-borderColor">
+                <div className=" mt-5 sm:w-1/2">
                     <div className=" flex justify-between">
                         <div className=" mb-4">
                             <p className="text-3xl font-bold text-headingTextColor mr-2">9%</p>
@@ -67,7 +67,7 @@ const Insights = () => {
                         <span>100%</span>
                     </div>
                 </div>
-                <div className=" w-1/2 ">
+                <div className=" sm:w-1/2 ">
                     <OverallActivityChart></OverallActivityChart>
                 </div>
             </div>

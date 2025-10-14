@@ -54,9 +54,9 @@ const StartTimer = () => {
     const filteredTasks = tasks.filter(t => t.toLowerCase().includes(taskSearch.toLowerCase()));
 
     return (
-        <PopoverContent side="bottom" align="start" className="w-[450px] p-4">
-            <div className="flex justify-between items-center gap-4">
-                <div className=" flex items-center gap-4">
+        <PopoverContent side="bottom" align="start" className="md:w-[450px] p-4">
+            <div className="flex justify-between items-center gap-2 md:gap-4">
+                <div className=" flex items-center gap-1 md:gap-4">
                     <Image
                         onClick={toggleTimer}
                         src={isRunning ? pauseIcon : playIcon}
