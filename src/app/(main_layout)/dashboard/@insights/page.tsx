@@ -14,20 +14,20 @@ const Insights = () => {
     return (
         <div className=" border-2 border-borderColor p-3 rounded-[12px] w-full">
             <div className=" flex justify-between items-center">
-                <h2 className=" text-lg">INSIGHTS</h2>
+                <h2 className=" text-md sm:text-lg">INSIGHTS</h2>
                 <div className=" flex items-center gap-3">
                     <Button variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
                     <Button size={'sm'}>View Insights</Button>
                 </div>
             </div>
 
-            <div className=" flex items-center mt-5">
-                <div className=" flex items-center gap-3 w-1/2">
-                    <h2 className="text-lg ">Work time classification</h2>
+            <div className=" flex gap-2 flex-col sm:flex-row sm:items-center mt-5">
+                <div className=" flex items-center gap-3 sm:w-1/2">
+                    <h2 className="text-md sm:text-lg ">Work time classification</h2>
                     <Info size={18} className=" cursor-pointer" />
                 </div>
-                <div className=" flex items-center gap-3 w-1/2">
-                    <h2 className="text-lg ">Overall activity</h2>
+                <div className=" flex items-center gap-3 sm:w-1/2">
+                    <h2 className="text-md sm:text-lg ">Overall activity</h2>
                     <Info size={18} className=" cursor-pointer" />
                 </div>
             </div>

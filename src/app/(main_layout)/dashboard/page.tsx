@@ -19,7 +19,7 @@ export default function Dashboard() {
         </p>
       </div>
 
-      <div className="flex mt-3 sm:mt-0 bg-[#f6f7f9] rounded-lg overflow-hidden">
+      <div className="flex mt-3 sm:mt-0 bg-[#f6f7f9] rounded-lg">
         {["Daily", "Weekly", "Monthly"].map((tab) => (
           <button
             key={tab}

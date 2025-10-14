@@ -17,7 +17,7 @@ const RecentActivity = () => {
     return (
         <div className=" border-2 border-borderColor p-3 rounded-[12px] w-full">
             <div className=" flex justify-between items-center">
-                <h2 className=" text-lg">RECENT ACTIVITY</h2>
+                <h2 className="text-md sm:text-lg">RECENT ACTIVITY</h2>
                 <div className=" flex items-center gap-3">
                     <Button variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
                     <Button size={'sm'}>View Activity</Button>
@@ -31,7 +31,7 @@ const RecentActivity = () => {
                             <AvatarImage sizes="20px" src="https://github.com/shadcn.png" />
                             <AvatarFallback>CN</AvatarFallback>
                         </Avatar>
-                        <h2 className="text-lg font-semibold">Danial Donald</h2>
+                        <h2 className="text-md sm:text-lg font-semibold">Danial Donald</h2>
                     </div>
                     <Button variant={'outline2'} size={'sm'}>View All</Button>
                 </div>
@@ -60,7 +60,7 @@ const RecentActivity = () => {
                             <AvatarImage sizes="20px" src="https://github.com/shadcn.png" />
                             <AvatarFallback>CN</AvatarFallback>
                         </Avatar>
-                        <h2 className="text-lg font-semibold">Danial Donald</h2>
+                        <h2 className="text-md sm:text-lg font-semibold">Danial Donald</h2>
                     </div>
                     <Button variant={'outline2'} size={'sm'}>View All</Button>
                 </div>
@@ -89,7 +89,7 @@ const RecentActivity = () => {
                             <AvatarImage sizes="20px" src="https://github.com/shadcn.png" />
                             <AvatarFallback>CN</AvatarFallback>
                         </Avatar>
-                        <h2 className="text-lg font-semibold">Danial Donald</h2>
+                        <h2 className="text-md sm:text-lg font-semibold">Danial Donald</h2>
                     </div>
                     <Button variant={'outline2'} size={'sm'}>View All</Button>
                 </div>

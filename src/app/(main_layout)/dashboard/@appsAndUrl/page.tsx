@@ -41,7 +41,7 @@ const AppsAndUrl = () => {
                 const image = row.original.image
                 const soft = row.original.soft
                 return (
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3  min-w-[160px]">
                         <Image
                             src={image}
                             width={100}
@@ -108,7 +108,7 @@ const AppsAndUrl = () => {
     return (
         <div className=" border-2 border-borderColor p-3 rounded-[12px] w-full">
             <div className=" flex justify-between items-center">
-                <h2 className=" text-lg">APPS & URL</h2>
+                <h2 className=" text-md sm:text-lg">APPS & URL</h2>
                 <div className=" flex items-center gap-3">
                     <Button variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
                     <Button size={'sm'}>View Report</Button>

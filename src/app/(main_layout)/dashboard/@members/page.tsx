@@ -42,7 +42,7 @@ const Members = () => {
                 const project = row.original.project
                 const task = row.original.task
                 return (
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 min-w-[220px]">
                         <Image
                             src={image}
                             width={100}
@@ -74,7 +74,7 @@ const Members = () => {
                     bgColor = "bg-yellow-500";
                 }
                 return (
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 min-w-[80px]">
                         <div className="flex flex-col">
                             <span className={` ${bgColor} rounded-full text-center text-white px-1  text-sm mb-0.5`}>{progress}</span>
                             <span className="">{today_work}</span>
@@ -126,7 +126,7 @@ const Members = () => {
     return (
         <div className=" border-2 border-borderColor p-3 rounded-[12px] w-full">
             <div className=" flex justify-between items-center">
-                <h2 className=" text-lg">MEMBERS</h2>
+                <h2 className=" text-md sm:text-lg">MEMBERS</h2>
                 <div className=" flex items-center gap-3">
                     <Button variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
                     <Button size={'sm'}>All Member</Button>

@@ -39,7 +39,7 @@ const CoreWorkMembers = () => {
                 const name = row.getValue("name") as string
                 const image = row.original.image
                 return (
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 min-w-[160px]">
                         <Image
                             src={image}
                             width={100}
@@ -78,9 +78,9 @@ const CoreWorkMembers = () => {
 
     return (
         <div>
-            <div className=" flex items-center justify-between mt-5">
-                <div className=" flex items-center gap-3 w-1/2">
-                    <h2 className="text-lg ">Core work members </h2>
+            <div className=" flex flex-col gap-3 sm:flex-row sm:items-center justify-between mt-5">
+                <div className=" flex items-center gap-3 sm:w-1/2">
+                    <h2 className="text-md sm:text-lg ">Core work members </h2>
                     <Info size={18} className=" cursor-pointer" />
                 </div>
                 <Button variant={'outline2'} size={'sm'}>Top Core worker <ChevronDown size={20} /></Button>

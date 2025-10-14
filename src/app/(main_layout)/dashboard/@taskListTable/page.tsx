@@ -144,7 +144,7 @@ const TaskListTable = () => {
                 const assignee = row.getValue("assignee") as string;
                 const image = row.original.image;
                 return (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 min-w-[180px]">
                         <Image
                             src={image}
                             width={40}
@@ -279,7 +279,7 @@ const TaskListTable = () => {
     return (
         <div className="mt-5 border-2 border-borderColor p-3 rounded-[12px]">
             <div className=" flex justify-between items-center mb-5">
-                <h2 className=" text-lg">TASK LIST</h2>
+                <h2 className=" text-md sm:text-lg">TASK LIST</h2>
                 <div className=" flex items-center gap-3">
                     <Button variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
                     <Button size={'sm'}>All Task</Button>
