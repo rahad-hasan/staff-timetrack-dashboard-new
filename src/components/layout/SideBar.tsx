@@ -58,7 +58,7 @@ const SideBar = () => {
             subItems: [
                 { label: 'Screenshot', key: '/activity/screenshorts' },
                 { label: 'App', key: '/activity/app' },
-                { label: 'URLs', key: 'URLs' },
+                { label: 'URLs', key: '/activity/urls' },
             ],
         },
         {

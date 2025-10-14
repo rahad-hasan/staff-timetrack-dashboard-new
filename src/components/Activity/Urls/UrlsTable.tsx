@@ -5,18 +5,13 @@ import { useMemo, useState } from "react";
 import { ArrowUpDown } from "lucide-react";
 import teamsLogo from '../../../assets/activity/teams-logo.png'
 import Image from "next/image";
-import {
-    Dialog,
-    DialogTrigger,
-} from "@/components/ui/dialog"
-import BlockAppModal from "./BlockAppModal";
 
-const AppNameTable = () => {
+const UrlsTable = () => {
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
     console.log(rowSelection);
-    interface Task {
-        appName: string;
+    interface Activity {
+        url: string;
         projectName: string;
         session: number;
         timeSpent: string;
@@ -24,10 +19,10 @@ const AppNameTable = () => {
         isBlock: boolean;
     }
 
-    const taskList: Task[] = useMemo(
+    const taskList: Activity[] = useMemo(
         () => [
             {
-                appName: "VS Code",
+                url: "https://ui.shadcn.com",
                 projectName: "Staff Time Tracker – Desktop",
                 session: 50,
                 timeSpent: "01:15:22",
@@ -35,7 +30,7 @@ const AppNameTable = () => {
                 isBlock: false,
             },
             {
-                appName: "Google Chrome",
+                url: "https://lucide.dev",
                 projectName: "Staff Time Tracker – Admin",
                 session: 47,
                 timeSpent: "00:35:10",
@@ -43,7 +38,7 @@ const AppNameTable = () => {
                 isBlock: false,
             },
             {
-                appName: "Postman",
+                url: "https://www.figma.com",
                 projectName: "API v2 – Reports",
                 session: 69,
                 timeSpent: "00:34:29",
@@ -51,7 +46,7 @@ const AppNameTable = () => {
                 isBlock: false,
             },
             {
-                appName: "Terminal",
+                url: "http://localhost:3000",
                 projectName: "DevOps – PM2/Redis",
                 session: 75,
                 timeSpent: "00:45:03",
@@ -59,7 +54,7 @@ const AppNameTable = () => {
                 isBlock: false,
             },
             {
-                appName: "Facebook",
+                url: "https://chatgpt.com",
                 projectName: "DB – TimeEntries cleanup",
                 session: 23,
                 timeSpent: "00:45:18",
@@ -67,7 +62,7 @@ const AppNameTable = () => {
                 isBlock: true,
             },
             {
-                appName: "Figma",
+                url: "https://www.npmjs.com",
                 projectName: "Dashboard UI Polish",
                 session: 35,
                 timeSpent: "00:40:02",
@@ -75,7 +70,7 @@ const AppNameTable = () => {
                 isBlock: false,
             },
             {
-                appName: "Slack",
+                url: "https://gemini.google.com",
                 projectName: "Team Sync",
                 session: 59,
                 timeSpent: "00:20:31",
@@ -86,10 +81,10 @@ const AppNameTable = () => {
         []
     );
 
-    const columns: ColumnDef<Task>[] = [
+    const columns: ColumnDef<Activity>[] = [
 
         {
-            accessorKey: "appName",
+            accessorKey: "url",
             header: ({ column }) => {
                 return (
                     <div>
@@ -97,21 +92,21 @@ const AppNameTable = () => {
                             className=" cursor-pointer flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                         >
-                            App name
+                            Site name
                             <ArrowUpDown className="ml-2 h-4 w-4" />
                         </span>
                     </div>
                 )
             },
             cell: ({ row }) => {
-                const appName = row.getValue("appName") as string;
+                const url = row.getValue("url") as string;
                 // const image = row.original.image;
                 return (
                     <div className="flex items-center gap-2">
                         <Image src={teamsLogo} alt="app_logo" width={200} height={200} className=" w-8 border border-borderColor rounded-full p-1" />
                         <div className="">
-                            <p className=" font-semibold">{appName}</p>
-                            <span className="">App</span>
+                            <p className=" font-semibold">{url}</p>
+                            <span className="">Site</span>
                         </div>
                     </div>
                 )
@@ -186,39 +181,10 @@ const AppNameTable = () => {
             cell: ({ row }) => {
                 const timeSpent = row.getValue("timeSpent") as string;
                 const time = row.original.time as string;
-                const isBlock = row.original.isBlock as boolean;
                 return (
-                    <div className=" flex items-center justify-between">
-                        <div className=" flex flex-col">
-                            <span className=" font-semibold">{timeSpent}</span>
-                            <span className=" text-textGray">{time}</span>
-                        </div>
-                        <div className="flex justify-end">
-
-                            {
-                                isBlock ?
-                                    <button
-                                        className={` w-[100px] py-1.5 flex items-center justify-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 bg-[#fee6eb] text-red-400  border border-red-400"
-                                `}
-                                    >
-                                        Unblock
-                                    </button>
-                                    :
-                                    <Dialog>
-                                        <form>
-                                            <DialogTrigger asChild>
-                                                <button
-                                                    className={` w-[100px] py-1.5 flex items-center justify-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 text-gray-600 hover:text-textGray border border-borderColor"
-                                                `}
-                                                >
-                                                    Block App
-                                                </button>
-                                            </DialogTrigger>
-                                            <BlockAppModal></BlockAppModal>
-                                        </form>
-                                    </Dialog>
-                            }
-                        </div>
+                    <div className=" flex flex-col">
+                        <span className=" font-semibold">{timeSpent}</span>
+                        <span className=" text-textGray">{time}</span>
                     </div>
                 );
             },
@@ -279,4 +245,4 @@ const AppNameTable = () => {
     );
 };
 
-export default AppNameTable;
+export default UrlsTable;
