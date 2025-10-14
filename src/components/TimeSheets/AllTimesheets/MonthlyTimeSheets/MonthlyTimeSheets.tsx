@@ -104,7 +104,6 @@ const MonthlyTimeSheets = () => {
                     </Select>
                 </div>
             </div>
-
             <MonthlyTimeSheetsCalendar></MonthlyTimeSheetsCalendar>
         </div>
     );
