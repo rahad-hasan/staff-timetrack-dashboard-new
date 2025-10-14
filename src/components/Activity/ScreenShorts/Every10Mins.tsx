@@ -103,6 +103,22 @@ const Every10Mins = () => {
         },
     ];
 
+    // assume I have many screenShorts
+    const dummyScreenShorts = [
+        {
+            screenShort: selectedImage
+        },
+        {
+            screenShort: screenshort1
+        },
+        {
+            screenShort: screenshort2
+        },
+        {
+            screenShort: screenshort3
+        },
+    ]
+
     return (
         <>
             {/* map and under map */}
@@ -239,7 +255,7 @@ const Every10Mins = () => {
                 </div >
                 {
                     modalOpen &&
-                    <ScreenShortsModal selectedImage={selectedImage} modalOpen={modalOpen} setModalOpen={setModalOpen}></ScreenShortsModal>
+                    <ScreenShortsModal screenShorts={dummyScreenShorts} modalOpen={modalOpen} setModalOpen={setModalOpen}></ScreenShortsModal>
                 }
             </div>
         </>

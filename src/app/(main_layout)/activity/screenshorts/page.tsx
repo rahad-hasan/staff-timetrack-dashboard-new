@@ -13,12 +13,6 @@ import { BriefcaseBusiness, CalendarDays, ChevronLeft, ChevronRight, ClipboardLi
 import { useCallback, useState } from "react";
 import {
     Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
 import AllNotesModal from "@/components/Activity/ScreenShorts/AllNotes";
