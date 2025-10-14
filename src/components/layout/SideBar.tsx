@@ -57,7 +57,7 @@ const SideBar = () => {
             collapsible: true,
             subItems: [
                 { label: 'Screenshot', key: '/activity/screenshorts' },
-                { label: 'App', key: 'App' },
+                { label: 'App', key: '/activity/app' },
                 { label: 'URLs', key: 'URLs' },
             ],
         },
