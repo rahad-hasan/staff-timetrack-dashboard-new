@@ -5,6 +5,15 @@ import { useMemo, useState } from "react";
 import { ArrowUpDown } from "lucide-react";
 import teamsLogo from '../../../assets/activity/teams-logo.png'
 import Image from "next/image";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+import BlockAppModal from "./BlockAppModal";
 
 const AppNameTable = () => {
     const [sorting, setSorting] = useState<SortingState>([])
@@ -189,6 +198,7 @@ const AppNameTable = () => {
                             <span className=" text-textGray">{time}</span>
                         </div>
                         <div className="flex justify-end">
+
                             {
                                 isBlock ?
                                     <button
@@ -198,15 +208,20 @@ const AppNameTable = () => {
                                         Unblock
                                     </button>
                                     :
-
-                                    <button
-                                        className={` w-[100px] py-1.5 flex items-center justify-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 text-gray-600 hover:text-textGray border border-borderColor"
-                                `}
-                                    >
-                                        Block App
-                                    </button>
+                                    <Dialog>
+                                        <form>
+                                            <DialogTrigger asChild>
+                                                <button
+                                                    className={` w-[100px] py-1.5 flex items-center justify-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 text-gray-600 hover:text-textGray border border-borderColor"
+                                                `}
+                                                >
+                                                    Block App
+                                                </button>
+                                            </DialogTrigger>
+                                            <BlockAppModal></BlockAppModal>
+                                        </form>
+                                    </Dialog>
                             }
-
 
                         </div>
                     </div>
