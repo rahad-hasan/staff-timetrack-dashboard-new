@@ -1,4 +1,5 @@
 "use client"
+
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Image from "next/image";
@@ -9,76 +10,65 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover"
-import { ArrowUpDown, ChevronDown, Copy, EllipsisVertical, Package2, Pencil, Trash2, UsersRound } from "lucide-react";
-// import lowFlag from '../../assets/dashboard/lowFlag.svg'
-// import mediumFlag from '../../assets/dashboard/mediumFlag.svg'
-// import noneFlag from '../../assets/dashboard/noneFlag.svg'
+
+import { ArrowUpDown, ChevronDown, EllipsisVertical } from "lucide-react";
+import lowFlag from '../../../assets/dashboard/lowFlag.svg'
+import mediumFlag from '../../../assets/dashboard/mediumFlag.svg'
+import noneFlag from '../../../assets/dashboard/noneFlag.svg'
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
 
-const ProjectTable = () => {
+const TaskTable = () => {
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
-    const router = useRouter();
-
+    console.log(rowSelection);
     interface Task {
-        _id: number;
         taskName: string;
-        date: string;
+        project: string;
         image: string;
-        manager: string;
+        assignee: string;
         timeWorked: string;
+        priority: string;
         status: string;
-        deadline: string;
     }
 
     const taskList = useMemo(
         () => [
             {
-                _id: 15645,
                 taskName: "Do the Logic for Orbit Home page project",
-                date: "From 12 Aug, 2025",
+                project: "Orbit Technology's project",
                 image: "https://avatar.iran.liara.run/public/25",
-                manager: "Juyed Ahmed",
+                assignee: "Juyed Ahmed",
                 timeWorked: "12:03:00",
-                status: "In Progress",
-                deadline: "Dec 20, 2025",
+                priority: "Low",
+                status: "In Progress"
             },
             {
-                _id: 53452,
                 taskName: "Marketing Tools",
-                date: "From 12 Aug, 2025",
+                project: "Orbit Technology's project",
                 image: "https://avatar.iran.liara.run/public/22",
-                manager: "Cameron Williamson",
+                assignee: "Cameron Williamson",
                 timeWorked: "12:03:00",
-                status: "Pending",
-                deadline: "Jan 10, 2026",
+                priority: "Medium",
+                status: "Pending"
             },
             {
-                _id: 15644,
                 taskName: "Design Idea",
-                date: "From 12 Aug, 2025",
+                project: "Orbit Technology's project",
                 image: "https://avatar.iran.liara.run/public/26",
-                manager: "Jenny Wilson",
+                assignee: "Jenny Wilson",
                 timeWorked: "11:03:00",
-                status: "In Progress",
-                deadline: "Jun 05, 2025",
+                priority: "None",
+                status: "In Progress"
             },
             {
-                _id: 12465,
                 taskName: "Do the Logic for Orbit Home page project wi...",
-                date: "From 12 Aug, 2025",
+                project: "Orbit Technology's project",
                 image: "https://avatar.iran.liara.run/public/27",
-                manager: "Esther Howard",
+                assignee: "Esther Howard",
                 timeWorked: "10:03:00",
-                status: "Pending",
-                deadline: "Feb 01, 2026",
+                priority: "Medium",
+                status: "Pending"
             }
         ],
         []
@@ -126,52 +116,20 @@ const ProjectTable = () => {
             },
             cell: ({ row }) => {
                 const task = row.getValue("taskName") as string;
-                const date = row.original.date;
+                const project = row.original.project;
                 return (
                     <div className="flex flex-col">
                         <span className="font-medium">{task}</span>
-                        <span className="">{date}</span>
+                        <span className="">{project}</span>
                     </div>
                 )
-            }
-        },
-        {
-            accessorKey: "manager",
-            header: ({ column }) => {
-                return (
-                    <div className=" min-w-[190px]">
-                        <span
-                            className=" cursor-pointer flex items-center gap-1"
-                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        >
-                            Manager
-                            <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </span>
-                    </div>
-                )
-            },
-            cell: ({ row }) => {
-                const manager = row.getValue("manager") as string;
-                const image = row.original.image;
-                return (
-                    <div className="flex items-center gap-2">
-                        <Image
-                            src={image}
-                            width={40}
-                            height={40}
-                            alt={manager}
-                            className="rounded-full w-10"
-                        />
-                        <span>{manager}</span>
-                    </div>
-                );
             }
         },
         {
             accessorKey: "assignee",
             header: ({ column }) => {
                 return (
-                    <div className="  min-w-[120px]">
+                    <div>
                         <span
                             className=" cursor-pointer flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
@@ -183,22 +141,18 @@ const ProjectTable = () => {
                 )
             },
             cell: ({ row }) => {
+                const assignee = row.getValue("assignee") as string;
                 const image = row.original.image;
                 return (
-                    <div className="flex items-center">
-                        {[image, image, image].map((imgSrc, index) => (
-                            <Image
-                                key={index}
-                                src={imgSrc}
-                                width={40}
-                                height={40}
-                                alt={`Assignee ${index + 1}`}
-                                className="rounded-full w-10 -ml-3 border-2 border-white"
-                            />
-                        ))}
-                        <div className="w-10 h-10 -ml-3 rounded-full bg-[#ede7ff] flex items-center justify-center text-sm font-semibold text-[#926fef] border-2 border-white">
-                            10+
-                        </div>
+                    <div className="flex items-center gap-2 min-w-[180px]">
+                        <Image
+                            src={image}
+                            width={40}
+                            height={40}
+                            alt={assignee}
+                            className="rounded-full w-10"
+                        />
+                        <span>{assignee}</span>
                     </div>
                 );
             }
@@ -225,8 +179,8 @@ const ProjectTable = () => {
             },
         },
         {
-            accessorKey: "deadline",
-            // header: () => <div className="">Time Worked</div>,
+            accessorKey: "priority",
+            // header: "Priority",
             header: ({ column }) => {
                 return (
                     <div>
@@ -234,16 +188,22 @@ const ProjectTable = () => {
                             className=" cursor-pointer flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                         >
-                            Deadline
+                            Priority
                             <ArrowUpDown className="ml-2 h-4 w-4" />
                         </span>
                     </div>
                 )
             },
             cell: ({ row }) => {
-                const deadline = row.getValue("deadline") as string;
-                return <div className="">{deadline}</div>;
-            },
+                const priority = row.getValue("priority") as string;
+                const flagImage = priority === "Low" ? lowFlag : priority === "Medium" ? mediumFlag : noneFlag;
+                return (
+                    <div className="flex items-center gap-2">
+                        <Image src={flagImage} width={100} height={100} alt="flag" className="w-4" />
+                        <span>{priority}</span>
+                    </div>
+                );
+            }
         },
         {
             accessorKey: "status",
@@ -303,40 +263,9 @@ const ProjectTable = () => {
         {
             accessorKey: "action",
             header: () => <div className="">Action</div>,
-            cell: ({ row }) => {
-                console.log(row);
+            cell: () => {
                 return <div className="">
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
-                        </PopoverTrigger>
-                        <PopoverContent side="bottom" align="end" className=" w-[250px] px-2">
-                            <div className="">
-                                <div className="space-y-2">
-                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 px-3 cursor-pointer">
-                                        <Pencil size={18} />
-                                        <p>Edit Project</p>
-                                    </div>
-                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 px-3 cursor-pointer">
-                                        <UsersRound size={18} />
-                                        <p>Manage member</p>
-                                    </div>
-                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 px-3 cursor-pointer">
-                                        <Copy size={18} />
-                                        <p>Duplicate Project</p>
-                                    </div>
-                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 px-3 cursor-pointer">
-                                        <Package2 size={18} />
-                                        <p>Archive Project</p>
-                                    </div>
-                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 px-3 cursor-pointer">
-                                        <Trash2 size={18} />
-                                        <p>Delete Project</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </PopoverContent>
-                    </Popover>
+                    <Button variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
                 </div>;
             },
         },
@@ -355,15 +284,15 @@ const ProjectTable = () => {
             rowSelection,
         },
     });
-    // Function to handle row click and navigation
-    const handleRowClick = (taskId: number) => {
-        router.push(`/project-management/projects/${taskId}`);
-    };
-    
+
     return (
         <div className="mt-5 border-2 border-borderColor p-3 rounded-[12px]">
-            <div className=" mb-5">
-                <h2 className=" text-md sm:text-lg">Projects</h2>
+            <div className=" flex justify-between items-center mb-5">
+                <h2 className=" text-md sm:text-lg">TASK LIST</h2>
+                <div className=" flex items-center gap-3">
+                    <Button variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
+                    <Button size={'sm'}>All Task</Button>
+                </div>
             </div>
             <Table>
                 <TableHeader>
@@ -382,15 +311,13 @@ const ProjectTable = () => {
                 <TableBody>
                     {table.getRowModel().rows?.length ? (
                         table.getRowModel().rows.map(row => (
-                            // <Link key={row.id} href={`/project-management/projects/${row.original._id}`} className=" w-full">
-                            <TableRow className=" cursor-pointer" key={row.id} onClick={() => handleRowClick(row.original._id)}>
+                            <TableRow key={row.id}>
                                 {row.getVisibleCells().map(cell => (
                                     <TableCell key={cell.id}>
                                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                     </TableCell>
                                 ))}
                             </TableRow>
-                            // </Link>
                         ))
                     ) : (
                         <TableRow>
@@ -405,4 +332,4 @@ const ProjectTable = () => {
     );
 };
 
-export default ProjectTable;
+export default TaskTable;

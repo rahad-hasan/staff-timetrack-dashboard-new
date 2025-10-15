@@ -30,7 +30,7 @@ export default function RootLayout({
                 cz-shortcut-listen="true"
                 monica-id="ofpnmcalabcbjgholdjcjblkibolbppb"
                 monica-version="7.9.7"
-                data-new-gr-c-s-check-loaded="14.1257.0"
+                data-new-gr-c-s-check-loaded="14.1258.0"
             >
                 {children}
             </body>
