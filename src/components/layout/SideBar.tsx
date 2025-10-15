@@ -71,9 +71,13 @@ const SideBar = () => {
         {
             icon: BriefcaseBusiness,
             label: 'Project Management',
-            key: 'project',
+            key: 'project-management',
             collapsible: true,
-            subItems: [],
+            subItems: [
+                { label: 'Projects', key: '/project-management/projects' },
+                { label: 'Task', key: '/project-management/task' },
+                { label: 'Clients', key: '/project-management/clients' },
+            ],
         },
         {
             icon: BarChart,
