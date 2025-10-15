@@ -1,4 +1,5 @@
 "use client"
+import ArchivedProjectTable from "@/components/ProjectManagement/Projects/ArchivedProjectTable";
 import ProjectTable from "@/components/ProjectManagement/Projects/ProjectTable";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
@@ -45,6 +46,10 @@ const Projects = () => {
             {
                 activeTab === "Active" &&
                 <ProjectTable></ProjectTable>
+            }
+            {
+                activeTab === "Archived" &&
+                <ArchivedProjectTable></ArchivedProjectTable>
             }
         </div>
     );
