@@ -5,6 +5,11 @@ import ProjectTable from "@/components/ProjectManagement/Projects/ProjectTable";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useState } from "react";
+import {
+    Dialog,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+import AddProjectModal from "@/components/ProjectManagement/Projects/AddProjectModal";
 
 const Projects = () => {
     const [activeTab, setActiveTab] = useState<"Active" | "Archived">("Active");
@@ -27,7 +32,14 @@ const Projects = () => {
                 </div>
 
                 <div className="">
-                    <Button><Plus size={20} />Add Project</Button>
+                    <Dialog>
+                        <form>
+                            <DialogTrigger asChild>
+                                <Button><Plus size={20} />Add Project</Button>
+                            </DialogTrigger>
+                            <AddProjectModal></AddProjectModal>
+                        </form>
+                    </Dialog>
                 </div>
             </div>
             <div className=" flex items-center justify-between">
