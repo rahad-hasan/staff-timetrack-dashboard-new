@@ -1,4 +1,5 @@
 "use client"
+import ProjectMemberTable from "@/components/ProjectManagement/Projects/ProjectMemberTable";
 import TaskTable from "@/components/ProjectManagement/Task/TaskTable";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronLeft, Pencil, Plus } from "lucide-react";
@@ -98,7 +99,7 @@ const SingleProjectPage = () => {
             </div>
             {
                 activeTab === "Members" ?
-                    'sdfjas;dljf'
+                    <ProjectMemberTable></ProjectMemberTable>
                     :
                     <TaskTable></TaskTable>
             }

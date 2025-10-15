@@ -1,5 +1,4 @@
 "use client"
-
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Image from "next/image";
@@ -9,72 +8,82 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-
-import { ArrowUpDown, ChevronDown, EllipsisVertical } from "lucide-react";
-import lowFlag from '../../../assets/dashboard/lowFlag.svg'
-import mediumFlag from '../../../assets/dashboard/mediumFlag.svg'
-import noneFlag from '../../../assets/dashboard/noneFlag.svg'
-import { Checkbox } from "@/components/ui/checkbox"
+} from "@/components/ui/dropdown-menu";
+import { ArrowUpDown, ChevronDown, Copy, EllipsisVertical, Package2, Pencil, Trash2, UsersRound } from "lucide-react";
+import lowFlag from '../../../assets/dashboard/lowFlag.svg';
+import mediumFlag from '../../../assets/dashboard/mediumFlag.svg';
+import noneFlag from '../../../assets/dashboard/noneFlag.svg';
+import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
-const TaskTable = () => {
+const ProjectMemberTable = () => {
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
-    console.log(rowSelection);
-    interface Task {
-        taskName: string;
-        project: string;
-        image: string;
-        assignee: string;
-        timeWorked: string;
-        priority: string;
-        status: string;
+
+    interface IMember {
+        project: string,
+        image: string,
+        memberName: string,
+        role: string,
+        memberSince: string,
+        weeklyLimit: string,
+        dailyLimit: string,
+        timeTracking: boolean,
+        status: string
     }
 
-    const taskList = useMemo(
+    const memberList = useMemo(
         () => [
             {
-                taskName: "Do the Logic for Orbit Home page project",
                 project: "Orbit Technology's project",
                 image: "https://avatar.iran.liara.run/public/25",
-                assignee: "Juyed Ahmed",
-                timeWorked: "12:03:00",
-                priority: "Low",
-                status: "In Progress"
+                memberName: "Juyed Ahmed",
+                role: "Front End Developer",
+                memberSince: "Jul 18, 2025",
+                weeklyLimit: "No weekly limit",
+                dailyLimit: "No daily limit",
+                timeTracking: true,
+                status: "Inactive"
             },
             {
-                taskName: "Marketing Tools",
                 project: "Orbit Technology's project",
                 image: "https://avatar.iran.liara.run/public/22",
-                assignee: "Cameron Williamson",
-                timeWorked: "12:03:00",
-                priority: "Medium",
-                status: "Pending"
+                memberName: "Cameron Williamson",
+                role: "Full Stack Developer",
+                memberSince: "Jun 28, 2024",
+                weeklyLimit: "No weekly limit",
+                dailyLimit: "No daily limit",
+                timeTracking: false,
+                status: "Active"
             },
             {
-                taskName: "Design Idea",
                 project: "Orbit Technology's project",
                 image: "https://avatar.iran.liara.run/public/26",
-                assignee: "Jenny Wilson",
-                timeWorked: "11:03:00",
-                priority: "None",
-                status: "In Progress"
+                memberName: "Jenny Wilson",
+                role: "Manager",
+                memberSince: "Aug 08, 2021",
+                weeklyLimit: "No weekly limit",
+                dailyLimit: "No daily limit",
+                timeTracking: true,
+                status: "Inactive"
             },
             {
-                taskName: "Do the Logic for Orbit Home page project wi...",
                 project: "Orbit Technology's project",
                 image: "https://avatar.iran.liara.run/public/27",
-                assignee: "Esther Howard",
-                timeWorked: "10:03:00",
-                priority: "Medium",
-                status: "Pending"
+                memberName: "Esther Howard",
+                role: "UI/UX Designer",
+                memberSince: "Jan 06, 2023",
+                weeklyLimit: "No weekly limit",
+                dailyLimit: "No daily limit",
+                timeTracking: true,
+                status: "Invited"
             }
         ],
         []
     );
 
-    const columns: ColumnDef<Task>[] = [
+    const columns: ColumnDef<IMember>[] = [
         {
             id: "select",
             header: ({ table }) => (
@@ -100,7 +109,7 @@ const TaskTable = () => {
             enableHiding: false,
         },
         {
-            accessorKey: "taskName",
+            accessorKey: "memberName",
             header: ({ column }) => {
                 return (
                     <div>
@@ -108,40 +117,14 @@ const TaskTable = () => {
                             className=" cursor-pointer flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                         >
-                            Task Name
+                            Member
                             <ArrowUpDown className="ml-2 h-4 w-4" />
                         </span>
                     </div>
                 )
             },
             cell: ({ row }) => {
-                const task = row.getValue("taskName") as string;
-                const project = row.original.project;
-                return (
-                    <div className="flex flex-col">
-                        <span className="font-medium">{task}</span>
-                        <span className="">{project}</span>
-                    </div>
-                )
-            }
-        },
-        {
-            accessorKey: "assignee",
-            header: ({ column }) => {
-                return (
-                    <div>
-                        <span
-                            className=" cursor-pointer flex items-center gap-1"
-                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        >
-                            Assignee
-                            <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </span>
-                    </div>
-                )
-            },
-            cell: ({ row }) => {
-                const assignee = row.getValue("assignee") as string;
+                const memberName = row.getValue("memberName") as string;
                 const image = row.original.image;
                 return (
                     <div className="flex items-center gap-2 min-w-[180px]">
@@ -149,69 +132,19 @@ const TaskTable = () => {
                             src={image}
                             width={40}
                             height={40}
-                            alt={assignee}
+                            alt={memberName}
                             className="rounded-full w-10"
                         />
-                        <span>{assignee}</span>
-                    </div>
-                );
-            }
-        },
-        {
-            accessorKey: "timeWorked",
-            // header: () => <div className="">Time Worked</div>,
-            header: ({ column }) => {
-                return (
-                    <div>
-                        <span
-                            className=" cursor-pointer flex items-center gap-1"
-                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        >
-                            Time Worked
-                            <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </span>
-                    </div>
-                )
-            },
-            cell: ({ row }) => {
-                const timeWorked = row.getValue("timeWorked") as string;
-                return <div className="">{timeWorked}</div>;
-            },
-        },
-        {
-            accessorKey: "priority",
-            // header: "Priority",
-            header: ({ column }) => {
-                return (
-                    <div>
-                        <span
-                            className=" cursor-pointer flex items-center gap-1"
-                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        >
-                            Priority
-                            <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </span>
-                    </div>
-                )
-            },
-            cell: ({ row }) => {
-                const priority = row.getValue("priority") as string;
-                const flagImage = priority === "Low" ? lowFlag : priority === "Medium" ? mediumFlag : noneFlag;
-                return (
-                    <div className="flex items-center gap-2">
-                        <Image src={flagImage} width={100} height={100} alt="flag" className="w-4" />
-                        <span>{priority}</span>
+                        <span>{memberName}</span>
                     </div>
                 );
             }
         },
         {
             accessorKey: "status",
-            // header: "Status",
-            // header: () => <div className=" text-right">Status</div>,
             header: ({ column }) => {
                 return (
-                    <div className=" flex justify-end">
+                    <div>
                         <span
                             className=" cursor-pointer flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
@@ -224,48 +157,143 @@ const TaskTable = () => {
             },
             cell: ({ row }) => {
                 const status = row.getValue("status") as string;
-
-                const statusClass =
-                    status === "In Progress"
-                        ? "bg-blue-100 text-blue-800"
-                        : "bg-gray-100 text-gray-800";
-
-                const handleStatusChange = (newStatus: string) => {
-                    console.log(newStatus);
-                };
-
                 return (
-                    <div className="flex justify-end">
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button
-                                    variant="outline2"
-                                    className={`px-2 py-1.5 rounded-full text-sm font-medium ${statusClass}`}
-                                >
-                                    <span className={` w-2 h-2 rounded-full ${status === "In Progress" ? "bg-blue-300" : "bg-gray-300"}`}></span>
-                                    {status}
-                                    <ChevronDown />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuItem className=" cursor-pointer" onClick={() => handleStatusChange("In Progress")}>
-                                    In Progress
-                                </DropdownMenuItem>
-                                <DropdownMenuItem className=" cursor-pointer" onClick={() => handleStatusChange("Pending")}>
-                                    Pending
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                    <div className="">
+                        {
+                            status === "Active" ?
+                                <button className=" bg-[#e9f8f0] text-primary border border-primary rounded-lg px-2">{status}</button>
+                                :
+                                status === "Inactive" ?
+                                    <button className=" bg-[#fee6eb] text-red-500 border border-red-500 rounded-lg px-2">{status}</button>
+                                    :
+                                    <button className=" bg-[#fff5db] text-yellow-600 border border-yellow-600 rounded-lg px-2">{status}</button>
+                        }
                     </div>
-                );
+                )
+            }
+        },
+        {
+            accessorKey: "role",
+            // header: () => <div className="">Time Worked</div>,
+            header: ({ column }) => {
+                return (
+                    <div>
+                        <span
+                            className=" cursor-pointer flex items-center gap-1"
+                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                        >
+                            Role
+                            <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </span>
+                    </div>
+                )
             },
+            cell: ({ row }) => {
+                const role = row.getValue("role") as string;
+                return <div className="">{role}</div>;
+            },
+        },
+        {
+            accessorKey: "limit",
+            // header: () => <div className="">Time Worked</div>,
+            header: ({ column }) => {
+                return (
+                    <div>
+                        <span
+                            className=" cursor-pointer flex items-center gap-1"
+                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                        >
+                            Limit
+                            <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </span>
+                    </div>
+                )
+            },
+            cell: ({ row }) => {
+                const weeklyLimit = row.original.weeklyLimit
+                const dailyLimit = row.original.dailyLimit
+                return <div className="">
+                    <p>{weeklyLimit}</p>
+                    <p>{dailyLimit}</p>
+                </div>;
+            },
+        },
+        {
+            accessorKey: "memberSince",
+            // header: () => <div className="">Time Worked</div>,
+            header: ({ column }) => {
+                return (
+                    <div>
+                        <span
+                            className=" cursor-pointer flex items-center gap-1"
+                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                        >
+                            Member since
+                            <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </span>
+                    </div>
+                )
+            },
+            cell: ({ row }) => {
+                const memberSince = row.original.memberSince
+                return <div className="">
+                    <p>{memberSince}</p>
+                </div>;
+            },
+        },
+        {
+            accessorKey: "timeTracking",
+            header: ({ column }) => {
+                return (
+                    <div>
+                        <span
+                            className=" cursor-pointer flex items-center gap-1"
+                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                        >
+                            Time Tracking
+                            <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </span>
+                    </div>
+                )
+            },
+            cell: ({ row }) => {
+                const timeTracking = row.getValue("timeTracking") as string;
+                return (
+                    <div className="">
+                        {
+                            timeTracking ?
+                                <button className=" bg-[#e9f8f0] text-primary border border-primary rounded-lg px-2">Enable</button>
+                                :
+                                <button className=" bg-[#fee6eb] text-red-500 border border-red-500 rounded-lg px-2">Not Enable</button>
+                        }
+                    </div>
+                )
+            }
         },
         {
             accessorKey: "action",
             header: () => <div className="">Action</div>,
             cell: () => {
                 return <div className="">
-                    <Button variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
+                        </PopoverTrigger>
+                        <PopoverContent side="bottom" align="end" className=" w-[250px] px-2">
+                            <div className="">
+                                <div className="space-y-2">
+                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 px-3 cursor-pointer">
+                                        <Pencil size={18} />
+                                        <p>Edit User</p>
+                                    </div>
+                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 px-3 cursor-pointer">
+                                        <Trash2 size={18} />
+                                        <p>Remove User</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </PopoverContent>
+                    </Popover>
                 </div>;
             },
         },
@@ -273,7 +301,7 @@ const TaskTable = () => {
 
 
     const table = useReactTable({
-        data: taskList,
+        data: memberList,
         columns,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,
@@ -328,4 +356,4 @@ const TaskTable = () => {
     );
 };
 
-export default TaskTable;
+export default ProjectMemberTable;
