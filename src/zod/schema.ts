@@ -51,12 +51,14 @@ export const addMemberSchema = z.object({
 
 // Step 3: Add Budget & Hours Schema
 export const addBudgetAndHoursSchema = z.object({
-    budget: z.number().min(1, "Budget is required"),
-    hours: z.number().min(1, "Hours are required"),
+    projectType: z.string().min(1, "Project Type is required"),
+    rate: z.coerce.number().min(1, "Rate is required"),
+    budgetType:  z.string().optional(),
+    budgetBasis:  z.string().optional(),
 });
 
 // Step 4: Add Tasks Schema
 export const addTasksSchema = z.object({
     tasks: z.string().min(1, "Task is required"),
-    description: z.string().min(1, "Description is required"),
+    description: z.string().min(1, "Description is required"), 
 });
