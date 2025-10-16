@@ -14,6 +14,17 @@ import { Input } from "@/components/ui/input";
 import SearchBar from "@/components/Common/SearchBar";
 import TaskTable from "@/components/ProjectManagement/Task/TaskTable";
 import KanbanDndList from "@/components/ProjectManagement/Task/KanbanDndList";
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+import CreateTaskModal from "@/components/ProjectManagement/Task/CreateTaskModal";
 
 const TaskPage = () => {
     const [activeTab, setActiveTab] = useState<"List view" | "Kanban">("List view");
@@ -79,7 +90,16 @@ const TaskPage = () => {
                             ))}
                         </div>
                     </div>
-                    <Button><Plus size={20} />Create Task</Button>
+
+                    <Dialog>
+                        <form>
+                            <DialogTrigger asChild>
+                                <Button><Plus size={20} />Create Task</Button>
+                            </DialogTrigger>
+                            <CreateTaskModal></CreateTaskModal>
+                        </form>
+                    </Dialog>
+
                 </div>
             </div>
             <div className=" flex items-center justify-between">

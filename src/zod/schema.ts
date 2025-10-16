@@ -53,12 +53,23 @@ export const addMemberSchema = z.object({
 export const addBudgetAndHoursSchema = z.object({
     projectType: z.string().min(1, "Project Type is required"),
     rate: z.coerce.number().min(1, "Rate is required"),
-    budgetType:  z.string().optional(),
-    budgetBasis:  z.string().optional(),
+    budgetType: z.string().optional(),
+    budgetBasis: z.string().optional(),
 });
 
 // Step 4: Add Tasks Schema
 export const addTasksSchema = z.object({
     tasks: z.string().min(1, "Task is required"),
-    description: z.string().min(1, "Description is required"), 
+    description: z.string().min(1, "Description is required"),
 });
+
+
+export const newTaskCreationSchema = z.object({
+    assignee: z.string().min(1, "Assignee is required"),
+    project: z.string().min(1, "Project is required"),
+    taskName: z.string().min(1, "Task name is required"),
+    deadline: z.date().refine(date => !isNaN(date.getTime()), {
+        message: "Deadline is required",
+    }),
+    details: z.string().min(1, "Task details is required"),
+})
