@@ -17,6 +17,7 @@ const AddProjectModal = () => {
     const handleStepSubmit = (data: any) => {
         setFormData((prevData:any) => ({ ...prevData, ...data }));
     };
+    console.log(formData);
     return (
         <DialogContent className="sm:max-w-[525px]">
             <DialogHeader>
