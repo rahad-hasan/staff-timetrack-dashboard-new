@@ -8,6 +8,8 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button";
 import { IClients } from "@/global/globalTypes";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import emptyBoxLogo from "../../../assets/projects/emptyBox.svg"
+import Image from "next/image";
 
 const ClientsTable = () => {
     const [sorting, setSorting] = useState<SortingState>([])
@@ -19,7 +21,7 @@ const ClientsTable = () => {
                 name: "Orbit Design Agency",
                 email: "orbitagency@gmail.com",
                 phone: "880 124 214 3134",
-                address: "Dhaka, Bangladesh"
+                address: "Dhaka, Bangladesh"  
             },
             {
                 name: "Orbit Design Agency",
@@ -245,7 +247,12 @@ const ClientsTable = () => {
                     ) : (
                         <TableRow>
                             <TableCell colSpan={columns.length} className="h-24 text-center">
-                                No tasks found.
+                                <div className=" flex flex-col items-center justify-center py-8">
+                                    <Image src={emptyBoxLogo} alt="Empty" width={200} height={200} className=" w-24 mb-3" />
+                                    <p className=" text-lg mb-1">No project found!</p>
+                                    <p>Currently this client have no project data</p>
+                                </div>
+
                             </TableCell>
                         </TableRow>
                     )}

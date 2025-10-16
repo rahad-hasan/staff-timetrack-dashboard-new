@@ -13,6 +13,12 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import ClientsTable from "@/components/ProjectManagement/Clients/ClientsTable";
+import {
+    Dialog,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+import AddClientModal from "@/components/ProjectManagement/Clients/AddClientModal";
+
 
 const ClientsPage = () => {
     const handleSearch = (query: string) => {
@@ -43,14 +49,14 @@ const ClientsPage = () => {
                 </div>
 
                 <div className="">
-                    <Button><Plus size={20} />Add Client</Button>
-                    {/* <Dialog>
+                    <Dialog>
                         <form>
                             <DialogTrigger asChild>
+                                <Button><Plus size={20} />Add Client</Button>
                             </DialogTrigger>
-                            <AddProjectModal></AddProjectModal>
+                            <AddClientModal></AddClientModal>
                         </form>
-                    </Dialog> */}
+                    </Dialog>
                 </div>
             </div>
             <div className=" flex items-center justify-between">

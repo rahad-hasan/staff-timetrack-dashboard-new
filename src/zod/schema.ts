@@ -73,3 +73,12 @@ export const newTaskCreationSchema = z.object({
     }),
     details: z.string().min(1, "Task details is required"),
 })
+
+export const newClientSchema = z.object({
+    name: z.string().min(1, "Name is required"),
+    address: z.string().min(1, "Address is required"),
+    email: z.string().min(1, "Email is required"),
+    phone: z.coerce.number().min(1, "Phone number is required"),
+})
+
+
