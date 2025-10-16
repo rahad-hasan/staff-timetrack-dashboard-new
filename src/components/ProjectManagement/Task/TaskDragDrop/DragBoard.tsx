@@ -8,24 +8,13 @@ import {
 } from "@dnd-kit/core";
 import Column from "./Column";
 import type { Dispatch, SetStateAction } from "react";
+import { ITask } from "@/global/globalTypes";
 
 const columns = ["todo", "in_progress", "pending"] as const;
 
-type TaskStatus = "todo" | "pending" | "in_progress" | "completed";
-type TaskPriority = "None" | "Low" | "Medium" | "High";
-interface Task {
-    id: string;
-    taskName: string;
-    project: string;
-    image: string;
-    assignee: string;
-    timeWorked: string; // e.g., "12:03:00" (HH:mm:ss)
-    priority: TaskPriority;
-    status: TaskStatus;
-}
 
 
-const DragBoard = ({ task, setTasks }: { task: Task[]; setTasks: Dispatch<SetStateAction<Task[]>> }) => {
+const DragBoard = ({ task, setTasks }: { task: ITask[]; setTasks: Dispatch<SetStateAction<ITask[]>> }) => {
 
     const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event;
@@ -36,13 +25,16 @@ const DragBoard = ({ task, setTasks }: { task: Task[]; setTasks: Dispatch<SetSta
 
         const dTask = task.find((t) => t.id === taskId);
 
-        setTasks((prev:any) =>
-            prev.map((t: Task) =>
+        // update in ui
+        setTasks((prev: any) =>
+            prev.map((t: ITask) =>
                 t.id === taskId && t.status !== newStatus
                     ? { ...t, status: newStatus }
                     : t
             )
         );
+
+        // here i will call api for updated value
         if (dTask && dTask.status !== newStatus) {
             // updateTodo({ id: taskId, data: { status: newStatus } });
             console.log('update');

@@ -1,25 +1,47 @@
-import React from 'react';
+import { Slider } from '@/components/ui/slider';
+import { ITask } from '@/global/globalTypes';
+import { Clock9, FileArchive, MessageSquareText } from 'lucide-react';
+import Image from 'next/image';
+import lowFlag from '../../../../assets/dashboard/lowFlag.svg'
+import mediumFlag from '../../../../assets/dashboard/mediumFlag.svg'
+import urgentFlag from '../../../../assets/dashboard/urgentFlag.svg'
 
-type TaskStatus = "todo" | "pending" | "in_progress" | "completed";
-type TaskPriority = "None" | "Low" | "Medium" | "High";
+const TaskCart = ({ task }: { task: ITask }) => {
 
-interface Task {
-    id: string;
-    taskName: string;
-    project: string;
-    image: string;
-    assignee: string;
-    timeWorked: string; // e.g., "12:03:00" (HH:mm:ss)
-    priority: TaskPriority;
-    status: TaskStatus;
-}
+    const selectedFlag = task?.priority === "Low" ? lowFlag : task?.priority === "Medium" ? mediumFlag : urgentFlag
+    const sliderClass = task?.checklist < 5 ? "bg-red-500 border-white" : task?.checklist < 8 ? " bg-yellow-400 border-white" : ""
 
-const TaskCart = ({ task }: { task: Task }) => {
     return (
-        <div className=" border p-6 rounded-lg bg-primary text-white cursor-grab" >
-            <p>{task?.taskName}</p>
-            <p>{task?.assignee}</p>
-            <p>{task?.timeWorked}</p>
+        <div className=" border p-6 rounded-lg bg-white cursor-grab" >
+            <h2 className=' text-lg font-semibold'>{task?.taskName}</h2>
+            <div className=' mt-3 flex items-center justify-between'>
+                <Image src={task?.image} alt='image' width={200} height={200} className=' w-9 rounded-full' />
+                <div className=' border-2 border-borderColor rounded-lg flex items-center gap-4 justify-between px-2 py-2'>
+                    <h2 className=' flex items-center gap-1'>
+                        <MessageSquareText size={18} /> 12
+                    </h2>
+                    <h2 className=' flex items-center gap-1'>
+                        <FileArchive size={18} /> 18
+                    </h2>
+                </div>
+            </div>
+            <div className=' mt-3 '>
+                <div className=' flex justify-between items-center mb-2'>
+                    <p>Checklist</p>
+                    <p>{task?.checklist}/10</p>
+                </div>
+                <Slider disabled className={sliderClass} defaultValue={[33]} max={100} step={1} />
+                <div className=' mt-3 flex items-center justify-between'>
+                    <div className=' flex items-center gap-1'>
+                        <Clock9 size={18} />
+                        <p>06:17:09</p>
+                    </div>
+                    <div className=' flex items-center gap-1'>
+                        <Image src={selectedFlag} alt='flag' width={200} height={200} className='w-6' />
+                        <p>{task?.priority}</p>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };
