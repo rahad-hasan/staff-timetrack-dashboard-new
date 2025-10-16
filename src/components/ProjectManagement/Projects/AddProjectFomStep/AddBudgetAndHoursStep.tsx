@@ -33,7 +33,7 @@ const AddBudgetAndHoursStep = ({ setStep, handleStepSubmit }: GeneralInfoStepPro
         resolver: zodResolver(addBudgetAndHoursSchema) as Resolver<z.infer<typeof addBudgetAndHoursSchema>>,
         defaultValues: {
             projectType: "",
-            rate: undefined,
+            rate: 0,
             budgetType: "",
             budgetBasis: "",
         },
@@ -55,8 +55,6 @@ const AddBudgetAndHoursStep = ({ setStep, handleStepSubmit }: GeneralInfoStepPro
         <div>
             <h2 className=" text-xl font-semibold mb-4">Add Budget & Hours</h2>
             <div className="flex gap-3">
-
-
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-full">
                         <FormField

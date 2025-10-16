@@ -12,7 +12,7 @@ import AddBudgetAndHoursStep from "./AddProjectFomStep/AddBudgetAndHoursStep";
 import AddTasksStep from "./AddProjectFomStep/AddTasksStep";
 
 const AddProjectModal = () => {
-    const [step, setStep] = useState<number>(3);
+    const [step, setStep] = useState<number>(1);
     const [formData, setFormData] = useState<any>({});
     const handleStepSubmit = (data: any) => {
         setFormData((prevData:any) => ({ ...prevData, ...data }));
@@ -45,7 +45,7 @@ const AddProjectModal = () => {
             }
             {
                 step === 4 &&
-                <AddTasksStep setStep={setStep} handleStepSubmit={handleStepSubmit}></AddTasksStep>
+                <AddTasksStep handleStepSubmit={handleStepSubmit}></AddTasksStep>
             }
 
         </DialogContent>
