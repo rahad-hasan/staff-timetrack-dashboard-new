@@ -13,6 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import SearchBar from "@/components/Common/SearchBar";
 import TaskTable from "@/components/ProjectManagement/Task/TaskTable";
+import KanbanDndList from "@/components/ProjectManagement/Task/KanbanDndList";
 
 const TaskPage = () => {
     const [activeTab, setActiveTab] = useState<"List view" | "Kanban">("List view");
@@ -158,6 +159,10 @@ const TaskPage = () => {
             {
                 activeTab === "List view" &&
                 <TaskTable></TaskTable>
+            }
+            {
+                activeTab === "Kanban" &&
+                <KanbanDndList></KanbanDndList>
             }
         </div>
     );
