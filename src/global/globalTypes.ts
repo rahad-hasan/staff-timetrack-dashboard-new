@@ -14,3 +14,11 @@ export interface ITask {
     status: TaskStatus;
     checklist: number;
 }
+
+
+export interface IClients {
+    name: string;
+    email: string;
+    phone: string;
+    address: string;
+}
