@@ -1,21 +1,20 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import AllScreenShorts from "@/components/Activity/ScreenShorts/AllScreenShorts";
 import Every10Mins from "@/components/Activity/ScreenShorts/Every10Mins";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { BriefcaseBusiness, CalendarDays, ChevronLeft, ChevronRight, ClipboardList, NotepadText, SlidersHorizontal, SquareActivity, TrendingDown, TrendingUp, UsersRound } from "lucide-react";
+import { BriefcaseBusiness, ClipboardList, NotepadText, SlidersHorizontal, SquareActivity, TrendingDown, TrendingUp, UsersRound } from "lucide-react";
 // import { Button } from "@/components/ui/button";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import {
     Dialog,
     DialogTrigger,
 } from "@/components/ui/dialog"
 import AllNotesModal from "@/components/Activity/ScreenShorts/AllNotes";
+import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 
 const ScreenShorts = () => {
     const [activeTab, setActiveTab] = useState<"Every 10 min" | "All Screenshots">("Every 10 min");
@@ -49,27 +48,6 @@ const ScreenShorts = () => {
 
     // date picker
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-    const formatDate = (date: any) => {
-        return date.toLocaleDateString('en-US', {
-            weekday: 'short', // Mon
-            month: 'short',   // Oct
-            day: 'numeric',   // 9
-            year: 'numeric',  // 2025
-        });
-    };
-
-    const handleNavigate = useCallback((days: any) => {
-        setSelectedDate(prevDate => {
-            const newDate = new Date(prevDate);
-            // setDate(getDate() + days) moves the date by the specified number of days
-            newDate.setDate(newDate.getDate() + days);
-            return newDate;
-        });
-    }, []);
-
-    const dateDisplay = formatDate(selectedDate);
-    // date popup open
-    const [open, setOpen] = useState(false)
 
     return (
         <div>
@@ -102,30 +80,7 @@ const ScreenShorts = () => {
             <div className=" mb-5 flex justify-between">
 
                 <div className=" flex gap-3">
-                    <div className="flex">
-                        <ChevronLeft onClick={() => handleNavigate(-1)} size={45} className="border p-2.5 border-borderColor rounded-lg cursor-pointer" />
-
-                        <Popover open={open} onOpenChange={setOpen}>
-                            <PopoverTrigger asChild>
-                                <div className=" flex items-center gap-2 border rounded-md px-4 mx-3 cursor-pointer">
-                                    <CalendarDays className=" text-primary" />
-                                    <span>{dateDisplay}</span>
-                                </div>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto overflow-hidden p-0" align="start">
-                                <Calendar
-                                    mode="single"
-                                    selected={selectedDate}
-                                    captionLayout="dropdown"
-                                    onSelect={(selectedDate) => {
-                                        if (selectedDate) setSelectedDate(selectedDate)
-                                        setOpen(false)
-                                    }}
-                                />
-                            </PopoverContent>
-                        </Popover>
-                        <ChevronRight onClick={() => handleNavigate(1)} size={45} className="border p-2.5 border-borderColor rounded-lg cursor-pointer" />
-                    </div>
+                        <SpecificDatePicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></SpecificDatePicker>
                     {/* Filter */}
                     <Popover>
                         <PopoverTrigger asChild>

@@ -84,7 +84,11 @@ const SideBar = () => {
             label: 'Report',
             key: 'report',
             collapsible: true,
-            subItems: [],
+            subItems: [
+                { label: 'Timesheet', key: '/report/timesheets' },
+                { label: 'Time & activities', key: '/report/time-and-activities' },
+                { label: 'Attendance', key: '/report/attendance' },
+            ],
         },
         {
             icon: Users,
