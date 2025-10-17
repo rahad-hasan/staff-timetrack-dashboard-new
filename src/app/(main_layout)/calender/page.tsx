@@ -7,6 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
 import CalenderTable from "@/components/Calender/CalenderTable";
+import {
+    Dialog,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+import AddEventModal from "@/components/Calender/AddEventModal";
 
 const CalenderPage = () => {
     const users = [
@@ -33,8 +38,15 @@ const CalenderPage = () => {
                         All the teams task and events are displayed here
                     </p>
                 </div>
+                <Dialog>
+                    <form>
+                        <DialogTrigger asChild>
+                            <Button><Plus size={20} />Add an event</Button>
+                        </DialogTrigger>
+                        <AddEventModal></AddEventModal>
+                    </form>
+                </Dialog>
 
-                <Button><Plus size={20} />Add an event</Button>
             </div>
 
             <div className=" flex items-center justify-between">

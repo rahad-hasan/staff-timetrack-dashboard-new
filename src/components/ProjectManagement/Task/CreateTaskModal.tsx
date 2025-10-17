@@ -62,15 +62,6 @@ const CreateTaskModal = () => {
         console.log(values)
     }
 
-
-    // assignee: z.string().min(1, "Assignee is required"),
-    //     project: z.string().min(1, "Project is required"),
-    //         taskName: z.string().min(1, "Task name is required"),
-    //             deadline: z.date().refine(date => !isNaN(date.getTime()), {
-    //                 message: "Deadline is required",
-    //             }),
-    //                 details: z.string().min(1, "Task details is required"),
-
     return (
         <DialogContent className="sm:max-w-[525px]">
             <DialogHeader>

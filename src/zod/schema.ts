@@ -93,3 +93,13 @@ export const addNewMemberSchema = z.object({
     role: z.string().min(1, "Role is required"),
     password: z.string().min(1, "Password is required"),
 })
+
+export const addNewEventSchema = z.object({
+    eventName: z.string().min(1, "Event name is required"),
+    date: z.date().refine(date => !isNaN(date.getTime()), {
+        message: "Date is required",
+    }),
+    project: z.string().optional(),
+    members: z.array(z.string().min(1, "Member name is required")).min(1, "At least one member is required"),
+    description: z.string().min(1, "Description is required"),
+})
