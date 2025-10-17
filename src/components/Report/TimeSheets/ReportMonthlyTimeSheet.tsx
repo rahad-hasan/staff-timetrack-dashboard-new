@@ -139,7 +139,7 @@ const ReportMonthlyTimeSheet = () => {
                                         <div className=" flex flex-col items-center justify-center h-full">
                                             <div className="text-base font-normal">{cell.date}</div>
                                             {cell.time && (
-                                                <div className={`text-xs font-medium mt-1 ${cell.time === '-' ? 'text-gray-400' : 'text-primary'}`}>
+                                                <div className={`text-md font-medium mt-1 ${cell.time === '-' ? 'text-gray-400' : 'text-primary'}`}>
                                                     {cell.time}
                                                 </div>
                                             )}

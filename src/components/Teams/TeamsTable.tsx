@@ -3,78 +3,58 @@ import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Image from "next/image";
 import { useMemo, useState } from "react";
-import { ArrowUpDown, EllipsisVertical, Pencil, Trash2 } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ArrowUpDown, EllipsisVertical, Pencil, Trash2 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox"
+import { Button } from "@/components/ui/button";
 
-const ProjectMemberTable = () => {
+const TeamsTable = () => {
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
 
-    interface IMember {
-        project: string,
-        image: string,
-        memberName: string,
-        role: string,
-        memberSince: string,
-        weeklyLimit: string,
-        dailyLimit: string,
-        timeTracking: boolean,
-        status: string
+    interface ITeam {
+        teamName: string;
+        date: string;
+        image: string;
+        project: string;
+        status: string;
     }
 
-    const memberList = useMemo(
+    const taskList:ITeam[] = useMemo(
         () => [
             {
-                project: "Orbit Technology's project",
+                teamName: "Software Development Team",
+                date: "From 12 Aug, 2025",
                 image: "https://avatar.iran.liara.run/public/25",
-                memberName: "Juyed Ahmed",
-                role: "Front End Developer",
-                memberSince: "Jul 18, 2025",
-                weeklyLimit: "No weekly limit",
-                dailyLimit: "No daily limit",
-                timeTracking: true,
-                status: "Inactive"
+                project: "Time tracker",
+                status: "In Progress"
             },
             {
-                project: "Orbit Technology's project",
+                teamName: "Marketing Team",
+                date: "From 12 Aug, 2025",
                 image: "https://avatar.iran.liara.run/public/22",
-                memberName: "Cameron Williamson",
-                role: "Full Stack Developer",
-                memberSince: "Jun 28, 2024",
-                weeklyLimit: "No weekly limit",
-                dailyLimit: "No daily limit",
-                timeTracking: false,
-                status: "Active"
+                project: "House price prediction",
+                status: "Pending"
             },
             {
-                project: "Orbit Technology's project",
+                teamName: "UI UX Design Team",
+                date: "From 12 Aug, 2025",
                 image: "https://avatar.iran.liara.run/public/26",
-                memberName: "Jenny Wilson",
-                role: "Manager",
-                memberSince: "Aug 08, 2021",
-                weeklyLimit: "No weekly limit",
-                dailyLimit: "No daily limit",
-                timeTracking: true,
-                status: "Inactive"
+                project: "Spam detection",
+                status: "In Progress"
             },
             {
-                project: "Orbit Technology's project",
+                teamName: "SEO Team ",
+                date: "From 12 Aug, 2025",
                 image: "https://avatar.iran.liara.run/public/27",
-                memberName: "Esther Howard",
-                role: "UI/UX Designer",
-                memberSince: "Jan 06, 2023",
-                weeklyLimit: "No weekly limit",
-                dailyLimit: "No daily limit",
-                timeTracking: true,
-                status: "Invited"
+                project: "Time tracker",
+                status: "Pending"
             }
         ],
         []
     );
 
-    const columns: ColumnDef<IMember>[] = [
+    const columns: ColumnDef<ITeam>[] = [
         {
             id: "select",
             header: ({ table }) => (
@@ -100,7 +80,7 @@ const ProjectMemberTable = () => {
             enableHiding: false,
         },
         {
-            accessorKey: "memberName",
+            accessorKey: "teamName",
             header: ({ column }) => {
                 return (
                     <div>
@@ -108,157 +88,80 @@ const ProjectMemberTable = () => {
                             className=" cursor-pointer flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                         >
-                            Member
+                            Team Name
                             <ArrowUpDown className="ml-2 h-4 w-4" />
                         </span>
                     </div>
                 )
             },
             cell: ({ row }) => {
-                const memberName = row.getValue("memberName") as string;
+                const teamName = row.getValue("teamName") as string;
+
+                return (
+                    <div className="">
+                        <span className="font-medium">{teamName}</span>
+                    </div>
+                )
+            }
+        },
+        {
+            accessorKey: "image",
+            header: ({ column }) => {
+                return (
+                    <div className="  min-w-[120px]">
+                        <span
+                            className=" cursor-pointer flex items-center gap-1"
+                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                        >
+                            Members
+                            <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </span>
+                    </div>
+                )
+            },
+            cell: ({ row }) => {
                 const image = row.original.image;
                 return (
-                    <div className="flex items-center gap-2 min-w-[180px]">
-                        <Image
-                            src={image}
-                            width={40}
-                            height={40}
-                            alt={memberName}
-                            className="rounded-full w-10"
-                        />
-                        <span>{memberName}</span>
+                    <div className="flex items-center">
+                        {[image, image, image].map((imgSrc, index) => (
+                            <Image
+                                key={index}
+                                src={imgSrc}
+                                width={40}
+                                height={40}
+                                alt={`Assignee ${index + 1}`}
+                                className="rounded-full w-10 -ml-3 border-2 border-white"
+                            />
+                        ))}
+                        <div className="w-10 h-10 -ml-3 rounded-full bg-[#ede7ff] flex items-center justify-center text-sm font-semibold text-[#926fef] border-2 border-white">
+                            10+
+                        </div>
                     </div>
                 );
             }
         },
         {
-            accessorKey: "status",
+            accessorKey: "project",
             header: ({ column }) => {
                 return (
-                    <div>
+                    <div className=" min-w-[190px]">
                         <span
                             className=" cursor-pointer flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                         >
-                            Status
+                            Project
                             <ArrowUpDown className="ml-2 h-4 w-4" />
                         </span>
                     </div>
                 )
             },
             cell: ({ row }) => {
-                const status = row.getValue("status") as string;
+                const project = row.getValue("project") as string;
                 return (
                     <div className="">
-                        {
-                            status === "Active" ?
-                                <button className=" bg-[#e9f8f0] text-primary border border-primary rounded-lg px-2">{status}</button>
-                                :
-                                status === "Inactive" ?
-                                    <button className=" bg-[#fee6eb] text-red-500 border border-red-500 rounded-lg px-2">{status}</button>
-                                    :
-                                    <button className=" bg-[#fff5db] text-yellow-600 border border-yellow-600 rounded-lg px-2">{status}</button>
-                        }
+                        <span>{project}</span>
                     </div>
-                )
-            }
-        },
-        {
-            accessorKey: "role",
-            // header: () => <div className="">Time Worked</div>,
-            header: ({ column }) => {
-                return (
-                    <div>
-                        <span
-                            className=" cursor-pointer flex items-center gap-1"
-                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        >
-                            Role
-                            <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </span>
-                    </div>
-                )
-            },
-            cell: ({ row }) => {
-                const role = row.getValue("role") as string;
-                return <div className="">{role}</div>;
-            },
-        },
-        {
-            accessorKey: "limit",
-            // header: () => <div className="">Time Worked</div>,
-            header: ({ column }) => {
-                return (
-                    <div>
-                        <span
-                            className=" cursor-pointer flex items-center gap-1"
-                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        >
-                            Limit
-                            <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </span>
-                    </div>
-                )
-            },
-            cell: ({ row }) => {
-                const weeklyLimit = row.original.weeklyLimit
-                const dailyLimit = row.original.dailyLimit
-                return <div className="">
-                    <p>{weeklyLimit}</p>
-                    <p>{dailyLimit}</p>
-                </div>;
-            },
-        },
-        {
-            accessorKey: "memberSince",
-            // header: () => <div className="">Time Worked</div>,
-            header: ({ column }) => {
-                return (
-                    <div>
-                        <span
-                            className=" cursor-pointer flex items-center gap-1"
-                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        >
-                            Member since
-                            <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </span>
-                    </div>
-                )
-            },
-            cell: ({ row }) => {
-                const memberSince = row.original.memberSince
-                return <div className="">
-                    <p>{memberSince}</p>
-                </div>;
-            },
-        },
-        {
-            accessorKey: "timeTracking",
-            header: ({ column }) => {
-                return (
-                    <div>
-                        <span
-                            className=" cursor-pointer flex items-center gap-1"
-                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        >
-                            Time Tracking
-                            <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </span>
-                    </div>
-                )
-            },
-            cell: ({ row }) => {
-                const timeTracking = row.getValue("timeTracking") as string;
-                return (
-                    <div className="">
-                        {
-                            timeTracking ?
-                                <button className=" bg-[#e9f8f0] text-primary border border-primary rounded-lg px-2">Enable</button>
-                                :
-                                <button className=" bg-[#fee6eb] text-red-500 border border-red-500 rounded-lg px-2">Not Enable</button>
-                        }
-                    </div>
-                )
+                );
             }
         },
         {
@@ -275,11 +178,11 @@ const ProjectMemberTable = () => {
                                 <div className="space-y-2">
                                     <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 px-3 cursor-pointer">
                                         <Pencil size={18} />
-                                        <p>Edit User</p>
+                                        <p>Edit Team</p>
                                     </div>
                                     <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 px-3 cursor-pointer">
                                         <Trash2 size={18} />
-                                        <p>Remove User</p>
+                                        <p>Delete Team</p>
                                     </div>
                                 </div>
                             </div>
@@ -292,7 +195,7 @@ const ProjectMemberTable = () => {
 
 
     const table = useReactTable({
-        data: memberList,
+        data: taskList,
         columns,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,
@@ -307,7 +210,7 @@ const ProjectMemberTable = () => {
     return (
         <div className="mt-5 border-2 border-borderColor p-3 rounded-[12px]">
             <div className=" mb-5">
-                <h2 className=" text-md sm:text-lg">TASK LIST</h2>
+                <h2 className=" text-md sm:text-lg">Teams</h2>
             </div>
             <Table>
                 <TableHeader>
@@ -347,4 +250,4 @@ const ProjectMemberTable = () => {
     );
 };
 
-export default ProjectMemberTable;
+export default TeamsTable; 

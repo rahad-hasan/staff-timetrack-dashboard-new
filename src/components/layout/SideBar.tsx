@@ -93,7 +93,7 @@ const SideBar = () => {
         {
             icon: Users,
             label: 'Teams',
-            key: 'Teams',
+            key: '/teams',
             collapsible: false,
             subItems: [],
         },
