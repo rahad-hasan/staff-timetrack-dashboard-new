@@ -104,20 +104,19 @@ const SideBar = () => {
         {
             icon: CalendarDays,
             label: 'Calendar',
-            key: 'Calendar',
-            collapsible: true,
-            subItems: [
-                { label: 'Screenshot', key: 'Screenshot' },
-                { label: 'App', key: 'App' },
-                { label: 'URLs', key: 'URLs' },
-            ],
+            key: '/calender',
+            collapsible: false,
+            subItems: [],
         },
         {
             icon: AlarmClock,
             label: 'Time and Attendance',
             key: 'TimeAndAttendance',
-            collapsible: false,
-            subItems: [],
+            collapsible: true,
+            subItems: [
+                { label: 'Leave', key: '/report/Leave' },
+                { label: 'Time & activities', key: '/report/Leave-and-Leave' },
+            ],
         },
         {
             icon: Settings,
@@ -206,6 +205,7 @@ const SideBar = () => {
                         <SidebarItem
                             icon={item.icon}
                             label={item.label}
+                            href={item.subItems.length > 0 ? undefined : item.key}
                             collapsible={item.collapsible}
                             isOpen={openMenu === item.key}
                             onClick={() => toggleMenu(item.key)}
@@ -213,7 +213,7 @@ const SideBar = () => {
                         >
                             {item.subItems.length > 0 && (
                                 <div className={`${isCollapsed ? "absolute left-24 bg-white shadow-2xl rounded-2xl" : "block"} p-3 mt-2 flex flex-col gap-1 transition-all duration-300`}>
-                                    {item.subItems.map((subItem) => (
+                                    {item?.subItems?.map((subItem) => (
                                         <SubItem
                                             key={subItem.key}
                                             label={subItem.label}
