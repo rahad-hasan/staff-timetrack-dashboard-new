@@ -1,5 +1,3 @@
-
-
 type TaskStatus = "todo" | "pending" | "in_progress" | "completed";
 type TaskPriority = "Urgent" | "Low" | "Medium" | "High";
 
@@ -30,4 +28,12 @@ export interface IAttendance {
     appVersion: string;
     checkIn: string;
     checkOut: string;
+}
+
+export interface ITimeActivity {
+    image: string,
+    name: string,
+    project: string,
+    duration: string,
+    activity: number,
 }
