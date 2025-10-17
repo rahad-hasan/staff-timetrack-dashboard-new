@@ -10,6 +10,8 @@ import {
 import TeamsTable from "@/components/Teams/TeamsTable";
 import AddTeamModal from "@/components/Teams/AddTeamModal";
 import TeamsMemberTable from "@/components/Teams/TeamsMemberTable";
+import AddNewMemberModal from "@/components/Teams/AddNewMemberModal";
+
 const TeamsPage = () => {
     const [activeTab, setActiveTab] = useState<"Teams" | "Members">("Teams");
 
@@ -31,14 +33,28 @@ const TeamsPage = () => {
                 </div>
 
                 <div className="">
-                    <Dialog>
-                        <form>
-                            <DialogTrigger asChild>
-                                <Button><Plus size={20} />Add Team</Button>
-                            </DialogTrigger>
-                            <AddTeamModal></AddTeamModal>
-                        </form>
-                    </Dialog>
+                    {
+                        activeTab === "Teams" &&
+                        <Dialog>
+                            <form>
+                                <DialogTrigger asChild>
+                                    <Button><Plus size={20} />Add Team</Button>
+                                </DialogTrigger>
+                                <AddTeamModal></AddTeamModal>
+                            </form>
+                        </Dialog>
+                    }
+                    {
+                        activeTab === "Members" &&
+                        <Dialog>
+                            <form>
+                                <DialogTrigger asChild>
+                                    <Button><Plus size={20} />Add Member</Button>
+                                </DialogTrigger>
+                                <AddNewMemberModal></AddNewMemberModal>
+                            </form>
+                        </Dialog>
+                    }
                 </div>
             </div>
             <div className=" flex items-center justify-between">

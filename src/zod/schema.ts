@@ -86,3 +86,10 @@ export const newTeamSchema = z.object({
     project: z.string().min(1, "Project is required"),
     members: z.array(z.string().min(1, "Member name is required")).min(1, "At least one member is required"),
 })
+
+export const addNewMemberSchema = z.object({
+    name: z.string().min(1, "Name is required"),
+    email: z.string().min(1, "Email is required"),
+    role: z.string().min(1, "Role is required"),
+    password: z.string().min(1, "Password is required"),
+})

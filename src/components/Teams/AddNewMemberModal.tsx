@@ -6,7 +6,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog"
-import { newTeamSchema } from "@/zod/schema";
+import { addNewMemberSchema } from "@/zod/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import z from "zod";
@@ -27,59 +27,45 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import {
-    MultiSelect,
-    MultiSelectContent,
-    MultiSelectGroup,
-    MultiSelectItem,
-    MultiSelectTrigger,
-    MultiSelectValue,
-} from "@/components/ui/multi-select"
-import Image from "next/image";
 
-const AddTeamModal = () => {
+const AddNewMemberModal = () => {
 
-    const manager = ["Website Design", "Working on App Design", "New Landing Page", "Work on helsenist Project"];
+    const manager = ["Website Design", "Full Stack Developer", "UI/UX Designer"];
     const [managerSearch, setManagerSearch] = useState("");
 
     const filteredManager = manager.filter(t => t.toLowerCase().includes(managerSearch.toLowerCase()));
 
-    const form = useForm<z.infer<typeof newTeamSchema>>({
-        resolver: zodResolver(newTeamSchema),
+    const form = useForm<z.infer<typeof addNewMemberSchema>>({
+        resolver: zodResolver(addNewMemberSchema),
         defaultValues: {
-            teamName: "",
-            project: "",
-            members: [],
+            name: "",
+            email: "",
+            role: "",
+            password: "",
         },
     })
 
-    function onSubmit(values: z.infer<typeof newTeamSchema>) {
+    function onSubmit(values: z.infer<typeof addNewMemberSchema>) {
         console.log(values)
     }
 
-    const memberData = [
-        { name: "Kalki Noland", image: "https://avatar.iran.liara.run/public/18" },
-        { name: "Minakshi Devi", image: "https://avatar.iran.liara.run/public/25" },
-        { name: "Dani Wolvarin", image: "https://avatar.iran.liara.run/public/20" },
-        { name: "Alex Johnson", image: "https://avatar.iran.liara.run/public/22" },
-    ]
 
     return (
         <DialogContent className="sm:max-w-[525px]">
             <DialogHeader>
-                <DialogTitle className=" mb-4">Add Team</DialogTitle>
+                <DialogTitle className=" mb-4">Add Member</DialogTitle>
             </DialogHeader>
 
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 ">
                     <FormField
                         control={form.control}
-                        name="teamName"
+                        name="name"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Team Name</FormLabel>
+                                <FormLabel>Name</FormLabel>
                                 <FormControl>
-                                    <Input type="text" className="" placeholder="Team Name" {...field} />
+                                    <Input type="text" className="" placeholder="Add member name" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -87,10 +73,23 @@ const AddTeamModal = () => {
                     />
                     <FormField
                         control={form.control}
-                        name="project"
+                        name="email"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Assign Project</FormLabel>
+                                <FormLabel>Email</FormLabel>
+                                <FormControl>
+                                    <Input type="text" className="" placeholder="Enter member email" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="role"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Role</FormLabel>
                                 <FormControl>
                                     <div className="relative">
                                         <Select
@@ -99,13 +98,13 @@ const AddTeamModal = () => {
                                         >
                                             <SelectTrigger className="w-full">
                                                 <div className=" flex gap-1 items-center">
-                                                    <SelectValue className=" text-start" placeholder="Select Project" />
+                                                    <SelectValue className=" text-start" placeholder="Select Role" />
                                                 </div>
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <Input
                                                     type="text"
-                                                    placeholder="Select Project"
+                                                    placeholder="Select Role"
                                                     className="flex-1 border-none focus:ring-0 focus:outline-none"
                                                     value={managerSearch}
                                                     onChange={(e) => setManagerSearch(e.target.value)}
@@ -120,44 +119,22 @@ const AddTeamModal = () => {
                                 <FormMessage />
                             </FormItem>
                         )}
-                    /> 
+                    />
                     <FormField
                         control={form.control}
-                        name="members"
+                        name="password"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Members</FormLabel>
+                                <FormLabel>Password</FormLabel>
                                 <FormControl>
-                                    <MultiSelect
-                                        values={field.value}
-                                        onValuesChange={field.onChange}
-                                    >
-                                        <MultiSelectTrigger className=" w-full hover:bg-white py-2">
-                                            <MultiSelectValue placeholder="Select frameworks..." />
-                                        </MultiSelectTrigger>
-                                        <MultiSelectContent>
-                                            {/* Items must be wrapped in a group for proper styling */}
-                                            <MultiSelectGroup>
-                                                {
-                                                    memberData?.map((member, i) => (
-
-                                                        <MultiSelectItem className=" px-0 cursor-pointer" key={i} value={member?.name}>
-                                                            <Image src={member?.image} className=" w-8" width={200} height={200} alt="profile_image" />
-                                                            <p>{member?.name}</p>
-                                                        </MultiSelectItem>
-                                                    ))
-                                                }
-
-                                            </MultiSelectGroup>
-                                        </MultiSelectContent>
-                                    </MultiSelect>
+                                    <Input type="password" className="" placeholder="Set Password" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
                     {/* <DialogClose asChild> */}
-                    <Button className=" w-full" type="submit">Create Team</Button>
+                    <Button className=" w-full" type="submit">Add Member</Button>
                     {/* </DialogClose> */}
                 </form>
             </Form>
@@ -165,4 +142,4 @@ const AddTeamModal = () => {
     );
 };
 
-export default AddTeamModal;
+export default AddNewMemberModal;
