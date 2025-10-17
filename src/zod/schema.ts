@@ -80,3 +80,9 @@ export const newClientSchema = z.object({
     email: z.string().min(1, "Email is required"),
     phone: z.coerce.number().min(1, "Phone number is required"),
 })
+
+export const newTeamSchema = z.object({
+    teamName: z.string().min(1, "Team name is required"),
+    project: z.string().min(1, "Project is required"),
+    members: z.array(z.string().min(1, "Member name is required")).min(1, "At least one member is required"),
+})

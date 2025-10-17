@@ -7,8 +7,8 @@ import {
     Dialog,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import AddProjectModal from "@/components/ProjectManagement/Projects/AddProjectModal";
 import TeamsTable from "@/components/Teams/TeamsTable";
+import AddTeamModal from "@/components/Teams/AddTeamModal";
 const TeamsPage = () => {
     const [activeTab, setActiveTab] = useState<"Teams" | "Members">("Teams");
 
@@ -35,7 +35,7 @@ const TeamsPage = () => {
                             <DialogTrigger asChild>
                                 <Button><Plus size={20} />Add Team</Button>
                             </DialogTrigger>
-                            <AddProjectModal></AddProjectModal>
+                            <AddTeamModal></AddTeamModal>
                         </form>
                     </Dialog>
                 </div>
@@ -59,7 +59,10 @@ const TeamsPage = () => {
                 </div>
                 <SearchBar onSearch={handleSearch} />
             </div>
-            <TeamsTable></TeamsTable>
+            {
+                activeTab === "Teams" &&
+                <TeamsTable></TeamsTable>
+            }
         </div>
     );
 };
