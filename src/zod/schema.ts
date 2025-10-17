@@ -80,5 +80,3 @@ export const newClientSchema = z.object({
     email: z.string().min(1, "Email is required"),
     phone: z.coerce.number().min(1, "Phone number is required"),
 })
-
-
