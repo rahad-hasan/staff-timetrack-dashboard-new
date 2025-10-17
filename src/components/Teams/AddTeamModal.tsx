@@ -120,7 +120,7 @@ const AddTeamModal = () => {
                                 <FormMessage />
                             </FormItem>
                         )}
-                    />
+                    /> 
                     <FormField
                         control={form.control}
                         name="members"

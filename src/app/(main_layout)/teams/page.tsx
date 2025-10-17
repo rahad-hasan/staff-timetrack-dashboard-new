@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog"
 import TeamsTable from "@/components/Teams/TeamsTable";
 import AddTeamModal from "@/components/Teams/AddTeamModal";
+import TeamsMemberTable from "@/components/Teams/TeamsMemberTable";
 const TeamsPage = () => {
     const [activeTab, setActiveTab] = useState<"Teams" | "Members">("Teams");
 
@@ -62,6 +63,10 @@ const TeamsPage = () => {
             {
                 activeTab === "Teams" &&
                 <TeamsTable></TeamsTable>
+            }
+            {
+                activeTab === "Members" &&
+                <TeamsMemberTable></TeamsMemberTable>
             }
         </div>
     );

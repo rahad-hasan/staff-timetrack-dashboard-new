@@ -37,3 +37,14 @@ export interface ITimeActivity {
     duration: string,
     activity: number,
 }
+export interface ITeamMembers {
+    image: string,
+    name: string,
+    memberSince: string,
+    status: string,
+    role: string,
+    project: number,
+    weeklyLimit: string,
+    tracking: boolean,
+    dailyLimit: string,
+}
