@@ -48,3 +48,13 @@ export interface ITeamMembers {
     tracking: boolean,
     dailyLimit: string,
 }
+
+export interface ILeave {
+    image: string,
+    name: string,
+    totalLeave: number,
+    casualLeave: number,
+    sickLeave: number,
+    earnedLeave: number,
+    availableLeave: number
+}

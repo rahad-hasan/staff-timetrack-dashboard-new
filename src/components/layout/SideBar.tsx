@@ -110,12 +110,12 @@ const SideBar = () => {
         },
         {
             icon: AlarmClock,
-            label: 'Time and Attendance',
-            key: 'TimeAndAttendance',
+            label: 'Leave Management',
+            key: '/leave-management',
             collapsible: true,
             subItems: [
-                { label: 'Leave', key: '/report/Leave' },
-                { label: 'Time & activities', key: '/report/Leave-and-Leave' },
+                { label: 'Leave details', key: '/leave-management/leave-details' },
+                { label: 'Leave request', key: '/leave-management/leave-details2' },
             ],
         },
         {
@@ -217,6 +217,7 @@ const SideBar = () => {
                                         <SubItem
                                             key={subItem.key}
                                             label={subItem.label}
+                                            href={subItem.key}
                                             active={activeSubItem === subItem.key}
                                             isCollapsed={isCollapsed}
                                             onClick={() => setActiveSubItem(subItem.key)}
