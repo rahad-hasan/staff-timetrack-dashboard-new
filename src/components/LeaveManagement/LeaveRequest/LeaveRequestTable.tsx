@@ -3,7 +3,6 @@
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useMemo, useState } from "react";
-import { ArrowUpDown } from "lucide-react";
 import emptyBoxLogo from "../../../assets/projects/emptyBox.svg"
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -60,16 +59,13 @@ const LeaveRequestTable = () => {
     const columns: ColumnDef<ILeaveRequest>[] = [
         {
             accessorKey: "name",
-            header: ({ column }) => {
+            header: () => {
                 return (
                     <div>
-                        <span
-                            className=" cursor-pointer flex items-center gap-1"
-                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        >
+                        <p>
+
                             Member name
-                            <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </span>
+                        </p>
                     </div>
                 )
             },
@@ -86,16 +82,13 @@ const LeaveRequestTable = () => {
         },
         {
             accessorKey: "from",
-            header: ({ column }) => {
+            header: () => {
                 return (
                     <div>
-                        <span
-                            className=" cursor-pointer flex items-center gap-1"
-                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        >
+                        <p>
+
                             From
-                            <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </span>
+                        </p>
                     </div>
                 )
             },
@@ -110,16 +103,13 @@ const LeaveRequestTable = () => {
         },
         {
             accessorKey: "to",
-            header: ({ column }) => {
+            header: () => {
                 return (
                     <div>
-                        <span
-                            className=" cursor-pointer flex items-center gap-1"
-                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        >
+                        <p>
+
                             To
-                            <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </span>
+                        </p>
                     </div>
                 )
             },
@@ -134,16 +124,12 @@ const LeaveRequestTable = () => {
         },
         {
             accessorKey: "days",
-            header: ({ column }) => {
+            header: () => {
                 return (
                     <div>
-                        <span
-                            className=" cursor-pointer flex items-center gap-1"
-                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        >
+                        <p>
                             Days
-                            <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </span>
+                        </p>
                     </div>
                 )
             },
@@ -158,16 +144,12 @@ const LeaveRequestTable = () => {
         },
         {
             accessorKey: "reason",
-            header: ({ column }) => {
+            header: () => {
                 return (
                     <div>
-                        <span
-                            className=" cursor-pointer flex items-center gap-1"
-                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        >
+                        <p>
                             Reason
-                            <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </span>
+                        </p>
                     </div>
                 )
             },
@@ -182,16 +164,12 @@ const LeaveRequestTable = () => {
         },
         {
             accessorKey: "availableLeave",
-            header: ({ column }) => {
+            header: () => {
                 return (
                     <div>
-                        <span
-                            className=" cursor-pointer flex items-center gap-1"
-                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        >
+                        <p>
                             Available Leave
-                            <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </span>
+                        </p>
                     </div>
                 )
             },
@@ -216,16 +194,12 @@ const LeaveRequestTable = () => {
         },
         {
             accessorKey: "action",
-            header: ({ column }) => {
+            header: () => {
                 return (
                     <div>
-                        <span
-                            className=" cursor-pointer flex items-center gap-1"
-                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        >
+                        <p>
                             Action
-                            <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </span>
+                        </p>
                     </div>
                 )
             },

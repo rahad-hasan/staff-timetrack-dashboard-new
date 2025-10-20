@@ -121,7 +121,7 @@ const SideBar = () => {
         {
             icon: Settings,
             label: 'Settings',
-            key: 'Settings',
+            key: '/settings',
             collapsible: false,
             subItems: [],
         },
