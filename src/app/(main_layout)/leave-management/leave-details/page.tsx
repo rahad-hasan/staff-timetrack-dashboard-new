@@ -1,5 +1,7 @@
 import LeaveDataTable from "@/components/LeaveManagement/LeaveDetails/LeaveDataTable";
+import LeaveRequestModal from "@/components/LeaveManagement/LeaveDetails/LeaveRequestModal";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
 
 const LeaveDetails = () => {
@@ -14,14 +16,14 @@ const LeaveDetails = () => {
                 </div>
 
                 <div className="">
-                    {/* <Dialog>
+                    <Dialog>
                         <form>
-                            <DialogTrigger asChild> */}
+                            <DialogTrigger asChild>
                     <Button><Plus size={20} />Leave request</Button>
-                    {/* </DialogTrigger>
-                            <AddProjectModal></AddProjectModal>
+                    </DialogTrigger>
+                            <LeaveRequestModal></LeaveRequestModal>
                         </form>
-                    </Dialog> */}
+                    </Dialog>
                 </div>
             </div>
             <div className=" mt-4 flex items-center gap-6 w-[70%]">

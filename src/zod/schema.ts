@@ -103,3 +103,15 @@ export const addNewEventSchema = z.object({
     members: z.array(z.string().min(1, "Member name is required")).min(1, "At least one member is required"),
     description: z.string().min(1, "Description is required"),
 })
+
+
+export const leaveRequestSchema = z.object({
+    leaveType: z.string().min(1, "Leave type is required"),
+    startDate: z.date().refine(date => !isNaN(date.getTime()), {
+        message: "Start date is required",
+    }),
+    endDate: z.date().refine(date => !isNaN(date.getTime()), {
+        message: "End date is required",
+    }),
+    details: z.string().min(1, "Details is required"),
+})
