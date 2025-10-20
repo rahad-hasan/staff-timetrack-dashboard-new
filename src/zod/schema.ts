@@ -115,3 +115,8 @@ export const leaveRequestSchema = z.object({
     }),
     details: z.string().min(1, "Details is required"),
 })
+
+export const leaveRejectRequestSchema = z.object({
+    project: z.string().min(1, "Project is required"),
+    details: z.string().min(1, "Details is required"),
+})

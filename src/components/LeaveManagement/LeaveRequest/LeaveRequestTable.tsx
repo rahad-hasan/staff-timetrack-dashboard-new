@@ -8,6 +8,8 @@ import emptyBoxLogo from "../../../assets/projects/emptyBox.svg"
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ILeaveRequest } from "@/global/globalTypes";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import RejectLeaveRequestModal from "./RejectLeaveRequestModal";
 
 const LeaveRequestTable = () => {
     const [sorting, setSorting] = useState<SortingState>([])
@@ -232,7 +234,14 @@ const LeaveRequestTable = () => {
                 return (
                     <div className="flex items-center gap-3">
                         <Button size={'sm'} className=" text-sm">Approve</Button>
-                        <Button size={'sm'} className=" text-sm bg-red-500">Reject</Button>
+                        <Dialog>
+                            <form>
+                                <DialogTrigger asChild>
+                                    <Button size={'sm'} className=" text-sm bg-red-500 hover:bg-red-500">Reject</Button>
+                                </DialogTrigger>
+                                <RejectLeaveRequestModal></RejectLeaveRequestModal>
+                            </form>
+                        </Dialog>
                     </div>
                 )
             }
