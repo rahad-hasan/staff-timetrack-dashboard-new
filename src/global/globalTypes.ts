@@ -58,3 +58,13 @@ export interface ILeave {
     earnedLeave: number,
     availableLeave: number
 }
+
+export type ILeaveRequest = {
+    image: string;
+    name: string;
+    from: string;
+    to: string;
+    days: number;
+    reason: string;
+    availableLeave: number;
+}

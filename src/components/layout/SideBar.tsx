@@ -115,7 +115,7 @@ const SideBar = () => {
             collapsible: true,
             subItems: [
                 { label: 'Leave details', key: '/leave-management/leave-details' },
-                { label: 'Leave request', key: '/leave-management/leave-details2' },
+                { label: 'Leave request', key: '/leave-management/leave-request' },
             ],
         },
         {
