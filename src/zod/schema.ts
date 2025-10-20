@@ -125,5 +125,5 @@ export const userBasicInfoSchema = z.object({
     name: z.string().min(1, "Name is required"),
     title: z.string().min(1, "Title is required"),
     email: z.string().min(1, "Email is required"),
-    password: z.string().min(8, "Password must be at least 8 characters"),
+    password: z.string().min(8, "Password must be at least 8 characters").optional(),
 })

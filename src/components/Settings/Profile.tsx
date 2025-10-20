@@ -16,9 +16,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import Image from "next/image";
-import { Briefcase, Lock, Mail, Upload, User } from "lucide-react";
-import profileAvatar from '../../assets/profile_image_avatar.webp'
-import { Label } from "@/components/ui/label"
+import { Briefcase, Mail, Upload, User } from "lucide-react";
+import profileAvatar from '../../assets/profile_image_avatar.webp';
+import { Label } from "@/components/ui/label";
 
 const Profile = () => {
     const [preview, setPreview] = useState(profileAvatar)
@@ -38,7 +38,7 @@ const Profile = () => {
             name: "",
             title: "",
             email: "",
-            password: "",
+            // password: "",
         },
     });
 
@@ -148,7 +148,8 @@ const Profile = () => {
                                 </FormItem>
                             )}
                         />
-                        <FormField
+                        <div className=" w-full"></div>
+                        {/* <FormField
                             control={form.control}
                             name="password"
                             render={({ field }) => (
@@ -168,7 +169,7 @@ const Profile = () => {
                                     <FormMessage />
                                 </FormItem>
                             )}
-                        />
+                        /> */}
                     </div>
 
                     <div className="border-b-2 pb-8 mt-2">
