@@ -13,7 +13,7 @@ export default function RootLayout({
       <div className="hidden md:block">
         <SideBar></SideBar>
       </div>
-      <div className=" bg-white w-full md:border-2 md:rounded-[12px] md:my-3 mr-3 ">
+      <div className=" bg-white w-full md:border-2 md:rounded-[12px] md:my-3 md:mr-3 ">
         <Header></Header>
         <div className="p-5">
           {children}

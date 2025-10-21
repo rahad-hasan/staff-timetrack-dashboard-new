@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
 
+
 const ReportDailyTimeSheet = () => {
     const users = [
         { name: "Juyed Ahmed", avatar: "https://avatar.iran.liara.run/public/18" },
@@ -13,7 +14,7 @@ const ReportDailyTimeSheet = () => {
     ];
 
     const [userSearch, setUserSearch] = useState("");
-    const [user, setUser] = useState<string>("Juyed Ahmed");
+    const [user, setUser] = useState("Juyed Ahmed");
 
     const filteredUsers = users.filter(t => t.name.toLowerCase().includes(userSearch.toLowerCase()));
     const selectedUser = users.find((u) => u.name === user);
@@ -21,58 +22,78 @@ const ReportDailyTimeSheet = () => {
     // date picker
     const [selectedDate, setSelectedDate] = useState(new Date());
 
-    // table
-
-    const timeLine = [
-        { time: '12:00 AM', project: 'Orbit Technology', startTime: '12:00 AM', endTime: '12:55 AM' },
-        { time: '1:00 AM', project: 'Orbit Technology', startTime: '1:00 AM', endTime: '1:55 AM' },
-        { time: '2:00 AM', project: 'Orbit Technology', startTime: '2:00 AM', endTime: '2:55 AM' },
-        { time: '3:00 AM', project: null, startTime: '3:00 AM', endTime: '3:55 AM' },
-        { time: '4:00 AM', project: null, startTime: '4:00 AM', endTime: '4:55 AM' },
-        { time: '5:00 AM', project: null, startTime: '5:00 AM', endTime: '5:55 AM' },
-        { time: '6:00 AM', project: null, startTime: '6:00 AM', endTime: '6:55 AM' },
-        { time: '7:00 AM', project: null, startTime: '7:00 AM', endTime: '7:55 AM' },
-        { time: '8:00 AM', project: 'Orbit Technology', startTime: '8:00 AM', endTime: '8:55 AM' },
-        { time: '9:00 AM', project: 'Orbit Technology', startTime: '9:00 AM', endTime: '9:55 AM' },
-        { time: '10:00 AM', project: 'Client Dashboard', startTime: '10:00 AM', endTime: '10:55 AM' },
-        { time: '11:00 AM', project: null, startTime: '11:00 AM', endTime: '11:55 AM' },
-        { time: '12:00 PM', project: null, startTime: '12:00 PM', endTime: '12:55 PM' },
-        { time: '1:00 PM', project: null, startTime: '1:00 PM', endTime: '1:55 PM' },
-        { time: '2:00 PM', project: null, startTime: '2:00 PM', endTime: '2:55 PM' },
-        { time: '3:00 PM', project: null, startTime: '3:00 PM', endTime: '3:55 PM' },
-        { time: '4:00 PM', project: null, startTime: '4:00 PM', endTime: '4:55 PM' },
-        { time: '5:00 PM', project: null, startTime: '5:00 PM', endTime: '5:55 PM' },
-        { time: '6:00 PM', project: null, startTime: '6:00 PM', endTime: '6:55 PM' },
-        { time: '7:00 PM', project: null, startTime: '7:00 PM', endTime: '7:55 PM' },
-        { time: '8:00 PM', project: null, startTime: '8:00 PM', endTime: '8:55 PM' },
-        { time: '9:00 PM', project: 'Documentation', startTime: '9:00 PM', endTime: '9:55 PM' },
-        { time: '10:00 PM', project: 'Code Review', startTime: '10:00 PM', endTime: '10:55 PM' },
-        { time: '11:00 PM', project: null, startTime: '11:00 PM', endTime: '11:55 PM' },
+    // timeline table
+    const taskEntries = [
+        { project: 'Project Alpha', startTime: '05:34', endTime: '09:19', color: 'yellow' }, // 105 mins
+        { project: 'Project Beta', startTime: '14:41', endTime: '16:31', color: 'amber' }, // 110 mins
+        { project: 'Project Gamma', startTime: '17:55', endTime: '19:05', color: 'yellow' }, // 70 mins
     ];
 
+    const timeToMinutes = (timeString: string) => {
+        if (!timeString) return 0;
+        const [hours, minutes] = timeString.split(':').map(Number);
+        return hours * 60 + minutes;
+    };
 
-    const TaskEntry = ({ project, startTime, endTime }: { project: string, startTime: string, endTime: string }) => {
-        const isOrbit = project === 'Orbit Technology';
-        const colorClass = isOrbit
-            ? 'bg-yellow-100 text-yellow-800 border-l-4 border-yellow-500'
-            : 'bg-pink-100 text-pink-800 border-l-4 border-pink-500';
+    const getDurationMinutes = (startTime: string, endTime: string) => {
+        console.log('startTime', startTime);
+        console.log('endTime', endTime);
+        console.log('endTimeFomatted', timeToMinutes(endTime));
+        console.log('startTimeFomatted', timeToMinutes(startTime));
+        console.log('hellooooo', timeToMinutes(endTime) - timeToMinutes(startTime));
+        return timeToMinutes(endTime) - timeToMinutes(startTime);
+    };
 
-        if (!project) return null;
+    const TOTAL_MINUTES_IN_DAY = 24 * 60; // 1440
+
+    // 24-hour axis labels
+    const timeLineHours = Array.from({ length: 24 }, (_, i) => i);
+
+
+    const TimelineEntry = ({ project, startTime, endTime, color }: { project: string, startTime: string, endTime: string, color: string }) => {
+        const startMinutes = timeToMinutes(startTime);
+        const durationMinutes = getDurationMinutes(startTime, endTime);
+        // console.log(startMinutes);
+        // console.log(durationMinutes);
+
+        const topPosition = (startMinutes / TOTAL_MINUTES_IN_DAY) * 100; // top as %
+        const heightPercentage = (durationMinutes / TOTAL_MINUTES_IN_DAY) * 100; // height as %
+
+        const baseClasses = 'absolute left-0 right-0 p-2 text-xs font-semibold rounded-sm border-l-4 shadow-md z-10';
+        let colorClasses;
+
+        if (color === 'yellow') {
+            colorClasses = 'bg-[#fff5db] text-black border-yellow-400';
+        } else {
+            colorClasses = 'bg-[#fee6eb] text-black border-red-500';
+        }
+
+        const formattedStartTime = startTime;
+        const formattedEndTime = endTime;
 
         return (
             <div
-                className={`p-1.5 pl-2 my-[2px] max-w-1/2 rounded-sm text-xs font-semibold ${colorClass}`}
+                className={`ml-0.5 ${baseClasses} ${colorClasses}`}
+                style={{
+                    top: `${topPosition}%`,
+                    height: `${heightPercentage}%`,
+                }}
             >
-                {project} <span className="font-normal">{startTime} - {endTime}</span>
+                <div>
+                    {project}
+                </div>
+                <div className="font-normal mt-1 h-[60px]">
+                    {formattedStartTime} - {formattedEndTime}
+                </div>
             </div>
         );
     };
 
     return (
         <div>
-            <div className=" flex items-center justify-between">
+            <div className="flex items-center justify-between mb-5">
                 <SpecificDatePicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></SpecificDatePicker>
-                <div className=" w-[250px]">
+                <div className="w-[250px]">
                     <Select onValueChange={setUser} value={user ?? undefined}>
                         <SelectTrigger size={'lg'} className="w-full">
                             {selectedUser ? (
@@ -87,7 +108,6 @@ const ReportDailyTimeSheet = () => {
                                 <SelectValue placeholder="Select user" />
                             )}
                         </SelectTrigger>
-
                         <SelectContent>
                             <Input
                                 type="text"
@@ -110,59 +130,41 @@ const ReportDailyTimeSheet = () => {
                 </div>
             </div>
 
-            <div className="mt-5">
-                <div className="w-full overflow-hidden">
+            <div className="flex border-t border-l border-r border-gray-200">
 
-                    <table className="w-full border-collapse">
+                <div className="w-[80px] flex-shrink-0">
+                    {timeLineHours.map((hour) => (
+                        <div
+                            key={hour}
+                            className="h-[60px] text-xs font-medium text-gray-500 flex items-center justify-center border-b "
+                        >
+                            {hour.toString().padStart(2, '0')}:00
+                        </div>
+                    ))}
+                </div>
 
-                        <thead>
-                            <tr className=" text-xs text-textGray font-semibold uppercase tracking-wider">
-                                <th className="w-1/12 p-3 text-center border-b border-gray-300">Time</th>
-                                <th className="w-5/12 p-3 text-center border-b border-gray-300">Task</th>
-                                <th className="w-1/12 p-3 text-center border-b border-gray-300">Time</th>
-                                <th className="w-5/12 p-3 text-center border-b border-gray-300">Task</th>
-                            </tr>
-                        </thead>
+                <div className="flex-grow relative border-l " style={{ height: `${24 * 60}px` }}>
 
-                        <tbody>
-                            {timeLine.slice(0, 12).map((amData, index) => {
-                                const pmData = timeLine[index + 12];
+                    {timeLineHours.map((hour) => (
+                        <div
+                            key={`grid-${hour}`}
+                            className="absolute left-0 right-0 border-b "
+                            style={{ top: `${(hour / 24) * 100}%`, height: '60px', zIndex: 0 }}
+                        >
+                            <div className="h-full"></div>
+                        </div>
+                    ))}
 
-                                return (
-                                    <tr key={index} className="text-sm">
+                    {taskEntries.map((entry, index) => (
+                        <TimelineEntry
+                            key={index}
+                            project={entry.project}
+                            startTime={entry.startTime}
+                            endTime={entry.endTime}
+                            color={entry.color}
+                        />
+                    ))}
 
-                                        <td className="p-3 text-left font-medium border-r border-gray-200 border-b text-gray-700">
-                                            {amData.time}
-                                        </td>
-
-                                        <td className="p-2 border-r border-gray-300 border-b">
-                                            {amData.project && (
-                                                <TaskEntry
-                                                    project={amData.project}
-                                                    startTime={amData.startTime}
-                                                    endTime={amData.endTime}
-                                                />
-                                            )}
-                                        </td>
-
-                                        <td className="p-3 text-left font-medium border-r border-gray-200 border-b text-gray-700">
-                                            {pmData.time}
-                                        </td>
-
-                                        <td className="p-2 border-b border-gray-200">
-                                            {pmData.project && (
-                                                <TaskEntry
-                                                    project={pmData.project}
-                                                    startTime={pmData.startTime}
-                                                    endTime={pmData.endTime}
-                                                />
-                                            )}
-                                        </td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </div>

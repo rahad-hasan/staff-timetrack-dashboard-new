@@ -148,7 +148,7 @@ const Profile = () => {
                                 </FormItem>
                             )}
                         />
-                        <div className=" w-full"></div>
+                        <div className="hidden sm:block w-full"></div>
                         {/* <FormField
                             control={form.control}
                             name="password"

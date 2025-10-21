@@ -23,12 +23,12 @@ const SettingsPage = () => {
                     </p>
                 </div>
             </div>
-            <div className="flex gap-3 mt-3 sm:mt-0 rounded-lg">
+            <div className="flex gap-1 md:gap-3 mt-3 sm:mt-0 rounded-lg">
                 {["Profile", "Notification", "Subscription Management"].map((tab) => (
                     <button
                         key={tab}
                         onClick={() => handleTabClick(tab as "Profile" | "Notification" | "Subscription Management")}
-                        className={`px-4 py-2 text-sm font-medium border transition-all cursor-pointer rounded-lg m-0.5 ${activeTab === tab
+                        className={`px-2 md:px-4 py-2 text-xs md:text-sm font-medium border transition-all cursor-pointer rounded-lg m-0.5 ${activeTab === tab
                             ? "bg-[#e9f8f0] text-primary border-none"
                             : "text-gray-600 hover:text-gray-800"
                             }`}
