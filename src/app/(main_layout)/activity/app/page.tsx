@@ -45,9 +45,9 @@ const App = () => {
 
     return (
         <div>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
                 <div>
-                    <h1 className="text-3xl font-semibold text-headingTextColor">App Activity</h1>
+                    <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor">App Activity</h1>
                     <p className="text-sm text-subTextColor mt-2">
                         All the app during the working hour by team member is here
                     </p>
@@ -70,13 +70,13 @@ const App = () => {
             </div>
 
 
-            <div className=" mb-5 flex justify-between">
-                <div className=" flex gap-3">
+            <div className=" mb-5 flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between">
+                <div className=" flex flex-col md:flex-row gap-4 md:gap-3">
                     <SpecificDatePicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></SpecificDatePicker>
                     {/* Filter */}
                     <Popover>
                         <PopoverTrigger asChild>
-                            <Button variant={'filter'}>
+                            <Button className=" hidden md:flex" variant={'filter'}>
                                 <SlidersHorizontal className="" /> Filters
                             </Button>
                         </PopoverTrigger>

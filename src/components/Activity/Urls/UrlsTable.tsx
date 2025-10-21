@@ -87,7 +87,7 @@ const UrlsTable = () => {
             accessorKey: "url",
             header: ({ column }) => {
                 return (
-                    <div>
+                    <div  className="  min-w-[220px]">
                         <span
                             className=" cursor-pointer flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}

@@ -92,7 +92,7 @@ const AppNameTable = () => {
             accessorKey: "appName",
             header: ({ column }) => {
                 return (
-                    <div>
+                    <div className="  min-w-[160px]">
                         <span
                             className=" cursor-pointer flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
@@ -121,7 +121,7 @@ const AppNameTable = () => {
             accessorKey: "projectName",
             header: ({ column }) => {
                 return (
-                    <div>
+                    <div  className="  min-w-[180px]">
                         <span
                             className=" cursor-pointer flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
@@ -172,7 +172,7 @@ const AppNameTable = () => {
             // header: () => <div className="">Time Worked</div>,
             header: ({ column }) => {
                 return (
-                    <div>
+                    <div className="  min-w-[250px]">
                         <span
                             className=" cursor-pointer flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}

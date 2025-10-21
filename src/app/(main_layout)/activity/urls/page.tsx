@@ -42,9 +42,9 @@ const Urls = () => {
 
     return (
         <div>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
                 <div>
-                    <h1 className="text-3xl font-semibold text-headingTextColor">URLs Activity</h1>
+                    <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor">URLs Activity</h1>
                     <p className="text-sm text-subTextColor mt-2">
                         All the URLs activity during the working hour by team member is here
                     </p>
@@ -67,13 +67,13 @@ const Urls = () => {
             </div>
 
 
-            <div className=" mb-5 flex justify-between">
+            <div className=" mb-5 flex flex-col gap-4 md:gap-0 md:flex-row justify-between">
                 <div className=" flex gap-3">
                     <SpecificDatePicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></SpecificDatePicker>
                     {/* Filter */}
                     <Popover>
                         <PopoverTrigger asChild>
-                            <Button variant={'filter'}>
+                            <Button className=" hidden lg:flex"  variant={'filter'}>
                                 <SlidersHorizontal className="" /> Filters
                             </Button>
                         </PopoverTrigger>
