@@ -1,15 +1,15 @@
 "use client"
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { Download, Settings } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CalendarDays, ChevronLeft, ChevronRight, SlidersHorizontal } from "lucide-react";
-import { useCallback, useState } from "react";
+import { SlidersHorizontal } from "lucide-react";
+import { useState } from "react";
 import UrlsTable from "@/components/Activity/Urls/UrlsTable";
+import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 
 
 const Urls = () => {
@@ -23,8 +23,6 @@ const Urls = () => {
     // Filtered options
     const filteredProjects = projects.filter(p => p.toLowerCase().includes(projectSearch.toLowerCase()));
     const filteredTasks = tasks.filter(t => t.toLowerCase().includes(taskSearch.toLowerCase()));
-
-
 
     const users = [
         { name: "Juyed Ahmed", avatar: "https://avatar.iran.liara.run/public/18" },
@@ -41,26 +39,6 @@ const Urls = () => {
 
     // date picker
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-    const formatDate = (date: any) => {
-        return date.toLocaleDateString('en-US', {
-            weekday: 'short', // Mon
-            month: 'short',   // Oct
-            day: 'numeric',   // 9
-            year: 'numeric',  // 2025
-        });
-    };
-
-    const handleNavigate = useCallback((days: any) => {
-        setSelectedDate(prevDate => {
-            const newDate = new Date(prevDate);
-            // setDate(getDate() + days) moves the date by the specified number of days
-            newDate.setDate(newDate.getDate() + days);
-            return newDate;
-        });
-    }, []);
-    // date popup open
-    const [open, setOpen] = useState(false)
-    const dateDisplay = formatDate(selectedDate);
 
     return (
         <div>
@@ -91,34 +69,11 @@ const Urls = () => {
 
             <div className=" mb-5 flex justify-between">
                 <div className=" flex gap-3">
-                    <div className="flex">
-                        <ChevronLeft onClick={() => handleNavigate(-1)} size={45} className="border p-2.5 border-borderColor rounded-lg cursor-pointer" />
-
-                        <Popover open={open} onOpenChange={setOpen}>
-                            <PopoverTrigger asChild>
-                                <div className=" flex items-center gap-2 border rounded-md px-4 mx-3 cursor-pointer">
-                                    <CalendarDays className=" text-primary" />
-                                    <span>{dateDisplay}</span>
-                                </div>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto overflow-hidden p-0" align="start">
-                                <Calendar
-                                    mode="single"
-                                    selected={selectedDate}
-                                    captionLayout="dropdown"
-                                    onSelect={(selectedDate) => {
-                                        if (selectedDate) setSelectedDate(selectedDate)
-                                        setOpen(false)
-                                    }}
-                                />
-                            </PopoverContent>
-                        </Popover>
-                        <ChevronRight onClick={() => handleNavigate(1)} size={45} className="border p-2.5 border-borderColor rounded-lg cursor-pointer" />
-                    </div>
+                    <SpecificDatePicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></SpecificDatePicker>
                     {/* Filter */}
                     <Popover>
                         <PopoverTrigger asChild>
-                            <Button variant={'outline2'}>
+                            <Button variant={'filter'}>
                                 <SlidersHorizontal className="" /> Filters
                             </Button>
                         </PopoverTrigger>

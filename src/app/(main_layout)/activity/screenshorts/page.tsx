@@ -84,7 +84,7 @@ const ScreenShorts = () => {
                     {/* Filter */}
                     <Popover>
                         <PopoverTrigger asChild>
-                            <Button variant={'outline2'}>
+                            <Button variant={'filter'}>
                                 <SlidersHorizontal className="" /> Filters
                             </Button>
                         </PopoverTrigger>
