@@ -14,13 +14,13 @@ const SingleClientPage = () => {
                     <div className=" flex items-center gap-1 cursor-pointer"><ChevronLeft className="" />Client</div>
                 </Link>
                 <div className=" flex gap-3">
-                    <Button variant={'outline2'}><Pencil />Edit Client</Button>
+                    <Button className=" text-sm md:text-base" variant={'outline2'}><Pencil />Edit Client</Button>
                 </div>
             </div>
 
-            <div className="mt-4 w-[70%]">
-                <div className=" mt-4 ">
-                    <table className="w-full table-auto border-collapse">
+            <div className="mt-4 xl:w-[80%] 2xl:w-[70%]">
+                <div className=" mt-4 w-full overflow-x-auto ">
+                    <table className="min-w-[600px] w-full border-collapse text-sm md:text-base">
                         <thead>
                             <tr className="">
                                 <th className="text-left py-1">Client</th>
@@ -42,7 +42,7 @@ const SingleClientPage = () => {
                     </table>
                 </div>
 
-                <div className=" mt-4 flex items-center gap-6">
+                <div className="  mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 items-center gap-6">
                     <div className=" border border-borderColor rounded-xl w-full">
                         <h2 className=" py-10 bg-[#fff5db] text-3xl font-semibold text-center border-b border-borderColor rounded-t-xl">06</h2>
                         <div className=" text-center py-2">Total Project</div>
@@ -64,7 +64,7 @@ const SingleClientPage = () => {
 
             <div className=" flex items-center justify-between mt-4">
                 <h2 className=" text-lg font-semibold">Project (12)</h2>
-                <Button><Plus /> Add Project</Button>
+                <Button className=" text-sm md:text-base"><Plus /> Add Project</Button>
 
             </div>
             <ProjectTable></ProjectTable>

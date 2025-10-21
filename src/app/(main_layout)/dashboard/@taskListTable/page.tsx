@@ -15,7 +15,7 @@ import { ArrowUpDown, ChevronDown, EllipsisVertical } from "lucide-react";
 import lowFlag from '../../../../assets/dashboard/lowFlag.svg'
 import mediumFlag from '../../../../assets/dashboard/mediumFlag.svg'
 import noneFlag from '../../../../assets/dashboard/noneFlag.svg'
-import { Checkbox } from "@/components/ui/checkbox"
+// import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button";
 
 const TaskListTable = () => {
@@ -75,30 +75,30 @@ const TaskListTable = () => {
     );
 
     const columns: ColumnDef<Task>[] = [
-        {
-            id: "select",
-            header: ({ table }) => (
-                <Checkbox
-                    checked={
-                        table.getIsAllPageRowsSelected() ||
-                        (table.getIsSomePageRowsSelected() && "indeterminate")
-                    }
-                    onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-                    aria-label="Select all"
-                    className=" cursor-pointer"
-                />
-            ),
-            cell: ({ row }) => (
-                <Checkbox
-                    checked={row.getIsSelected()}
-                    onCheckedChange={(value) => row.toggleSelected(!!value)}
-                    aria-label="Select row"
-                    className=" cursor-pointer"
-                />
-            ),
-            enableSorting: false,
-            enableHiding: false,
-        },
+        // {
+        //     id: "select",
+        //     header: ({ table }) => (
+        //         <Checkbox
+        //             checked={
+        //                 table.getIsAllPageRowsSelected() ||
+        //                 (table.getIsSomePageRowsSelected() && "indeterminate")
+        //             }
+        //             onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        //             aria-label="Select all"
+        //             className=" cursor-pointer"
+        //         />
+        //     ),
+        //     cell: ({ row }) => (
+        //         <Checkbox
+        //             checked={row.getIsSelected()}
+        //             onCheckedChange={(value) => row.toggleSelected(!!value)}
+        //             aria-label="Select row"
+        //             className=" cursor-pointer"
+        //         />
+        //     ),
+        //     enableSorting: false,
+        //     enableHiding: false,
+        // },
         {
             accessorKey: "taskName",
             header: ({ column }) => {
