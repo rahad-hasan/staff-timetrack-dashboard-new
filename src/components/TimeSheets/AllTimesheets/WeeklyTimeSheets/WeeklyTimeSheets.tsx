@@ -71,19 +71,21 @@ const WeeklyTimeSheets = () => {
 
     return (
         <div>
-            <div className=" mb-5 flex justify-between">
+            <div className=" mb-5 flex flex-col gap-4 lg:gap-0 lg:flex-row justify-between">
                 <div className=" flex gap-3">
                     <div className="flex">
-                        <ChevronLeft onClick={() => handleNavigate(-1)} size={45} className="border p-2.5 border-borderColor rounded-lg cursor-pointer" />
-                        <div className=" flex items-center gap-2 border rounded-md px-4 mx-3">
-                            <Calendar className=" text-primary" />
-                            <span>{dateDisplay}</span>
+                        <ChevronLeft onClick={() => handleNavigate(-1)} className="border p-2.5 w-10 h-10 border-borderColor rounded-lg cursor-pointer" />
+                        <div className=" flex items-center gap-2 border rounded-md px-2 sm:px-4 mx-3">
+                            <Calendar className=" text-primary " />
+                            <span className="text-sm sm:text-[16px]">{dateDisplay}</span>
                         </div>
-                        <ChevronRight onClick={() => handleNavigate(1)} size={45} className="border p-2.5 border-borderColor rounded-lg cursor-pointer" />
+                        <ChevronRight onClick={() => handleNavigate(1)} className="border p-2.5 w-10 h-10 border-borderColor rounded-lg cursor-pointer" />
                     </div>
-                    <Button variant={'outline2'}>
-                        <SlidersHorizontal className="" /> Filters
-                    </Button>
+                    <div className=" hidden md:block">
+                        <Button variant={'filter'}>
+                            <SlidersHorizontal className="" /> Filters
+                        </Button>
+                    </div>
                 </div>
                 <div className=" w-[250px]">
                     <Select onValueChange={setUser} value={user ?? undefined}>

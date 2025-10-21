@@ -13,10 +13,6 @@ import StartTimer from "./Header/StartTimer";
 import Link from "next/link";
 import {
     Sheet,
-    SheetContent,
-    SheetDescription,
-    SheetHeader,
-    SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet"
 import MobileSidebar from "./MobileSidebar";
@@ -24,11 +20,11 @@ import MobileSidebar from "./MobileSidebar";
 const Header = () => {
     console.log('header rendered');
     return (
-        <div className=" border-b-2 border-borderColor py-5 px-5 flex items-center justify-between">
+        <div className=" border-b-2 border-borderColor py-3 md:py-5 px-3 md:px-5 flex items-center justify-between">
             <div>
                 <Popover>
                     <PopoverTrigger asChild>
-                        <Button variant={'outline2'}><Image src={startTimerIcon} width={0} height={0} className="w-5" alt="download" />Start Timer</Button>
+                        <Button variant={'filter'}><Image src={startTimerIcon} width={0} height={0} className="w-5" alt="download" />Start Timer</Button>
                     </PopoverTrigger>
                     <StartTimer></StartTimer>
                 </Popover>

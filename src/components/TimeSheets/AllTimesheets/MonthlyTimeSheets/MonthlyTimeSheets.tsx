@@ -1,7 +1,7 @@
 import MonthlyTimeSheetsCalendar from "./MonthlyTimeSheetsCalendar";
 import { Button } from "../../../ui/button";
-import { Calendar, ChevronLeft, ChevronRight, SlidersHorizontal } from "lucide-react";
-import { useCallback, useState } from "react";
+import { SlidersHorizontal } from "lucide-react";
+import { useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -26,12 +26,14 @@ const MonthlyTimeSheets = () => {
 
     return (
         <div>
-            <div className="mb-5 flex justify-between">
+            <div className=" mb-5 flex flex-col gap-4 md:gap-0 sm:flex-row justify-between">
                 <div className="flex gap-3">
                     <MonthPicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></MonthPicker>
-                    <Button variant={'outline2'}>
-                        <SlidersHorizontal className="" /> Filters
-                    </Button>
+                    <div className=" hidden md:block">
+                        <Button variant={'filter'}>
+                            <SlidersHorizontal className="" /> Filters
+                        </Button>
+                    </div>
                 </div>
 
                 <div className="w-[250px]">

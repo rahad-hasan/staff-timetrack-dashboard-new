@@ -15,7 +15,7 @@ export default function RootLayout({
       </div>
       <div className=" bg-white w-full md:border-2 md:rounded-[12px] md:my-3 md:mr-3 ">
         <Header></Header>
-        <div className="p-5">
+        <div className="p-3 md:p-5">
           {children}
         </div>
       </div>

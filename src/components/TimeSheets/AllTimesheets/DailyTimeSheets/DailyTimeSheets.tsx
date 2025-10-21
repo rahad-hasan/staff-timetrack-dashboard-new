@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "../../../ui/button";
-import { Calendar, ChevronLeft, ChevronRight, SlidersHorizontal } from "lucide-react";
-import { useCallback, useState } from "react";
+import { SlidersHorizontal } from "lucide-react";
+import { useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -11,6 +10,7 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip"
 import DailyTimeSheetsTable from "./DailyTimeSheetsTable";
+import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 
 const DailyTimeSheets = () => {
     const users = [
@@ -34,41 +34,17 @@ const DailyTimeSheets = () => {
 
     // date picker
     const [selectedDate, setSelectedDate] = useState(new Date());
-    const formatDate = (date: any) => {
-        return date.toLocaleDateString('en-US', {
-            weekday: 'short', // Mon
-            month: 'short',   // Oct
-            day: 'numeric',   // 9
-            year: 'numeric',  // 2025
-        });
-    };
-
-    const handleNavigate = useCallback((days: any) => {
-        setSelectedDate(prevDate => {
-            const newDate = new Date(prevDate);
-            // setDate(getDate() + days) moves the date by the specified number of days
-            newDate.setDate(newDate.getDate() + days);
-            return newDate;
-        });
-    }, []);
-
-    const dateDisplay = formatDate(selectedDate);
 
     return (
         <>
-            <div className=" mb-5 flex justify-between">
-                <div className=" flex gap-3">
-                    <div className="flex">
-                        <ChevronLeft onClick={() => handleNavigate(-1)} size={45} className="border p-2.5 border-borderColor rounded-lg cursor-pointer" />
-                        <div className=" flex items-center gap-2 border rounded-md px-4 mx-3">
-                            <Calendar className=" text-primary" />
-                            <span>{dateDisplay}</span>
-                        </div>
-                        <ChevronRight onClick={() => handleNavigate(1)} size={45} className="border p-2.5 border-borderColor rounded-lg cursor-pointer" />
+            <div className=" mb-5 flex flex-col gap-4 md:gap-0 md:flex-row justify-between">
+                <div className=" flex flex-col md:flex-row gap-4 md:gap-3">
+                    <SpecificDatePicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></SpecificDatePicker>
+                    <div className="hidden md:block">
+                        <Button className=" py-0" variant={'filter'}>
+                            <SlidersHorizontal className="" /> Filters
+                        </Button>
                     </div>
-                    <Button variant={'outline2'}>
-                        <SlidersHorizontal className="" /> Filters
-                    </Button>
                 </div>
                 <div className=" w-[250px]">
                     <Select onValueChange={setUser} value={user ?? undefined}>
@@ -143,11 +119,27 @@ const DailyTimeSheets = () => {
                         );
                     })}
                 </div>
-                <div className=" flex justify-between mt-[2px]">
-                    {Array.from({ length: 24 }, (_, i) => (
-                        <span className=" text-sm text-gray-400" key={i}>{i + 1}h</span>
-                    ))}
+                <div className="flex justify-between mt-[2px]">
+                    {Array.from({ length: 24 }, (_, i) => {
+                        const hour = i + 1;
+                        // choose which hours to always show
+                        const isAlwaysVisible = hour === 1 || hour === 6 || hour === 12 || hour === 18 || hour === 24;
+
+                        return (
+                            <span
+                                key={i}
+                                className={`text-sm text-gray-400 
+                                ${!isAlwaysVisible ? "hidden lg:inline xl:inline" : ""}
+                                sm:first:ml-1
+                                `}
+                            >
+                                {hour}h
+                            </span>
+                        );
+                    })}
                 </div>
+
+
             </div>
             <DailyTimeSheetsTable></DailyTimeSheetsTable>
         </>

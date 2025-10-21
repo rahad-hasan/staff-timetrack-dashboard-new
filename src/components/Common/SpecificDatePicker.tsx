@@ -31,7 +31,7 @@ const SpecificDatePicker = ({ selectedDate, setSelectedDate }: { selectedDate: D
     return (
         <div>
             <div className="flex">
-                <ChevronLeft onClick={() => handleNavigate(-1)} size={45} className="border p-2.5 border-borderColor rounded-lg cursor-pointer" />
+                <ChevronLeft onClick={() => handleNavigate(-1)} className="border p-2.5 border-borderColor w-10 h-10 rounded-lg cursor-pointer" />
 
                 <Popover open={open} onOpenChange={setOpen}>
                     <PopoverTrigger asChild>
@@ -52,7 +52,7 @@ const SpecificDatePicker = ({ selectedDate, setSelectedDate }: { selectedDate: D
                         />
                     </PopoverContent>
                 </Popover>
-                <ChevronRight onClick={() => handleNavigate(1)} size={45} className="border p-2.5 border-borderColor rounded-lg cursor-pointer" />
+                <ChevronRight onClick={() => handleNavigate(1)} className="border p-2.5 border-borderColor w-10 h-10 rounded-lg cursor-pointer" />
             </div>
         </div>
     );

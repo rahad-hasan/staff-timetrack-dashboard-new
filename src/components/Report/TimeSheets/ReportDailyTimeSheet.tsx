@@ -130,7 +130,15 @@ const ReportDailyTimeSheet = () => {
                 </div>
             </div>
 
-            <div className="flex border-t border-l border-r border-gray-200">
+            <div className="flex border-gray-200 h-[30px]">
+                <div className="w-[80px] flex items-center justify-center">
+                    <p className="">Time</p>
+                </div>
+                <div className=" w-full flex items-center justify-center">
+                    <p>Tasks</p>
+                </div>
+            </div>
+            <div className="flex border-t border-gray-200">
 
                 <div className="w-[80px] flex-shrink-0">
                     {timeLineHours.map((hour) => (

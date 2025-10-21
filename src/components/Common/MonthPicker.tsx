@@ -27,8 +27,7 @@ const MonthPicker = ({ selectedDate, setSelectedDate }: { selectedDate: Date; se
         <div className="flex">
             <ChevronLeft
                 onClick={() => handleNavigate(-1)}
-                size={45}
-                className="border p-2.5 border-borderColor rounded-lg cursor-pointer"
+                className="border p-2.5  w-10 h-10 border-borderColor rounded-lg cursor-pointer"
             />
             <div className="flex items-center gap-2 border rounded-md px-4 mx-3">
                 <Calendar className="text-primary" />
@@ -36,8 +35,7 @@ const MonthPicker = ({ selectedDate, setSelectedDate }: { selectedDate: Date; se
             </div>
             <ChevronRight
                 onClick={() => handleNavigate(1)}
-                size={45}
-                className="border p-2.5 border-borderColor rounded-lg cursor-pointer"
+                className="border p-2.5  w-10 h-10 border-borderColor rounded-lg cursor-pointer"
             />
         </div>
     );

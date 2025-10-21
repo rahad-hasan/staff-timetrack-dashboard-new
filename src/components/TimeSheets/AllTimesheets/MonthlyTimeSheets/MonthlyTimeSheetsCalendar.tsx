@@ -83,13 +83,13 @@ const MonthlyTimeSheetsCalendar = () => {
 
     return (
         <div>
-            <div className=" flex items-center justify-between mb-4">
-                <div className=" flex items-center gap-5 ">
-                    <div className=" flex items-center gap-2">
+            <div className=" mb-5 flex flex-col gap-4 md:gap-0 md:flex-row justify-between">
+                <div className=" flex items-center gap-3 md:gap-5 ">
+                    <div className=" flex items-center gap-0.5 md:gap-2">
                         <h2 className=" font-semibold">Total Hour:</h2>
                         <h2>32:25:00</h2>
                     </div>
-                    <div className=" flex items-center gap-2">
+                    <div className=" flex items-center gap-0.5 md:gap-2">
                         <h2 className=" font-semibold">Monthly Activity:</h2>
                         <h2>75.56%</h2>
                     </div>

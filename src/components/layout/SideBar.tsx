@@ -64,9 +64,11 @@ const SideBar = () => {
         {
             icon: Lightbulb,
             label: 'Insights',
-            key: 'Lightbulb',
+            key: '/insights',
             collapsible: true,
-            subItems: [],
+            subItems: [
+                { label: 'Highlight', key: '/insights/highlight' },
+            ],
         },
         {
             icon: BriefcaseBusiness,
