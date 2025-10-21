@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog"
 import AddManualTimeModal from "@/components/TimeSheets/ManualRequests/AddManualTimeModal";
 
-const Manualequests = () => {
+const ManualRequests = () => {
     const users = [
         { name: "Juyed Ahmed", avatar: "https://avatar.iran.liara.run/public/18" },
         { name: "Cameron Williamson", avatar: "https://avatar.iran.liara.run/public/19" },
@@ -93,4 +93,4 @@ const Manualequests = () => {
     );
 };
 
-export default Manualequests;
+export default ManualRequests;
