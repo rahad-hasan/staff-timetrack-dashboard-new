@@ -51,7 +51,7 @@ const DragBoard = ({ task, setTasks }: { task: ITask[]; setTasks: Dispatch<SetSt
 
     return (
         <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {columns.map((col) => (
                     <Column key={col} id={col} label={col} task={task.filter((t) => t.status === col)} />
                 ))}

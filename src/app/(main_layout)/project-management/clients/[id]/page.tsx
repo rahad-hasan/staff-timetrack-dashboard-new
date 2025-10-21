@@ -3,15 +3,18 @@
 import ProjectTable from "@/components/ProjectManagement/Projects/ProjectTable";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, Pencil, Plus } from "lucide-react";
+import Link from "next/link";
 
 const SingleClientPage = () => {
 
     return (
         <div>
             <div className=" flex justify-between items-center">
-                <div className=" flex items-center gap-1 cursor-pointer"><ChevronLeft className="" /> Client</div>
+                <Link href={`/project-management/clients`}>
+                    <div className=" flex items-center gap-1 cursor-pointer"><ChevronLeft className="" />Client</div>
+                </Link>
                 <div className=" flex gap-3">
-                    <Button variant={'outline2'}><Pencil /> Edit Client</Button>
+                    <Button variant={'outline2'}><Pencil />Edit Client</Button>
                 </div>
             </div>
 

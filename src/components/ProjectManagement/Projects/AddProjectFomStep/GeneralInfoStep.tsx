@@ -174,7 +174,7 @@ const GeneralInfoStep = ({ setStep, handleStepSubmit }: GeneralInfoStepProps) =>
                             </FormItem>
                         )}
                     />
-                    <div className="flex gap-3 items-center">
+                    <div className="flex flex-col md:flex-row gap-4 md:gap-3">
                         {/* Start Date */}
                         <FormField
                             control={form.control}

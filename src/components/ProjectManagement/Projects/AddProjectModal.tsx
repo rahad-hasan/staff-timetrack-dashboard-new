@@ -15,11 +15,11 @@ const AddProjectModal = () => {
     const [step, setStep] = useState<number>(1);
     const [formData, setFormData] = useState<any>({});
     const handleStepSubmit = (data: any) => {
-        setFormData((prevData:any) => ({ ...prevData, ...data }));
+        setFormData((prevData: any) => ({ ...prevData, ...data }));
     };
     console.log(formData);
     return (
-        <DialogContent className="sm:max-w-[525px]">
+        <DialogContent className=" w-full sm:max-w-[525px] max-h-[95vh] overflow-y-auto">
             <DialogHeader>
                 <DialogTitle>
                     <div className=" flex gap-3 items-center mt-5">
@@ -29,7 +29,7 @@ const AddProjectModal = () => {
                         <span className={` h-1.5 rounded-full ${step >= 4 ? "bg-primary" : "bg-[#dce3e3]"}  w-full `}></span>
                     </div>
 
-                </DialogTitle> 
+                </DialogTitle>
             </DialogHeader>
             {
                 step === 1 &&

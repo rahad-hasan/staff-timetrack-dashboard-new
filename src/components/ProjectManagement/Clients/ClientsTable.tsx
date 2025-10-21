@@ -10,6 +10,7 @@ import { IClients } from "@/global/globalTypes";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import emptyBoxLogo from "../../../assets/projects/emptyBox.svg"
 import Image from "next/image";
+import Link from "next/link";
 
 const ClientsTable = () => {
     const [sorting, setSorting] = useState<SortingState>([])
@@ -21,7 +22,7 @@ const ClientsTable = () => {
                 name: "Orbit Design Agency",
                 email: "orbitagency@gmail.com",
                 phone: "880 124 214 3134",
-                address: "Dhaka, Bangladesh"  
+                address: "Dhaka, Bangladesh"
             },
             {
                 name: "Orbit Design Agency",
@@ -179,10 +180,12 @@ const ClientsTable = () => {
                         <PopoverContent side="bottom" align="end" className=" w-[250px] px-2">
                             <div className="">
                                 <div className="space-y-2">
-                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 px-3 cursor-pointer">
-                                        <Eye size={18} />
-                                        <p>View Client</p>
-                                    </div>
+                                    <Link href={`/project-management/clients/777`}>
+                                        <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 px-3 cursor-pointer">
+                                            <Eye size={18} />
+                                            <p>View Client</p>
+                                        </div>
+                                    </Link>
                                     <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 px-3 cursor-pointer">
                                         <Pencil size={18} />
                                         <p>Edit Client</p>
