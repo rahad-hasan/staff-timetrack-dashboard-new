@@ -106,7 +106,7 @@ const AddManualTimeModal = () => {
     };
 
     return (
-        <DialogContent>
+        <DialogContent className=" w-full sm:max-w-[525px] max-h-[95vh] overflow-y-auto">
             <DialogHeader>
                 <DialogTitle>Add Time</DialogTitle>
                 <DialogDescription asChild className="">
@@ -117,7 +117,7 @@ const AddManualTimeModal = () => {
                                     control={form.control}
                                     name="project"
                                     render={({ field }) => (
-                                        <FormItem>
+                                        <FormItem className=" w-full">
                                             <FormLabel>Project</FormLabel>
                                             <FormControl>
                                                 <div className="relative">
@@ -155,7 +155,7 @@ const AddManualTimeModal = () => {
                                     control={form.control}
                                     name="task"
                                     render={({ field }) => (
-                                        <FormItem>
+                                        <FormItem className=" w-full">
                                             <FormLabel>Task</FormLabel>
                                             <FormControl>
                                                 <div className="relative">
@@ -193,7 +193,7 @@ const AddManualTimeModal = () => {
                                     control={form.control}
                                     name="date"
                                     render={({ field }) => (
-                                        <FormItem>
+                                        <FormItem className=" w-full">
                                             <FormLabel>Date</FormLabel>
                                             <Popover open={open} onOpenChange={setOpen}>
                                                 <PopoverTrigger asChild>
@@ -229,7 +229,7 @@ const AddManualTimeModal = () => {
                                 />
 
                                 <FormLabel className="-mb-1">Time</FormLabel>
-                                <div className=" flex gap-3 items-center">
+                                <div className=" flex flex-col md:flex-row gap-2 md:gap-3">
                                     <FormField
                                         control={form.control}
                                         name="timeFrom"
@@ -317,7 +317,7 @@ const AddManualTimeModal = () => {
                                     control={form.control}
                                     name="message"
                                     render={({ field }) => (
-                                        <FormItem>
+                                        <FormItem className=" w-full">
                                             <FormLabel>Message</FormLabel>
                                             <FormControl>
                                                 <Textarea {...field} />

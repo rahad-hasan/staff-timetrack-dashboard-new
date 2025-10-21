@@ -27,9 +27,9 @@ const Manualequests = () => {
     const selectedUser = users.find((u) => u.name === user);
     return (
         <div>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 md:gap-0 mb-5">
                 <div>
-                    <h1 className="text-3xl font-semibold text-headingTextColor">Manual Requests</h1>
+                    <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor">Manual Requests</h1>
                     <p className="text-sm text-subTextColor mt-2">
                         All the timesheet by team member who completed is displayed here
                     </p>
@@ -38,16 +38,16 @@ const Manualequests = () => {
                 <div className="">
                     <Dialog>
                         <DialogTrigger asChild>
-                            <Button><Plus size={20} />Add Time</Button>
+                            <Button className=" text-sm md:text-base"><Plus size={20} />Add Time</Button>
                         </DialogTrigger>
                         <AddManualTimeModal></AddManualTimeModal>
                     </Dialog>
 
                 </div>
             </div>
-            <div className=" flex justify-between items-center mb-5">
+            <div className=" flex justify-between items-center gap-4 md:gap-3 mb-5">
                 <div className="">
-                    <Button variant={'outline2'}>
+                    <Button className="" variant={'outline2'}>
                         <SlidersHorizontal className="" /> Filters
                     </Button>
                 </div>
