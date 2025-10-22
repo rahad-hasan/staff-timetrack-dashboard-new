@@ -15,7 +15,7 @@ const ReportTimeSheets = () => {
         <div>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5">
                 <div>
-                    <h1 className="text-3xl font-semibold text-headingTextColor">All Timesheets</h1>
+                    <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor">All Timesheets</h1>
                     <p className="text-sm text-subTextColor mt-2">
                         All the timesheet by team member who completed is displayed here
                     </p>

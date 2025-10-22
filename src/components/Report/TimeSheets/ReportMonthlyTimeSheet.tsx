@@ -69,7 +69,7 @@ const ReportMonthlyTimeSheet = () => {
 
     return (
         <div className="">
-            <div className=" flex items-center justify-between">
+            <div className="mb-5 flex flex-col gap-4 md:gap-0 md:flex-row justify-between">
                 <MonthPicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></MonthPicker>
                 <div className=" w-[250px]">
                     <Select onValueChange={setUser} value={user ?? undefined}>

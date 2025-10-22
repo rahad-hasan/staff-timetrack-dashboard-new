@@ -25,6 +25,7 @@ const ReportDailyTimeSheet = () => {
     // timeline table
     const taskEntries = [
         { project: 'Project Alpha', startTime: '05:34', endTime: '09:19', color: 'yellow' }, // 105 mins
+        // { project: 'Project Alpha', startTime: '07:34', endTime: '10:19', color: 'yellow' },
         { project: 'Project Beta', startTime: '14:41', endTime: '16:31', color: 'amber' }, // 110 mins
         { project: 'Project Gamma', startTime: '17:55', endTime: '19:05', color: 'yellow' }, // 70 mins
     ];
@@ -73,7 +74,7 @@ const ReportDailyTimeSheet = () => {
 
         return (
             <div
-                className={`ml-0.5 ${baseClasses} ${colorClasses}`}
+                className={`ml-0.5 w-full sm:w-[300px] xl:w-1/3 ${baseClasses} ${colorClasses}`}
                 style={{
                     top: `${topPosition}%`,
                     height: `${heightPercentage}%`,
@@ -91,7 +92,7 @@ const ReportDailyTimeSheet = () => {
 
     return (
         <div>
-            <div className="flex items-center justify-between mb-5">
+            <div className="mb-5 flex flex-col gap-4 lg:gap-0 lg:flex-row justify-between">
                 <SpecificDatePicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></SpecificDatePicker>
                 <div className="w-[250px]">
                     <Select onValueChange={setUser} value={user ?? undefined}>
@@ -135,7 +136,7 @@ const ReportDailyTimeSheet = () => {
                     <p className="">Time</p>
                 </div>
                 <div className=" w-full flex items-center justify-center">
-                    <p>Tasks</p>
+                    {/* <p>Tasks</p> */}
                 </div>
             </div>
             <div className="flex border-t border-gray-200">
