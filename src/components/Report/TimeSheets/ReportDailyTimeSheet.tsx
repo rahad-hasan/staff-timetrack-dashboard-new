@@ -6,6 +6,7 @@ import { useState } from "react";
 
 
 const ReportDailyTimeSheet = () => {
+    console.log("ReportDailyTimeSheet");
     const users = [
         { name: "Juyed Ahmed", avatar: "https://avatar.iran.liara.run/public/18" },
         { name: "Cameron Williamson", avatar: "https://avatar.iran.liara.run/public/19" },
@@ -25,7 +26,7 @@ const ReportDailyTimeSheet = () => {
     // timeline table
     const taskEntries = [
         { project: 'Project Alpha', startTime: '05:34', endTime: '09:19', color: 'yellow' }, // 105 mins
-        // { project: 'Project Alpha', startTime: '07:34', endTime: '10:19', color: 'yellow' },
+        { project: 'Project Alpha', startTime: '07:34', endTime: '10:19', color: 'yellow' },
         { project: 'Project Beta', startTime: '14:41', endTime: '16:31', color: 'amber' }, // 110 mins
         { project: 'Project Gamma', startTime: '17:55', endTime: '19:05', color: 'yellow' }, // 70 mins
     ];
@@ -37,11 +38,11 @@ const ReportDailyTimeSheet = () => {
     };
 
     const getDurationMinutes = (startTime: string, endTime: string) => {
-        console.log('startTime', startTime);
-        console.log('endTime', endTime);
-        console.log('endTimeFomatted', timeToMinutes(endTime));
-        console.log('startTimeFomatted', timeToMinutes(startTime));
-        console.log('hellooooo', timeToMinutes(endTime) - timeToMinutes(startTime));
+        // console.log('startTime', startTime);
+        // console.log('endTime', endTime);
+        // console.log('endTimeFomatted', timeToMinutes(endTime));
+        // console.log('startTimeFomatted', timeToMinutes(startTime));
+        // console.log('hellooooo', timeToMinutes(endTime) - timeToMinutes(startTime));
         return timeToMinutes(endTime) - timeToMinutes(startTime);
     };
 
@@ -72,9 +73,11 @@ const ReportDailyTimeSheet = () => {
         const formattedStartTime = startTime;
         const formattedEndTime = endTime;
 
+        const isSameTimeZone = 'find here if same timezone';
+
         return (
             <div
-                className={`ml-0.5 w-full sm:w-[300px] xl:w-1/3 ${baseClasses} ${colorClasses}`}
+                className={`ml-0.5 w-[400px] ${baseClasses} ${colorClasses}`} // then place them side by side
                 style={{
                     top: `${topPosition}%`,
                     height: `${heightPercentage}%`,

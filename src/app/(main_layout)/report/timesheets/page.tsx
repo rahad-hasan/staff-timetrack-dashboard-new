@@ -5,6 +5,7 @@ import ReportWeeklyTimeSheet from "@/components/Report/TimeSheets/ReportWeeklyTi
 import { useState } from "react";
 
 const ReportTimeSheets = () => {
+    console.log("ReportTimeSheets");
     const [activeTab, setActiveTab] = useState<"Daily" | "Weekly" | "Monthly">("Daily");
 
     const handleTabClick = (tab: "Daily" | "Weekly" | "Monthly") => {

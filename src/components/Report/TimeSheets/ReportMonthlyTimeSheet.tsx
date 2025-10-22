@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const ReportMonthlyTimeSheet = () => {
+        console.log("ReportMonthlyTimeSheet");
     type DayMeta = { name: string };
     const days: DayMeta[] = [
         { name: 'MON' },

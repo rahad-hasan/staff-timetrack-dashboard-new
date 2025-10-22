@@ -29,13 +29,13 @@ const SpecificDatePicker = ({ selectedDate, setSelectedDate }: { selectedDate: D
     const [open, setOpen] = useState(false)
 
     return (
-        <div>
-            <div className="flex">
+        <div className="w-full">
+            <div className="flex w-full">
                 <ChevronLeft onClick={() => handleNavigate(-1)} className="border p-2.5 border-borderColor w-10 h-10 rounded-lg cursor-pointer" />
 
                 <Popover open={open} onOpenChange={setOpen}>
                     <PopoverTrigger asChild>
-                        <div className=" flex items-center gap-2 border rounded-md px-4 mx-3 cursor-pointer">
+                        <div className=" flex items-center gap-2 border rounded-md px-4 mx-3 cursor-pointer w-full sm:w-auto">
                             <CalendarDays className=" text-primary" />
                             <span>{dateDisplay}</span>
                         </div>

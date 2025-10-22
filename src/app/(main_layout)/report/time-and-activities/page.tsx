@@ -34,7 +34,7 @@ const TimeAndActivitiesPage = () => {
         <div>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5">
                 <div>
-                    <h1 className="text-3xl font-semibold text-headingTextColor">Time & activities</h1>
+                    <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor">Time & activities</h1>
                     <p className="text-sm text-subTextColor mt-2">
                         All the Time & activities during the working hour by team member is here
                     </p>
@@ -42,10 +42,10 @@ const TimeAndActivitiesPage = () => {
 
             </div>
             <div className=" flex items-center justify-between">
-                <div className="flex items-center gap-4">
+                <div className=" w-full flex flex-col sm:flex-row gap-4 sm:gap-4">
                     <SpecificDatePicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></SpecificDatePicker>
                     <Select onValueChange={setProject} value={project ?? undefined}>
-                        <SelectTrigger size={'lg'} className="">
+                        <SelectTrigger size={'lg'} className=" w-full sm:w-[300px]">
                             {selectedProject ? (
                                 <div className="flex items-center gap-2">
                                     <Avatar className="w-6 h-6">
