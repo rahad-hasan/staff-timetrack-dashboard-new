@@ -19,6 +19,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button";
 
 const TaskTable = () => {
+    console.log("TaskTable");
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
     console.log(rowSelection);

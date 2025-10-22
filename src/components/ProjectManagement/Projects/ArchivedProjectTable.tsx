@@ -11,6 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import noDataIcon from "../../../assets/no_data_icon.svg"
 
 const ArchivedProjectTable = () => {
+    console.log("ArchivedProjectTable");
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
     console.log(rowSelection);

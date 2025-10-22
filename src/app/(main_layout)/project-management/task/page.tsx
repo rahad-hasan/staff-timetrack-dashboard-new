@@ -21,6 +21,7 @@ import {
 import CreateTaskModal from "@/components/ProjectManagement/Task/CreateTaskModal";
 
 const TaskPage = () => {
+    console.log("Task");
     const [activeTab, setActiveTab] = useState<"List view" | "Kanban">("List view");
 
     const handleTabClick = (tab: "List view" | "Kanban") => {

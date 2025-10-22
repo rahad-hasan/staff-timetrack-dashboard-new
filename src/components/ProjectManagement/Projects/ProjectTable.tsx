@@ -23,6 +23,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 
 const ProjectTable = () => {
+    console.log("ProjectTable");
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
     const router = useRouter();

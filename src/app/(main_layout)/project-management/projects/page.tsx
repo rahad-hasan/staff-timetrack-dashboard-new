@@ -10,10 +10,9 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import AddProjectModal from "@/components/ProjectManagement/Projects/AddProjectModal";
-import ProjectTableSkeleton from "@/skeleton/projectManagement/project/ProjectTableSkeleton";
-import ArchivedProjectTableSkeleton from "@/skeleton/projectManagement/project/ArchivedProjectTableSkeleton";
 
 const Projects = () => {
+    console.log("Projects");
     const [activeTab, setActiveTab] = useState<"Active" | "Archived">("Active");
 
     const handleTabClick = (tab: "Active" | "Archived") => {
