@@ -84,7 +84,7 @@ const AttendanceTable = () => {
             accessorKey: "name",
             header: ({ column }) => {
                 return (
-                    <div>
+                    <div >
                         <span
                             className=" cursor-pointer flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
@@ -99,7 +99,7 @@ const AttendanceTable = () => {
                 const name = row.getValue("name") as string;
                 const img = row.original.image;
                 return (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 min-w-[200px]">
                         <Image src={img} alt="profile" width={200} height={200} className="w-8 h-8 object-cover rounded-full" />
                         <span className="">{name}</span>
                     </div>

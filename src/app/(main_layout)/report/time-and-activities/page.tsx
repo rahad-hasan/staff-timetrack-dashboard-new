@@ -45,7 +45,7 @@ const TimeAndActivitiesPage = () => {
                 <div className=" w-full flex flex-col sm:flex-row gap-4 sm:gap-4">
                     <SpecificDatePicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></SpecificDatePicker>
                     <Select onValueChange={setProject} value={project ?? undefined}>
-                        <SelectTrigger size={'lg'} className=" w-full sm:w-[300px]">
+                        <SelectTrigger size={'lg'} className=" w-full sm:w-[250px]">
                             {selectedProject ? (
                                 <div className="flex items-center gap-2">
                                     <Avatar className="w-6 h-6">

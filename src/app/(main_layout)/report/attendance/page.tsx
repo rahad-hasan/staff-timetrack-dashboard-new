@@ -34,53 +34,59 @@ const AttendancePage = () => {
         <div>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5">
                 <div>
-                    <h1 className="text-3xl font-semibold text-headingTextColor">Attendance</h1>
+                    <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor">Attendance</h1>
                     <p className="text-sm text-subTextColor mt-2">
                         All the Attendance during the working hour by team member is here
                     </p>
                 </div>
 
             </div>
-            <div className=" flex items-center justify-between">
-                <div className="flex items-center gap-4">
+            <div className=" flex items-center justify-between w-full">
+                <div className="flex flex-col md:flex-row gap-4 md:gap-3 w-full">
                     <SpecificDatePicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></SpecificDatePicker>
-                    <Select onValueChange={setProject} value={project ?? undefined}>
-                        <SelectTrigger size={'lg'} className="">
-                            {selectedProject ? (
-                                <div className="flex items-center gap-2">
-                                    <Avatar className="w-6 h-6">
-                                        <AvatarImage src={selectedProject.avatar} alt={selectedProject.name} />
-                                        <AvatarFallback>{selectedProject.name.charAt(0)}</AvatarFallback>
-                                    </Avatar>
-                                    <span>{selectedProject.name}</span>
-                                </div>
-                            ) : (
-                                <SelectValue placeholder="Select user" />
-                            )}
-                        </SelectTrigger>
+                    <div className=" flex items-center justify-between">
+                        <Select onValueChange={setProject} value={project ?? undefined}>
+                            <SelectTrigger size={'lg'} className=" w-[170px] sm:w-[250px]">
+                                {selectedProject ? (
+                                    <div className="flex items-center gap-2">
+                                        <Avatar className="w-6 h-6">
+                                            <AvatarImage src={selectedProject.avatar} alt={selectedProject.name} />
+                                            <AvatarFallback>{selectedProject.name.charAt(0)}</AvatarFallback>
+                                        </Avatar>
+                                        <span>{selectedProject.name}</span>
+                                    </div>
+                                ) : (
+                                    <SelectValue placeholder="Select user" />
+                                )}
+                            </SelectTrigger>
 
-                        <SelectContent>
-                            <Input
-                                type="text"
-                                placeholder="Search user..."
-                                className="flex-1 border-none focus:ring-0 focus:outline-none"
-                                value={projectSearch}
-                                onChange={(e) => setProjectSearch(e.target.value)}
-                            />
-                            {filteredProjects.map(t => (
-                                <SelectItem className="px-3 flex items-center gap-2 cursor-pointer" key={t.name} value={t.name}>
-                                    <Avatar className="w-6 h-6">
-                                        <AvatarImage src={t.avatar} alt={t.name} />
-                                        <AvatarFallback>{t.name.charAt(0)}</AvatarFallback>
-                                    </Avatar>
-                                    <span className="ml-2">{t.name}</span>
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                            <SelectContent>
+                                <Input
+                                    type="text"
+                                    placeholder="Search user..."
+                                    className="flex-1 border-none focus:ring-0 focus:outline-none"
+                                    value={projectSearch}
+                                    onChange={(e) => setProjectSearch(e.target.value)}
+                                />
+                                {filteredProjects.map(t => (
+                                    <SelectItem className="px-3 flex items-center gap-2 cursor-pointer" key={t.name} value={t.name}>
+                                        <Avatar className="w-6 h-6">
+                                            <AvatarImage src={t.avatar} alt={t.name} />
+                                            <AvatarFallback>{t.name.charAt(0)}</AvatarFallback>
+                                        </Avatar>
+                                        <span className="ml-2">{t.name}</span>
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <div className=" flex md:hidden items-center gap-2">
+                            <Checkbox className=" cursor-pointer border-primary" />
+                            <p>No check in data</p>
+                        </div>
+                    </div>
                 </div>
 
-                <div className=" flex items-center gap-2">
+                <div className=" w-[200px] hidden md:flex items-center justify-end gap-2">
                     <Checkbox className=" cursor-pointer border-primary" />
                     <p>No check in data</p>
                 </div>
