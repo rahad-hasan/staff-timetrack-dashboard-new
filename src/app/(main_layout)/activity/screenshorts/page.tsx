@@ -17,6 +17,7 @@ import AllNotesModal from "@/components/Activity/ScreenShorts/AllNotes";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 
 const ScreenShorts = () => {
+    console.log('screenShorts');
     const [activeTab, setActiveTab] = useState<"Every 10 min" | "All Screenshots">("Every 10 min");
     // Filter
     const [project, setProject] = useState<string | null>(null);

@@ -13,6 +13,7 @@ import { useState } from "react";
 import ScreenShortsModal from "./ScreenShortsModal";
 
 const Every10Mins = () => {
+    console.log('Every10Mins');
     const [selectedImage, setSelectedImage] = useState<string | StaticImageData>();
     const [modalOpen, setModalOpen] = useState<boolean>(false);
 

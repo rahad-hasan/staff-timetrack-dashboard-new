@@ -5,7 +5,7 @@ import screenshort3 from "../../../assets/dashboard/screenshort3.png";
 import Image, { StaticImageData } from "next/image";
 
 const AllScreenShorts = () => {
-
+    console.log('AllScreenShorts');
     interface IScreenShortsTimely {
         _id: number;
         start: string;

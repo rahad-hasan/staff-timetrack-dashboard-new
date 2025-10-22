@@ -14,6 +14,7 @@ import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 
 
 const App = () => {
+    console.log('app');
     // Filter
     const [project, setProject] = useState<string | null>(null);
     const [task, setTask] = useState<string | null>(null);
