@@ -10,6 +10,7 @@ import { SlidersHorizontal } from "lucide-react";
 import { useState } from "react";
 import UrlsTable from "@/components/Activity/Urls/UrlsTable";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
+import UrlsTableSkeleton from "@/skeleton/activity/url/UrlsTableSkeleton";
 
 
 const Urls = () => {

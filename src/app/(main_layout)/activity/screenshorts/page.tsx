@@ -15,8 +15,6 @@ import {
 } from "@/components/ui/dialog"
 import AllNotesModal from "@/components/Activity/ScreenShorts/AllNotes";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
-import Every10MinsSkeleton from "@/skeleton/activity/screenShorts/Every10MinsSkeleton";
-import AllScreenShortsSkeleton from "@/skeleton/activity/screenShorts/AllScreenShortsSkeleton";
 
 const ScreenShorts = () => {
     const [activeTab, setActiveTab] = useState<"Every 10 min" | "All Screenshots">("Every 10 min");
@@ -293,7 +291,7 @@ const ScreenShorts = () => {
                 activeTab === "All Screenshots" &&
                 <AllScreenShorts></AllScreenShorts>
             }
-            
+
         </div>
     );
 };
