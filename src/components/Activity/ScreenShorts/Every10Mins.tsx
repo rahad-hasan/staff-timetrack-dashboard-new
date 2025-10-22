@@ -123,7 +123,7 @@ const Every10Mins = () => {
         <>
             {/* map and under map */}
             <div className="">
-                <div className=" flex justify-between items-center">
+                <div className=" flex flex-col sm:flex-row gap-2 sm:gap-3 sm:justify-between sm:items-center">
                     <div className=" flex items-center gap-2">
                         <Circle size={20} className=" text-gray-200" />
                         <p className=" text-subTextColor"> 9:10 am - 10:00 am</p>
@@ -138,7 +138,7 @@ const Every10Mins = () => {
                     <Carousel className="w-full ">
                         <CarouselContent className="">
                             {screenShortsTimely.map((screenShort) => (
-                                <CarouselItem key={screenShort._id} className=" basis-[30%] 2xl:basis-[23%] p-3">
+                                <CarouselItem key={screenShort._id} className=" basis-[70%] sm:basis-[45%] lg:basis-[30%] 2xl:basis-[23%] p-3">
                                     <div className=" p-3 flex-nowrap rounded-lg border border-borderColor cursor-grab">
 
                                         <Image
@@ -179,7 +179,7 @@ const Every10Mins = () => {
                                                 max={100}
                                                 step={1}
                                             />
-                                            <h2 className="mt-2 text-lg font-semibold">
+                                            <h2 className="mt-2 md:text-lg font-semibold">
                                                 {screenShort.project}
                                             </h2>
                                             <p className="text-textGray">{screenShort.task}</p>
@@ -193,7 +193,7 @@ const Every10Mins = () => {
             </div>
             {/* map and under map */}
             <div>
-                <div className=" flex justify-between items-center">
+                <div className=" flex flex-col sm:flex-row gap-2 sm:gap-3 sm:justify-between sm:items-center">
                     <div className=" flex items-center gap-2">
                         <Circle size={20} className=" text-gray-200" />
                         <p className=" text-subTextColor"> 10:10 am - 11:10 am</p>
@@ -208,7 +208,7 @@ const Every10Mins = () => {
                     <Carousel className="w-full ">
                         <CarouselContent className="">
                             {screenShortsTimely.map((screenShort) => (
-                                <CarouselItem key={screenShort._id} className=" basis-[30%] 2xl:basis-[23%] p-3">
+                                <CarouselItem key={screenShort._id} className=" basis-[70%] sm:basis-[45%] lg:basis-[30%] 2xl:basis-[23%] p-3">
                                     <div className=" p-3 flex-nowrap rounded-lg border border-borderColor cursor-grab">
                                         <Image
                                             src={screenShort.screenShort}
@@ -242,7 +242,7 @@ const Every10Mins = () => {
                                                 max={100}
                                                 step={1}
                                             />
-                                            <h2 className="mt-2 text-lg font-semibold">
+                                            <h2 className="mt-2 md:text-lg font-semibold">
                                                 {screenShort.project}
                                             </h2>
                                             <p className="text-textGray">{screenShort.task}</p>

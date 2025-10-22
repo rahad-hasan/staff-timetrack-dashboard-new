@@ -53,7 +53,7 @@ const ScreenShorts = () => {
         <div>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5">
                 <div>
-                    <h1 className="text-3xl font-semibold text-headingTextColor">Screenshot</h1>
+                    <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor">Screenshot</h1>
                     <p className="text-sm text-subTextColor mt-2">
                         All the screenshot during the working hour by team member is here
                     </p>
@@ -77,14 +77,14 @@ const ScreenShorts = () => {
                     {/* <Button><Plus size={20} />Add Time</Button> */}
                 </div>
             </div>
-            <div className=" mb-5 flex justify-between">
+            <div className="mb-5 flex flex-col gap-4 lg:gap-0 lg:flex-row justify-between">
 
                 <div className=" flex gap-3">
                         <SpecificDatePicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></SpecificDatePicker>
                     {/* Filter */}
                     <Popover>
                         <PopoverTrigger asChild>
-                            <Button variant={'filter'}>
+                            <Button className=" hidden xl:flex" variant={'filter'}>
                                 <SlidersHorizontal className="" /> Filters
                             </Button>
                         </PopoverTrigger>
@@ -179,14 +179,14 @@ const ScreenShorts = () => {
                         <form>
                             <DialogTrigger asChild>
                                 <Button variant={'outline2'}>
-                                    <NotepadText className="" /> All Notes
+                                    <NotepadText className=" text-sm md:text-base" /> All Notes
                                 </Button>
                             </DialogTrigger>
                             <AllNotesModal></AllNotesModal>
                         </form>
                     </Dialog>
 
-                    <div className=" w-[250px]">
+                    <div className=" w-[200px] xl:w-[250px]">
                         <Select onValueChange={setUser} value={user ?? undefined}>
                             <SelectTrigger size={'lg'} className="w-full">
                                 {selectedUser ? (
@@ -224,7 +224,7 @@ const ScreenShorts = () => {
                     </div>
                 </div>
             </div>
-            <div className=" mb-4 flex gap-5">
+            <div className=" mb-4 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-5">
                 <div className=" border-2 border-borderColor rounded-2xl w-full">
                     <div className=" flex items-center gap-2 px-3 py-5">
                         <SquareActivity size={40} className=" border-2 border-borderColor rounded-lg p-1.5" />

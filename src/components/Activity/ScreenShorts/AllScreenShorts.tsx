@@ -71,7 +71,7 @@ const AllScreenShorts = () => {
             _id: 5,
             start: "9:00 AM",
             end: "9:10 AM",
-            duration: "10 minutes",
+            duration: "10 minute1s",
             progress: 20,
             activity: 45,
             screenshotCount: 3,
@@ -85,7 +85,7 @@ const AllScreenShorts = () => {
         <>
             {/* map and under map */}
             <div className="">
-                <div className=" flex justify-between items-center">
+                <div className=" flex flex-col sm:flex-row gap-2 sm:gap-3 sm:justify-between sm:items-center">
                     <div className=" flex items-center gap-2">
                         <Circle size={20} className=" text-gray-200" />
                         <p className=" text-subTextColor"> 9:10 am - 10:00 am</p>
@@ -96,7 +96,7 @@ const AllScreenShorts = () => {
                     </h2>
                 </div>
 
-                <div className=" mt-3 grid grid-cols-5 gap-4">
+                <div className=" mt-3 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
 
                     {
 
@@ -114,11 +114,11 @@ const AllScreenShorts = () => {
 
                                 <div className="mt-3">
                                     <div className="flex justify-between items-center">
-                                        <p className="text-lg text-textGray">
+                                        <p className="md:text-lg text-textGray">
                                             {screenShort.start}
                                         </p>
                                     </div>
-                                    <h2 className="mt-1 text-lg font-semibold">
+                                    <h2 className="mt-1 md:text-lg font-semibold">
                                         {screenShort.project}
                                     </h2>
                                     <p className="text-textGray">{screenShort.task}</p>
@@ -130,10 +130,10 @@ const AllScreenShorts = () => {
             </div>
             {/* map and under map */}
             <div className=" mt-5">
-                <div className=" flex justify-between items-center">
+                <div className=" flex flex-col sm:flex-row gap-2 sm:gap-3 sm:justify-between sm:items-center">
                     <div className=" flex items-center gap-2">
                         <Circle size={20} className=" text-gray-200" />
-                        <p className=" text-subTextColor"> 10:10 am - 11:10 am</p>
+                        <p className=" text-subTextColor"> 9:10 am - 10:00 am</p>
                     </div>
 
                     <h2 className=" text-lg  text-subTextColor">
@@ -141,7 +141,7 @@ const AllScreenShorts = () => {
                     </h2>
                 </div>
 
-                <div className=" mt-3 grid grid-cols-5 gap-4">
+                <div className=" mt-3 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
 
                     {
 
@@ -159,11 +159,11 @@ const AllScreenShorts = () => {
 
                                 <div className="mt-3">
                                     <div className="flex justify-between items-center">
-                                        <p className="text-lg text-textGray">
+                                        <p className="md:text-lg text-textGray">
                                             {screenShort.start}
                                         </p>
                                     </div>
-                                    <h2 className="mt-1 text-lg font-semibold">
+                                    <h2 className="mt-1 md:text-lg font-semibold">
                                         {screenShort.project}
                                     </h2>
                                     <p className="text-textGray">{screenShort.task}</p>

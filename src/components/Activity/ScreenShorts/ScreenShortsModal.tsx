@@ -75,16 +75,16 @@ const ScreenShortsModal = ({ screenShorts, modalOpen, setModalOpen }: any) => {
         <div ref={modalRef} className="fixed inset-0 z-50 bg-[#000000e7] transition-all duration-100">
 
             {/* Close Button */}
-            <div className=" px-5 mt-8 md:mt-4 flex justify-between items-center">
+            <div className=" px-5 mt-5 md:mt-4 flex justify-between items-center">
                 <div>
 
                 </div>
-                <div className=" flex gap-10 md:gap-5 items-center">
-                    <ZoomOut onClick={handleZoomOut} className="text-white cursor-pointer w-20 sm:w-12 md:w-8 h-20 sm:h-12 md:h-8  z-50" />
-                    <ZoomIn onClick={handleZoomIn} className="text-white cursor-pointer w-20 sm:w-12 md:w-8 h-20 sm:h-12 md:h-8 z-50" />
-                    <Fullscreen onClick={toggleFullscreen} className="text-white cursor-pointer w-20 sm:w-12 md:w-8 h-20 sm:h-12 md:h-8 z-50" />
-                    <Download onClick={handleDownload} className="text-white cursor-pointer w-20 sm:w-12 md:w-8 h-20 sm:h-12 md:h-8 z-50" />
-                    <X className=" text-white cursor-pointer w-20 sm:w-12 md:w-8 h-20 sm:h-12 md:h-8 z-50" onClick={() => setModalOpen(!modalOpen)} />
+                <div className=" flex gap-5 items-center">
+                    <ZoomOut onClick={handleZoomOut} className="text-white cursor-pointer h-8  z-50" />
+                    <ZoomIn onClick={handleZoomIn} className="text-white cursor-pointer h-8 z-50" />
+                    <Fullscreen onClick={toggleFullscreen} className="text-white cursor-pointer h-8 z-50" />
+                    <Download onClick={handleDownload} className="text-white cursor-pointer h-8 z-50" />
+                    <X className=" text-white cursor-pointer h-8 z-50" onClick={() => setModalOpen(!modalOpen)} />
                 </div>
 
             </div>
@@ -112,21 +112,21 @@ const ScreenShortsModal = ({ screenShorts, modalOpen, setModalOpen }: any) => {
                         {/* Prev/Next Buttons */}
                         <button
                             onClick={handlePrev}
-                            className="absolute left-0 top-1/2 -translate-y-1/2 bg-black/70 text-white p-5 md:p-2 rounded-r-md hover:bg-black transition cursor-pointer"
+                            className="absolute left-0 top-1/2 -translate-y-1/2 bg-black/70 text-white p-2 rounded-r-md hover:bg-black transition cursor-pointer"
                         >
-                            <ChevronLeft className=" w-12 md:w-8 h-12 md:h-8" />
+                            <ChevronLeft className="w-8 h-8" />
                         </button>
                         <button
                             onClick={handleNext}
-                            className="absolute right-0 top-1/2 -translate-y-1/2 bg-black/70 text-white p-5 md:p-2 rounded-l-md hover:bg-black transition cursor-pointer"
+                            className="absolute right-0 top-1/2 -translate-y-1/2 bg-black/70 text-white p-2 rounded-l-md hover:bg-black transition cursor-pointer"
                         >
-                            <ChevronRight className=" w-12 md:w-8 h-12 md:h-8" />
+                            <ChevronRight className="w-8 :h-8" />
                         </button>
                     </div>
 
                 </div>
                 {/* Thumbnails */}
-                <div className="mt-24 md:mt-16 w-full flex flex-wrap justify-center gap-3 px-5">
+                <div className="mt-16 w-full flex flex-wrap justify-center gap-3 px-5">
                     {screenShorts.map(
                         (img: { screenShort: string | StaticImageData }, index: number) => (
                             <div
@@ -142,7 +142,7 @@ const ScreenShortsModal = ({ screenShorts, modalOpen, setModalOpen }: any) => {
                                     width={100}
                                     height={100}
                                     alt={`thumb-${index + 1}`}
-                                    className=" w-[200px] md:w-[150px] rounded-md"
+                                    className=" w-[100px] md:w-[150px] rounded-md"
                                 />
                             </div>
                         )
