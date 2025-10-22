@@ -2,6 +2,7 @@
 import ProjectMemberTable from "@/components/ProjectManagement/Projects/ProjectMemberTable";
 import TaskTable from "@/components/ProjectManagement/Task/TaskTable";
 import { Button } from "@/components/ui/button";
+// import SingleProjectClientInfoSkeleton from "@/skeleton/projectManagement/project/SingleProjectClientInfoSkeleton";
 import { ChevronDown, ChevronLeft, Pencil, Plus } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -75,6 +76,8 @@ const SingleProjectPage = () => {
                     </div>
                 </div>
             </div>
+
+            {/* <SingleProjectClientInfoSkeleton></SingleProjectClientInfoSkeleton> */}
 
             <div className=" flex flex-col sm:flex-row items-start gap-3 sm:items-center sm:justify-between mt-4">
                 <div className="flex gap-3">

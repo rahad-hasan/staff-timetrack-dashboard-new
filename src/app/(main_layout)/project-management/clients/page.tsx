@@ -19,7 +19,6 @@ import {
 } from "@/components/ui/dialog"
 import AddClientModal from "@/components/ProjectManagement/Clients/AddClientModal";
 
-
 const ClientsPage = () => {
     const handleSearch = (query: string) => {
         console.log("Searching for:", query);

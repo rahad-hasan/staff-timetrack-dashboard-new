@@ -8,7 +8,7 @@ import {
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import SearchBar from "@/components/Common/SearchBar";
@@ -17,7 +17,7 @@ import KanbanDndList from "@/components/ProjectManagement/Task/KanbanDndList";
 import {
     Dialog,
     DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import CreateTaskModal from "@/components/ProjectManagement/Task/CreateTaskModal";
 
 const TaskPage = () => {
