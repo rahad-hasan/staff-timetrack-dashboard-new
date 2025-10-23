@@ -284,8 +284,8 @@ const ProjectListTable = () => {
             <div className=" flex justify-between items-center mb-5">
                 <h2 className=" text-md sm:text-lg">Project list</h2>
                 <div className=" flex items-center gap-3">
-                    <Button variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
-                    <Button size={'sm'}>All Project</Button>
+                    <Button className=" text-sm md:text-base" variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
+                    <Button className=" text-sm md:text-base" size={'sm'}>All Project</Button>
                 </div>
             </div>
             <Table>

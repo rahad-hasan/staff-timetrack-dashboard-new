@@ -3,7 +3,6 @@
 import Notification from "@/components/Settings/Notification";
 import Profile from "@/components/Settings/Profile";
 import Subscription from "@/components/Settings/Subscription";
-import SubscriptionSkeleton from "@/skeleton/settings/SubscriptionSkeleton";
 import { useState } from "react"
 
 const SettingsPage = () => {

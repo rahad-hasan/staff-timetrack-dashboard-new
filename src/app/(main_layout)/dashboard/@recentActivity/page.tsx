@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 
-
 const RecentActivity = () => {
     const screenshorts = [
         { id: 1, img: screenshort1, progress: "5%", color: "bg-red-600" },
@@ -19,96 +18,102 @@ const RecentActivity = () => {
             <div className=" flex justify-between items-center">
                 <h2 className="text-md sm:text-lg">RECENT ACTIVITY</h2>
                 <div className=" flex items-center gap-3">
-                    <Button variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
-                    <Button size={'sm'}>View Activity</Button>
+                    <Button className="text-sm md:text-base" variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
+                    <Button className="text-sm md:text-base" size={'sm'}>View Activity</Button>
                 </div>
             </div>
             {/* screenshorts per person */}
             <div className=" mt-6">
                 <div className=" flex justify-between items-center">
-                    <div className=" flex items-center gap-3">
-                        <Avatar>
-                            <AvatarImage sizes="20px" src="https://github.com/shadcn.png" />
+                    <div className=" flex items-center gap-1.5 sm:gap-3">
+                        <Avatar className=" w-8 sm:w-10 h-8 sm:h-10">
+                            <AvatarImage src="https://github.com/shadcn.png" />
                             <AvatarFallback>CN</AvatarFallback>
                         </Avatar>
                         <h2 className="text-md sm:text-lg font-semibold">Danial Donald</h2>
                     </div>
-                    <Button variant={'outline2'} size={'sm'}>View All</Button>
+                    <Button className="text-sm md:text-base" variant={'outline2'} size={'sm'}>View All</Button>
                 </div>
-                <div className=" flex justify-between gap-2.5 mt-5">
-                    {screenshorts.map((p) => (
-                        <div
-                            key={p.id}
-                            className="relative"
-                        >
-                            <Image src={p.img} width={200} height={200} className=" rounded-lg w-full" alt="screenshort" />
-                            {p.progress && (
-                                <span
-                                    className={`absolute top-1 right-2 text-xs font-semibold text-white px-2 py-0.5 rounded-full ${p.color}`}
-                                >
-                                    {p.progress}
-                                </span>
-                            )}
-                        </div>
-                    ))}
+                <div className=" overflow-x-scroll">
+                    <div className=" flex justify-between gap-2.5 mt-5 min-w-[500px]">
+                        {screenshorts.map((p) => (
+                            <div
+                                key={p.id}
+                                className="relative"
+                            >
+                                <Image src={p.img} width={200} height={200} className=" rounded-lg w-full" alt="screenshort" />
+                                {p.progress && (
+                                    <span
+                                        className={`absolute top-1 right-2 text-xs font-semibold text-white px-2 py-0.5 rounded-full ${p.color}`}
+                                    >
+                                        {p.progress}
+                                    </span>
+                                )}
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
             <div className=" mt-6">
                 <div className=" flex justify-between items-center">
-                    <div className=" flex items-center gap-3">
-                        <Avatar>
-                            <AvatarImage sizes="20px" src="https://github.com/shadcn.png" />
+                    <div className=" flex items-center gap-1.5 sm:gap-3">
+                        <Avatar className=" w-8 sm:w-10 h-8 sm:h-10">
+                            <AvatarImage src="https://github.com/shadcn.png" />
                             <AvatarFallback>CN</AvatarFallback>
                         </Avatar>
                         <h2 className="text-md sm:text-lg font-semibold">Danial Donald</h2>
                     </div>
-                    <Button variant={'outline2'} size={'sm'}>View All</Button>
+                    <Button className="text-sm md:text-base" variant={'outline2'} size={'sm'}>View All</Button>
                 </div>
-                <div className=" flex justify-between gap-2.5 mt-5">
-                    {screenshorts.map((p) => (
-                        <div
-                            key={p.id}
-                            className="relative"
-                        >
-                            <Image src={p.img} width={200} height={200} className=" rounded-lg w-full" alt="screenshort" />
-                            {p.progress && (
-                                <span
-                                    className={`absolute top-1 right-2 text-xs font-semibold text-white px-2 py-0.5 rounded-full ${p.color}`}
-                                >
-                                    {p.progress}
-                                </span>
-                            )}
-                        </div>
-                    ))}
+                <div className=" overflow-x-scroll">
+                    <div className=" flex justify-between gap-2.5 mt-5 min-w-[500px]">
+                        {screenshorts.map((p) => (
+                            <div
+                                key={p.id}
+                                className="relative"
+                            >
+                                <Image src={p.img} width={200} height={200} className=" rounded-lg w-full" alt="screenshort" />
+                                {p.progress && (
+                                    <span
+                                        className={`absolute top-1 right-2 text-xs font-semibold text-white px-2 py-0.5 rounded-full ${p.color}`}
+                                    >
+                                        {p.progress}
+                                    </span>
+                                )}
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
             <div className=" mt-6">
                 <div className=" flex justify-between items-center">
-                    <div className=" flex items-center gap-3">
-                        <Avatar>
-                            <AvatarImage sizes="20px" src="https://github.com/shadcn.png" />
+                    <div className=" flex items-center gap-1.5 sm:gap-3">
+                        <Avatar className=" w-8 sm:w-10 h-8 sm:h-10">
+                            <AvatarImage src="https://github.com/shadcn.png" />
                             <AvatarFallback>CN</AvatarFallback>
                         </Avatar>
                         <h2 className="text-md sm:text-lg font-semibold">Danial Donald</h2>
                     </div>
-                    <Button variant={'outline2'} size={'sm'}>View All</Button>
+                    <Button className="text-sm md:text-base" variant={'outline2'} size={'sm'}>View All</Button>
                 </div>
-                <div className=" flex justify-between gap-2.5 mt-5">
-                    {screenshorts.map((p) => (
-                        <div
-                            key={p.id}
-                            className="relative"
-                        >
-                            <Image src={p.img} width={200} height={200} className=" rounded-lg w-full" alt="screenshort" />
-                            {p.progress && (
-                                <span
-                                    className={`absolute top-1 right-2 text-xs font-semibold text-white px-2 py-0.5 rounded-full ${p.color}`}
-                                >
-                                    {p.progress}
-                                </span>
-                            )}
-                        </div>
-                    ))}
+                <div className=" overflow-x-scroll">
+                    <div className=" flex justify-between gap-2.5 mt-5 min-w-[500px]">
+                        {screenshorts.map((p) => (
+                            <div
+                                key={p.id}
+                                className="relative"
+                            >
+                                <Image src={p.img} width={200} height={200} className=" rounded-lg w-full" alt="screenshort" />
+                                {p.progress && (
+                                    <span
+                                        className={`absolute top-1 right-2 text-xs font-semibold text-white px-2 py-0.5 rounded-full ${p.color}`}
+                                    >
+                                        {p.progress}
+                                    </span>
+                                )}
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>

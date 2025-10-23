@@ -13,13 +13,13 @@ export default function Dashboard() {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5">
       <div>
-        <h1 className="text-3xl font-semibold text-headingTextColor">Dashboard</h1>
+        <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor">Dashboard</h1>
         <p className="text-sm text-subTextColor mt-2">
           Mon, Aug 18, 2025 - Sun, Aug 24, 2025
         </p>
       </div>
 
-      <div className="flex mt-3 sm:mt-0 bg-[#f6f7f9] rounded-lg">
+      <div className="flex mt-3 sm:mt-0 bg-[#f6f7f9] rounded-lg w-[240px] sm:w-auto">
         {["Daily", "Weekly", "Monthly"].map((tab) => (
           <button
             key={tab}

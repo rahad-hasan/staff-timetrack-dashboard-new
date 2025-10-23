@@ -128,8 +128,8 @@ const Members = () => {
             <div className=" flex justify-between items-center">
                 <h2 className=" text-md sm:text-lg">MEMBERS</h2>
                 <div className=" flex items-center gap-3">
-                    <Button variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
-                    <Button size={'sm'}>All Member</Button>
+                    <Button className=" text-sm md:text-base" variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
+                    <Button className=" text-sm md:text-base" size={'sm'}>All Member</Button>
                 </div>
             </div>
             <div className=" mt-5">
