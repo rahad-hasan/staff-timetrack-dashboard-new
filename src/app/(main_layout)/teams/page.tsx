@@ -11,6 +11,8 @@ import TeamsTable from "@/components/Teams/TeamsTable";
 import AddTeamModal from "@/components/Teams/AddTeamModal";
 import TeamsMemberTable from "@/components/Teams/TeamsMemberTable";
 import AddNewMemberModal from "@/components/Teams/AddNewMemberModal";
+// import TeamsMemberTableSkeleton from "@/skeleton/teams/TeamsMemberTableSkeleton";
+// import TeamsTableSkeleton from "@/skeleton/teams/TeamsTableSkeleton";
 
 const TeamsPage = () => {
     const [activeTab, setActiveTab] = useState<"Teams" | "Members">("Teams");
@@ -77,13 +79,21 @@ const TeamsPage = () => {
                 <SearchBar onSearch={handleSearch} />
             </div>
             {
-        activeTab === "Teams" &&
-            <TeamsTable></TeamsTable>
-    }
-    {
-        activeTab === "Members" &&
-            <TeamsMemberTable></TeamsMemberTable>
-    }
+                activeTab === "Teams" &&
+                <TeamsTable></TeamsTable>
+            }
+            {/* {
+                activeTab === "Teams" &&
+                <TeamsTableSkeleton></TeamsTableSkeleton>
+            } */}
+            {
+                activeTab === "Members" &&
+                <TeamsMemberTable></TeamsMemberTable>
+            }
+            {/* {
+                activeTab === "Members" &&
+                <TeamsMemberTableSkeleton></TeamsMemberTableSkeleton>
+            } */}
         </div >
     );
 };
