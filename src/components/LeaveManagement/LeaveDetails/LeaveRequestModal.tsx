@@ -65,7 +65,7 @@ const LeaveRequestModal = () => {
     }
 
     return (
-        <DialogContent className="sm:max-w-[525px]">
+        <DialogContent className=" w-full sm:max-w-[525px] max-h-[95vh] overflow-y-auto">
             <DialogHeader>
                 <DialogTitle className="mb-4">Leave request</DialogTitle>
             </DialogHeader>
@@ -109,7 +109,7 @@ const LeaveRequestModal = () => {
                         )}
                     />
 
-                    <div className="flex items-center gap-3">
+                    <div className=" flex flex-col md:flex-row gap-4 md:gap-3">
                         <FormField
                             control={form.control}
                             name="startDate"
