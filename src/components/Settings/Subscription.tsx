@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { BadgeCheck, CheckCircle2 } from "lucide-react"
+// import SubscriptionSkeleton from "@/skeleton/settings/SubscriptionSkeleton";
 
 export default function Subscription() {
     const [activeTab, setActiveTab] = useState<"Monthly" | "Yearly">("Monthly");
@@ -67,16 +68,16 @@ export default function Subscription() {
     const currentSubscription = "Premium";
 
     return (
-        <div className="border border-gray-200 rounded-lg p-6 bg-white mt-6">
+        <div className="border-2 border-borderColor rounded-lg p-3 sm:p-6 bg-white mt-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
                 <div>
                     <h2 className="text-xl mb-1.5 font-semibold">Subscription</h2>
-                    <p className="text-gray-500">
+                    <p className="text-gray-500 mb-4">
                         Manage your billing and payment details
                     </p>
                 </div>
 
-                <div className="flex items-center bg-[#f6f7f9] rounded-lg">
+                <div className="flex items-center bg-[#f6f7f9] rounded-lg ">
                     {["Monthly", "Yearly"].map((tab) => (
                         <button
                             key={tab}
@@ -105,7 +106,7 @@ export default function Subscription() {
                     Active
                 </div>
             </div>
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-6">
                 {plans.map((plan) => (
                     <div
                         key={plan.name}
@@ -137,6 +138,7 @@ export default function Subscription() {
                     </div>
                 ))}
             </div>
+            {/* <SubscriptionSkeleton></SubscriptionSkeleton> */}
         </div>
     )
 }

@@ -3,6 +3,7 @@
 import Notification from "@/components/Settings/Notification";
 import Profile from "@/components/Settings/Profile";
 import Subscription from "@/components/Settings/Subscription";
+import SubscriptionSkeleton from "@/skeleton/settings/SubscriptionSkeleton";
 import { useState } from "react"
 
 const SettingsPage = () => {
@@ -17,7 +18,7 @@ const SettingsPage = () => {
         <div>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5">
                 <div>
-                    <h1 className="text-3xl font-semibold text-headingTextColor">Settings</h1>
+                    <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor">Settings</h1>
                     <p className="text-sm text-subTextColor mt-2">
                         All the teams and member are displayed here
                     </p>

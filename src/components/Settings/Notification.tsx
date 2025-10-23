@@ -29,13 +29,13 @@ const Notification = () => {
     ];
 
     return (
-        <div className="rounded-lg border border-borderColor p-4 mt-4 bg-white">
+        <div className="rounded-lg border-2 border-borderColor p-3 md:p-4 mt-4 bg-white">
             <h2 className="text-lg font-semibold mb-6 text-textGray">Notifications Preferences</h2>
 
             {sections.map((section, idx) => (
                 <div
                     key={section.title}
-                    className={`rounded-md border border-borderColor p-4 ${idx < sections.length - 1 ? "mb-4" : ""
+                    className={`rounded-md border border-borderColor p-3 md:p-4 ${idx < sections.length - 1 ? "mb-4" : ""
                         }`}
                 >
 

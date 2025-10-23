@@ -49,8 +49,8 @@ const Profile = () => {
     return (
         <div className=" rounded-lg border-2 border-borderColor p-4 mt-4">
             <h2 className=" text-lg mb-4">Basic Information</h2>
-            <div className="flex flex-col sm:flex-row items-center gap-5 mb-6">
-                <div className="relative w-20 h-20 rounded-full overflow-hidden">
+            <div className="flex items-center gap-5 mb-6">
+                <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden">
                     <Image
                         src={preview}
                         alt="Profile"
@@ -81,7 +81,7 @@ const Profile = () => {
 
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                    <div className="flex items-center gap-3">
+                    <div className="flex flex-col sm:flex-row gap-4 sm:gap-3">
                         <FormField
                             control={form.control}
                             name="name"
@@ -173,7 +173,7 @@ const Profile = () => {
                     </div>
 
                     <div className="border-b-2 pb-8 mt-2">
-                        <h2 className="text-2xl font-semibold mb-3">Team Role</h2>
+                        <h2 className=" text-lg sm:text-2xl font-semibold mb-3">Team Role</h2>
                         <Button
                             className="bg-[#f5f6f6] text-black hover:bg-gray-100"
                             variant={"outline2"}
