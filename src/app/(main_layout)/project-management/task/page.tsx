@@ -68,7 +68,7 @@ const TaskPage = () => {
                     </p>
                 </div>
 
-                <div className=" flex items-center gap-5">
+                <div className=" flex items-center gap-3 sm:gap-5">
                     <div className="flex gap-3">
                         <div className="flex bg-[#f6f7f9] rounded-lg overflow-hidden">
                             {["List view", "Kanban"].map((tab) => (
@@ -89,7 +89,7 @@ const TaskPage = () => {
                     <Dialog>
                         <form>
                             <DialogTrigger asChild>
-                                <Button className=" text-sm md:text-base"><Plus size={20} />Create Task</Button>
+                                <Button className=""><Plus className="size-5" /> <span className=" hidden sm:block">Create Task</span></Button>
                             </DialogTrigger>
                             <CreateTaskModal></CreateTaskModal>
                         </form>
@@ -98,9 +98,9 @@ const TaskPage = () => {
                 </div>
             </div>
             <div className=" flex flex-col gap-4 md:gap-0 md:flex-row justify-between">
-                <div className=" flex items-center gap-2 sm:gap-4">
+                <div className=" flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
                     <Select onValueChange={setProject} value={project ?? undefined}>
-                        <SelectTrigger size={'lg'} className="w-full">
+                        <SelectTrigger size={'lg'} className="w-full py-1.5">
                             {selectedProject ? (
                                 <div className="flex items-center gap-2">
                                     <Avatar className="w-6 h-6">
@@ -133,43 +133,49 @@ const TaskPage = () => {
                             ))}
                         </SelectContent>
                     </Select>
+                    <div className=" flex items-center gap-3 w-full">
+                        <Select onValueChange={setUser} value={user ?? undefined}>
+                            <SelectTrigger size={'lg'} className="w-full py-1.5">
+                                {selectedUser ? (
+                                    <div className="flex items-center gap-2">
+                                        <Avatar className="w-6 h-6">
+                                            <AvatarImage src={selectedUser.avatar} alt={selectedUser.name} />
+                                            <AvatarFallback>{selectedUser.name.charAt(0)}</AvatarFallback>
+                                        </Avatar>
+                                        <span>{selectedUser.name}</span>
+                                    </div>
+                                ) : (
+                                    <SelectValue placeholder="Select user" />
+                                )}
+                            </SelectTrigger>
 
-                    <Select onValueChange={setUser} value={user ?? undefined}>
-                        <SelectTrigger size={'lg'} className="w-full">
-                            {selectedUser ? (
-                                <div className="flex items-center gap-2">
-                                    <Avatar className="w-6 h-6">
-                                        <AvatarImage src={selectedUser.avatar} alt={selectedUser.name} />
-                                        <AvatarFallback>{selectedUser.name.charAt(0)}</AvatarFallback>
-                                    </Avatar>
-                                    <span>{selectedUser.name}</span>
-                                </div>
-                            ) : (
-                                <SelectValue placeholder="Select user" />
-                            )}
-                        </SelectTrigger>
-
-                        <SelectContent>
-                            <Input
-                                type="text"
-                                placeholder="Search user..."
-                                className="flex-1 border-none focus:ring-0 focus:outline-none"
-                                value={userSearch}
-                                onChange={(e) => setUserSearch(e.target.value)}
-                            />
-                            {filteredUsers.map(t => (
-                                <SelectItem className="px-3 flex items-center gap-2 cursor-pointer" key={t.name} value={t.name}>
-                                    <Avatar className="w-6 h-6">
-                                        <AvatarImage src={t.avatar} alt={t.name} />
-                                        <AvatarFallback>{t.name.charAt(0)}</AvatarFallback>
-                                    </Avatar>
-                                    <span className="ml-2">{t.name}</span>
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                            <SelectContent>
+                                <Input
+                                    type="text"
+                                    placeholder="Search user..."
+                                    className="flex-1 border-none focus:ring-0 focus:outline-none"
+                                    value={userSearch}
+                                    onChange={(e) => setUserSearch(e.target.value)}
+                                />
+                                {filteredUsers.map(t => (
+                                    <SelectItem className="px-3 flex items-center gap-2 cursor-pointer" key={t.name} value={t.name}>
+                                        <Avatar className="w-6 h-6">
+                                            <AvatarImage src={t.avatar} alt={t.name} />
+                                            <AvatarFallback>{t.name.charAt(0)}</AvatarFallback>
+                                        </Avatar>
+                                        <span className="ml-2">{t.name}</span>
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <div className=" block sm:hidden">
+                            <SearchBar onSearch={handleSearch}></SearchBar>
+                        </div>
+                    </div>
                 </div>
-                <SearchBar onSearch={handleSearch}></SearchBar>
+                <div className=" hidden sm:block">
+                    <SearchBar onSearch={handleSearch}></SearchBar>
+                </div>
             </div>
             {
                 activeTab === "List view" &&

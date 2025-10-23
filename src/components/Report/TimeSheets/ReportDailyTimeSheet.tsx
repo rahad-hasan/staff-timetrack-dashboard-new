@@ -73,8 +73,6 @@ const ReportDailyTimeSheet = () => {
         const formattedStartTime = startTime;
         const formattedEndTime = endTime;
 
-        const isSameTimeZone = 'find here if same timezone';
-
         return (
             <div
                 className={`ml-0.5 w-[400px] ${baseClasses} ${colorClasses}`} // then place them side by side
@@ -94,10 +92,10 @@ const ReportDailyTimeSheet = () => {
     };
 
     return (
-        <div>
-            <div className="mb-5 flex flex-col gap-4 lg:gap-0 lg:flex-row justify-between">
+        <div className="">
+            <div className="mb-5 flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between">
                 <SpecificDatePicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></SpecificDatePicker>
-                <div className="w-[250px]">
+                <div className=" w-full md:w-[250px]">
                     <Select onValueChange={setUser} value={user ?? undefined}>
                         <SelectTrigger size={'lg'} className="w-full">
                             {selectedUser ? (
@@ -142,41 +140,43 @@ const ReportDailyTimeSheet = () => {
                     {/* <p>Tasks</p> */}
                 </div>
             </div>
-            <div className="flex border-t border-gray-200">
+            <div className=" overflow-x-scroll">
+                <div className="flex border-t border-gray-200 min-w-[1520px]">
 
-                <div className="w-[80px] flex-shrink-0">
-                    {timeLineHours.map((hour) => (
-                        <div
-                            key={hour}
-                            className="h-[60px] text-xs font-medium text-gray-500 flex items-center justify-center border-b "
-                        >
-                            {hour.toString().padStart(2, '0')}:00
-                        </div>
-                    ))}
-                </div>
+                    <div className="w-[80px] flex-shrink-0">
+                        {timeLineHours.map((hour) => (
+                            <div
+                                key={hour}
+                                className="h-[60px] text-xs font-medium text-gray-500 flex items-center justify-center border-b "
+                            >
+                                {hour.toString().padStart(2, '0')}:00
+                            </div>
+                        ))}
+                    </div>
 
-                <div className="flex-grow relative border-l " style={{ height: `${24 * 60}px` }}>
+                    <div className="flex-grow relative border-l " style={{ height: `${24 * 60}px` }}>
 
-                    {timeLineHours.map((hour) => (
-                        <div
-                            key={`grid-${hour}`}
-                            className="absolute left-0 right-0 border-b "
-                            style={{ top: `${(hour / 24) * 100}%`, height: '60px', zIndex: 0 }}
-                        >
-                            <div className="h-full"></div>
-                        </div>
-                    ))}
+                        {timeLineHours.map((hour) => (
+                            <div
+                                key={`grid-${hour}`}
+                                className="absolute left-0 right-0 border-b "
+                                style={{ top: `${(hour / 24) * 100}%`, height: '60px', zIndex: 0 }}
+                            >
+                                <div className="h-full"></div>
+                            </div>
+                        ))}
 
-                    {taskEntries.map((entry, index) => (
-                        <TimelineEntry
-                            key={index}
-                            project={entry.project}
-                            startTime={entry.startTime}
-                            endTime={entry.endTime}
-                            color={entry.color}
-                        />
-                    ))}
+                        {taskEntries.map((entry, index) => (
+                            <TimelineEntry
+                                key={index}
+                                project={entry.project}
+                                startTime={entry.startTime}
+                                endTime={entry.endTime}
+                                color={entry.color}
+                            />
+                        ))}
 
+                    </div>
                 </div>
             </div>
         </div>

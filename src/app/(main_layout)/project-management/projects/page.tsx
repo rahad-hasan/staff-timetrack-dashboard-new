@@ -24,7 +24,7 @@ const Projects = () => {
     };
     return (
         <div>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-2 md:mb-5">
+            <div className="flex items-center justify-between gap-3 mb-2 md:mb-5">
                 <div>
                     <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor">Projects</h1>
                     <p className="text-sm text-subTextColor mt-2">
@@ -36,16 +36,16 @@ const Projects = () => {
                     <Dialog>
                         <form>
                             <DialogTrigger asChild>
-                                <Button className=" text-sm md:text-base"><Plus size={20} />Add Project</Button>
+                                <Button className=""><Plus className="size-5" /> <span className=" hidden sm:block">Add Project</span></Button>
                             </DialogTrigger>
                             <AddProjectModal></AddProjectModal>
                         </form>
                     </Dialog>
                 </div>
             </div>
-            <div className=" flex flex-col gap-4 md:gap-0 md:flex-row justify-between">
+            <div className=" flex gap-3 items-center justify-between mt-3 sm:mt-0">
                 <div className="flex gap-3">
-                    <div className="flex mt-3 sm:mt-0 bg-[#f6f7f9] rounded-lg overflow-hidden">
+                    <div className="flex bg-[#f6f7f9] rounded-lg overflow-hidden">
                         {["Active", "Archived"].map((tab) => (
                             <button
                                 key={tab}

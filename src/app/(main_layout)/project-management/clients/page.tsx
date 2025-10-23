@@ -39,7 +39,7 @@ const ClientsPage = () => {
     const selectedProject = projects.find((u) => u.name === project);
     return (
         <div>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
+            <div className="flex items-center justify-between gap-3 mb-5">
                 <div>
                     <h1 className="text-2xl md:text-3xl font-semibold text-headingTextColor">Clients</h1>
                     <p className="text-sm text-subTextColor mt-2">
@@ -51,16 +51,16 @@ const ClientsPage = () => {
                     <Dialog>
                         <form>
                             <DialogTrigger asChild>
-                                <Button className=" text-sm md:text-base"><Plus size={20} />Add Client</Button>
+                                <Button className=""><Plus className="size-5" /> <span className=" hidden sm:block">Add Client</span></Button>
                             </DialogTrigger>
                             <AddClientModal></AddClientModal>
                         </form>
                     </Dialog>
                 </div>
             </div>
-            <div className=" flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between">
+            <div className=" flex items-center justify-between gap-3">
                 <Select onValueChange={setProject} value={project ?? undefined}>
-                    <SelectTrigger size={'lg'} className="">
+                    <SelectTrigger size={'lg'} className=" w-full sm:w-[250px] py-1.5">
                         {selectedProject ? (
                             <div className="flex items-center gap-2">
                                 <Avatar className="w-6 h-6">
