@@ -59,7 +59,7 @@ const CalenderTable = () => {
                                 <th
                                     key={i}
                                     className={`
-                                        px-4 py-4 text-xl font-bold
+                                        px-4 py-4 sm:text-xl font-bold
                                         border-b border-gray-200 ${i < days.length - 1 ? 'border-r border-gray-200' : ''}
                                     `}
                                 >
@@ -80,23 +80,23 @@ const CalenderTable = () => {
                                         `}
                                     >
                                         <div className=" flex flex-col items-center justify-center h-full">
-                                            <div className="text-base font-normal mb-1">{cell.date}</div>
+                                            <div className=" text-sm sm:text-base font-normal mb-1">{cell.date}</div>
                                             {cell.event && (
                                                 <>
                                                     {cell.event.length >= 1 && (
-                                                        <div className={`${pillBaseClasses} bg-yellow-100 text-start text-yellow-800 border-l-4 border-yellow-500`}>
+                                                        <div className={`${pillBaseClasses} bg-yellow-100 text-sm sm:text-base text-start text-yellow-800 border-l-4 border-yellow-500`}>
                                                             {cell.event[0]}
                                                         </div>
                                                     )}
 
                                                     {cell.event.length >= 2 && (
-                                                        <div className={`${pillBaseClasses} bg-pink-100 text-start text-pink-800 border-l-4 border-red-500`}>
+                                                        <div className={`${pillBaseClasses} bg-pink-100 text-sm sm:text-base text-start text-pink-800 border-l-4 border-red-500`}>
                                                             {cell.event[1]}
                                                         </div>
                                                     )}
 
                                                     {cell.event.length > 2 && (
-                                                        <div className={`${pillBaseClasses} bg-green-100 text-start text-green-800 border-l-4 border-green-500`}>
+                                                        <div className={`${pillBaseClasses} bg-green-100 text-sm sm:text-base text-start text-green-800 border-l-4 border-green-500`}>
                                                             + {cell.event.length - 2} others
                                                         </div>
                                                     )}

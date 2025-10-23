@@ -31,9 +31,9 @@ const CalenderPage = () => {
 
     return (
         <div>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5">
+            <div className="flex items-center justify-between gap-3 mb-5">
                 <div>
-                    <h1 className="text-3xl font-semibold text-headingTextColor">Calender</h1>
+                    <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor">Calender</h1>
                     <p className="text-sm text-subTextColor mt-2">
                         All the teams task and events are displayed here
                     </p>
@@ -41,7 +41,7 @@ const CalenderPage = () => {
                 <Dialog>
                     <form>
                         <DialogTrigger asChild>
-                            <Button><Plus size={20} />Add an event</Button>
+                            <Button className=" "><Plus className="size-5" /> <span className=" hidden sm:block">Add an event</span></Button>
                         </DialogTrigger>
                         <AddEventModal></AddEventModal>
                     </form>
@@ -49,11 +49,11 @@ const CalenderPage = () => {
 
             </div>
 
-            <div className=" flex items-center justify-between">
+            <div className=" flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between w-full">
                 <MonthPicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></MonthPicker>
-                <div className=" w-[250px]">
+                <div className="w-full sm:w-[250px]">
                     <Select onValueChange={setUser} value={user ?? undefined}>
-                        <SelectTrigger size={'lg'} className="w-full">
+                        <SelectTrigger size={'lg'} className=" w-full sm:w-[250px]">
                             {selectedUser ? (
                                 <div className="flex items-center gap-2">
                                     <Avatar className="w-6 h-6">
