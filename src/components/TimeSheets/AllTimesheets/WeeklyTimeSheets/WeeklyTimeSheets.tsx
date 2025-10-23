@@ -37,7 +37,7 @@ const WeeklyTimeSheets = () => {
                         </Button>
                     </div>
                 </div>
-                <div className=" w-[250px]">
+                <div className=" w-full sm:w-[250px]">
                     <Select onValueChange={setUser} value={user ?? undefined}>
                         <SelectTrigger size={'lg'} className="w-full">
                             {selectedUser ? (

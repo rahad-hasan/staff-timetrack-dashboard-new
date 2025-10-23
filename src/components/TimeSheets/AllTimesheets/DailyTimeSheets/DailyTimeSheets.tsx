@@ -37,7 +37,7 @@ const DailyTimeSheets = () => {
 
     return (
         <>
-            <div className=" mb-5 flex flex-col gap-4 md:gap-0 md:flex-row justify-between">
+            <div className=" mb-5 flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between">
                 <div className=" flex flex-col md:flex-row gap-4 md:gap-3">
                     <SpecificDatePicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></SpecificDatePicker>
                     <div className="hidden md:block">
@@ -46,7 +46,7 @@ const DailyTimeSheets = () => {
                         </Button>
                     </div>
                 </div>
-                <div className=" w-[250px]">
+                <div className=" w-full sm:w-[250px]">
                     <Select onValueChange={setUser} value={user ?? undefined}>
                         <SelectTrigger size={'lg'} className="w-full">
                             {selectedUser ? (

@@ -27,7 +27,7 @@ const ManualRequests = () => {
     const selectedUser = users.find((u) => u.name === user);
     return (
         <div>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 md:gap-0 mb-5">
+            <div className="flex items-center justify-between gap-3 md:gap-0 mb-5">
                 <div>
                     <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor">Manual Requests</h1>
                     <p className="text-sm text-subTextColor mt-2">
@@ -38,7 +38,7 @@ const ManualRequests = () => {
                 <div className="">
                     <Dialog>
                         <DialogTrigger asChild>
-                            <Button className=" text-sm md:text-base"><Plus size={20} />Add Time</Button>
+                            <Button className=""><Plus className="size-5" /> <span className=" hidden sm:block">Add Time</span></Button>
                         </DialogTrigger>
                         <AddManualTimeModal></AddManualTimeModal>
                     </Dialog>
@@ -47,11 +47,11 @@ const ManualRequests = () => {
             </div>
             <div className=" flex justify-between items-center gap-4 md:gap-3 mb-5">
                 <div className="">
-                    <Button className="" variant={'outline2'}>
-                        <SlidersHorizontal className="" /> Filters
+                    <Button className=" w-10 sm:w-auto h-10 sm:h-auto" variant={'outline2'}>
+                        <SlidersHorizontal className="" /> <span className=" hidden sm:block">Filters</span>
                     </Button>
                 </div>
-                <div className=" w-[250px]">
+                <div className=" w-full sm:w-[250px]">
                     <Select onValueChange={setUser} value={user ?? undefined}>
                         <SelectTrigger size={'lg'} className="w-full">
                             {selectedUser ? (
