@@ -24,9 +24,9 @@ const TeamsPage = () => {
 
     return (
         <div>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5">
+            <div className="flex items-center justify-between gap-3 mb-5">
                 <div>
-                    <h1 className="text-3xl font-semibold text-headingTextColor">Teams</h1>
+                    <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor">Teams</h1>
                     <p className="text-sm text-subTextColor mt-2">
                         All the teams and member are displayed here
                     </p>
@@ -38,7 +38,7 @@ const TeamsPage = () => {
                         <Dialog>
                             <form>
                                 <DialogTrigger asChild>
-                                    <Button><Plus size={20} />Add Team</Button>
+                                    <Button className=" text-sm md:text-base py-2"><Plus className="size-5" /> <span className=" hidden sm:block">Add Team</span></Button>
                                 </DialogTrigger>
                                 <AddTeamModal></AddTeamModal>
                             </form>
@@ -49,7 +49,7 @@ const TeamsPage = () => {
                         <Dialog>
                             <form>
                                 <DialogTrigger asChild>
-                                    <Button><Plus size={20} />Add Member</Button>
+                                    <Button className=" text-sm md:text-base py-2"><Plus className="size-5" /> <span className=" hidden sm:block">Add Member</span></Button>
                                 </DialogTrigger>
                                 <AddNewMemberModal></AddNewMemberModal>
                             </form>
@@ -59,7 +59,7 @@ const TeamsPage = () => {
             </div>
             <div className=" flex items-center justify-between">
                 <div className="flex gap-3">
-                    <div className="flex mt-3 sm:mt-0 bg-[#f6f7f9] rounded-lg overflow-hidden">
+                    <div className="flex  bg-[#f6f7f9] rounded-lg overflow-hidden">
                         {["Teams", "Members"].map((tab) => (
                             <button
                                 key={tab}
@@ -77,14 +77,14 @@ const TeamsPage = () => {
                 <SearchBar onSearch={handleSearch} />
             </div>
             {
-                activeTab === "Teams" &&
-                <TeamsTable></TeamsTable>
-            }
-            {
-                activeTab === "Members" &&
-                <TeamsMemberTable></TeamsMemberTable>
-            }
-        </div>
+        activeTab === "Teams" &&
+            <TeamsTable></TeamsTable>
+    }
+    {
+        activeTab === "Members" &&
+            <TeamsMemberTable></TeamsMemberTable>
+    }
+        </div >
     );
 };
 
