@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import TotalHoursPerDayChart from "@/components/Report/TimeAndActivities/TotalHoursPerDayChart";
 import TimeAndActivitiesTable from "@/components/Report/TimeAndActivities/TimeAndActivitiesTable";
+// import TimeAndActivitiesTableSkeleton from "@/skeleton/report/timeAndActivities/TimeAndActivitiesTableSkeleton";
 
 const TimeAndActivitiesPage = () => {
     // project select
@@ -104,6 +105,7 @@ const TimeAndActivitiesPage = () => {
 
             <TotalHoursPerDayChart></TotalHoursPerDayChart>
             <TimeAndActivitiesTable></TimeAndActivitiesTable>
+            {/* <TimeAndActivitiesTableSkeleton></TimeAndActivitiesTableSkeleton> */}
         </div>
     );
 };

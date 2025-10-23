@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import { Checkbox } from "@/components/ui/checkbox";
 import AttendanceTable from "@/components/Report/Attendance/AttendanceTable";
+// import AttendanceTableSkeleton from "@/skeleton/report/Attendance/AttendanceTableSkeleton";
 
 const AttendancePage = () => {
     // project select
@@ -92,6 +93,7 @@ const AttendancePage = () => {
                 </div>
             </div>
             <AttendanceTable></AttendanceTable>
+            {/* <AttendanceTableSkeleton></AttendanceTableSkeleton> */}
         </div>
     );
 };
