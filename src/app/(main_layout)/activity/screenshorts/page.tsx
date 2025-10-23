@@ -187,7 +187,7 @@ const ScreenShorts = () => {
                         </form>
                     </Dialog>
 
-                    <div className=" w-[200px] xl:w-[250px]">
+                    <div className=" w-full sm:w-[250px]">
                         <Select onValueChange={setUser} value={user ?? undefined}>
                             <SelectTrigger size={'lg'} className="w-full">
                                 {selectedUser ? (

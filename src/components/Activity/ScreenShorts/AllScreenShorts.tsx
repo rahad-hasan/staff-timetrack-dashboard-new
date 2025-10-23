@@ -118,10 +118,10 @@ const AllScreenShorts = () => {
                                             {screenShort.start}
                                         </p>
                                     </div>
-                                    <h2 className="mt-1 md:text-lg font-semibold">
+                                    <h2 className="mt-1 text-sm sm:text-lg font-semibold">
                                         {screenShort.project}
                                     </h2>
-                                    <p className="text-textGray">{screenShort.task}</p>
+                                    <p className="text-sm sm:text-base text-textGray">{screenShort.task}</p>
                                 </div>
                             </div>
                         ))
@@ -163,10 +163,10 @@ const AllScreenShorts = () => {
                                             {screenShort.start}
                                         </p>
                                     </div>
-                                    <h2 className="mt-1 md:text-lg font-semibold">
+                                    <h2 className="mt-1 text-sm sm:text-lg font-semibold">
                                         {screenShort.project}
                                     </h2>
-                                    <p className="text-textGray">{screenShort.task}</p>
+                                    <p className=" text-sm sm:text-base text-textGray">{screenShort.task}</p>
                                 </div>
                             </div>
                         ))

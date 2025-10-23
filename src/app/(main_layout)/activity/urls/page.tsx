@@ -43,7 +43,7 @@ const Urls = () => {
 
     return (
         <div>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
+            <div className="flex justify-between gap-3 mb-5">
                 <div>
                     <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor">URLs Activity</h1>
                     <p className="text-sm text-subTextColor mt-2">
@@ -51,12 +51,12 @@ const Urls = () => {
                     </p>
                 </div>
 
-                <div className=" flex items-center gap-3">
+                <div className=" flex items-center gap-1.5 sm:gap-3">
                     <button
-                        className={`px-4 py-2 flex items-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 text-gray-600 hover:text-textGray border border-borderColor"
+                        className={`px-3 sm:px-4 py-2 sm:py-2 flex items-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 text-gray-600 hover:text-textGray border border-borderColor"
                                 `}
                     >
-                        <Download size={20} /> Export
+                        <Download size={20} /> <span className=" hidden sm:block">Export</span>
                     </button>
                     <button
                         className={`px-3 py-2 flex items-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 text-gray-600 hover:text-textGray border border-borderColor"
@@ -68,13 +68,13 @@ const Urls = () => {
             </div>
 
 
-            <div className=" mb-5 flex flex-col gap-4 md:gap-0 md:flex-row justify-between">
+            <div className=" mb-5 flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between">
                 <div className=" flex gap-3">
                     <SpecificDatePicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></SpecificDatePicker>
                     {/* Filter */}
                     <Popover>
                         <PopoverTrigger asChild>
-                            <Button className=" hidden lg:flex"  variant={'filter'}>
+                            <Button className=" hidden lg:flex" variant={'filter'}>
                                 <SlidersHorizontal className="" /> Filters
                             </Button>
                         </PopoverTrigger>
@@ -165,7 +165,7 @@ const Urls = () => {
                 </div>
                 <div className=" flex items-center gap-3">
 
-                    <div className=" w-[250px]">
+                    <div className=" w-full sm:w-[250px]">
                         <Select onValueChange={setUser} value={user ?? undefined}>
                             <SelectTrigger size={'lg'} className="w-full">
                                 {selectedUser ? (

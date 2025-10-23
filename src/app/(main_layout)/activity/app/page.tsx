@@ -46,7 +46,7 @@ const App = () => {
 
     return (
         <div>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
+            <div className="flex items-center justify-between gap-3 mb-5">
                 <div>
                     <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor">App Activity</h1>
                     <p className="text-sm text-subTextColor mt-2">
@@ -54,12 +54,12 @@ const App = () => {
                     </p>
                 </div>
 
-                <div className=" flex items-center gap-3">
+                <div className=" flex items-center gap-1.5 sm:gap-3">
                     <button
-                        className={`px-4 py-2 flex items-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 text-gray-600 hover:text-textGray border border-borderColor"
+                        className={`px-3 sm:px-4 py-2 sm:py-2 flex items-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 text-gray-600 hover:text-textGray border border-borderColor"
                                 `}
                     >
-                        <Download size={20} /> Export
+                        <Download size={20} /> <span className=" hidden sm:block">Export</span>
                     </button>
                     <button
                         className={`px-3 py-2 flex items-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 text-gray-600 hover:text-textGray border border-borderColor"
@@ -168,7 +168,7 @@ const App = () => {
                 </div>
                 <div className=" flex items-center gap-3">
 
-                    <div className=" w-[250px]">
+                    <div className=" w-full sm:w-[250px]">
                         <Select onValueChange={setUser} value={user ?? undefined}>
                             <SelectTrigger size={'lg'} className="w-full">
                                 {selectedUser ? (
