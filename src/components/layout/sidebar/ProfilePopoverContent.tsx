@@ -3,7 +3,6 @@ import { BellOff, CreditCard, Headset, LogOut, Plug, Share2, User, UserPlus } fr
 import Image from "next/image";
 import Link from "next/link";
 
-
 const ProfilePopoverContent = ({side, align}: { side: "top" | "right" | "bottom" | "left", align:  "center" | "end" | "start"}) => {
     return (
         <PopoverContent side={side} align={align}>
