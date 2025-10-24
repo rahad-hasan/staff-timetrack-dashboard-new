@@ -1,7 +1,7 @@
 "use client"
 import clsx from 'clsx';
 import { GitCommitVertical } from 'lucide-react';
-import Link from 'next/link'; // Ensure to import Link from Next.js for proper routing
+import Link from 'next/link';
 
 const SubItem = ({
     label,
@@ -13,7 +13,7 @@ const SubItem = ({
     label: string;
     href?: string;
     active?: boolean;
-    isCollapsed: boolean;
+    isCollapsed?: boolean;
     onClick?: () => void;
 }) => {
     return (
