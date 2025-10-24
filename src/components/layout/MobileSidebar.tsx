@@ -36,7 +36,7 @@ const MobileSidebar = () => {
                         <h2 className="text-xl font-bold">Tracker</h2>
                     </div>
                 </SheetTitle>
-                <div className="overflow-y-auto max-h-[calc(100vh-100px)] ml-1">
+                <div className="overflow-y-auto max-h-[calc(100vh-100px)] ml-1 pb-">
                     <div className=" mt-2">
                         <span className="text-xs uppercase text-gray-400 mb-3">Main menu</span>
                         {sidebarItems.map((item) => (
@@ -67,7 +67,7 @@ const MobileSidebar = () => {
                         ))}
                     </div>
 
-                    <div className="pt-3 border-t-2 border-borderColor mt-4">
+                    <div className="pt-3 border-t-2 border-borderColor mt-4 pb-8">
                         <span className="text-xs uppercase text-gray-400 mb-4">Others</span>
                         {othersSidebarItems.map((item) => (
                             <div key={item.key}>

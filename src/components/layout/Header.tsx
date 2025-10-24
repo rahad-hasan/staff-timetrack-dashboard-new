@@ -15,11 +15,14 @@ import {
 } from "@/components/ui/sheet"
 import MobileSidebar from "./MobileSidebar";
 import ProfilePopoverContent from "./Sidebar/ProfilePopoverContent";
+import DarkMoodToggle from "./Header/DarkMoodToogle";
+
 
 const Header = () => {
     console.log('header rendered');
+
     return (
-        <div className=" border-b-2 border-borderColor py-3 md:py-5 px-3 md:px-5 flex items-center justify-between">
+        <div className=" border-b-2 border-borderColor py-3 md:py-5 px-3 md:px-5 flex items-center justify-between rounded-t-lg dark:bg-black">
             <div>
                 <Popover>
                     <PopoverTrigger asChild>
@@ -29,7 +32,12 @@ const Header = () => {
                 </Popover>
             </div>
 
+
             <div className=" hidden md:flex items-center gap-4">
+
+                <div>
+                    <DarkMoodToggle></DarkMoodToggle>
+                </div>
                 <div className="border-x-2 border-borderColor px-3">
                     <div className="relative w-7 h-7 cursor-pointer">
                         <Image

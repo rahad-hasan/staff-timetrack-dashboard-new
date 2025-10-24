@@ -54,8 +54,8 @@ const StartTimer = () => {
     const filteredTasks = tasks.filter(t => t.toLowerCase().includes(taskSearch.toLowerCase()));
 
     return (
-        <PopoverContent side="bottom" align="start" className="md:w-[450px] p-4">
-            <div className="flex justify-between items-center gap-2 md:gap-4">
+        <PopoverContent side="bottom" align="start" className="sm:w-[450px] sm:px-4">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 md:gap-4">
                 <div className=" flex items-center gap-1 md:gap-4">
                     <Image
                         onClick={toggleTimer}
@@ -66,7 +66,7 @@ const StartTimer = () => {
                         className="w-10 cursor-pointer"
                     />
                     <div>
-                        <p className="font-semibold">{project || "Select Project"}</p>
+                        <p className="font-semibold text-base sm:text-base">{project || "Select Project"}</p>
                         <p className="text-gray-500 text-sm">{task || "Select Task"}</p>
                         {
                             task &&
@@ -76,7 +76,7 @@ const StartTimer = () => {
                 </div>
 
                 <div>
-                    <h2 className="text-lg font-semibold">{formatTime(time)}</h2>
+                    <h2 className="text-base sm:text-lg font-semibold">{formatTime(time)}</h2>
                     <p className="text-sm text-gray-500">Today: {formatTime(time)}</p>
                 </div>
 

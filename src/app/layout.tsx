@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/components/Theme/theme-provider";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -23,7 +24,7 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en">
+        <html lang="en" suppressHydrationWarning>
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased flex bg-[#f6f7f9]`}
                 data-gr-ext-installed=""
@@ -32,7 +33,14 @@ export default function RootLayout({
                 monica-version="7.9.7"
                 data-new-gr-c-s-check-loaded="14.1258.0"
             >
-                {children}
+                <ThemeProvider
+                    attribute="class"
+                    defaultTheme="system"
+                    enableSystem
+                    disableTransitionOnChange
+                >
+                    {children}
+                </ThemeProvider>
             </body>
         </html >
     );
