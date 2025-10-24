@@ -7,6 +7,16 @@
   --color-subTextColor: #505553; 
   --color-borderColor: #dce3e3; 
   --color-textGray: #505553;
+
+  /* Dark Theme */
+  /* Dark Bg */
+  --color-darkPrimaryBg: #151b23;
+  --color-darkSecondaryBg: #212830;
+  /* Dark Text */
+  --color-darkTextPrimary: #F3F4F6;
+  --color-darkTextSecondary: #bdbdbd;
+  /* Dark Border */
+  --color-darkBorder: #545454;
   /* --shadow-greenShadow: '0px 10px 30px rgba(18, 205, 105, 0.5)' */
 }
 @plugin "tailwindcss-animate";

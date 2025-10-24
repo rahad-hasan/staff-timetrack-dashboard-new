@@ -26,7 +26,7 @@ export default function RootLayout({
     return (
         <html lang="en" suppressHydrationWarning>
             <body
-                className={`${geistSans.variable} ${geistMono.variable} antialiased flex bg-[#f6f7f9]`}
+                className={`${geistSans.variable} ${geistMono.variable} antialiased flex bg-[#f6f7f9] `}
                 data-gr-ext-installed=""
                 cz-shortcut-listen="true"
                 monica-id="ofpnmcalabcbjgholdjcjblkibolbppb"

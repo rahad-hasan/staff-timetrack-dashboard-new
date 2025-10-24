@@ -22,11 +22,11 @@ const Header = () => {
     console.log('header rendered');
 
     return (
-        <div className=" border-b-2 border-borderColor py-3 md:py-5 px-3 md:px-5 flex items-center justify-between rounded-t-lg dark:bg-black">
+        <div className=" border-b-2 border-borderColor dark:border-darkBorder py-3 md:py-5 px-3 md:px-5 flex items-center justify-between rounded-t-lg dark:bg-darkPrimaryBg">
             <div>
                 <Popover>
                     <PopoverTrigger asChild>
-                        <Button className=" px-2 sm:px-3 " variant={'filter'}><Image src={startTimerIcon} width={0} height={0} className=" w-7 sm:w-5" alt="download" /><span className=" hidden sm:block">Start Timer</span></Button>
+                        <Button className=" px-2 sm:px-3 " variant={'filter'}><Image src={startTimerIcon} width={0} height={0} className=" w-7 sm:w-5" alt="download" /><span className=" hidden sm:block dark:text-darkTextPrimary">Start Timer</span></Button>
                     </PopoverTrigger>
                     <StartTimer></StartTimer>
                 </Popover>

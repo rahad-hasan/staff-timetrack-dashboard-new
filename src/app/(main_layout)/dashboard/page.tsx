@@ -13,8 +13,8 @@ export default function Dashboard() {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5">
       <div>
-        <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor">Dashboard</h1>
-        <p className="text-sm text-subTextColor mt-2">
+        <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor dark:text-darkTextPrimary">Dashboard</h1>
+        <p className="text-sm text-subTextColor mt-2 dark:text-darkTextPrimary">
           Mon, Aug 18, 2025 - Sun, Aug 24, 2025
         </p>
       </div>

@@ -25,7 +25,7 @@ const SideBar = () => {
     return (
         <div className={`${isCollapsed ? "w-[90px]" : "w-[320px]"} min-h-screen py-5  z-50 sticky top-0 flex flex-col transition-all duration-300`}>
             <div
-                className={`flex items-center justify-between bg-white px-4 py-2 mx-3 rounded-2xl border-2 ${isCollapsed ? "flex-col" : "flex-row"
+                className={`flex items-center justify-between bg-white dark:bg-darkPrimaryBg px-4 py-2 mx-3 rounded-2xl border-2 border-borderColor dark:border-darkBorder ${isCollapsed ? "flex-col" : "flex-row"
                     } transition-all duration-300`}
             >
                 <div
@@ -39,7 +39,7 @@ const SideBar = () => {
                         height={0}
                         className={`w-12 h-12`}
                     />
-                    {!isCollapsed && <h2 className="text-2xl font-bold">Tracker</h2>}
+                    {!isCollapsed && <h2 className="text-2xl font-bold dark:text-darkTextPrimary">Tracker</h2>}
                 </div>
 
                 {/* Collapse Toggle */}
@@ -91,7 +91,7 @@ const SideBar = () => {
 
             </aside>
 
-            <div className=" mx-5 pt-3 border-t-2 border-borderColor">
+            <div className=" mx-5 pt-3 border-t-2 border-borderColor dark:border-darkBorder">
                 {!isCollapsed && (
                     <h2 className="text-xs uppercase text-gray-400 mb-4">Others</h2>
                 )}

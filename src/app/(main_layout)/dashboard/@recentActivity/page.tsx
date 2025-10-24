@@ -14,11 +14,11 @@ const RecentActivity = () => {
         { id: 3, img: screenshort3, progress: null, color: "" },
     ];
     return (
-        <div className=" border-2 border-borderColor p-3 rounded-[12px] w-full">
+        <div className=" border-2 border-borderColor dark:border-darkBorder p-3 rounded-[12px] w-full">
             <div className=" flex justify-between items-center">
-                <h2 className="text-md sm:text-lg">RECENT ACTIVITY</h2>
+                <h2 className="text-md sm:text-lg dark:text-darkTextPrimary ">RECENT ACTIVITY</h2>
                 <div className=" flex items-center gap-3">
-                    <Button className="text-sm md:text-base" variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
+                    <Button className="text-sm md:text-base dark:text-darkTextPrimary" variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
                     <Button className="text-sm md:text-base" size={'sm'}>View Activity</Button>
                 </div>
             </div>
@@ -32,9 +32,9 @@ const RecentActivity = () => {
                         </Avatar>
                         <h2 className="text-md sm:text-lg font-semibold">Danial Donald</h2>
                     </div>
-                    <Button className="text-sm md:text-base" variant={'outline2'} size={'sm'}>View All</Button>
+                    <Button className="text-sm md:text-base dark:text-darkTextPrimary" variant={'outline2'} size={'sm'}>View All</Button>
                 </div>
-                <div className=" overflow-x-scroll">
+                <div className=" overflow-x-scroll sm:overflow-auto">
                     <div className=" flex justify-between gap-2.5 mt-5 min-w-[500px]">
                         {screenshorts.map((p) => (
                             <div
@@ -63,9 +63,9 @@ const RecentActivity = () => {
                         </Avatar>
                         <h2 className="text-md sm:text-lg font-semibold">Danial Donald</h2>
                     </div>
-                    <Button className="text-sm md:text-base" variant={'outline2'} size={'sm'}>View All</Button>
+                    <Button className="text-sm md:text-base dark:text-darkTextPrimary" variant={'outline2'} size={'sm'}>View All</Button>
                 </div>
-                <div className=" overflow-x-scroll">
+                <div className=" overflow-x-scroll sm:overflow-auto">
                     <div className=" flex justify-between gap-2.5 mt-5 min-w-[500px]">
                         {screenshorts.map((p) => (
                             <div
@@ -94,9 +94,9 @@ const RecentActivity = () => {
                         </Avatar>
                         <h2 className="text-md sm:text-lg font-semibold">Danial Donald</h2>
                     </div>
-                    <Button className="text-sm md:text-base" variant={'outline2'} size={'sm'}>View All</Button>
+                    <Button className="text-sm md:text-base dark:text-darkTextPrimary" variant={'outline2'} size={'sm'}>View All</Button>
                 </div>
-                <div className=" overflow-x-scroll">
+                <div className=" overflow-x-scroll sm:overflow-auto">
                     <div className=" flex justify-between gap-2.5 mt-5 min-w-[500px]">
                         {screenshorts.map((p) => (
                             <div

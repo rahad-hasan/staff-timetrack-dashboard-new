@@ -12,36 +12,36 @@ const Insights = () => {
 
 
     return (
-        <div className=" border-2 border-borderColor p-3 rounded-[12px] w-full">
+        <div className=" border-2 border-borderColor dark:border-darkBorder p-3 rounded-[12px] w-full">
             <div className=" flex justify-between items-center">
-                <h2 className=" text-md sm:text-lg">INSIGHTS</h2>
+                <h2 className=" text-md sm:text-lg dark:text-darkTextPrimary">INSIGHTS</h2>
                 <div className=" flex items-center gap-3">
-                    <Button className=" text-sm md:text-base" variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
+                    <Button className=" text-sm md:text-base dark:text-darkTextPrimary" variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
                     <Button className=" text-sm md:text-base" size={'sm'}>View Insights</Button>
                 </div>
             </div>
 
             <div className=" flex gap-2 flex-col sm:flex-row sm:items-center mt-5">
                 <div className=" flex items-center gap-3 sm:w-1/2">
-                    <h2 className="text-md sm:text-lg ">Work time classification</h2>
+                    <h2 className="text-md sm:text-lg dark:text-darkTextPrimary">Work time classification</h2>
                     <Info size={18} className=" cursor-pointer" />
                 </div>
                 <div className=" flex items-center gap-3 sm:w-1/2">
-                    <h2 className="text-md sm:text-lg ">Overall activity</h2>
+                    <h2 className="text-md sm:text-lg dark:text-darkTextPrimary">Overall activity</h2>
                     <Info size={18} className=" cursor-pointer" />
                 </div>
             </div>
-            <div className=" flex flex-col sm:flex-row gap-5 border-b-2 border-borderColor">
+            <div className=" flex flex-col sm:flex-row gap-5 border-b-2 border-borderColor dark:border-darkBorder">
                 <div className=" mt-5 sm:w-1/2">
                     <div className=" flex justify-between">
                         <div className=" mb-4">
-                            <p className="text-3xl font-bold text-headingTextColor mr-2">9%</p>
-                            <p className="text-lg font-medium text-subTextColor">Productive</p>
+                            <p className="text-3xl font-bold text-headingTextColor mr-2 dark:text-darkTextPrimary">9%</p>
+                            <p className="text-lg font-medium text-subTextColor dark:text-darkTextSecondary">Productive</p>
                         </div>
 
                         <div className="space-y-1">
                             {classificationData.map((item) => (
-                                <div key={item.label} className="flex items-center text-sm text-gray-600">
+                                <div key={item.label} className="flex items-center text-sm text-gray-600 dark:text-darkTextSecondary">
                                     <span className={`w-2.5 h-2.5 rounded ${item.color} mr-2`}></span>
                                     <span className="w-16">{`${item.percentage}%`}</span>
                                     <span>{item.label}</span>
@@ -59,7 +59,7 @@ const Insights = () => {
                         ))}
 
                     </div>
-                    <div className=" flex justify-between text-md text-headingTextColor mt-1 px-1">
+                    <div className=" flex justify-between text-md text-headingTextColor mt-1 px-1 dark:text-darkTextSecondary">
                         <span>1%</span>
                         <span>25%</span>
                         <span>50%</span>
