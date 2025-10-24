@@ -72,9 +72,9 @@ const ReportMonthlyTimeSheet = () => {
         <div className="">
             <div className="mb-5 flex flex-col gap-4 md:gap-0 md:flex-row justify-between">
                 <MonthPicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></MonthPicker>
-                <div className=" w-[250px]">
+                <div className=" w-full md:w-[250px]">
                     <Select onValueChange={setUser} value={user ?? undefined}>
-                        <SelectTrigger size={'lg'} className="w-full">
+                        <SelectTrigger size={'lg'}  className=" w-full md:w-[250px]">
                             {selectedUser ? (
                                 <div className="flex items-center gap-2">
                                     <Avatar className="w-6 h-6">

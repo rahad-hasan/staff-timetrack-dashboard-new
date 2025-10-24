@@ -24,7 +24,7 @@ const Header = () => {
             <div>
                 <Popover>
                     <PopoverTrigger asChild>
-                        <Button variant={'filter'}><Image src={startTimerIcon} width={0} height={0} className="w-5" alt="download" />Start Timer</Button>
+                        <Button className=" px-2 sm:px-3 " variant={'filter'}><Image src={startTimerIcon} width={0} height={0} className=" w-7 sm:w-5" alt="download" /><span className=" hidden sm:block">Start Timer</span></Button>
                     </PopoverTrigger>
                     <StartTimer></StartTimer>
                 </Popover>
@@ -99,7 +99,20 @@ const Header = () => {
                     </PopoverContent>
                 </Popover>
             </div>
-            <div className=" block md:hidden">
+            {/* mobile menu */}
+            <div className=" flex gap-4 md:hidden">
+                <div className="">
+                    <div className="relative w-7 h-7 cursor-pointer">
+                        <Image
+                            src={bellIcon}
+                            fill
+                            className="object-contain"
+                            alt="notification bell"
+                        />
+                        {/* Red dot */}
+                        <span className="absolute top-[1px] right-[4px] w-1.5 h-1.5 bg-red-600 rounded-full"></span>
+                    </div>
+                </div>
                 <Sheet>
                     <SheetTrigger asChild><Menu className=" cursor-pointer" size={25} /></SheetTrigger>
                     <MobileSidebar></MobileSidebar>

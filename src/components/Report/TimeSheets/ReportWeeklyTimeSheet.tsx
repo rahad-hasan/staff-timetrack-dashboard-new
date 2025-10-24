@@ -8,7 +8,7 @@ import WeeklyDatePicker from "@/components/Common/WeeklyDatePicker";
 
 
 const ReportWeeklyTimeSheet = () => {
-        console.log("ReportWeeklyTimeSheet");
+    console.log("ReportWeeklyTimeSheet");
     const users = [
         { name: "Juyed Ahmed", avatar: "https://avatar.iran.liara.run/public/18" },
         { name: "Cameron Williamson", avatar: "https://avatar.iran.liara.run/public/19" },
@@ -56,9 +56,9 @@ const ReportWeeklyTimeSheet = () => {
                         <SlidersHorizontal className="" /> Filters
                     </Button>
                 </div>
-                <div className=" w-[250px]">
+                <div className=" w-full md:w-[250px]">
                     <Select onValueChange={setUser} value={user ?? undefined}>
-                        <SelectTrigger size={'lg'} className="w-full">
+                        <SelectTrigger size={'lg'} className=" w-full md:w-[250px]">
                             {selectedUser ? (
                                 <div className="flex items-center gap-2">
                                     <Avatar className="w-6 h-6">
