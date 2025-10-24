@@ -24,38 +24,31 @@ const ReportDailyTimeSheet = () => {
     const [selectedDate, setSelectedDate] = useState(new Date());
 
     const taskEntries = [
-        { project: 'Project Alpha', startTime: '05:34', endTime: '09:19', color: 'yellow' }, // Overlap Group 1 (Track 0)
-        { project: 'Project Alpha', startTime: '07:34', endTime: '10:19', color: 'yellow' }, // Overlap Group 1 (Track 1)
-        { project: 'Project Beta', startTime: '14:41', endTime: '16:31', color: 'amber' },  // Track 0
-        { project: 'Project Gamma', startTime: '17:55', endTime: '19:05', color: 'yellow' }, // Track 0
+        { project: 'Project Alpha', startTime: '05:34', endTime: '09:19', color: 'yellow' },
+        { project: 'Project Alpha', startTime: '07:34', endTime: '10:19', color: 'yellow' },
+        { project: 'Project Beta', startTime: '14:41', endTime: '16:31', color: 'amber' },
+        { project: 'Project Gamma', startTime: '17:55', endTime: '19:05', color: 'yellow' },
     ];
 
+    // Time sheet timeline calculations
     const TOTAL_MINUTES_IN_DAY = 24 * 60; // 1440
 
-    // Helper to convert "HH:MM" to minutes from midnight
     const timeToMinutes = (timeString:string) => {
         if (!timeString) return 0;
         const [hours, minutes] = timeString.split(':').map(Number);
         return hours * 60 + minutes;
     };
 
-    // Helper to calculate duration in minutes
     const getDurationMinutes = (startTime: string, endTime:string) => {
         return timeToMinutes(endTime) - timeToMinutes(startTime);
     };
 
-    // --- Overlap Detection and Layout Calculation ---
     const tasksWithLayout = useMemo(() => {
-        // 1. Sort tasks by start time
         const sortedTasks = [...taskEntries].sort((a, b) =>
             timeToMinutes(a.startTime) - timeToMinutes(b.startTime)
         );
 
-        console.log('sortedTasks',sortedTasks);
-
-        // 2. Greedy Track Assignment: Find the minimum number of tracks (lanes) required. 
-        // This number (maxTracks) is equal to the maximum concurrent overlap at any time.
-        const tracks:any = []; // Stores the end time (in minutes) of the last task placed in each lane
+        const tracks:any = []; // tracks means columns
 
         const tasksWithTrack = sortedTasks.map(task => {
             const currentTaskStart = timeToMinutes(task.startTime);
@@ -63,18 +56,16 @@ const ReportDailyTimeSheet = () => {
 
             let assignedTrackIndex = -1;
 
-            // Try to find the first track where the last task has already ended
             for (let i = 0; i < tracks.length; i++) {
                 const laneEndTime = tracks[i];
                 if (currentTaskStart >= laneEndTime) {
                     assignedTrackIndex = i;
-                    tracks[i] = currentTaskEnd; // Update lane end time
+                    tracks[i] = currentTaskEnd;
                     break;
                 }
             }
 
             if (assignedTrackIndex === -1) {
-                // No available track, start a new one
                 assignedTrackIndex = tracks.length;
                 tracks.push(currentTaskEnd);
             }
@@ -86,9 +77,9 @@ const ReportDailyTimeSheet = () => {
                 durationMinutes: getDurationMinutes(task.startTime, task.endTime),
             };
         });
+        console.log('tasksWithTrack',tasksWithTrack);
         console.log('tracks',tracks);
 
-        // 3. Determine maximum concurrency and calculate layout properties
         const maxTracks = tracks.length;
 
         return tasksWithTrack.map(task => {
@@ -99,20 +90,15 @@ const ReportDailyTimeSheet = () => {
                 // Vertical (Positioning based on minutes converted to %)
                 topPosition: (task.startMinutes / TOTAL_MINUTES_IN_DAY) * 100,
                 heightPercentage: (task.durationMinutes / TOTAL_MINUTES_IN_DAY) * 100,
-
-                // Horizontal (Positioning based on tracks)
+                // Horizontal (Positioning based on track index)
                 leftPercentage: task.trackIndex * baseWidth,
                 widthPercentage: baseWidth,
                 maxTracks: maxTracks
             };
         });
     }, [taskEntries]);
-    // --- Overlap Detection and Layout Calculation End ---
-
-    console.log(tasksWithLayout);
 
 
-    // 24-hour axis labels
     const timeLineHours = Array.from({ length: 24 }, (_, i) => i);
 
     type TimelineEntryProps = {
@@ -141,9 +127,7 @@ const ReportDailyTimeSheet = () => {
         const formattedStartTime = startTime;
         const formattedEndTime = endTime;
 
-        // Horizontal position using dynamic width and left percentage
-        // Apply 2px margin-right for separation, only if it's not the last track
-        const marginLeftPx = trackIndex === 0 ? 0 : 2; // Add 2px margin-left for all except the first track
+        const marginLeftPx = trackIndex === 0 ? 1 : 2;
 
         return (
             <div
@@ -151,9 +135,9 @@ const ReportDailyTimeSheet = () => {
                 style={{
                     top: `${topPosition}%`,
                     height: `${heightPercentage}%`,
-                    left: `calc(${leftPercentage}% + ${marginLeftPx}px)`, // Adjust left position by 2px margin of previous track
-                    width: `calc(${widthPercentage}% - ${maxTracks > 1 ? 2 : 0}px)`, // Adjust width to accommodate 2px separation
-                    minHeight: '2rem' // Ensure minimum visibility for short tasks
+                    left: `calc(${leftPercentage}% + ${marginLeftPx}px)`,
+                    width: `calc(${widthPercentage}% - ${maxTracks > 1 ? 2 : 0}px)`,
+                    minHeight: '2rem'
                 }}
             >
                 <div className="">{project}</div>
@@ -163,6 +147,7 @@ const ReportDailyTimeSheet = () => {
             </div>
         );
     };
+
     return (
         <div className="">
             <div className="mb-5 flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between">
