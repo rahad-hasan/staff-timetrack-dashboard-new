@@ -47,8 +47,8 @@ const Profile = () => {
     }
 
     return (
-        <div className=" rounded-lg border-2 border-borderColor p-4 mt-4">
-            <h2 className=" text-lg mb-4">Basic Information</h2>
+        <div className=" rounded-lg border-2 border-borderColor dark:border-darkBorder p-4 mt-4">
+            <h2 className=" text-lg mb-4 dark:text-darkTextPrimary">Basic Information</h2>
             <div className="flex items-center gap-5 mb-6">
                 <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden">
                     <Image
@@ -60,11 +60,11 @@ const Profile = () => {
                     />
                 </div>
                 <div>
-                    <p className="font-medium">Profile Picture</p>
-                    <p className="text-sm text-gray-500 mb-3">400px, JPG or PNG, max 200kb</p>
+                    <p className="font-medium dark:text-darkTextPrimary">Profile Picture</p>
+                    <p className="text-sm text-gray-500 mb-3 dark:text-darkTextPrimary">400px, JPG or PNG, max 200kb</p>
                     <Label
                         htmlFor="photo-upload"
-                        className="cursor-pointer flex items-center gap-2 text-sm font-medium border rounded-md px-3 py-1.5 hover:bg-gray-50"
+                        className="cursor-pointer flex items-center gap-2 text-sm font-medium border rounded-md px-3 py-1.5 hover:bg-gray-50 dark:bg-darkPrimaryBg"
                     >
                         <Upload className="h-4 w-4" />
                         Upload Photo
@@ -173,9 +173,9 @@ const Profile = () => {
                     </div>
 
                     <div className="border-b-2 pb-8 mt-2">
-                        <h2 className=" text-lg sm:text-2xl font-semibold mb-3">Team Role</h2>
+                        <h2 className=" text-lg sm:text-2xl font-semibold mb-3 dark:text-darkTextPrimary">Team Role</h2>
                         <Button
-                            className="bg-[#f5f6f6] text-black hover:bg-gray-100"
+                            className="bg-[#f5f6f6] text-black hover:bg-gray-100 dark:text-darkTextPrimary dark:border-darkBorder"
                             variant={"outline2"}
                             size={"sm"}
                         >

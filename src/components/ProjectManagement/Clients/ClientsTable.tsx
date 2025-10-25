@@ -218,7 +218,7 @@ const ClientsTable = () => {
     });
 
     return (
-        <div className="mt-5 border-2 border-borderColor p-3 rounded-[12px]">
+        <div className="mt-5 border-2 border-borderColor dark:border-darkBorder p-3 rounded-[12px]">
             <div className=" mb-5">
                 <h2 className=" text-md sm:text-lg">Clients</h2>
             </div>

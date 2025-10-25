@@ -185,7 +185,7 @@ const LeaveRequestTable = () => {
                 return (
                     <div className=" flex items-center ">
                         <p className=" w-7">{availableLeave}</p>
-                        <div className={`bg-gray-100 flex h-4 w-16 rounded-full relative`}>
+                        <div className={`bg-gray-100 dark:bg-gray-500 flex h-4 w-16 rounded-full relative`}>
                             <p className={`${barColor} flex h-4 rounded-full absolute top-0 left-0`} style={{ width: `${widthPercentage}%` }}></p>
                         </div>
                     </div>
@@ -211,7 +211,7 @@ const LeaveRequestTable = () => {
                         <Dialog>
                             <form>
                                 <DialogTrigger asChild>
-                                    <Button size={'sm'} className=" text-sm bg-red-500 hover:bg-red-500">Reject</Button>
+                                    <Button size={'sm'} className=" text-sm bg-red-500 hover:bg-red-500 dark:text-white">Reject</Button>
                                 </DialogTrigger>
                                 <RejectLeaveRequestModal></RejectLeaveRequestModal>
                             </form>
@@ -236,9 +236,9 @@ const LeaveRequestTable = () => {
     });
 
     return (
-        <div className="mt-5 border-2 border-borderColor p-3 rounded-[12px]">
+        <div className="mt-5 border-2 border-borderColor dark:border-darkBorder p-3 rounded-[12px]">
             <div className=" mb-5">
-                <h2 className=" text-md sm:text-lg">Leave Request</h2>
+                <h2 className=" text-md sm:text-lg dark:text-darkTextPrimary">Leave Request</h2>
             </div>
             <Table>
                 <TableHeader>

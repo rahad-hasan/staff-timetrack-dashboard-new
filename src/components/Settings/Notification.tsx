@@ -29,23 +29,23 @@ const Notification = () => {
     ];
 
     return (
-        <div className="rounded-lg border-2 border-borderColor p-3 md:p-4 mt-4 bg-white">
-            <h2 className="text-lg font-semibold mb-6 text-textGray">Notifications Preferences</h2>
+        <div className="rounded-lg border-2 border-borderColor p-3 md:p-4 mt-4 bg-white dark:bg-darkSecondaryBg dark:border-darkBorder">
+            <h2 className="text-lg font-semibold mb-6 text-textGray dark:text-darkTextPrimary">Notifications Preferences</h2>
 
             {sections.map((section, idx) => (
                 <div
                     key={section.title}
-                    className={`rounded-md border border-borderColor p-3 md:p-4 ${idx < sections.length - 1 ? "mb-4" : ""
+                    className={`rounded-md border border-borderColor dark:border-darkBorder p-3 md:p-4 ${idx < sections.length - 1 ? "mb-4" : ""
                         }`}
                 >
 
-                    <h3 className="font-medium mb-4 text-gray-900">
+                    <h3 className="font-medium mb-4 text-gray-900 dark:text-darkTextPrimary">
                         {section.title}
                     </h3>
 
                     <div className="flex justify-between items-center text-sm font-semibold text-gray-500 mb-2">
-                        <span>Notification</span>
-                        <div className="flex gap-8">
+                        <span className="dark:text-darkTextSecondary">Notification</span>
+                        <div className="flex gap-8 dark:text-darkTextPrimary">
                             <span>IN-APP</span>
                             <span>EMAIL</span>
                         </div>
@@ -57,7 +57,7 @@ const Notification = () => {
                         {section.items.map((item) => (
                             <div
                                 key={item.name}
-                                className="flex justify-between items-center text-sm text-gray-800"
+                                className="flex justify-between items-center text-sm text-gray-800 dark:text-darkTextPrimary"
                             >
                                 <span className="flex-1">{item.name}</span>
                                 <div className="flex items-center gap-8">

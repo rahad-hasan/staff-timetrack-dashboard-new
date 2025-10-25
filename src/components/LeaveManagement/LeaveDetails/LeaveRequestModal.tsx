@@ -121,7 +121,7 @@ const LeaveRequestModal = () => {
                                             <PopoverTrigger asChild>
                                                 <Button
                                                     variant="outline2"
-                                                    className="py-1.5 justify-between font-normal"
+                                                    className="py-1.5 justify-between font-normal dark:text-darkTextSecondary"
                                                 >
                                                     {startDate
                                                         ? startDate.toLocaleDateString()
@@ -159,7 +159,7 @@ const LeaveRequestModal = () => {
                                             <PopoverTrigger asChild>
                                                 <Button
                                                     variant="outline2"
-                                                    className="py-1.5 justify-between font-normal"
+                                                    className="py-1.5 justify-between font-normal dark:text-darkTextSecondary"
                                                 >
                                                     {endDate
                                                         ? endDate.toLocaleDateString()

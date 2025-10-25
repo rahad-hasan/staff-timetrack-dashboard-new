@@ -10,8 +10,8 @@ const LeaveDetails = () => {
         <div>
             <div className="flex items-center justify-between gap-3 mb-5">
                 <div>
-                    <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor">Leave Management</h1>
-                    <p className="text-sm text-subTextColor mt-2">
+                    <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor dark:text-darkTextPrimary">Leave Management</h1>
+                    <p className="text-sm text-subTextColor mt-2 dark:text-darkTextPrimary">
                         All the teams member leave details are displayed here
                     </p>
                 </div>
@@ -28,21 +28,21 @@ const LeaveDetails = () => {
                 </div>
             </div>
             <div className=" mt-4 grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-6 w-full 2xl:w-[70%]">
-                <div className=" border border-borderColor rounded-xl w-full">
-                    <h2 className=" py-7 sm:py-10 bg-[#fff5db] text-3xl font-semibold text-center border-b border-borderColor rounded-t-xl">30</h2>
-                    <div className=" text-sm sm:text-base text-center py-2">Yearly Paid Leave</div>
+                <div className=" border border-borderColor dark:border-darkBorder rounded-xl w-full">
+                    <h2 className=" py-7 sm:py-10 bg-[#fff5db] text-3xl font-semibold text-center border-b border-borderColor dark:border-darkBorder rounded-t-xl dark:text-darkSecondaryBg">30</h2>
+                    <div className=" text-sm sm:text-base text-center py-2 dark:text-darkTextPrimary">Yearly Paid Leave</div>
                 </div>
-                <div className=" border border-borderColor rounded-xl w-full">
-                    <h2 className=" py-7 sm:py-10 bg-[#eff7fe] text-3xl font-semibold text-center border-b border-borderColor rounded-t-xl">14</h2>
-                    <div className=" text-sm sm:text-base text-center py-2">Public Holiday</div>
+                <div className=" border border-borderColor dark:border-darkBorder rounded-xl w-full">
+                    <h2 className=" py-7 sm:py-10 bg-[#eff7fe] text-3xl font-semibold text-center border-b border-borderColor dark:border-darkBorder rounded-t-xl dark:text-darkSecondaryBg">14</h2>
+                    <div className=" text-sm sm:text-base text-center py-2 dark:text-darkTextPrimary">Public Holiday</div>
                 </div>
-                <div className=" border border-borderColor rounded-xl w-full">
-                    <h2 className=" py-7 sm:py-10 bg-[#ede7ff] text-3xl font-semibold text-center border-b border-borderColor rounded-t-xl">14</h2>
-                    <div className=" text-sm sm:text-base text-center py-2">Yearly Casual Leave</div>
+                <div className=" border border-borderColor dark:border-darkBorder rounded-xl w-full">
+                    <h2 className=" py-7 sm:py-10 bg-[#ede7ff] text-3xl font-semibold text-center border-b border-borderColor dark:border-darkBorder rounded-t-xl dark:text-darkSecondaryBg">14</h2>
+                    <div className=" text-sm sm:text-base text-center py-2 dark:text-darkTextPrimary">Yearly Casual Leave</div>
                 </div>
-                <div className=" border border-borderColor rounded-xl w-full">
-                    <h2 className=" py-7 sm:py-10 bg-[#fee6eb] text-3xl font-semibold text-center border-b border-borderColor rounded-t-xl">4</h2>
-                    <div className=" text-sm sm:text-base text-center py-2">Team member on leave</div>
+                <div className=" border border-borderColor dark:border-darkBorder rounded-xl w-full">
+                    <h2 className=" py-7 sm:py-10 bg-[#fee6eb] text-3xl font-semibold text-center border-b border-borderColor dark:border-darkBorder rounded-t-xl dark:text-darkSecondaryBg">4</h2>
+                    <div className=" text-sm sm:text-base text-center py-2 dark:text-darkTextPrimary">Team member on leave</div>
                 </div>
             </div>
             <LeaveDataTable></LeaveDataTable>
