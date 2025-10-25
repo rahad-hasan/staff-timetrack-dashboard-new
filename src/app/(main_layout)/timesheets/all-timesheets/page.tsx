@@ -17,21 +17,21 @@ const AllTimeSheets = () => {
         <div>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5">
                 <div>
-                    <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor">All Timesheets</h1>
-                    <p className="text-sm text-subTextColor mt-2">
+                    <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor dark:text-darkTextPrimary">All Timesheets</h1>
+                    <p className="text-sm text-subTextColor mt-2 dark:text-darkTextPrimary">
                         All the timesheet by team member who completed is displayed here
                     </p>
                 </div>
 
                 <div className="flex gap-3">
-                    <div className="flex mt-3 sm:mt-0 bg-[#f6f7f9] rounded-lg overflow-hidden">
+                    <div className="flex mt-3 sm:mt-0 bg-[#f6f7f9] dark:bg-darkPrimaryBg rounded-lg overflow-hidden">
                         {["Daily", "Weekly", "Monthly"].map((tab) => (
                             <button
                                 key={tab}
                                 onClick={() => handleTabClick(tab as "Daily" | "Weekly" | "Monthly")}
                                 className={`px-4 py-2 text-sm font-medium transition-all cursor-pointer rounded-lg m-0.5 ${activeTab === tab
-                                    ? "bg-white text-headingTextColor shadow-sm"
-                                    : "text-gray-600 hover:text-gray-800"
+                                    ? "bg-white text-headingTextColor shadow-sm dark:bg-primary"
+                                    : "text-gray-600 dark:text-darkTextSecondary hover:text-gray-800"
                                     }`}
                             >
                                 {tab}

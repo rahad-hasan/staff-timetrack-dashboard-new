@@ -30,8 +30,8 @@ const MonthlyTimeSheets = () => {
                 <div className="flex gap-3">
                     <MonthPicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></MonthPicker>
                     <div className=" hidden md:block">
-                        <Button variant={'filter'}>
-                            <SlidersHorizontal className="" /> Filters
+                        <Button className="dark:text-darkTextPrimary" variant={'filter'}>
+                            <SlidersHorizontal className="dark:text-darkTextPrimary" /> Filters
                         </Button>
                     </div>
                 </div>

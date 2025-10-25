@@ -7,7 +7,7 @@ import {
     Popover,
     PopoverTrigger,
 } from "@/components/ui/popover"
-import { Bell, ChevronDown, Menu, } from "lucide-react";
+import { ChevronDown, Menu, } from "lucide-react";
 import StartTimer from "./Header/StartTimer";
 import {
     Sheet,
@@ -43,7 +43,7 @@ const Header = () => {
                         <Image
                             src={bellIcon}
                             fill
-                            className="object-contain"
+                            className="object-contain bell-icon"
                             alt="notification bell"
                         />
                         {/* <Bell className=" dark:text-darkTextPrimary" /> */}
@@ -68,7 +68,7 @@ const Header = () => {
                         <Image
                             src={bellIcon}
                             fill
-                            className="object-contain"
+                            className="object-contain bell-icon"
                             alt="notification bell"
                         />
                         {/* Red dot */}

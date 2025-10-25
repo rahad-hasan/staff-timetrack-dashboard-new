@@ -193,7 +193,7 @@ const AddManualTimeModal = () => {
                                     control={form.control}
                                     name="date"
                                     render={({ field }) => (
-                                        <FormItem className=" w-full">
+                                        <FormItem className=" w-full ">
                                             <FormLabel>Date</FormLabel>
                                             <Popover open={open} onOpenChange={setOpen}>
                                                 <PopoverTrigger asChild>
@@ -202,7 +202,7 @@ const AddManualTimeModal = () => {
                                                         id="date"
                                                         className="w-full justify-between font-normal py-[5px] flex items-center"
                                                     >
-                                                        <div className=" flex items-center">
+                                                        <div className=" flex items-center dark:text-darkTextPrimary">
                                                             <CalendarDays className="mr-2 text-muted-foreground" />
                                                             {date ? date.toLocaleDateString() : "Select date"}
                                                         </div>
@@ -228,7 +228,7 @@ const AddManualTimeModal = () => {
                                     )}
                                 />
 
-                                <FormLabel className="-mb-1">Time</FormLabel>
+                                <FormLabel className="-mb-1 ">Time</FormLabel>
                                 <div className=" flex flex-col md:flex-row gap-2 md:gap-3">
                                     <FormField
                                         control={form.control}
@@ -284,7 +284,7 @@ const AddManualTimeModal = () => {
                                 </div>
 
                                 <FormLabel className="-mb-1 mt-2">Total Time: {totalTime}</FormLabel>
-                                <div className="relative h-5 bg-[#f6f7f9] rounded-4xl border border-borderColor">
+                                <div className="relative h-5 bg-[#f6f7f9] dark:bg-darkPrimaryBg rounded-4xl border border-borderColor dark:border-darkBorder">
                                     {activePeriods?.map((period, index) => {
                                         const startPercent = (period.start / 24) * 100;
                                         const endPercent = (period.end / 24) * 100;
@@ -306,13 +306,12 @@ const AddManualTimeModal = () => {
                                     })}
                                 </div>
                                 <div className=" flex justify-between -mt-2">
-                                    <span className=" text-sm text-gray-400">1h</span>
-                                    <span className=" text-sm text-gray-400">6h</span>
-                                    <span className=" text-sm text-gray-400">12h</span>
-                                    <span className=" text-sm text-gray-400">18h</span>
-                                    <span className=" text-sm text-gray-400">24h</span>
+                                    <span className=" text-sm text-gray-400 dark:text-darkTextSecondary">1h</span>
+                                    <span className=" text-sm text-gray-400 dark:text-darkTextSecondary">6h</span>
+                                    <span className=" text-sm text-gray-400 dark:text-darkTextSecondary">12h</span>
+                                    <span className=" text-sm text-gray-400 dark:text-darkTextSecondary">18h</span>
+                                    <span className=" text-sm text-gray-400 dark:text-darkTextSecondary">24h</span>
                                 </div>
-
                                 <FormField
                                     control={form.control}
                                     name="message"
@@ -327,7 +326,6 @@ const AddManualTimeModal = () => {
                                     )}
                                 />
                             </div>
-
                             <div className="flex justify-end">
                                 <Button type="submit">Save</Button>
                             </div>

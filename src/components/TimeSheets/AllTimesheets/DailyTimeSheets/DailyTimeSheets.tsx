@@ -37,12 +37,12 @@ const DailyTimeSheets = () => {
 
     return (
         <>
-            <div className=" mb-5 flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between">
+            <div className=" mb-5 flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between h-full">
                 <div className=" flex flex-col md:flex-row gap-4 md:gap-3">
                     <SpecificDatePicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></SpecificDatePicker>
                     <div className="hidden md:block">
-                        <Button className=" py-0" variant={'filter'}>
-                            <SlidersHorizontal className="" /> Filters
+                        <Button className=" py-0 dark:text-darkTextPrimary" variant={'filter'}>
+                            <SlidersHorizontal className=" dark:text-darkTextPrimary" /> Filters
                         </Button>
                     </div>
                 </div>
@@ -86,10 +86,10 @@ const DailyTimeSheets = () => {
 
             <div className=" mb-5">
                 <div className=" flex gap-2 mb-2">
-                    <h1 className=" font-bold">Today:</h1>
-                    <p className="">6:00:00</p>
+                    <h1 className=" font-bold dark:text-darkTextPrimary">Today:</h1>
+                    <p className="dark:text-darkTextPrimary">6:00:00</p>
                 </div>
-                <div className="relative h-5 bg-[#f6f7f9] rounded-4xl border border-borderColor">
+                <div className="relative h-5 bg-[#f6f7f9] dark:bg-darkPrimaryBg rounded-4xl border border-borderColor dark:border-darkBorder">
                     {activePeriods.map((period, index) => {
                         const startPercent = (period.start / 24) * 100;
                         const endPercent = (period.end / 24) * 100;
@@ -109,9 +109,9 @@ const DailyTimeSheets = () => {
                                 </TooltipTrigger>
                                 <TooltipContent className=" bg-[#868686] p-3">
                                     <div>
-                                        <h2 className=" text-[15px] mb-2">Project: Orbit Technology’s Project</h2>
-                                        <h2 className=" text-[15px] mb-2">Task: Front End Development</h2>
-                                        <h2 className=" text-[15px]">Duration: 2:00:00</h2>
+                                        <h2 className=" text-[15px] mb-2 dark:text-darkTextPrimary">Project: Orbit Technology’s Project</h2>
+                                        <h2 className=" text-[15px] mb-2 dark:text-darkTextPrimary">Task: Front End Development</h2>
+                                        <h2 className=" text-[15px] dark:text-darkTextPrimary">Duration: 2:00:00</h2>
                                     </div>
                                 </TooltipContent>
                             </Tooltip>
@@ -128,7 +128,7 @@ const DailyTimeSheets = () => {
                         return (
                             <span
                                 key={i}
-                                className={`text-sm text-gray-400 
+                                className={`text-sm text-gray-400 dark:text-darkTextSecondary
                                 ${!isAlwaysVisible ? "hidden lg:inline xl:inline" : ""}
                                 sm:first:ml-1
                                 `}

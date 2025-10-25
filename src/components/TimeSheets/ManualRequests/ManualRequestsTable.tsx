@@ -161,7 +161,7 @@ const ManualRequestsTable = () => {
                             </h1>
                             <p>8:00 am - 10:00 pm</p>
                         </div>
-                        <Button variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
+                        <Button className="dark:text-darkTextPrimary" variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
                     </div>
                 );
             },
@@ -180,7 +180,7 @@ const ManualRequestsTable = () => {
     });
 
     return (
-        <div className="border-2 border-borderColor p-3 rounded-[12px]">
+        <div className="border-2 border-borderColor dark:border-darkBorder p-3 rounded-[12px]">
             <Table>
                 <TableHeader>
                     {table.getHeaderGroups().map(headerGroup => (

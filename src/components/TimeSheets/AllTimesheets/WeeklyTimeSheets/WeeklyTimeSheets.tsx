@@ -32,8 +32,8 @@ const WeeklyTimeSheets = () => {
                 <div className=" flex gap-3">
                     <WeeklyDatePicker centerDate={centerDate} setCenterDate={setCenterDate} />
                     <div className=" hidden md:block">
-                        <Button variant={'filter'}>
-                            <SlidersHorizontal className="" /> Filters
+                        <Button className="dark:text-darkTextPrimary" variant={'filter'}>
+                            <SlidersHorizontal className=" dark:text-darkTextPrimary" /> Filters
                         </Button>
                     </div>
                 </div>

@@ -51,14 +51,14 @@ const MonthlyTimeSheetsCalendar = () => {
 
     const DateCell = ({ day, time, activity }: { day: number, time: string, activity: number | null }) => (
         <div
-            className={`p-3 h-28 md:h-24 flex flex-col justify-center items-center text-gray-800 bg-white border border-gray-200`}
+            className={`p-3 h-28 md:h-24 flex flex-col justify-center items-center text-gray-800 bg-white border border-gray-200 dark:bg-darkPrimaryBg dark:text-darkTextPrimary dark:border-darkBorder`}
         >
             <span className="font-semibold text-lg mb-1">{day}</span>
             {
                 viewType === "Hours" ?
                     <div>
                         {time && (
-                            <div className="px-2 py-1 text-sm font-medium rounded-lg bg-[#e9f8f0] text-primary shadow-sm">
+                            <div className="px-2 py-1 text-sm font-medium rounded-lg bg-[#e9f8f0] dark:bg-darkSecondaryBg text-primary shadow-sm">
                                 {time}
                             </div>
                         )}
@@ -66,7 +66,7 @@ const MonthlyTimeSheetsCalendar = () => {
                     :
                     <div>
                         {activity && (
-                            <div className="px-2 py-1 text-sm font-medium rounded-lg bg-[#e9f8f0] text-primary shadow-sm">
+                            <div className="px-2 py-1 text-sm font-medium rounded-lg bg-[#e9f8f0] dark:bg-darkSecondaryBg text-primary shadow-sm">
                                 {activity}%
                             </div>
                         )}
@@ -76,7 +76,7 @@ const MonthlyTimeSheetsCalendar = () => {
     );
 
     const DayHeader = ({ day, className }: { day: string; className?: string }) => (
-        <div className={`p-3 flex items-center justify-center font-bold text-sm h-14 text-black bg-gray-100 border-gray-300 ${className}`}>
+        <div className={`p-3 flex items-center justify-center font-bold text-sm h-14 text-black bg-gray-100 border-gray-300 dark:bg-darkPrimaryBg dark:text-darkTextPrimary ${className}`}>
             {day}
         </div>
     );
@@ -86,16 +86,16 @@ const MonthlyTimeSheetsCalendar = () => {
             <div className=" mb-5 flex flex-col gap-4 md:gap-0 md:flex-row justify-between">
                 <div className=" flex items-center gap-3 md:gap-5 ">
                     <div className=" flex items-center gap-0.5 md:gap-2">
-                        <h2 className=" font-semibold">Total Hour:</h2>
-                        <h2>32:25:00</h2>
+                        <h2 className=" font-semibold dark:text-darkTextPrimary">Total Hour:</h2>
+                        <h2 className="dark:text-darkTextPrimary">32:25:00</h2>
                     </div>
                     <div className=" flex items-center gap-0.5 md:gap-2">
-                        <h2 className=" font-semibold">Monthly Activity:</h2>
-                        <h2>75.56%</h2>
+                        <h2 className=" font-semibold dark:text-darkTextPrimary">Monthly Activity:</h2>
+                        <h2 className="dark:text-darkTextPrimary">75.56%</h2>
                     </div>
                 </div>
                 <div className=" flex items-center gap-2">
-                    <p className=" font-semibold">Select Option: </p>
+                    <p className=" font-semibold dark:text-darkTextPrimary">Select Option: </p>
 
                     <Select onValueChange={(value) => setViewType(value)} defaultValue="Hours">
                         <SelectTrigger className="w-[180px]">
@@ -118,7 +118,7 @@ const MonthlyTimeSheetsCalendar = () => {
                         if (index === dayHeaders.length - 1) extraClass = "rounded-tr-lg";
 
                         return (
-                            <div key={day}>
+                            <div key={day} >
                                 <DayHeader day={day} className={extraClass} />
                             </div>
                         );

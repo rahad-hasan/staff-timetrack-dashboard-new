@@ -56,12 +56,12 @@ const WeeklyDatePicker = ({ centerDate, setCenterDate }: WeeklyDatePickerProps) 
     console.log("End Date:", endOfWeek.toISOString());
     return (
         <div className="flex">
-            <ChevronLeft onClick={() => handleNavigate(-1)} className="border p-2.5 w-10 h-10 border-borderColor rounded-lg cursor-pointer" />
-            <div className=" flex items-center gap-2 border rounded-md px-2 sm:px-4 mx-3">
+            <ChevronLeft onClick={() => handleNavigate(-1)} className="border p-2.5 w-10 h-10 border-borderColor dark:border-darkBorder rounded-lg cursor-pointer" />
+            <div className=" flex items-center gap-2 border dark:border-darkBorder rounded-md px-2 sm:px-4 mx-3">
                 <Calendar className=" text-primary " />
                 <span className="text-sm sm:text-[16px]">{dateDisplay}</span>
             </div>
-            <ChevronRight onClick={() => handleNavigate(1)} className="border p-2.5 w-10 h-10 border-borderColor rounded-lg cursor-pointer" />
+            <ChevronRight onClick={() => handleNavigate(1)} className="border p-2.5 w-10 h-10 border-borderColor dark:border-darkBorder rounded-lg cursor-pointer" />
         </div>
     );
 };

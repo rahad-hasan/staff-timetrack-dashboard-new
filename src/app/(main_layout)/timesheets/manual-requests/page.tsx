@@ -29,8 +29,8 @@ const ManualRequests = () => {
         <div>
             <div className="flex items-center justify-between gap-3 md:gap-0 mb-5">
                 <div>
-                    <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor">Manual Requests</h1>
-                    <p className="text-sm text-subTextColor mt-2">
+                    <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor dark:text-darkTextPrimary">Manual Requests</h1>
+                    <p className="text-sm text-subTextColor mt-2 dark:text-darkTextPrimary">
                         All the timesheet by team member who completed is displayed here
                     </p>
                 </div>
@@ -47,8 +47,8 @@ const ManualRequests = () => {
             </div>
             <div className=" flex justify-between items-center gap-4 md:gap-3 mb-5">
                 <div className="">
-                    <Button className=" w-10 sm:w-auto h-10 sm:h-auto" variant={'outline2'}>
-                        <SlidersHorizontal className="" /> <span className=" hidden sm:block">Filters</span>
+                    <Button className=" w-10 sm:w-auto h-10 sm:h-auto dark:text-darkTextPrimary" variant={'outline2'}>
+                        <SlidersHorizontal className="" /> <span className=" hidden sm:block dark:text-darkTextPrimary">Filters</span>
                     </Button>
                 </div>
                 <div className=" w-full sm:w-[250px]">
