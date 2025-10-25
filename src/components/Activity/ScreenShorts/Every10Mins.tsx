@@ -126,11 +126,11 @@ const Every10Mins = () => {
             <div className="">
                 <div className=" flex flex-col sm:flex-row gap-2 sm:gap-3 sm:justify-between sm:items-center">
                     <div className=" flex items-center gap-2">
-                        <Circle size={20} className=" text-gray-200" />
-                        <p className=" text-subTextColor"> 9:10 am - 10:00 am</p>
+                        <Circle size={20} className=" text-gray-200 dark:text-darkTextPrimary" />
+                        <p className=" text-subTextColor dark:text-darkTextSecondary"> 9:10 am - 10:00 am</p>
                     </div>
 
-                    <h2 className=" text-lg  text-subTextColor">
+                    <h2 className=" text-lg  text-subTextColor dark:text-darkTextSecondary">
                         Total time worked: <span className=" font-semibold">1:00:00</span>
                     </h2>
                 </div>
@@ -140,7 +140,7 @@ const Every10Mins = () => {
                         <CarouselContent className="">
                             {screenShortsTimely.map((screenShort) => (
                                 <CarouselItem key={screenShort._id} className=" basis-[70%] sm:basis-[45%] lg:basis-[30%] 2xl:basis-[23%] p-3">
-                                    <div className=" p-3 flex-nowrap rounded-lg border border-borderColor cursor-grab">
+                                    <div className=" p-3 flex-nowrap rounded-lg border border-borderColor dark:border-darkBorder cursor-grab">
 
                                         <Image
                                             src={screenShort.screenShort}
@@ -157,12 +157,12 @@ const Every10Mins = () => {
 
                                         <div className="mt-3">
                                             <div className="flex justify-between items-center">
-                                                <p className="text-lg text-textGray">
+                                                <p className="text-lg text-textGray dark:text-darkTextSecondary">
                                                     {screenShort.start} - {screenShort.end}
                                                 </p>
                                                 <Pencil className="text-primary cursor-pointer" size={18} />
                                             </div>
-                                            <p className="mb-2 text-textGray">
+                                            <p className="mb-2 text-textGray dark:text-darkTextSecondary">
                                                 {screenShort.activity}% of 10 minutes
                                             </p>
                                             <Slider
@@ -180,10 +180,10 @@ const Every10Mins = () => {
                                                 max={100}
                                                 step={1}
                                             />
-                                            <h2 className="mt-2 md:text-lg font-semibold">
+                                            <h2 className="mt-2 md:text-lg font-semibold dark:text-darkTextPrimary">
                                                 {screenShort.project}
                                             </h2>
-                                            <p className="text-textGray">{screenShort.task}</p>
+                                            <p className="text-textGray dark:text-darkTextSecondary">{screenShort.task}</p>
                                         </div>
                                     </div>
                                 </CarouselItem>
@@ -193,14 +193,14 @@ const Every10Mins = () => {
                 </div >
             </div>
             {/* map and under map */}
-            <div>
+            <div className="">
                 <div className=" flex flex-col sm:flex-row gap-2 sm:gap-3 sm:justify-between sm:items-center">
                     <div className=" flex items-center gap-2">
-                        <Circle size={20} className=" text-gray-200" />
-                        <p className=" text-subTextColor"> 10:10 am - 11:10 am</p>
+                        <Circle size={20} className=" text-gray-200 dark:text-darkTextPrimary" />
+                        <p className=" text-subTextColor dark:text-darkTextSecondary"> 10:10 am - 11:00 am</p>
                     </div>
 
-                    <h2 className=" text-lg  text-subTextColor">
+                    <h2 className=" text-lg  text-subTextColor dark:text-darkTextSecondary">
                         Total time worked: <span className=" font-semibold">1:00:00</span>
                     </h2>
                 </div>
@@ -210,22 +210,29 @@ const Every10Mins = () => {
                         <CarouselContent className="">
                             {screenShortsTimely.map((screenShort) => (
                                 <CarouselItem key={screenShort._id} className=" basis-[70%] sm:basis-[45%] lg:basis-[30%] 2xl:basis-[23%] p-3">
-                                    <div className=" p-3 flex-nowrap rounded-lg border border-borderColor cursor-grab">
+                                    <div className=" p-3 flex-nowrap rounded-lg border border-borderColor dark:border-darkBorder cursor-grab">
+
                                         <Image
                                             src={screenShort.screenShort}
+                                            onClick={() => {
+                                                setSelectedImage(screenShort.screenShort)
+                                                setModalOpen(!modalOpen)
+                                            }}
                                             width={300}
                                             height={300}
                                             className="rounded-lg w-full transition-transform duration-300 hover:scale-[1.01]"
                                             alt="screenshot"
                                         />
+
+
                                         <div className="mt-3">
                                             <div className="flex justify-between items-center">
-                                                <p className="text-lg text-textGray">
+                                                <p className="text-lg text-textGray dark:text-darkTextSecondary">
                                                     {screenShort.start} - {screenShort.end}
                                                 </p>
                                                 <Pencil className="text-primary cursor-pointer" size={18} />
                                             </div>
-                                            <p className="mb-2 text-textGray">
+                                            <p className="mb-2 text-textGray dark:text-darkTextSecondary">
                                                 {screenShort.activity}% of 10 minutes
                                             </p>
                                             <Slider
@@ -243,10 +250,10 @@ const Every10Mins = () => {
                                                 max={100}
                                                 step={1}
                                             />
-                                            <h2 className="mt-2 md:text-lg font-semibold">
+                                            <h2 className="mt-2 md:text-lg font-semibold dark:text-darkTextPrimary">
                                                 {screenShort.project}
                                             </h2>
-                                            <p className="text-textGray">{screenShort.task}</p>
+                                            <p className="text-textGray dark:text-darkTextSecondary">{screenShort.task}</p>
                                         </div>
                                     </div>
                                 </CarouselItem>
@@ -254,11 +261,11 @@ const Every10Mins = () => {
                         </CarouselContent>
                     </Carousel>
                 </div >
-                {
-                    modalOpen &&
-                    <ScreenShortsModal screenShorts={dummyScreenShorts} modalOpen={modalOpen} setModalOpen={setModalOpen}></ScreenShortsModal>
-                }
             </div>
+            {
+                modalOpen &&
+                <ScreenShortsModal screenShorts={dummyScreenShorts} modalOpen={modalOpen} setModalOpen={setModalOpen}></ScreenShortsModal>
+            }
         </>
     );
 };

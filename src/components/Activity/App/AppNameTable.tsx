@@ -191,14 +191,14 @@ const AppNameTable = () => {
                     <div className=" flex items-center justify-between">
                         <div className=" flex flex-col">
                             <span className=" font-semibold">{timeSpent}</span>
-                            <span className=" text-textGray">{time}</span>
+                            <span className=" text-textGray dark:text-darkTextSecondary">{time}</span>
                         </div>
                         <div className="flex justify-end">
 
                             {
                                 isBlock ?
                                     <button
-                                        className={` w-[100px] py-1.5 flex items-center justify-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 bg-[#fee6eb] text-red-400  border border-red-400"
+                                        className={` w-[100px] py-1.5 flex items-center justify-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 bg-[#fee6eb]  text-red-400  border border-red-400"
                                 `}
                                     >
                                         Unblock
@@ -208,7 +208,7 @@ const AppNameTable = () => {
                                         <form>
                                             <DialogTrigger asChild>
                                                 <button
-                                                    className={` w-[100px] py-1.5 flex items-center justify-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 text-gray-600 hover:text-textGray border border-borderColor"
+                                                    className={` w-[100px] py-1.5 flex items-center justify-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 text-gray-600 hover:text-textGray dark:text-darkTextSecondary dark:border-darkBorder border border-borderColor"
                                                 `}
                                                 >
                                                     Block App
@@ -239,7 +239,7 @@ const AppNameTable = () => {
     });
 
     return (
-        <div className="mt-5 border-2 border-borderColor rounded-[12px]">
+        <div className="mt-5 border-2 border-borderColor dark:border-darkBorder rounded-[12px]">
 
             <Table>
                 <TableHeader>

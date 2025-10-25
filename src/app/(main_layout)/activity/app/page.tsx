@@ -48,21 +48,21 @@ const App = () => {
         <div>
             <div className="flex items-center justify-between gap-3 mb-5">
                 <div>
-                    <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor">App Activity</h1>
-                    <p className="text-sm text-subTextColor mt-2">
+                    <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor dark:text-darkTextPrimary">App Activity</h1>
+                    <p className="text-sm text-subTextColor mt-2 dark:text-darkTextPrimary">
                         All the app during the working hour by team member is here
                     </p>
                 </div>
 
                 <div className=" flex items-center gap-1.5 sm:gap-3">
                     <button
-                        className={`px-3 sm:px-4 py-2 sm:py-2 flex items-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 text-gray-600 hover:text-textGray border border-borderColor"
+                        className={`px-3 sm:px-4 py-2 sm:py-2 flex items-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 text-gray-600 hover:text-textGray dark:bg-darkPrimaryBg dark:text-darkTextSecondary border border-borderColor"
                                 `}
                     >
                         <Download size={20} /> <span className=" hidden sm:block">Export</span>
                     </button>
                     <button
-                        className={`px-3 py-2 flex items-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 text-gray-600 hover:text-textGray border border-borderColor"
+                        className={`px-3 py-2 flex items-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 text-gray-600 dark:border-darkBorder hover:text-textGray border border-borderColor "
                                 `}
                     >
                         <Settings className=" text-primary" size={20} />
@@ -77,8 +77,8 @@ const App = () => {
                     {/* Filter */}
                     <Popover>
                         <PopoverTrigger asChild>
-                            <Button className=" hidden md:flex" variant={'filter'}>
-                                <SlidersHorizontal className="" /> Filters
+                            <Button className=" hidden md:flex dark:text-darkTextPrimary" variant={'filter'}>
+                                <SlidersHorizontal className="dark:text-darkTextPrimary" /> Filters
                             </Button>
                         </PopoverTrigger>
                         <PopoverContent side="bottom" align="start" className="w-80">

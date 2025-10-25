@@ -184,7 +184,7 @@ const UrlsTable = () => {
                 return (
                     <div className=" flex flex-col">
                         <span className=" font-semibold">{timeSpent}</span>
-                        <span className=" text-textGray">{time}</span>
+                        <span className=" text-textGray dark:text-darkTextSecondary">{time}</span>
                     </div>
                 );
             },
@@ -205,7 +205,7 @@ const UrlsTable = () => {
     });
 
     return (
-        <div className="mt-5 border-2 border-borderColor rounded-[12px]">
+        <div className="mt-5 border-2 border-borderColor dark:border-darkBorder rounded-[12px]">
 
             <Table>
                 <TableHeader>

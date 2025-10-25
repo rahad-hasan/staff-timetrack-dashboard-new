@@ -87,11 +87,11 @@ const AllScreenShorts = () => {
             <div className="">
                 <div className=" flex flex-col sm:flex-row gap-2 sm:gap-3 sm:justify-between sm:items-center">
                     <div className=" flex items-center gap-2">
-                        <Circle size={20} className=" text-gray-200" />
-                        <p className=" text-subTextColor"> 9:10 am - 10:00 am</p>
+                        <Circle size={20} className=" text-gray-200 dark:text-darkTextPrimary" />
+                        <p className=" text-subTextColor dark:text-darkTextSecondary"> 9:10 am - 10:00 am</p>
                     </div>
 
-                    <h2 className=" text-lg  text-subTextColor">
+                    <h2 className=" text-lg  text-subTextColor dark:text-darkTextSecondary">
                         Total time worked: <span className=" font-semibold">1:00:00</span>
                     </h2>
                 </div>
@@ -101,7 +101,7 @@ const AllScreenShorts = () => {
                     {
 
                         screenShortsTimely.map((screenShort) => (
-                            <div key={screenShort?._id} className=" p-3 flex-nowrap rounded-lg border border-borderColor">
+                            <div key={screenShort?._id} className=" p-3 flex-nowrap rounded-lg border border-borderColor dark:border-darkBorder">
 
                                 <Image
                                     src={screenShort.screenShort}
@@ -114,14 +114,14 @@ const AllScreenShorts = () => {
 
                                 <div className="mt-3">
                                     <div className="flex justify-between items-center">
-                                        <p className="md:text-lg text-textGray">
+                                        <p className="md:text-lg text-textGray dark:text-darkTextSecondary">
                                             {screenShort.start}
                                         </p>
                                     </div>
-                                    <h2 className="mt-1 text-sm sm:text-lg font-semibold">
+                                    <h2 className="mt-1 text-sm sm:text-lg font-semibold dark:text-darkTextPrimary">
                                         {screenShort.project}
                                     </h2>
-                                    <p className="text-sm sm:text-base text-textGray">{screenShort.task}</p>
+                                    <p className="text-sm sm:text-base text-textGray dark:text-darkTextSecondary">{screenShort.task}</p>
                                 </div>
                             </div>
                         ))
@@ -129,14 +129,14 @@ const AllScreenShorts = () => {
                 </div>
             </div>
             {/* map and under map */}
-            <div className=" mt-5">
+            <div className="">
                 <div className=" flex flex-col sm:flex-row gap-2 sm:gap-3 sm:justify-between sm:items-center">
                     <div className=" flex items-center gap-2">
-                        <Circle size={20} className=" text-gray-200" />
-                        <p className=" text-subTextColor"> 9:10 am - 10:00 am</p>
+                        <Circle size={20} className=" text-gray-200 dark:text-darkTextPrimary" />
+                        <p className=" text-subTextColor dark:text-darkTextSecondary"> 9:10 am - 10:00 am</p>
                     </div>
 
-                    <h2 className=" text-lg  text-subTextColor">
+                    <h2 className=" text-lg  text-subTextColor dark:text-darkTextSecondary">
                         Total time worked: <span className=" font-semibold">1:00:00</span>
                     </h2>
                 </div>
@@ -146,7 +146,7 @@ const AllScreenShorts = () => {
                     {
 
                         screenShortsTimely.map((screenShort) => (
-                            <div key={screenShort?._id} className=" p-3 flex-nowrap rounded-lg border border-borderColor">
+                            <div key={screenShort?._id} className=" p-3 flex-nowrap rounded-lg border border-borderColor dark:border-darkBorder">
 
                                 <Image
                                     src={screenShort.screenShort}
@@ -159,14 +159,14 @@ const AllScreenShorts = () => {
 
                                 <div className="mt-3">
                                     <div className="flex justify-between items-center">
-                                        <p className="md:text-lg text-textGray">
+                                        <p className="md:text-lg text-textGray dark:text-darkTextSecondary">
                                             {screenShort.start}
                                         </p>
                                     </div>
-                                    <h2 className="mt-1 text-sm sm:text-lg font-semibold">
+                                    <h2 className="mt-1 text-sm sm:text-lg font-semibold dark:text-darkTextPrimary">
                                         {screenShort.project}
                                     </h2>
-                                    <p className=" text-sm sm:text-base text-textGray">{screenShort.task}</p>
+                                    <p className="text-sm sm:text-base text-textGray dark:text-darkTextSecondary">{screenShort.task}</p>
                                 </div>
                             </div>
                         ))
