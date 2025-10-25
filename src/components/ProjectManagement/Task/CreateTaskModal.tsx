@@ -63,7 +63,7 @@ const CreateTaskModal = () => {
     }
 
     return (
-        <DialogContent className="sm:max-w-[525px]">
+        <DialogContent className="w-full sm:max-w-[525px] max-h-[95vh] overflow-y-auto">
             <DialogHeader>
                 <DialogTitle className=" mb-4">Create New Task</DialogTitle>
             </DialogHeader>

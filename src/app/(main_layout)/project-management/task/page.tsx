@@ -62,22 +62,22 @@ const TaskPage = () => {
         <div>
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-5">
                 <div>
-                    <h1 className="text-2xl md:text-3xl font-semibold text-headingTextColor">Tasks</h1>
-                    <p className="text-sm text-subTextColor mt-2">
+                    <h1 className="text-2xl md:text-3xl font-semibold text-headingTextColor dark:text-darkTextPrimary">Tasks</h1>
+                    <p className="text-sm text-subTextColor mt-2 dark:text-darkTextPrimary">
                         All the tasks during the working hour by team member is here
                     </p>
                 </div>
 
                 <div className=" flex items-center gap-3 sm:gap-5">
                     <div className="flex gap-3">
-                        <div className="flex bg-[#f6f7f9] rounded-lg overflow-hidden">
+                        <div className="flex bg-[#f6f7f9] dark:bg-darkPrimaryBg rounded-lg overflow-hidden">
                             {["List view", "Kanban"].map((tab) => (
                                 <button
                                     key={tab}
                                     onClick={() => handleTabClick(tab as "List view" | "Kanban")}
                                     className={`px-4 py-2 text-sm font-medium transition-all cursor-pointer rounded-lg m-0.5 ${activeTab === tab
-                                        ? "bg-white text-headingTextColor shadow-sm"
-                                        : "text-gray-600 hover:text-gray-800"
+                                        ? "bg-white text-headingTextColor shadow-sm dark:bg-primary"
+                                        : "text-gray-600 hover:text-gray-800 dark:text-darkTextSecondary"
                                         }`}
                                 >
                                     {tab}
