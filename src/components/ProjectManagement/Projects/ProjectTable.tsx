@@ -268,8 +268,8 @@ const ProjectTable = () => {
 
                 const statusClass =
                     status === "In Progress"
-                        ? "bg-blue-100 text-blue-800"
-                        : "bg-gray-100 text-gray-800";
+                        ? "bg-blue-100 dark:bg-darkPrimaryBg text-blue-800 dark:text-darkTextPrimary"
+                        : "bg-gray-100 dark:bg-darkPrimaryBg text-gray-800 dark:text-darkTextPrimary";
 
                 const handleStatusChange = (newStatus: string) => {
                     console.log(newStatus);
@@ -283,7 +283,7 @@ const ProjectTable = () => {
                                     variant="outline2"
                                     className={`px-2 py-1.5 rounded-full text-sm font-medium ${statusClass}`}
                                 >
-                                    <span className={` w-2 h-2 rounded-full ${status === "In Progress" ? "bg-blue-300" : "bg-gray-300"}`}></span>
+                                    <span className={` w-2 h-2 rounded-full ${status === "In Progress" ? "bg-blue-300 dark:bg-gray-300 " : "bg-gray-300"}`}></span>
                                     {status}
                                     <ChevronDown />
                                 </Button>
@@ -309,28 +309,28 @@ const ProjectTable = () => {
                 return <div className="">
                     <Popover>
                         <PopoverTrigger asChild>
-                            <Button variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
+                            <Button className=" dark:text-darkTextPrimary" variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
                         </PopoverTrigger>
                         <PopoverContent side="bottom" align="end" className=" w-[250px] px-2">
                             <div className="">
                                 <div className="space-y-2">
-                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 px-3 cursor-pointer">
+                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkSecondaryBg px-3 cursor-pointer">
                                         <Pencil size={18} />
                                         <p>Edit Project</p>
                                     </div>
-                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 px-3 cursor-pointer">
+                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkSecondaryBg px-3 cursor-pointer">
                                         <UsersRound size={18} />
                                         <p>Manage member</p>
                                     </div>
-                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 px-3 cursor-pointer">
+                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkSecondaryBg px-3 cursor-pointer">
                                         <Copy size={18} />
                                         <p>Duplicate Project</p>
                                     </div>
-                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 px-3 cursor-pointer">
+                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkSecondaryBg px-3 cursor-pointer">
                                         <Package2 size={18} />
                                         <p>Archive Project</p>
                                     </div>
-                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 px-3 cursor-pointer">
+                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkSecondaryBg px-3 cursor-pointer">
                                         <Trash2 size={18} />
                                         <p>Delete Project</p>
                                     </div>
@@ -360,9 +360,9 @@ const ProjectTable = () => {
     const handleRowClick = (taskId: number) => {
         router.push(`/project-management/projects/${taskId}`);
     };
-    
+
     return (
-        <div className="mt-5 border-2 border-borderColor p-3 rounded-[12px]">
+        <div className="mt-5 border-2 border-borderColor dark:border-darkBorder p-3 rounded-[12px]">
             <div className=" mb-5">
                 <h2 className=" text-md sm:text-lg">Projects</h2>
             </div>

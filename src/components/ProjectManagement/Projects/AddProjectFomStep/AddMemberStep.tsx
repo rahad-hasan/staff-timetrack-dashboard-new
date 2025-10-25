@@ -67,13 +67,13 @@ const AddMemberStep = ({ setStep, handleStepSubmit }: GeneralInfoStepProps) => {
                                         <MultiSelectTrigger className=" w-full hover:bg-white py-2">
                                             <MultiSelectValue placeholder="Select frameworks..." />
                                         </MultiSelectTrigger>
-                                        <MultiSelectContent>
+                                        <MultiSelectContent className="dark:bg-darkPrimaryBg">
                                             {/* Items must be wrapped in a group for proper styling */}
                                             <MultiSelectGroup>
                                                 {
                                                     memberData?.map((member, i) => (
 
-                                                        <MultiSelectItem className=" px-0 cursor-pointer" key={i} value={member?.name}>
+                                                        <MultiSelectItem className=" px-0 cursor-pointer hover:dark:bg-darkSecondaryBg" key={i} value={member?.name}>
                                                             <Image src={member?.image} className=" w-8" width={200} height={200} alt="profile_image" />
                                                             <p>{member?.name}</p>
                                                         </MultiSelectItem>

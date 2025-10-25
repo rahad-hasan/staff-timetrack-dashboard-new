@@ -188,7 +188,7 @@ const GeneralInfoStep = ({ setStep, handleStepSubmit }: GeneralInfoStepProps) =>
                                                 <Button
                                                     variant="outline2"
                                                     id="startDate"
-                                                    className="py-1.5 justify-between font-normal"
+                                                    className="py-1.5 justify-between font-normal dark:text-darkTextPrimary"
                                                 >
                                                     {dateStartDate ? dateStartDate.toLocaleDateString() : "Select Start Date"}
                                                     <ChevronDownIcon />
@@ -226,7 +226,7 @@ const GeneralInfoStep = ({ setStep, handleStepSubmit }: GeneralInfoStepProps) =>
                                                 <Button
                                                     variant="outline2"
                                                     id="deadline"
-                                                    className="py-1.5 justify-between font-normal"
+                                                    className="py-1.5 justify-between font-normal dark:text-darkTextPrimary"
                                                 >
                                                     {dateDeadLine ? dateDeadLine.toLocaleDateString() : "Select Deadline"}
                                                     <ChevronDownIcon />

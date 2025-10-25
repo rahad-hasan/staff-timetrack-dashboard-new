@@ -268,16 +268,16 @@ const ProjectMemberTable = () => {
                 return <div className="">
                     <Popover>
                         <PopoverTrigger asChild>
-                            <Button variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
+                            <Button className=" dark:text-darkTextPrimary" variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
                         </PopoverTrigger>
                         <PopoverContent side="bottom" align="end" className=" w-[250px] px-2">
                             <div className="">
                                 <div className="space-y-2">
-                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 px-3 cursor-pointer">
+                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100  hover:dark:bg-darkSecondaryBg px-3 cursor-pointer">
                                         <Pencil size={18} />
                                         <p>Edit User</p>
                                     </div>
-                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 px-3 cursor-pointer">
+                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100  hover:dark:bg-darkSecondaryBg px-3 cursor-pointer">
                                         <Trash2 size={18} />
                                         <p>Remove User</p>
                                     </div>
@@ -305,7 +305,7 @@ const ProjectMemberTable = () => {
     });
 
     return (
-        <div className="mt-5 border-2 border-borderColor p-3 rounded-[12px]">
+        <div className="mt-5 border-2 border-borderColor dark:border-darkBorder p-3 rounded-[12px]">
             <div className=" mb-5">
                 <h2 className=" text-md sm:text-lg">TASK LIST</h2>
             </div>

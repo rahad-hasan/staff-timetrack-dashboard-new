@@ -228,8 +228,8 @@ const TaskTable = () => {
 
                 const statusClass =
                     status === "In Progress"
-                        ? "bg-blue-100 text-blue-800"
-                        : "bg-gray-100 text-gray-800";
+                        ? "bg-blue-100 dark:bg-darkPrimaryBg text-blue-800 dark:text-darkTextPrimary"
+                        : "bg-gray-100 dark:bg-darkPrimaryBg text-gray-800 dark:text-darkTextPrimary";
 
                 const handleStatusChange = (newStatus: string) => {
                     console.log(newStatus);
@@ -243,7 +243,7 @@ const TaskTable = () => {
                                     variant="outline2"
                                     className={`px-2 py-1.5 rounded-full text-sm font-medium ${statusClass}`}
                                 >
-                                    <span className={` w-2 h-2 rounded-full ${status === "In Progress" ? "bg-blue-300" : "bg-gray-300"}`}></span>
+                                    <span className={` w-2 h-2 rounded-full ${status === "In Progress" ? "bg-blue-300 dark:bg-gray-300 " : "bg-gray-300"}`}></span>
                                     {status}
                                     <ChevronDown />
                                 </Button>
@@ -266,7 +266,7 @@ const TaskTable = () => {
             header: () => <div className="">Action</div>,
             cell: () => {
                 return <div className="">
-                    <Button variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
+                    <Button className="dark:text-darkTextPrimary" variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
                 </div>;
             },
         },
@@ -287,7 +287,7 @@ const TaskTable = () => {
     });
 
     return (
-        <div className="mt-5 border-2 border-borderColor p-3 rounded-[12px]">
+        <div className="mt-5 border-2 border-borderColor dark:border-darkBorder p-3 rounded-[12px]">
             <div className=" mb-5">
                 <h2 className=" text-md sm:text-lg">TASK LIST</h2>
             </div>
