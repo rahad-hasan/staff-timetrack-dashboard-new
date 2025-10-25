@@ -230,8 +230,8 @@ const ProjectListTable = () => {
 
                 const statusClass =
                     status === "In Progress"
-                        ? "bg-blue-100 text-blue-800"
-                        : "bg-gray-100 text-gray-800";
+                        ? "bg-blue-100 dark:bg-darkPrimaryBg text-blue-800 dark:text-darkTextPrimary"
+                        : "bg-gray-100 dark:bg-darkPrimaryBg text-gray-800 dark:text-darkTextPrimary";
 
                 const handleStatusChange = (newStatus: string) => {
                     console.log(newStatus);
@@ -245,7 +245,7 @@ const ProjectListTable = () => {
                                     variant="outline2"
                                     className={`px-2 py-1.5 rounded-full text-sm font-medium ${statusClass}`}
                                 >
-                                    <span className={` w-2 h-2 rounded-full ${status === "In Progress" ? "bg-blue-300" : "bg-gray-300"}`}></span>
+                                    <span className={` w-2 h-2 rounded-full ${status === "In Progress" ? "bg-blue-300 dark:bg-gray-300 " : "bg-gray-300"}`}></span>
                                     {status}
                                     <ChevronDown />
                                 </Button>
@@ -280,11 +280,11 @@ const ProjectListTable = () => {
     });
 
     return (
-        <div className="mt-5 border-2 border-borderColor p-3 rounded-[12px]">
+        <div className="mt-5 border-2 border-borderColor dark:border-darkBorder p-3 rounded-[12px]">
             <div className=" flex justify-between items-center mb-5">
-                <h2 className=" text-md sm:text-lg">Project list</h2>
+                <h2 className=" text-md sm:text-lg dark:text-darkTextPrimary">Project list</h2>
                 <div className=" flex items-center gap-3">
-                    <Button className=" text-sm md:text-base" variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
+                    <Button className=" text-sm md:text-base dark:text-darkTextPrimary" variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
                     <Button className=" text-sm md:text-base" size={'sm'}>All Project</Button>
                 </div>
             </div>
