@@ -25,12 +25,8 @@ const MobileSidebarItem = ({
   const content = (
     <div
       onClick={onClick}
-      className={clsx(
-        "flex items-center justify-between w-full text-md text-gray-700 hover:text-primary transition-all",
-        isCollapsed ? "justify-center" : "",
-        "py-2 cursor-pointer",
-        isOpen && "text-primary"
-      )}
+      className={clsx('flex items-center justify-between w-full text-md text-gray-700 dark:text-darkTextPrimary dark:hover:text-primary hover:text-primary transition-all',
+        isCollapsed ? "justify-center" : "", 'py-2 cursor-pointer', isOpen && 'text-primary dark:text-primary')}
     >
       <div className="flex items-center gap-2">
         <Icon size={20} />

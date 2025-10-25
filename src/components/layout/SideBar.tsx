@@ -45,12 +45,12 @@ const SideBar = () => {
                 {/* Collapse Toggle */}
                 <button
                     onClick={() => setIsCollapsed((prev) => !prev)}
-                    className="p-2 rounded-lg hover:bg-gray-100 transition cursor-pointer"
+                    className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-darkSecondaryBg transition cursor-pointer"
                 >
                     {isCollapsed ? (
-                        <ChevronRight size={22} />
+                        <ChevronRight className='' size={22} />
                     ) : (
-                        <ChevronLeft size={22} />
+                        <ChevronLeft className='' size={22} />
                     )}
                 </button>
             </div>
@@ -72,7 +72,7 @@ const SideBar = () => {
                             isCollapsed={isCollapsed}
                         >
                             {item.subItems.length > 0 && (
-                                <div className={`${isCollapsed ? "absolute left-24 px-3 w-[180px] bg-white shadow-2xl rounded-2xl" : "block"} py-3 mt-2 flex flex-col gap-1 transition-all duration-300`}>
+                                <div className={`${isCollapsed ? "absolute left-24 px-3 w-[180px] bg-white dark:bg-darkPrimaryBg shadow-2xl rounded-2xl" : "block"} py-3 mt-2 flex flex-col gap-1 transition-all duration-300`}>
                                     {item.subItems.map((subItem) => (
                                         <SubItem
                                             key={subItem.key}
@@ -107,7 +107,7 @@ const SideBar = () => {
                             isCollapsed={isCollapsed}
                         >
                             {item.subItems.length > 0 && (
-                                <div className={`${isCollapsed ? "absolute left-24 bg-white shadow-2xl rounded-2xl" : "block"} p-3 mt-2 flex flex-col gap-1 transition-all duration-300`}>
+                                <div className={`${isCollapsed ? "absolute left-24 w-[180px] bg-white dark:bg-darkPrimaryBg shadow-2xl rounded-2xl" : "block"} p-3 mt-2 flex flex-col gap-1 transition-all duration-300`}>
                                     {item?.subItems?.map((subItem) => (
                                         <SubItem
                                             key={subItem.key}

@@ -21,14 +21,14 @@ const MobileSubItem = ({
         <Link href={href ?? '#'} passHref>
             <SheetClose asChild>
                 <div
-                    onClick={onClick}
-                    className={clsx(
-                        'text-sm px-2 py-2 rounded-lg cursor-pointer flex gap-1.5 items-center ',
-                        active
-                            ? 'bg-white border border-borderColor text-primary font-medium'
-                            : 'text-gray-600 hover:text-primary',
-                        isCollapsed && '!px-2'
-                    )}
+                onClick={onClick}
+                className={clsx(
+                    'text-sm px-2 py-2 rounded-lg cursor-pointer flex gap-1.5 items-center dark:text-darkTextPrimary ',
+                    active
+                        ? 'bg-white border border-borderColor dark:border-none dark:text-primary dark:bg-darkSecondaryBg text-primary font-medium'
+                        : 'text-gray-600 hover:text-primary',
+                    isCollapsed && '!px-2 '
+                )}
                 >
                     {active && !isCollapsed && <GitCommitVertical size={18} />}
                     <span >{label}</span>
