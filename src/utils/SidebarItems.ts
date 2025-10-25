@@ -47,6 +47,7 @@ export const sidebarItems = [
         collapsible: true,
         subItems: [
             { label: 'Highlight', key: '/insights/highlight' },
+            { label: 'Performance', key: '/insights/performance' },
         ],
     },
     {
