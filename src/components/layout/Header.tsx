@@ -39,7 +39,7 @@ const Header = () => {
                     <DarkMoodToggle></DarkMoodToggle>
                 </div>
                 <div className="border-x-2 border-borderColor dark:border-darkBorder px-3">
-                    <div className="relative w-7 h-7 cursor-pointer">
+                    <div className="relative w-6 h-6 cursor-pointer">
                         <Image
                             src={bellIcon}
                             fill
@@ -62,9 +62,11 @@ const Header = () => {
             </div>
             {/* mobile menu */}
             <div className=" flex items-center gap-4 md:hidden">
-
+                <div>
+                    <DarkMoodToggle></DarkMoodToggle>
+                </div>
                 <div className="">
-                    <div className="relative w-7 h-7 cursor-pointer">
+                    <div className="relative w-[25px] h-[25px] cursor-pointer">
                         <Image
                             src={bellIcon}
                             fill

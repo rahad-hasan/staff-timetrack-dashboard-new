@@ -32,7 +32,7 @@ export default function Subscription() {
         {
             name: "Premium",
             price: "$59",
-            period: "per month",
+            period: "per month", 
             description: "A plan that grows with your business.",
             color: "from-[#aae5c5] from-10% to-white dark:to-darkPrimaryBg to-80%",
             buttonColor: " bg-primary text-white cursor-pointer",
