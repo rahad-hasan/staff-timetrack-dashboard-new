@@ -75,7 +75,7 @@ const AddEventModal = () => {
     ]
 
     return (
-        <DialogContent className="sm:max-w-[525px]">
+        <DialogContent className=" w-full sm:max-w-[525px] max-h-[95vh] overflow-y-auto">
             <DialogHeader>
                 <DialogTitle className=" mb-4">Add Event</DialogTitle>
             </DialogHeader>
@@ -107,7 +107,7 @@ const AddEventModal = () => {
                                             <Button
                                                 variant="outline2"
                                                 id="startDate"
-                                                className="py-1.5 justify-between font-normal"
+                                                className="py-1.5 justify-between font-normal dark:text-darkTextSecondary"
                                             >
                                                 <div className=" flex items-center gap-2">
                                                     <CalendarDays />
