@@ -7,7 +7,7 @@ import {
     Popover,
     PopoverTrigger,
 } from "@/components/ui/popover"
-import { ChevronDown, Menu, } from "lucide-react";
+import { Bell, ChevronDown, Menu, } from "lucide-react";
 import StartTimer from "./Header/StartTimer";
 import {
     Sheet,
@@ -38,7 +38,7 @@ const Header = () => {
                 <div>
                     <DarkMoodToggle></DarkMoodToggle>
                 </div>
-                <div className="border-x-2 border-borderColor px-3">
+                <div className="border-x-2 border-borderColor dark:border-darkBorder px-3">
                     <div className="relative w-7 h-7 cursor-pointer">
                         <Image
                             src={bellIcon}
@@ -46,6 +46,7 @@ const Header = () => {
                             className="object-contain"
                             alt="notification bell"
                         />
+                        {/* <Bell className=" dark:text-darkTextPrimary" /> */}
                         {/* Red dot */}
                         <span className="absolute top-[1px] right-[4px] w-1.5 h-1.5 bg-red-600 rounded-full"></span>
                     </div>
@@ -54,7 +55,7 @@ const Header = () => {
 
                 <Popover>
                     <PopoverTrigger asChild>
-                        <Button variant={'outline2'} className=" py-[5px]"><Image src={`https://avatar.iran.liara.run/public/18`} width={200} height={200} className="w-8 rounded-full" alt="download" />Dannielis Vettori <ChevronDown size={20} /></Button>
+                        <Button variant={'outline2'} className=" py-[5px] dark:text-darkTextPrimary"><Image src={`https://avatar.iran.liara.run/public/18`} width={200} height={200} className="w-8 rounded-full" alt="download" />Dannielis Vettori <ChevronDown size={20} /></Button>
                     </PopoverTrigger>
                     <ProfilePopoverContent side={"bottom"} align={"end"}></ProfilePopoverContent>
                 </Popover>
@@ -77,7 +78,7 @@ const Header = () => {
 
                 <Popover>
                     <PopoverTrigger asChild>
-                        <Button variant={'outline2'} className=" py-[5px]"><Image src={`https://avatar.iran.liara.run/public/18`} width={200} height={200} className="w-5 rounded-full" alt="download" />Vettori <ChevronDown size={20} /></Button>
+                        <Button variant={'outline2'} className=" py-[5px] dark:text-darkTextPrimary"><Image src={`https://avatar.iran.liara.run/public/18`} width={200} height={200} className="w-5 rounded-full" alt="download" />Vettori <ChevronDown size={20} /></Button>
                     </PopoverTrigger>
                     <ProfilePopoverContent side={"bottom"} align={"start"}></ProfilePopoverContent>
                 </Popover>

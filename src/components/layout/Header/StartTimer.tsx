@@ -54,7 +54,7 @@ const StartTimer = () => {
     const filteredTasks = tasks.filter(t => t.toLowerCase().includes(taskSearch.toLowerCase()));
 
     return (
-        <PopoverContent side="bottom" align="start" className="sm:w-[450px] sm:px-4">
+        <PopoverContent side="bottom" align="start" className="sm:w-[450px] sm:px-4 dark:bg-darkPrimaryBg">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 md:gap-4">
                 <div className=" flex items-center gap-1 md:gap-4">
                     <Image
@@ -66,8 +66,8 @@ const StartTimer = () => {
                         className="w-10 cursor-pointer"
                     />
                     <div>
-                        <p className="font-semibold text-base sm:text-base">{project || "Select Project"}</p>
-                        <p className="text-gray-500 text-sm">{task || "Select Task"}</p>
+                        <p className="font-semibold text-base sm:text-base dark:text-darkTextPrimary">{project || "Select Project"}</p>
+                        <p className="text-gray-500 text-sm dark:text-darkTextSecondary">{task || "Select Task"}</p>
                         {
                             task &&
                             <p className="text-gray-500 text-sm">2 Hours limit</p>
@@ -76,8 +76,8 @@ const StartTimer = () => {
                 </div>
 
                 <div>
-                    <h2 className="text-base sm:text-lg font-semibold">{formatTime(time)}</h2>
-                    <p className="text-sm text-gray-500">Today: {formatTime(time)}</p>
+                    <h2 className="text-base sm:text-lg font-semibold dark:text-darkTextPrimary">{formatTime(time)}</h2>
+                    <p className="text-sm text-gray-500 dark:text-darkTextSecondary">Today: {formatTime(time)}</p>
                 </div>
 
             </div>
