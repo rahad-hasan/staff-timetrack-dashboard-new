@@ -35,8 +35,8 @@ const AttendancePage = () => {
         <div>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5">
                 <div>
-                    <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor">Attendance</h1>
-                    <p className="text-sm text-subTextColor mt-2">
+                    <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor dark:text-darkTextPrimary">Attendance</h1>
+                    <p className="text-sm text-subTextColor mt-2 dark:text-darkTextPrimary">
                         All the Attendance during the working hour by team member is here
                     </p>
                 </div>

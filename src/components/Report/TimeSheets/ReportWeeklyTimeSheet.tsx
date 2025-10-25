@@ -52,8 +52,8 @@ const ReportWeeklyTimeSheet = () => {
             <div className="mb-5 flex flex-col gap-4 lg:gap-0 lg:flex-row justify-between">
                 <div className=" flex gap-3">
                     <WeeklyDatePicker centerDate={centerDate} setCenterDate={setCenterDate} />
-                    <Button className=" hidden sm:flex" variant={'filter'}>
-                        <SlidersHorizontal className="" /> Filters
+                    <Button className=" hidden sm:flex dark:text-darkTextPrimary" variant={'filter'}>
+                        <SlidersHorizontal className="dark:text-darkTextPrimary" /> Filters
                     </Button>
                 </div>
                 <div className=" w-full md:w-[250px]">
@@ -93,16 +93,16 @@ const ReportWeeklyTimeSheet = () => {
                     </Select>
                 </div>
             </div>
-            <div className="overflow-x-auto w-full border rounded-lg">
+            <div className="overflow-x-auto w-full border rounded-lg dark:border-darkBorder">
                 <table className="w-full border-collapse">
                     <thead className="">
                         <tr className="text-slate-900">
                             {days.map((d, i) => (
                                 <th
                                     key={i}
-                                    className={`z-10 px-4 py-5 text-center border-b border-gray-200 ${i < days.length - 1 ? 'border-r' : ''}`}
+                                    className={`z-10 px-4 py-5 text-center border-b border-gray-200 dark:border-darkBorder ${i < days.length - 1 ? 'border-r' : ''}`}
                                 >
-                                    <div className="text-xl font-bold">{d.name}</div>
+                                    <div className="text-xl font-bold dark:text-darkTextPrimary">{d.name}</div>
                                 </th>
                             ))}
                         </tr>
@@ -112,7 +112,7 @@ const ReportWeeklyTimeSheet = () => {
                             {rows?.times?.map((time, i) => (
                                 <td
                                     key={i}
-                                    className={`z-10 px-4 py-5 text-center ${i < rows.times.length - 1 ? 'border-r border-gray-200' : ''}`}
+                                    className={`z-10 px-4 py-5 text-center ${i < rows.times.length - 1 ? 'border-r border-gray-200 dark:border-darkBorder' : ''}`}
                                 >
                                     <h2 className=" text-lg text-primary font-semibold">{time.time}</h2>
                                 </td>

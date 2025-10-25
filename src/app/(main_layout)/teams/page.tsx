@@ -28,8 +28,8 @@ const TeamsPage = () => {
         <div>
             <div className="flex items-center justify-between gap-3 mb-5">
                 <div>
-                    <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor">Teams</h1>
-                    <p className="text-sm text-subTextColor mt-2">
+                    <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor dark:text-darkTextPrimary">Teams</h1>
+                    <p className="text-sm text-subTextColor mt-2 dark:text-darkTextPrimary">
                         All the teams and member are displayed here
                     </p>
                 </div>
@@ -61,14 +61,14 @@ const TeamsPage = () => {
             </div>
             <div className=" flex items-center justify-between">
                 <div className="flex gap-3">
-                    <div className="flex  bg-[#f6f7f9] rounded-lg overflow-hidden">
+                    <div className="flex  bg-[#f6f7f9] dark:bg-darkPrimaryBg rounded-lg overflow-hidden">
                         {["Teams", "Members"].map((tab) => (
                             <button
                                 key={tab}
                                 onClick={() => handleTabClick(tab as "Teams" | "Members")}
                                 className={`px-4 py-2 text-sm font-medium transition-all cursor-pointer rounded-lg m-0.5 ${activeTab === tab
-                                    ? "bg-white text-headingTextColor shadow-sm"
-                                    : "text-gray-600 hover:text-gray-800"
+                                    ? "bg-white text-headingTextColor shadow-sm dark:bg-primary"
+                                    : "text-gray-600 hover:text-gray-800 dark:text-darkTextSecondary"
                                     }`}
                             >
                                 {tab} (12)

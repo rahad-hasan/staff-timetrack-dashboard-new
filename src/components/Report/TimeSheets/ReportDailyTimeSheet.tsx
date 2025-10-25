@@ -191,7 +191,7 @@ const ReportDailyTimeSheet = () => {
 
             <div className=" rounded-xl overflow-x-auto">
                 <div className="flex  pb-2">
-                    <div className="w-[80px] flex-shrink-0 font-bold text-sm text-gray-600 text-center">Time</div>
+                    <div className="w-[80px] flex-shrink-0 font-bold text-sm text-gray-600 text-center dark:text-darkTextPrimary">Time</div>
                     <div className="flex-grow font-bold text-sm text-gray-600 ml-4"></div>
                 </div>
 
@@ -201,7 +201,7 @@ const ReportDailyTimeSheet = () => {
                         {timeLineHours.map((hour) => (
                             <div
                                 key={hour}
-                                className="h-[60px] text-xs font-medium text-gray-500 flex items-center justify-center border-b border-borderColor"
+                                className="h-[60px] text-xs font-medium text-gray-500 flex items-center justify-center border-b border-borderColor dark:text-darkTextSecondary"
                             >
                                 {hour.toString().padStart(2, '0')}:00
                             </div>

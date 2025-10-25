@@ -109,16 +109,16 @@ const ReportMonthlyTimeSheet = () => {
                     </Select>
                 </div>
             </div>
-            <div className="overflow-x-auto rounded-2xl border border-borderColor mt-5">
+            <div className="overflow-x-auto rounded-2xl border border-borderColor dark:border-darkBorder mt-5">
                 <table className="w-full border-collapse">
-                    <thead className="bg-white">
+                    <thead className="bg-white dark:bg-darkSecondaryBg">
                         <tr>
                             {days.map((d, i) => (
                                 <th
                                     key={i}
                                     className={`
-                                        px-4 py-4 text-xl font-bold
-                                        border-b border-gray-200 ${i < days.length - 1 ? 'border-r border-gray-200' : ''}
+                                        px-4 py-4 text-lg sm:text-xl font-bold dark:text-darkTextPrimary
+                                        border-b border-gray-200 dark:border-darkBorder ${i < days.length - 1 ? 'border-r border-gray-200 dark:border-darkBorder' : ''}
                                     `}
                                 >
                                     {d.name}
@@ -126,21 +126,21 @@ const ReportMonthlyTimeSheet = () => {
                             ))}
                         </tr>
                     </thead>
-                    <tbody className="bg-white">
+                    <tbody className="bg-white dark:bg-darkSecondaryBg">
                         {weeks.map((week, weekIndex) => (
                             <tr key={weekIndex} className="h-20">
                                 {week.map((cell, cellIndex) => (
                                     <td
                                         key={cellIndex}
                                         className={`
-                                            ${weekIndex < weeks.length - 1 ? 'border-b border-gray-200' : ''} 
-                                            ${cellIndex < week.length - 1 ? 'border-r border-gray-200' : ''}
+                                            ${weekIndex < weeks.length - 1 ? 'border-b border-gray-200 dark:border-darkBorder' : ''} 
+                                            ${cellIndex < week.length - 1 ? 'border-r border-gray-200 dark:border-darkBorder' : ''}
                                         `}
                                     >
                                         <div className=" flex flex-col items-center justify-center h-full">
-                                            <div className="text-base font-normal">{cell.date}</div>
+                                            <div className="text-base font-normal dark:text-darkTextPrimary">{cell.date}</div>
                                             {cell.time && (
-                                                <div className={`text-md font-medium mt-1 ${cell.time === '-' ? 'text-gray-400' : 'text-primary'}`}>
+                                                <div className={`text-md font-medium mt-1  ${cell.time === '-' ? 'text-gray-400 dark:border-darkBorder' : 'text-primary'}`}>
                                                     {cell.time}
                                                 </div>
                                             )}
