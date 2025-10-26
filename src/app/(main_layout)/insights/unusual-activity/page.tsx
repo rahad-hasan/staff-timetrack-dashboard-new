@@ -3,16 +3,18 @@ import { Bell, Settings } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch"
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import { useState } from "react";
-import CoreWork from "@/components/Insights/Performance/CoreWork";
-import Utilization from "@/components/Insights/Performance/Utilization";
-import DailyFocus from "@/components/Insights/Performance/DailyFocus";
-import Activity from "@/components/Insights/Performance/Activity";
+import UnusualActivityTable from "@/components/Insights/UnusualActivity/UnusualActivityTable";
 
-const Performance = () => {
+const UnusualActivity = () => {
     console.log('Performance');
+    const [activeTab, setActiveTab] = useState<"Highly Unusual" | "Unusual" | "Slightly Unusual">("Highly Unusual");
+    console.log("Dashboard Rendered", activeTab);
+
+    const handleTabClick = (tab: "Highly Unusual" | "Unusual" | "Slightly Unusual") => {
+        setActiveTab(tab);
+    };
 
     const users = [
         { name: "Juyed Ahmed", avatar: "https://avatar.iran.liara.run/public/18" },
@@ -34,9 +36,9 @@ const Performance = () => {
         <div>
             <div className="flex items-center justify-between gap-3 mb-5">
                 <div>
-                    <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor dark:text-darkTextPrimary">Performance</h1>
+                    <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor dark:text-darkTextPrimary">Unusual activity</h1>
                     <p className="text-sm text-subTextColor mt-2 dark:text-darkTextPrimary">
-                        All the Performance during the working hour by team member is here
+                        All the Unusual activity during the working hour by team member is here
                     </p>
                 </div>
 
@@ -99,30 +101,23 @@ const Performance = () => {
                     </div>
                 </div>
             </div>
-            <div className="flex items-center gap-3">
-                <Switch id="benchmarks" />
-                <label
-                    htmlFor="benchmarks"
-                    className="flex items-center gap-2 text-sm font-medium text-gray-700  cursor-pointer"
-                >
-                    <span className=" dark:text-darkTextPrimary">Benchmarks</span>
-                    <span className="flex items-center gap-1 dark:text-darkTextPrimary">
-                        <span className="w-2.5 h-2.5 rounded-full bg-green-500 "></span>
-                        Other Industry average
-                    </span> 
-                </label>
+            <div className="flex mt-3 sm:mt-0 bg-[#f6f7f9] dark:bg-darkPrimaryBg rounded-lg w-[341px] sm:w-[359px]">
+                {["Highly Unusual", "Unusual", "Slightly Unusual"].map((tab) => (
+                    <button
+                        key={tab}
+                        onClick={() => handleTabClick(tab as "Highly Unusual" | "Unusual" | "Slightly Unusual")}
+                        className={`px-4 py-2 text-[13px] sm:text-sm font-medium transition-all cursor-pointer rounded-lg m-0.5 ${activeTab === tab
+                            ? "bg-white dark:bg-primary text-headingTextColor shadow-sm"
+                            : "text-gray-600 dark:text-darkTextSecondary hover:text-gray-800"
+                            }`}
+                    >
+                        {tab}
+                    </button>
+                ))}
             </div>
-            {/* performance */}
-            <div className="flex flex-col lg:flex-row gap-5 my-5">
-                <Utilization></Utilization>
-                <CoreWork></CoreWork>
-            </div>
-            <div className="flex flex-col lg:flex-row gap-5 my-5">
-                <DailyFocus></DailyFocus>
-                <Activity></Activity>
-            </div>
+            <UnusualActivityTable></UnusualActivityTable>
         </div>
     );
 };
 
-export default Performance;
+export default UnusualActivity;
