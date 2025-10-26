@@ -1,4 +1,5 @@
 import { Info } from "lucide-react";
+import GaugeChart from "./GaugeChart";
 
 const Utilization = () => {
     const secondBarValue = 20;
@@ -9,10 +10,9 @@ const Utilization = () => {
                 <h2 className="text-md sm:text-lg dark:text-darkTextPrimary">Utilization</h2>
                 <Info size={18} className=" cursor-pointer" />
             </div>
-            <div className=" flex items-center justify-between mt-8">
+            <div className=" flex items-center justify-between mt-8 pb-5  border-b  dark:border-darkBorder">
                 <div className="">
-                    <p className="text-3xl text-headingTextColor mr-2 dark:text-darkTextPrimary">20%</p>
-                    <p className="text-lg text-subTextColor dark:text-darkTextSecondary">Core work</p>
+                    <GaugeChart percentage={65} value="4:38h" label="Daily work avg." />
                 </div>
                 <div className="">
                     <p className="flex items-center justify-end gap-2 dark:text-darkTextPrimary text-3xl">
