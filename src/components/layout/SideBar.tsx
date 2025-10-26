@@ -2,7 +2,7 @@
 import Image from 'next/image';
 import logo from '../../assets/logo.svg'
 // import fit from '../../assets/fit.svg'
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import SidebarItem from './Sidebar/SidebarItem';
 import SubItem from './Sidebar/SubItem';
 import {
@@ -16,7 +16,31 @@ const SideBar = () => {
     const [openMenu, setOpenMenu] = useState<string | null>('');
     const [activeSubItem, setActiveSubItem] = useState<string>('');
     const [isCollapsed, setIsCollapsed] = useState(false);
-    
+
+    useEffect(() => {
+        const savedOpenMenu = localStorage.getItem("sidebarOpenMenu");
+        const savedActiveSubItem = localStorage.getItem("sidebarActiveSubItem");
+        const savedCollapsed = localStorage.getItem("sidebarCollapsed");
+
+        if (savedOpenMenu) setOpenMenu(savedOpenMenu);
+        if (savedActiveSubItem) setActiveSubItem(savedActiveSubItem);
+        if (savedCollapsed === "true") setIsCollapsed(true);
+    }, []);
+
+    useEffect(() => {
+        if (openMenu !== null) localStorage.setItem("sidebarOpenMenu", openMenu);
+        else localStorage.removeItem("sidebarOpenMenu");
+    }, [openMenu]);
+
+    useEffect(() => {
+        if (activeSubItem)
+            localStorage.setItem("sidebarActiveSubItem", activeSubItem);
+    }, [activeSubItem]);
+
+    useEffect(() => {
+        localStorage.setItem("sidebarCollapsed", isCollapsed.toString());
+    }, [isCollapsed]);
+
     const toggleMenu = (menu: string) => {
         setOpenMenu((prev) => (prev === menu ? null : menu));
         setActiveSubItem('')
@@ -55,7 +79,7 @@ const SideBar = () => {
                 </button>
             </div>
 
-            <aside className=" px-5 mt-6">
+            <div className=" px-5 mt-6">
                 {!isCollapsed && (
                     <h2 className="text-xs uppercase text-gray-400 mb-3">Main menu</h2>
                 )}
@@ -89,7 +113,7 @@ const SideBar = () => {
                     </div>
                 ))}
 
-            </aside>
+            </div>
 
             <div className=" mx-5 pt-3 border-t-2 border-borderColor dark:border-darkBorder">
                 {!isCollapsed && (
