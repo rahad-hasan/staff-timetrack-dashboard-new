@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/tooltip"
 import DailyTimeSheetsTable from "./DailyTimeSheetsTable";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
+import AppPagination from "@/components/Common/AppPagination";
 
 const DailyTimeSheets = () => {
     const users = [
@@ -34,7 +35,8 @@ const DailyTimeSheets = () => {
 
     // date picker
     const [selectedDate, setSelectedDate] = useState(new Date());
-
+    const [page, setPage] = useState(1);
+    console.log(page);
     return (
         <>
             <div className=" mb-5 flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between h-full">
@@ -142,6 +144,12 @@ const DailyTimeSheets = () => {
 
             </div>
             <DailyTimeSheetsTable></DailyTimeSheetsTable>
+                <AppPagination
+                    total={120}     // total items
+                    currentPage={page}
+                    limit={10}      // items per page
+                    onPageChange={setPage}
+                />
         </>
     );
 };
