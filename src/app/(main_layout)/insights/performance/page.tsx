@@ -8,6 +8,8 @@ import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import { useState } from "react";
 import CoreWork from "@/components/Insights/Performance/CoreWork";
 import Utilization from "@/components/Insights/Performance/Utilization";
+import DailyFocus from "@/components/Insights/Performance/DailyFocus";
+import Activity from "@/components/Insights/Performance/Activity";
 
 const Performance = () => {
     console.log('Performance');
@@ -114,6 +116,10 @@ const Performance = () => {
             <div className="flex flex-col lg:flex-row gap-5 my-5">
                 <Utilization></Utilization>
                 <CoreWork></CoreWork>
+            </div>
+            <div className="flex flex-col lg:flex-row gap-5 my-5">
+                <DailyFocus></DailyFocus>
+                <Activity></Activity>
             </div>
         </div>
     );
