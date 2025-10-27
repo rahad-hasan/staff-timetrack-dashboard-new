@@ -1,6 +1,6 @@
 "use client"
 
-import { Download, Settings } from "lucide-react";
+import { Settings } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -52,12 +52,12 @@ const Urls = () => {
                 </div>
 
                 <div className=" flex items-center gap-1.5 sm:gap-3">
-                    <button
+                    {/* <button
                         className={`px-3 sm:px-4 py-2 sm:py-2 flex items-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 text-gray-600 hover:text-textGray dark:bg-darkPrimaryBg dark:text-darkTextSecondary border border-borderColor"
                                 `}
                     >
                         <Download size={20} /> <span className=" hidden sm:block">Export</span>
-                    </button>
+                    </button> */}
                     <button
                         className={`px-3 py-2 flex items-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 text-gray-600 dark:border-darkBorder hover:text-textGray border border-borderColor "
                                 `}
