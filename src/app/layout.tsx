@@ -1,28 +1,14 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Poppins, Raleway, Lato  } from "next/font/google";
+import { Nunito } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/Theme/theme-provider";
 import { SidebarRouteSync } from "@/utils/SidebarRouteSync";
 
-const geistSans = Geist({
-    variable: "--font-geist-sans",
-    subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-    variable: "--font-geist-mono",
-    subsets: ["latin"],
-});
-const poppins = Poppins({
-    subsets: ['latin'],
-    weight: ['400', '500', '600', '700'],
-    variable: '--font-poppins',
-})
-const raleway = Raleway({
-    subsets: ['latin'],
-    weight: ['400', '500', '600', '700'],
-    variable: '--font-raleway',
-    display: 'swap',
+const nunito = Nunito({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700', '800', '900'],
+  variable: '--font-nunito',
+  display: 'swap',
 })
 
 export const metadata: Metadata = {
@@ -36,9 +22,9 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en" suppressHydrationWarning>
+        <html lang="en" suppressHydrationWarning className={nunito.className}>
             <body
-                className={`${poppins.variable} ${poppins.variable} antialiased flex bg-[#f6f7f9] dark:bg-darkSecondaryBg`}
+                className={`antialiased flex bg-[#f6f7f9] dark:bg-darkSecondaryBg`}
                 data-gr-ext-installed=""
                 cz-shortcut-listen="true"
                 monica-id="ofpnmcalabcbjgholdjcjblkibolbppb"

@@ -129,7 +129,7 @@ const AllScreenShorts = () => {
                 </div>
             </div>
             {/* map and under map */}
-            <div className="">
+            <div className=" mt-4">
                 <div className=" flex flex-col sm:flex-row gap-2 sm:gap-3 sm:justify-between sm:items-center">
                     <div className=" flex items-center gap-2">
                         <Circle size={20} className=" text-gray-200 dark:text-darkTextPrimary" />
