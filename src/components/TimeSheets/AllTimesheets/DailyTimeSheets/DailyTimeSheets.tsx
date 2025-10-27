@@ -1,9 +1,6 @@
 import { Button } from "../../../ui/button";
 import { SlidersHorizontal } from "lucide-react";
 import { useState } from "react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
     Tooltip,
     TooltipContent,
@@ -12,21 +9,37 @@ import {
 import DailyTimeSheetsTable from "./DailyTimeSheetsTable";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import AppPagination from "@/components/Common/AppPagination";
+import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 
 const DailyTimeSheets = () => {
+
     const users = [
-        { name: "Juyed Ahmed", avatar: "https://avatar.iran.liara.run/public/18" },
-        { name: "Cameron Williamson", avatar: "https://avatar.iran.liara.run/public/19" },
-        { name: "Jenny Wilson", avatar: "https://avatar.iran.liara.run/public/20" },
-        { name: "Esther Howard", avatar: "https://avatar.iran.liara.run/public/21" }
-    ];
-
-    const [userSearch, setUserSearch] = useState("");
-    const [user, setUser] = useState<string>("Juyed Ahmed");
-
-    const filteredUsers = users.filter(t => t.name.toLowerCase().includes(userSearch.toLowerCase()));
-    const selectedUser = users.find((u) => u.name === user);
-
+        {
+            value: "Juyed Ahmed",
+            label: "Juyed Ahmed",
+            avatar: "https://avatar.iran.liara.run/public/18",
+        },
+        {
+            value: "Cameron Williamson",
+            label: "Cameron Williamson",
+            avatar: "https://avatar.iran.liara.run/public/19",
+        },
+        {
+            value: "Jenny Wilson",
+            label: "Jenny Wilson",
+            avatar: "https://avatar.iran.liara.run/public/20",
+        },
+        {
+            value: "Esther Howard",
+            label: "Esther Howard",
+            avatar: "https://avatar.iran.liara.run/public/21",
+        },
+        {
+            value: "Walid Ahmed",
+            label: "Walid Ahmed",
+            avatar: "https://avatar.iran.liara.run/public/22",
+        },
+    ]
     const activePeriods = [
         { start: 5, end: 7 }, // Active from 5 AM to 7 AM
         { start: 13, end: 16 }, // Active from 1 PM to 4 PM
@@ -48,8 +61,8 @@ const DailyTimeSheets = () => {
                         </Button>
                     </div>
                 </div>
-                <div className=" w-full sm:w-[250px]">
-                    <Select onValueChange={setUser} value={user ?? undefined}>
+                <div className=" ">
+                    {/* <Select onValueChange={setUser} value={user ?? undefined}>
                         <SelectTrigger size={'lg'} className="w-full">
                             {selectedUser ? (
                                 <div className="flex items-center gap-2">
@@ -82,7 +95,8 @@ const DailyTimeSheets = () => {
                                 </SelectItem>
                             ))}
                         </SelectContent>
-                    </Select>
+                    </Select> */}
+                    <SelectUserDropDown users={users}></SelectUserDropDown>
                 </div>
             </div>
 
@@ -144,12 +158,12 @@ const DailyTimeSheets = () => {
 
             </div>
             <DailyTimeSheetsTable></DailyTimeSheetsTable>
-                <AppPagination
-                    total={120}     // total items
-                    currentPage={page}
-                    limit={10}      // items per page
-                    onPageChange={setPage}
-                />
+            <AppPagination
+                total={120}     // total items
+                currentPage={page}
+                limit={10}      // items per page
+                onPageChange={setPage}
+            />
         </>
     );
 };

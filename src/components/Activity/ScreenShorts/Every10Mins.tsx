@@ -4,11 +4,11 @@ import screenshort2 from "../../../assets/dashboard/screenshort2.png";
 import screenshort3 from "../../../assets/dashboard/screenshort3.png";
 import Image, { StaticImageData } from "next/image";
 import { Slider } from "@/components/ui/slider"
-import {
-    Carousel,
-    CarouselContent,
-    CarouselItem,
-} from "@/components/ui/carousel"
+// import {
+//     Carousel,
+//     CarouselContent,
+//     CarouselItem,
+// } from "@/components/ui/carousel"
 import { useState } from "react";
 import ScreenShortsModal from "./ScreenShortsModal";
 
@@ -179,10 +179,10 @@ const Every10Mins = () => {
                         </CarouselContent>
                     </Carousel>
                 </div > */}
-                <div className=" mt-3 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
+                <div className=" mt-3 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
                     {
                         screenShortsTimely?.map((screenShort) => (
-                            <div key={screenShort._id} className=" p-3 flex-nowrap rounded-lg border border-borderColor dark:border-darkBorder cursor-pointer">
+                            <div key={screenShort._id} className=" p-3 flex-nowrap rounded-lg border border-borderColor dark:border-darkBorder">
                                 <Image
                                     src={screenShort.screenShort}
                                     onClick={() => {
@@ -191,17 +191,17 @@ const Every10Mins = () => {
                                     }}
                                     width={300}
                                     height={300}
-                                    className="rounded-lg w-full transition-transform duration-300 hover:scale-[1.01]"
+                                    className="rounded-lg w-full transition-transform duration-300 hover:scale-[1.01] cursor-pointer"
                                     alt="screenshot"
                                 />
                                 <div className="mt-3">
                                     <div className="flex justify-between items-center">
-                                        <p className="text-lg text-textGray dark:text-darkTextSecondary">
+                                        <p className="text-sm sm:text-lg  text-textGray dark:text-darkTextSecondary">
                                             {screenShort.start} - {screenShort.end}
                                         </p>
                                         <Pencil className="text-primary cursor-pointer" size={18} />
                                     </div>
-                                    <p className="mb-2 text-textGray dark:text-darkTextSecondary">
+                                    <p className="mb-2 text-sm sm:text-base text-textGray dark:text-darkTextSecondary">
                                         {screenShort.activity}% of 10 minutes
                                     </p>
                                     <Slider
@@ -219,10 +219,10 @@ const Every10Mins = () => {
                                         max={100}
                                         step={1}
                                     />
-                                    <h2 className="mt-2 md:text-lg font-semibold dark:text-darkTextPrimary">
+                                    <h2 className="mt-2 text-sm sm:text-lg font-semibold dark:text-darkTextPrimary">
                                         {screenShort.project}
                                     </h2>
-                                    <p className="text-textGray dark:text-darkTextSecondary">{screenShort.task}</p>
+                                    <p className="text-textGray text-sm sm:text-base dark:text-darkTextSecondary">{screenShort.task}</p>
                                 </div>
                             </div>
                         ))
@@ -240,10 +240,10 @@ const Every10Mins = () => {
                         Total time worked: <span className=" font-semibold">1:00:00</span>
                     </h2>
                 </div>
-                <div className=" mt-3 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
+                               <div className=" mt-3 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
                     {
                         screenShortsTimely?.map((screenShort) => (
-                            <div key={screenShort._id} className=" p-3 flex-nowrap rounded-lg border border-borderColor dark:border-darkBorder cursor-pointer">
+                            <div key={screenShort._id} className=" p-3 flex-nowrap rounded-lg border border-borderColor dark:border-darkBorder">
                                 <Image
                                     src={screenShort.screenShort}
                                     onClick={() => {
@@ -252,17 +252,17 @@ const Every10Mins = () => {
                                     }}
                                     width={300}
                                     height={300}
-                                    className="rounded-lg w-full transition-transform duration-300 hover:scale-[1.01]"
+                                    className="rounded-lg w-full transition-transform duration-300 hover:scale-[1.01] cursor-pointer"
                                     alt="screenshot"
                                 />
                                 <div className="mt-3">
                                     <div className="flex justify-between items-center">
-                                        <p className="text-lg text-textGray dark:text-darkTextSecondary">
+                                        <p className="text-sm sm:text-lg  text-textGray dark:text-darkTextSecondary">
                                             {screenShort.start} - {screenShort.end}
                                         </p>
                                         <Pencil className="text-primary cursor-pointer" size={18} />
                                     </div>
-                                    <p className="mb-2 text-textGray dark:text-darkTextSecondary">
+                                    <p className="mb-2 text-sm sm:text-base text-textGray dark:text-darkTextSecondary">
                                         {screenShort.activity}% of 10 minutes
                                     </p>
                                     <Slider
@@ -280,10 +280,10 @@ const Every10Mins = () => {
                                         max={100}
                                         step={1}
                                     />
-                                    <h2 className="mt-2 md:text-lg font-semibold dark:text-darkTextPrimary">
+                                    <h2 className="mt-2 text-sm sm:text-lg font-semibold dark:text-darkTextPrimary">
                                         {screenShort.project}
                                     </h2>
-                                    <p className="text-textGray dark:text-darkTextSecondary">{screenShort.task}</p>
+                                    <p className="text-textGray text-sm sm:text-base dark:text-darkTextSecondary">{screenShort.task}</p>
                                 </div>
                             </div>
                         ))
