@@ -14,8 +14,8 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet"
 import MobileSidebar from "./MobileSidebar";
-import ProfilePopoverContent from "./Sidebar/ProfilePopoverContent";
 import DarkMoodToggle from "./Header/DarkMoodToogle";
+import ProfilePopoverContent from "./sidebar/ProfilePopoverContent";
 
 
 const Header = () => {

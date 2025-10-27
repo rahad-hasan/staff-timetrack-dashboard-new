@@ -3,17 +3,17 @@ import Image from 'next/image';
 import logo from '../../assets/logo.svg'
 // import fit from '../../assets/fit.svg'
 // import { useEffect, useState } from 'react';
-import SidebarItem from './Sidebar/SidebarItem';
-import SubItem from './Sidebar/SubItem';
 import {
     ChevronRight,
     ChevronLeft,
 } from 'lucide-react';
-import TrialCart from './Sidebar/TrialCart';
 import { othersSidebarItems, sidebarItems } from '@/utils/SidebarItems';
 import { useSidebarStore } from '@/store/sidebarStore';
 import { usePathname } from 'next/navigation';
-import { useEffect } from 'react';
+import SidebarItem from './sidebar/SidebarItem';
+import SubItem from './sidebar/SubItem';
+import TrialCart from './sidebar/TrialCart';
+
 
 const SideBar = () => {
     const pathname = usePathname();
@@ -26,7 +26,6 @@ const SideBar = () => {
         setActiveSubItem,
         toggleCollapse,
     } = useSidebarStore();
-
 
 
     return (

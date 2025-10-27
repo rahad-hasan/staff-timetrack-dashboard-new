@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Poppins, Raleway, Lato  } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/Theme/theme-provider";
 import { SidebarRouteSync } from "@/utils/SidebarRouteSync";
@@ -13,6 +13,17 @@ const geistMono = Geist_Mono({
     variable: "--font-geist-mono",
     subsets: ["latin"],
 });
+const poppins = Poppins({
+    subsets: ['latin'],
+    weight: ['400', '500', '600', '700'],
+    variable: '--font-poppins',
+})
+const raleway = Raleway({
+    subsets: ['latin'],
+    weight: ['400', '500', '600', '700'],
+    variable: '--font-raleway',
+    display: 'swap',
+})
 
 export const metadata: Metadata = {
     title: "Staff Time Tracker Dashboard",
@@ -27,7 +38,7 @@ export default function RootLayout({
     return (
         <html lang="en" suppressHydrationWarning>
             <body
-                className={`${geistSans.variable} ${geistMono.variable} antialiased flex bg-[#f6f7f9] dark:bg-darkSecondaryBg`}
+                className={`${poppins.variable} ${poppins.variable} antialiased flex bg-[#f6f7f9] dark:bg-darkSecondaryBg`}
                 data-gr-ext-installed=""
                 cz-shortcut-listen="true"
                 monica-id="ofpnmcalabcbjgholdjcjblkibolbppb"

@@ -7,9 +7,9 @@ import {
 import Image from "next/image";
 import logo from '../../assets/logo.svg'
 import { othersSidebarItems, sidebarItems } from "@/utils/SidebarItems";
-import MobileSubItem from "./Sidebar/MobileSubItem";
-import MobileSidebarItem from "./Sidebar/MobileSidebarItem";
 import { useSidebarStore } from "@/store/sidebarStore";
+import MobileSidebarItem from "./sidebar/MobileSidebarItem";
+import MobileSubItem from "./sidebar/MobileSubItem";
 
 const MobileSidebar = () => {
     const {

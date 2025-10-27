@@ -21,7 +21,9 @@
 }
 @plugin "tailwindcss-animate";
 @custom-variant dark (&:is(.dark *));
-
+:root {
+  font-family: var(--font-poppins), sans-serif;
+}
 /* notification icon while */
 .dark img.bell-icon {
   filter: brightness(0) invert(1) contrast(60%) saturate(0%);
