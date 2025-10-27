@@ -5,6 +5,7 @@ import screenshort2 from "../../../../assets/dashboard/screenshort2.png";
 import screenshort3 from "../../../../assets/dashboard/screenshort3.png";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Link from "next/link";
 
 
 const RecentActivity = () => {
@@ -19,7 +20,9 @@ const RecentActivity = () => {
                 <h2 className="text-md sm:text-lg dark:text-darkTextPrimary ">RECENT ACTIVITY</h2>
                 <div className=" flex items-center gap-3">
                     <Button className="text-sm md:text-base dark:text-darkTextPrimary" variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
-                    <Button className="text-sm md:text-base" size={'sm'}>View Activity</Button>
+                    <Link href={`/activity/screenshorts`}>
+                        <Button className="text-sm md:text-base" size={'sm'}>View Activity</Button>
+                    </Link>
                 </div>
             </div>
             {/* screenshorts per person */}

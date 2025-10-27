@@ -2,7 +2,7 @@
 import Image from 'next/image';
 import logo from '../../assets/logo.svg'
 // import fit from '../../assets/fit.svg'
-import { useEffect, useState } from 'react';
+// import { useEffect, useState } from 'react';
 import SidebarItem from './Sidebar/SidebarItem';
 import SubItem from './Sidebar/SubItem';
 import {
@@ -11,40 +11,17 @@ import {
 } from 'lucide-react';
 import TrialCart from './Sidebar/TrialCart';
 import { othersSidebarItems, sidebarItems } from '@/utils/SidebarItems';
+import { useSidebarStore } from '@/store/sidebarStore';
 
 const SideBar = () => {
-    const [openMenu, setOpenMenu] = useState<string | null>('');
-    const [activeSubItem, setActiveSubItem] = useState<string>('');
-    const [isCollapsed, setIsCollapsed] = useState(false);
-
-    useEffect(() => {
-        const savedOpenMenu = localStorage.getItem("sidebarOpenMenu");
-        const savedActiveSubItem = localStorage.getItem("sidebarActiveSubItem");
-        const savedCollapsed = localStorage.getItem("sidebarCollapsed");
-
-        if (savedOpenMenu) setOpenMenu(savedOpenMenu);
-        if (savedActiveSubItem) setActiveSubItem(savedActiveSubItem);
-        if (savedCollapsed === "true") setIsCollapsed(true);
-    }, []);
-
-    useEffect(() => {
-        if (openMenu !== null) localStorage.setItem("sidebarOpenMenu", openMenu);
-        else localStorage.removeItem("sidebarOpenMenu");
-    }, [openMenu]);
-
-    useEffect(() => {
-        if (activeSubItem)
-            localStorage.setItem("sidebarActiveSubItem", activeSubItem);
-    }, [activeSubItem]);
-
-    useEffect(() => {
-        localStorage.setItem("sidebarCollapsed", isCollapsed.toString());
-    }, [isCollapsed]);
-
-    const toggleMenu = (menu: string) => {
-        setOpenMenu((prev) => (prev === menu ? null : menu));
-        setActiveSubItem('')
-    };
+    const {
+        openMenu,
+        activeSubItem,
+        isCollapsed,
+        setOpenMenu,
+        setActiveSubItem,
+        toggleCollapse,
+    } = useSidebarStore();
 
     return (
         <div className={`${isCollapsed ? "w-[90px]" : "w-[320px]"} min-h-screen py-5  z-50 sticky top-0 flex flex-col transition-all duration-300`}>
@@ -66,9 +43,8 @@ const SideBar = () => {
                     {!isCollapsed && <h2 className="text-2xl font-bold dark:text-darkTextPrimary">Tracker</h2>}
                 </div>
 
-                {/* Collapse Toggle */}
                 <button
-                    onClick={() => setIsCollapsed((prev) => !prev)}
+                    onClick={toggleCollapse}
                     className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-darkSecondaryBg transition cursor-pointer"
                 >
                     {isCollapsed ? (
@@ -92,7 +68,7 @@ const SideBar = () => {
                             href={item.subItems.length > 0 ? undefined : item.key}
                             collapsible={item.collapsible}
                             isOpen={openMenu === item.key}
-                            onClick={() => toggleMenu(item.key)}
+                            onClick={() => setOpenMenu(item.key)}
                             isCollapsed={isCollapsed}
                         >
                             {item.subItems.length > 0 && (
@@ -127,7 +103,7 @@ const SideBar = () => {
                             href={item.subItems.length > 0 ? undefined : item.key}
                             collapsible={item.collapsible}
                             isOpen={openMenu === item.key}
-                            onClick={() => toggleMenu(item.key)}
+                            onClick={() => setOpenMenu(item.key)}
                             isCollapsed={isCollapsed}
                         >
                             {item.subItems.length > 0 && (
