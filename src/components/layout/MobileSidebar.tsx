@@ -7,18 +7,18 @@ import {
 import Image from "next/image";
 import logo from '../../assets/logo.svg'
 import { othersSidebarItems, sidebarItems } from "@/utils/SidebarItems";
-import { useState } from "react";
 import MobileSubItem from "./Sidebar/MobileSubItem";
 import MobileSidebarItem from "./Sidebar/MobileSidebarItem";
+import { useSidebarStore } from "@/store/sidebarStore";
 
 const MobileSidebar = () => {
-    const [openMenu, setOpenMenu] = useState<string | null>('');
-    const [activeSubItem, setActiveSubItem] = useState<string>('');
+    const {
+        openMenu,
+        activeSubItem,
+        setOpenMenu,
+        setActiveSubItem,
+    } = useSidebarStore();
 
-    const toggleMenu = (menu: string) => {
-        setOpenMenu((prev) => (prev === menu ? null : menu));
-        setActiveSubItem('')
-    };
     return (
         <SheetContent className=" dark:bg-darkPrimaryBg">
             <SheetHeader>
@@ -47,7 +47,7 @@ const MobileSidebar = () => {
                                     href={item.subItems.length > 0 ? undefined : item.key}
                                     collapsible={item.collapsible}
                                     isOpen={openMenu === item.key}
-                                    onClick={() => toggleMenu(item.key)}
+                                    onClick={() => setOpenMenu(item.key)}
                                 >
                                     {item.subItems.length > 0 && (
                                         <div className="py-3 mt-2 flex flex-col gap-1 transition-all duration-300">
@@ -77,7 +77,7 @@ const MobileSidebar = () => {
                                     href={item.subItems.length > 0 ? undefined : item.key}
                                     collapsible={item.collapsible}
                                     isOpen={openMenu === item.key}
-                                    onClick={() => toggleMenu(item.key)}
+                                    onClick={() => setOpenMenu(item.key)}
                                 >
                                     {item.subItems.length > 0 && (
                                         <div className="p-3 mt-2 flex flex-col gap-1 transition-all duration-300">

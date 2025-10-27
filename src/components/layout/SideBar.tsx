@@ -12,8 +12,12 @@ import {
 import TrialCart from './Sidebar/TrialCart';
 import { othersSidebarItems, sidebarItems } from '@/utils/SidebarItems';
 import { useSidebarStore } from '@/store/sidebarStore';
+import { usePathname } from 'next/navigation';
+import { useEffect } from 'react';
 
 const SideBar = () => {
+    const pathname = usePathname();
+    console.log(pathname);
     const {
         openMenu,
         activeSubItem,
@@ -22,6 +26,8 @@ const SideBar = () => {
         setActiveSubItem,
         toggleCollapse,
     } = useSidebarStore();
+
+
 
     return (
         <div className={`${isCollapsed ? "w-[90px]" : "w-[320px]"} min-h-screen py-5  z-50 sticky top-0 flex flex-col transition-all duration-300`}>
