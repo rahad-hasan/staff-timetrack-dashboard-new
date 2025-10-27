@@ -110,7 +110,7 @@ const CreateNewPassword = () => {
                                 </FormItem>
                             )}
                         />
-                        <Link href={`/auth/signIn`}>
+                        <Link href={`/`}>
                             <Button className=" w-full" type="submit">Set New password</Button>
                         </Link>
                     </form>

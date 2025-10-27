@@ -13,10 +13,10 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { useForm } from "react-hook-form";
-import loginIcon from '../../../assets/auth/loginIcon.svg'
+import loginIcon from '../assets/auth/loginIcon.svg'
 import Image from "next/image";
-import logo from '../../../assets/logo.svg'
-import signInImage from '../../../assets/auth/signImage.webp'
+import logo from '../assets/logo.svg'
+import signInImage from '../assets/auth/signImage.webp'
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
@@ -139,7 +139,9 @@ const SignIn = () => {
                                         </FormItem>
                                     )}
                                 />
-                                <Button className=" w-full" type="submit">Sign in</Button>
+                                <Link href={`/dashboard`}>
+                                    <Button className=" w-full" type="submit">Sign in</Button>
+                                </Link>
                                 <h3 className=" text-center">Don’t have a account? <span className=" text-primary cursor-pointer">Sign Up</span></h3>
                             </form>
                         </Form>
