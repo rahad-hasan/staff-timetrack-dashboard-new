@@ -1,5 +1,5 @@
-import CoreWorkMembers from "@/components/Dashboard/Insights/CoreWorkMembers";
-import OverallActivityChart from "@/components/Dashboard/Insights/OverallActivityChart";
+import CoreWorkMembers from "@/components/Dashboard/insights/CoreWorkMembers";
+import OverallActivityChart from "@/components/Dashboard/insights/OverallActivityChart";
 import { Button } from "@/components/ui/button";
 import { EllipsisVertical, Info } from "lucide-react";
 
@@ -9,7 +9,6 @@ const Insights = () => {
         { label: 'Offline', percentage: 79, color: 'bg-[#dce3e3]' },
         { label: 'Dull', percentage: 12, color: 'bg-[#ffcb49]' },
     ];
-
 
     return (
         <div className=" border-2 border-borderColor dark:border-darkBorder p-3 rounded-[12px] w-full">

@@ -32,7 +32,6 @@ const Header = () => {
                 </Popover>
             </div>
 
-
             <div className=" hidden md:flex items-center gap-4">
 
                 <div>
@@ -48,7 +47,7 @@ const Header = () => {
                         />
                         {/* <Bell className=" dark:text-darkTextPrimary" /> */}
                         {/* Red dot */}
-                        <span className="absolute top-[1px] right-[4px] w-1.5 h-1.5 bg-red-600 rounded-full"></span>
+                        <span className="absolute top-[1px] right-[3px] w-1.5 h-1.5 bg-red-600 rounded-full"></span>
                     </div>
                 </div>
                 <Button variant={'outline'}><Image src={downloadIcon} width={0} height={0} className="w-5" alt="download" />Download App</Button>
