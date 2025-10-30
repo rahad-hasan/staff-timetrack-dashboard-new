@@ -27,6 +27,9 @@ const SideBar = () => {
         toggleCollapse,
     } = useSidebarStore();
 
+    console.log('isCollapsed', isCollapsed);
+    console.log('openMenu', openMenu);
+
 
     return (
         <div className={`${isCollapsed ? "w-[90px]" : "w-[320px]"} min-h-screen py-5  z-50 sticky top-0 flex flex-col transition-all duration-300`}>
