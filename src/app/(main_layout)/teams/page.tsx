@@ -11,6 +11,7 @@ import TeamsTable from "@/components/Teams/TeamsTable";
 import AddTeamModal from "@/components/Teams/AddTeamModal";
 import TeamsMemberTable from "@/components/Teams/TeamsMemberTable";
 import AddNewMemberModal from "@/components/Teams/AddNewMemberModal";
+import HeadingComponent from "@/components/Common/HeadingComponent";
 // import TeamsMemberTableSkeleton from "@/skeleton/teams/TeamsMemberTableSkeleton";
 // import TeamsTableSkeleton from "@/skeleton/teams/TeamsTableSkeleton";
 
@@ -27,12 +28,7 @@ const TeamsPage = () => {
     return (
         <div>
             <div className="flex items-center justify-between gap-3 mb-5">
-                <div>
-                    <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor dark:text-darkTextPrimary">Teams</h1>
-                    <p className="text-sm text-subTextColor mt-2 dark:text-darkTextPrimary">
-                        All the teams and member are displayed here
-                    </p>
-                </div>
+                <HeadingComponent heading="Teams" subHeading="All the teams and member are displayed here"></HeadingComponent>
 
                 <div className="">
                     {

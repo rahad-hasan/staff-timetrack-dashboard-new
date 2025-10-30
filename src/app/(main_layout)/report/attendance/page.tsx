@@ -4,6 +4,7 @@ import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import { Checkbox } from "@/components/ui/checkbox";
 import AttendanceTable from "@/components/Report/Attendance/AttendanceTable";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
+import HeadingComponent from "@/components/Common/HeadingComponent";
 // import AttendanceTableSkeleton from "@/skeleton/report/Attendance/AttendanceTableSkeleton";
 
 const AttendancePage = () => {
@@ -41,12 +42,7 @@ const AttendancePage = () => {
     return (
         <div>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5">
-                <div>
-                    <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor dark:text-darkTextPrimary">Attendance</h1>
-                    <p className="text-sm text-subTextColor mt-2 dark:text-darkTextPrimary">
-                        All the Attendance during the working hour by team member is here
-                    </p>
-                </div>
+                <HeadingComponent heading="Attendance" subHeading="All the Attendance during the working hour by team member is here"></HeadingComponent>
 
             </div>
             <div className=" flex items-center justify-between w-full">

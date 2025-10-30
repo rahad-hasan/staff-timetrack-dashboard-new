@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog"
 import AddEventModal from "@/components/Calender/AddEventModal";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
+import HeadingComponent from "@/components/Common/HeadingComponent";
 
 const CalenderPage = () => {
     const users = [
@@ -45,12 +46,8 @@ const CalenderPage = () => {
     return (
         <div>
             <div className="flex items-center justify-between gap-3 mb-5">
-                <div>
-                    <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor dark:text-darkTextPrimary">Calender</h1>
-                    <p className="text-sm text-subTextColor mt-2 dark:text-darkTextPrimary">
-                        All the teams task and events are displayed here
-                    </p>
-                </div>
+                <HeadingComponent heading="Calender" subHeading="All the teams task and events are displayed here"></HeadingComponent>
+
                 <Dialog>
                     <form>
                         <DialogTrigger asChild>

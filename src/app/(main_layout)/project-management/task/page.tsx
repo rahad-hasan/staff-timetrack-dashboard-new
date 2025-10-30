@@ -12,6 +12,7 @@ import {
 import CreateTaskModal from "@/components/ProjectManagement/Task/CreateTaskModal";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
+import HeadingComponent from "@/components/Common/HeadingComponent";
 
 const TaskPage = () => {
     console.log("Task");
@@ -84,12 +85,7 @@ const TaskPage = () => {
     return (
         <div>
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-5">
-                <div>
-                    <h1 className="text-2xl md:text-3xl font-semibold text-headingTextColor dark:text-darkTextPrimary">Tasks</h1>
-                    <p className="text-sm text-subTextColor mt-2 dark:text-darkTextPrimary">
-                        All the tasks during the working hour by team member is here
-                    </p>
-                </div>
+                <HeadingComponent heading="Tasks" subHeading="All the tasks during the working hour by team member is here"></HeadingComponent>
 
                 <div className=" flex items-center gap-3 sm:gap-5">
                     <div className="flex gap-3">

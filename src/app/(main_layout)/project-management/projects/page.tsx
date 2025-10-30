@@ -10,6 +10,7 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import AddProjectModal from "@/components/ProjectManagement/Projects/AddProjectModal";
+import HeadingComponent from "@/components/Common/HeadingComponent";
 
 const Projects = () => {
     console.log("Projects");
@@ -25,12 +26,7 @@ const Projects = () => {
     return (
         <div>
             <div className="flex items-center justify-between gap-3 mb-2 md:mb-5">
-                <div>
-                    <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor dark:text-darkTextPrimary">Projects</h1>
-                    <p className="text-sm text-subTextColor mt-2 dark:text-darkTextPrimary">
-                        All the projects during the working hour by team member is here
-                    </p>
-                </div>
+                <HeadingComponent heading="Projects" subHeading="All the projects during the working hour by team member is here"></HeadingComponent>
 
                 <div className="">
                     <Dialog>

@@ -12,6 +12,7 @@ import {
 import AllNotesModal from "@/components/Activity/ScreenShorts/AllNotes";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
+import HeadingComponent from "@/components/Common/HeadingComponent";
 
 const ScreenShorts = () => {
     console.log('screenShorts');
@@ -55,12 +56,7 @@ const ScreenShorts = () => {
     return (
         <div>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5">
-                <div>
-                    <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor dark:text-darkTextPrimary">Screenshot</h1>
-                    <p className="text-sm text-subTextColor mt-2 dark:text-darkTextPrimary">
-                        All the screenshot during the working hour by team member is here
-                    </p>
-                </div>
+                <HeadingComponent heading="Screenshot" subHeading="All the screenshot during the working hour by team member is here"></HeadingComponent>
 
                 <div className="flex gap-3">
                     <div className="flex mt-3 sm:mt-0 bg-[#f6f7f9] dark:bg-darkPrimaryBg rounded-lg overflow-hidden">

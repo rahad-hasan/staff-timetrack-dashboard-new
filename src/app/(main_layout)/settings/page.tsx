@@ -1,5 +1,6 @@
 "use client";
 
+import HeadingComponent from "@/components/Common/HeadingComponent";
 import Notification from "@/components/Settings/Notification";
 import Profile from "@/components/Settings/Profile";
 import Subscription from "@/components/Settings/Subscription";
@@ -16,12 +17,7 @@ const SettingsPage = () => {
     return (
         <div>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5">
-                <div>
-                    <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor dark:text-darkTextPrimary">Settings</h1>
-                    <p className="text-sm text-subTextColor mt-2 dark:text-darkTextPrimary">
-                        All the teams and member are displayed here
-                    </p>
-                </div>
+                <HeadingComponent heading="Settings" subHeading="All the teams and member are displayed here"></HeadingComponent>
             </div>
             <div className="flex gap-1 md:gap-3 mt-3 sm:mt-0 rounded-lg">
                 {["Profile", "Notification", "Subscription Management"].map((tab) => (
@@ -40,7 +36,7 @@ const SettingsPage = () => {
             {
                 activeTab === "Profile" &&
                 <Profile></Profile>
-            } 
+            }
             {
                 activeTab === "Notification" &&
                 <Notification></Notification>

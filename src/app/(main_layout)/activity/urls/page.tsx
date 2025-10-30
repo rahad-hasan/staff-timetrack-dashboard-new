@@ -6,6 +6,7 @@ import { useState } from "react";
 import UrlsTable from "@/components/Activity/Urls/UrlsTable";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
+import HeadingComponent from "@/components/Common/HeadingComponent";
 
 
 const Urls = () => {
@@ -44,12 +45,7 @@ const Urls = () => {
     return (
         <div>
             <div className="flex justify-between gap-3 mb-5">
-                <div>
-                    <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor dark:text-darkTextPrimary">URLs Activity</h1>
-                    <p className="text-sm text-subTextColor mt-2 dark:text-darkTextPrimary">
-                        All the URLs activity during the working hour by team member is here
-                    </p>
-                </div>
+                <HeadingComponent heading="URLs Activity" subHeading="All the URLs activity during the working hour by team member is here"></HeadingComponent>
 
                 <div className=" flex items-center gap-1.5 sm:gap-3">
                     {/* <button

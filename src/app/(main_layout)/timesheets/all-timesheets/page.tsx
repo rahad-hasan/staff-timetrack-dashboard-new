@@ -5,6 +5,7 @@ import { useState } from "react";
 import DailyTimeSheets from "@/components/TimeSheets/AllTimesheets/DailyTimeSheets/DailyTimeSheets";
 import WeeklyTimeSheets from "@/components/TimeSheets/AllTimesheets/WeeklyTimeSheets/WeeklyTimeSheets";
 import MonthlyTimeSheets from "@/components/TimeSheets/AllTimesheets/MonthlyTimeSheets/MonthlyTimeSheets";
+import HeadingComponent from "@/components/Common/HeadingComponent";
 
 const AllTimeSheets = () => {
     const [activeTab, setActiveTab] = useState<"Daily" | "Weekly" | "Monthly">("Daily");
@@ -16,12 +17,7 @@ const AllTimeSheets = () => {
     return (
         <div>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5">
-                <div>
-                    <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor dark:text-darkTextPrimary">All Timesheets</h1>
-                    <p className="text-sm text-subTextColor mt-2 dark:text-darkTextPrimary">
-                        All the timesheet by team member who completed is displayed here
-                    </p>
-                </div>
+                <HeadingComponent heading="All Timesheets" subHeading="All the timesheet by team member who completed is displayed here"></HeadingComponent>
 
                 <div className="flex gap-3">
                     <div className="flex mt-3 sm:mt-0 bg-[#f6f7f9] dark:bg-darkPrimaryBg rounded-lg overflow-hidden">

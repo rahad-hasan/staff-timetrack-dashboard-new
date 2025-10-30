@@ -4,6 +4,7 @@ import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import { useState } from "react";
 import UnusualActivityTable from "@/components/Insights/UnusualActivity/UnusualActivityTable";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
+import HeadingComponent from "@/components/Common/HeadingComponent";
 
 const UnusualActivity = () => {
     console.log('Performance');
@@ -48,12 +49,7 @@ const UnusualActivity = () => {
     return (
         <div>
             <div className="flex items-center justify-between gap-3 mb-5">
-                <div>
-                    <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor dark:text-darkTextPrimary">Unusual Activity</h1>
-                    <p className="text-sm text-subTextColor mt-2 dark:text-darkTextPrimary">
-                        All the Unusual activity during the working hour by team member is here
-                    </p>
-                </div>
+                <HeadingComponent heading="Unusual Activity" subHeading="All the Unusual activity during the working hour by team member is here"></HeadingComponent>
 
                 <div className=" flex items-center gap-1.5 sm:gap-3">
                     <button

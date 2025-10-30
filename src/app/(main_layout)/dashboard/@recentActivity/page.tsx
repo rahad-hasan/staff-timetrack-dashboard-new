@@ -122,6 +122,7 @@ const RecentActivity = () => {
                     </div>
                 </div>
             </div>
+            
         </div>
     );
 };

@@ -1,3 +1,4 @@
+import HeadingComponent from "@/components/Common/HeadingComponent";
 import LeaveDataTable from "@/components/LeaveManagement/LeaveDetails/LeaveDataTable";
 import LeaveRequestModal from "@/components/LeaveManagement/LeaveDetails/LeaveRequestModal";
 import { Button } from "@/components/ui/button";
@@ -9,12 +10,7 @@ const LeaveDetails = () => {
     return (
         <div>
             <div className="flex items-center justify-between gap-3 mb-5">
-                <div>
-                    <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor dark:text-darkTextPrimary">Leave Management</h1>
-                    <p className="text-sm text-subTextColor mt-2 dark:text-darkTextPrimary">
-                        All the teams member leave details are displayed here
-                    </p>
-                </div>
+                <HeadingComponent heading="Leave Management" subHeading="All the teams member leave details are displayed here"></HeadingComponent>
 
                 <div className="">
                     <Dialog>

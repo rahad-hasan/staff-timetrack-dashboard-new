@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/dialog"
 import AddManualTimeModal from "@/components/TimeSheets/ManualRequests/AddManualTimeModal";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
+import HeadingComponent from "@/components/Common/HeadingComponent";
 
 const ManualRequests = () => {
     const users = [
@@ -39,12 +40,7 @@ const ManualRequests = () => {
     return (
         <div>
             <div className="flex items-center justify-between gap-3 md:gap-0 mb-5">
-                <div>
-                    <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor dark:text-darkTextPrimary">Manual Requests</h1>
-                    <p className="text-sm text-subTextColor mt-2 dark:text-darkTextPrimary">
-                        All the timesheet by team member who completed is displayed here
-                    </p>
-                </div>
+                <HeadingComponent heading="Manual Requests" subHeading="All the timesheet by team member who completed is displayed here"></HeadingComponent>
 
                 <div className="">
                     <Dialog>

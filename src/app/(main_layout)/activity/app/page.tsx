@@ -8,6 +8,7 @@ import { useState } from "react";
 import AppNameTable from "@/components/Activity/App/AppNameTable";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
+import HeadingComponent from "@/components/Common/HeadingComponent";
 
 
 const App = () => {
@@ -47,12 +48,7 @@ const App = () => {
     return (
         <div>
             <div className="flex items-center justify-between gap-3 mb-5">
-                <div>
-                    <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor dark:text-darkTextPrimary">App Activity</h1>
-                    <p className="text-sm text-subTextColor mt-2 dark:text-darkTextPrimary">
-                        All the app during the working hour by team member is here
-                    </p>
-                </div>
+                <HeadingComponent heading="App Activity" subHeading="All the app during the working hour by team member is here"></HeadingComponent>
 
                 <div className=" flex items-center gap-1.5 sm:gap-3">
                     {/* <button

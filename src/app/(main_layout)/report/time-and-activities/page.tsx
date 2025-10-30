@@ -4,6 +4,7 @@ import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import TotalHoursPerDayChart from "@/components/Report/TimeAndActivities/TotalHoursPerDayChart";
 import TimeAndActivitiesTable from "@/components/Report/TimeAndActivities/TimeAndActivitiesTable";
 import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
+import HeadingComponent from "@/components/Common/HeadingComponent";
 // import TimeAndActivitiesTableSkeleton from "@/skeleton/report/timeAndActivities/TimeAndActivitiesTableSkeleton";
 
 const TimeAndActivitiesPage = () => {
@@ -41,12 +42,7 @@ const TimeAndActivitiesPage = () => {
     return (
         <div>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5">
-                <div>
-                    <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor dark:text-darkTextPrimary">Time & activities</h1>
-                    <p className="text-sm text-subTextColor mt-2 dark:text-darkTextPrimary">
-                        All the Time & activities during the working hour by team member is here
-                    </p>
-                </div>
+                <HeadingComponent heading="Time & activities" subHeading="All the Time & activities during the working hour by team member is here"></HeadingComponent>
 
             </div>
             <div className=" flex items-center justify-between">
