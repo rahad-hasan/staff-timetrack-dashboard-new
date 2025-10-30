@@ -8,12 +8,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import LinkWithActiveNav from "@/components/Common/LinkWithActiveNav";
 
 
-const RecentActivity = () => {
+const RecentActivity = async () => {
+    await new Promise((resolve) => setTimeout(resolve, 3000));
     const screenshorts = [
         { id: 1, img: screenshort1, progress: "5%", color: "bg-red-600" },
         { id: 2, img: screenshort2, progress: "100%", color: "bg-blue-600" },
         { id: 3, img: screenshort3, progress: null, color: "" },
     ];
+
     return (
         <div className=" border-2 border-borderColor dark:border-darkBorder p-3 rounded-[12px] w-full">
             <div className=" flex justify-between items-center">
@@ -122,7 +124,7 @@ const RecentActivity = () => {
                     </div>
                 </div>
             </div>
-            
+
         </div>
     );
 };

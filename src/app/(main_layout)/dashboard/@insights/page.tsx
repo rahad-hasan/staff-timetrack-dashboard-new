@@ -3,7 +3,8 @@ import OverallActivityChart from "@/components/Dashboard/insights/OverallActivit
 import { Button } from "@/components/ui/button";
 import { EllipsisVertical, Info } from "lucide-react";
 
-const Insights = () => {
+const Insights = async () => {
+    await new Promise((resolve) => setTimeout(resolve, 6000));
     const classificationData = [
         { label: 'Productive', percentage: 9, color: 'bg-[#5db0f1]' },
         { label: 'Offline', percentage: 79, color: 'bg-[#dce3e3]' },
