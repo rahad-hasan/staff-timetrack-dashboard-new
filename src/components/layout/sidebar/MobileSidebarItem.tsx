@@ -2,6 +2,7 @@ import { Minus, Plus } from "lucide-react";
 import Link from "next/link";
 import clsx from "clsx";
 import { SheetClose } from "@/components/ui/sheet";
+import { motion, AnimatePresence } from "framer-motion";
 
 const MobileSidebarItem = ({
   icon: Icon,
@@ -59,7 +60,23 @@ const MobileSidebarItem = ({
   return (
     <div className="mb-2">
       {href ? <Link href={href}>{content}</Link> : content}
-      {isOpen && children && <div className="mt-1">{children}</div>}
+      <AnimatePresence initial={false}>
+        {isOpen && children && (
+          <motion.div
+            key="content"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{
+              duration: 0.25,
+              ease: [0.4, 0, 0.2, 1],
+            }}
+            className="overflow-hidden"
+          >
+            {children}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

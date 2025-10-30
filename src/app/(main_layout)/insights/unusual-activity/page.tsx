@@ -1,11 +1,9 @@
 "use client"
 import { Bell, Settings } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import { useState } from "react";
 import UnusualActivityTable from "@/components/Insights/UnusualActivity/UnusualActivityTable";
+import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 
 const UnusualActivity = () => {
     console.log('Performance');
@@ -17,17 +15,32 @@ const UnusualActivity = () => {
     };
 
     const users = [
-        { name: "Juyed Ahmed", avatar: "https://avatar.iran.liara.run/public/18" },
-        { name: "Cameron Williamson", avatar: "https://avatar.iran.liara.run/public/19" },
-        { name: "Jenny Wilson", avatar: "https://avatar.iran.liara.run/public/20" },
-        { name: "Esther Howard", avatar: "https://avatar.iran.liara.run/public/21" }
-    ];
-
-    const [userSearch, setUserSearch] = useState("");
-    const [user, setUser] = useState<string>("Juyed Ahmed");
-
-    const filteredUsers = users.filter(t => t.name.toLowerCase().includes(userSearch.toLowerCase()));
-    const selectedUser = users.find((u) => u.name === user);
+        {
+            value: "Juyed Ahmed",
+            label: "Juyed Ahmed",
+            avatar: "https://avatar.iran.liara.run/public/18",
+        },
+        {
+            value: "Cameron Williamson",
+            label: "Cameron Williamson",
+            avatar: "https://avatar.iran.liara.run/public/19",
+        },
+        {
+            value: "Jenny Wilson",
+            label: "Jenny Wilson",
+            avatar: "https://avatar.iran.liara.run/public/20",
+        },
+        {
+            value: "Esther Howard",
+            label: "Esther Howard",
+            avatar: "https://avatar.iran.liara.run/public/21",
+        },
+        {
+            value: "Walid Ahmed",
+            label: "Walid Ahmed",
+            avatar: "https://avatar.iran.liara.run/public/22",
+        },
+    ]
 
     // date picker
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -63,50 +76,15 @@ const UnusualActivity = () => {
                 </div>
                 <div className=" flex items-center gap-3">
 
-                    <div className=" w-full sm:w-[250px]">
-                        <Select onValueChange={setUser} value={user ?? undefined}>
-                            <SelectTrigger size={'lg'} className="w-full">
-                                {selectedUser ? (
-                                    <div className="flex items-center gap-2">
-                                        <Avatar className="w-6 h-6">
-                                            <AvatarImage src={selectedUser.avatar} alt={selectedUser.name} />
-                                            <AvatarFallback>{selectedUser.name.charAt(0)}</AvatarFallback>
-                                        </Avatar>
-                                        <span>{selectedUser.name}</span>
-                                    </div>
-                                ) : (
-                                    <SelectValue placeholder="Select user" />
-                                )}
-                            </SelectTrigger>
-
-                            <SelectContent>
-                                <Input
-                                    type="text"
-                                    placeholder="Search user..."
-                                    className="flex-1 border-none focus:ring-0 focus:outline-none"
-                                    value={userSearch}
-                                    onChange={(e) => setUserSearch(e.target.value)}
-                                />
-                                {filteredUsers.map(t => (
-                                    <SelectItem className="px-3 flex items-center gap-2" key={t.name} value={t.name}>
-                                        <Avatar className="w-6 h-6">
-                                            <AvatarImage src={t.avatar} alt={t.name} />
-                                            <AvatarFallback>{t.name.charAt(0)}</AvatarFallback>
-                                        </Avatar>
-                                        <span className="ml-2">{t.name}</span>
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
+                    <SelectUserDropDown users={users}></SelectUserDropDown>
                 </div>
             </div>
-            <div className="flex mt-3 sm:mt-0 bg-[#f6f7f9] dark:bg-darkPrimaryBg rounded-lg w-[341px] sm:w-[359px]">
+            <div className="flex mt-3 sm:mt-0 bg-[#f6f7f9] dark:bg-darkPrimaryBg rounded-lg w-[340px] sm:w-[340px]">
                 {["Highly Unusual", "Unusual", "Slightly Unusual"].map((tab) => (
                     <button
                         key={tab}
                         onClick={() => handleTabClick(tab as "Highly Unusual" | "Unusual" | "Slightly Unusual")}
-                        className={`px-4 py-2 text-[13px] sm:text-sm font-medium transition-all cursor-pointer rounded-lg m-0.5 ${activeTab === tab
+                        className={`px-3 py-2 text-[13px] sm:text-sm font-medium transition-all cursor-pointer rounded-lg m-0.5 ${activeTab === tab
                             ? "bg-white dark:bg-primary text-headingTextColor shadow-sm"
                             : "text-gray-600 dark:text-darkTextSecondary hover:text-gray-800"
                             }`}

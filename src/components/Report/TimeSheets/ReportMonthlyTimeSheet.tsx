@@ -1,11 +1,9 @@
 import MonthPicker from "@/components/Common/MonthPicker";
 import { useState } from "react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 
 const ReportMonthlyTimeSheet = () => {
-        console.log("ReportMonthlyTimeSheet");
+    console.log("ReportMonthlyTimeSheet");
     type DayMeta = { name: string };
     const days: DayMeta[] = [
         { name: 'MON' },
@@ -56,58 +54,38 @@ const ReportMonthlyTimeSheet = () => {
 
     // search user
     const users = [
-        { name: "Juyed Ahmed", avatar: "https://avatar.iran.liara.run/public/18" },
-        { name: "Cameron Williamson", avatar: "https://avatar.iran.liara.run/public/19" },
-        { name: "Jenny Wilson", avatar: "https://avatar.iran.liara.run/public/20" },
-        { name: "Esther Howard", avatar: "https://avatar.iran.liara.run/public/21" }
-    ];
-
-    const [userSearch, setUserSearch] = useState("");
-    const [user, setUser] = useState<string>("Juyed Ahmed");
-
-    const filteredUsers = users.filter(t => t.name.toLowerCase().includes(userSearch.toLowerCase()));
-    const selectedUser = users.find((u) => u.name === user);
+        {
+            value: "Juyed Ahmed",
+            label: "Juyed Ahmed",
+            avatar: "https://avatar.iran.liara.run/public/18",
+        },
+        {
+            value: "Cameron Williamson",
+            label: "Cameron Williamson",
+            avatar: "https://avatar.iran.liara.run/public/19",
+        },
+        {
+            value: "Jenny Wilson",
+            label: "Jenny Wilson",
+            avatar: "https://avatar.iran.liara.run/public/20",
+        },
+        {
+            value: "Esther Howard",
+            label: "Esther Howard",
+            avatar: "https://avatar.iran.liara.run/public/21",
+        },
+        {
+            value: "Walid Ahmed",
+            label: "Walid Ahmed",
+            avatar: "https://avatar.iran.liara.run/public/22",
+        },
+    ]
 
     return (
         <div className="">
             <div className="mb-5 flex flex-col gap-4 md:gap-0 md:flex-row justify-between">
                 <MonthPicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></MonthPicker>
-                <div className=" w-full md:w-[250px]">
-                    <Select onValueChange={setUser} value={user ?? undefined}>
-                        <SelectTrigger size={'lg'}  className=" w-full md:w-[250px]">
-                            {selectedUser ? (
-                                <div className="flex items-center gap-2">
-                                    <Avatar className="w-6 h-6">
-                                        <AvatarImage src={selectedUser.avatar} alt={selectedUser.name} />
-                                        <AvatarFallback>{selectedUser.name.charAt(0)}</AvatarFallback>
-                                    </Avatar>
-                                    <span>{selectedUser.name}</span>
-                                </div>
-                            ) : (
-                                <SelectValue placeholder="Select user" />
-                            )}
-                        </SelectTrigger>
-
-                        <SelectContent>
-                            <Input
-                                type="text"
-                                placeholder="Search user..."
-                                className="flex-1 border-none focus:ring-0 focus:outline-none"
-                                value={userSearch}
-                                onChange={(e) => setUserSearch(e.target.value)}
-                            />
-                            {filteredUsers.map(t => (
-                                <SelectItem className="px-3 flex items-center gap-2" key={t.name} value={t.name}>
-                                    <Avatar className="w-6 h-6">
-                                        <AvatarImage src={t.avatar} alt={t.name} />
-                                        <AvatarFallback>{t.name.charAt(0)}</AvatarFallback>
-                                    </Avatar>
-                                    <span className="ml-2">{t.name}</span>
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </div>
+                <SelectUserDropDown users={users}></SelectUserDropDown>
             </div>
             <div className="overflow-x-auto rounded-2xl border border-borderColor dark:border-darkBorder mt-5">
                 <table className="w-full border-collapse">

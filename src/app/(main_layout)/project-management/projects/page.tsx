@@ -8,7 +8,7 @@ import { useState } from "react";
 import {
     Dialog,
     DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import AddProjectModal from "@/components/ProjectManagement/Projects/AddProjectModal";
 
 const Projects = () => {

@@ -2,15 +2,6 @@
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useState } from "react";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
 import SearchBar from "@/components/Common/SearchBar";
 import TaskTable from "@/components/ProjectManagement/Task/TaskTable";
 import KanbanDndList from "@/components/ProjectManagement/Task/KanbanDndList";
@@ -19,6 +10,8 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import CreateTaskModal from "@/components/ProjectManagement/Task/CreateTaskModal";
+import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
+import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
 
 const TaskPage = () => {
     console.log("Task");
@@ -28,32 +21,62 @@ const TaskPage = () => {
         setActiveTab(tab);
     };
 
-    // user select
-    const users = [
-        { name: "Juyed Ahmed", avatar: "https://avatar.iran.liara.run/public/18" },
-        { name: "Cameron Williamson", avatar: "https://avatar.iran.liara.run/public/19" },
-        { name: "Jenny Wilson", avatar: "https://avatar.iran.liara.run/public/20" },
-        { name: "Esther Howard", avatar: "https://avatar.iran.liara.run/public/21" }
-    ];
-    const [userSearch, setUserSearch] = useState("");
-    const [user, setUser] = useState<string>("Juyed Ahmed");
-
-    const filteredUsers = users.filter(t => t.name.toLowerCase().includes(userSearch.toLowerCase()));
-    const selectedUser = users.find((u) => u.name === user);
-
-    // project select
     const projects = [
-        { name: "Time Tracker", avatar: "https://picsum.photos/200/300" },
-        { name: "E-commerce", avatar: "https://picsum.photos/200/300" },
-        { name: "Fack News Detection", avatar: "https://picsum.photos/200/300" },
-        { name: "Travel Together", avatar: "https://picsum.photos/200/300" }
-    ];
-    const [projectSearch, setProjectSearch] = useState("");
-    const [project, setProject] = useState<string>("Time Tracker");
+        {
+            value: "Time Tracker",
+            label: "Time Tracker",
+            avatar: "https://picsum.photos/200/300",
+        },
+        {
+            value: "E-commerce",
+            label: "E-commerce",
+            avatar: "https://picsum.photos/200/300",
+        },
+        {
+            value: "Fack News Detection",
+            label: "Fack News Detection",
+            avatar: "https://picsum.photos/200/300",
+        },
+        {
+            value: "Travel Together",
+            label: "Travel Together",
+            avatar: "https://picsum.photos/200/300",
+        },
+        {
+            value: "Time Tracker2",
+            label: "Time Tracker2",
+            avatar: "https://picsum.photos/200/300",
+        },
+    ]
 
-    const filteredProjects = projects.filter(t => t.name.toLowerCase().includes(projectSearch.toLowerCase()));
-    const selectedProject = projects.find((u) => u.name === project);
-    // search
+    const users = [
+        {
+            value: "Juyed Ahmed",
+            label: "Juyed Ahmed",
+            avatar: "https://avatar.iran.liara.run/public/18",
+        },
+        {
+            value: "Cameron Williamson",
+            label: "Cameron Williamson",
+            avatar: "https://avatar.iran.liara.run/public/19",
+        },
+        {
+            value: "Jenny Wilson",
+            label: "Jenny Wilson",
+            avatar: "https://avatar.iran.liara.run/public/20",
+        },
+        {
+            value: "Esther Howard",
+            label: "Esther Howard",
+            avatar: "https://avatar.iran.liara.run/public/21",
+        },
+        {
+            value: "Walid Ahmed",
+            label: "Walid Ahmed",
+            avatar: "https://avatar.iran.liara.run/public/22",
+        },
+    ]
+
     const handleSearch = (values: string) => {
         console.log(values);
     }
@@ -99,75 +122,11 @@ const TaskPage = () => {
             </div>
             <div className=" flex flex-col gap-4 md:gap-0 md:flex-row justify-between">
                 <div className=" flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
-                    <Select onValueChange={setProject} value={project ?? undefined}>
-                        <SelectTrigger size={'lg'} className="w-full py-1.5">
-                            {selectedProject ? (
-                                <div className="flex items-center gap-2">
-                                    <Avatar className="w-6 h-6">
-                                        <AvatarImage src={selectedProject.avatar} alt={selectedProject.name} />
-                                        <AvatarFallback>{selectedProject.name.charAt(0)}</AvatarFallback>
-                                    </Avatar>
-                                    <span>{selectedProject.name}</span>
-                                </div>
-                            ) : (
-                                <SelectValue placeholder="Select user" />
-                            )}
-                        </SelectTrigger>
-
-                        <SelectContent>
-                            <Input
-                                type="text"
-                                placeholder="Search user..."
-                                className="flex-1 border-none focus:ring-0 focus:outline-none"
-                                value={userSearch}
-                                onChange={(e) => setProjectSearch(e.target.value)}
-                            />
-                            {filteredProjects.map(t => (
-                                <SelectItem className="px-3 flex items-center gap-2 cursor-pointer" key={t.name} value={t.name}>
-                                    <Avatar className="w-6 h-6">
-                                        <AvatarImage src={t.avatar} alt={t.name} />
-                                        <AvatarFallback>{t.name.charAt(0)}</AvatarFallback>
-                                    </Avatar>
-                                    <span className="ml-2">{t.name}</span>
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                    <SelectProjectDropDown projects={projects}></SelectProjectDropDown>
                     <div className=" flex items-center gap-3 w-full">
-                        <Select onValueChange={setUser} value={user ?? undefined}>
-                            <SelectTrigger size={'lg'} className="w-full py-1.5">
-                                {selectedUser ? (
-                                    <div className="flex items-center gap-2">
-                                        <Avatar className="w-6 h-6">
-                                            <AvatarImage src={selectedUser.avatar} alt={selectedUser.name} />
-                                            <AvatarFallback>{selectedUser.name.charAt(0)}</AvatarFallback>
-                                        </Avatar>
-                                        <span>{selectedUser.name}</span>
-                                    </div>
-                                ) : (
-                                    <SelectValue placeholder="Select user" />
-                                )}
-                            </SelectTrigger>
-
-                            <SelectContent>
-                                <Input
-                                    type="text"
-                                    placeholder="Search user..."
-                                    className="flex-1 border-none focus:ring-0 focus:outline-none"
-                                    value={userSearch}
-                                    onChange={(e) => setUserSearch(e.target.value)}
-                                />
-                                {filteredUsers.map(t => (
-                                    <SelectItem className="px-3 flex items-center gap-2 cursor-pointer" key={t.name} value={t.name}>
-                                        <Avatar className="w-6 h-6">
-                                            <AvatarImage src={t.avatar} alt={t.name} />
-                                            <AvatarFallback>{t.name.charAt(0)}</AvatarFallback>
-                                        </Avatar>
-                                        <span className="ml-2">{t.name}</span>
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                        <div className=" w-full">
+                            <SelectUserDropDown users={users}></SelectUserDropDown>
+                        </div>
                         <div className=" block sm:hidden">
                             <SearchBar onSearch={handleSearch}></SearchBar>
                         </div>

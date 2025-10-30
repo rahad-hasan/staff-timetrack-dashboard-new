@@ -17,9 +17,9 @@ export default function SearchBar({ onSearch }: { onSearch: (query: string) => v
 
   return (
     <div className="relative">
-      <div className="relative hidden sm:block sm:w-[280px]">
+      <div className="relative hidden sm:block sm:w-[280px] dark:border-darkBorder">
         <Search
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+          className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-darkTextPrimary"
           size={18}
         />
         <Input
@@ -27,10 +27,11 @@ export default function SearchBar({ onSearch }: { onSearch: (query: string) => v
           placeholder="Search..."
           value={query}
           onChange={handleChange}
-          className="pl-9"
+          className="pl-9 py-4.5 dark:border-darkBorder dark:text-darkTextPrimary"
         />
       </div>
-      <Button onClick={() => setIsOpen(!isOpen)} size={'sr'} className="bg-[#f6f7f9] block sm:hidden z-50" variant={'outline2'}>
+      {/* responsive */}
+      <Button onClick={() => setIsOpen(!isOpen)} className="bg-[#f6f7f9] block sm:hidden z-50 py-[9px]" variant={'outline2'}>
         <Search
           className=" size-5 "
           size={20}
@@ -38,10 +39,10 @@ export default function SearchBar({ onSearch }: { onSearch: (query: string) => v
       </Button>
       {
         isOpen && (
-          <div className=" absolute top-0 right-10 z-50 bg-white shadow-2xl rounded-lg shadow-white ">
-            <div className="relative min-w-[250px]">
+          <div className=" absolute top-0 right-10 z-50 bg-white dark:bg-darkPrimaryBg shadow-2xl rounded-lg shadow-white dark:border-darkBorder">
+            <div className="relative min-w-[250px] dark:border-darkBorder">
               <Search
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-darkTextPrimary"
                 size={18}
               />
               <Input
@@ -49,7 +50,7 @@ export default function SearchBar({ onSearch }: { onSearch: (query: string) => v
                 placeholder="Search..."
                 value={query}
                 onChange={handleChange}
-                className="pl-9 "
+                className="pl-9 py-4.5 dark:border-darkBorder dark:text-darkTextPrimary"
               />
             </div>
           </div>
