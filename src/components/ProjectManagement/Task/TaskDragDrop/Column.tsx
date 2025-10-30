@@ -25,7 +25,7 @@ const Column = ({ id, label, task }: { id: string; label: string; task: ITask[] 
 
             <div className="flex items-center gap-2 mb-4">
                 <span className={barClass}></span>
-                <button className={`text-md font-semibold capitalize ${buttonClass}`}>
+                <button className={`text-base font-semibold capitalize ${buttonClass}`}>
                     {label.replace("_", " ")}
                 </button>
                 <span className="text-sm bg-gray-200 dark:bg-darkSecondaryBg dark:border dark:border-darkBorder px-2.5 py-1 rounded-lg font-semibold">

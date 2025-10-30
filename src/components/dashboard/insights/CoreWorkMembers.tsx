@@ -80,7 +80,7 @@ const CoreWorkMembers = () => {
         <div>
             <div className=" flex items-center justify-between mt-5">
                 <div className=" flex items-center gap-1.5 sm:gap-3 sm:w-1/2">
-                    <h2 className="text-md sm:text-lg dark:text-darkTextPrimary">Core work members </h2>
+                    <h2 className="text-base sm:text-lg dark:text-darkTextPrimary">Core work members </h2>
                     <Info size={18} className=" cursor-pointer" />
                 </div>
                 <Button className=" text-sm md:text-base dark:text-darkTextSecondary" variant={'outline2'} size={'sm'}><span className=" hidden sm:block">Top Core worker</span><span className=" sm:hidden">Top worker</span> <ChevronDown size={20} /></Button>

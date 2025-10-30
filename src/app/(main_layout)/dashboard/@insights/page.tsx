@@ -13,7 +13,7 @@ const Insights = () => {
     return (
         <div className=" border-2 border-borderColor dark:border-darkBorder p-3 rounded-[12px] w-full">
             <div className=" flex justify-between items-center">
-                <h2 className=" text-md sm:text-lg dark:text-darkTextPrimary">INSIGHTS</h2>
+                <h2 className=" text-base sm:text-lg dark:text-darkTextPrimary">INSIGHTS</h2>
                 <div className=" flex items-center gap-3">
                     <Button className=" text-sm md:text-base dark:text-darkTextPrimary" variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
                     <Button className=" text-sm md:text-base" size={'sm'}>View Insights</Button>
@@ -22,11 +22,11 @@ const Insights = () => {
 
             <div className=" flex gap-2 flex-col sm:flex-row sm:items-center mt-5">
                 <div className=" flex items-center gap-3 sm:w-1/2">
-                    <h2 className="text-md sm:text-lg dark:text-darkTextPrimary">Work time classification</h2>
+                    <h2 className="text-base sm:text-lg dark:text-darkTextPrimary">Work time classification</h2>
                     <Info size={18} className=" cursor-pointer" />
                 </div>
                 <div className=" flex items-center gap-3 sm:w-1/2">
-                    <h2 className="text-md sm:text-lg dark:text-darkTextPrimary">Overall activity</h2>
+                    <h2 className="text-base sm:text-lg dark:text-darkTextPrimary">Overall activity</h2>
                     <Info size={18} className=" cursor-pointer" />
                 </div>
             </div>
@@ -58,7 +58,7 @@ const Insights = () => {
                         ))}
 
                     </div>
-                    <div className=" flex justify-between text-md text-headingTextColor mt-1 px-1 dark:text-darkTextSecondary">
+                    <div className=" flex justify-between text-base text-headingTextColor mt-1 px-1 dark:text-darkTextSecondary">
                         <span>1%</span>
                         <span>25%</span>
                         <span>50%</span>

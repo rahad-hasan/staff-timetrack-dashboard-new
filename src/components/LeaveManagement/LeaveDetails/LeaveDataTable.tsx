@@ -224,7 +224,7 @@ const LeaveDataTable = () => {
     return (
         <div className="mt-5 border-2 border-borderColor dark:border-darkBorder p-3 rounded-[12px]">
             <div className=" mb-5">
-                <h2 className=" text-md sm:text-lg dark:text-darkTextPrimary">Leave Data</h2>
+                <h2 className=" text-base sm:text-lg dark:text-darkTextPrimary">Leave Data</h2>
             </div>
             <Table>
                 <TableHeader>

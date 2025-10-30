@@ -15,7 +15,7 @@ const Activity = () => {
     return (
         <div className=" border-2 border-borderColor dark:border-darkBorder py-3 px-5 rounded-[12px] w-full">
             <div className=" flex gap-3 items-center mb-8">
-                <h2 className="text-md sm:text-lg dark:text-darkTextPrimary">Activity</h2>
+                <h2 className="text-base sm:text-lg dark:text-darkTextPrimary">Activity</h2>
                 <Info size={18} className=" cursor-pointer" />
             </div>
             <div className=" flex  justify-between mb-5 pb-7 border-b dark:border-darkBorder">

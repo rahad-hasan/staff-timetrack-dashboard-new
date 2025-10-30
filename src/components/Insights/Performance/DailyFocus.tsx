@@ -11,7 +11,7 @@ const DailyFocus = () => {
     return (
         <div className=" border-2 border-borderColor dark:border-darkBorder py-3 px-5 rounded-[12px] w-full">
             <div className=" flex gap-3 items-center">
-                <h2 className="text-md sm:text-lg dark:text-darkTextPrimary">Daily Focus</h2>
+                <h2 className="text-base sm:text-lg dark:text-darkTextPrimary">Daily Focus</h2>
                 <Info size={18} className=" cursor-pointer" />
             </div>
             <div className=" flex items-center justify-between mt-8 pb-5 border-b dark:border-darkBorder">

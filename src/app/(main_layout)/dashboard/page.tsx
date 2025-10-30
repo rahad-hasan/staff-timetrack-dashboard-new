@@ -1,5 +1,6 @@
 "use client";
 
+import HeadingComponent from "@/components/Common/HeadingComponent";
 import { useState } from "react";
 
 export default function Dashboard() {
@@ -12,12 +13,7 @@ export default function Dashboard() {
 
   return (
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5">
-      <div>
-        <h1 className=" text-2xl md:text-3xl font-semibold text-headingTextColor dark:text-darkTextPrimary ">Dashboard</h1>
-        <p className="text-sm text-subTextColor mt-2 dark:text-darkTextPrimary">
-          Mon, Aug 18, 2025 - Sun, Aug 24, 2025
-        </p>
-      </div>
+      <HeadingComponent heading="Dashboard" subHeading="Mon, Aug 18, 2025 - Sun, Aug 24, 2025"></HeadingComponent>
 
       <div className="flex mt-3 sm:mt-0 bg-[#f6f7f9] dark:bg-darkPrimaryBg rounded-lg w-[240px] sm:w-auto">
         {["Daily", "Weekly", "Monthly"].map((tab) => (
