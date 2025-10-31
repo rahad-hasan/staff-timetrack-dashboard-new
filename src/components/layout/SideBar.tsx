@@ -97,7 +97,7 @@ const SideBar = () => {
                 ))}
             </div>
 
-            <div className=" px-5 pt-3 border-t-2 border-borderColor dark:border-darkBorder">
+            <div className=" mx-5 pt-3 border-t-2 border-borderColor dark:border-darkBorder">
                 {!isCollapsed && (
                     <h2 className="text-xs uppercase text-gray-400 mb-4">Others</h2>
                 )}

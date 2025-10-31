@@ -10,8 +10,10 @@
 
   /* Dark Theme */
   /* Dark Bg */
-  --color-darkPrimaryBg: #151b23;
-  --color-darkSecondaryBg: #212830;
+  /* --color-darkPrimaryBg: #151b23;
+  --color-darkSecondaryBg: #212830; */
+  --color-darkPrimaryBg: #212733;
+  --color-darkSecondaryBg: #323947;
   /* Dark Text */
   --color-darkTextPrimary: #F3F4F6;
   --color-darkTextSecondary: #bdbdbd;
