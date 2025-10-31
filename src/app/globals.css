@@ -18,7 +18,8 @@
   --color-darkTextPrimary: #F3F4F6;
   --color-darkTextSecondary: #bdbdbd;
   /* Dark Border */
-  --color-darkBorder: #545454;
+  /* --color-darkBorder: #545454; */
+  --color-darkBorder: #4a5263;
   /* --shadow-greenShadow: '0px 10px 30px rgba(18, 205, 105, 0.5)' */
 }
 @plugin "tailwindcss-animate";

@@ -86,14 +86,14 @@ const ScreenShorts = () => {
                 <HeadingComponent heading="Screenshot" subHeading="All the screenshot during the working hour by team member is here"></HeadingComponent>
 
                 <div className="flex gap-3">
-                    <div className="flex mt-3 sm:mt-0 bg-[#f6f7f9] dark:bg-darkPrimaryBg rounded-lg overflow-hidden w-[255px]">
+                    <div className="flex mt-3 sm:mt-0 bg-[#f6f7f9] dark:bg-darkSecondaryBg rounded-lg overflow-hidden w-[255px]">
                         {["Every 10 min", "All Screenshots"].map((tab) => (
                             <button
                                 key={tab}
                                 onClick={() => handleTabClick(tab as "Every 10 min" | "All Screenshots")}
                                 className={`px-4 py-2 text-sm font-medium transition-all cursor-pointer rounded-lg m-0.5 ${activeTab === tab
-                                    ? "bg-white dark:bg-primary text-headingTextColor shadow-sm"
-                                    : "text-gray-600 hover:text-gray-800 dark:text-darkTextSecondary"
+                                    ? "bg-white dark:bg-darkPrimaryBg dark:text-darkTextPrimary text-headingTextColor shadow-sm"
+                                    : "text-gray-600 hover:text-gray-800 dark:text-darkTextPrimary"
                                     }`}
                             >
                                 {tab}
