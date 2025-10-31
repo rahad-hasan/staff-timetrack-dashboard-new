@@ -1,19 +1,45 @@
 "use client"
 
 import { Settings } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { SlidersHorizontal } from "lucide-react";
 // import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import AppNameTable from "@/components/Activity/App/AppNameTable";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import HeadingComponent from "@/components/Common/HeadingComponent";
+import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
 
 
 const App = () => {
     console.log('app');
     // Filter
+    const projects = [
+        {
+            value: "Time Tracker",
+            label: "Time Tracker",
+            avatar: "https://picsum.photos/200/300",
+        },
+        {
+            value: "E-commerce",
+            label: "E-commerce",
+            avatar: "https://picsum.photos/200/300",
+        },
+        {
+            value: "Fack News Detection",
+            label: "Fack News Detection",
+            avatar: "https://picsum.photos/200/300",
+        },
+        {
+            value: "Travel Together",
+            label: "Travel Together",
+            avatar: "https://picsum.photos/200/300",
+        },
+        {
+            value: "Time Tracker2",
+            label: "Time Tracker2",
+            avatar: "https://picsum.photos/200/300",
+        },
+    ]
     const users = [
         {
             value: "Juyed Ahmed",
@@ -67,17 +93,17 @@ const App = () => {
             </div>
 
 
-            <div className=" mb-5 flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between">
-                <div className=" flex flex-col md:flex-row gap-4 md:gap-3">
+            <div className=" mb-5 flex flex-col gap-4 sm:gap-3 xl:flex-row justify-between">
+                <div className=" flex flex-col sm:flex-row gap-4 md:gap-3">
                     <SpecificDatePicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></SpecificDatePicker>
                     {/* Filter */}
-                    <Button className=" hidden md:flex dark:text-darkTextPrimary" variant={'filter'}>
+                    {/* <Button className=" hidden md:flex dark:text-darkTextPrimary" variant={'filter'}>
                         <SlidersHorizontal className="dark:text-darkTextPrimary" /> Filters
-                    </Button>
+                    </Button> */}
+                    <SelectProjectDropDown projects={projects}></SelectProjectDropDown>
                 </div>
 
                 <div className=" flex items-center gap-3">
-
                     <SelectUserDropDown users={users}></SelectUserDropDown>
                 </div>
             </div>

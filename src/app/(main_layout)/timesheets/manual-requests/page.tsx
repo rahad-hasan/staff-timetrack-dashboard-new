@@ -1,6 +1,6 @@
 import ManualRequestsTable from "@/components/TimeSheets/ManualRequests/ManualRequestsTable";
 import { Button } from "@/components/ui/button";
-import { Plus, SlidersHorizontal } from "lucide-react";
+import { Plus } from "lucide-react";
 import {
     Dialog,
     DialogTrigger,
@@ -8,8 +8,36 @@ import {
 import AddManualTimeModal from "@/components/TimeSheets/ManualRequests/AddManualTimeModal";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import HeadingComponent from "@/components/Common/HeadingComponent";
+import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
 
 const ManualRequests = () => {
+    const projects = [
+        {
+            value: "Time Tracker",
+            label: "Time Tracker",
+            avatar: "https://picsum.photos/200/300",
+        },
+        {
+            value: "E-commerce",
+            label: "E-commerce",
+            avatar: "https://picsum.photos/200/300",
+        },
+        {
+            value: "Fack News Detection",
+            label: "Fack News Detection",
+            avatar: "https://picsum.photos/200/300",
+        },
+        {
+            value: "Travel Together",
+            label: "Travel Together",
+            avatar: "https://picsum.photos/200/300",
+        },
+        {
+            value: "Time Tracker2",
+            label: "Time Tracker2",
+            avatar: "https://picsum.photos/200/300",
+        },
+    ]
     const users = [
         {
             value: "Juyed Ahmed",
@@ -52,12 +80,13 @@ const ManualRequests = () => {
 
                 </div>
             </div>
-            <div className=" flex justify-between items-center gap-4 md:gap-3 mb-5">
-                <div className="">
+            <div className=" flex flex-col sm:flex-row justify-between items-center gap-4 md:gap-3 mb-5">
+                {/* <div className="">
                     <Button className=" w-10 sm:w-auto h-10 sm:h-auto dark:text-darkTextPrimary" variant={'outline2'}>
                         <SlidersHorizontal className="" /> <span className=" hidden sm:block dark:text-darkTextPrimary">Filters</span>
                     </Button>
-                </div>
+                </div> */}
+                <SelectProjectDropDown projects={projects}></SelectProjectDropDown>
                 <SelectUserDropDown users={users}></SelectUserDropDown>
             </div>
             <ManualRequestsTable></ManualRequestsTable>

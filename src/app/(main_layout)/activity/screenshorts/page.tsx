@@ -2,7 +2,7 @@
 import AllScreenShorts from "@/components/Activity/ScreenShorts/AllScreenShorts";
 import Every10Mins from "@/components/Activity/ScreenShorts/Every10Mins";
 import { Button } from "@/components/ui/button";
-import { BriefcaseBusiness, ClipboardList, NotepadText, SlidersHorizontal, SquareActivity, TrendingDown, TrendingUp, UsersRound } from "lucide-react";
+import { BriefcaseBusiness, ClipboardList, NotepadText, SquareActivity, TrendingDown, TrendingUp, UsersRound } from "lucide-react";
 // import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import {
@@ -13,6 +13,7 @@ import AllNotesModal from "@/components/Activity/ScreenShorts/AllNotes";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import HeadingComponent from "@/components/Common/HeadingComponent";
+import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
 
 const ScreenShorts = () => {
     console.log('screenShorts');
@@ -21,7 +22,33 @@ const ScreenShorts = () => {
     const handleTabClick = (tab: "Every 10 min" | "All Screenshots") => {
         setActiveTab(tab);
     };
-
+    const projects = [
+        {
+            value: "Time Tracker",
+            label: "Time Tracker",
+            avatar: "https://picsum.photos/200/300",
+        },
+        {
+            value: "E-commerce",
+            label: "E-commerce",
+            avatar: "https://picsum.photos/200/300",
+        },
+        {
+            value: "Fack News Detection",
+            label: "Fack News Detection",
+            avatar: "https://picsum.photos/200/300",
+        },
+        {
+            value: "Travel Together",
+            label: "Travel Together",
+            avatar: "https://picsum.photos/200/300",
+        },
+        {
+            value: "Time Tracker2",
+            label: "Time Tracker2",
+            avatar: "https://picsum.photos/200/300",
+        },
+    ]
     const users = [
         {
             value: "Juyed Ahmed",
@@ -59,7 +86,7 @@ const ScreenShorts = () => {
                 <HeadingComponent heading="Screenshot" subHeading="All the screenshot during the working hour by team member is here"></HeadingComponent>
 
                 <div className="flex gap-3">
-                    <div className="flex mt-3 sm:mt-0 bg-[#f6f7f9] dark:bg-darkPrimaryBg rounded-lg overflow-hidden">
+                    <div className="flex mt-3 sm:mt-0 bg-[#f6f7f9] dark:bg-darkPrimaryBg rounded-lg overflow-hidden w-[255px]">
                         {["Every 10 min", "All Screenshots"].map((tab) => (
                             <button
                                 key={tab}
@@ -76,16 +103,16 @@ const ScreenShorts = () => {
                     {/* <Button><Plus size={20} />Add Time</Button> */}
                 </div>
             </div>
-            <div className="mb-5 flex flex-col gap-4 lg:gap-0 lg:flex-row justify-between">
+            <div className="mb-5 flex flex-col gap-4 lg:gap-4 xl:flex-row justify-between">
 
-                <div className=" flex gap-3">
+                <div className=" flex flex-col lg:flex-row gap-3">
                     <SpecificDatePicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></SpecificDatePicker>
                     {/* Filter */}
-
+                    {/* 
                     <Button className=" hidden xl:flex dark:text-darkTextPrimary" variant={'filter'}>
                         <SlidersHorizontal className="dark:text-darkTextPrimary" /> Filters
-                    </Button>
-
+                    </Button> */}
+                    <SelectProjectDropDown projects={projects}></SelectProjectDropDown>
                 </div>
                 <div className=" flex items-center gap-3">
 
@@ -99,7 +126,9 @@ const ScreenShorts = () => {
                             <AllNotesModal></AllNotesModal>
                         </form>
                     </Dialog>
-                    <SelectUserDropDown users={users}></SelectUserDropDown>
+                    <div className=" w-full">
+                        <SelectUserDropDown users={users}></SelectUserDropDown>
+                    </div>
                 </div>
             </div>
             <div className=" mb-4 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-5">

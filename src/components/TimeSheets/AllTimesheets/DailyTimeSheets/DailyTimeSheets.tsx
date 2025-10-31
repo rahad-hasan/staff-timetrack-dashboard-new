@@ -1,5 +1,3 @@
-import { Button } from "../../../ui/button";
-import { SlidersHorizontal } from "lucide-react";
 import { useState } from "react";
 import {
     Tooltip,
@@ -10,9 +8,36 @@ import DailyTimeSheetsTable from "./DailyTimeSheetsTable";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import AppPagination from "@/components/Common/AppPagination";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
+import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
 
 const DailyTimeSheets = () => {
-
+    const projects = [
+        {
+            value: "Time Tracker",
+            label: "Time Tracker",
+            avatar: "https://picsum.photos/200/300",
+        },
+        {
+            value: "E-commerce",
+            label: "E-commerce",
+            avatar: "https://picsum.photos/200/300",
+        },
+        {
+            value: "Fack News Detection",
+            label: "Fack News Detection",
+            avatar: "https://picsum.photos/200/300",
+        },
+        {
+            value: "Travel Together",
+            label: "Travel Together",
+            avatar: "https://picsum.photos/200/300",
+        },
+        {
+            value: "Time Tracker2",
+            label: "Time Tracker2",
+            avatar: "https://picsum.photos/200/300",
+        },
+    ]
     const users = [
         {
             value: "Juyed Ahmed",
@@ -53,13 +78,14 @@ const DailyTimeSheets = () => {
     return (
         <>
             <div className=" mb-5 flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between h-full">
-                <div className=" flex flex-col md:flex-row gap-4 md:gap-3">
+                <div className=" flex flex-col sm:flex-col-reverse xl:flex-row gap-4 md:gap-3">
                     <SpecificDatePicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></SpecificDatePicker>
-                    <div className="hidden md:block">
+                    {/* <div className="hidden md:block">
                         <Button className=" py-0 dark:text-darkTextPrimary" variant={'filter'}>
                             <SlidersHorizontal className=" dark:text-darkTextPrimary" /> Filters
                         </Button>
-                    </div>
+                    </div> */}
+                    <SelectProjectDropDown projects={projects}></SelectProjectDropDown>
                 </div>
                 <div className=" ">
                     {/* <Select onValueChange={setUser} value={user ?? undefined}>
