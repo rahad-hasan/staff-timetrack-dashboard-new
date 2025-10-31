@@ -9,7 +9,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 
 
 const Members = () => {
-
     type Member = {
         name: string;
         project: string;

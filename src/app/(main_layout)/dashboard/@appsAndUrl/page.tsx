@@ -8,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import SmallChart from "@/components/Dashboard/SmallChart/SmallChart";
 
 const AppsAndUrl = () => {
+
     type Member = {
         name: string;
         project: string;

@@ -1,4 +1,3 @@
-import React from 'react';
 
 const loading = () => {
 
@@ -19,28 +18,28 @@ const loading = () => {
             <td className="px-4 py-4 w-10">
                 <PulseBlock widthClass="w-5" heightClass="h-5" roundedClass="rounded-sm" />
             </td>
-            <td className="px-4 py-4 min-w-[200px] max-w-[300px]">
+            <td className="px-4 py-4 min-w-[180px] max-w-[300px]">
                 <div className="flex flex-col space-y-2">
-                    <PulseBlock widthClass="w-full" heightClass="h-4" />
-                    <PulseBlock widthClass="w-3/5" heightClass="h-4" />
+                    <PulseBlock widthClass=" w-5/5 sm:w-3/5" heightClass="h-4" />
+                    <PulseBlock widthClass=" w-4/5 sm:w-2/5" heightClass="h-4" />
                 </div>
             </td>
-            <td className="px-4 py-4 w-48">
+            <td className="px-4 py-4 ">
                 <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
                     <PulseBlock widthClass="w-24" heightClass="h-4" />
                 </div>
             </td>
-            <td className="px-4 py-4 w-32">
+            <td className="px-4 py-4 ">
                 <PulseBlock widthClass="w-20" heightClass="h-4" />
             </td>
-            <td className="px-4 py-4 w-32">
+            <td className="px-4 py-4 ">
                 <div className="flex items-center space-x-2">
                     <div className="w-4 h-4 bg-gray-200 dark:bg-gray-700 rounded-sm"></div>
                     <PulseBlock widthClass="w-16" heightClass="h-4" />
                 </div>
             </td>
-            <td className="px-4 py-4 w-24 text-right">
+            <td className="px-4 py-4 text-right">
                 <div className="flex justify-end">
                     <div className="w-24 h-7 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
                 </div>
@@ -49,7 +48,7 @@ const loading = () => {
     );
 
     return (
-        <div className="mt-5 border-2 border-gray-200 dark:border-gray-700 p-3 rounded-xl bg-white dark:bg-gray-800 shadow-lg">
+        <div className="mt-5 border-2 border-borderColor dark:border-darkBorder p-3 rounded-[12px] animate-pulse">
             <div className="flex justify-between items-center mb-5 animate-pulse">
                 <PulseBlock widthClass="w-36" heightClass="h-6" />
 
