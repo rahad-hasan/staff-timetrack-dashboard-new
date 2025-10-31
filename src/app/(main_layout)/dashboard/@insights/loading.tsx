@@ -34,7 +34,7 @@ const loading = () => {
                         <div className="space-y-3">
                             {['Productive', 'Offline', 'Dull'].map((label) => (
                                 <div key={label} className="flex items-center text-sm gap-3">
-                                    <div className={`w-3 h-3 rounded bg-gray-200`}></div>
+                                    <div className={`w-3 h-3 rounded bg-gray-200 dark:bg-gray-700`}></div>
                                     <div className="w-16 h-3 rounded bg-gray-200 dark:bg-gray-700"></div>
                                 </div>
                             ))}
@@ -42,9 +42,9 @@ const loading = () => {
                     </div>
 
                     <div className="flex w-full h-8 rounded-md overflow-hidden mt-16">
-                        <div className={`w-[9%] h-full bg-gray-200`}></div>
-                        <div className={`w-[79%] h-full bg-gray-200`}></div>
-                        <div className={`w-[12%] h-full bg-gray-200`}></div>
+                        <div className={`w-[9%] h-full bg-gray-200 dark:bg-gray-700`}></div>
+                        <div className={`w-[79%] h-full bg-gray-200 dark:bg-gray-700`}></div>
+                        <div className={`w-[12%] h-full bg-gray-200 dark:bg-gray-700`}></div>
                     </div>
 
                     <div className="flex justify-between mt-2 px-1">
@@ -56,7 +56,7 @@ const loading = () => {
 
                 <div className=" sm:w-1/2 flex items-center justify-center pt-5 pb-8">
                     <div className="relative h-44 w-44 rounded-full bg-gray-200 dark:bg-gray-700">
-                        <div className="absolute inset-6 rounded-full bg-white dark:bg-gray-900 shadow-inner"></div>
+                        <div className="absolute inset-6 rounded-full bg-white dark:bg-darkPrimaryBg shadow-inner"></div>
                     </div>
                 </div>
             </div>
