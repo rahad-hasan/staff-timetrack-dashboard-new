@@ -54,7 +54,7 @@ const StartTimer = () => {
     const filteredTasks = tasks.filter(t => t.toLowerCase().includes(taskSearch.toLowerCase()));
 
     return (
-        <PopoverContent side="bottom" align="start" className="sm:w-[450px] sm:px-4 dark:bg-darkPrimaryBg">
+        <PopoverContent side="bottom" align="start" className="sm:w-[450px] sm:px-4 dark:bg-darkSecondaryBg">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 md:gap-4">
                 <div className=" flex items-center gap-1 md:gap-4">
                     <Image
@@ -70,7 +70,7 @@ const StartTimer = () => {
                         <p className="text-gray-500 text-sm dark:text-darkTextSecondary">{task || "Select Task"}</p>
                         {
                             task &&
-                            <p className="text-gray-500 text-sm">2 Hours limit</p>
+                            <p className="text-gray-500 dark:text-darkTextSecondary text-sm">2 Hours limit</p>
                         }
                     </div>
                 </div>

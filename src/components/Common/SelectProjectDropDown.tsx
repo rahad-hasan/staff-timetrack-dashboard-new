@@ -20,7 +20,7 @@ import { useState } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 
 
-const SelectProjectDropDown = ({projects}:any) => {
+const SelectProjectDropDown = ({ projects }: any) => {
     const [open, setOpen] = useState(false)
     const [value, setValue] = useState("")
 
@@ -36,13 +36,13 @@ const SelectProjectDropDown = ({projects}:any) => {
                     <div className=" flex justify-between items-center gap-3">
                         {value && (
                             <Avatar className="w-6 h-6">
-                                <AvatarImage src={projects.find((project:any) => project.value === value)?.avatar} alt={value} />
-                                <AvatarFallback>{projects.find((project:any) => project.value === value)?.label.charAt(0)}</AvatarFallback>
+                                <AvatarImage src={projects.find((project: any) => project.value === value)?.avatar} alt={value} />
+                                <AvatarFallback>{projects.find((project: any) => project.value === value)?.label.charAt(0)}</AvatarFallback>
                             </Avatar>
                         )}
                         <span>
                             {value
-                                ? projects.find((project:any) => project.value === value)?.label
+                                ? projects.find((project: any) => project.value === value)?.label
                                 : "Select Project..."}
                         </span>
                     </div>
@@ -56,7 +56,7 @@ const SelectProjectDropDown = ({projects}:any) => {
                     <CommandList>
                         <CommandEmpty>No project found.</CommandEmpty>
                         <CommandGroup>
-                            {projects.map((project:any) => (
+                            {projects.map((project: any) => (
                                 <CommandItem
                                     key={project.value}
                                     className="cursor-pointer hover:dark:bg-darkSecondaryBg"
