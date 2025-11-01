@@ -121,7 +121,7 @@ const LeaveRequestModal = () => {
                                             <PopoverTrigger asChild>
                                                 <Button
                                                     variant="outline2"
-                                                    className="py-1.5 justify-between font-normal dark:text-darkTextSecondary"
+                                                    className="py-1.5 justify-between font-normal dark:bg-darkPrimaryBg dark:text-darkTextPrimary"
                                                 >
                                                     {startDate
                                                         ? startDate.toLocaleDateString()
@@ -159,7 +159,7 @@ const LeaveRequestModal = () => {
                                             <PopoverTrigger asChild>
                                                 <Button
                                                     variant="outline2"
-                                                    className="py-1.5 justify-between font-normal dark:text-darkTextSecondary"
+                                                    className="py-1.5 justify-between font-normal dark:text-darkTextPrimary dark:bg-darkPrimaryBg "
                                                 >
                                                     {endDate
                                                         ? endDate.toLocaleDateString()
@@ -194,7 +194,7 @@ const LeaveRequestModal = () => {
                             <FormItem>
                                 <FormLabel>Details</FormLabel>
                                 <FormControl>
-                                    <Textarea placeholder="Enter details" {...field} />
+                                    <Textarea className="dark:border-darkBorder" placeholder="Enter details" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -203,7 +203,7 @@ const LeaveRequestModal = () => {
 
                     <div className="flex items-center gap-3 w-full">
                         <DialogClose asChild>
-                            <Button variant="outline2">Cancel</Button>
+                            <Button variant="outline2" className="dark:border-darkBorder dark:text-darkTextPrimary dark:bg-darkPrimaryBg">Cancel</Button>
                         </DialogClose>
                         <DialogClose asChild>
                             <Button type="submit">Submit Request</Button>

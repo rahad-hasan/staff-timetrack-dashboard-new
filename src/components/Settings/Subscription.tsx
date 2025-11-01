@@ -68,7 +68,7 @@ export default function Subscription() {
     const currentSubscription = "Premium";
 
     return (
-        <div className="border-2 border-borderColor rounded-lg p-3 sm:p-6 bg-white dark:bg-darkSecondaryBg dark:border-darkBorder mt-6">
+        <div className="border-2 border-borderColor rounded-lg p-3 sm:p-6 bg-white dark:bg-darkPrimaryBg dark:border-darkBorder mt-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
                 <div>
                     <h2 className="text-xl mb-1.5 font-semibold dark:text-darkTextPrimary">Subscription</h2>
@@ -77,14 +77,14 @@ export default function Subscription() {
                     </p>
                 </div>
 
-                <div className="flex items-center bg-[#f6f7f9]  dark:bg-darkPrimaryBg rounded-lg ">
+                <div className="flex items-center bg-[#f6f7f9] dark:bg-darkSecondaryBg rounded-lg ">
                     {["Monthly", "Yearly"].map((tab) => (
                         <button
                             key={tab}
                             onClick={() => handleTabClick(tab as "Monthly" | "Yearly")}
-                            className={`px-4 py-2 text-sm font-medium transition-all cursor-pointer rounded-lg m-0.5 ${activeTab === tab
-                                ? "bg-white text-headingTextColor shadow-sm dark:bg-primary"
-                                : "text-gray-600 hover:text-gray-800 dark:text-darkTextSecondary"
+                            className={`px-4 py-2 text-sm font-medium transition-all cursor-pointer rounded-lg m-0.5 dark:text-darkTextPrimary ${activeTab === tab
+                                ? "bg-white text-headingTextColor shadow-sm dark:bg-darkPrimaryBg"
+                                : "text-gray-600 hover:text-gray-800"
                                 }`}
                         >
                             {tab}

@@ -94,7 +94,7 @@ const Profile = () => {
                                             <Input
                                                 type="text"
                                                 placeholder="Full Name"
-                                                className="pl-9"
+                                                className="pl-9 dark:bg-darkPrimaryBg dark:border-darkBorder"
                                                 {...field}
                                             />
                                         </div>
@@ -115,7 +115,7 @@ const Profile = () => {
                                             <Input
                                                 type="text"
                                                 placeholder="Job Title"
-                                                className="pl-9"
+                                                className="pl-9 dark:bg-darkPrimaryBg dark:border-darkBorder"
                                                 {...field}
                                             />
                                         </div>
@@ -139,7 +139,7 @@ const Profile = () => {
                                             <Input
                                                 type="email"
                                                 placeholder="Email Address"
-                                                className="pl-9"
+                                                className="pl-9 dark:bg-darkPrimaryBg dark:border-darkBorder"
                                                 {...field}
                                             />
                                         </div>
@@ -185,7 +185,7 @@ const Profile = () => {
 
                     <div className="flex items-center gap-3 w-full pt-3">
                         <Button type="submit">Save Changes</Button>
-                        <Button variant="outline2">Cancel</Button>
+                        <Button variant="outline2" className=" dark:bg-darkPrimaryBg dark:border-darkBorder dark:text-darkTextPrimary">Cancel</Button>
                     </div>
                 </form>
             </Form>

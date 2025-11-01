@@ -102,7 +102,7 @@ const RejectLeaveRequestModal = () => {
                             <FormItem>
                                 <FormLabel>Details</FormLabel>
                                 <FormControl>
-                                    <Textarea placeholder="Enter details" {...field} />
+                                    <Textarea className="dark:border-darkBorder" placeholder="Enter details" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -111,9 +111,9 @@ const RejectLeaveRequestModal = () => {
 
                     <div className="flex items-center gap-3 w-full">
                         <DialogClose asChild>
-                            <Button variant="outline2">Cancel</Button>
+                            <Button className="dark:border-darkBorder dark:text-darkTextPrimary" variant="outline2">Cancel</Button>
                         </DialogClose>
-                            <Button className="  bg-red-500 hover:bg-red-500" type="submit">Reject Request</Button>
+                            <Button className="  bg-red-500 hover:bg-red-500 dark:text-darkTextPrimary" type="submit">Reject Request</Button>
                     </div>
                 </form>
             </Form>
