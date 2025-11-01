@@ -21,7 +21,7 @@ const SingleProjectPage = () => {
                     <div className="hidden sm:flex items-center gap-1 cursor-pointer "><ChevronLeft className="" /> Projects</div>
                 </Link>
                 <div className=" flex gap-3">
-                    <Button className="text-sm md:text-base bg-[#eff7fe] hover:bg-[#eff7fe] text-[#5db0f1] border border-[#5db0f1]">
+                    <Button className="text-sm md:text-base bg-[#eff7fe] hover:bg-[#eff7fe] dark:bg-darkPrimaryBg text-[#5db0f1] border border-[#5db0f1]">
                         <span className="w-2 h-2 bg-[#5db0f1] rounded-full"></span> In Progress <ChevronDown />
                     </Button>
                     <Button className=" text-sm md:text-base dark:text-darkTextPrimary" variant={'outline2'}><Pencil /> Edit Project</Button>
