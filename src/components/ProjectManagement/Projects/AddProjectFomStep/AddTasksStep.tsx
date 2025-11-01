@@ -39,7 +39,7 @@ const AddTasksStep = ({ handleStepSubmit }: GeneralInfoStepProps) => {
                             <FormItem>
                                 <FormLabel>Tasks</FormLabel>
                                 <FormControl>
-                                    <Input type="text" className="" placeholder="Task title" {...field} />
+                                    <Input type="text" className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Task title" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -52,7 +52,7 @@ const AddTasksStep = ({ handleStepSubmit }: GeneralInfoStepProps) => {
                             <FormItem>
                                 <FormLabel>Description</FormLabel>
                                 <FormControl>
-                                    <Textarea placeholder="Add Description" {...field} />
+                                    <Textarea className="dark:border-darkBorder" placeholder="Add Description" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>

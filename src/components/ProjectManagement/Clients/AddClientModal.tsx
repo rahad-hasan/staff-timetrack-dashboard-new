@@ -50,7 +50,7 @@ const AddClientModal = () => {
                             <FormItem>
                                 <FormLabel>Name</FormLabel>
                                 <FormControl>
-                                    <Input type="text" className="" placeholder="Client Name" {...field} />
+                                    <Input type="text" className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Client Name" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -63,7 +63,7 @@ const AddClientModal = () => {
                             <FormItem>
                                 <FormLabel>Address</FormLabel>
                                 <FormControl>
-                                    <Input type="text" className="" placeholder="Enter Address" {...field} />
+                                    <Input type="text" className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Enter Address" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -76,7 +76,7 @@ const AddClientModal = () => {
                             <FormItem>
                                 <FormLabel>Email</FormLabel>
                                 <FormControl>
-                                    <Input type="text" className="" placeholder="Enter Email" {...field} />
+                                    <Input type="text" className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Enter Email" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -89,7 +89,7 @@ const AddClientModal = () => {
                             <FormItem>
                                 <FormLabel>Phone</FormLabel>
                                 <FormControl>
-                                    <Input type="number" className="" placeholder="Enter Phone" {...field} />
+                                    <Input type="number" className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Enter Phone" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>

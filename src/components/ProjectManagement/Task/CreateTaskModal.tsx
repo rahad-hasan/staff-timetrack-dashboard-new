@@ -150,7 +150,7 @@ const CreateTaskModal = () => {
                             <FormItem>
                                 <FormLabel>Task Name</FormLabel>
                                 <FormControl>
-                                    <Input type="text" className="" placeholder="Task Name" {...field} />
+                                    <Input type="text" className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Task Name" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -168,7 +168,7 @@ const CreateTaskModal = () => {
                                             <Button
                                                 variant="outline2"
                                                 id="startDate"
-                                                className="py-1.5 justify-between font-normal"
+                                                className="py-1.5 justify-between font-normal dark:bg-darkPrimaryBg dark:border-darkBorder dark:text-darkTextPrimary"
                                             >
                                                 {dateStartDate ? dateStartDate.toLocaleDateString() : "Set a deadline"}
                                                 <ChevronDownIcon />
@@ -199,7 +199,7 @@ const CreateTaskModal = () => {
                             <FormItem>
                                 <FormLabel>Task Details</FormLabel>
                                 <FormControl>
-                                    <Textarea placeholder="Task Details" {...field} />
+                                    <Textarea className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Task Details" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>

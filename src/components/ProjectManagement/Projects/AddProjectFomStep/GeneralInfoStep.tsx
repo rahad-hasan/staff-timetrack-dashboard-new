@@ -78,10 +78,10 @@ const GeneralInfoStep = ({ setStep, handleStepSubmit }: GeneralInfoStepProps) =>
                         control={form.control}
                         name="projectName"
                         render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="dark:text-darkTextPrimary">
                                 <FormLabel>Project Name</FormLabel>
-                                <FormControl>
-                                    <Input type="text" className="" placeholder="Project Name" {...field} />
+                                <FormControl className="">
+                                    <Input type="text" className="dark:border-darkBorder dark:bg-darkPrimaryBg dark:text-darkTextPrimary" placeholder="Project Name" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -168,7 +168,7 @@ const GeneralInfoStep = ({ setStep, handleStepSubmit }: GeneralInfoStepProps) =>
                             <FormItem>
                                 <FormLabel>Description</FormLabel>
                                 <FormControl>
-                                    <Textarea {...field} />
+                                    <Textarea className="dark:border-darkBorder" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -188,7 +188,7 @@ const GeneralInfoStep = ({ setStep, handleStepSubmit }: GeneralInfoStepProps) =>
                                                 <Button
                                                     variant="outline2"
                                                     id="startDate"
-                                                    className="py-1.5 justify-between font-normal dark:text-darkTextPrimary"
+                                                    className="py-1.5 justify-between font-normal dark:text-darkTextPrimary dark:bg-darkPrimaryBg"
                                                 >
                                                     {dateStartDate ? dateStartDate.toLocaleDateString() : "Select Start Date"}
                                                     <ChevronDownIcon />
@@ -226,7 +226,7 @@ const GeneralInfoStep = ({ setStep, handleStepSubmit }: GeneralInfoStepProps) =>
                                                 <Button
                                                     variant="outline2"
                                                     id="deadline"
-                                                    className="py-1.5 justify-between font-normal dark:text-darkTextPrimary"
+                                                    className="py-1.5 justify-between font-normal dark:text-darkTextPrimary dark:bg-darkPrimaryBg"
                                                 >
                                                     {dateDeadLine ? dateDeadLine.toLocaleDateString() : "Select Deadline"}
                                                     <ChevronDownIcon />
@@ -258,8 +258,8 @@ const GeneralInfoStep = ({ setStep, handleStepSubmit }: GeneralInfoStepProps) =>
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Phone</FormLabel>
-                                <FormControl>
-                                    <Input type="text" className="" placeholder="Phone Number" {...field} />
+                                <FormControl className="">
+                                    <Input type="text" className="dark:border-darkBorder dark:bg-darkPrimaryBg dark:text-darkTextPrimary " placeholder="Phone Number" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>

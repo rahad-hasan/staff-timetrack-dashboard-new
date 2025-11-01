@@ -79,7 +79,7 @@ const AddTeamModal = () => {
                             <FormItem>
                                 <FormLabel>Team Name</FormLabel>
                                 <FormControl>
-                                    <Input type="text" className="" placeholder="Team Name" {...field} />
+                                    <Input type="text" className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Team Name" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -132,16 +132,16 @@ const AddTeamModal = () => {
                                         values={field.value}
                                         onValuesChange={field.onChange}
                                     >
-                                        <MultiSelectTrigger className=" w-full hover:bg-white py-2">
+                                        <MultiSelectTrigger className=" w-full hover:bg-white py-2 dark:bg-darkPrimaryBg hover:dark:bg-darkPrimaryBg dark:border-darkBorder dark:text-darkTextPrimary">
                                             <MultiSelectValue placeholder="Select frameworks..." />
                                         </MultiSelectTrigger>
-                                        <MultiSelectContent>
+                                        <MultiSelectContent className="dark:bg-darkSecondaryBg">
                                             {/* Items must be wrapped in a group for proper styling */}
-                                            <MultiSelectGroup>
+                                            <MultiSelectGroup className="dark:bg-darkSecondaryBg">
                                                 {
                                                     memberData?.map((member, i) => (
 
-                                                        <MultiSelectItem className=" px-0 cursor-pointer" key={i} value={member?.name}>
+                                                        <MultiSelectItem className=" px-0 cursor-pointer hover:dark:bg-darkPrimaryBg" key={i} value={member?.name}>
                                                             <Image src={member?.image} className=" w-8" width={200} height={200} alt="profile_image" />
                                                             <p>{member?.name}</p>
                                                         </MultiSelectItem>

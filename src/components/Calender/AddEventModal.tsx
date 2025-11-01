@@ -89,7 +89,7 @@ const AddEventModal = () => {
                             <FormItem>
                                 <FormLabel>Event name</FormLabel>
                                 <FormControl>
-                                    <Input type="text" className="" placeholder="Event name" {...field} />
+                                    <Input type="text" className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Event name" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -107,7 +107,7 @@ const AddEventModal = () => {
                                             <Button
                                                 variant="outline2"
                                                 id="startDate"
-                                                className="py-1.5 justify-between font-normal dark:text-darkTextSecondary"
+                                                className="py-1.5 justify-between font-normal dark:text-darkTextSecondary dark:bg-darkPrimaryBg dark:border-darkBorder"
                                             >
                                                 <div className=" flex items-center gap-2">
                                                     <CalendarDays />
@@ -182,12 +182,12 @@ const AddEventModal = () => {
                                         values={field.value}
                                         onValuesChange={field.onChange}
                                     >
-                                        <MultiSelectTrigger className=" w-full hover:bg-white py-2">
+                                        <MultiSelectTrigger className=" w-full hover:bg-white dark:bg-darkPrimaryBg hover:dark:bg-darkPrimaryBg dark:border-darkBorder py-2">
                                             <MultiSelectValue placeholder="Select Team Members..." />
                                         </MultiSelectTrigger>
-                                        <MultiSelectContent>
+                                        <MultiSelectContent className="dark:bg-darkSecondaryBg">
                                             {/* Items must be wrapped in a group for proper styling */}
-                                            <MultiSelectGroup>
+                                            <MultiSelectGroup className="dark:bg-darkSecondaryBg">
                                                 {
                                                     memberData?.map((member, i) => (
 
@@ -214,7 +214,7 @@ const AddEventModal = () => {
                             <FormItem>
                                 <FormLabel>Description</FormLabel>
                                 <FormControl>
-                                    <Textarea placeholder="Enter description" {...field} />
+                                    <Textarea className="dark:border-darkBorder" placeholder="Enter description" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>

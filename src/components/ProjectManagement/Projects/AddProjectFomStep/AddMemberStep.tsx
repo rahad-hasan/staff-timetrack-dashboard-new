@@ -64,16 +64,16 @@ const AddMemberStep = ({ setStep, handleStepSubmit }: GeneralInfoStepProps) => {
                                         values={field.value}
                                         onValuesChange={field.onChange}
                                     >
-                                        <MultiSelectTrigger className=" w-full hover:bg-white py-2">
+                                        <MultiSelectTrigger className=" w-full hover:bg-white py-2 dark:bg-darkSecondaryBg hover:dark:bg-darkSecondaryBg">
                                             <MultiSelectValue placeholder="Select frameworks..." />
                                         </MultiSelectTrigger>
-                                        <MultiSelectContent className="dark:bg-darkPrimaryBg">
+                                        <MultiSelectContent className="dark:bg-darkSecondaryBg">
                                             {/* Items must be wrapped in a group for proper styling */}
-                                            <MultiSelectGroup>
+                                            <MultiSelectGroup className="dark:bg-darkSecondaryBg">
                                                 {
                                                     memberData?.map((member, i) => (
 
-                                                        <MultiSelectItem className=" px-0 cursor-pointer hover:dark:bg-darkSecondaryBg" key={i} value={member?.name}>
+                                                        <MultiSelectItem className=" px-0 cursor-pointer hover:dark:bg-darkPrimaryBg" key={i} value={member?.name}>
                                                             <Image src={member?.image} className=" w-8" width={200} height={200} alt="profile_image" />
                                                             <p>{member?.name}</p>
                                                         </MultiSelectItem>

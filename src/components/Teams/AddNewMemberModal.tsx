@@ -65,7 +65,7 @@ const AddNewMemberModal = () => {
                             <FormItem>
                                 <FormLabel>Name</FormLabel>
                                 <FormControl>
-                                    <Input type="text" className="" placeholder="Add member name" {...field} />
+                                    <Input type="text" className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Add member name" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -78,7 +78,7 @@ const AddNewMemberModal = () => {
                             <FormItem>
                                 <FormLabel>Email</FormLabel>
                                 <FormControl>
-                                    <Input type="text" className="" placeholder="Enter member email" {...field} />
+                                    <Input type="text" className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Enter member email" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -127,7 +127,7 @@ const AddNewMemberModal = () => {
                             <FormItem>
                                 <FormLabel>Password</FormLabel>
                                 <FormControl>
-                                    <Input type="password" className="" placeholder="Set Password" {...field} />
+                                    <Input type="password" className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Set Password" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>

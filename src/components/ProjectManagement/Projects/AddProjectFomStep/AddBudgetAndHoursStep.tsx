@@ -94,7 +94,7 @@ const AddBudgetAndHoursStep = ({ setStep, handleStepSubmit }: GeneralInfoStepPro
                                             :
                                             <FormLabel>Hourly Rate</FormLabel>
                                     }
-                                    <FormControl>
+                                    <FormControl  className="dark:bg-darkPrimaryBg dark:border-darkBorder">
                                         <Input type="number" className="" placeholder="Project rate" {...field} />
                                     </FormControl>
                                     <FormMessage />
