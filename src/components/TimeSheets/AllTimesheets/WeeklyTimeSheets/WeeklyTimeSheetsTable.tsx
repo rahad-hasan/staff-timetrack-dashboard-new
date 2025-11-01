@@ -13,7 +13,7 @@ const WeeklyTimeSheetsTable = () => {
         allWeekTotal: string;
     };
 
-    const days: DayMeta[] = [
+    const weekDays: DayMeta[] = [
         { key: "mon", date: "18", name: "Monday" },
         { key: "tue", date: "19", name: "Tuesday" },
         { key: "wed", date: "20", name: "Wednesday" },
@@ -59,7 +59,7 @@ const WeeklyTimeSheetsTable = () => {
                             <th className=" z-10 px-4 py-5 text-left border dark:border-darkBorder dark:text-darkTextPrimary">
                                 Project name
                             </th>
-                            {days.map((d) => (
+                            {weekDays.map((d) => (
                                 <th key={d.key} className=" z-10 px-4 py-5 text-center border dark:border-darkBorder dark:text-darkTextPrimary">
                                     <h2 className=" text-2xl font-bold">{d.date}</h2>
                                     <div className="mt-0.5 text-xs text-gray-500 dark:text-darkTextSecondary">{d.name}</div>

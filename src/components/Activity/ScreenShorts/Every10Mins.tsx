@@ -17,7 +17,7 @@ const Every10Mins = () => {
     const [selectedImage, setSelectedImage] = useState<string | StaticImageData>();
     const [modalOpen, setModalOpen] = useState<boolean>(false);
 
-    interface IScreenShortsTimely {
+    interface IScreenShort {
         _id: number;
         start: string;
         end: string;
@@ -29,66 +29,145 @@ const Every10Mins = () => {
         project: string;
         task: string;
     }
+
+    interface IScreenShortsTimely {
+        time: string;
+        totalTimeWorked: string;
+        allScreenshorts: IScreenShort[];
+    }
+
     const screenShortsTimely: IScreenShortsTimely[] = [
         {
-            _id: 1,
-            start: "9:00 am",
-            end: "9:10 am",
-            duration: "10 minutes",
-            progress: 20,
-            activity: 45,
-            screenshotCount: 3,
-            screenShort: screenshort1,
-            project: "Orbit Technology's Project",
-            task: "No Task",
+            time: "9:10 am - 10:00 am",
+            totalTimeWorked: "1:00:00",
+            allScreenshorts: [
+                {
+                    _id: 1,
+                    start: "9:00 am",
+                    end: "9:10 am",
+                    duration: "10 minutes",
+                    progress: 20,
+                    activity: 45,
+                    screenshotCount: 3,
+                    screenShort: screenshort1,
+                    project: "Orbit Technology's Project",
+                    task: "No Task",
+                },
+                {
+                    _id: 2,
+                    start: "9:10 am",
+                    end: "9:20 am",
+                    duration: "10 minutes",
+                    progress: 49,
+                    activity: 70,
+                    screenshotCount: 3,
+                    screenShort: screenshort2,
+                    project: "Orbit Technology's Project",
+                    task: "No Task",
+                },
+                {
+                    _id: 3,
+                    start: "9:20 am",
+                    end: "9:30 am",
+                    duration: "10 minutes",
+                    progress: 80,
+                    activity: 25,
+                    screenshotCount: 0,
+                    screenShort: screenshort1,
+                    project: "No Activity Listed",
+                    task: "No Task",
+                },
+                {
+                    _id: 4,
+                    start: "9:10 am",
+                    end: "9:20 am",
+                    duration: "10 minutes",
+                    progress: 49,
+                    activity: 70,
+                    screenshotCount: 3,
+                    screenShort: screenshort2,
+                    project: "Orbit Technology's Project",
+                    task: "No Task",
+                },
+                {
+                    _id: 5,
+                    start: "9:00 am",
+                    end: "9:10 am",
+                    duration: "10 minutes",
+                    progress: 20,
+                    activity: 45,
+                    screenshotCount: 3,
+                    screenShort: screenshort1,
+                    project: "Orbit Technology's Project",
+                    task: "No Task",
+                },
+            ],
         },
         {
-            _id: 2,
-            start: "9:10 am",
-            end: "9:20 am",
-            duration: "10 minutes",
-            progress: 49,
-            activity: 70,
-            screenshotCount: 3,
-            screenShort: screenshort2,
-            project: "Orbit Technology's Project",
-            task: "No Task",
-        },
-        {
-            _id: 3,
-            start: "9:20 am",
-            end: "9:30 am",
-            duration: "10 minutes",
-            progress: 80,
-            activity: 25,
-            screenshotCount: 0,
-            screenShort: screenshort1,
-            project: "No Activity Listed",
-            task: "No Task",
-        },
-        {
-            _id: 4,
-            start: "9:30 am",
-            end: "9:40 am",
-            duration: "10 minutes",
-            progress: 25,
-            activity: 65,
-            screenshotCount: 3,
-            screenShort: screenshort3,
-            project: "Orbit Technology's Project",
-            task: "No Task",
-        },
-        {
-            _id: 5,
-            start: "9:00 am",
-            end: "9:10 am",
-            duration: "10 minutes",
-            progress: 20,
-            activity: 45,
-            screenshotCount: 3,
-            screenShort: screenshort1,
-            project: "Orbit Technology's Project",
-            task: "No Task",
+            time: "10:00 am - 11:00 am",
+            totalTimeWorked: "0:50:00",
+            allScreenshorts: [
+                {
+                    _id: 1,
+                    start: "10:00 am",
+                    end: "10:10 am",
+                    duration: "10 minutes",
+                    progress: 25,
+                    activity: 65,
+                    screenshotCount: 3,
+                    screenShort: screenshort3,
+                    project: "Orbit Technology's Project",
+                    task: "No Task",
+                },
+                {
+                    _id: 2,
+                    start: "10:10 am",
+                    end: "10:20 am",
+                    duration: "10 minutes",
+                    progress: 40,
+                    activity: 55,
+                    screenshotCount: 3,
+                    screenShort: screenshort2,
+                    project: "Orbit Technology's Project",
+                    task: "No Task",
+                },
+                {
+                    _id: 3,
+                    start: "9:20 am",
+                    end: "9:30 am",
+                    duration: "10 minutes",
+                    progress: 80,
+                    activity: 25,
+                    screenshotCount: 0,
+                    screenShort: screenshort1,
+                    project: "No Activity Listed",
+                    task: "No Task",
+                },
+                {
+                    _id: 4,
+                    start: "9:10 am",
+                    end: "9:20 am",
+                    duration: "10 minutes",
+                    progress: 49,
+                    activity: 70,
+                    screenshotCount: 3,
+                    screenShort: screenshort2,
+                    project: "Orbit Technology's Project",
+                    task: "No Task",
+                },
+                {
+                    _id: 5,
+                    start: "9:00 am",
+                    end: "9:10 am",
+                    duration: "10 minutes",
+                    progress: 20,
+                    activity: 45,
+                    screenshotCount: 3,
+                    screenShort: screenshort1,
+                    project: "Orbit Technology's Project",
+                    task: "No Task",
+                },
+            ],
         },
     ];
 
@@ -111,18 +190,9 @@ const Every10Mins = () => {
     return (
         <>
             {/* map and under map */}
-            <div className="">
-                <div className=" flex flex-col sm:flex-row gap-2 sm:gap-3 sm:justify-between sm:items-center">
-                    <div className=" flex items-center gap-2">
-                        <Circle size={20} className=" text-gray-200 dark:text-darkTextPrimary" />
-                        <p className=" text-subTextColor dark:text-darkTextSecondary"> 9:10 am - 10:00 am</p>
-                    </div>
 
-                    <h2 className=" text-lg  text-subTextColor dark:text-darkTextSecondary">
-                        Total time worked: <span className=" font-semibold">1:00:00</span>
-                    </h2>
-                </div>
-                {/* 
+
+            {/* 
                 <div className=" mt-1">
                     <Carousel className="w-full ">
                         <CarouselContent className="">
@@ -179,116 +249,81 @@ const Every10Mins = () => {
                         </CarouselContent>
                     </Carousel>
                 </div > */}
-                <div className=" mt-3 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
-                    {
-                        screenShortsTimely?.map((screenShort) => (
-                            <div key={screenShort._id} className=" p-3 flex-nowrap rounded-lg border border-borderColor dark:border-darkBorder">
-                                <Image
-                                    src={screenShort.screenShort}
-                                    onClick={() => {
-                                        setSelectedImage(screenShort.screenShort)
-                                        setModalOpen(!modalOpen)
-                                    }}
-                                    width={300}
-                                    height={300}
-                                    className="rounded-lg w-full transition-transform duration-300 hover:scale-[1.01] cursor-pointer"
-                                    alt="screenshot"
-                                />
-                                <div className="mt-3">
-                                    <div className="flex justify-between items-center">
-                                        <p className="text-sm sm:text-lg  text-textGray dark:text-darkTextSecondary">
-                                            {screenShort.start} - {screenShort.end}
-                                        </p>
-                                        <Pencil className="text-primary cursor-pointer" size={18} />
-                                    </div>
-                                    <p className="mb-2 text-sm sm:text-base text-textGray dark:text-darkTextSecondary">
-                                        {screenShort.activity}% of 10 minutes
-                                    </p>
-                                    <Slider
-                                        className={`
-                                            rounded-full
-                                            ${screenShort.progress < 30
-                                                ? "bg-red-500 border-white"
-                                                : screenShort.progress < 60
-                                                    ? "bg-yellow-400 border-white"
-                                                    : "bg-primary border-white"
-                                            }
-                                            `}
-                                        disabled
-                                        defaultValue={[screenShort.progress ?? 0]}
-                                        max={100}
-                                        step={1}
-                                    />
-                                    <h2 className="mt-2 text-sm sm:text-lg font-semibold dark:text-darkTextPrimary">
-                                        {screenShort.project}
-                                    </h2>
-                                    <p className="text-textGray text-sm sm:text-base dark:text-darkTextSecondary">{screenShort.task}</p>
-                                </div>
-                            </div>
-                        ))
-                    }
-                </div>
-            </div>
-            <div className=" mt-4">
-                <div className=" flex flex-col sm:flex-row gap-2 sm:gap-3 sm:justify-between sm:items-center">
-                    <div className=" flex items-center gap-2">
-                        <Circle size={20} className=" text-gray-200 dark:text-darkTextPrimary" />
-                        <p className=" text-subTextColor dark:text-darkTextSecondary"> 9:10 am - 10:00 am</p>
-                    </div>
 
-                    <h2 className=" text-lg  text-subTextColor dark:text-darkTextSecondary">
-                        Total time worked: <span className=" font-semibold">1:00:00</span>
-                    </h2>
-                </div>
-                               <div className=" mt-3 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
-                    {
-                        screenShortsTimely?.map((screenShort) => (
-                            <div key={screenShort._id} className=" p-3 flex-nowrap rounded-lg border border-borderColor dark:border-darkBorder">
-                                <Image
-                                    src={screenShort.screenShort}
-                                    onClick={() => {
-                                        setSelectedImage(screenShort.screenShort)
-                                        setModalOpen(!modalOpen)
-                                    }}
-                                    width={300}
-                                    height={300}
-                                    className="rounded-lg w-full transition-transform duration-300 hover:scale-[1.01] cursor-pointer"
-                                    alt="screenshot"
-                                />
-                                <div className="mt-3">
-                                    <div className="flex justify-between items-center">
-                                        <p className="text-sm sm:text-lg  text-textGray dark:text-darkTextSecondary">
-                                            {screenShort.start} - {screenShort.end}
-                                        </p>
-                                        <Pencil className="text-primary cursor-pointer" size={18} />
-                                    </div>
-                                    <p className="mb-2 text-sm sm:text-base text-textGray dark:text-darkTextSecondary">
-                                        {screenShort.activity}% of 10 minutes
-                                    </p>
-                                    <Slider
-                                        className={`
-                                            rounded-full
-                                            ${screenShort.progress < 30
-                                                ? "bg-red-500 border-white"
-                                                : screenShort.progress < 60
-                                                    ? "bg-yellow-400 border-white"
-                                                    : "bg-primary border-white"
-                                            }
-                                            `}
-                                        disabled
-                                        defaultValue={[screenShort.progress ?? 0]}
-                                        max={100}
-                                        step={1}
-                                    />
-                                    <h2 className="mt-2 text-sm sm:text-lg font-semibold dark:text-darkTextPrimary">
-                                        {screenShort.project}
-                                    </h2>
-                                    <p className="text-textGray text-sm sm:text-base dark:text-darkTextSecondary">{screenShort.task}</p>
-                                </div>
+            <div className=" mt-4">
+                {screenShortsTimely.map((block, blockIndex) => (
+                    <div key={blockIndex} className="mt-5">
+                        {/* Header (time and total worked) */}
+                        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 sm:justify-between sm:items-center">
+                            <div className="flex items-center gap-2">
+                                <Circle size={20} className="text-gray-200 dark:text-darkTextPrimary" />
+                                <p className="text-subTextColor dark:text-darkTextSecondary">{block.time}</p>
                             </div>
-                        ))
-                    }
-                </div>
+                            <h2 className="text-lg text-subTextColor dark:text-darkTextSecondary">
+                                Total time worked: <span className="font-semibold">{block.totalTimeWorked}</span>
+                            </h2>
+                        </div>
+
+                        {/* Screenshot grid */}
+                        <div className="mt-3 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+                            {block.allScreenshorts.map((screenShort) => (
+                                <div
+                                    key={screenShort._id}
+                                    className="p-3 flex-nowrap rounded-lg border border-borderColor dark:border-darkBorder"
+                                >
+                                    <Image
+                                        src={screenShort.screenShort}
+                                        onClick={() => {
+                                            setSelectedImage(screenShort.screenShort);
+                                            setModalOpen(true);
+                                        }}
+                                        width={300}
+                                        height={300}
+                                        className="rounded-lg w-full transition-transform duration-300 hover:scale-[1.01] cursor-pointer"
+                                        alt="screenshot"
+                                    />
+
+                                    <div className="mt-3">
+                                        <div className="flex justify-between items-center">
+                                            <p className="text-sm sm:text-lg text-textGray dark:text-darkTextSecondary">
+                                                {screenShort.start} - {screenShort.end}
+                                            </p>
+                                            <Pencil className="text-primary cursor-pointer" size={18} />
+                                        </div>
+
+                                        <p className="mb-2 text-sm sm:text-base text-textGray dark:text-darkTextSecondary">
+                                            {screenShort.activity}% of 10 minutes
+                                        </p>
+
+                                        <Slider
+                                            className={`
+                rounded-full
+                ${screenShort.progress < 30
+                                                    ? "bg-red-500"
+                                                    : screenShort.progress < 60
+                                                        ? "bg-yellow-400"
+                                                        : "bg-primary"}
+              `}
+                                            disabled
+                                            defaultValue={[screenShort.progress ?? 0]}
+                                            max={100}
+                                            step={1}
+                                        />
+
+                                        <h2 className="mt-2 text-sm sm:text-lg font-semibold dark:text-darkTextPrimary">
+                                            {screenShort.project}
+                                        </h2>
+                                        <p className="text-textGray text-sm sm:text-base dark:text-darkTextSecondary">
+                                            {screenShort.task}
+                                        </p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                ))}
+
+
             </div>
             {
                 modalOpen &&

@@ -34,19 +34,19 @@ const AllNotesModal = () => {
         {notes.map((note) => (
           <div
             key={note.id}
-            className="border rounded-lg p-4 bg-[#f5f6f6] hover:shadow-sm transition-all"
+            className="border rounded-lg p-4 bg-[#f5f6f6] dark:bg-darkSecondaryBg hover:shadow-sm transition-all"
           >
-            <p className="text-xs font-medium text-textGray mb-1">Member</p>
+            <p className="text-xs font-medium text-textGray mb-1 dark:text-darkTextPrimary">Member</p>
             <h3 className="text-sm font-semibold ">
               {note.member}&apos;s notes for {note.date}
             </h3>
 
-            <p className="text-[13px] text-textGray mt-1 font-medium">
+            <p className="text-[13px] text-textGray mt-1 font-medium dark:text-darkTextPrimary">
               {note.project}
             </p>
-            <p className="text-xs text-textGray">{note.time}</p>
+            <p className="text-xs text-textGray dark:text-darkTextPrimary">{note.time}</p>
 
-            <p className="text-sm text-textGray mt-2">{note.content}</p>
+            <p className="text-sm text-textGray mt-2 dark:text-darkTextPrimary">{note.content}</p>
           </div>
         ))}
       </div>

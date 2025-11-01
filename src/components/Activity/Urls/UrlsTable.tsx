@@ -17,6 +17,8 @@ const UrlsTable = () => {
         timeSpent: string;
         time: string;
         isBlock: boolean;
+        startTime: string;
+        endTime: string;
     }
 
     const taskList: Activity[] = useMemo(
@@ -28,6 +30,8 @@ const UrlsTable = () => {
                 timeSpent: "01:15:22",
                 time: "8:00 AM - 11:00 AM",
                 isBlock: false,
+                startTime: "8:00 am",
+                endTime: "10:00 pm"
             },
             {
                 url: "https://lucide.dev",
@@ -36,6 +40,8 @@ const UrlsTable = () => {
                 timeSpent: "00:35:10",
                 time: "8:00 AM - 11:00 AM",
                 isBlock: false,
+                startTime: "8:00 am",
+                endTime: "10:00 pm"
             },
             {
                 url: "https://www.figma.com",
@@ -44,6 +50,8 @@ const UrlsTable = () => {
                 timeSpent: "00:34:29",
                 time: "8:00 AM - 11:00 AM",
                 isBlock: false,
+                startTime: "8:00 am",
+                endTime: "10:00 pm"
             },
             {
                 url: "http://localhost:3000",
@@ -52,6 +60,8 @@ const UrlsTable = () => {
                 timeSpent: "00:45:03",
                 time: "8:00 AM - 11:00 AM",
                 isBlock: false,
+                startTime: "8:00 am",
+                endTime: "10:00 pm"
             },
             {
                 url: "https://chatgpt.com",
@@ -60,6 +70,8 @@ const UrlsTable = () => {
                 timeSpent: "00:45:18",
                 time: "8:00 AM - 11:00 AM",
                 isBlock: true,
+                startTime: "8:00 am",
+                endTime: "10:00 pm"
             },
             {
                 url: "https://www.npmjs.com",
@@ -68,6 +80,8 @@ const UrlsTable = () => {
                 timeSpent: "00:40:02",
                 time: "8:00 AM - 11:00 AM",
                 isBlock: false,
+                startTime: "8:00 am",
+                endTime: "10:00 pm"
             },
             {
                 url: "https://gemini.google.com",
@@ -76,6 +90,8 @@ const UrlsTable = () => {
                 timeSpent: "00:20:31",
                 time: "8:00 AM - 11:00 AM",
                 isBlock: false,
+                startTime: "8:00 am",
+                endTime: "10:00 pm"
             }
         ],
         []
@@ -87,7 +103,7 @@ const UrlsTable = () => {
             accessorKey: "url",
             header: ({ column }) => {
                 return (
-                    <div  className="  min-w-[220px]">
+                    <div className="  min-w-[220px]">
                         <span
                             className=" cursor-pointer flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}

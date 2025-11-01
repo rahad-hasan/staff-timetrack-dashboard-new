@@ -200,14 +200,14 @@ const AddManualTimeModal = () => {
                                                     <Button
                                                         variant="outline2"
                                                         id="date"
-                                                        className="w-full justify-between font-normal py-[5px] flex items-center"
+                                                        className="w-full justify-between font-normal py-[5px] flex items-center dark:hover:bg-darkPrimaryBg dark:bg-darkPrimaryBg"
                                                     >
-                                                        <div className=" flex items-center dark:text-darkTextPrimary">
+                                                        <div className=" flex items-center dark:text-darkTextPrimary ">
                                                             <CalendarDays className="mr-2 text-muted-foreground" />
                                                             {date ? date.toLocaleDateString() : "Select date"}
                                                         </div>
 
-                                                        <ChevronDownIcon className="ml-2" />
+                                                        <ChevronDownIcon className="ml-2 w-10 h-10" />
                                                     </Button>
                                                 </PopoverTrigger>
                                                 <PopoverContent className="w-auto overflow-hidden p-0" align="start">
@@ -229,14 +229,14 @@ const AddManualTimeModal = () => {
                                 />
 
                                 <FormLabel className="-mb-1 ">Time</FormLabel>
-                                <div className=" flex flex-col md:flex-row gap-2 md:gap-3">
+                                <div className=" flex flex-col md:flex-row md:items-center gap-2 md:gap-3">
                                     <FormField
                                         control={form.control}
                                         name="timeFrom"
                                         render={({ field }) => (
                                             <FormItem className=" w-full">
-                                                <FormControl>
-                                                    <div className='relative'>
+                                                <FormControl className="">
+                                                    <div className='relative '>
                                                         <div className='text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 peer-disabled:opacity-50'>
                                                             <Clock8Icon className='size-4' />
                                                             <span className='sr-only'>Time From</span>
@@ -246,7 +246,7 @@ const AddManualTimeModal = () => {
                                                             id='time-picker'
                                                             step='1'
                                                             {...field}
-                                                            className='peer bg-background appearance-none pl-9 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none'
+                                                            className='peer bg-background dark:bg-darkPrimaryBg dark:border-darkBorder appearance-none pl-9 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none'
                                                         />
                                                     </div>
                                                 </FormControl>
@@ -273,7 +273,7 @@ const AddManualTimeModal = () => {
                                                             id='time-picker2'
                                                             step='1'
                                                             {...field}
-                                                            className='peer bg-background appearance-none pl-9 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none'
+                                                            className='peer bg-background dark:bg-darkPrimaryBg dark:border-darkBorder appearance-none pl-9 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none'
                                                         />
                                                     </div>
                                                 </FormControl>
@@ -316,10 +316,10 @@ const AddManualTimeModal = () => {
                                     control={form.control}
                                     name="message"
                                     render={({ field }) => (
-                                        <FormItem className=" w-full">
+                                        <FormItem className=" w-full ">
                                             <FormLabel>Message</FormLabel>
                                             <FormControl>
-                                                <Textarea {...field} />
+                                                <Textarea className="dark:border-darkBorder" {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>

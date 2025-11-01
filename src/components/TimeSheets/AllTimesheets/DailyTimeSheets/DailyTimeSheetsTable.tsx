@@ -27,6 +27,8 @@ const DailyTimeSheetsTable = () => {
                 manager: "Juyed Ahmed",
                 manual: true,
                 totalTime: "12:03:00",
+                startTime: "8:00 am",
+                endTime: "10:00 pm"
             },
             {
                 taskName: "Marketing Tools",
@@ -35,6 +37,8 @@ const DailyTimeSheetsTable = () => {
                 manager: "Cameron Williamson",
                 manual: false,
                 totalTime: "12:03:00",
+                startTime: "8:00 am",
+                endTime: "10:00 pm"
             },
             {
                 taskName: "Design Idea",
@@ -43,6 +47,8 @@ const DailyTimeSheetsTable = () => {
                 manager: "Jenny Wilson",
                 manual: true,
                 totalTime: "11:03:00",
+                startTime: "8:00 am",
+                endTime: "10:00 pm"
             },
             {
                 taskName: "Do the Logic for Orbit Home page project wi...",
@@ -51,6 +57,8 @@ const DailyTimeSheetsTable = () => {
                 manager: "Esther Howard",
                 manual: false,
                 totalTime: "10:03:00",
+                startTime: "8:00 am",
+                endTime: "10:00 pm"
             }
         ],
         []

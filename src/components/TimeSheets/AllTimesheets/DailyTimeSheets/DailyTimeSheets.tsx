@@ -66,13 +66,14 @@ const DailyTimeSheets = () => {
         },
     ]
     const activePeriods = [
-        { start: 5, end: 7 }, // Active from 5 AM to 7 AM
-        { start: 13, end: 16 }, // Active from 1 PM to 4 PM
-        { start: 18, end: 20 }, // Active from 6 PM to 8 PM
+        { start: 5, end: 7, project: 'project', task: 'task', duration: '2:00:00' }, // Active from 5 AM to 7 AM
+        { start: 13, end: 16, project: 'project', task: 'task', duration: '2:00:00' }, // Active from 1 PM to 4 PM
+        { start: 18, end: 20, project: 'project', task: 'task', duration: '2:00:00' }, // Active from 6 PM to 8 PM
     ];
 
     // date picker
     const [selectedDate, setSelectedDate] = useState(new Date());
+    console.log('selectedDate', selectedDate);
     const [page, setPage] = useState(1);
     console.log(page);
     return (
@@ -149,7 +150,7 @@ const DailyTimeSheets = () => {
                                         }}
                                     ></div>
                                 </TooltipTrigger>
-                                <TooltipContent className=" bg-[#868686] p-3">
+                                <TooltipContent className=" bg-[#868686] dark:bg-darkSecondaryBg p-3">
                                     <div>
                                         <h2 className=" text-[15px] mb-2 dark:text-darkTextPrimary">Project: Orbit Technology’s Project</h2>
                                         <h2 className=" text-[15px] mb-2 dark:text-darkTextPrimary">Task: Front End Development</h2>

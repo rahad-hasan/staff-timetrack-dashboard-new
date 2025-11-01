@@ -50,8 +50,8 @@ const SelectUserDropDown = ({users}:any) => {
                 </Button>
             </PopoverTrigger>
 
-            <PopoverContent className="sm:w-[250px] p-0 dark:bg-darkPrimaryBg">
-                <Command className="dark:bg-darkPrimaryBg">
+            <PopoverContent className="sm:w-[250px] p-0 dark:bg-darkSecondaryBg">
+                <Command className="dark:bg-darkSecondaryBg">
                     <CommandInput placeholder="Search User..." className="h-9" />
                     <CommandList>
                         <CommandEmpty>No user found.</CommandEmpty>

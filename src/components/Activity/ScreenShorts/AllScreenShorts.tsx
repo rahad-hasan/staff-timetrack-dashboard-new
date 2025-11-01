@@ -6,7 +6,7 @@ import Image, { StaticImageData } from "next/image";
 
 const AllScreenShorts = () => {
     console.log('AllScreenShorts');
-    interface IScreenShortsTimely {
+    interface IScreenShort {
         _id: number;
         start: string;
         end: string;
@@ -18,91 +18,172 @@ const AllScreenShorts = () => {
         project: string;
         task: string;
     }
-    const screenShortsTimely: IScreenShortsTimely[] = [
+
+    interface IScreenShortsGroup {
+        time: string;
+        totalTimeWorked: string;
+        allScreenshorts: IScreenShort[];
+    }
+
+    const screenShortsTimely: IScreenShortsGroup[] = [
         {
-            _id: 1,
-            start: "9:00 AM",
-            end: "9:10 AM",
-            duration: "10 minutes",
-            progress: 20,
-            activity: 45,
-            screenshotCount: 3,
-            screenShort: screenshort1,
-            project: "Orbit Technology's Project",
-            task: "No Task",
+            time: "9:10 am - 10:00 am",
+            totalTimeWorked: "1:00:00",
+            allScreenshorts: [
+                {
+                    _id: 1,
+                    start: "9:00 AM",
+                    end: "9:10 AM",
+                    duration: "10 minutes",
+                    progress: 20,
+                    activity: 45,
+                    screenshotCount: 3,
+                    screenShort: screenshort1,
+                    project: "Orbit Technology's Project",
+                    task: "No Task",
+                },
+                {
+                    _id: 2,
+                    start: "9:10 AM",
+                    end: "9:20 AM",
+                    duration: "10 minutes",
+                    progress: 49,
+                    activity: 70,
+                    screenshotCount: 3,
+                    screenShort: screenshort2,
+                    project: "Orbit Technology's Project",
+                    task: "No Task",
+                },
+                {
+                    _id: 3,
+                    start: "9:00 AM",
+                    end: "9:10 AM",
+                    duration: "10 minutes",
+                    progress: 20,
+                    activity: 45,
+                    screenshotCount: 3,
+                    screenShort: screenshort1,
+                    project: "Orbit Technology's Project",
+                    task: "No Task",
+                },
+                {
+                    _id: 4,
+                    start: "9:00 AM",
+                    end: "9:10 AM",
+                    duration: "10 minutes",
+                    progress: 20,
+                    activity: 45,
+                    screenshotCount: 3,
+                    screenShort: screenshort1,
+                    project: "Orbit Technology's Project",
+                    task: "No Task",
+                },
+                {
+                    _id: 5,
+                    start: "9:10 AM",
+                    end: "9:20 AM",
+                    duration: "10 minutes",
+                    progress: 49,
+                    activity: 70,
+                    screenshotCount: 3,
+                    screenShort: screenshort2,
+                    project: "Orbit Technology's Project",
+                    task: "No Task",
+                },
+            ],
         },
         {
-            _id: 2,
-            start: "9:10 AM",
-            end: "9:20 AM",
-            duration: "10 minutes",
-            progress: 49,
-            activity: 70,
-            screenshotCount: 3,
-            screenShort: screenshort2,
-            project: "Orbit Technology's Project",
-            task: "No Task",
+            time: "10:00 am - 11:00 am",
+            totalTimeWorked: "0:50:00",
+            allScreenshorts: [
+                {
+                    _id: 1,
+                    start: "10:00 AM",
+                    end: "10:10 AM",
+                    duration: "10 minutes",
+                    progress: 80,
+                    activity: 25,
+                    screenshotCount: 0,
+                    screenShort: screenshort1,
+                    project: "No Activity Listed",
+                    task: "No Task",
+                },
+                {
+                    _id: 2,
+                    start: "10:10 AM",
+                    end: "10:20 AM",
+                    duration: "10 minutes",
+                    progress: 25,
+                    activity: 65,
+                    screenshotCount: 3,
+                    screenShort: screenshort3,
+                    project: "Orbit Technology's Project",
+                    task: "No Task",
+                },
+                {
+                    _id: 3,
+                    start: "9:00 AM",
+                    end: "9:10 AM",
+                    duration: "10 minutes",
+                    progress: 20,
+                    activity: 45,
+                    screenshotCount: 3,
+                    screenShort: screenshort1,
+                    project: "Orbit Technology's Project",
+                    task: "No Task",
+                },
+                {
+                    _id: 4,
+                    start: "9:00 AM",
+                    end: "9:10 AM",
+                    duration: "10 minutes",
+                    progress: 20,
+                    activity: 45,
+                    screenshotCount: 3,
+                    screenShort: screenshort1,
+                    project: "Orbit Technology's Project",
+                    task: "No Task",
+                },
+                {
+                    _id: 5,
+                    start: "9:10 AM",
+                    end: "9:20 AM",
+                    duration: "10 minutes",
+                    progress: 49,
+                    activity: 70,
+                    screenshotCount: 3,
+                    screenShort: screenshort2,
+                    project: "Orbit Technology's Project",
+                    task: "No Task",
+                },
+            ],
         },
-        {
-            _id: 3,
-            start: "9:20 AM",
-            end: "9:30 AM",
-            duration: "10 minutes",
-            progress: 80,
-            activity: 25,
-            screenshotCount: 0,
-            screenShort: screenshort1,
-            project: "No Activity Listed",
-            task: "No Task",
-        },
-        {
-            _id: 4,
-            start: "9:30 AM",
-            end: "9:40 AM",
-            duration: "10 minutes",
-            progress: 25,
-            activity: 65,
-            screenshotCount: 3,
-            screenShort: screenshort3,
-            project: "Orbit Technology's Project",
-            task: "No Task",
-        },
-        {
-            _id: 5,
-            start: "9:00 AM",
-            end: "9:10 AM",
-            duration: "10 minute1s",
-            progress: 20,
-            activity: 45,
-            screenshotCount: 3,
-            screenShort: screenshort1,
-            project: "Orbit Technology's Project",
-            task: "No Task",
-        }
     ];
+
 
     return (
         <>
-            {/* map and under map */}
-            <div className="">
-                <div className=" flex flex-col sm:flex-row gap-2 sm:gap-3 sm:justify-between sm:items-center">
-                    <div className=" flex items-center gap-2">
-                        <Circle size={20} className=" text-gray-200 dark:text-darkTextPrimary" />
-                        <p className=" text-subTextColor dark:text-darkTextSecondary"> 9:10 am - 10:00 am</p>
+            {screenShortsTimely.map((group, groupIndex) => (
+                <div key={groupIndex} className={groupIndex > 0 ? "mt-6" : ""}>
+                    {/* Header */}
+                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 sm:justify-between sm:items-center">
+                        <div className="flex items-center gap-2">
+                            <Circle size={20} className="text-gray-200 dark:text-darkTextPrimary" />
+                            <p className="text-subTextColor dark:text-darkTextSecondary">{group.time}</p>
+                        </div>
+
+                        <h2 className="text-lg text-subTextColor dark:text-darkTextSecondary">
+                            Total time worked: <span className="font-semibold">{group.totalTimeWorked}</span>
+                        </h2>
                     </div>
 
-                    <h2 className=" text-lg  text-subTextColor dark:text-darkTextSecondary">
-                        Total time worked: <span className=" font-semibold">1:00:00</span>
-                    </h2>
-                </div>
-
-                <div className=" mt-3 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
-
-                    {
-
-                        screenShortsTimely.map((screenShort) => (
-                            <div key={screenShort?._id} className=" p-3 flex-nowrap rounded-lg border border-borderColor dark:border-darkBorder">
-
+                    {/* Screenshot Grid */}
+                    <div className="mt-3 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
+                        {group.allScreenshorts.map((screenShort) => (
+                            <div
+                                key={screenShort._id}
+                                className="p-3 flex-nowrap rounded-lg border border-borderColor dark:border-darkBorder"
+                            >
                                 <Image
                                     src={screenShort.screenShort}
                                     width={300}
@@ -110,7 +191,6 @@ const AllScreenShorts = () => {
                                     className="rounded-lg w-full transition-transform duration-300 hover:scale-[1.01]"
                                     alt="screenshot"
                                 />
-
 
                                 <div className="mt-3">
                                     <div className="flex justify-between items-center">
@@ -121,59 +201,17 @@ const AllScreenShorts = () => {
                                     <h2 className="mt-1 text-sm sm:text-lg font-semibold dark:text-darkTextPrimary">
                                         {screenShort.project}
                                     </h2>
-                                    <p className="text-sm sm:text-base text-textGray dark:text-darkTextSecondary">{screenShort.task}</p>
+                                    <p className="text-sm sm:text-base text-textGray dark:text-darkTextSecondary">
+                                        {screenShort.task}
+                                    </p>
                                 </div>
                             </div>
-                        ))
-                    }
-                </div>
-            </div>
-            {/* map and under map */}
-            <div className=" mt-4">
-                <div className=" flex flex-col sm:flex-row gap-2 sm:gap-3 sm:justify-between sm:items-center">
-                    <div className=" flex items-center gap-2">
-                        <Circle size={20} className=" text-gray-200 dark:text-darkTextPrimary" />
-                        <p className=" text-subTextColor dark:text-darkTextSecondary"> 9:10 am - 10:00 am</p>
+                        ))}
                     </div>
-
-                    <h2 className=" text-lg  text-subTextColor dark:text-darkTextSecondary">
-                        Total time worked: <span className=" font-semibold">1:00:00</span>
-                    </h2>
                 </div>
-
-                <div className=" mt-3 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
-
-                    {
-
-                        screenShortsTimely.map((screenShort) => (
-                            <div key={screenShort?._id} className=" p-3 flex-nowrap rounded-lg border border-borderColor dark:border-darkBorder">
-
-                                <Image
-                                    src={screenShort.screenShort}
-                                    width={300}
-                                    height={300}
-                                    className="rounded-lg w-full transition-transform duration-300 hover:scale-[1.01]"
-                                    alt="screenshot"
-                                />
-
-
-                                <div className="mt-3">
-                                    <div className="flex justify-between items-center">
-                                        <p className="md:text-lg text-textGray dark:text-darkTextSecondary">
-                                            {screenShort.start}
-                                        </p>
-                                    </div>
-                                    <h2 className="mt-1 text-sm sm:text-lg font-semibold dark:text-darkTextPrimary">
-                                        {screenShort.project}
-                                    </h2>
-                                    <p className="text-sm sm:text-base text-textGray dark:text-darkTextSecondary">{screenShort.task}</p>
-                                </div>
-                            </div>
-                        ))
-                    }
-                </div>
-            </div>
+            ))}
         </>
+
     );
 };
 

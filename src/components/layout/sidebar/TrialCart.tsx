@@ -20,7 +20,7 @@ const TrialCart = () => {
                     <X size={18} />
                 </button>
 
-                <Button size={'sm'}>
+                <Button className="" size={'sm'}>
                     <span className="text-green-600"><Zap size={20} className=" text-white" /></span> Trial
                 </Button>
 

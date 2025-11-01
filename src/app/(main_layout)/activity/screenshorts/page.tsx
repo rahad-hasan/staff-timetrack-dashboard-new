@@ -77,6 +77,44 @@ const ScreenShorts = () => {
         },
     ]
 
+    const metrics = [
+        {
+            id: 1,
+            icon: SquareActivity,
+            value: "48%",
+            title: "AVG ACTIVITY",
+            change: "+1.5%",
+            direction: "down",
+            note: "last Monday",
+        },
+        {
+            id: 2,
+            icon: BriefcaseBusiness,
+            value: "7h 24m",
+            title: "WORKED TIME",
+            change: "+30m",
+            direction: "up",
+            note: "from yesterday",
+        },
+        {
+            id: 3,
+            icon: ClipboardList,
+            value: "4h 12m",
+            title: "FOCUS TIME",
+            change: "-15m",
+            direction: "down",
+            note: "from yesterday",
+        },
+        {
+            id: 4,
+            icon: UsersRound,
+            value: "6h 02m",
+            title: "CORE WORK",
+            change: "+25m",
+            direction: "up",
+            note: "from yesterday",
+        },
+    ];
     // date picker
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
@@ -131,63 +169,35 @@ const ScreenShorts = () => {
                     </div>
                 </div>
             </div>
-            <div className=" mb-4 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-5">
-                <div className=" border-2 border-borderColor rounded-2xl w-full dark:border-darkBorder">
-                    <div className=" flex items-center gap-2 px-3 py-5">
-                        <SquareActivity size={40} className=" border-2 border-borderColor rounded-lg p-1.5" />
-                        <div>
-                            <h2 className=" text-xl font-semibold dark:text-darkTextPrimary">48%</h2>
-                            <h3 className=" text-textGray dark:text-darkTextSecondary">AVG ACTIVITY</h3>
+            <div className="mb-4 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-5">
+                {metrics.map(({ id, icon: Icon, value, title, change, direction, note }) => {
+                    const isUp = direction === "up";
+                    const TrendIcon = isUp ? TrendingUp : TrendingDown;
+                    const trendColor = isUp ? "text-green-500" : "text-red-500";
+
+                    return (
+                        <div
+                            key={id}
+                            className="border-2 border-borderColor rounded-2xl w-full dark:border-darkBorder transition-all hover:shadow-md  duration-200"
+                        >
+                            {/* Card header */}
+                            <div className="flex items-center gap-2 px-3 py-5">
+                                <Icon size={40} className="border-2 border-borderColor rounded-lg p-1.5" />
+                                <div>
+                                    <h2 className="text-xl font-semibold dark:text-darkTextPrimary">{value}</h2>
+                                    <h3 className="text-textGray dark:text-darkTextSecondary">{title}</h3>
+                                </div>
+                            </div>
+
+                            {/* Card footer */}
+                            <div className="bg-[#f6f7f9] dark:bg-darkPrimaryBg rounded-b-xl px-3 py-3 flex items-center gap-2">
+                                <TrendIcon size={20} className={trendColor} />
+                                <p className="text-primary">{change}</p>
+                                <p className="text-sm text-muted-foreground">{note}</p>
+                            </div>
                         </div>
-                    </div>
-                    <div className=" bg-[#f6f7f9] dark:bg-darkPrimaryBg rounded-b-xl px-3 py-3 flex items-center gap-2">
-                        <TrendingDown size={20} className=" text-red-500" />
-                        <p className=" text-primary">+1.5%</p>
-                        <p>last Monday</p>
-                    </div>
-                </div>
-                <div className=" border-2 border-borderColor rounded-2xl w-full dark:border-darkBorder">
-                    <div className=" flex items-center gap-2 px-3 py-5">
-                        <BriefcaseBusiness size={40} className=" border-2 border-borderColor rounded-lg p-1.5" />
-                        <div>
-                            <h2 className=" text-xl font-semibold dark:text-darkTextPrimary">48%</h2>
-                            <h3 className=" text-textGray dark:text-darkTextSecondary">WORKED TIME</h3>
-                        </div>
-                    </div>
-                    <div className=" bg-[#f6f7f9] dark:bg-darkPrimaryBg rounded-b-xl px-3 py-3 flex items-center gap-2">
-                        <TrendingUp size={20} className=" text-green-500" />
-                        <p className=" text-primary">+1.5%</p>
-                        <p>last Monday</p>
-                    </div>
-                </div>
-                <div className=" border-2 border-borderColor rounded-2xl w-full dark:border-darkBorder">
-                    <div className=" flex items-center gap-2 px-3 py-5">
-                        <ClipboardList size={40} className=" border-2 border-borderColor rounded-lg p-1.5" />
-                        <div>
-                            <h2 className=" text-xl font-semibold dark:text-darkTextPrimary">48%</h2>
-                            <h3 className=" text-textGray dark:text-darkTextSecondary">FOCUS TIME</h3>
-                        </div>
-                    </div>
-                    <div className=" bg-[#f6f7f9] dark:bg-darkPrimaryBg rounded-b-xl px-3 py-3 flex items-center gap-2">
-                        <TrendingDown size={20} className=" text-red-500" />
-                        <p className=" text-primary">+1.5%</p>
-                        <p>last Monday</p>
-                    </div>
-                </div>
-                <div className=" border-2 border-borderColor rounded-2xl w-full dark:border-darkBorder">
-                    <div className=" flex items-center gap-2 px-3 py-5">
-                        <UsersRound size={40} className=" border-2 border-borderColor rounded-lg p-1.5" />
-                        <div>
-                            <h2 className=" text-xl font-semibold dark:text-darkTextPrimary">48%</h2>
-                            <h3 className=" text-textGray dark:text-darkTextSecondary">CORE WORK</h3>
-                        </div>
-                    </div>
-                    <div className=" bg-[#f6f7f9] dark:bg-darkPrimaryBg rounded-b-xl px-3 py-3 flex items-center gap-2">
-                        <TrendingUp size={20} className=" text-green-500" />
-                        <p className=" text-primary">+1.5%</p>
-                        <p>last Monday</p>
-                    </div>
-                </div>
+                    );
+                })}
             </div>
 
             {

@@ -50,8 +50,8 @@ const SelectProjectDropDown = ({ projects }: any) => {
                 </Button>
             </PopoverTrigger>
 
-            <PopoverContent className="sm:w-[250px] p-0 dark:bg-darkPrimaryBg">
-                <Command className="dark:bg-darkPrimaryBg">
+            <PopoverContent className="sm:w-[250px] p-0 dark:bg-darkSecondaryBg">
+                <Command className="dark:bg-darkSecondaryBg">
                     <CommandInput placeholder="Search Project..." className="h-9" />
                     <CommandList>
                         <CommandEmpty>No project found.</CommandEmpty>
@@ -59,7 +59,7 @@ const SelectProjectDropDown = ({ projects }: any) => {
                             {projects.map((project: any) => (
                                 <CommandItem
                                     key={project.value}
-                                    className="cursor-pointer hover:dark:bg-darkSecondaryBg"
+                                    className="cursor-pointer hover:dark:bg-darkPrimaryBg"
                                     value={project.value}
                                     onSelect={(currentValue) => {
                                         setValue(currentValue === value ? "" : currentValue)
