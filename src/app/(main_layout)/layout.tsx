@@ -1,5 +1,6 @@
 import SideBar from "@/components/layout/SideBar";
 import Header from "@/components/layout/Header";
+import TrackerChatBot from "@/components/Chats/TrackerChatBot";
 
 export default function RootLayout({
   children,
@@ -8,7 +9,7 @@ export default function RootLayout({
 }>) {
   return (
     <div
-      className={` w-full flex bg-[#f6f7f9] dark:bg-darkSecondaryBg`}
+      className={` w-full flex bg-[#f6f7f9] dark:bg-darkSecondaryBg relative`}
     >
       <div className="hidden md:block">
         <SideBar></SideBar>
@@ -19,6 +20,9 @@ export default function RootLayout({
           {children}
         </div>
       </div>
+
+        <TrackerChatBot></TrackerChatBot>
+
     </div>
   );
 }
