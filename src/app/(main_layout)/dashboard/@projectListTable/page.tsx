@@ -16,6 +16,7 @@ import { ArrowUpDown, ChevronDown, EllipsisVertical } from "lucide-react";
 // import noneFlag from '../../assets/dashboard/noneFlag.svg'
 // import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const ProjectListTable = () => {
     const [sorting, setSorting] = useState<SortingState>([])
@@ -285,7 +286,9 @@ const ProjectListTable = () => {
                 <h2 className=" text-base sm:text-lg dark:text-darkTextPrimary">Project list</h2>
                 <div className=" flex items-center gap-3">
                     <Button className=" text-sm md:text-base dark:text-darkTextPrimary" variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
-                    <Button className=" text-sm md:text-base" size={'sm'}>All Project</Button>
+                    <Link href={`/project-management/projects`}>
+                        <Button className=" text-sm md:text-base" size={'sm'}>All Project</Button>
+                    </Link>
                 </div>
             </div>
             <Table>

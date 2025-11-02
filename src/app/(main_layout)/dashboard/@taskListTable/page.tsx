@@ -17,6 +17,7 @@ import mediumFlag from '../../../../assets/dashboard/mediumFlag.svg'
 import noneFlag from '../../../../assets/dashboard/noneFlag.svg'
 // import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const TaskListTable = () => {
     const [sorting, setSorting] = useState<SortingState>([])
@@ -282,7 +283,9 @@ const TaskListTable = () => {
                 <h2 className=" text-base sm:text-lg dark:text-darkTextPrimary">TASK LIST</h2>
                 <div className=" flex items-center gap-3">
                     <Button className=" text-sm md:text-base dark:text-darkTextPrimary" variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
-                    <Button className=" text-sm md:text-base" size={'sm'}>All Task</Button>
+                    <Link href={`/project-management/task`}>
+                        <Button className=" text-sm md:text-base" size={'sm'}>All Task</Button>
+                    </Link>
                 </div>
             </div>
             <Table>

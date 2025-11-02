@@ -6,6 +6,7 @@ import screenshort3 from "../../../../assets/dashboard/screenshort3.png";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import LinkWithActiveNav from "@/components/Common/LinkWithActiveNav";
+import Link from "next/link";
 
 
 const RecentActivity = async () => {
@@ -22,9 +23,9 @@ const RecentActivity = async () => {
                 <h2 className="text-base sm:text-lg dark:text-darkTextPrimary ">RECENT ACTIVITY</h2>
                 <div className=" flex items-center gap-3">
                     <Button className="text-sm md:text-base dark:text-darkTextPrimary" variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
-                    <LinkWithActiveNav url={`/activity/screenshorts`} openMenu={'Activity'} activeSubItem={'/activity/screenshorts'}>
-                        <Button className="text-sm md:text-base" size={'sm'}>View Activity</Button>
-                    </LinkWithActiveNav>
+                    {/* <LinkWithActiveNav url={`/activity/screenshorts`} openMenu={'Activity'} activeSubItem={'/activity/screenshorts'}> */}
+                    <Button className="text-sm md:text-base" size={'sm'}>View Activity</Button>
+                    {/* </LinkWithActiveNav> */}
                     {/* <Link href={`/activity/screenshorts`}>
                         <Button className="text-sm md:text-base" size={'sm'}>View Activity</Button>
                     </Link> */}
@@ -40,7 +41,9 @@ const RecentActivity = async () => {
                         </Avatar>
                         <h2 className="text-base sm:text-lg font-semibold">Danial Donald</h2>
                     </div>
-                    <Button className="text-sm md:text-base dark:text-darkTextPrimary" variant={'outline2'} size={'sm'}>View All</Button>
+                    <Link href={`/activity/screenshorts`}>
+                        <Button className="text-sm md:text-base dark:text-darkTextPrimary" variant={'outline2'} size={'sm'}>View All</Button>
+                    </Link>
                 </div>
                 <div className=" overflow-x-scroll sm:overflow-auto">
                     <div className=" flex justify-between gap-2.5 mt-5 min-w-[500px]">
@@ -71,7 +74,9 @@ const RecentActivity = async () => {
                         </Avatar>
                         <h2 className="text-base sm:text-lg font-semibold">Danial Donald</h2>
                     </div>
-                    <Button className="text-sm md:text-base dark:text-darkTextPrimary" variant={'outline2'} size={'sm'}>View All</Button>
+                    <Link href={`/activity/screenshorts`}>
+                        <Button className="text-sm md:text-base dark:text-darkTextPrimary" variant={'outline2'} size={'sm'}>View All</Button>
+                    </Link>
                 </div>
                 <div className=" overflow-x-scroll sm:overflow-auto">
                     <div className=" flex justify-between gap-2.5 mt-5 min-w-[500px]">
@@ -102,7 +107,9 @@ const RecentActivity = async () => {
                         </Avatar>
                         <h2 className="text-base sm:text-lg font-semibold">Danial Donald</h2>
                     </div>
-                    <Button className="text-sm md:text-base dark:text-darkTextPrimary" variant={'outline2'} size={'sm'}>View All</Button>
+                    <Link href={`/activity/screenshorts`}>
+                        <Button className="text-sm md:text-base dark:text-darkTextPrimary" variant={'outline2'} size={'sm'}>View All</Button>
+                    </Link>
                 </div>
                 <div className=" overflow-x-scroll sm:overflow-auto">
                     <div className=" flex justify-between gap-2.5 mt-5 min-w-[500px]">

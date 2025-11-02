@@ -6,6 +6,7 @@ import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack
 import SmallChart from "@/components/Dashboard/SmallChart/SmallChart";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import Link from "next/link";
 
 
 const Members = () => {
@@ -129,7 +130,9 @@ const Members = () => {
                 <h2 className=" text-base sm:text-lg dark:text-darkTextPrimary">MEMBERS</h2>
                 <div className=" flex items-center gap-3">
                     <Button className=" text-sm md:text-base dark:text-darkTextPrimary" variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
-                    <Button className=" text-sm md:text-base " size={'sm'}>All Member</Button>
+                    <Link href={`/teams`}>
+                        <Button className=" text-sm md:text-base " size={'sm'}>All Member</Button>
+                    </Link>
                 </div>
             </div>
             <div className=" mt-5">
