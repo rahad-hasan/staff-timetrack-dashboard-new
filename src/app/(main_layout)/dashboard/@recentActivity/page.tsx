@@ -5,7 +5,6 @@ import screenshort2 from "../../../../assets/dashboard/screenshort2.png";
 import screenshort3 from "../../../../assets/dashboard/screenshort3.png";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import LinkWithActiveNav from "@/components/Common/LinkWithActiveNav";
 import Link from "next/link";
 
 
