@@ -185,7 +185,7 @@ const ReportDailyTimeSheet = () => {
                 <SelectUserDropDown users={users}></SelectUserDropDown>
             </div>
 
-            <div className=" rounded-xl overflow-x-auto">
+            <div className="  overflow-x-auto">
                 <div className="flex  pb-2">
                     <div className="w-[80px] flex-shrink-0 font-bold text-sm text-gray-600 text-center dark:text-darkTextPrimary">Time</div>
                     <div className="flex-grow font-bold text-sm text-gray-600 ml-4"></div>

@@ -7,6 +7,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { ArrowUpDown, EllipsisVertical, Pencil, Trash2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogTrigger } from "../ui/dialog";
+import EditTeamModal from "./EditTeamModal";
 
 const TeamsTable = () => {
     const [sorting, setSorting] = useState<SortingState>([])
@@ -176,10 +178,18 @@ const TeamsTable = () => {
                         <PopoverContent side="bottom" align="end" className=" w-[250px] px-2">
                             <div className="">
                                 <div className="space-y-2">
-                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                        <Pencil size={18} />
-                                        <p>Edit Team</p>
-                                    </div>
+
+                                    <Dialog>
+                                        <form>
+                                            <DialogTrigger asChild>
+                                                <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
+                                                    <Pencil size={18} />
+                                                    <p>Edit Team</p>
+                                                </div>
+                                            </DialogTrigger>
+                                            <EditTeamModal></EditTeamModal>
+                                        </form>
+                                    </Dialog>
                                     <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
                                         <Trash2 size={18} />
                                         <p>Delete Team</p>
