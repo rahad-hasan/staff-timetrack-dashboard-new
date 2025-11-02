@@ -11,12 +11,15 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-import { ArrowUpDown, ChevronDown, EllipsisVertical } from "lucide-react";
+import { ArrowUpDown, ChevronDown, EllipsisVertical, Pencil, Trash2 } from "lucide-react";
 import lowFlag from '../../../assets/dashboard/lowFlag.svg'
 import mediumFlag from '../../../assets/dashboard/mediumFlag.svg'
 import noneFlag from '../../../assets/dashboard/noneFlag.svg'
 import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import EditTaskModal from "./EditTaskModal";
 
 const TaskTable = () => {
     console.log("TaskTable");
@@ -266,7 +269,33 @@ const TaskTable = () => {
             header: () => <div className="">Action</div>,
             cell: () => {
                 return <div className="">
-                    <Button className="dark:text-darkTextPrimary" variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button className="dark:text-darkTextPrimary" variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
+                        </PopoverTrigger>
+                        <PopoverContent side="bottom" align="end" className=" w-[250px] px-2">
+                            <div className="">
+                                <div className="space-y-2">
+                                    <Dialog>
+                                        <form>
+                                            <DialogTrigger asChild>
+                                                <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
+                                                    <Pencil size={18} />
+                                                    <p>Edit Client</p>
+                                                </div>
+                                            </DialogTrigger>
+                                            <EditTaskModal></EditTaskModal>
+                                        </form>
+                                    </Dialog>
+
+                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
+                                        <Trash2 size={18} />
+                                        <p>Delete Client</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </PopoverContent>
+                    </Popover>
                 </div>;
             },
         },
