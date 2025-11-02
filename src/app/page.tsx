@@ -71,7 +71,7 @@ const SignIn = () => {
 
     const currentItem = sliderContent[currentSlide];
     return (
-        <div className=" h-auto lg:h-screen w-full flex flex-col lg:flex-row bg-gradient-to-b from-[#12cd6918] from-5% to-[#f6f7f9] to-20%">
+        <div className=" h-auto lg:h-screen w-full flex flex-col lg:flex-row bg-gradient-to-b from-[#12cd6918] from-5% to-[#f6f7f9] dark:to-darkSecondaryBg to-20%">
             <div className=" lg:w-1/2 h-screen lg:h-full">
                 <div
                     className={`flex items-center gap-1.5 px-8 py-5 `}
@@ -98,10 +98,10 @@ const SignIn = () => {
                                     control={form.control}
                                     name="email"
                                     render={({ field }) => (
-                                        <FormItem>
+                                        <FormItem className="">
                                             <FormLabel>Email</FormLabel>
                                             <FormControl>
-                                                <Input type="email" className="w-[300px] sm:w-[400px]" placeholder="Email" {...field} />
+                                                <Input type="email" className="w-[300px] sm:w-[400px] dark:border-darkBorder" placeholder="Email" {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -123,7 +123,7 @@ const SignIn = () => {
                                                 <div className="relative">
                                                     <Input
                                                         type={showPassword ? "text" : "password"}
-                                                        className="w-[300px] sm:w-[400px]"
+                                                        className="w-[300px] sm:w-[400px] dark:border-darkBorder"
                                                         placeholder="Password"
                                                         {...field}
                                                     />
@@ -142,7 +142,7 @@ const SignIn = () => {
                                 <Link href={`/dashboard`}>
                                     <Button className=" w-full" type="submit">Sign in</Button>
                                 </Link>
-                                <h3 className=" text-center">Don’t have a account? <span className=" text-primary cursor-pointer">Sign Up</span></h3>
+                                <h3 className=" text-center mt-2">Don’t have a account? <span className=" text-primary cursor-pointer">Sign Up</span></h3>
                             </form>
                         </Form>
                     </div>

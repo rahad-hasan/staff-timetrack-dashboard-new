@@ -11,7 +11,7 @@ const TrialCart = () => {
 
     if (!visible) return null;
     return (
-        <div className=" mt-10  mx-4">
+        <div className=" my-8  mx-4">
             <div className="bg-white dark:bg-darkPrimaryBg shadow-sm rounded-2xl border border-gray-200 dark:border-none dark:shadow-textPrimaryBg p-5 relative">
                 <button
                     onClick={() => setVisible(false)}

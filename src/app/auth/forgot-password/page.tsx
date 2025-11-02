@@ -25,7 +25,7 @@ const ForgotPassword = () => {
     }
 
     return (
-        <div className=" w-full">
+        <div className=" w-full dark:bg-darkSecondaryBg">
             <div className=" w-full flex items-center justify-center">
 
                 <div
@@ -44,7 +44,7 @@ const ForgotPassword = () => {
             <div className=" h-[80vh] flex items-center justify-center">
 
                 <Form {...form}>
-                    <form style={{ boxShadow: "0px 10px 180px rgba(18, 205, 105, 0.3)" }} onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 bg-white py-8 px-6 md:px-10 rounded-lg border border-borderColor">
+                    <form style={{ boxShadow: "0px 10px 180px rgba(18, 205, 105, 0.3)" }} onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 bg-white dark:bg-darkPrimaryBg py-8 px-6 md:px-10 rounded-lg border border-borderColor dark:border-darkBorder">
                         <div className=" flex flex-col items-center mb-5">
                             <Image src={roundedEmail} width={200} height={200} alt="icon" className=" w-16" />
                             <h2 className=" text-2xl font-semibold mt-4 mb-2">Forgot password</h2>
@@ -57,7 +57,7 @@ const ForgotPassword = () => {
                                 <FormItem>
                                     <FormLabel>Email</FormLabel>
                                     <FormControl>
-                                        <Input type="email" className="w-[300px] sm:w-[400px]" placeholder="Email" {...field} />
+                                        <Input type="email" className="w-[300px] sm:w-[400px] dark:border-darkBorder" placeholder="Email" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

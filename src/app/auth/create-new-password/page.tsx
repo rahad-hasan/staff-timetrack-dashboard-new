@@ -52,7 +52,7 @@ const CreateNewPassword = () => {
             <div className=" h-[80vh] flex items-center justify-center">
 
                 <Form {...form}>
-                    <form style={{ boxShadow: "0px 10px 180px rgba(18, 205, 105, 0.3)" }} onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 bg-white py-8 px-6 md:px-10 rounded-lg border border-borderColor">
+                    <form style={{ boxShadow: "0px 10px 180px rgba(18, 205, 105, 0.3)" }} onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 bg-white dark:bg-darkPrimaryBg py-8 px-6 md:px-10 rounded-lg border border-borderColor dark:border-darkBorder">
                         <div className=" flex flex-col items-center mb-5">
                             <Image src={createNewPasswordIcon} width={200} height={200} alt="icon" className=" w-16" />
                             <h2 className=" text-2xl font-semibold mt-4 mb-2">Create your password</h2>
@@ -68,7 +68,7 @@ const CreateNewPassword = () => {
                                         <div className="relative">
                                             <Input
                                                 type={showPassword ? "text" : "password"}
-                                                className="w-[300px] sm:w-[400px]"
+                                                className="w-[300px] sm:w-[400px] dark:border-darkBorder"
                                                 placeholder="new password"
                                                 {...field}
                                             />
@@ -94,7 +94,7 @@ const CreateNewPassword = () => {
                                         <div className="relative">
                                             <Input
                                                 type={showPassword ? "text" : "password"}
-                                                className="w-[300px] sm:w-[400px]"
+                                                className="w-[300px] sm:w-[400px] dark:border-darkBorder"
                                                 placeholder="confirm password"
                                                 {...field}
                                             />

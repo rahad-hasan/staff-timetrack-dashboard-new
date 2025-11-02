@@ -54,7 +54,7 @@ const VerificationCode = () => {
             </div>
             <div className=" h-[80vh] flex items-center justify-center">
 
-                <div style={{ boxShadow: "0px 10px 180px rgba(18, 205, 105, 0.3)" }} className="space-y-4 bg-white py-8 px-6 md:px-10 rounded-lg border border-borderColor">
+                <div style={{ boxShadow: "0px 10px 180px rgba(18, 205, 105, 0.3)" }} className="space-y-4 bg-white dark:bg-darkPrimaryBg py-8 px-6 md:px-10 rounded-lg border border-borderColor dark:border-darkBorder">
                     <div className=" flex flex-col items-center mb-5">
                         <Image src={roundedEmail} width={200} height={200} alt="icon" className=" w-16" />
                         <h2 className=" text-2xl font-semibold mt-4 mb-2">Enter your code</h2>
@@ -71,7 +71,7 @@ const VerificationCode = () => {
                                     <input
                                         {...props}
                                         style={{ width: width }}
-                                        className="responsive-otp-input w-12 h-10 md:h-12 border-2 border-borderColor rounded-md text-center text-lg focus:border-primary focus:outline-none"
+                                        className="responsive-otp-input w-12 h-10 md:h-12 border-2 border-borderColor dark:border-darkBorder rounded-md text-center text-lg focus:border-primary focus:outline-none"
                                     />
                                 )}
                             />
