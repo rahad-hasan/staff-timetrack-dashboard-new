@@ -6,10 +6,10 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog"
 import { useState } from "react";
-import AddMemberStep from "./AddProjectFomStep/AddMemberStep";
-import AddBudgetAndHoursStep from "./AddProjectFomStep/AddBudgetAndHoursStep";
-import AddTasksStep from "./AddProjectFomStep/AddTasksStep";
 import EditGeneralInfoStep from "./EditProjectFormStep/EditGeneralInfoStep";
+import EditMemberStep from "./EditProjectFormStep/EditMemberStep";
+import EditBudgetAndHoursStep from "./EditProjectFormStep/EditBudgetAndHoursStep";
+import EditTasksStep from "./EditProjectFormStep/EditTasksStep";
 
 const EditProjectModal = () => {
     const [step, setStep] = useState<number>(1);
@@ -37,15 +37,15 @@ const EditProjectModal = () => {
             }
             {
                 step === 2 &&
-                <AddMemberStep setStep={setStep} handleStepSubmit={handleStepSubmit}></AddMemberStep>
+                <EditMemberStep setStep={setStep} handleStepSubmit={handleStepSubmit}></EditMemberStep>
             }
             {
                 step === 3 &&
-                <AddBudgetAndHoursStep setStep={setStep} handleStepSubmit={handleStepSubmit}></AddBudgetAndHoursStep>
+                <EditBudgetAndHoursStep setStep={setStep} handleStepSubmit={handleStepSubmit}></EditBudgetAndHoursStep>
             }
             {
                 step === 4 &&
-                <AddTasksStep handleStepSubmit={handleStepSubmit}></AddTasksStep>
+                <EditTasksStep handleStepSubmit={handleStepSubmit}></EditTasksStep>
             }
 
         </DialogContent>
