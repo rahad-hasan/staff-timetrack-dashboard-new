@@ -11,6 +11,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import emptyBoxLogo from "../../../assets/projects/emptyBox.svg"
 import Image from "next/image";
 import Link from "next/link";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import EditClientModal from "./EditClientModal";
 
 const ClientsTable = () => {
     const [sorting, setSorting] = useState<SortingState>([])
@@ -186,10 +188,18 @@ const ClientsTable = () => {
                                             <p>View Client</p>
                                         </div>
                                     </Link>
-                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                        <Pencil size={18} />
-                                        <p>Edit Client</p>
-                                    </div>
+                                    <Dialog>
+                                        <form>
+                                            <DialogTrigger asChild>
+                                                <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
+                                                    <Pencil size={18} />
+                                                    <p>Edit Client</p>
+                                                </div>
+                                            </DialogTrigger>
+                                            <EditClientModal></EditClientModal>
+                                        </form>
+                                    </Dialog>
+
                                     <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
                                         <Trash2 size={18} />
                                         <p>Delete Client</p>

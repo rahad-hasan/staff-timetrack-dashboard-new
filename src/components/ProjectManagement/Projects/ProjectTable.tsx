@@ -328,96 +328,96 @@ const ProjectTable = () => {
                                     <Dialog>
                                         <form>
                                             <DialogTrigger asChild>
-                                            <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                                <Pencil size={18} />
-                                                <p>Edit Project</p>
-                                            </div>
-                                        </DialogTrigger>
-                                        <EditProjectModal></EditProjectModal>
-                                    </form>
-                                </Dialog>
-                                <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                    <UsersRound size={18} />
-                                    <p>Manage member</p>
-                                </div>
-                                <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                    <Copy size={18} />
-                                    <p>Duplicate Project</p>
-                                </div>
-                                <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                    <Package2 size={18} />
-                                    <p>Archive Project</p>
-                                </div>
-                                <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                    <Trash2 size={18} />
-                                    <p>Delete Project</p>
+                                                <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
+                                                    <Pencil size={18} />
+                                                    <p>Edit Project</p>
+                                                </div>
+                                            </DialogTrigger>
+                                            <EditProjectModal></EditProjectModal>
+                                        </form>
+                                    </Dialog>
+                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
+                                        <UsersRound size={18} />
+                                        <p>Manage member</p>
+                                    </div>
+                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
+                                        <Copy size={18} />
+                                        <p>Duplicate Project</p>
+                                    </div>
+                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
+                                        <Package2 size={18} />
+                                        <p>Archive Project</p>
+                                    </div>
+                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
+                                        <Trash2 size={18} />
+                                        <p>Delete Project</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </PopoverContent>
-                </Popover>
+                        </PopoverContent>
+                    </Popover>
                 </div >;
             },
         },
     ];
 
 
-const table = useReactTable({
-    data: taskList,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
-    onRowSelectionChange: setRowSelection,
-    state: {
-        sorting,
-        rowSelection,
-    },
-});
+    const table = useReactTable({
+        data: taskList,
+        columns,
+        getCoreRowModel: getCoreRowModel(),
+        onSortingChange: setSorting,
+        getSortedRowModel: getSortedRowModel(),
+        onRowSelectionChange: setRowSelection,
+        state: {
+            sorting,
+            rowSelection,
+        },
+    });
 
-return (
-    <div className="mt-5 border-2 border-borderColor dark:border-darkBorder p-3 rounded-[12px]">
-        <div className=" mb-5">
-            <h2 className=" text-base sm:text-lg">Projects</h2>
-        </div>
-        <Table>
-            <TableHeader>
-                {table.getHeaderGroups().map(headerGroup => (
-                    <TableRow key={headerGroup.id}>
-                        {headerGroup.headers.map(header => (
-                            <TableHead key={header.id}>
-                                {header.isPlaceholder
-                                    ? null
-                                    : flexRender(header.column.columnDef.header, header.getContext())}
-                            </TableHead>
-                        ))}
-                    </TableRow>
-                ))}
-            </TableHeader>
-            <TableBody>
-                {table.getRowModel().rows?.length ? (
-                    table.getRowModel().rows.map(row => (
-                        // <Link key={row.id} href={`/project-management/projects/${row.original._id}`} className=" w-full">
-                        <TableRow className=" cursor-pointer" key={row.id} >
-                            {row.getVisibleCells().map(cell => (
-                                <TableCell key={cell.id}>
-                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                </TableCell>
+    return (
+        <div className="mt-5 border-2 border-borderColor dark:border-darkBorder p-3 rounded-[12px]">
+            <div className=" mb-5">
+                <h2 className=" text-base sm:text-lg">Projects</h2>
+            </div>
+            <Table>
+                <TableHeader>
+                    {table.getHeaderGroups().map(headerGroup => (
+                        <TableRow key={headerGroup.id}>
+                            {headerGroup.headers.map(header => (
+                                <TableHead key={header.id}>
+                                    {header.isPlaceholder
+                                        ? null
+                                        : flexRender(header.column.columnDef.header, header.getContext())}
+                                </TableHead>
                             ))}
                         </TableRow>
-                        // </Link>
-                    ))
-                ) : (
-                    <TableRow>
-                        <TableCell colSpan={columns.length} className="h-24 text-center">
-                            No tasks found.
-                        </TableCell>
-                    </TableRow>
-                )}
-            </TableBody>
-        </Table>
-    </div>
-);
+                    ))}
+                </TableHeader>
+                <TableBody>
+                    {table.getRowModel().rows?.length ? (
+                        table.getRowModel().rows.map(row => (
+                            // <Link key={row.id} href={`/project-management/projects/${row.original._id}`} className=" w-full">
+                            <TableRow className=" cursor-pointer" key={row.id} >
+                                {row.getVisibleCells().map(cell => (
+                                    <TableCell key={cell.id}>
+                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                    </TableCell>
+                                ))}
+                            </TableRow>
+                            // </Link>
+                        ))
+                    ) : (
+                        <TableRow>
+                            <TableCell colSpan={columns.length} className="h-24 text-center">
+                                No tasks found.
+                            </TableCell>
+                        </TableRow>
+                    )}
+                </TableBody>
+            </Table>
+        </div>
+    );
 };
 
 export default ProjectTable;
