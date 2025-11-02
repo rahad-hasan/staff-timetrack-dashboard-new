@@ -176,11 +176,11 @@ const TeamsTable = () => {
                         <PopoverContent side="bottom" align="end" className=" w-[250px] px-2">
                             <div className="">
                                 <div className="space-y-2">
-                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkSecondaryBg px-3 cursor-pointer">
+                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
                                         <Pencil size={18} />
                                         <p>Edit Team</p>
                                     </div>
-                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkSecondaryBg px-3 cursor-pointer">
+                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
                                         <Trash2 size={18} />
                                         <p>Delete Team</p>
                                     </div>
