@@ -98,13 +98,13 @@ const TrackerChatBot = () => {
                             <div ref={chatEndRef} />
                         </div>
 
-                        <div className="p-3 border-t flex items-center gap-2">
+                        <div className="p-3 border-t dark:border-gray-200 flex items-center gap-2">
                             <input
                                 type="text"
                                 placeholder="Type..."
                                 value={inputMessage}
                                 onChange={(e) => setInputMessage(e.target.value)}
-                                className="flex-1 p-2 border border-gray-200 rounded-lg focus:outline-none"
+                                className="flex-1 p-2 border border-gray-200 rounded-lg focus:outline-none dark:text-black"
                             />
                             <button
                                 onClick={handleSendMessage}
