@@ -45,7 +45,7 @@ const TrackerChatBot = () => {
                 {chatOpen && (
                     <motion.div
                         key="chat-window"
-                        className="fixed bottom-24 right-5 w-[400px] h-[600px] bg-white rounded-lg shadow-xl flex flex-col z-50 overflow-hidden"
+                        className="fixed bottom-24 left-2 sm:left-auto top-2 sm:top-auto right-2 sm:right-5 sm:w-[400px] sm:h-[600px] bg-white rounded-lg shadow-xl flex flex-col z-50 overflow-hidden"
                         initial={{ opacity: 0, y: 50 }} // Initial state when entering
                         animate={{ opacity: 1, y: 0 }}   // Final state when entering
                         exit={{ opacity: 0, y: 50 }}     // State when exiting
@@ -53,7 +53,7 @@ const TrackerChatBot = () => {
                     >
                         <div className="bg-primary
                             [background-image:linear-gradient(135deg,_#308bb2_0%,_#85af76_100%,_#8c8da8_10%)]
-                            text-white px-4 py-8 flex justify-between gap-2 items-center rounded-t-lg">
+                            text-white px-4 py-3 sm:py-8 flex justify-between gap-2 items-center rounded-t-lg">
                             <div>
                                 <h2 className="bg-white text-primary text-2xl font-bold h-10 w-10 flex items-center justify-center rounded-full">T</h2>
                             </div>
