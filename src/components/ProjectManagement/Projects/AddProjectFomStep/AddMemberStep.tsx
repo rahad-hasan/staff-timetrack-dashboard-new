@@ -88,9 +88,10 @@ const AddMemberStep = ({ setStep, handleStepSubmit }: GeneralInfoStepProps) => {
                             </FormItem>
                         )}
                     />
-                    <Button className="w-full" type="submit">
-                        Next
-                    </Button>
+                    <div className=" flex items-center gap-3">
+                        <Button onClick={() => setStep(1)} className=" " type="button">Previous</Button>
+                        <Button className="" type="submit">Next</Button>
+                    </div>
                 </form>
             </Form>
         </div>

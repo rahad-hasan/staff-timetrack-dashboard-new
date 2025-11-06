@@ -9,7 +9,7 @@ import { useState } from "react";
 import GeneralInfoStep from "./AddProjectFomStep/GeneralInfoStep";
 import AddMemberStep from "./AddProjectFomStep/AddMemberStep";
 import AddBudgetAndHoursStep from "./AddProjectFomStep/AddBudgetAndHoursStep";
-import AddTasksStep from "./AddProjectFomStep/AddTasksStep";
+// import AddTasksStep from "./AddProjectFomStep/AddTasksStep";
 
 const AddProjectModal = () => {
     const [step, setStep] = useState<number>(1);
@@ -28,7 +28,7 @@ const AddProjectModal = () => {
                         <span className=" h-1.5 rounded-full bg-primary w-full"></span>
                         <span className={` h-1.5 rounded-full ${step >= 2 ? "bg-primary" : "bg-[#dce3e3]"}  w-full `}></span>
                         <span className={` h-1.5 rounded-full ${step >= 3 ? "bg-primary" : "bg-[#dce3e3]"}  w-full `}></span>
-                        <span className={` h-1.5 rounded-full ${step >= 4 ? "bg-primary" : "bg-[#dce3e3]"}  w-full `}></span>
+                        {/* <span className={` h-1.5 rounded-full ${step >= 4 ? "bg-primary" : "bg-[#dce3e3]"}  w-full `}></span> */}
                     </div>
 
                 </DialogTitle>
@@ -45,10 +45,10 @@ const AddProjectModal = () => {
                 step === 3 &&
                 <AddBudgetAndHoursStep setStep={setStep} handleStepSubmit={handleStepSubmit}></AddBudgetAndHoursStep>
             }
-            {
+            {/* {
                 step === 4 &&
                 <AddTasksStep handleStepSubmit={handleStepSubmit}></AddTasksStep>
-            }
+            } */}
 
         </DialogContent>
     );

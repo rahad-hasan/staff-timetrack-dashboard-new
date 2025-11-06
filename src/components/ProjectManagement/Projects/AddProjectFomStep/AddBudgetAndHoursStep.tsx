@@ -22,6 +22,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { Input } from "@/components/ui/input";
+import { DialogClose } from "@radix-ui/react-dialog";
 
 interface GeneralInfoStepProps {
     setStep: (step: number) => void;
@@ -94,7 +95,7 @@ const AddBudgetAndHoursStep = ({ setStep, handleStepSubmit }: GeneralInfoStepPro
                                             :
                                             <FormLabel>Hourly Rate</FormLabel>
                                     }
-                                    <FormControl  className="dark:bg-darkPrimaryBg dark:border-darkBorder">
+                                    <FormControl className="dark:bg-darkPrimaryBg dark:border-darkBorder">
                                         <Input type="number" className="" placeholder="Project rate" {...field} />
                                     </FormControl>
                                     <FormMessage />
@@ -158,10 +159,14 @@ const AddBudgetAndHoursStep = ({ setStep, handleStepSubmit }: GeneralInfoStepPro
                                 />
                             </div>
                         }
-
-                        <Button className="w-full" type="submit">
-                            Next
-                        </Button>
+                        <div className=" flex items-center gap-3">
+                            <Button onClick={() => setStep(2)} className=" " type="button">Previous</Button>
+                            <DialogClose asChild>
+                                <Button className="" type="submit">
+                                    Create Project
+                                </Button>
+                            </DialogClose>
+                        </div>
                     </form>
                 </Form>
             </div>
