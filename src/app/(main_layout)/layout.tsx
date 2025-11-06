@@ -9,7 +9,7 @@ export default function RootLayout({
 }>) {
   return (
     <div
-      className={` w-full flex bg-[#f6f7f9] dark:bg-darkSecondaryBg relative`}
+      className={` w-full flex bg-[#f6f7f9] dark:bg-darkSecondaryBg`}
     >
       <div className="hidden md:block">
         <SideBar></SideBar>

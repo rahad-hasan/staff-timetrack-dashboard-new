@@ -7,7 +7,7 @@ const TrackerChatBot = () => {
     const [chatOpen, setChatOpen] = useState<boolean>(false);
     const [inputMessage, setInputMessage] = useState<string>("");
     const [messages, setMessages] = useState<{ sender: string, content: string }[]>([]);
-    const [isBotTyping, setIsBotTyping] = useState<boolean>(false); // Track bot typing state
+    const [isBotTyping, setIsBotTyping] = useState<boolean>(false);
     const chatEndRef = useRef<HTMLDivElement>(null);
 
     const handleSendMessage = () => {
@@ -46,10 +46,10 @@ const TrackerChatBot = () => {
                     <motion.div
                         key="chat-window"
                         className="fixed bottom-24 left-2 sm:left-auto top-2 sm:top-auto right-2 sm:right-5 sm:w-[400px] sm:h-[600px] bg-white rounded-lg shadow-xl flex flex-col z-50 overflow-hidden"
-                        initial={{ opacity: 0, y: 50 }} // Initial state when entering
-                        animate={{ opacity: 1, y: 0 }}   // Final state when entering
-                        exit={{ opacity: 0, y: 50 }}     // State when exiting
-                        transition={{ duration: 0.3 }}    // Transition duration
+                        initial={{ opacity: 0, y: 50 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 50 }}
+                        transition={{ duration: 0.3 }}
                     >
                         <div className="bg-primary
                             [background-image:linear-gradient(135deg,_#308bb2_0%,_#85af76_100%,_#8c8da8_10%)]
@@ -77,7 +77,7 @@ const TrackerChatBot = () => {
                                         </div>
                                     )}
                                     <div className="max-w-[75%]">
-                                        {message.sender !== 'user' && <h2 className="text-base font-semibold">Ai Assistant</h2>}
+                                        {message.sender !== 'user' && <h2 className="text-base font-semibold dark:text-black">Ai Assistant</h2>}
                                         <div className={`p-2 rounded-lg ${message.sender === 'user' ? 'bg-primary text-white' : 'bg-gray-100 text-black'}`}>
                                             <p>{message.content}</p>
                                             <p className={`text-[10px] ${message.sender !== 'user' ? 'text-left' : 'text-right'}`}>8:05 PM</p>
