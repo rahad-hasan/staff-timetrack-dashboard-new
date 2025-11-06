@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 import { addMemberSchema } from "@/zod/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -21,6 +21,7 @@ import {
     MultiSelectValue,
 } from "@/components/ui/multi-select"
 import Image from "next/image";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface GeneralInfoStepProps {
     setStep: (step: number) => void;
@@ -88,9 +89,9 @@ const AddMemberStep = ({ setStep, handleStepSubmit }: GeneralInfoStepProps) => {
                             </FormItem>
                         )}
                     />
-                    <div className=" flex items-center gap-3">
-                        <Button onClick={() => setStep(1)} className=" " type="button">Previous</Button>
-                        <Button className="" type="submit">Next</Button>
+                    <div className=" flex items-center justify-between gap-3">
+                        <button onClick={() => setStep(1)} className=" bg-primary rounded-lg text-white p-2 cursor-pointer" type="button"><ChevronLeft size={25} /></button>
+                        <button className=" bg-primary rounded-lg text-white p-2 cursor-pointer" type="submit"><ChevronRight size={25} /></button>
                     </div>
                 </form>
             </Form>
