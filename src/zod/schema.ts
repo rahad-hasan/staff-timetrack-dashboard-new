@@ -33,15 +33,18 @@ export const addManualTimeSchema = z.object({
 export const generalInfoSchema = z.object({
     projectName: z.string().min(1, "Project name is required"),
     client: z.string().min(1, "Client is required"),
-    manager: z.string().min(1, "Manager is required"),
+    manager: z.array(z.string().min(1, "Manager name is required")).min(1, "At least one manager is required"),
     description: z.string().min(1, "Description is required"),
-    startDate: z.date().refine(date => !isNaN(date.getTime()), {
+
+    startDate: z.date().nullable().refine((date) => date !== null && !isNaN(date.getTime()), {
         message: "Start date is required",
     }),
-    deadline: z.date().refine(date => !isNaN(date.getTime()), {
+
+    deadline: z.date().nullable().refine((date) => date !== null && !isNaN(date.getTime()), {
         message: "Deadline is required",
     }),
-    phone: z.string().min(1, "Dead line is required"),
+
+    phone: z.string().optional(),
 });
 
 // Step 2: Add Members Schema

@@ -30,6 +30,8 @@ import { useState } from "react";
 import { ChevronDownIcon, CircleUserRound, } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
+import { MultiSelect, MultiSelectContent, MultiSelectGroup, MultiSelectItem, MultiSelectTrigger, MultiSelectValue } from "@/components/ui/multi-select";
+import Image from "next/image";
 
 interface GeneralInfoStepProps {
     setStep: (step: number) => void;
@@ -38,12 +40,15 @@ interface GeneralInfoStepProps {
 
 const GeneralInfoStep = ({ setStep, handleStepSubmit }: GeneralInfoStepProps) => {
     const client = ["Orbit Project", "App Redesign", "Marketing Campaign", "New Website"];
-    const manager = ["Website Design", "Working on App Design", "New Landing Page", "Work on helsenist Project"];
-    const [managerSearch, setManagerSearch] = useState("");
+    const managersData = [
+        { name: "Kalki Noland", image: "https://avatar.iran.liara.run/public/18" },
+        { name: "Minakshi Devi", image: "https://avatar.iran.liara.run/public/25" },
+        { name: "Dani Wolvarin", image: "https://avatar.iran.liara.run/public/20" },
+        { name: "Alex Johnson", image: "https://avatar.iran.liara.run/public/22" },
+    ]
     const [clientSearch, setClientSearch] = useState("");
 
     const filteredClient = client.filter(p => p.toLowerCase().includes(clientSearch.toLowerCase()));
-    const filteredManager = manager.filter(t => t.toLowerCase().includes(managerSearch.toLowerCase()));
 
     const [openStartDate, setOpenStartDate] = useState(false);
     const [dateStartDate, setStartDate] = useState<Date | undefined>(undefined);
@@ -57,8 +62,10 @@ const GeneralInfoStep = ({ setStep, handleStepSubmit }: GeneralInfoStepProps) =>
         defaultValues: {
             projectName: "",
             client: "",
-            manager: "",
+            manager: [],
             description: "",
+            startDate: null,  // must match schema nullable
+            deadline: null,   // must match schema nullable
             phone: "",
         },
     })
@@ -131,31 +138,29 @@ const GeneralInfoStep = ({ setStep, handleStepSubmit }: GeneralInfoStepProps) =>
                             <FormItem>
                                 <FormLabel>Manager</FormLabel>
                                 <FormControl>
-                                    <div className="relative">
-                                        <Select
-                                            value={field.value}
-                                            onValueChange={field.onChange}
-                                        >
-                                            <SelectTrigger className="w-full">
-                                                <div className=" flex gap-1 items-center">
-                                                    <CircleUserRound className="mr-2" />
-                                                    <SelectValue className=" text-start" placeholder="Select Manager" />
-                                                </div>
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <Input
-                                                    type="text"
-                                                    placeholder="Select Manager"
-                                                    className="flex-1 border-none focus:ring-0 focus:outline-none"
-                                                    value={managerSearch}
-                                                    onChange={(e) => setManagerSearch(e.target.value)}
-                                                />
-                                                {filteredManager.map(p => (
-                                                    <SelectItem key={p} value={p}>{p}</SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
+                                    <MultiSelect
+                                        values={field.value}
+                                        onValuesChange={field.onChange}
+                                    >
+                                        <MultiSelectTrigger className=" w-full hover:bg-white py-2 dark:bg-darkSecondaryBg hover:dark:bg-darkSecondaryBg">
+                                            <MultiSelectValue placeholder="Select managers..." />
+                                        </MultiSelectTrigger>
+                                        <MultiSelectContent className="dark:bg-darkSecondaryBg">
+                                            {/* Items must be wrapped in a group for proper styling */}
+                                            <MultiSelectGroup className="dark:bg-darkSecondaryBg">
+                                                {
+                                                    managersData?.map((member, i) => (
+
+                                                        <MultiSelectItem className=" px-0 cursor-pointer hover:dark:bg-darkPrimaryBg" key={i} value={member?.name}>
+                                                            <Image src={member?.image} className=" w-8" width={200} height={200} alt="profile_image" />
+                                                            <p>{member?.name}</p>
+                                                        </MultiSelectItem>
+                                                    ))
+                                                }
+
+                                            </MultiSelectGroup>
+                                        </MultiSelectContent>
+                                    </MultiSelect>
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -176,83 +181,86 @@ const GeneralInfoStep = ({ setStep, handleStepSubmit }: GeneralInfoStepProps) =>
                     />
                     <div className="flex flex-col md:flex-row gap-4 md:gap-3">
                         {/* Start Date */}
-                        <FormField
-                            control={form.control}
-                            name="startDate"
-                            render={({ field }) => (
-                                <FormItem className="w-full">
-                                    <FormLabel>Start Date</FormLabel>
-                                    <FormControl>
-                                        <Popover open={openStartDate} onOpenChange={setOpenStartDate}>
-                                            <PopoverTrigger asChild>
-                                                <Button
-                                                    variant="outline2"
-                                                    id="startDate"
-                                                    className="py-1.5 justify-between font-normal dark:text-darkTextPrimary dark:bg-darkPrimaryBg"
-                                                >
-                                                    {dateStartDate ? dateStartDate.toLocaleDateString() : "Select Start Date"}
-                                                    <ChevronDownIcon />
-                                                </Button>
-                                            </PopoverTrigger>
-                                            <PopoverContent className="w-auto overflow-hidden p-0" align="start">
-                                                <Calendar
-                                                    mode="single"
-                                                    selected={dateStartDate}
-                                                    captionLayout="dropdown"
-                                                    onSelect={(date) => {
-                                                        setStartDate(date);
-                                                        field.onChange(date); // Update the form state
-                                                        setOpenStartDate(false);
-                                                    }}
-                                                />
-                                            </PopoverContent>
-                                        </Popover>
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
+                        <div className="flex-1 flex flex-col justify-start">
+                            <FormField
+                                control={form.control}
+                                name="startDate"
+                                render={({ field }) => (
+                                    <FormItem className="w-full">
+                                        <FormLabel>Start Date</FormLabel>
+                                        <FormControl>
+                                            <Popover open={openStartDate} onOpenChange={setOpenStartDate}>
+                                                <PopoverTrigger asChild>
+                                                    <Button
+                                                        variant="outline2"
+                                                        id="startDate"
+                                                        className="py-1.5 justify-between font-normal dark:text-darkTextPrimary dark:bg-darkPrimaryBg"
+                                                    >
+                                                        {dateStartDate ? dateStartDate.toLocaleDateString() : "Select Start Date"}
+                                                        <ChevronDownIcon />
+                                                    </Button>
+                                                </PopoverTrigger>
+                                                <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+                                                    <Calendar
+                                                        mode="single"
+                                                        selected={dateStartDate}
+                                                        captionLayout="dropdown"
+                                                        onSelect={(date) => {
+                                                            setStartDate(date);
+                                                            field.onChange(date); // Update the form state
+                                                            setOpenStartDate(false);
+                                                        }}
+                                                    />
+                                                </PopoverContent>
+                                            </Popover>
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
                         {/* Deadline Date */}
-                        <FormField
-                            control={form.control}
-                            name="deadline"
-                            render={({ field }) => (
-                                <FormItem className="w-full">
-                                    <FormLabel>Deadline</FormLabel>
-                                    <FormControl>
-                                        <Popover open={openDeadLine} onOpenChange={setDeadLineOpen}>
-                                            <PopoverTrigger asChild>
-                                                <Button
-                                                    variant="outline2"
-                                                    id="deadline"
-                                                    className="py-1.5 justify-between font-normal dark:text-darkTextPrimary dark:bg-darkPrimaryBg"
-                                                >
-                                                    {dateDeadLine ? dateDeadLine.toLocaleDateString() : "Select Deadline"}
-                                                    <ChevronDownIcon />
-                                                </Button>
-                                            </PopoverTrigger>
-                                            <PopoverContent className="w-auto overflow-hidden p-0" align="start">
-                                                <Calendar
-                                                    mode="single"
-                                                    selected={dateDeadLine}
-                                                    captionLayout="dropdown"
-                                                    onSelect={(date) => {
-                                                        setDeadLineDate(date);
-                                                        field.onChange(date); // Update the form state
-                                                        setDeadLineOpen(false);
-                                                    }}
-                                                />
-                                            </PopoverContent>
-                                        </Popover>
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                        <div className="flex-1 flex flex-col justify-start">
+                            <FormField
+                                control={form.control}
+                                name="deadline"
+                                render={({ field }) => (
+                                    <FormItem className="w-full">
+                                        <FormLabel>Deadline</FormLabel>
+                                        <FormControl>
+                                            <Popover open={openDeadLine} onOpenChange={setDeadLineOpen}>
+                                                <PopoverTrigger asChild>
+                                                    <Button
+                                                        variant="outline2"
+                                                        id="deadline"
+                                                        className="py-1.5 justify-between font-normal dark:text-darkTextPrimary dark:bg-darkPrimaryBg"
+                                                    >
+                                                        {dateDeadLine ? dateDeadLine.toLocaleDateString() : "Select Deadline"}
+                                                        <ChevronDownIcon />
+                                                    </Button>
+                                                </PopoverTrigger>
+                                                <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+                                                    <Calendar
+                                                        mode="single"
+                                                        selected={dateDeadLine}
+                                                        captionLayout="dropdown"
+                                                        onSelect={(date) => {
+                                                            setDeadLineDate(date);
+                                                            field.onChange(date); // Update the form state
+                                                            setDeadLineOpen(false);
+                                                        }}
+                                                    />
+                                                </PopoverContent>
+                                            </Popover>
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
                     </div>
 
-                    <FormField
+                    {/* <FormField
                         control={form.control}
                         name="phone"
                         render={({ field }) => (
@@ -264,7 +272,7 @@ const GeneralInfoStep = ({ setStep, handleStepSubmit }: GeneralInfoStepProps) =>
                                 <FormMessage />
                             </FormItem>
                         )}
-                    />
+                    /> */}
                     <Button className=" w-full" type="submit">Next</Button>
                 </form>
             </Form>
