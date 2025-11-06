@@ -36,7 +36,9 @@ const AddClientModal = () => {
     }
 
     return (
-        <DialogContent className="sm:max-w-[525px]">
+        <DialogContent
+            onInteractOutside={(event) => event.preventDefault()}
+            className="sm:max-w-[525px]">
             <DialogHeader>
                 <DialogTitle className=" mb-4">Add New Client</DialogTitle>
             </DialogHeader>
@@ -58,7 +60,7 @@ const AddClientModal = () => {
                     />
                     <FormField
                         control={form.control}
-                        name="address"   
+                        name="address"
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Address</FormLabel>

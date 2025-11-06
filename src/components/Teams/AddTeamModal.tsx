@@ -65,7 +65,9 @@ const AddTeamModal = () => {
     ]
 
     return (
-        <DialogContent className="sm:max-w-[525px]">
+        <DialogContent
+            onInteractOutside={(event) => event.preventDefault()}
+            className="sm:max-w-[525px]">
             <DialogHeader>
                 <DialogTitle className=" mb-4">Add Team</DialogTitle>
             </DialogHeader>
@@ -120,7 +122,7 @@ const AddTeamModal = () => {
                                 <FormMessage />
                             </FormItem>
                         )}
-                    /> 
+                    />
                     <FormField
                         control={form.control}
                         name="members"

@@ -75,7 +75,9 @@ const AddEventModal = () => {
     ]
 
     return (
-        <DialogContent className=" w-full sm:max-w-[525px] max-h-[95vh] overflow-y-auto">
+        <DialogContent
+            onInteractOutside={(event) => event.preventDefault()}
+            className=" w-full sm:max-w-[525px] max-h-[95vh] overflow-y-auto">
             <DialogHeader>
                 <DialogTitle className=" mb-4">Add Event</DialogTitle>
             </DialogHeader>
@@ -222,7 +224,7 @@ const AddEventModal = () => {
                     />
 
                     {/* <DialogClose asChild> */}
-                        <Button className=" w-full" type="submit">Create Task</Button>
+                    <Button className=" w-full" type="submit">Create Task</Button>
                     {/* </DialogClose> */}
                 </form>
             </Form>
