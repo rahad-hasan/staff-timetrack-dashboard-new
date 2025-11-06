@@ -20,7 +20,7 @@ export const createNewPasswordSchema = z.object({
 export const addManualTimeSchema = z.object({
     project: z.string().min(1, "Project is required"),
     task: z.string().min(1, "Task is required"),
-    date: z.date().refine(date => !isNaN(date.getTime()), {
+    date: z.date().nullable().refine((date) => date !== null && !isNaN(date.getTime()), {
         message: "Date is required",
     }),
     timeFrom: z.string().min(1, "Start time is required"),
@@ -70,7 +70,7 @@ export const newTaskCreationSchema = z.object({
     assignee: z.string().min(1, "Assignee is required"),
     project: z.string().min(1, "Project is required"),
     taskName: z.string().min(1, "Task name is required"),
-    deadline: z.date().refine(date => !isNaN(date.getTime()), {
+    deadline: z.date().nullable().refine((date) => date !== null && !isNaN(date.getTime()), {
         message: "Deadline is required",
     }),
     details: z.string().min(1, "Task details is required"),
@@ -79,9 +79,11 @@ export const newTaskCreationSchema = z.object({
 export const newClientSchema = z.object({
     name: z.string().min(1, "Name is required"),
     address: z.string().min(1, "Address is required"),
-    email: z.string().min(1, "Email is required"),
-    phone: z.coerce.number().min(1, "Phone number is required"),
-})
+    email: z.string().min(1, "Email is required").email("Invalid email format"),
+    phone: z.number()
+        .min(10, "Phone number must have at least 10 digits")
+        .max(15, "Phone number cannot exceed 15 digits")
+});
 
 export const newTeamSchema = z.object({
     teamName: z.string().min(1, "Team name is required"),

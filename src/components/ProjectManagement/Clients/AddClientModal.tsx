@@ -28,6 +28,7 @@ const AddClientModal = () => {
             name: "",
             address: "",
             email: "",
+            
         },
     })
 
@@ -91,7 +92,9 @@ const AddClientModal = () => {
                             <FormItem>
                                 <FormLabel>Phone</FormLabel>
                                 <FormControl>
-                                    <Input type="number" className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Enter Phone" {...field} />
+                                    <Input
+                                        type="number"
+                                        className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Enter Phone" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>

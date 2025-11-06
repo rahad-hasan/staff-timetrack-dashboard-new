@@ -36,6 +36,7 @@ const AddManualTimeModal = () => {
         defaultValues: {
             project: "",
             task: "",
+            date: null,
             timeFrom: "07:30:00",
             timeTo: "08:30:00",
             message: "",

@@ -54,6 +54,7 @@ const CreateTaskModal = () => {
             assignee: "",
             project: "",
             taskName: "",
+            deadline: null,
             details: "",
         },
     })
