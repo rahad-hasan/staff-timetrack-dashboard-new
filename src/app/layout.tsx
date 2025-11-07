@@ -29,7 +29,7 @@ export default function RootLayout({
                 cz-shortcut-listen="true"
                 monica-id="ofpnmcalabcbjgholdjcjblkibolbppb"
                 monica-version="7.9.7"
-                data-new-gr-c-s-check-loaded="14.1260.0"
+                data-new-gr-c-s-check-loaded="14.1261.0"
             >
                 <ThemeProvider
                     attribute="class"

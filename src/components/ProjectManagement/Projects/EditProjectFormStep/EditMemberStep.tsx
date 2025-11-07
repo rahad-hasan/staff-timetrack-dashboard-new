@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 import { addMemberSchema } from "@/zod/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -21,6 +21,7 @@ import {
     MultiSelectValue,
 } from "@/components/ui/multi-select"
 import Image from "next/image";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface GeneralInfoStepProps {
     setStep: (step: number) => void;
@@ -31,7 +32,7 @@ const EditMemberStep = ({ setStep, handleStepSubmit }: GeneralInfoStepProps) => 
     const form = useForm<z.infer<typeof addMemberSchema>>({
         resolver: zodResolver(addMemberSchema),
         defaultValues: {
-            members: ["Kalki Noland", "Dani Wolvarin"],
+            members: ["Minakshi Devi"],
         },
     });
 
@@ -50,7 +51,7 @@ const EditMemberStep = ({ setStep, handleStepSubmit }: GeneralInfoStepProps) => 
 
     return (
         <div>
-            <h2 className=" text-xl font-semibold mb-4">Edit Member</h2>
+            <h2 className=" text-xl font-semibold mb-4">Add Member</h2>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                     <FormField
@@ -88,9 +89,10 @@ const EditMemberStep = ({ setStep, handleStepSubmit }: GeneralInfoStepProps) => 
                             </FormItem>
                         )}
                     />
-                    <Button className="w-full" type="submit">
-                        Next
-                    </Button>
+                    <div className=" flex items-center justify-between gap-3">
+                        <button onClick={() => setStep(1)} className=" bg-primary rounded-lg text-white p-2 cursor-pointer" type="button"><ChevronLeft size={25} /></button>
+                        <button className=" bg-primary rounded-lg text-white p-2 cursor-pointer" type="submit"><ChevronRight size={25} /></button>
+                    </div>
                 </form>
             </Form>
         </div>

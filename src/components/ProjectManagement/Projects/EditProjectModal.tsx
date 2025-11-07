@@ -9,7 +9,7 @@ import { useState } from "react";
 import EditGeneralInfoStep from "./EditProjectFormStep/EditGeneralInfoStep";
 import EditMemberStep from "./EditProjectFormStep/EditMemberStep";
 import EditBudgetAndHoursStep from "./EditProjectFormStep/EditBudgetAndHoursStep";
-import EditTasksStep from "./EditProjectFormStep/EditTasksStep";
+// import EditTasksStep from "./EditProjectFormStep/EditTasksStep";
 
 const EditProjectModal = () => {
     const [step, setStep] = useState<number>(1);
@@ -19,14 +19,16 @@ const EditProjectModal = () => {
     };
     console.log(formData);
     return (
-        <DialogContent className=" w-full sm:max-w-[525px] max-h-[95vh] overflow-y-auto">
+        <DialogContent
+            onInteractOutside={(event) => event.preventDefault()}
+            className=" w-full sm:max-w-[525px] max-h-[95vh] overflow-y-auto">
             <DialogHeader>
                 <DialogTitle>
                     <div className=" flex gap-3 items-center mt-5">
                         <span className=" h-1.5 rounded-full bg-primary w-full"></span>
                         <span className={` h-1.5 rounded-full ${step >= 2 ? "bg-primary" : "bg-[#dce3e3]"}  w-full `}></span>
                         <span className={` h-1.5 rounded-full ${step >= 3 ? "bg-primary" : "bg-[#dce3e3]"}  w-full `}></span>
-                        <span className={` h-1.5 rounded-full ${step >= 4 ? "bg-primary" : "bg-[#dce3e3]"}  w-full `}></span>
+                        {/* <span className={` h-1.5 rounded-full ${step >= 4 ? "bg-primary" : "bg-[#dce3e3]"}  w-full `}></span> */}
                     </div>
 
                 </DialogTitle>
@@ -43,10 +45,10 @@ const EditProjectModal = () => {
                 step === 3 &&
                 <EditBudgetAndHoursStep setStep={setStep} handleStepSubmit={handleStepSubmit}></EditBudgetAndHoursStep>
             }
-            {
+            {/* {
                 step === 4 &&
                 <EditTasksStep handleStepSubmit={handleStepSubmit}></EditTasksStep>
-            }
+            } */}
 
         </DialogContent>
     );

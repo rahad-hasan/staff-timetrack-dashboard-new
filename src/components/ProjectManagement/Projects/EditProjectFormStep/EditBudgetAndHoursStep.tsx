@@ -1,6 +1,6 @@
 "use client"
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 import { addBudgetAndHoursSchema } from "@/zod/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, type Resolver } from "react-hook-form";
@@ -22,6 +22,8 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { Input } from "@/components/ui/input";
+import { DialogClose } from "@radix-ui/react-dialog";
+import { ChevronLeft } from "lucide-react";
 
 interface GeneralInfoStepProps {
     setStep: (step: number) => void;
@@ -32,44 +34,43 @@ const EditBudgetAndHoursStep = ({ setStep, handleStepSubmit }: GeneralInfoStepPr
     const form = useForm<z.infer<typeof addBudgetAndHoursSchema>>({
         resolver: zodResolver(addBudgetAndHoursSchema) as Resolver<z.infer<typeof addBudgetAndHoursSchema>>,
         defaultValues: {
-            projectType: "Hourly Rate",
-            rate: 30,
-            budgetType: "",
-            budgetBasis: "",
+            budgetType: "Hourly Rate",
+            rate: 20,
+            basedOn: "Employee Pay Rate",
         },
     });
 
     function onSubmit(values: z.infer<typeof addBudgetAndHoursSchema>) {
         console.log(values);
         handleStepSubmit(values);
-        setStep(4);
+        // setStep(4);
     }
     // Project rate => hourly, fixed
     // if hourly
 
     // 1. WATCH THE PROJECT TYPE FIELD
-    const projectType = form.watch("projectType");
-    const isHourlyRate = projectType === "Hourly Rate";
+    const budgetType = form.watch("budgetType");
+    const isHourlyRate = budgetType === "Hourly Rate";
 
     return (
         <div>
-            <h2 className=" text-xl font-semibold mb-4">Edit Budget & Hours</h2>
+            <h2 className=" text-xl font-semibold mb-4">Add Budget & Hours</h2>
             <div className="flex gap-3">
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-full">
                         <FormField
                             control={form.control}
-                            name="projectType"
+                            name="budgetType"
                             render={({ field }) => (
                                 <FormItem className=" w-full">
-                                    <FormLabel>Project Type</FormLabel>
+                                    <FormLabel>Budget Type</FormLabel>
                                     <FormControl className="">
                                         <Select
                                             value={field.value}
                                             onValueChange={field.onChange}
                                         >
                                             <SelectTrigger className=" w-full">
-                                                <SelectValue placeholder="Select project type" />
+                                                <SelectValue placeholder="Select Budget type" />
                                             </SelectTrigger>
                                             <SelectContent className=" cursor-pointer">
                                                 <SelectGroup>
@@ -89,12 +90,12 @@ const EditBudgetAndHoursStep = ({ setStep, handleStepSubmit }: GeneralInfoStepPr
                             render={({ field }) => (
                                 <FormItem>
                                     {
-                                        projectType === "Fixed Budget" ?
+                                        budgetType === "Fixed Budget" ?
                                             <FormLabel>Fixed Rate</FormLabel>
                                             :
                                             <FormLabel>Hourly Rate</FormLabel>
                                     }
-                                    <FormControl  className="dark:bg-darkPrimaryBg dark:border-darkBorder">
+                                    <FormControl className="dark:bg-darkPrimaryBg dark:border-darkBorder">
                                         <Input type="number" className="" placeholder="Project rate" {...field} />
                                     </FormControl>
                                     <FormMessage />
@@ -106,48 +107,22 @@ const EditBudgetAndHoursStep = ({ setStep, handleStepSubmit }: GeneralInfoStepPr
                             <div className=" flex items-center gap-3">
                                 <FormField
                                     control={form.control}
-                                    name="budgetType"
+                                    name="basedOn"
                                     render={({ field }) => (
                                         <FormItem className=" w-full">
-                                            <FormLabel>Budget Type</FormLabel>
+                                            <FormLabel>Based on</FormLabel>
                                             <FormControl className="">
                                                 <Select
                                                     value={field.value === undefined ? "" : field.value}
                                                     onValueChange={field.onChange}
                                                 >
                                                     <SelectTrigger className=" w-full">
-                                                        <SelectValue placeholder="Select budget type" />
+                                                        <SelectValue placeholder="Select based on" />
                                                     </SelectTrigger>
                                                     <SelectContent className=" cursor-pointer">
                                                         <SelectGroup>
-                                                            <SelectItem className=" cursor-pointer" value="apple">Hourly Rate</SelectItem>
-                                                            <SelectItem className=" cursor-pointer" value="banana">Fixed Budget</SelectItem>
-                                                        </SelectGroup>
-                                                    </SelectContent>
-                                                </Select>
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="budgetBasis"
-                                    render={({ field }) => (
-                                        <FormItem className=" w-full">
-                                            <FormLabel>Budget Basis</FormLabel>
-                                            <FormControl className="">
-                                                <Select
-                                                    value={field.value}
-                                                    onValueChange={field.onChange}
-                                                >
-                                                    <SelectTrigger className=" w-full">
-                                                        <SelectValue placeholder="Select budget basis" />
-                                                    </SelectTrigger>
-                                                    <SelectContent className=" cursor-pointer">
-                                                        <SelectGroup>
-                                                            <SelectItem className=" cursor-pointer" value="Hourly Rate">Hourly Rate</SelectItem>
-                                                            <SelectItem className=" cursor-pointer" value="Fixed Budget">Fixed Budget</SelectItem>
+                                                            <SelectItem className=" cursor-pointer" value="Employee Pay Rate">Employee Pay Rate</SelectItem>
+                                                            <SelectItem className=" cursor-pointer" value="Project Pay Rate">Project Pay Rate</SelectItem>
                                                         </SelectGroup>
                                                     </SelectContent>
                                                 </Select>
@@ -158,10 +133,12 @@ const EditBudgetAndHoursStep = ({ setStep, handleStepSubmit }: GeneralInfoStepPr
                                 />
                             </div>
                         }
-
-                        <Button className="w-full" type="submit">
-                            Next
-                        </Button>
+                        <div className=" flex items-center justify-between gap-3">
+                            <button onClick={() => setStep(2)} className=" bg-primary rounded-lg text-white p-2 cursor-pointer" type="button"><ChevronLeft size={25} /></button>
+                            <DialogClose asChild>
+                                <button className=" bg-primary rounded-lg text-white py-2 px-3 cursor-pointer" type="submit">Create Project</button>
+                            </DialogClose>
+                        </div>
                     </form>
                 </Form>
             </div>
