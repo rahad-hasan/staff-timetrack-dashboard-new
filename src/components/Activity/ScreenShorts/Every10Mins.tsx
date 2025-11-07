@@ -101,6 +101,18 @@ const Every10Mins = () => {
                     project: "Orbit Technology's Project",
                     task: "No Task",
                 },
+                {
+                    _id: 6,
+                    start: "9:20 am",
+                    end: "9:30 am",
+                    duration: "10 minutes",
+                    progress: 80,
+                    activity: 25,
+                    screenshotCount: 0,
+                    screenShort: screenshort1,
+                    project: "No Activity Listed",
+                    task: "No Task",
+                },
             ],
         },
         {
@@ -165,6 +177,18 @@ const Every10Mins = () => {
                     screenshotCount: 3,
                     screenShort: screenshort1,
                     project: "Orbit Technology's Project",
+                    task: "No Task",
+                },
+                {
+                    _id: 6,
+                    start: "9:20 am",
+                    end: "9:30 am",
+                    duration: "10 minutes",
+                    progress: 80,
+                    activity: 25,
+                    screenshotCount: 0,
+                    screenShort: screenshort1,
+                    project: "No Activity Listed",
                     task: "No Task",
                 },
             ],
@@ -265,11 +289,11 @@ const Every10Mins = () => {
                         </div>
 
                         {/* Screenshot grid */}
-                        <div className="mt-3 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+                        <div className="mt-3 grid grid-cols-2  xl:grid-cols-4 2xl:grid-cols-6 gap-4">
                             {block.allScreenshorts.map((screenShort) => (
                                 <div
                                     key={screenShort._id}
-                                    className="p-3 flex-nowrap rounded-lg border border-borderColor dark:border-darkBorder"
+                                    className="p-2 flex-nowrap rounded-lg border border-borderColor dark:border-darkBorder"
                                 >
                                     <Image
                                         src={screenShort.screenShort}
@@ -297,13 +321,13 @@ const Every10Mins = () => {
 
                                         <Slider
                                             className={`
-                rounded-full
-                ${screenShort.progress < 30
+                                            rounded-full
+                                            ${screenShort.progress < 30
                                                     ? "bg-red-500"
                                                     : screenShort.progress < 60
                                                         ? "bg-yellow-400"
                                                         : "bg-primary"}
-              `}
+                                                        `}
                                             disabled
                                             defaultValue={[screenShort.progress ?? 0]}
                                             max={100}
