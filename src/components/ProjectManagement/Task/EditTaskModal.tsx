@@ -57,14 +57,16 @@ const EditTaskModal = () => {
         },
     })
 
-    const [dateStartDate, setStartDate] = useState<Date | undefined>(form.getValues("deadline"));
+    const [dateStartDate, setStartDate] = useState<Date | undefined>(form.getValues("deadline") || undefined);
 
     function onSubmit(values: z.infer<typeof newTaskCreationSchema>) {
         console.log(values)
     }
 
     return (
-        <DialogContent className="w-full sm:max-w-[525px] max-h-[95vh] overflow-y-auto">
+        <DialogContent
+            onInteractOutside={(event) => event.preventDefault()}
+            className="w-full sm:max-w-[525px] max-h-[95vh] overflow-y-auto">
             <DialogHeader>
                 <DialogTitle className=" mb-4">Edit Task</DialogTitle>
             </DialogHeader>
