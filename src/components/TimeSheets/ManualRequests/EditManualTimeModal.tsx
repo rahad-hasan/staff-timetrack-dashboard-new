@@ -64,7 +64,7 @@ const EditManualTimeModal = () => {
     const filteredTasks = tasks.filter(t => t.toLowerCase().includes(taskSearch.toLowerCase()));
 
     const [open, setOpen] = useState(false);
-    const [date, setDate] = useState<Date | undefined>(form.getValues("date"));
+    const [date, setDate] = useState<Date | undefined>(form.getValues("date") || undefined);
     const [activePeriods, setActivePeriods] = useState<TimePeriod[] | undefined>(undefined);
     const [totalTime, setTotalTime] = useState<string>("1:00:00");
 

@@ -64,8 +64,8 @@ const EditGeneralInfoStep = ({ setStep, handleStepSubmit }: GeneralInfoStepProps
             client: "Orbit Client",
             manager: ["Kalki Noland"],
             description: "This is description",
-            startDate: new Date(),
-            deadline: new Date(),
+            startDate: new Date(Date.now()),
+            deadline: new Date(Date.now()),
         },
     })
 
