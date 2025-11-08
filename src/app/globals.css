@@ -2,7 +2,8 @@
 /* @import "tw-animate-css"; */
 
 @theme {
-  --color-primary: #12cd69;
+  /* --color-primary: #12cd69; */
+  --color-primary: #e7000b;
   --color-headingTextColor: #0f1613;
   --color-subTextColor: #505553; 
   --color-borderColor: #dce3e3; 
@@ -39,7 +40,7 @@
   --card-foreground: oklch(0.1450 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.1450 0 0);
-  --primary: oklch(0.7438 0.1945 151.5593);
+  --primary: #e7000b;
   --primary-foreground: oklch(0.9850 0 0);
   --secondary: oklch(0.9700 0 0);
   --secondary-foreground: oklch(0.2050 0 0);

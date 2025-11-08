@@ -1,5 +1,6 @@
 "use client";
 
+import GlobalColorPicker from "@/components/Common/GlobalColorPicker";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import Notification from "@/components/Settings/Notification";
 import Profile from "@/components/Settings/Profile";
@@ -16,9 +17,13 @@ const SettingsPage = () => {
 
     return (
         <div>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5">
-                <HeadingComponent heading="Settings" subHeading="All the teams and member are displayed here"></HeadingComponent>
+            <div className=" flex justify-between items-center">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5">
+                    <HeadingComponent heading="Settings" subHeading="All the teams and member are displayed here"></HeadingComponent>
+                </div>
+                <GlobalColorPicker></GlobalColorPicker>
             </div>
+
             <div className="flex gap-1 md:gap-3 mt-3 sm:mt-0 rounded-lg">
                 {["Profile", "Notification", "Subscription Management"].map((tab) => (
                     <button

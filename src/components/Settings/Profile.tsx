@@ -89,7 +89,7 @@ const Profile = () => {
                                 <FormItem className="w-full">
                                     <FormLabel>Full Name</FormLabel>
                                     <FormControl>
-                                        <div className="relative">
+                                        <div className="relative ">
                                             <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 h-4 w-4" />
                                             <Input
                                                 type="text"
@@ -181,6 +181,8 @@ const Profile = () => {
                         >
                             Owner in tracker.org
                         </Button>
+
+
                     </div>
 
                     <div className="flex items-center gap-3 w-full pt-3">
