@@ -90,6 +90,18 @@ const AllScreenShorts = () => {
                     project: "Orbit Technology's Project",
                     task: "No Task",
                 },
+                {
+                    _id: 6,
+                    start: "9:10 AM",
+                    end: "9:20 AM",
+                    duration: "10 minutes",
+                    progress: 49,
+                    activity: 70,
+                    screenshotCount: 3,
+                    screenShort: screenshort2,
+                    project: "Orbit Technology's Project",
+                    task: "No Task",
+                },
             ],
         },
         {
@@ -156,6 +168,18 @@ const AllScreenShorts = () => {
                     project: "Orbit Technology's Project",
                     task: "No Task",
                 },
+                {
+                    _id: 6,
+                    start: "9:10 AM",
+                    end: "9:20 AM",
+                    duration: "10 minutes",
+                    progress: 49,
+                    activity: 70,
+                    screenshotCount: 3,
+                    screenShort: screenshort2,
+                    project: "Orbit Technology's Project",
+                    task: "No Task",
+                },
             ],
         },
     ];
@@ -178,11 +202,11 @@ const AllScreenShorts = () => {
                     </div>
 
                     {/* Screenshot Grid */}
-                    <div className="mt-3 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4">
+                    <div className="mt-3 grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
                         {group.allScreenshorts.map((screenShort) => (
                             <div
                                 key={screenShort._id}
-                                className="p-3 flex-nowrap rounded-lg border border-borderColor dark:border-darkBorder"
+                                className="p-2 flex-nowrap rounded-lg border border-borderColor dark:border-darkBorder"
                             >
                                 <Image
                                     src={screenShort.screenShort}
@@ -194,11 +218,11 @@ const AllScreenShorts = () => {
 
                                 <div className="mt-3">
                                     <div className="flex justify-between items-center">
-                                        <p className="md:text-lg text-textGray dark:text-darkTextSecondary">
+                                        <p className="md:text-base text-textGray dark:text-darkTextSecondary">
                                             {screenShort.start}
                                         </p>
                                     </div>
-                                    <h2 className="mt-1 text-sm sm:text-lg font-semibold dark:text-darkTextPrimary">
+                                    <h2 className=" text-sm sm:text-base font-semibold dark:text-darkTextPrimary">
                                         {screenShort.project}
                                     </h2>
                                     <p className="text-sm sm:text-base text-textGray dark:text-darkTextSecondary">

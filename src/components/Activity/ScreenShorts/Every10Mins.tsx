@@ -289,7 +289,7 @@ const Every10Mins = () => {
                         </div>
 
                         {/* Screenshot grid */}
-                        <div className="mt-3 grid grid-cols-2  xl:grid-cols-4 2xl:grid-cols-6 gap-4">
+                        <div className="mt-3 grid grid-cols-2  xl:grid-cols-4 2xl:grid-cols-6 3xl:grid-cols-6 gap-4">
                             {block.allScreenshorts.map((screenShort) => (
                                 <div
                                     key={screenShort._id}
@@ -309,7 +309,7 @@ const Every10Mins = () => {
 
                                     <div className="mt-3">
                                         <div className="flex justify-between items-center">
-                                            <p className="text-sm sm:text-lg text-textGray dark:text-darkTextSecondary">
+                                            <p className="text-sm sm:text-base text-textGray dark:text-darkTextSecondary">
                                                 {screenShort.start} - {screenShort.end}
                                             </p>
                                             <Pencil className="text-primary cursor-pointer" size={18} />
@@ -334,7 +334,7 @@ const Every10Mins = () => {
                                             step={1}
                                         />
 
-                                        <h2 className="mt-2 text-sm sm:text-lg font-semibold dark:text-darkTextPrimary">
+                                        <h2 className="mt-2 text-sm sm:text-base font-semibold dark:text-darkTextPrimary">
                                             {screenShort.project}
                                         </h2>
                                         <p className="text-textGray text-sm sm:text-base dark:text-darkTextSecondary">
