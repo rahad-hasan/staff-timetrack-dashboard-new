@@ -29,7 +29,7 @@ const ProfileDropDown = () => {
             src={`https://avatar.iran.liara.run/public/18`}
             width={200}
             height={200}
-            className="w-8 rounded-full"
+            className=" w-7 sm:w-8 rounded-full"
             alt="User Avatar"
           />
           <span className="hidden md:block">Dannielis</span> Vettori

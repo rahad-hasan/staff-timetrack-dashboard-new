@@ -21,7 +21,7 @@ const TrialCart = () => {
                 </button>
 
                 <Button className="" size={'sm'}>
-                    <span className="text-green-600"><Zap size={20} className=" text-white" /></span> Trial
+                    <span className="text-primary"><Zap size={20} className=" text-white" /></span> Trial
                 </Button>
 
                 <h2 className="text-lg font-semibold mt-3 dark:text-darkTextPrimary">Basic</h2>
@@ -31,10 +31,10 @@ const TrialCart = () => {
                 <div className="mt-4">
                     <div className="h-2 bg-gray-200 rounded-full">
                         <div
-                            className="h-2 bg-green-600 rounded-full relative"
+                            className="h-2 bg-primary rounded-full relative"
                             style={{ width: `${progress}%` }}
                         >
-                            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-white border-2 border-green-600 rounded-full"></div>
+                            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-white border-2 border-primary rounded-full"></div>
                         </div>
                     </div>
                     <p className="text-sm text-gray-600 dark:text-darkTextSecondary mt-2">

@@ -108,7 +108,7 @@ const TrackerChatBot = () => {
                             />
                             <button
                                 onClick={handleSendMessage}
-                                className="bg-primary text-white p-3 rounded-full hover:bg-primary-dark transition-colors disabled:opacity-70 cursor-pointer"
+                                className="bg-primary text-white p-3 rounded-full hover:bg-primary-dark transition-colors disabled:bg-primary/60 cursor-pointer"
                                 disabled={inputMessage.trim() === ""}
                                 aria-label="Send message"
                             >

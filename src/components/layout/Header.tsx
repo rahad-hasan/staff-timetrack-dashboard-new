@@ -7,7 +7,7 @@ import {
     Popover,
     PopoverTrigger,
 } from "@/components/ui/popover"
-import { Menu, } from "lucide-react";
+import { CirclePlay, Download, Menu, } from "lucide-react";
 import StartTimer from "./Header/StartTimer";
 import {
     Sheet,
@@ -26,7 +26,8 @@ const Header = () => {
             <div>
                 <Popover>
                     <PopoverTrigger asChild>
-                        <Button className=" px-2 sm:px-3 dark:border-darkBorder" variant={'filter'}><Image src={startTimerIcon} width={0} height={0} className=" w-7 lg:w-5" alt="download" /><span className=" hidden lg:block dark:text-darkTextPrimary">Start Timer</span></Button>
+                        {/* <Button className=" px-2 sm:px-3 dark:border-darkBorder" variant={'filter'}><Image src={startTimerIcon} width={0} height={0} className=" w-7 lg:w-5" alt="download" /><span className=" hidden lg:block dark:text-darkTextPrimary">Start Timer</span></Button> */}
+                        <Button className=" dark:border-darkBorder" variant={'filter'}><CirclePlay className="text-primary text-[30px] w-20" size={30}/><span className=" hidden lg:block dark:text-darkTextPrimary">Start Timer</span></Button>
                     </PopoverTrigger>
                     <StartTimer></StartTimer>
                 </Popover>
@@ -51,7 +52,8 @@ const Header = () => {
                     </div>
                 </div>
                 <div className="hidden lg:block ">
-                    <Button className=" dark:border-primary " variant={'outline'}><Image src={downloadIcon} width={0} height={0} className="w-5" alt="download" />Download App</Button>
+                    {/* <Button className=" dark:border-primary " variant={'outline'}><Image src={downloadIcon} width={0} height={0} className="w-5" alt="download" />Download App</Button> */}
+                    <Button className=" dark:border-primary " variant={'outline'}><Download className=" text-primary w-8" />Download App</Button>
                 </div>
                 <ProfileDropDown></ProfileDropDown>
             </div>

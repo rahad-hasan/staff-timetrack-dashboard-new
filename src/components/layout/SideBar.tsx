@@ -1,6 +1,6 @@
 "use client"
 import Image from 'next/image';
-import logo from '../../assets/logo.svg'
+// import logo from '../../assets/logo.svg'
 // import fit from '../../assets/fit.svg'
 // import { useEffect, useState } from 'react';
 import {
@@ -13,7 +13,7 @@ import { usePathname } from 'next/navigation';
 import SidebarItem from './sidebar/SidebarItem';
 import SubItem from './sidebar/SubItem';
 import TrialCart from './sidebar/TrialCart';
-
+import timerLogo from '../../assets/timerLogo.svg'
 
 const SideBar = () => {
     const pathname = usePathname();
@@ -43,12 +43,19 @@ const SideBar = () => {
                             className={`flex items-center ${isCollapsed ? "flex-col gap-0" : "gap-1.5"
                                 }`}
                         >
-                            <Image
+                            {/* <Image
                                 src={logo}
                                 alt="Logo"
                                 width={0}
                                 height={0}
                                 className={`w-12 h-12`}
+                            /> */}
+                            <Image
+                                src={timerLogo}
+                                alt="Logo"
+                                width={0}
+                                height={0}
+                                className={` ${isCollapsed ? "h-auto mt-2 w-auto" : "h-10 w-10"}  bg-primary rounded-xl p-2 shadow-lg`}
                             />
                             {!isCollapsed && <h2 className="text-2xl font-bold dark:text-darkTextPrimary">Tracker</h2>}
                         </div>
