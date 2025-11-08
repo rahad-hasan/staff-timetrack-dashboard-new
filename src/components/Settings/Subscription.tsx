@@ -68,7 +68,7 @@ export default function Subscription() {
     const currentSubscription = "Premium";
 
     return (
-        <div className="border-2 border-borderColor rounded-lg p-3 sm:p-6 bg-white dark:bg-darkPrimaryBg dark:border-darkBorder mt-6">
+        <div className="border-2 border-borderColor rounded-lg p-3 sm:p-4 bg-white dark:bg-darkPrimaryBg dark:border-darkBorder mt-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
                 <div>
                     <h2 className="text-xl mb-1.5 font-semibold dark:text-darkTextPrimary">Subscription</h2>
