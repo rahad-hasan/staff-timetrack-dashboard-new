@@ -297,7 +297,7 @@ const AddManualTimeModal = () => {
                                             return (
                                                 <div
                                                     key={index}
-                                                    className="absolute h-5 bg-green-400 rounded-4xl"
+                                                    className="absolute h-5 bg-primary rounded-4xl"
                                                     style={{
                                                         left: `${startPercent}%`,
                                                         width: `${width}%`,

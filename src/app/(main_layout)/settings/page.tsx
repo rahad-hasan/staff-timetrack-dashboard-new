@@ -17,8 +17,8 @@ const SettingsPage = () => {
 
     return (
         <div>
-            <div className=" flex justify-between items-center">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5">
+            <div className=" flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 sm:mb-5">
                     <HeadingComponent heading="Settings" subHeading="All the teams and member are displayed here"></HeadingComponent>
                 </div>
                 <GlobalColorPicker></GlobalColorPicker>
@@ -30,7 +30,7 @@ const SettingsPage = () => {
                         key={tab}
                         onClick={() => handleTabClick(tab as "Profile" | "Notification" | "Subscription Management")}
                         className={`px-2 md:px-4 py-2 text-xs md:text-sm font-medium border dark:border-darkBorder transition-all cursor-pointer rounded-lg m-0.5 ${activeTab === tab
-                            ? "bg-[#e9f8f0] dark:bg-darkSecondaryBg text-primary border-none"
+                            ? "bg-primary/7 dark:bg-darkSecondaryBg text-primary border-none"
                             : "text-gray-600 hover:text-gray-800 dark:text-darkTextPrimary "
                             }`}
                     >

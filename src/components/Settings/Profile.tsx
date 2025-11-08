@@ -89,7 +89,7 @@ const Profile = () => {
                                 <FormItem className="w-full">
                                     <FormLabel>Full Name</FormLabel>
                                     <FormControl>
-                                        <div className="relative ">
+                                        <div className="relative">
                                             <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 h-4 w-4" />
                                             <Input
                                                 type="text"
@@ -174,13 +174,11 @@ const Profile = () => {
 
                     <div className="border-b-2 pb-8 mt-2">
                         <h2 className=" text-lg sm:text-2xl font-semibold mb-3 dark:text-darkTextPrimary">Team Role</h2>
-                        <Button
-                            className="bg-[#f5f6f6] text-black hover:bg-gray-100 dark:text-darkTextPrimary dark:border-darkBorder"
-                            variant={"outline2"}
-                            size={"sm"}
+                        <span
+                            className=" text-black border bg-gray-100 px-2 py-1 rounded-lg dark:bg-gray-700 dark:text-darkTextPrimary dark:border-darkBorder"
                         >
                             Owner in tracker.org
-                        </Button>
+                        </span>
 
 
                     </div>

@@ -1,6 +1,6 @@
 import { Button } from "../ui/button";
-import downloadIcon from '../../assets/header/download.svg'
-import startTimerIcon from '../../assets/header/start_timer_icon.svg'
+// import downloadIcon from '../../assets/header/download.svg'
+// import startTimerIcon from '../../assets/header/start_timer_icon.svg'
 import bellIcon from '../../assets/header/bell.svg'
 import Image from "next/image";
 import {
@@ -27,7 +27,7 @@ const Header = () => {
                 <Popover>
                     <PopoverTrigger asChild>
                         {/* <Button className=" px-2 sm:px-3 dark:border-darkBorder" variant={'filter'}><Image src={startTimerIcon} width={0} height={0} className=" w-7 lg:w-5" alt="download" /><span className=" hidden lg:block dark:text-darkTextPrimary">Start Timer</span></Button> */}
-                        <Button className=" dark:border-darkBorder" variant={'filter'}><CirclePlay className="text-primary text-[30px] w-20" size={30}/><span className=" hidden lg:block dark:text-darkTextPrimary">Start Timer</span></Button>
+                        <Button className=" dark:border-darkBorder " variant={'filter'}><CirclePlay className="text-primary size-5.5 sm:size-5.5"/><span className=" hidden lg:block dark:text-darkTextPrimary">Start Timer</span></Button>
                     </PopoverTrigger>
                     <StartTimer></StartTimer>
                 </Popover>

@@ -68,7 +68,7 @@ export default function Subscription() {
     const currentSubscription = "Premium";
 
     return (
-        <div className="border-2 border-borderColor rounded-lg p-3 sm:p-4 bg-white dark:bg-darkPrimaryBg dark:border-darkBorder mt-6">
+        <div className="border-2 border-borderColor rounded-lg p-3 sm:p-4 bg-white dark:bg-darkPrimaryBg dark:border-darkBorder mt-4">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
                 <div>
                     <h2 className="text-xl mb-1.5 font-semibold dark:text-darkTextPrimary">Subscription</h2>
@@ -130,7 +130,7 @@ export default function Subscription() {
                         <ul className="mt-6 space-y-2 m-6 pt-6 border-t-2">
                             {plan.features.map((feature) => (
                                 <li key={feature} className="flex items-center gap-2 text-sm text-gray-700 dark:text-darkTextSecondary">
-                                    <CheckCircle2 className="text-green-500 h-8 w-5" />
+                                    <CheckCircle2 className="text-primary h-8 w-5" />
                                     {feature}
                                 </li>
                             ))}

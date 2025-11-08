@@ -1,4 +1,5 @@
 "use client"
+import { useColorStore } from "@/store/globalColorStore";
 import {
     Bar,
     BarChart,
@@ -16,7 +17,7 @@ const SmallChart = () => {
         { month: "May", trainer: 120 },
         { month: "Jun", trainer: 50 },
     ];
-
+    const { color } = useColorStore();
 
     return (
         <ResponsiveContainer width={105} height={50}>
@@ -35,7 +36,7 @@ const SmallChart = () => {
                     barSize={5}
                     // radius={[5, 5, 0, 0]}
                     dataKey="trainer"
-                    fill="#12cd69"
+                    fill={color}
                 />
             </BarChart>
         </ResponsiveContainer>
