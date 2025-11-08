@@ -7,7 +7,7 @@ import {
     Popover,
     PopoverTrigger,
 } from "@/components/ui/popover"
-import { ChevronDown, Menu, } from "lucide-react";
+import { Menu, } from "lucide-react";
 import StartTimer from "./Header/StartTimer";
 import {
     Sheet,
@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/sheet"
 import MobileSidebar from "./MobileSidebar";
 import DarkMoodToggle from "./Header/DarkMoodToogle";
-import ProfilePopoverContent from "./sidebar/ProfilePopoverContent";
+import ProfileDropDown from "./Header/ProfileDropDown";
 
 
 const Header = () => {
@@ -53,12 +53,7 @@ const Header = () => {
                 <div className="hidden lg:block ">
                     <Button className=" dark:border-primary " variant={'outline'}><Image src={downloadIcon} width={0} height={0} className="w-5" alt="download" />Download App</Button>
                 </div>
-                <Popover>
-                    <PopoverTrigger asChild>
-                        <Button variant={'outline2'} className=" py-[5px] dark:text-darkTextPrimary "><Image src={`https://avatar.iran.liara.run/public/18`} width={200} height={200} className="w-8 rounded-full " alt="download" />Dannielis Vettori <ChevronDown size={20} /></Button>
-                    </PopoverTrigger>
-                    <ProfilePopoverContent side={"bottom"} align={"end"}></ProfilePopoverContent>
-                </Popover>
+                <ProfileDropDown></ProfileDropDown>
             </div>
             {/* mobile menu */}
             <div className=" flex items-center gap-4 md:hidden">
@@ -78,12 +73,7 @@ const Header = () => {
                     </div>
                 </div>
 
-                <Popover>
-                    <PopoverTrigger asChild>
-                        <Button variant={'outline2'} className=" py-[5px] dark:text-darkTextPrimary"><Image src={`https://avatar.iran.liara.run/public/18`} width={200} height={200} className="w-5 rounded-full" alt="download" />Vettori <ChevronDown size={20} /></Button>
-                    </PopoverTrigger>
-                    <ProfilePopoverContent side={"bottom"} align={"start"}></ProfilePopoverContent>
-                </Popover>
+                <ProfileDropDown></ProfileDropDown>
                 <Sheet>
                     <SheetTrigger asChild><Menu className=" cursor-pointer" size={25} /></SheetTrigger>
                     <MobileSidebar></MobileSidebar>
