@@ -1,4 +1,4 @@
-import { Circle, Pencil } from "lucide-react";
+import { Circle, Pencil, Trash2 } from "lucide-react";
 import screenshort1 from "../../../assets/dashboard/screenshort1.png";
 import screenshort2 from "../../../assets/dashboard/screenshort2.png";
 import screenshort3 from "../../../assets/dashboard/screenshort3.png";
@@ -274,7 +274,7 @@ const Every10Mins = () => {
                     </Carousel>
                 </div > */}
 
-            <div className=" mt-4">
+            <div className="">
                 {screenShortsTimely.map((block, blockIndex) => (
                     <div key={blockIndex} className="mt-5">
                         {/* Header (time and total worked) */}
@@ -312,7 +312,7 @@ const Every10Mins = () => {
                                             <p className="text-sm sm:text-base text-textGray dark:text-darkTextSecondary">
                                                 {screenShort.start} - {screenShort.end}
                                             </p>
-                                            <Pencil className="text-primary cursor-pointer" size={18} />
+                                            <Trash2 className="text-red-500 cursor-pointer" size={18} />
                                         </div>
 
                                         <p className="mb-2 text-sm sm:text-base text-textGray dark:text-darkTextSecondary">

@@ -14,6 +14,8 @@ import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
+// import AllScreenShortsSkeleton from "@/skeleton/activity/screenShorts/AllScreenShortsSkeleton";
+// import Every10MinsSkeleton from "@/skeleton/activity/screenShorts/Every10MinsSkeleton";
 
 const ScreenShorts = () => {
     console.log('screenShorts');
@@ -204,10 +206,18 @@ const ScreenShorts = () => {
                 activeTab === "Every 10 min" &&
                 <Every10Mins></Every10Mins>
             }
+            {/* {
+                activeTab === "Every 10 min" &&
+                <Every10MinsSkeleton></Every10MinsSkeleton>
+            } */}
             {
                 activeTab === "All Screenshots" &&
                 <AllScreenShorts></AllScreenShorts>
             }
+            {/* {
+                activeTab === "All Screenshots" &&
+                <AllScreenShortsSkeleton></AllScreenShortsSkeleton>
+            } */}
 
         </div>
     );

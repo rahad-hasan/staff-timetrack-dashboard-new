@@ -188,7 +188,7 @@ const AllScreenShorts = () => {
     return (
         <>
             {screenShortsTimely.map((group, groupIndex) => (
-                <div key={groupIndex} className={groupIndex > 0 ? "mt-6" : ""}>
+                <div key={groupIndex} className={groupIndex > 0 ? "mt-5" : ""}>
                     {/* Header */}
                     <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 sm:justify-between sm:items-center">
                         <div className="flex items-center gap-2">
