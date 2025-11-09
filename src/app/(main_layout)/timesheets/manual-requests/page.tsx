@@ -9,6 +9,7 @@ import AddManualTimeModal from "@/components/TimeSheets/ManualRequests/AddManual
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
+// import ManualRequestsSkeleton from "@/skeleton/timesheets/manualRequest/ManualRequestsSkeleton";
 
 const ManualRequests = () => {
     const projects = [
@@ -90,6 +91,7 @@ const ManualRequests = () => {
                 <SelectUserDropDown users={users}></SelectUserDropDown>
             </div>
             <ManualRequestsTable></ManualRequestsTable>
+            {/* <ManualRequestsSkeleton></ManualRequestsSkeleton> */}
         </div>
     );
 };

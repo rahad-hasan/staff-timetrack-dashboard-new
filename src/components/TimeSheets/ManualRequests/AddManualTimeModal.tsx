@@ -71,6 +71,7 @@ const AddManualTimeModal = () => {
 
     const timeFrom = form.watch("timeFrom"); // form.watch, getting real time data like onChange from react hook form
     const timeTo = form.watch("timeTo");
+    console.log('time From', timeFrom);
 
 
     useEffect(() => {
@@ -103,8 +104,33 @@ const AddManualTimeModal = () => {
 
 
     const onSubmit = (data: z.infer<typeof addManualTimeSchema>) => {
-        console.log(data);
+        if (data.date && data.timeFrom && data.timeTo) {
+            // Combine the selected date with timeFrom and timeTo
+            const dateOnly = new Date(data.date);
+
+            // Construct ISO datetime for timeFrom
+            const [fromHours, fromMinutes, fromSeconds] = data.timeFrom.split(":").map(Number);
+            const timeFromISO = new Date(dateOnly);
+            timeFromISO.setHours(fromHours, fromMinutes, fromSeconds || 0, 0);
+
+            // Construct ISO datetime for timeTo
+            const [toHours, toMinutes, toSeconds] = data.timeTo.split(":").map(Number);
+            const timeToISO = new Date(dateOnly);
+            timeToISO.setHours(toHours, toMinutes, toSeconds || 0, 0);
+
+            // Replace the raw values with ISO strings
+            const formattedData = {
+                ...data,
+                timeFrom: timeFromISO.toISOString(),
+                timeTo: timeToISO.toISOString(),
+            };
+
+            console.log("Final Data:", formattedData);
+        } else {
+            console.error("Missing date or time fields");
+        }
     };
+
 
     return (
         <DialogContent
