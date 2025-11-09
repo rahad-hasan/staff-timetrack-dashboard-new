@@ -13,6 +13,8 @@ import CreateTaskModal from "@/components/ProjectManagement/Task/CreateTaskModal
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
 import HeadingComponent from "@/components/Common/HeadingComponent";
+// import KanbanDndListSkeleton from "@/skeleton/projectManagement/task/KanbanDndListSkeleton";
+// import TaskTableSkeleton from "@/skeleton/projectManagement/task/TaskTableSkeleton";
 
 const TaskPage = () => {
     console.log("Task");
@@ -136,10 +138,18 @@ const TaskPage = () => {
                 activeTab === "List view" &&
                 <TaskTable></TaskTable>
             }
+            {/* {
+                activeTab === "List view" &&
+                <TaskTableSkeleton></TaskTableSkeleton>
+            } */}
             {
                 activeTab === "Kanban" &&
                 <KanbanDndList></KanbanDndList>
             }
+            {/* {
+                activeTab === "Kanban" &&
+                <KanbanDndListSkeleton></KanbanDndListSkeleton>
+            } */}
         </div>
     );
 };

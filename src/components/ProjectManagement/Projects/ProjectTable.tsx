@@ -18,7 +18,7 @@ import { ArrowUpDown, ChevronDown, Copy, EllipsisVertical, Eye, Package2, Pencil
 // import lowFlag from '../../assets/dashboard/lowFlag.svg'
 // import mediumFlag from '../../assets/dashboard/mediumFlag.svg'
 // import noneFlag from '../../assets/dashboard/noneFlag.svg'
-import { Checkbox } from "@/components/ui/checkbox"
+// import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";

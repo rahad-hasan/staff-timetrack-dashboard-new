@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/dialog";
 import AddProjectModal from "@/components/ProjectManagement/Projects/AddProjectModal";
 import HeadingComponent from "@/components/Common/HeadingComponent";
+// import ProjectTableSkeleton from "@/skeleton/projectManagement/project/ProjectTableSkeleton";
+// import ArchivedProjectTableSkeleton from "@/skeleton/projectManagement/project/ArchivedProjectTableSkeleton";
 
 const Projects = () => {
     console.log("Projects");
@@ -62,10 +64,18 @@ const Projects = () => {
                 activeTab === "Active" &&
                 <ProjectTable></ProjectTable>
             }
+            {/* {
+                activeTab === "Active" &&
+                <ProjectTableSkeleton></ProjectTableSkeleton>
+            } */}
             {
                 activeTab === "Archived" &&
                 <ArchivedProjectTable></ArchivedProjectTable>
             }
+            {/* {
+                activeTab === "Archived" &&
+                <ArchivedProjectTableSkeleton></ArchivedProjectTableSkeleton>
+            } */}
         </div>
     );
 };

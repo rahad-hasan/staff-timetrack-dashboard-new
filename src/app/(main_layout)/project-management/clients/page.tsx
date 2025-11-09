@@ -8,6 +8,7 @@ import {
 import AddClientModal from "@/components/ProjectManagement/Clients/AddClientModal";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import HeadingComponent from "@/components/Common/HeadingComponent";
+// import ClientsTableSkeleton from "@/skeleton/projectManagement/clients/ClientsTableSkeleton";
 
 const ClientsPage = () => {
 
@@ -57,6 +58,7 @@ const ClientsPage = () => {
             </div>
             <SelectUserDropDown users={users}></SelectUserDropDown>
             <ClientsTable></ClientsTable>
+            {/* <ClientsTableSkeleton></ClientsTableSkeleton> */}
         </div>
     );
 };
