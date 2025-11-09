@@ -81,7 +81,7 @@ const Profile = () => {
 
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                    <div className="flex flex-col sm:flex-row gap-4 sm:gap-3">
+                    <div className=" grid grid-cols-2 gap-4 sm:gap-3 items-start">
                         <FormField
                             control={form.control}
                             name="name"
@@ -89,7 +89,7 @@ const Profile = () => {
                                 <FormItem className="w-full">
                                     <FormLabel>Full Name</FormLabel>
                                     <FormControl>
-                                        <div className="relative">
+                                        <div className="relative ">
                                             <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 h-4 w-4" />
                                             <Input
                                                 type="text"
