@@ -1,10 +1,10 @@
 "use client";
-
 import GlobalColorPicker from "@/components/Common/GlobalColorPicker";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import Notification from "@/components/Settings/Notification";
 import Profile from "@/components/Settings/Profile";
 import Subscription from "@/components/Settings/Subscription";
+// import SubscriptionSkeleton from "@/skeleton/settings/SubscriptionSkeleton";
 import { useState } from "react"
 
 const SettingsPage = () => {
@@ -50,6 +50,10 @@ const SettingsPage = () => {
                 activeTab === "Subscription Management" &&
                 <Subscription></Subscription>
             }
+            {/* {
+                activeTab === "Subscription Management" &&
+                <SubscriptionSkeleton></SubscriptionSkeleton>
+            } */}
         </div>
     );
 };
