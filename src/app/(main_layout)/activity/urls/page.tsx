@@ -6,6 +6,7 @@ import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
+// import UrlsTableSkeleton from "@/skeleton/activity/url/UrlsTableSkeleton";
 
 const Urls = () => {
     console.log('urls');
@@ -87,7 +88,6 @@ const Urls = () => {
                 </div>
             </div>
 
-
             <div className=" mb-5 flex flex-col gap-4 sm:gap-3 xl:flex-row justify-between">
                 <div className=" flex flex-col sm:flex-row gap-3">
                     <SpecificDatePicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></SpecificDatePicker>
@@ -102,6 +102,7 @@ const Urls = () => {
                 </div>
             </div>
             <UrlsTable></UrlsTable>
+            {/* <UrlsTableSkeleton></UrlsTableSkeleton> */}
         </div>
     );
 };

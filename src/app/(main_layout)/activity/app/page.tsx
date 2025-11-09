@@ -8,6 +8,7 @@ import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
+// import AppNameTableSkeleton from "@/skeleton/activity/app/AppNameTableSkeleton";
 
 
 const App = () => {
@@ -108,6 +109,7 @@ const App = () => {
                 </div>
             </div>
             <AppNameTable></AppNameTable>
+            {/* <AppNameTableSkeleton></AppNameTableSkeleton> */}
         </div>
     );
 };
