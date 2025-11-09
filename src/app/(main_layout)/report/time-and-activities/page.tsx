@@ -51,10 +51,10 @@ const TimeAndActivitiesPage = () => {
                     <SelectProjectDropDown projects={projects}></SelectProjectDropDown>
                 </div>
             </div>
-            <div className="mt-4 flex items-stretch gap-6 max-w-[600px]">
+            <div className="mt-4 flex items-stretch gap-3 sm:gap-6 max-w-[600px]">
                 <div className="border border-borderColor dark:border-darkBorder rounded-xl w-full flex flex-col justify-between">
                     <div className="flex items-center justify-center py-6 bg-[#eff7fe] border-b border-borderColor dark:border-darkBorder rounded-t-xl flex-1">
-                        <h2 className="text-3xl font-semibold text-center dark:text-darkSecondaryBg">60:33:52</h2>
+                        <h2 className=" text-2xl sm:text-3xl font-semibold text-center dark:text-darkSecondaryBg">60:33:52</h2>
                     </div>
                     <div className="text-center py-2 font-medium text-gray-600 dark:text-darkTextPrimary">
                         Worked Time
@@ -63,8 +63,8 @@ const TimeAndActivitiesPage = () => {
 
                 <div className="border border-borderColor dark:border-darkBorder rounded-xl w-full flex flex-col justify-between">
                     <div className="flex flex-col items-center justify-center py-6 bg-[#fff5db] border-b border-borderColor dark:border-darkBorder rounded-t-xl flex-1">
-                        <div className="w-25 h-25 rounded-full border-[6px] border-[#f5b400] flex items-center justify-center bg-[#fff5db]">
-                            <span className="text-2xl font-semibold text-gray-800 dark:text-darkSecondaryBg">50.12%</span>
+                        <div className=" w-25 sm:w-27 h-25 sm:h-27 rounded-full border-[6px] border-[#f5b400] flex items-center justify-center bg-[#fff5db]">
+                            <span className=" text-xl sm:text-2xl font-semibold text-gray-800 dark:text-darkSecondaryBg">50.12%</span>
                         </div>
                     </div>
                     <div className="text-center py-2 font-medium text-gray-600 dark:text-darkTextPrimary">
