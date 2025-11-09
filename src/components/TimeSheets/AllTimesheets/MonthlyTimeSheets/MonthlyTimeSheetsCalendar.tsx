@@ -76,7 +76,7 @@ const MonthlyTimeSheetsCalendar = () => {
     );
 
     const DayHeader = ({ day, className }: { day: string; className?: string }) => (
-        <div className={`p-3 flex items-center justify-center font-bold text-sm h-14 text-black bg-gray-100 border-gray-300 dark:bg-darkPrimaryBg dark:text-darkTextPrimary ${className}`}>
+        <div className={`p-3 flex items-center justify-center font-bold text-sm h-14 text-black bg-gray-100 border-gray-300 dark:bg-darkSecondaryBg dark:text-darkTextPrimary ${className}`}>
             {day}
         </div>
     );

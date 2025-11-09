@@ -6,6 +6,9 @@ import DailyTimeSheets from "@/components/TimeSheets/AllTimesheets/DailyTimeShee
 import WeeklyTimeSheets from "@/components/TimeSheets/AllTimesheets/WeeklyTimeSheets/WeeklyTimeSheets";
 import MonthlyTimeSheets from "@/components/TimeSheets/AllTimesheets/MonthlyTimeSheets/MonthlyTimeSheets";
 import HeadingComponent from "@/components/Common/HeadingComponent";
+// import MonthlyTimeSheetsCalendarSkeleton from "@/skeleton/timesheets/allTimesheets/MonthlyTimeSheetsCalendarSkeleton";
+// import WeeklyTimeSheetsSkeleton from "@/skeleton/timesheets/allTimesheets/WeeklyTimeSheetsSkeleton";
+// import DailyTimeSheetsSkeleton from "@/skeleton/timesheets/allTimesheets/DailyTimeSheetsSkeleton";
 
 const AllTimeSheets = () => {
     const [activeTab, setActiveTab] = useState<"Daily" | "Weekly" | "Monthly">("Daily");
@@ -41,16 +44,28 @@ const AllTimeSheets = () => {
                 activeTab === "Daily" &&
                 <DailyTimeSheets></DailyTimeSheets>
             }
+            {/* {
+                activeTab === "Daily" &&
+                <DailyTimeSheetsSkeleton></DailyTimeSheetsSkeleton>
+            } */}
 
             {
                 activeTab === "Weekly" &&
                 <WeeklyTimeSheets></WeeklyTimeSheets>
             }
+            {/* {
+                activeTab === "Weekly" &&
+                <WeeklyTimeSheetsSkeleton></WeeklyTimeSheetsSkeleton>
+            } */}
 
             {
                 activeTab === "Monthly" &&
                 <MonthlyTimeSheets></MonthlyTimeSheets>
             }
+            {/* {
+                activeTab === "Monthly" &&
+                <MonthlyTimeSheetsCalendarSkeleton></MonthlyTimeSheetsCalendarSkeleton>
+            } */}
 
         </div>
     );
