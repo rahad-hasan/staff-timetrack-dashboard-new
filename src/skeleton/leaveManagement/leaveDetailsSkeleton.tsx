@@ -17,8 +17,8 @@ const leaveDetailsSkeleton = () => {
         <div>
             <div className="mt-4 grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-6 w-full 2xl:w-[70%] animate-pulse">
                 {skeletonCards.map((_, index) => (
-                    <div key={index} className="border border-gray-200 rounded-xl w-full overflow-hidden">
-                        <div className="py-7 sm:py-10 bg-gray-100 flex justify-center items-center border-b border-gray-200 rounded-t-xl">
+                    <div key={index} className="border border-gray-200 dark:border-darkBorder rounded-xl w-full overflow-hidden">
+                        <div className="py-7 sm:py-10 flex justify-center items-center border-b border-gray-200 dark:border-darkBorder rounded-t-xl">
                             <PlaceholderBox className="h-8 w-12 bg-gray-300" />
                         </div>
                         <div className="text-sm sm:text-base text-center py-3 px-2">
@@ -28,7 +28,7 @@ const leaveDetailsSkeleton = () => {
                 ))}
             </div>
 
-            <div className="border-2 border-borderColor bg-white rounded-lg p-5 animate-pulse max-w-full mt-5">
+            <div className="border-2 border-borderColor dark:border-darkBorder rounded-lg p-5 animate-pulse max-w-full mt-5">
 
                 <div className="mb-5">
                     <PlaceholderBlock className="h-6 w-24" />
@@ -37,7 +37,7 @@ const leaveDetailsSkeleton = () => {
                 <div className="w-full overflow-x-auto">
                     <div className={`w-full ${MIN_TABLE_WIDTH}`}>
 
-                        <div className="flex border-b border-gray-200 py-3 text-sm font-semibold text-gray-500 px-1">
+                        <div className="flex border-b border-gray-200 dark:border-darkBorder py-3 text-sm font-semibold text-gray-500 px-1">
                             <div className="w-[25%]">Member name</div>
                             <div className="w-[15%]">Total Leave</div>
                             <div className="w-[15%]">Casual Leave</div>
@@ -48,7 +48,7 @@ const leaveDetailsSkeleton = () => {
 
                         <div className="space-y-0">
                             {skeletonRows.map((_, index) => (
-                                <div key={index} className="flex items-center border-b border-gray-100 py-3 last:border-b-0 px-1">
+                                <div key={index} className="flex items-center border-b border-gray-100 dark:border-darkBorder py-3 last:border-b-0 px-1">
 
                                     <div className="w-[25%] flex items-center gap-2">
                                         <PlaceholderBlock className="w-8 h-8" isRounded={true} />

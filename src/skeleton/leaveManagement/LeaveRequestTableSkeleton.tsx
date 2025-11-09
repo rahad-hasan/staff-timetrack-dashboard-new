@@ -9,7 +9,7 @@ const LeaveRequestTableSkeleton = () => {
 
     const MIN_TABLE_WIDTH = 'min-w-[800px]';
     return (
-        <div className="border-2 border-borderColor bg-white rounded-lg p-5 animate-pulse max-w-full mt-5">
+        <div className="border-2 border-borderColor dark:border-darkBorder rounded-lg p-5 animate-pulse max-w-full mt-5">
 
             <div className="mb-5">
                 <PlaceholderBlock className="h-6 w-24" />
@@ -18,7 +18,7 @@ const LeaveRequestTableSkeleton = () => {
             <div className="w-full overflow-x-auto">
                 <div className={`w-full ${MIN_TABLE_WIDTH}`}>
 
-                    <div className="flex border-b border-gray-200 py-3 text-sm font-semibold text-gray-500 px-1">
+                    <div className="flex border-b border-gray-200 dark:border-darkBorder py-3 text-sm font-semibold text-gray-500 px-1">
                         <div className="w-[20%]">Member name</div>
                         <div className="w-[15%]">From</div>
                         <div className="w-[10%]">To</div>
@@ -30,7 +30,7 @@ const LeaveRequestTableSkeleton = () => {
 
                     <div className="space-y-0">
                         {skeletonRows.map((_, index) => (
-                            <div key={index} className="flex items-center border-b border-gray-100 py-3 last:border-b-0 px-1">
+                            <div key={index} className="flex items-center border-b border-gray-100 dark:border-darkBorder py-3 last:border-b-0 px-1">
 
                                 <div className="w-[20%] flex items-center gap-2">
                                     <PlaceholderBlock className="w-8 h-8 " isRounded={true} />
