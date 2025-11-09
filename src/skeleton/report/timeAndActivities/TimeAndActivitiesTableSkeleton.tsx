@@ -10,14 +10,14 @@ const TimeAndActivitiesTableSkeleton = () => {
     const MIN_TABLE_WIDTH = 'min-w-[600px]'; 
 
     return (
-        <div className="mt-5 border-2 p-3 border-borderColor rounded-[12px] animate-pulse max-w-full">
+        <div className="mt-5 border-2 p-3 border-borderColor dark:border-darkBorder rounded-[12px] animate-pulse max-w-full">
             <div className="mb-5">
                 <PlaceholderBlock className="h-6 w-32" /> 
             </div>
 
             <div className="w-full overflow-x-auto">
                 <div className={`w-full ${MIN_TABLE_WIDTH}`}>
-                    <div className="flex border-b border-gray-200 py-3 text-sm font-semibold text-gray-500">
+                    <div className="flex border-b border-gray-200 dark:border-darkBorder py-3 text-sm font-semibold text-gray-500">
                         <div className="w-[20%] pl-2">Member Name</div>
                         <div className="w-[30%] text-center">Project</div>
                         <div className="w-[25%] text-center">Duration</div>
