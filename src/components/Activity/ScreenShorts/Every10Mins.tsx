@@ -1,4 +1,4 @@
-import { Circle, Pencil, Trash2 } from "lucide-react";
+import { Circle, Trash2 } from "lucide-react";
 import screenshort1 from "../../../assets/dashboard/screenshort1.png";
 import screenshort2 from "../../../assets/dashboard/screenshort2.png";
 import screenshort3 from "../../../assets/dashboard/screenshort3.png";
@@ -11,6 +11,8 @@ import { Slider } from "@/components/ui/slider"
 // } from "@/components/ui/carousel"
 import { useState } from "react";
 import ScreenShortsModal from "./ScreenShortsModal";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import ScreenShortsDeleteReason from "./ScreenShortsDeleteReason";
 
 const Every10Mins = () => {
     console.log('Every10Mins');
@@ -312,7 +314,15 @@ const Every10Mins = () => {
                                             <p className="text-sm sm:text-base text-textGray dark:text-darkTextSecondary">
                                                 {screenShort.start} - {screenShort.end}
                                             </p>
-                                            <Trash2 className="text-red-500 cursor-pointer" size={18} />
+                                            <Dialog>
+                                                <form>
+                                                    <DialogTrigger asChild>
+                                                        <Trash2 className="text-red-500 cursor-pointer" size={18} />
+                                                    </DialogTrigger>
+                                                    <ScreenShortsDeleteReason></ScreenShortsDeleteReason>
+                                                </form>
+                                            </Dialog>
+
                                         </div>
 
                                         <p className="mb-2 text-sm sm:text-base text-textGray dark:text-darkTextSecondary">
