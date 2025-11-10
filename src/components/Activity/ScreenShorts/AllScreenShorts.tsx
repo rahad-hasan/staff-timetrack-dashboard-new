@@ -3,9 +3,16 @@ import screenshort1 from "../../../assets/dashboard/screenshort1.png";
 import screenshort2 from "../../../assets/dashboard/screenshort2.png";
 import screenshort3 from "../../../assets/dashboard/screenshort3.png";
 import Image, { StaticImageData } from "next/image";
+import { useState } from "react";
+import TestScreenModal from "./TestScreenModal";
+import { AnimatePresence } from 'framer-motion';
 
 const AllScreenShorts = () => {
     console.log('AllScreenShorts');
+
+    const [selectedImage, setSelectedImage] = useState<string | StaticImageData>();
+    const [modalOpen, setModalOpen] = useState<boolean>(false);
+
     interface IScreenShort {
         _id: number;
         start: string;
@@ -184,6 +191,20 @@ const AllScreenShorts = () => {
         },
     ];
 
+    const dummyScreenShorts = [
+        {
+            screenShort: selectedImage
+        },
+        {
+            screenShort: screenshort1
+        },
+        {
+            screenShort: screenshort2
+        },
+        {
+            screenShort: screenshort3
+        },
+    ]
 
     return (
         <>
@@ -210,9 +231,13 @@ const AllScreenShorts = () => {
                             >
                                 <Image
                                     src={screenShort.screenShort}
+                                    onClick={() => {
+                                        setSelectedImage(screenShort.screenShort);
+                                        setModalOpen(true);
+                                    }}
                                     width={300}
                                     height={300}
-                                    className="rounded-lg w-full transition-transform duration-300 hover:scale-[1.01]"
+                                    className="rounded-lg w-full transition-transform duration-300 hover:scale-[1.01] cursor-pointer"
                                     alt="screenshot"
                                 />
 
@@ -234,8 +259,18 @@ const AllScreenShorts = () => {
                     </div>
                 </div>
             ))}
-        </>
 
+            {/* Wrap the modal with AnimatePresence for exit animation */}
+            <AnimatePresence>
+                {modalOpen && (
+                    <TestScreenModal
+                        screenShorts={dummyScreenShorts}
+                        modalOpen={modalOpen}
+                        setModalOpen={setModalOpen}
+                    />
+                )}
+            </AnimatePresence>
+        </>
     );
 };
 
