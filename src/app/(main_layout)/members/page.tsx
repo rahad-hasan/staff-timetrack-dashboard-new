@@ -2,25 +2,25 @@
 import SearchBar from "@/components/Common/SearchBar";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { useState } from "react";
+// import { useState } from "react";
 import {
     Dialog,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import TeamsTable from "@/components/Teams/TeamsTable";
-import AddTeamModal from "@/components/Teams/AddTeamModal";
-import TeamsMemberTable from "@/components/Teams/TeamsMemberTable";
-import AddNewMemberModal from "@/components/Teams/AddNewMemberModal";
+// import TeamsTable from "@/components/Members/TeamsTable";
+// import AddTeamModal from "@/components/Members/AddTeamModal";
+import TeamsMemberTable from "@/components/Members/TeamsMemberTable";
+import AddNewMemberModal from "@/components/Members/AddNewMemberModal";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 // import TeamsMemberTableSkeleton from "@/skeleton/teams/TeamsMemberTableSkeleton";
 // import TeamsTableSkeleton from "@/skeleton/teams/TeamsTableSkeleton";
 
 const TeamsPage = () => {
-    const [activeTab, setActiveTab] = useState<"Teams" | "Members">("Teams");
+    // const [activeTab, setActiveTab] = useState<"Teams" | "Members">("Teams");
 
-    const handleTabClick = (tab: "Teams" | "Members") => {
-        setActiveTab(tab);
-    };
+    // const handleTabClick = (tab: "Teams" | "Members") => {
+    //     setActiveTab(tab);
+    // };
     const handleSearch = (query: string) => {
         console.log("Searching for:", query);
     };
@@ -28,9 +28,9 @@ const TeamsPage = () => {
     return (
         <div>
             <div className="flex items-center justify-between gap-3 mb-5">
-                <HeadingComponent heading="Teams" subHeading="All the teams and member are displayed here"></HeadingComponent>
+                <HeadingComponent heading="Members" subHeading="All the member are displayed here"></HeadingComponent>
 
-                <div className="">
+                {/* <div className="">
                     {
                         activeTab === "Teams" &&
                         <Dialog>
@@ -43,7 +43,7 @@ const TeamsPage = () => {
                         </Dialog>
                     }
                     {
-                        activeTab === "Members" &&
+                        activeTab === "Members" && */}
                         <Dialog>
                             <form>
                                 <DialogTrigger asChild>
@@ -52,11 +52,11 @@ const TeamsPage = () => {
                                 <AddNewMemberModal></AddNewMemberModal>
                             </form>
                         </Dialog>
-                    }
-                </div>
+                    
+                {/* </div> */}
             </div>
             <div className=" flex items-center justify-between">
-                <div className="flex gap-3">
+                {/* <div className="flex gap-3">
                     <div className="flex  bg-[#f6f7f9] dark:bg-darkSecondaryBg rounded-lg overflow-hidden">
                         {["Teams", "Members"].map((tab) => (
                             <button
@@ -71,21 +71,21 @@ const TeamsPage = () => {
                             </button>
                         ))}
                     </div>
-                </div>
+                </div> */}
                 <SearchBar onSearch={handleSearch} />
             </div>
-            {
+            {/* {
                 activeTab === "Teams" &&
                 <TeamsTable></TeamsTable>
-            }
+            } */}
             {/* {
                 activeTab === "Teams" &&
                 <TeamsTableSkeleton></TeamsTableSkeleton>
             } */}
-            {
-                activeTab === "Members" &&
+            {/* {
+                activeTab === "Members" && */}
                 <TeamsMemberTable></TeamsMemberTable>
-            }
+            
             {/* {
                 activeTab === "Members" &&
                 <TeamsMemberTableSkeleton></TeamsMemberTableSkeleton>

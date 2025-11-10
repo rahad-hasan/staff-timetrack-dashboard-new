@@ -15,7 +15,7 @@ import { ArrowUpDown, ChevronDown, EllipsisVertical, Pencil, Trash2 } from "luci
 import lowFlag from '../../../assets/dashboard/lowFlag.svg'
 import mediumFlag from '../../../assets/dashboard/mediumFlag.svg'
 import noneFlag from '../../../assets/dashboard/noneFlag.svg'
-import { Checkbox } from "@/components/ui/checkbox"
+// import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";

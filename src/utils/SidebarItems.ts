@@ -75,8 +75,8 @@ export const sidebarItems = [
     },
     {
         icon: Users,
-        label: 'Teams',
-        key: '/teams',
+        label: 'Members',
+        key: '/members',
         collapsible: false,
         subItems: [],
     },
