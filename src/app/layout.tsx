@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { Nunito } from "next/font/google";
+import { Montserrat } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/Theme/theme-provider";
 import { SidebarRouteSync } from "@/utils/SidebarRouteSync";
 import SetGlobalColor from "@/components/Common/SetGlobalColor";
 
-const nunito = Nunito({
+const montserrat = Montserrat({
     subsets: ['latin'],
     weight: ['300', '400', '500', '600', '700', '800', '900'],
     variable: '--font-nunito',
@@ -23,7 +23,7 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en" suppressHydrationWarning className={nunito.className}>
+        <html lang="en" suppressHydrationWarning className={montserrat.className}>
             <body
                 className={`antialiased flex bg-[#f6f7f9] dark:bg-darkSecondaryBg`}
                 data-gr-ext-installed=""
