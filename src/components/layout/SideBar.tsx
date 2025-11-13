@@ -34,7 +34,7 @@ const SideBar = () => {
     return (
         <div className='sticky top-0 z-[50]'>
             <div className='overflow-y-scroll no-scrollbar scroll-smooth'>
-                <div className={`${isCollapsed ? "w-[90px]" : "w-[300px]"} h-screen py-5 z-50  flex flex-col transition-all duration-300`}>
+                <div className={`${isCollapsed ? "w-[90px]" : "w-[280px]"} h-screen py-5 z-50  flex flex-col transition-all duration-300`}>
                     <div
                         className={`flex items-center justify-between bg-white dark:bg-darkPrimaryBg px-4 py-2 mx-3 rounded-2xl border-2 border-borderColor dark:border-darkBorder ${isCollapsed ? "flex-col" : "flex-row"
                             } transition-all duration-300`}

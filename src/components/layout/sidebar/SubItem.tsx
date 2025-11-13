@@ -21,7 +21,7 @@ const SubItem = ({
             <div
                 onClick={onClick}
                 className={clsx(
-                    'text-[15px] px-2 py-2 rounded-lg cursor-pointer flex gap-1.5 items-center dark:text-darkTextPrimary ',
+                    'text-base px-2 py-2 rounded-lg cursor-pointer flex gap-1.5 items-center dark:text-darkTextPrimary ',
                     active
                         ? 'bg-white border border-borderColor dark:border-none dark:text-primary dark:bg-darkPrimaryBg text-primary font-medium'
                         : 'text-gray-600 hover:text-primary',
