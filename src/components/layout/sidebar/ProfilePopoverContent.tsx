@@ -6,13 +6,13 @@ import Link from "next/link";
 const ProfilePopoverContent = ({side, align}: { side: "top" | "right" | "bottom" | "left", align:  "center" | "end" | "start"}) => {
     return (
         <PopoverContent side={side} align={align}>
-            <div className="flex items-center gap-3 mb-4">
+            <div className="flex items-center gap-2 mb-4">
                 <Image
                     src="https://avatar.iran.liara.run/public/18"
                     alt="Dannielis Vettori"
                     width={48}
                     height={48}
-                    className="rounded-full w-16"
+                    className="rounded-full w-14"
                 />
                 <div>
                     <h4 className="font-semibold text-xl">Dannielis Vettori</h4>

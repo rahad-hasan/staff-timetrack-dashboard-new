@@ -1,8 +1,7 @@
 import { Button } from "../ui/button";
 // import downloadIcon from '../../assets/header/download.svg'
 // import startTimerIcon from '../../assets/header/start_timer_icon.svg'
-import bellIcon from '../../assets/header/bell.svg'
-import Image from "next/image";
+// import Image from "next/image";
 import {
     Popover,
     PopoverTrigger,
@@ -16,7 +15,8 @@ import {
 import MobileSidebar from "./MobileSidebar";
 import DarkMoodToggle from "./Header/DarkMoodToogle";
 import ProfileDropDown from "./Header/ProfileDropDown";
-
+import Notification from "./Header/Notification";
+// import bellIcon from '../../assets/header/bell.svg'
 
 const Header = () => {
     console.log('header rendered');
@@ -27,29 +27,18 @@ const Header = () => {
                 <Popover>
                     <PopoverTrigger asChild>
                         {/* <Button className=" px-2 sm:px-3 dark:border-darkBorder" variant={'filter'}><Image src={startTimerIcon} width={0} height={0} className=" w-7 lg:w-5" alt="download" /><span className=" hidden lg:block dark:text-darkTextPrimary">Start Timer</span></Button> */}
-                        <Button className=" dark:border-darkBorder " variant={'filter'}><CirclePlay className="text-primary size-5.5 sm:size-5.5"/><span className=" hidden lg:block dark:text-darkTextPrimary">Start Timer</span></Button>
+                        <Button className=" dark:border-darkBorder " variant={'filter'}><CirclePlay className="text-primary size-5.5 sm:size-5.5" /><span className=" hidden lg:block dark:text-darkTextPrimary">Start Timer</span></Button>
                     </PopoverTrigger>
                     <StartTimer></StartTimer>
                 </Popover>
             </div>
 
             <div className=" hidden md:flex items-center gap-4">
-
                 <div>
                     <DarkMoodToggle></DarkMoodToggle>
                 </div>
                 <div className="border-x-2 border-borderColor dark:border-darkBorder px-3">
-                    <div className="relative w-6 h-6 cursor-pointer">
-                        <Image
-                            src={bellIcon}
-                            fill
-                            className="object-contain bell-icon"
-                            alt="notification bell"
-                        />
-                        {/* <Bell className=" dark:text-darkTextPrimary" /> */}
-                        {/* Red dot */}
-                        <span className="absolute top-[1px] right-[3px] w-1.5 h-1.5 bg-red-600 rounded-full"></span>
-                    </div>
+                    <Notification></Notification>
                 </div>
                 <div className="hidden lg:block ">
                     {/* <Button className=" dark:border-primary " variant={'outline'}><Image src={downloadIcon} width={0} height={0} className="w-5" alt="download" />Download App</Button> */}
@@ -57,22 +46,15 @@ const Header = () => {
                 </div>
                 <ProfileDropDown></ProfileDropDown>
             </div>
+            
             {/* mobile menu */}
             <div className=" flex items-center gap-4 md:hidden">
                 <div>
                     <DarkMoodToggle></DarkMoodToggle>
                 </div>
+
                 <div className="">
-                    <div className="relative w-[25px] h-[25px] cursor-pointer">
-                        <Image
-                            src={bellIcon}
-                            fill
-                            className="object-contain bell-icon"
-                            alt="notification bell"
-                        />
-                        {/* Red dot */}
-                        <span className="absolute top-[1px] right-[4px] w-1.5 h-1.5 bg-red-600 rounded-full"></span>
-                    </div>
+                    <Notification></Notification>
                 </div>
 
                 <ProfileDropDown></ProfileDropDown>
