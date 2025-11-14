@@ -8,10 +8,10 @@ import Subscription from "@/components/Settings/Subscription";
 import { useState } from "react"
 
 const SettingsPage = () => {
-    const [activeTab, setActiveTab] = useState<"Profile" | "Notification" | "Subscription Management">("Profile");
+    const [activeTab, setActiveTab] = useState<"Profile" | "Configuration" | "Subscription Management">("Profile");
     console.log("Dashboard Rendered", activeTab);
 
-    const handleTabClick = (tab: "Profile" | "Notification" | "Subscription Management") => {
+    const handleTabClick = (tab: "Profile" | "Configuration" | "Subscription Management") => {
         setActiveTab(tab);
     };
 
@@ -25,10 +25,10 @@ const SettingsPage = () => {
             </div>
 
             <div className="flex gap-1 md:gap-3 mt-3 sm:mt-0 rounded-lg">
-                {["Profile", "Notification", "Subscription Management"].map((tab) => (
+                {["Profile", "Configuration", "Subscription Management"].map((tab) => (
                     <button
                         key={tab}
-                        onClick={() => handleTabClick(tab as "Profile" | "Notification" | "Subscription Management")}
+                        onClick={() => handleTabClick(tab as "Profile" | "Configuration" | "Subscription Management")}
                         className={`px-2 md:px-4 py-2 text-xs md:text-sm font-medium border dark:border-darkBorder transition-all cursor-pointer rounded-lg m-0.5 ${activeTab === tab
                             ? "bg-primary/7 dark:bg-darkSecondaryBg text-primary border-none"
                             : "text-gray-600 hover:text-gray-800 dark:text-darkTextPrimary "
@@ -43,7 +43,7 @@ const SettingsPage = () => {
                 <Profile></Profile>
             }
             {
-                activeTab === "Notification" &&
+                activeTab === "Configuration" &&
                 <Notification></Notification>
             }
             {

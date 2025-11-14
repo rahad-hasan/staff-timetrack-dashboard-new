@@ -136,3 +136,10 @@ export const userBasicInfoSchema = z.object({
 export const screenDeleteReasonSchema = z.object({
     reason: z.string().min(1, "Reason is required"),
 })
+
+export const leaveSettingsSchema = z.object({
+    paid_leave: z.number().min(1, "Paid Leave is required"),
+    casual_leave: z.number().min(1, "Casual Leave is required"),
+    sick_leave: z.number().min(1, "Sick Leave is required"),
+    maternity_leave: z.number().min(1, "Maternity Leave is required"),
+});
