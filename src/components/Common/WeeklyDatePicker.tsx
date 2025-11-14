@@ -58,7 +58,7 @@ const WeeklyDatePicker = ({ centerDate, setCenterDate }: WeeklyDatePickerProps) 
         <div className="flex">
             <ChevronLeft onClick={() => handleNavigate(-1)} className="border p-2.5 w-10 h-10 border-borderColor dark:border-darkBorder rounded-lg cursor-pointer" />
             <div className=" flex items-center gap-2 border dark:border-darkBorder rounded-md px-2 sm:px-4 mx-3">
-                <Calendar className=" text-primary " />
+                <Calendar className=" text-primary w-5.5" />
                 <span className="text-sm sm:text-[16px]">{dateDisplay}</span>
             </div>
             <ChevronRight onClick={() => handleNavigate(1)} className="border p-2.5 w-10 h-10 border-borderColor dark:border-darkBorder rounded-lg cursor-pointer" />

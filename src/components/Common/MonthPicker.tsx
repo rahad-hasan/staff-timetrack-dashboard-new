@@ -30,7 +30,7 @@ const MonthPicker = ({ selectedDate, setSelectedDate }: { selectedDate: Date; se
                 className="border p-2.5  w-12 sm:w-10 h-10 border-borderColor dark:border-darkBorder rounded-lg cursor-pointer"
             />
             <div className="flex items-center gap-2 border rounded-md px-4 mx-3 w-full sm:w-auto dark:border-darkBorder">
-                <Calendar className="text-primary" />
+                <Calendar className="text-primary w-5.5" />
                 <span>{monthDisplay}</span>
             </div>
             <ChevronRight

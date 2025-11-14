@@ -36,7 +36,7 @@ const SpecificDatePicker = ({ selectedDate, setSelectedDate }: { selectedDate: D
                 <Popover open={open} onOpenChange={setOpen}>
                     <PopoverTrigger asChild>
                         <div className=" flex items-center gap-2 border dark:border-darkBorder rounded-md px-4 mx-3 cursor-pointer w-full sm:w-auto">
-                            <CalendarDays className=" text-primary" />
+                            <CalendarDays className=" text-primary w-5.5" />
                             <span>{dateDisplay}</span>
                         </div>
                     </PopoverTrigger>
