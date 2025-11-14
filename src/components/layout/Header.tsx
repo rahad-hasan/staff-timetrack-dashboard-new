@@ -16,6 +16,7 @@ import MobileSidebar from "./MobileSidebar";
 import DarkMoodToggle from "./Header/DarkMoodToogle";
 import ProfileDropDown from "./Header/ProfileDropDown";
 import Notification from "./Header/Notification";
+import Link from "next/link";
 // import bellIcon from '../../assets/header/bell.svg'
 
 const Header = () => {
@@ -42,11 +43,13 @@ const Header = () => {
                 </div>
                 <div className="hidden lg:block ">
                     {/* <Button className=" dark:border-primary " variant={'outline'}><Image src={downloadIcon} width={0} height={0} className="w-5" alt="download" />Download App</Button> */}
-                    <Button className=" dark:border-primary " variant={'outline'}><Download className=" text-primary w-8" />Download App</Button>
+                    <Link href={`/download`}>
+                        <Button className=" dark:border-primary " variant={'outline'}><Download className=" text-primary w-8" />Download App</Button>
+                    </Link>
                 </div>
                 <ProfileDropDown></ProfileDropDown>
             </div>
-            
+
             {/* mobile menu */}
             <div className=" flex items-center gap-4 md:hidden">
                 <div>
