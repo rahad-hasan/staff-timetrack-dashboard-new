@@ -71,8 +71,8 @@ export default function Subscription() {
         <div className="border-2 border-borderColor rounded-lg p-3 sm:p-4 bg-white dark:bg-darkPrimaryBg dark:border-darkBorder mt-4">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
                 <div>
-                    <h2 className="text-xl mb-1.5 font-semibold dark:text-darkTextPrimary">Subscription</h2>
-                    <p className="text-gray-500 mb-4 dark:text-darkTextSecondary">
+                    <h2 className="text-xl mb-1.5 font-semibold text-headingTextColor dark:text-darkTextPrimary">Subscription</h2>
+                    <p className="text-subTextColor mb-4 dark:text-darkTextSecondary">
                         Manage your billing and payment details
                     </p>
                 </div>
@@ -84,7 +84,7 @@ export default function Subscription() {
                             onClick={() => handleTabClick(tab as "Monthly" | "Yearly")}
                             className={`px-4 py-2 text-sm font-medium transition-all cursor-pointer rounded-lg m-0.5 dark:text-darkTextPrimary ${activeTab === tab
                                 ? "bg-white text-headingTextColor shadow-sm dark:bg-darkPrimaryBg"
-                                : "text-gray-600 hover:text-gray-800"
+                                : "text-subTextColor hover:text-headingTextColor"
                                 }`}
                         >
                             {tab}
@@ -94,10 +94,10 @@ export default function Subscription() {
             </div>
             <div className="mb-8 border rounded-lg p-4 bg-gradient-to-r from-[#f0f9ff] to-white flex items-center justify-between">
                 <div>
-                    <h3 className="text-lg font-semibold text-gray-800">
+                    <h3 className="text-lg font-semibold text-headingTextColor">
                         Current Plan: <span className="text-primary">{currentSubscription}</span>
                     </h3>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-subTextColor">
                         Your subscription renews automatically every month. You can manage or upgrade your plan anytime.
                     </p>
                 </div>
@@ -113,15 +113,15 @@ export default function Subscription() {
                         className={`flex flex-col justify-between border rounded-lg shadow dark:border-darkBorder dark:shadow-2xl dark:shadow-white ${plan.color}`}
                     >
                         <div className={` rounded-lg bg-gradient-to-b ${plan.color} p-6`}>
-                            <h3 className="text-xl font-semibold mb-5 ">{plan.name}</h3>
+                            <h3 className="text-xl font-semibold mb-5  text-headingTextColor dark:text-darkTextPrimary">{plan.name}</h3>
                             <div className=" flex gap-2 items-end mb-5">
-                                <p className="text-4xl ">{plan.price}</p>
-                                <p className="text-sm text-gray-600 dark:text-darkTextPrimary">/ {plan.period}</p>
+                                <p className="text-4xl  text-headingTextColor dark:text-darkTextPrimary">{plan.price}</p>
+                                <p className="text-sm  text-headingTextColor dark:text-darkTextPrimary">/ {plan.period}</p>
                             </div>
 
-                            <p className="text-sm text-gray-600 mb-6 dark:text-darkTextPrimary">{plan.description}</p>
+                            <p className="text-sm text-subTextColor mb-6 dark:text-darkTextPrimary">{plan.description}</p>
                             <button
-                                className={`w-full py-2 border dark:border-darkBorder rounded-md text-sm font-medium transition dark:text-darkTextPrimary ${plan.buttonColor}`}
+                                className={`w-full py-2 border dark:border-darkBorder rounded-md text-sm font-medium transition text-headingTextColor dark:text-darkTextPrimary ${plan.buttonColor}`}
                             >
                                 Get Started
                             </button>
@@ -129,7 +129,7 @@ export default function Subscription() {
 
                         <ul className="mt-6 space-y-2 m-6 pt-6 border-t-2">
                             {plan.features.map((feature) => (
-                                <li key={feature} className="flex items-center gap-2 text-sm text-gray-700 dark:text-darkTextSecondary">
+                                <li key={feature} className="flex items-center gap-2 text-sm text-subTextColor dark:text-darkTextSecondary">
                                     <CheckCircle2 className="text-primary h-8 w-5" />
                                     {feature}
                                 </li>

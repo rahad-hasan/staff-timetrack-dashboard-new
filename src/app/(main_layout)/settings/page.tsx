@@ -31,7 +31,7 @@ const SettingsPage = () => {
                         onClick={() => handleTabClick(tab as "Profile" | "Configuration" | "Subscription Management")}
                         className={`px-2 md:px-4 py-2 text-xs md:text-sm font-medium border dark:border-darkBorder transition-all cursor-pointer rounded-lg m-0.5 ${activeTab === tab
                             ? "bg-primary/7 dark:bg-darkSecondaryBg text-primary border-none"
-                            : "text-gray-600 hover:text-gray-800 dark:text-darkTextPrimary "
+                            : "text-subTextColor hover:text-gray-800 dark:text-darkTextPrimary "
                             }`}
                     >
                         {tab}

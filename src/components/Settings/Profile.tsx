@@ -48,7 +48,7 @@ const Profile = () => {
 
     return (
         <div className=" rounded-lg border-2 border-borderColor dark:border-darkBorder p-4 mt-4">
-            <h2 className=" text-lg mb-4 dark:text-darkTextPrimary">Basic Information</h2>
+            <h2 className=" text-lg mb-4 text-headingTextColor dark:text-darkTextPrimary">Basic Information</h2>
             <div className="flex items-center gap-5 mb-6">
                 <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden">
                     <Image
@@ -60,8 +60,8 @@ const Profile = () => {
                     />
                 </div>
                 <div>
-                    <p className="font-medium dark:text-darkTextPrimary">Profile Picture</p>
-                    <p className="text-sm text-gray-500 mb-3 dark:text-darkTextPrimary">400px, JPG or PNG, max 200kb</p>
+                    <p className="font-medium text-headingTextColor dark:text-darkTextPrimary">Profile Picture</p>
+                    <p className="text-sm text-subTextColor mb-3 dark:text-darkTextPrimary">400px, JPG or PNG, max 200kb</p>
                     <Label
                         htmlFor="photo-upload"
                         className="cursor-pointer flex items-center gap-2 text-sm font-medium border rounded-md px-3 py-1.5 hover:bg-gray-50 dark:bg-darkPrimaryBg"
@@ -173,14 +173,12 @@ const Profile = () => {
                     </div>
 
                     <div className="border-b-2 pb-8 mt-2">
-                        <h2 className=" text-lg sm:text-2xl font-semibold mb-3 dark:text-darkTextPrimary">Team Role</h2>
+                        <h2 className=" text-lg sm:text-2xl font-semibold mb-3 text-headingTextColor dark:text-darkTextPrimary">Team Role</h2>
                         <span
-                            className=" text-black border bg-gray-100 px-2 py-1 rounded-lg dark:bg-gray-700 dark:text-darkTextPrimary dark:border-darkBorder"
+                            className=" border bg-gray-100 px-2 py-1 rounded-lg dark:bg-gray-700 text-headingTextColor dark:text-darkTextPrimary dark:border-darkBorder"
                         >
                             Owner in tracker.org
                         </span>
-
-
                     </div>
 
                     <div className="flex items-center gap-3 w-full pt-3">

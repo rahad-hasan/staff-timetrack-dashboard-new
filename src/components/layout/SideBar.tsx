@@ -57,7 +57,7 @@ const SideBar = () => {
                                 height={0}
                                 className={` ${isCollapsed ? "h-auto my-2 w-auto" : "h-10 w-10"}  bg-primary rounded-xl p-2 shadow-lg`}
                             />
-                            {!isCollapsed && <h2 className="text-2xl font-bold dark:text-darkTextPrimary">Tracker</h2>}
+                            {!isCollapsed && <h2 className="text-2xl font-bold text-headingTextColor dark:text-darkTextPrimary">Tracker</h2>}
                         </div>
 
                         <button

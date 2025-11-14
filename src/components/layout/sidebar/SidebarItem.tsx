@@ -27,7 +27,7 @@ const SidebarItem = ({
     <div
       onClick={onClick}
       className={clsx(
-        "flex items-center justify-between w-full text-base text-gray-700 dark:text-darkTextPrimary dark:hover:text-primary hover:text-primary transition-all duration-200 ease-in-out",
+        "flex items-center justify-between w-full text-base text-headingTextColor dark:text-darkTextPrimary dark:hover:text-primary hover:text-primary transition-all duration-200 ease-in-out",
         isCollapsed ? "justify-center" : "",
         "py-2 cursor-pointer",
         isOpen && "text-primary dark:text-primary"

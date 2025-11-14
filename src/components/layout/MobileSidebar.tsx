@@ -33,7 +33,7 @@ const MobileSidebar = () => {
                             height={0}
                             className={`w-10 h-10`}
                         />
-                        <h2 className="text-xl font-bold dark:text-darkTextPrimary">Tracker</h2>
+                        <h2 className="text-xl font-bold text-headingTextColor dark:text-darkTextPrimary">Tracker</h2>
                     </div>
                 </SheetTitle>
                 <div className="overflow-y-auto max-h-[calc(100vh-100px)] ml-1 pb-">

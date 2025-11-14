@@ -110,7 +110,7 @@ const Notification = () => {
             </PopoverTrigger>
             <PopoverContent side={'top'} align={'center'} className="w-80 p-0 shadow-lg mt-2">
                 <div className="p-4">
-                    <h2 className="text-lg font-semibold">
+                    <h2 className="text-lg font-semibold  text-headingTextColor dark:text-darkTextPrimary">
                         Notifications {unreadCount > 0 && <span>({unreadCount} new)</span>}
                     </h2>
                 </div>
@@ -121,7 +121,7 @@ const Notification = () => {
                         return (
                             <div
                                 key={notification.id}
-                                className={`flex items-center gap-3 px-3 py-2 border-b transition-colors dark:bg-darkSecondaryBg ${notification.isNew ? 'bg-gray-50 hover:bg-gray-100' : 'hover:bg-gray-100'}`}
+                                className={`flex items-center gap-3 px-3 py-2 border-b transition-colors text-headingTextColor dark:bg-darkSecondaryBg ${notification.isNew ? 'bg-gray-50 hover:bg-gray-100' : 'hover:bg-gray-100'}`}
                             >
                                 <Image
                                     src={notification.image}
@@ -132,10 +132,10 @@ const Notification = () => {
                                 />
 
                                 <div className="flex-grow">
-                                    <h3 className={`text-sm font-medium dark:text-darkTextPrimary ${notification.isNew ? 'text-gray-900' : 'text-gray-700'}`}>
+                                    <h3 className={`text-sm font-medium text-headingTextColor dark:text-darkTextPrimary ${notification.isNew ? 'text-headingTextColor' : 'text-subTextColor'}`}>
                                         {notification.title}
                                     </h3>
-                                    <p className="text-xs text-gray-500 dark:text-darkTextSecondary mt-0.5">
+                                    <p className="text-xs text-subTextColor dark:text-darkTextSecondary mt-0.5">
                                         {notification.time}
                                         {notification.isNew && (
                                             <span className="ml-2 inline-block w-1.5 h-1.5 bg-red-500 rounded-full align-middle" aria-label="New notification"></span>
@@ -155,7 +155,7 @@ const Notification = () => {
                         View All
                     </button>
                     {unreadCount > 0 && (
-                        <button className="text-gray-500 dark:text-gray-300 text-xs px-2 py-1 rounded cursor-pointer">
+                        <button className="text-subTextColor dark:text-gray-300 text-xs px-2 py-1 rounded cursor-pointer">
                             Mark All as Read
                         </button>
                     )}

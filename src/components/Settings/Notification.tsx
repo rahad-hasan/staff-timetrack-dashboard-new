@@ -51,8 +51,8 @@ const Notification = () => {
                 >
 
                     <div className="flex justify-between items-center text-sm font-semibold text-gray-500 mb-2">
-                        <span className="dark:text-darkTextSecondary">Notification Configuration</span>
-                        <div className="flex gap-8 dark:text-darkTextPrimary">
+                        <span className="text-subTextColor dark:text-darkTextPrimary">Notification Configuration</span>
+                        <div className="flex gap-8 text-headingTextColor dark:text-darkTextPrimary">
                             <span>IN-APP</span>
                             <span>EMAIL</span>
                         </div>
@@ -64,7 +64,7 @@ const Notification = () => {
                         {section.items.map((item) => (
                             <div
                                 key={item.name}
-                                className="flex justify-between items-center text-sm text-gray-800 dark:text-darkTextPrimary"
+                                className="flex justify-between items-center text-sm text-headingTextColor dark:text-darkTextPrimary"
                             >
                                 <span className="flex-1">{item.name}</span>
                                 <div className="flex items-center gap-8">
@@ -77,7 +77,7 @@ const Notification = () => {
                 </div>
             ))}
             <div className={`rounded-md border border-borderColor dark:border-darkBorder p-3 md:p-4`}>
-                <span className="dark:text-darkTextSecondary  text-sm font-semibold text-gray-500">Leave Configuration</span>
+                <span className="text-subTextColor dark:text-darkTextPrimary  text-sm font-semibold ">Leave Configuration</span>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-2">
                         <div className="grid grid-cols-2 gap-4 sm:gap-3 items-start">
