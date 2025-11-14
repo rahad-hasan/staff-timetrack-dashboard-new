@@ -187,8 +187,8 @@ const ReportDailyTimeSheet = () => {
 
             <div className="  overflow-x-auto">
                 <div className="flex  pb-2">
-                    <div className="w-[80px] flex-shrink-0 font-bold text-sm text-gray-600 text-center dark:text-darkTextPrimary">Time</div>
-                    <div className="flex-grow font-bold text-sm text-gray-600 ml-4"></div>
+                    <div className="w-[80px] flex-shrink-0 font-bold text-sm text-subTextColor text-center dark:text-darkTextPrimary">Time</div>
+                    <div className="flex-grow font-bold text-sm text-subTextColor ml-4"></div>
                 </div>
 
                 <div className="flex min-w-[800px] border-t border-gray-200">

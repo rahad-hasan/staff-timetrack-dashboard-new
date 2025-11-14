@@ -30,7 +30,7 @@ const AllTimeSheets = () => {
                                 onClick={() => handleTabClick(tab as "Daily" | "Weekly" | "Monthly")}
                                 className={`px-4 py-2 text-sm font-medium transition-all cursor-pointer rounded-lg m-0.5 ${activeTab === tab
                                     ? "bg-white text-headingTextColor shadow-sm dark:bg-darkPrimaryBg dark:text-darkTextPrimary"
-                                    : "text-gray-600 dark:text-darkTextPrimary hover:text-gray-800"
+                                    : "text-subTextColor dark:text-darkTextPrimary hover:text-gray-800"
                                     }`}
                             >
                                 {tab}

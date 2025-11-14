@@ -1,4 +1,5 @@
-"use client";
+"use client"
+
 import { loginSchema } from "@/zod/schema";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod";

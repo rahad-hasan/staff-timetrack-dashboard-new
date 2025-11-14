@@ -283,7 +283,7 @@ const ProjectListTable = () => {
     return (
         <div className="mt-5 border-2 border-borderColor dark:border-darkBorder p-3 rounded-[12px]">
             <div className=" flex justify-between items-center mb-5">
-                <h2 className=" text-base sm:text-lg dark:text-darkTextPrimary">Project list</h2>
+                <h2 className=" text-base sm:text-lg text-headingTextColor dark:text-darkTextPrimary">Project list</h2>
                 <div className=" flex items-center gap-3">
                     <Button className=" text-sm md:text-base dark:text-darkTextPrimary" variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
                     <Link href={`/project-management/projects`}>

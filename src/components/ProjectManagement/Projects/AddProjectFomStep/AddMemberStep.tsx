@@ -51,7 +51,7 @@ const AddMemberStep = ({ setStep, handleStepSubmit }: GeneralInfoStepProps) => {
 
     return (
         <div>
-            <h2 className=" text-xl font-semibold mb-4">Add Member</h2>
+            <h2 className=" text-xl font-semibold mb-4 text-headingTextColor dark:text-darkTextPrimary">Add Member</h2>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                     <FormField

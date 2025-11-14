@@ -79,7 +79,7 @@ const AddEventModal = () => {
             onInteractOutside={(event) => event.preventDefault()}
             className=" w-full sm:max-w-[525px] max-h-[95vh] overflow-y-auto">
             <DialogHeader>
-                <DialogTitle className=" mb-4">Add Event</DialogTitle>
+                <DialogTitle className=" mb-4 text-headingTextColor dark:text-darkTextPrimary">Add Event</DialogTitle>
             </DialogHeader>
 
             <Form {...form}>

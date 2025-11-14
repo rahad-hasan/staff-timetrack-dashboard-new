@@ -19,7 +19,7 @@ const RecentActivity = async () => {
     return (
         <div className=" border-2 border-borderColor dark:border-darkBorder p-3 rounded-[12px] w-full">
             <div className=" flex justify-between items-center">
-                <h2 className="text-base sm:text-lg dark:text-darkTextPrimary ">RECENT ACTIVITY</h2>
+                <h2 className="text-base text-headingTextColor sm:text-lg dark:text-darkTextPrimary ">RECENT ACTIVITY</h2>
                 <div className=" flex items-center gap-3">
                     <Button className="text-sm md:text-base dark:text-darkTextPrimary" variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
                     {/* <LinkWithActiveNav url={`/activity/screenshorts`} openMenu={'Activity'} activeSubItem={'/activity/screenshorts'}> */}
@@ -38,7 +38,7 @@ const RecentActivity = async () => {
                             <AvatarImage src="https://github.com/shadcn.png" />
                             <AvatarFallback>CN</AvatarFallback>
                         </Avatar>
-                        <h2 className="text-base sm:text-lg font-semibold">Danial Donald</h2>
+                        <h2 className="text-base text-headingTextColor dark:text-darkTextPrimary sm:text-lg font-semibold">Danial Donald</h2>
                     </div>
                     <Link href={`/activity/screenshorts`}>
                         <Button className="text-sm md:text-base dark:text-darkTextPrimary" variant={'outline2'} size={'sm'}>View All</Button>
@@ -71,7 +71,7 @@ const RecentActivity = async () => {
                             <AvatarImage src="https://github.com/shadcn.png" />
                             <AvatarFallback>CN</AvatarFallback>
                         </Avatar>
-                        <h2 className="text-base sm:text-lg font-semibold">Danial Donald</h2>
+                        <h2 className="text-base text-headingTextColor dark:text-darkTextPrimary sm:text-lg font-semibold">Danial Donald</h2>
                     </div>
                     <Link href={`/activity/screenshorts`}>
                         <Button className="text-sm md:text-base dark:text-darkTextPrimary" variant={'outline2'} size={'sm'}>View All</Button>
@@ -104,7 +104,7 @@ const RecentActivity = async () => {
                             <AvatarImage src="https://github.com/shadcn.png" />
                             <AvatarFallback>CN</AvatarFallback>
                         </Avatar>
-                        <h2 className="text-base sm:text-lg font-semibold">Danial Donald</h2>
+                        <h2 className="text-base sm:text-lg text-headingTextColor dark:text-darkTextPrimary font-semibold">Danial Donald</h2>
                     </div>
                     <Link href={`/activity/screenshorts`}>
                         <Button className="text-sm md:text-base dark:text-darkTextPrimary" variant={'outline2'} size={'sm'}>View All</Button>

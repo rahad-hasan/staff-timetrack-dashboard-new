@@ -48,7 +48,7 @@ const TotalHoursPerDayChart = () => {
     ];
     return (
         <div className=' h-[400px] w-full border-2 border-borderColor dark:border-darkBorder px-4 pt-4 pb-12 rounded-xl mt-5'>
-            <h2 className=' mb-4 text-textGray dark:text-darkTextPrimary'>Total hours worked per day a week</h2>
+            <h2 className=' mb-4 text-subTextColor dark:text-darkTextPrimary'>Total hours worked per day a week</h2>
             <ResponsiveContainer width="100%" height="100%">
                 <BarChart width={150} height={40} data={data} barSize={60}>
                     <CartesianGrid vertical={false} stroke="#d0d0d0" strokeDasharray="3 3" />

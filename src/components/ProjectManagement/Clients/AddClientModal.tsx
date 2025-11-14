@@ -41,7 +41,7 @@ const AddClientModal = () => {
             onInteractOutside={(event) => event.preventDefault()}
             className="sm:max-w-[525px]">
             <DialogHeader>
-                <DialogTitle className=" mb-4">Add New Client</DialogTitle>
+                <DialogTitle className=" mb-4 text-headingTextColor dark:text-darkTextPrimary">Add New Client</DialogTitle>
             </DialogHeader>
 
             <Form {...form}>

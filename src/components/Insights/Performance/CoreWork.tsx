@@ -10,7 +10,7 @@ const CoreWork = () => {
     return (
         <div className=" border-2 border-borderColor dark:border-darkBorder py-3 px-5 rounded-[12px] w-full">
             <div className=" flex gap-3 items-center mb-8">
-                <h2 className="text-base sm:text-lg dark:text-darkTextPrimary">Work time classification</h2>
+                <h2 className="text-base sm:text-lg text-headingTextColor dark:text-darkTextPrimary">Work time classification</h2>
                 <Info size={18} className=" cursor-pointer" />
             </div>
             <div className=" flex items-center justify-between mb-8">
@@ -19,11 +19,11 @@ const CoreWork = () => {
                     <p className="text-lg text-subTextColor dark:text-darkTextSecondary">Core work</p>
                 </div>
                 <div className="">
-                    <p className="flex items-center gap-2 dark:text-darkTextPrimary">
+                    <p className="flex items-center gap-2 text-headingTextColor dark:text-darkTextPrimary">
                         <span className="w-3 h-3 rounded-full bg-primary "></span>
                         20% Core work
                     </p>
-                    <p className="flex items-center gap-2 dark:text-darkTextPrimary">
+                    <p className="flex items-center gap-2 text-headingTextColor dark:text-darkTextPrimary">
                         <span className="w-3 h-3 rounded-full bg-[#dce3e3] "></span>
                         93% Non-core work
                     </p>
@@ -78,7 +78,7 @@ const CoreWork = () => {
                     >
                     </div>
                     <span
-                        className="absolute bottom-3.5 flex items-center text-textGray dark:text-darkTextSecondary"
+                        className="absolute bottom-3.5 flex items-center text-subTextColor dark:text-darkTextSecondary"
                         style={{
                             left: `${secondBarValue - 1.5}%`,
                         }}

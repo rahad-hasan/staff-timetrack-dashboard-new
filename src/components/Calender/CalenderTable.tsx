@@ -59,7 +59,7 @@ const CalenderTable = () => {
                                 <th
                                     key={i}
                                     className={`
-                                        px-4 py-4 sm:text-xl font-bold dark:text-darkTextPrimary
+                                        px-4 py-4 sm:text-xl font-bold text-headingTextColor dark:text-darkTextPrimary
                                         border-b border-gray-200 dark:border-darkBorder ${i < days.length - 1 ? 'border-r border-gray-200 dark:border-darkBorder' : ''}
                                     `}
                                 >

@@ -241,12 +241,12 @@ const Every10Mins = () => {
 
                                         <div className="mt-3">
                                             <div className="flex justify-between items-center">
-                                                <p className="text-lg text-textGray dark:text-darkTextSecondary">
+                                                <p className="text-lg text-headingTextColor dark:text-darkTextPrimary">
                                                     {screenShort.start} - {screenShort.end}
                                                 </p>
                                                 <Pencil className="text-primary cursor-pointer" size={18} />
                                             </div>
-                                            <p className="mb-2 text-textGray dark:text-darkTextSecondary">
+                                            <p className="mb-2 text-headingTextColor dark:text-darkTextPrimary">
                                                 {screenShort.activity}% of 10 minutes
                                             </p>
                                             <Slider
@@ -267,7 +267,7 @@ const Every10Mins = () => {
                                             <h2 className="mt-2 md:text-lg font-semibold dark:text-darkTextPrimary">
                                                 {screenShort.project}
                                             </h2>
-                                            <p className="text-textGray dark:text-darkTextSecondary">{screenShort.task}</p>
+                                            <p className="text-headingTextColor dark:text-darkTextPrimary">{screenShort.task}</p>
                                         </div>
                                     </div>
                                 </CarouselItem>
@@ -311,7 +311,7 @@ const Every10Mins = () => {
 
                                     <div className="mt-3">
                                         <div className="flex justify-between items-center">
-                                            <p className="text-sm sm:text-base text-textGray dark:text-darkTextSecondary">
+                                            <p className="text-sm sm:text-base text-headingTextColor dark:text-darkTextPrimary">
                                                 {screenShort.start} - {screenShort.end}
                                             </p>
                                             <Dialog>
@@ -325,7 +325,7 @@ const Every10Mins = () => {
 
                                         </div>
 
-                                        <p className="mb-2 text-sm sm:text-base text-textGray dark:text-darkTextSecondary">
+                                        <p className="mb-2 text-sm sm:text-base text-headingTextColor dark:text-darkTextPrimary">
                                             {screenShort.activity}% of 10 minutes
                                         </p>
 
@@ -344,10 +344,10 @@ const Every10Mins = () => {
                                             step={1}
                                         />
 
-                                        <h2 className="mt-2 text-sm sm:text-base font-semibold dark:text-darkTextPrimary">
+                                        <h2 className="mt-2 text-sm sm:text-base font-semibold text-headingTextColor dark:text-darkTextPrimary">
                                             {screenShort.project}
                                         </h2>
-                                        <p className="text-textGray text-sm sm:text-base dark:text-darkTextSecondary">
+                                        <p className="text-subTextColor text-sm sm:text-base dark:text-darkTextSecondary">
                                             {screenShort.task}
                                         </p>
                                     </div>

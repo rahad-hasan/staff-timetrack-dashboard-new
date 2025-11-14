@@ -7,7 +7,7 @@ const Utilization = () => {
     return (
         <div className=" border-2 border-borderColor dark:border-darkBorder py-3 px-5 rounded-[12px] w-full">
             <div className=" flex gap-3 items-center">
-                <h2 className="text-base sm:text-lg dark:text-darkTextPrimary">Utilization</h2>
+                <h2 className="text-base sm:text-lg text-headingTextColor dark:text-darkTextPrimary">Utilization</h2>
                 <Info size={18} className=" cursor-pointer" />
             </div>
             <div className=" flex items-center justify-between mt-8 pb-5  border-b  dark:border-darkBorder">
@@ -15,7 +15,7 @@ const Utilization = () => {
                     <GaugeChart percentage={65} value="4:38h" label="Daily work avg." />
                 </div>
                 <div className="">
-                    <p className="flex items-center justify-end gap-2 dark:text-darkTextPrimary text-3xl">
+                    <p className="flex items-center justify-end gap-2 text-headingTextColor dark:text-darkTextPrimary text-3xl">
                         2:22
                     </p>
                     <p className="flex items-center justify-end gap-2 text-subTextColor dark:text-darkTextSecondary text-lg ">
@@ -23,7 +23,7 @@ const Utilization = () => {
                     </p>
                     <div className=" flex gap-3 items-center mt-8">
                         <Info size={18} className=" cursor-pointer" />
-                        <h2 className="text-base  dark:text-darkTextPrimary">Avg. daily target 8:00</h2>
+                        <h2 className="text-base text-headingTextColor dark:text-darkTextPrimary">Avg. daily target 8:00</h2>
                     </div>
                 </div>
             </div>

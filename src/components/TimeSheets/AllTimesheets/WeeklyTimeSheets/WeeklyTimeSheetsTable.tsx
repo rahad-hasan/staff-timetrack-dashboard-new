@@ -56,16 +56,16 @@ const WeeklyTimeSheetsTable = () => {
                 <table className="w-full">
                     <thead className=" ">
                         <tr className="text-slate-900 border dark:border-darkBorder">
-                            <th className=" z-10 px-4 py-5 text-left border dark:border-darkBorder dark:text-darkTextPrimary">
+                            <th className=" z-10 px-4 py-5 text-left border dark:border-darkBorder  text-headingTextColor dark:text-darkTextPrimary">
                                 Project name
                             </th>
                             {weekDays.map((d) => (
-                                <th key={d.key} className=" z-10 px-4 py-5 text-center border dark:border-darkBorder dark:text-darkTextPrimary">
+                                <th key={d.key} className=" z-10 px-4 py-5 text-center border dark:border-darkBorder text-headingTextColor dark:text-darkTextPrimary">
                                     <h2 className=" text-2xl font-bold">{d.date}</h2>
-                                    <div className="mt-0.5 text-xs text-gray-500 dark:text-darkTextSecondary">{d.name}</div>
+                                    <div className="mt-0.5 text-xs text-subTextColor dark:text-darkTextSecondary">{d.name}</div>
                                 </th>
                             ))}
-                            <th className=" z-10 px-4 py-5 text-center border dark:border-darkBorder dark:text-darkTextPrimary">
+                            <th className=" z-10 px-4 py-5 text-center border dark:border-darkBorder text-headingTextColor dark:text-darkTextPrimary">
                                 Week Total
                             </th>
                         </tr>
@@ -74,16 +74,16 @@ const WeeklyTimeSheetsTable = () => {
                         {rows.map((project: Row, i: number) => (
                             <tr key={i} className="text-slate-900 border dark:border-darkBorder">
                                 <td className=" z-10 px-4 py-5 text-left border dark:border-darkBorder">
-                                    <h2 className=" font-semibold dark:text-darkTextPrimary">{project?.project}</h2>
+                                    <h2 className=" font-semibold text-headingTextColor dark:text-darkTextPrimary">{project?.project}</h2>
                                     <p className=" text-sm dark:text-darkTextSecondary">{project?.task}</p>
                                 </td>
                                 {project?.times?.map((time, i) => (
                                     <td key={i} className=" z-10 px-4 py-5 text-center border dark:border-darkBorder">
-                                        <h2 className=" text-lg dark:text-darkTextPrimary">{time.time}</h2>
+                                        <h2 className=" text-lg text-headingTextColor dark:text-darkTextPrimary">{time.time}</h2>
                                     </td>
                                 ))}
                                 <td className=" z-10 px-4 py-5 text-center border dark:border-darkBorder">
-                                    <h2 className="text-lg dark:text-darkTextPrimary">{project?.weekTotal}</h2>
+                                    <h2 className="text-lg text-headingTextColor dark:text-darkTextPrimary">{project?.weekTotal}</h2>
                                 </td>
                             </tr>
                         ))}
@@ -91,11 +91,11 @@ const WeeklyTimeSheetsTable = () => {
                     <tfoot className="border dark:border-darkBorder">
                         <tr className="text-slate-900 border dark:border-darkBorder">
                             <td className=" z-10 px-4 py-5 text-left border dark:border-darkBorder">
-                                <h2 className=" font-semibold dark:text-darkTextPrimary">{tableFooter?.project}</h2>
+                                <h2 className=" font-semibold text-headingTextColor dark:text-darkTextPrimary">{tableFooter?.project}</h2>
                             </td>
                             {tableFooter?.times?.map((time, i) => (
                                 <td key={i} className=" z-10 px-4 py-5 text-center border dark:border-darkBorder">
-                                    <h2 className=" text-lg dark:text-darkTextPrimary">{time.time}</h2>
+                                    <h2 className=" text-lg text-headingTextColor dark:text-darkTextPrimary">{time.time}</h2>
                                 </td>
                             ))}
                             <td className=" z-10 px-4 py-5 text-center border dark:border-darkBorder">

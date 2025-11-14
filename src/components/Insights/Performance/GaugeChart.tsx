@@ -44,19 +44,19 @@ const GaugeChart: React.FC<GaugeChartProps> = ({
 
         {/* Needle */}
         <div
-          className="absolute left-1/2 bottom-[6px] origin-bottom w-[2px] h-[50px] bg-black dark:bg-darkTextPrimary"
+          className="absolute left-1/2 bottom-[6px] origin-bottom w-[2px] h-[50px] text-headingTextColor dark:bg-darkTextPrimary"
           style={{
             transform: `translateX(-50%) rotate(${rotation}deg)`,
           }}
         >
           {/* pivot dot */}
-          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[8px] h-[8px] bg-black dark:bg-darkTextPrimary rounded-full"></div>
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[8px] h-[8px] text-headingTextColor dark:bg-darkTextPrimary rounded-full"></div>
         </div>
       </div>
 
       {/* Text Section */}
-      <p className="text-xl font-semibold text-gray-900 mt-1 dark:text-darkTextPrimary">{value}</p>
-      <p className="text-base text-gray-500 dark:text-darkTextSecondary">{label}</p>
+      <p className="text-xl font-semibold text-subTextColor mt-1 dark:text-darkTextPrimary">{value}</p>
+      <p className="text-base text-subTextColor dark:text-darkTextSecondary">{label}</p>
     </div>
   );
 };

@@ -72,7 +72,7 @@ export default function Dashboard() {
             className={`px-4 py-2 text-sm font-medium transition-all cursor-pointer rounded-lg m-0.5 ${
               activeTab === tab
                 ? "bg-white dark:bg-darkPrimaryBg dark:text-darkTextPrimary text-headingTextColor shadow-sm"
-                : "text-gray-600 dark:text-darkTextPrimary hover:text-gray-800"
+                : "text-subTextColor dark:text-darkTextPrimary hover:text-gray-800"
             }`}
           >
             {tab}

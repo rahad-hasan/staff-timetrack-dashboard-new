@@ -31,13 +31,13 @@ const SpecificDatePicker = ({ selectedDate, setSelectedDate }: { selectedDate: D
     return (
         <div className="w-full">
             <div className="flex w-full">
-                <ChevronLeft onClick={() => handleNavigate(-1)} className="border p-2.5 border-borderColor dark:border-darkBorder w-12 sm:w-10 h-10 rounded-lg cursor-pointer" />
+                <ChevronLeft onClick={() => handleNavigate(-1)} className="border p-2.5 text-headingTextColor dark:text-darkTextPrimary border-borderColor dark:border-darkBorder w-12 sm:w-10 h-10 rounded-lg cursor-pointer" />
 
                 <Popover open={open} onOpenChange={setOpen}>
                     <PopoverTrigger asChild>
                         <div className=" flex items-center gap-2 border dark:border-darkBorder rounded-md px-4 mx-3 cursor-pointer w-full sm:w-auto">
                             <CalendarDays className=" text-primary w-5.5" />
-                            <span>{dateDisplay}</span>
+                            <span className="text-headingTextColor dark:text-darkTextPrimary">{dateDisplay}</span>
                         </div>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto overflow-hidden p-0" align="start">
@@ -52,7 +52,7 @@ const SpecificDatePicker = ({ selectedDate, setSelectedDate }: { selectedDate: D
                         />
                     </PopoverContent>
                 </Popover>
-                <ChevronRight onClick={() => handleNavigate(1)} className="border p-2.5 border-borderColor dark:border-darkBorder w-12 sm:w-10 h-10 rounded-lg cursor-pointer" />
+                <ChevronRight onClick={() => handleNavigate(1)} className="border p-2.5 text-headingTextColor dark:text-darkTextPrimary border-borderColor dark:border-darkBorder w-12 sm:w-10 h-10 rounded-lg cursor-pointer" />
             </div>
         </div>
     );

@@ -243,14 +243,14 @@ const AllScreenShorts = () => {
 
                                 <div className="mt-3">
                                     <div className="flex justify-between items-center">
-                                        <p className="md:text-base text-textGray dark:text-darkTextSecondary">
+                                        <p className="md:text-base text-subTextColor dark:text-darkTextSecondary">
                                             {screenShort.start}
                                         </p>
                                     </div>
-                                    <h2 className=" text-sm sm:text-base font-semibold dark:text-darkTextPrimary">
+                                    <h2 className=" text-sm sm:text-base font-semibold text-headingTextColor dark:text-darkTextPrimary">
                                         {screenShort.project}
                                     </h2>
-                                    <p className="text-sm sm:text-base text-textGray dark:text-darkTextSecondary">
+                                    <p className="text-sm sm:text-base text-subTextColor dark:text-darkTextSecondary">
                                         {screenShort.task}
                                     </p>
                                 </div>

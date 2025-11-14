@@ -95,7 +95,7 @@ const ReportMonthlyTimeSheet = () => {
                                 <th
                                     key={i}
                                     className={`
-                                        px-4 py-4 text-lg sm:text-xl font-bold dark:text-darkTextPrimary
+                                        px-4 py-4 text-lg sm:text-xl font-bold text-headingTextColor dark:text-darkTextPrimary
                                         border-b border-gray-200 dark:border-darkBorder ${i < days.length - 1 ? 'border-r border-gray-200 dark:border-darkBorder' : ''}
                                     `}
                                 >
@@ -116,9 +116,9 @@ const ReportMonthlyTimeSheet = () => {
                                         `}
                                     >
                                         <div className=" flex flex-col items-center justify-center h-full">
-                                            <div className="text-base font-normal dark:text-darkTextPrimary">{cell.date}</div>
+                                            <div className="text-base font-normal text-headingTextColor dark:text-darkTextPrimary">{cell.date}</div>
                                             {cell.time && (
-                                                <div className={`text-base font-medium mt-1  ${cell.time === '-' ? 'text-gray-400 dark:border-darkBorder' : 'text-primary'}`}>
+                                                <div className={`text-base font-medium mt-1  ${cell.time === '-' ? 'text-subTextColor dark:border-darkBorder' : 'text-primary'}`}>
                                                     {cell.time}
                                                 </div>
                                             )}

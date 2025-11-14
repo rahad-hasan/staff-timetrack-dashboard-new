@@ -129,8 +129,8 @@ const DailyTimeSheets = () => {
 
             <div className=" mb-5">
                 <div className=" flex gap-2 mb-2">
-                    <h1 className=" font-bold dark:text-darkTextPrimary">Today:</h1>
-                    <p className="dark:text-darkTextPrimary">6:00:00</p>
+                    <h1 className=" font-bold text-headingTextColor dark:text-darkTextPrimary">Today:</h1>
+                    <p className="text-headingTextColor dark:text-darkTextPrimary">6:00:00</p>
                 </div>
                 <div className="relative h-5 bg-[#f6f7f9] dark:bg-darkPrimaryBg rounded-4xl border border-borderColor dark:border-darkBorder">
                     {activePeriods.map((period, index) => {

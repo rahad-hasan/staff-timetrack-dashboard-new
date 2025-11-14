@@ -64,8 +64,8 @@ const ReportWeeklyTimeSheet = () => {
             <div className="mb-5 flex flex-col gap-4 lg:gap-0 lg:flex-row justify-between">
                 <div className=" flex gap-3">
                     <WeeklyDatePicker centerDate={centerDate} setCenterDate={setCenterDate} />
-                    <Button className=" hidden sm:flex dark:text-darkTextPrimary" variant={'filter'}>
-                        <SlidersHorizontal className="dark:text-darkTextPrimary" /> Filters
+                    <Button className=" hidden sm:flex text-headingTextColor dark:text-darkTextPrimary" variant={'filter'}>
+                        <SlidersHorizontal className="text-headingTextColor dark:text-darkTextPrimary" /> Filters
                     </Button>
                 </div>
                 <SelectUserDropDown users={users}></SelectUserDropDown>
@@ -73,19 +73,19 @@ const ReportWeeklyTimeSheet = () => {
             <div className="overflow-x-auto w-full border rounded-lg dark:border-darkBorder">
                 <table className="w-full border-collapse">
                     <thead className="">
-                        <tr className="text-slate-900">
+                        <tr className="text-headingTextColor">
                             {days.map((d, i) => (
                                 <th
                                     key={i}
                                     className={`z-10 px-4 py-5 text-center border-b border-gray-200 dark:border-darkBorder ${i < days.length - 1 ? 'border-r' : ''}`}
                                 >
-                                    <div className="text-xl font-bold dark:text-darkTextPrimary">{d.name}</div>
+                                    <div className="text-xl font-bold text-headingTextColor dark:text-darkTextPrimary">{d.name}</div>
                                 </th>
                             ))}
                         </tr>
                     </thead>
                     <tbody className="">
-                        <tr className="text-slate-900">
+                        <tr className="text-headingTextColor">
                             {rows?.times?.map((time, i) => (
                                 <td
                                     key={i}

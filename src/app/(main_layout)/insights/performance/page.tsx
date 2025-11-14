@@ -1,8 +1,5 @@
 "use client"
 import { Bell, Settings } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch"
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import { useState } from "react";
@@ -57,7 +54,7 @@ const Performance = () => {
                         className={`px-3 sm:px-4 py-2 sm:py-2 flex items-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 text-gray-600 hover:text-textGray dark:bg-darkSecondaryBg dark:text-darkTextSecondary border border-borderColor"
                                 `}
                     >
-                        <Bell size={20} /> <span className=" hidden sm:block">Smart Notification </span>
+                        <Bell size={20} /> <span className=" hidden sm:block text-headingTextColor dark:text-darkTextPrimary">Smart Notification </span>
                     </button>
                     <button
                         className={`px-3 py-2 flex items-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 text-gray-600 dark:border-darkBorder hover:text-textGray border border-borderColor "
@@ -81,7 +78,7 @@ const Performance = () => {
                     htmlFor="benchmarks"
                     className="flex items-center gap-2 text-sm font-medium text-gray-700  cursor-pointer"
                 >
-                    <span className=" dark:text-darkTextPrimary">Benchmarks</span>
+                    <span className=" text-headingTextColor dark:text-darkTextPrimary">Benchmarks</span>
                     <span className="flex items-center gap-1 dark:text-darkTextPrimary">
                         <span className="w-2.5 h-2.5 rounded-full bg-green-500 "></span>
                         Other Industry average

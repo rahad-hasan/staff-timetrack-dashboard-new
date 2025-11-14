@@ -15,7 +15,7 @@ const Activity = () => {
     return (
         <div className=" border-2 border-borderColor dark:border-darkBorder py-3 px-5 rounded-[12px] w-full">
             <div className=" flex gap-3 items-center mb-8">
-                <h2 className="text-base sm:text-lg dark:text-darkTextPrimary">Activity</h2>
+                <h2 className="text-base sm:text-lg text-headingTextColor dark:text-darkTextPrimary">Activity</h2>
                 <Info size={18} className=" cursor-pointer" />
             </div>
             <div className=" flex  justify-between mb-5 pb-7 border-b dark:border-darkBorder">
@@ -27,7 +27,7 @@ const Activity = () => {
                     <div className="flex items-end space-x-4 px-6  rounded-xl ">
                         <div className="flex flex-col justify-between h-44 text-gray-700 text-sm font-medium">
                             {labels.reverse().map((label, index) => (
-                                <div key={index} className="h-full flex items-center dark:text-darkTextSecondary">{label}</div>
+                                <div key={index} className="h-full flex items-center text-subTextColor dark:text-darkTextSecondary">{label}</div>
                             ))}
                         </div>
                         <div className="relative w-12 h-44 bg-gray-200 rounded-lg overflow-hidden flex flex-col-reverse">
@@ -72,7 +72,7 @@ const Activity = () => {
                     >
                     </div>
                     <span
-                        className="absolute bottom-3.5 flex items-center text-textGray dark:text-darkTextSecondary"
+                        className="absolute bottom-3.5 flex items-center text-subTextColor dark:text-darkTextSecondary"
                         style={{
                             left: `${secondBarValue - 1.5}%`,
                         }}

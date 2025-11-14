@@ -51,7 +51,7 @@ const MonthlyTimeSheetsCalendar = () => {
 
     const DateCell = ({ day, time, activity }: { day: number, time: string, activity: number | null }) => (
         <div
-            className={`p-3 h-28 md:h-24 flex flex-col justify-center items-center text-gray-800 bg-white border border-gray-200 dark:bg-darkPrimaryBg dark:text-darkTextPrimary dark:border-darkBorder`}
+            className={`p-3 h-28 md:h-24 flex flex-col justify-center items-center bg-white border border-gray-200 dark:bg-darkPrimaryBg text-headingTextColor dark:text-darkTextPrimary dark:border-darkBorder`}
         >
             <span className="font-semibold text-lg mb-1">{day}</span>
             {
@@ -76,7 +76,7 @@ const MonthlyTimeSheetsCalendar = () => {
     );
 
     const DayHeader = ({ day, className }: { day: string; className?: string }) => (
-        <div className={`p-3 flex items-center justify-center font-bold text-sm h-14 text-black bg-gray-100 border-gray-300 dark:bg-darkSecondaryBg dark:text-darkTextPrimary ${className}`}>
+        <div className={`p-3 flex items-center justify-center font-bold text-sm h-14 bg-gray-100 border-gray-300 dark:bg-darkSecondaryBg text-headingTextColor dark:text-darkTextPrimary ${className}`}>
             {day}
         </div>
     );
@@ -86,16 +86,16 @@ const MonthlyTimeSheetsCalendar = () => {
             <div className=" mb-5 flex flex-col gap-4 md:gap-0 md:flex-row justify-between">
                 <div className=" flex items-center gap-3 md:gap-5 ">
                     <div className=" flex items-center gap-0.5 md:gap-2">
-                        <h2 className=" font-semibold dark:text-darkTextPrimary">Total Hour:</h2>
-                        <h2 className="dark:text-darkTextPrimary">32:25:00</h2>
+                        <h2 className=" font-semibold text-headingTextColor dark:text-darkTextPrimary">Total Hour:</h2>
+                        <h2 className="text-headingTextColor dark:text-darkTextPrimary">32:25:00</h2>
                     </div>
                     <div className=" flex items-center gap-0.5 md:gap-2">
-                        <h2 className=" font-semibold dark:text-darkTextPrimary">Monthly Activity:</h2>
-                        <h2 className="dark:text-darkTextPrimary">75.56%</h2>
+                        <h2 className=" font-semibold text-headingTextColor dark:text-darkTextPrimary">Monthly Activity:</h2>
+                        <h2 className="text-headingTextColor dark:text-darkTextPrimary">75.56%</h2>
                     </div>
                 </div>
                 <div className=" flex items-center gap-2">
-                    <p className=" font-semibold dark:text-darkTextPrimary">Select Option: </p>
+                    <p className=" font-semibold text-headingTextColor dark:text-darkTextPrimary">Select Option: </p>
 
                     <Select onValueChange={(value) => setViewType(value)} defaultValue="Hours">
                         <SelectTrigger className="w-[180px]">
