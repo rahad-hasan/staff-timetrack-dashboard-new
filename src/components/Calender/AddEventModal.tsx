@@ -19,13 +19,6 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import {
     Popover,
     PopoverContent,
     PopoverTrigger,
@@ -46,10 +39,10 @@ import {
 import Image from "next/image";
 
 const AddEventModal = () => {
-    const manager = ["Website Design", "Working on App Design", "New Landing Page", "Work on helsenist Project"];
-    const [managerSearch, setManagerSearch] = useState("");
+    // const manager = ["Website Design", "Working on App Design", "New Landing Page", "Work on helsenist Project"];
+    // const [managerSearch, setManagerSearch] = useState("");
 
-    const filteredManager = manager.filter(t => t.toLowerCase().includes(managerSearch.toLowerCase()));
+    // const filteredManager = manager.filter(t => t.toLowerCase().includes(managerSearch.toLowerCase()));
 
     const [openStartDate, setOpenStartDate] = useState(false);
     const [dateStartDate, setStartDate] = useState<Date | undefined>(undefined);
@@ -137,7 +130,7 @@ const AddEventModal = () => {
                             </FormItem>
                         )}
                     />
-                    <FormField
+                    {/* <FormField
                         control={form.control}
                         name="project"
                         render={({ field }) => (
@@ -172,7 +165,7 @@ const AddEventModal = () => {
                                 <FormMessage />
                             </FormItem>
                         )}
-                    />
+                    /> */}
                     <FormField
                         control={form.control}
                         name="members"

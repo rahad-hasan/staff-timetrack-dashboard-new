@@ -1,3 +1,10 @@
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
+} from "@/components/ui/tooltip"
+import Image from "next/image";
+
 const CalenderTable = () => {
     type DayMeta = { name: string };
     const days: DayMeta[] = [
@@ -83,10 +90,63 @@ const CalenderTable = () => {
                                             <div className=" text-sm sm:text-base font-normal mb-1">{cell.date}</div>
                                             {cell.event && (
                                                 <>
+
                                                     {cell.event.length >= 1 && (
-                                                        <div className={`${pillBaseClasses} bg-yellow-100 text-sm sm:text-base text-start text-yellow-800 border-l-4 border-yellow-500`}>
-                                                            {cell.event[0]}
-                                                        </div>
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <div
+                                                                    className={`${pillBaseClasses} bg-yellow-100 text-sm sm:text-base text-start text-yellow-800 border-l-4 border-yellow-500`}
+                                                                >
+                                                                    {cell.event[0]}
+                                                                </div>
+                                                            </TooltipTrigger>
+
+                                                            <TooltipContent
+                                                                className="bg-[#868686] dark:bg-darkPrimaryBg dark:fill-darkPrimaryBg shadow-xl rounded-lg px-5 py-4 max-w-xs"
+                                                            >
+                                                                <h2 className="text-sm font-semibold text-white dark:text-darkTextPrimary mb-3 border-b dark:border-darkBorder pb-1">
+                                                                    Event Participants
+                                                                </h2>
+
+                                                                <div className="flex items-center mb-4">
+                                                                    {[
+                                                                        "https://avatar.iran.liara.run/public/18",
+                                                                        "https://avatar.iran.liara.run/public/20",
+                                                                        "https://avatar.iran.liara.run/public/22",
+                                                                    ].map((imgSrc, index) => (
+                                                                        <Image
+                                                                            key={index}
+                                                                            src={imgSrc}
+                                                                            width={40}
+                                                                            height={40}
+                                                                            alt={`Assignee ${index + 1}`}
+                                                                            className="rounded-full w-10 h-10 -ml-3 first:ml-0 border-2 border-white dark:border-darkBorder shadow-sm"
+                                                                        />
+                                                                    ))}
+
+                                                                    <div className="w-10 h-10 -ml-3 text-headingTextColor rounded-full bg-[#ede7ff] flex items-center justify-center text-sm font-semibold  border-2 border-white shadow-sm">
+                                                                        10+
+                                                                    </div>
+                                                                </div>
+
+                                                                <h3 className="text-sm font-semibold text-white dark:text-darkTextPrimary border-b dark:border-darkBorder pb-1 mb-2">
+                                                                    Assigned By
+                                                                </h3>
+
+                                                                <div className="flex items-center gap-2">
+                                                                    <Image
+                                                                        src="https://avatar.iran.liara.run/public/18"
+                                                                        width={32}
+                                                                        height={32}
+                                                                        alt="Assigner"
+                                                                        className="rounded-full w-8 h-8 border dark:border-darkBorder"
+                                                                    />
+                                                                    <p className="text-sm text-white dark:text-darkTextPrimary">
+                                                                        Dannielis Vettori
+                                                                    </p>
+                                                                </div>
+                                                            </TooltipContent>
+                                                        </Tooltip>
                                                     )}
 
                                                     {cell.event.length >= 2 && (
