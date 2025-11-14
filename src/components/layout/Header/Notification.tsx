@@ -1,3 +1,4 @@
+"use client"
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Image from "next/image";
 import bellIcon from '../../../assets/header/bell.svg'
@@ -6,6 +7,8 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
+import Link from "next/link";
+import { useState } from "react";
 
 const notifications = [
     {
@@ -88,10 +91,11 @@ const getNotificationStyles = (type: any) => {
 };
 
 const Notification = () => {
+    const [open, setOpen] = useState(false);
     const unreadCount = notifications.filter(n => n.isNew).length;
 
     return (
-        <Popover>
+        <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
                 <div className="relative w-[25px] h-[25px] cursor-pointer">
                     <Image
@@ -151,9 +155,12 @@ const Notification = () => {
                 </div>
 
                 <div className="p-2 flex justify-between items-center text-sm">
-                    <button className="text-primary font-medium px-2 py-1 rounded cursor-pointer">
-                        View All
-                    </button>
+                    <Link href={`/notification`}>
+                        <button onClick={() => setOpen(false)} className="text-primary font-medium px-2 py-1 rounded cursor-pointer">
+                            View All
+                        </button>
+                    </Link>
+
                     {unreadCount > 0 && (
                         <button className="text-subTextColor dark:text-gray-300 text-xs px-2 py-1 rounded cursor-pointer">
                             Mark All as Read

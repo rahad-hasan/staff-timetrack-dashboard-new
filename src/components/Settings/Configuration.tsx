@@ -16,7 +16,7 @@ import {
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 
-const Notification = () => {
+const Configuration = () => {
     const sections = [
         {
             title: "Project Notifications",
@@ -188,4 +188,4 @@ const Notification = () => {
     );
 };
 
-export default Notification;
+export default Configuration;

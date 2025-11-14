@@ -1,7 +1,7 @@
 "use client";
 import GlobalColorPicker from "@/components/Common/GlobalColorPicker";
 import HeadingComponent from "@/components/Common/HeadingComponent";
-import Notification from "@/components/Settings/Notification";
+import Configuration from "@/components/Settings/Configuration";
 import Profile from "@/components/Settings/Profile";
 import Subscription from "@/components/Settings/Subscription";
 // import SubscriptionSkeleton from "@/skeleton/settings/SubscriptionSkeleton";
@@ -44,7 +44,7 @@ const SettingsPage = () => {
             }
             {
                 activeTab === "Configuration" &&
-                <Notification></Notification>
+                <Configuration></Configuration>
             }
             {
                 activeTab === "Subscription Management" &&
