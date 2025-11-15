@@ -51,14 +51,14 @@ const MonthlyTimeSheetsCalendar = () => {
 
     const DateCell = ({ day, time, activity }: { day: number, time: string, activity: number | null }) => (
         <div
-            className={`p-3 h-28 md:h-24 flex flex-col justify-center items-center bg-white border border-gray-200 dark:bg-darkPrimaryBg text-headingTextColor dark:text-darkTextPrimary dark:border-darkBorder`}
+            className={`p-3 h-28 md:h-24 flex flex-col justify-center items-center border border-gray-200 bg-bgPrimary dark:bg-darkPrimaryBg text-headingTextColor dark:text-darkTextPrimary dark:border-darkBorder`}
         >
             <span className="font-semibold text-lg mb-1">{day}</span>
             {
                 viewType === "Hours" ?
                     <div>
                         {time && (
-                            <div className="px-2 py-1 text-sm font-medium rounded-lg bg-[#e9f8f0] dark:bg-darkSecondaryBg text-primary shadow-sm">
+                            <div className="px-2 py-1 text-sm font-medium rounded-lg bg-primary/5 dark:bg-darkSecondaryBg text-primary shadow-sm">
                                 {time}
                             </div>
                         )}
@@ -66,7 +66,7 @@ const MonthlyTimeSheetsCalendar = () => {
                     :
                     <div>
                         {activity && (
-                            <div className="px-2 py-1 text-sm font-medium rounded-lg bg-[#e9f8f0] dark:bg-darkSecondaryBg text-primary shadow-sm">
+                            <div className="px-2 py-1 text-sm font-medium rounded-lg bg-primary dark:bg-darkSecondaryBg text-primary shadow-sm">
                                 {activity}%
                             </div>
                         )}
@@ -76,7 +76,7 @@ const MonthlyTimeSheetsCalendar = () => {
     );
 
     const DayHeader = ({ day, className }: { day: string; className?: string }) => (
-        <div className={`p-3 flex items-center justify-center font-bold text-sm h-14 bg-gray-100 border-gray-300 dark:bg-darkSecondaryBg text-headingTextColor dark:text-darkTextPrimary ${className}`}>
+        <div className={`p-3 flex items-center justify-center font-bold text-sm h-14 border bg-[#e8eaec] border-[#00000010] dark:bg-darkSecondaryBg text-headingTextColor dark:text-darkTextPrimary ${className}`}>
             {day}
         </div>
     );

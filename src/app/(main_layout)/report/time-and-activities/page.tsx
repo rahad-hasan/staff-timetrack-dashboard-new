@@ -56,7 +56,7 @@ const TimeAndActivitiesPage = () => {
                     <div className="flex items-center justify-center py-6 bg-[#eff7fe] border-b border-borderColor dark:border-darkBorder rounded-t-xl flex-1">
                         <h2 className=" text-2xl sm:text-3xl font-semibold text-center dark:text-darkSecondaryBg">60:33:52</h2>
                     </div>
-                    <div className="text-center py-2 font-medium text-subTextColor dark:text-darkTextPrimary">
+                    <div className="text-center py-2 font-medium text-subTextColor dark:text-darkTextPrimary bg-bgSecondary dark:bg-darkPrimaryBg rounded-b-xl">
                         Worked Time
                     </div>
                 </div>
@@ -67,7 +67,7 @@ const TimeAndActivitiesPage = () => {
                             <span className=" text-xl sm:text-2xl font-semibold text-gray-800 dark:text-darkSecondaryBg">50.12%</span>
                         </div>
                     </div>
-                    <div className="text-center py-2 font-medium text-subTextColor dark:text-darkTextPrimary">
+                    <div className="text-center py-2 font-medium text-subTextColor dark:text-darkTextPrimary bg-bgSecondary dark:bg-darkPrimaryBg rounded-b-xl">
                         Avg. Activity
                     </div>
                 </div>

@@ -17,7 +17,7 @@ const RecentActivity = async () => {
     ];
 
     return (
-        <div className=" border-2 border-borderColor dark:border-darkBorder p-3 rounded-[12px] w-full">
+        <div className=" border-2 border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg p-3 rounded-[12px] w-full">
             <div className=" flex justify-between items-center">
                 <h2 className="text-base text-headingTextColor sm:text-lg dark:text-darkTextPrimary ">RECENT ACTIVITY</h2>
                 <div className=" flex items-center gap-3">

@@ -188,7 +188,7 @@ const DailyTimeSheetsTable = () => {
     });
 
     return (
-        <div className="border-2 border-borderColor dark:border-darkBorder p-3 rounded-[12px]">
+        <div className="border-2 border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg p-3 rounded-[12px]">
             <Table>
                 <TableHeader>
                     {table.getHeaderGroups().map(headerGroup => (

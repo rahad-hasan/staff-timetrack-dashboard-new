@@ -75,13 +75,13 @@ const UnusualActivity = () => {
                     <SelectUserDropDown users={users}></SelectUserDropDown>
                 </div>
             </div>
-            <div className="flex mt-3 sm:mt-0 bg-[#f6f7f9] dark:bg-darkSecondaryBg rounded-lg w-[340px] sm:w-[368px]">
+            <div className="flex mt-3 sm:mt-0 bg-bgSecondary dark:bg-darkSecondaryBg rounded-lg w-[340px] sm:w-[368px]">
                 {["Highly Unusual", "Unusual", "Slightly Unusual"].map((tab) => (
                     <button
                         key={tab}
                         onClick={() => handleTabClick(tab as "Highly Unusual" | "Unusual" | "Slightly Unusual")}
                         className={`px-3 py-2 text-[13px] sm:text-sm font-medium transition-all cursor-pointer rounded-lg m-0.5 ${activeTab === tab
-                            ? "bg-white dark:bg-darkPrimaryBg dark:text-darkTextPrimary text-headingTextColor shadow-sm"
+                            ? "bg-bgPrimary dark:bg-darkPrimaryBg dark:text-darkTextPrimary text-headingTextColor shadow-sm"
                             : "text-subTextColor dark:text-darkTextPrimary hover:text-gray-800"
                             }`}
                     >

@@ -126,13 +126,13 @@ const ScreenShorts = () => {
                 <HeadingComponent heading="Screenshot" subHeading="All the screenshot during the working hour by team member is here"></HeadingComponent>
 
                 <div className="flex gap-3">
-                    <div className="flex mt-3 sm:mt-0 bg-[#f6f7f9] dark:bg-darkSecondaryBg rounded-lg overflow-hidden w-[271px]">
+                    <div className="flex mt-3 sm:mt-0 bg-bgSecondary dark:bg-darkSecondaryBg rounded-lg overflow-hidden w-[271px]">
                         {["Every 10 min", "All Screenshots"].map((tab) => (
                             <button
                                 key={tab}
                                 onClick={() => handleTabClick(tab as "Every 10 min" | "All Screenshots")}
-                                className={`px-4 py-2 text-sm font-medium transition-all cursor-pointer rounded-lg m-0.5 ${activeTab === tab
-                                    ? "bg-white dark:bg-darkPrimaryBg dark:text-darkTextPrimary text-headingTextColor shadow-sm"
+                                className={`px-4 py-2 text-sm font-medium transition-all cursor-pointer rounded-lg m-0.5  ${activeTab === tab
+                                    ? "bg-bgPrimary dark:bg-darkPrimaryBg dark:text-darkTextPrimary text-headingTextColor shadow-sm"
                                     : "text-subTextColor hover:text-gray-800 dark:text-darkTextPrimary"
                                     }`}
                             >
@@ -159,7 +159,7 @@ const ScreenShorts = () => {
                     <Dialog>
                         <form>
                             <DialogTrigger asChild>
-                                <Button className="dark:text-darkTextPrimary" variant={'outline2'}>
+                                <Button className="dark:text-darkTextPrimary bg-bgPrimary" variant={'outline2'}>
                                     <NotepadText className=" text-sm md:text-base dark:text-darkTextPrimary" /> All Notes
                                 </Button>
                             </DialogTrigger>
@@ -180,10 +180,10 @@ const ScreenShorts = () => {
                     return (
                         <div
                             key={id}
-                            className="border-2 border-borderColor rounded-2xl w-full dark:border-darkBorder transition-all hover:shadow-md  duration-200"
+                            className="border-2 border-borderColor rounded-2xl w-full dark:border-darkBorder transition-all hover:shadow duration-200"
                         >
                             {/* Card header */}
-                            <div className="flex items-center gap-2 px-3 py-5">
+                            <div className="flex items-center gap-2 px-3 py-5 bg-bgSecondary dark:bg-darkPrimaryBg rounded-t-2xl">
                                 <Icon size={40} className="border-2 border-borderColor rounded-lg p-1.5" />
                                 <div>
                                     <h2 className="text-xl font-semibold text-headingTextColor dark:text-darkTextPrimary">{value}</h2>
@@ -192,7 +192,7 @@ const ScreenShorts = () => {
                             </div>
 
                             {/* Card footer */}
-                            <div className="bg-[#f6f7f9] dark:bg-darkPrimaryBg rounded-b-xl px-3 py-3 flex items-center gap-2">
+                            <div className="bg-bgPrimary dark:bg-darkSecondaryBg rounded-b-2xl px-3 py-3 flex items-center gap-2">
                                 <TrendIcon size={20} className={trendColor} />
                                 <p className="text-primary">{change}</p>
                                 <p className="text-sm text-muted-foreground">{note}</p>

@@ -320,7 +320,7 @@ const TeamsMemberTable = () => {
     });
 
     return (
-        <div className="mt-5 border-2 border-borderColor dark:border-darkBorder p-3 rounded-[12px]">
+        <div className="mt-5 border-2 border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg p-3 rounded-[12px]">
             <div className=" mb-5">
                 <h2 className=" text-base sm:text-lg text-headingTextColor dark:text-darkTextPrimary">Members</h2>
             </div>

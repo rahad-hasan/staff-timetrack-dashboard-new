@@ -43,13 +43,13 @@ const Projects = () => {
             </div>
             <div className=" flex gap-3 items-center justify-between mt-3 sm:mt-0">
                 <div className="flex gap-3">
-                    <div className="flex bg-[#f6f7f9] dark:bg-darkSecondaryBg rounded-lg overflow-hidden">
+                    <div className="flex bg-bgSecondary dark:bg-darkSecondaryBg rounded-lg overflow-hidden">
                         {["Active", "Archived"].map((tab) => (
                             <button
                                 key={tab}
                                 onClick={() => handleTabClick(tab as "Active" | "Archived")}
                                 className={`px-4 py-2 text-sm font-medium transition-all cursor-pointer rounded-lg m-0.5 ${activeTab === tab
-                                    ? "bg-white text-headingTextColor shadow-sm dark:bg-darkPrimaryBg dark:text-darkTextPrimary"
+                                    ? "bg-bgPrimary text-headingTextColor shadow-sm dark:bg-darkPrimaryBg dark:text-darkTextPrimary"
                                     : "text-gray-600 hover:text-gray-800 dark:text-darkTextPrimary"
                                     }`}
                             >

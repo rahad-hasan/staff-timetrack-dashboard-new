@@ -30,28 +30,28 @@ const SingleProjectPage = () => {
 
             <div className="mt-4 xl:w-[80%] 2xl:w-[70%]">
                 <div className=" ">
-                    <h2 className=" text-lg font-semibold dark:text-darkTextPrimary">Orbit Management Project</h2>
-                    <p className="mt-2 text-textGray dark:text-darkTextSecondary">Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere explicabo autem dolorem deserunt minus voluptatem enim sit quidem repellat accusamus soluta, delectus cumque facilis, doloremque esse possimus, adipisci odio tempora architecto quos. Similique sequi impedit debitis autem quaerat exercitationem, dolorum, cumque, quis et laborum ratione sit sapiente aliquam praesentium enim.</p>
+                    <h2 className=" text-lg font-semibold text-headingTextColor dark:text-darkTextPrimary">Orbit Management Project</h2>
+                    <p className="mt-2 text-subTextColor dark:text-darkTextSecondary">Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere explicabo autem dolorem deserunt minus voluptatem enim sit quidem repellat accusamus soluta, delectus cumque facilis, doloremque esse possimus, adipisci odio tempora architecto quos. Similique sequi impedit debitis autem quaerat exercitationem, dolorum, cumque, quis et laborum ratione sit sapiente aliquam praesentium enim.</p>
                 </div>
 
                 <div className="mt-4 w-full overflow-x-auto">
                     <table className="min-w-[600px] w-full border-collapse text-sm md:text-base">
                         <thead className="">
                             <tr>
-                                <th className="text-left py-2 px-3 whitespace-nowrap dark:text-darkTextPrimary">Client</th>
-                                <th className="text-left py-2 px-3 whitespace-nowrap dark:text-darkTextPrimary">Phone</th>
-                                <th className="text-left py-2 px-3 whitespace-nowrap dark:text-darkTextPrimary">Starting Date</th>
-                                <th className="text-left py-2 px-3 whitespace-nowrap dark:text-darkTextPrimary">Deadline</th>
-                                <th className="text-left py-2 px-3 whitespace-nowrap dark:text-darkTextPrimary">Project Bill</th>
+                                <th className="text-left py-2 px-3 whitespace-nowrap text-headingTextColor dark:text-darkTextPrimary">Client</th>
+                                <th className="text-left py-2 px-3 whitespace-nowrap text-headingTextColor dark:text-darkTextPrimary">Phone</th>
+                                <th className="text-left py-2 px-3 whitespace-nowrap text-headingTextColor dark:text-darkTextPrimary">Starting Date</th>
+                                <th className="text-left py-2 px-3 whitespace-nowrap text-headingTextColor dark:text-darkTextPrimary">Deadline</th>
+                                <th className="text-left py-2 px-3 whitespace-nowrap text-headingTextColor dark:text-darkTextPrimary">Project Bill</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr className="">
-                                <td className="py-2 px-3 whitespace-nowrap dark:text-darkTextPrimary">Daniel Vector</td>
-                                <td className="py-2 px-3 whitespace-nowrap dark:text-darkTextPrimary">+880 - 1324 4524 452</td>
-                                <td className="py-2 px-3 whitespace-nowrap dark:text-darkTextPrimary">12 Aug, 2025</td>
-                                <td className="py-2 px-3 whitespace-nowrap dark:text-darkTextPrimary">12 Aug, 2025</td>
-                                <td className="py-2 px-3 whitespace-nowrap dark:text-darkTextPrimary">Hourly: $35</td>
+                                <td className="py-2 px-3 whitespace-nowrap text-headingTextColor dark:text-darkTextPrimary">Daniel Vector</td>
+                                <td className="py-2 px-3 whitespace-nowrap text-headingTextColor dark:text-darkTextPrimary">+880 - 1324 4524 452</td>
+                                <td className="py-2 px-3 whitespace-nowrap text-headingTextColor dark:text-darkTextPrimary">12 Aug, 2025</td>
+                                <td className="py-2 px-3 whitespace-nowrap text-headingTextColor dark:text-darkTextPrimary">12 Aug, 2025</td>
+                                <td className="py-2 px-3 whitespace-nowrap text-headingTextColor dark:text-darkTextPrimary">Hourly: $35</td>
                             </tr>
                         </tbody>
                     </table>
@@ -59,20 +59,20 @@ const SingleProjectPage = () => {
 
                 <div className=" mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 items-center gap-6">
                     <div className=" border border-borderColor rounded-xl w-full">
-                        <h2 className=" py-10 bg-[#fff5db] text-3xl font-semibold text-center border-b border-borderColor rounded-t-xl dark:text-black">420 hours</h2>
-                        <div className=" text-center py-2">Total Hours</div>
+                        <h2 className=" py-10 bg-[#fff5db] text-3xl font-semibold text-center border-b border-borderColor rounded-t-xl text-headingTextColor dark:text-black">420 hours</h2>
+                        <div className=" text-center py-2 text-headingTextColor dark:text-darkTextPrimary">Total Hours</div>
                     </div>
                     <div className=" border border-borderColor rounded-xl w-full">
-                        <h2 className=" py-10 bg-[#eff7fe] text-3xl font-semibold text-center border-b border-borderColor rounded-t-xl dark:text-black">180 hours</h2>
-                        <div className=" text-center py-2">Billable Hours</div>
+                        <h2 className=" py-10 bg-[#eff7fe] text-3xl font-semibold text-center border-b border-borderColor rounded-t-xl text-headingTextColor dark:text-black">180 hours</h2>
+                        <div className=" text-center py-2 text-headingTextColor dark:text-darkTextPrimary">Billable Hours</div>
                     </div>
                     <div className=" border border-borderColor rounded-xl w-full">
-                        <h2 className=" py-10 bg-[#ede7ff] text-3xl font-semibold text-center border-b border-borderColor rounded-t-xl dark:text-black">240 hours</h2>
-                        <div className=" text-center py-2">Unbilled Hours</div>
+                        <h2 className=" py-10 bg-[#ede7ff] text-3xl font-semibold text-center border-b border-borderColor rounded-t-xl text-headingTextColor dark:text-black">240 hours</h2>
+                        <div className=" text-center py-2 text-headingTextColor dark:text-darkTextPrimary">Unbilled Hours</div>
                     </div>
                     <div className=" border border-borderColor rounded-xl w-full">
-                        <h2 className=" py-10 bg-[#fee6eb] text-3xl font-semibold text-center border-b border-borderColor rounded-t-xl dark:text-black">$6,302</h2>
-                        <div className=" text-center py-2">Unbilled Amount</div>
+                        <h2 className=" py-10 bg-[#fee6eb] text-3xl font-semibold text-center border-b border-borderColor rounded-t-xl text-headingTextColor dark:text-black">$6,302</h2>
+                        <div className=" text-center py-2 text-headingTextColor dark:text-darkTextPrimary">Unbilled Amount</div>
                     </div>
                 </div>
             </div>
@@ -81,13 +81,13 @@ const SingleProjectPage = () => {
 
             <div className=" flex flex-col sm:flex-row items-start gap-3 sm:items-center sm:justify-between mt-4">
                 <div className="flex gap-3">
-                    <div className="flex mt-3 sm:mt-0 bg-[#f6f7f9] dark:bg-darkSecondaryBg rounded-lg overflow-hidden">
+                    <div className="flex mt-3 sm:mt-0 bg-bgSecondary dark:bg-darkSecondaryBg rounded-lg overflow-hidden">
                         {["Members", "Tasks"].map((tab) => (
                             <button
                                 key={tab}
                                 onClick={() => handleTabClick(tab as "Members" | "Tasks")}
                                 className={`px-4 py-2 text-sm font-medium transition-all cursor-pointer rounded-lg m-0.5 ${activeTab === tab
-                                    ? "bg-white text-headingTextColor shadow-sm dark:bg-darkPrimaryBg dark:text-darkTextPrimary"
+                                    ? "bg-bgPrimary text-headingTextColor shadow-sm dark:bg-darkPrimaryBg dark:text-darkTextPrimary"
                                     : "text-gray-600 hover:text-gray-800 dark:text-darkTextPrimary"
                                     }`}
                             >

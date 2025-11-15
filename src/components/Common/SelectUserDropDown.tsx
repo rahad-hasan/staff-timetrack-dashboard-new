@@ -31,7 +31,7 @@ const SelectUserDropDown = ({users}:any) => {
                     variant="outline2"
                     role="combobox"
                     aria-expanded={open}
-                    className="w-full sm:w-[250px] py-[7.5px] flex justify-between items-center gap-2 dark:border-darkBorder  dark:text-darkTextPrimary dark:bg-darkPrimaryBg hover:dark:bg-darkPrimaryBg"
+                    className="w-full sm:w-[250px] py-[7.5px] flex justify-between items-center gap-2 dark:border-darkBorder dark:text-darkTextPrimary bg-bgPrimary dark:bg-darkPrimaryBg hover:dark:bg-darkPrimaryBg"
                 >
                     <div className=" flex justify-between items-center gap-3">
                         {value && (

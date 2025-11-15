@@ -8,7 +8,7 @@ const CoreWork = () => {
     const secondBarRange = { start: 50, end: 65 };
 
     return (
-        <div className=" border-2 border-borderColor dark:border-darkBorder py-3 px-5 rounded-[12px] w-full">
+        <div className=" border-2 border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg py-3 px-5 rounded-[12px] w-full">
             <div className=" flex gap-3 items-center mb-8">
                 <h2 className="text-base sm:text-lg text-headingTextColor dark:text-darkTextPrimary">Work time classification</h2>
                 <Info size={18} className=" cursor-pointer" />

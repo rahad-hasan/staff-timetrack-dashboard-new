@@ -9,6 +9,10 @@
   --color-borderColor: #dce3e3;
   --color-textGray: #505553;
 
+  /* Bg Color Combination */
+  --color-bgPrimary: #fcfcfc;
+  --color-bgSecondary: #ffffff;
+
   /* Dark Theme */
   /* Dark Bg */
   /* --color-darkPrimaryBg: #151b23;
@@ -23,6 +27,7 @@
   --color-darkBorder: #4a5263;
   /* --shadow-greenShadow: '0px 10px 30px rgba(18, 205, 105, 0.5)' */
 }
+
 @plugin "tailwindcss-animate";
 @custom-variant dark (&:is(.dark *));
 /* :root {

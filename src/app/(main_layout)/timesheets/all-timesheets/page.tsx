@@ -23,13 +23,13 @@ const AllTimeSheets = () => {
                 <HeadingComponent heading="All Timesheets" subHeading="All the timesheet by team member who completed is displayed here"></HeadingComponent>
 
                 <div className="flex gap-3">
-                    <div className="flex mt-3 sm:mt-0 bg-[#f6f7f9] dark:bg-darkSecondaryBg rounded-lg overflow-hidden">
+                    <div className="flex mt-3 sm:mt-0 bg-bgSecondary dark:bg-darkSecondaryBg rounded-lg overflow-hidden">
                         {["Daily", "Weekly", "Monthly"].map((tab) => (
                             <button
                                 key={tab}
                                 onClick={() => handleTabClick(tab as "Daily" | "Weekly" | "Monthly")}
                                 className={`px-4 py-2 text-sm font-medium transition-all cursor-pointer rounded-lg m-0.5 ${activeTab === tab
-                                    ? "bg-white text-headingTextColor shadow-sm dark:bg-darkPrimaryBg dark:text-darkTextPrimary"
+                                    ? "bg-bgPrimary text-headingTextColor shadow-sm dark:bg-darkPrimaryBg dark:text-darkTextPrimary"
                                     : "text-subTextColor dark:text-darkTextPrimary hover:text-gray-800"
                                     }`}
                             >

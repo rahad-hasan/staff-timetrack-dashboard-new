@@ -132,7 +132,7 @@ const DailyTimeSheets = () => {
                     <h1 className=" font-bold text-headingTextColor dark:text-darkTextPrimary">Today:</h1>
                     <p className="text-headingTextColor dark:text-darkTextPrimary">6:00:00</p>
                 </div>
-                <div className="relative h-5 bg-[#f6f7f9] dark:bg-darkPrimaryBg rounded-4xl border border-borderColor dark:border-darkBorder">
+                <div className="relative h-5 bg-bgSecondary dark:bg-darkPrimaryBg rounded-4xl border border-borderColor dark:border-darkBorder">
                     {activePeriods.map((period, index) => {
                         const startPercent = (period.start / 24) * 100;
                         const endPercent = (period.end / 24) * 100;

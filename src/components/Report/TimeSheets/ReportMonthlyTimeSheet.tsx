@@ -89,7 +89,7 @@ const ReportMonthlyTimeSheet = () => {
             </div>
             <div className="overflow-x-auto rounded-2xl border border-borderColor dark:border-darkBorder mt-5">
                 <table className="w-full border-collapse">
-                    <thead className="bg-white dark:bg-darkSecondaryBg">
+                    <thead className="bg-bgPrimary dark:bg-darkSecondaryBg">
                         <tr>
                             {days.map((d, i) => (
                                 <th
@@ -104,7 +104,7 @@ const ReportMonthlyTimeSheet = () => {
                             ))}
                         </tr>
                     </thead>
-                    <tbody className="bg-white dark:bg-darkSecondaryBg">
+                    <tbody className="bg-bgPrimary dark:bg-darkSecondaryBg">
                         {weeks.map((week, weekIndex) => (
                             <tr key={weekIndex} className="h-20">
                                 {week.map((cell, cellIndex) => (

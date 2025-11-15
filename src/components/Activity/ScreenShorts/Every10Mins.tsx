@@ -291,7 +291,7 @@ const Every10Mins = () => {
                         </div>
 
                         {/* Screenshot grid */}
-                        <div className="mt-3 grid grid-cols-2  xl:grid-cols-4 2xl:grid-cols-6 3xl:grid-cols-6 gap-4">
+                        <div className="mt-3 grid grid-cols-2 xl:grid-cols-4 2xl:grid-cols-6 3xl:grid-cols-6 gap-4">
                             {block.allScreenshorts.map((screenShort) => (
                                 <div
                                     key={screenShort._id}
@@ -356,9 +356,8 @@ const Every10Mins = () => {
                         </div>
                     </div>
                 ))}
-
-
             </div>
+            
             {
                 modalOpen &&
                 <ScreenShortsModal screenShorts={dummyScreenShorts} modalOpen={modalOpen} setModalOpen={setModalOpen}></ScreenShortsModal>

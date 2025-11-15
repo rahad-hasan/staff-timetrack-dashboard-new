@@ -61,7 +61,7 @@ const AttendancePage = () => {
 
                 <div className=" w-[180px] hidden md:flex items-center justify-end gap-2">
                     <Checkbox className=" cursor-pointer border-primary" />
-                    <p>No check in data</p>
+                    <p className=" text-base">No check in data</p>
                 </div>
             </div>
             <AttendanceTable></AttendanceTable>
