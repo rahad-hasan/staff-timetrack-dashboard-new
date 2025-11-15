@@ -51,7 +51,7 @@ const CalenderPage = () => {
                 <Dialog>
                     <form>
                         <DialogTrigger asChild>
-                            <Button className=" "><Plus className="size-5" /> <span className=" hidden sm:block">Add an event</span></Button>
+                            <Button className=""><Plus className="size-5" /> <span className=" hidden sm:block">Add an event</span></Button>
                         </DialogTrigger>
                         <AddEventModal></AddEventModal>
                     </form>

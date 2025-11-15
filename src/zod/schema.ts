@@ -65,7 +65,6 @@ export const addTasksSchema = z.object({
     description: z.string().min(1, "Description is required"),
 });
 
-
 export const newTaskCreationSchema = z.object({
     assignee: z.string().min(1, "Assignee is required"),
     project: z.string().min(1, "Project is required"),
@@ -108,6 +107,15 @@ export const addNewEventSchema = z.object({
     description: z.string().min(1, "Description is required"),
 })
 
+export const editEventSchema = z.object({
+    date: z
+        .date()
+        .nullable()
+        .refine((date) => date !== null, {
+            message: "Date is required",
+        }),
+});
+
 
 export const leaveRequestSchema = z.object({
     leaveType: z.string().min(1, "Leave type is required"),
@@ -131,7 +139,6 @@ export const userBasicInfoSchema = z.object({
     email: z.string().min(1, "Email is required"),
     password: z.string().min(8, "Password must be at least 8 characters").optional(),
 })
-
 
 export const screenDeleteReasonSchema = z.object({
     reason: z.string().min(1, "Reason is required"),

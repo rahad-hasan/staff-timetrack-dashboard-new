@@ -217,7 +217,7 @@ const AddEventModal = () => {
                     />
 
                     {/* <DialogClose asChild> */}
-                    <Button className=" w-full" type="submit">Create Task</Button>
+                    <Button className=" w-full" type="submit">Create Event</Button>
                     {/* </DialogClose> */}
                 </form>
             </Form>

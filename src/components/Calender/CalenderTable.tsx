@@ -4,6 +4,8 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip"
 import Image from "next/image";
+import { Dialog, DialogTrigger } from "../ui/dialog";
+import EditEventModal from "./EditEventModal";
 
 const CalenderTable = () => {
     type DayMeta = { name: string };
@@ -86,21 +88,31 @@ const CalenderTable = () => {
                                             ${cellIndex < week.length - 1 ? 'border-r border-gray-200 dark:border-darkBorder' : ''}
                                         `}
                                     >
-                                        <div className=" flex flex-col items-center justify-center h-full">
+                                        <div className=" flex flex-col items-center h-full">
                                             <div className=" text-sm sm:text-base font-normal mb-1">{cell.date}</div>
                                             {cell.event && (
                                                 <>
 
                                                     {cell.event.length >= 1 && (
                                                         <Tooltip>
-                                                            <TooltipTrigger asChild>
-                                                                <div
-                                                                    className={`${pillBaseClasses} bg-yellow-100 text-sm sm:text-base text-start text-yellow-800 border-l-4 border-yellow-500`}
-                                                                >
-                                                                    {cell.event[0]}
-                                                                </div>
-                                                            </TooltipTrigger>
+                                                            <Dialog>
+                                                              
+                                                                    <DialogTrigger asChild>
+                                                                        <TooltipTrigger asChild>
 
+
+                                                                            <div
+                                                                                className={`${pillBaseClasses} bg-yellow-100 text-sm sm:text-base text-start text-yellow-800 border-l-4 border-yellow-500`}
+                                                                            >
+                                                                                {cell.event[0]}
+                                                                            </div>
+
+
+                                                                        </TooltipTrigger>
+                                                                    </DialogTrigger>
+                                                                    <EditEventModal></EditEventModal>
+                                                           
+                                                            </Dialog>
                                                             <TooltipContent
                                                                 className="bg-[#868686] dark:bg-darkPrimaryBg dark:fill-darkPrimaryBg shadow-xl rounded-lg px-5 py-4 max-w-xs"
                                                             >
