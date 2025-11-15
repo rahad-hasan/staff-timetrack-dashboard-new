@@ -3,13 +3,14 @@ import {
     SheetContent,
     SheetHeader,
     SheetTitle,
-} from "@/components/ui/sheet"
+} from "@/components/ui/sheet";
 import Image from "next/image";
-import logo from '../../assets/logo.svg'
+// import logo from '../../assets/logo.svg';
 import { othersSidebarItems, sidebarItems } from "@/utils/SidebarItems";
 import { useSidebarStore } from "@/store/sidebarStore";
 import MobileSidebarItem from "./sidebar/MobileSidebarItem";
 import MobileSubItem from "./sidebar/MobileSubItem";
+import timerLogo from '../../assets/timerLogo.svg';
 
 const MobileSidebar = () => {
     const {
@@ -24,16 +25,24 @@ const MobileSidebar = () => {
             <SheetHeader>
                 <SheetTitle>
                     <div
-                        className={`flex items-center `}
+                        className={`flex items-center gap-2`}
                     >
-                        <Image
+                        {/* <Image
                             src={logo}
                             alt="Logo"
                             width={0}
                             height={0}
                             className={`w-10 h-10`}
                         />
-                        <h2 className="text-xl font-bold text-headingTextColor dark:text-darkTextPrimary">Tracker</h2>
+                        <h2 className="text-xl font-bold text-headingTextColor dark:text-darkTextPrimary">Tracker</h2> */}
+                        <Image
+                            src={timerLogo}
+                            alt="Logo"
+                            width={100}
+                            height={100}
+                            className={`h-10 w-10 bg-primary rounded-xl p-2 shadow-lg`}
+                        />
+                        <h2 className="text-2xl font-bold text-headingTextColor dark:text-darkTextPrimary">Tracker</h2>
                     </div>
                 </SheetTitle>
                 <div className="overflow-y-auto max-h-[calc(100vh-100px)] ml-1 pb-">
