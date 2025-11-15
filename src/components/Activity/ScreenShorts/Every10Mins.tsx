@@ -211,6 +211,21 @@ const Every10Mins = () => {
         {
             screenShort: screenshort3
         },
+        {
+            screenShort: screenshort3
+        },
+        {
+            screenShort: screenshort2
+        },
+        {
+            screenShort: screenshort3
+        },
+                {
+            screenShort: screenshort2
+        },
+        {
+            screenShort: screenshort3
+        },
     ]
 
     return (
@@ -322,7 +337,6 @@ const Every10Mins = () => {
                                                     <ScreenShortsDeleteReason></ScreenShortsDeleteReason>
                                                 </form>
                                             </Dialog>
-
                                         </div>
 
                                         <p className="mb-2 text-sm sm:text-base text-headingTextColor dark:text-darkTextPrimary">
@@ -357,7 +371,7 @@ const Every10Mins = () => {
                     </div>
                 ))}
             </div>
-            
+
             {
                 modalOpen &&
                 <ScreenShortsModal screenShorts={dummyScreenShorts} modalOpen={modalOpen} setModalOpen={setModalOpen}></ScreenShortsModal>

@@ -1,155 +1,119 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { X, Download, ChevronLeft, ChevronRight, ZoomOut, ZoomIn, Fullscreen } from "lucide-react";
+import { X, Download, ZoomOut, ZoomIn, Fullscreen } from "lucide-react";
 import Image, { StaticImageData } from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
+import {
+    Carousel,
+    CarouselContent,
+    CarouselItem,
+    CarouselNext,
+    CarouselPrevious,
+} from "@/components/ui/carousel";
+
+type ScreenShortType = string | StaticImageData | { screenShort: string | StaticImageData };
+
+const getSrc = (item: ScreenShortType): string | StaticImageData => {
+    if (typeof item === "string") return item;
+    if ("screenShort" in item) return item.screenShort;
+    return item;
+};
 
 const ScreenShortsModal = ({ screenShorts, modalOpen, setModalOpen }: any) => {
-    const [activeIndex, setActiveIndex] = useState<number>(0);
+    const [activeIndex, setActiveIndex] = useState(0);
     const [zoom, setZoom] = useState(1);
-    const [isFullscreen, setIsFullscreen] = useState(false);
+    const [api, setApi] = useState<any>(null);
     const modalRef = useRef<HTMLDivElement>(null);
 
-    const handleDownload = () => {
-        const currentImage = screenShorts[activeIndex]?.screenShort;
-        if (!currentImage) return;
-
-        const link = document.createElement("a");
-        link.href = typeof currentImage === "string" ? currentImage : currentImage.src;
-        link.download = `screenshot-${activeIndex + 1}.png`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    };
-
-    const handleThumbClick = (index: number) => {
-        setActiveIndex(index);
-        setZoom(1);
-    };
-
-    const handlePrev = () => {
-        setActiveIndex((prev) => (prev - 1 + screenShorts.length) % screenShorts.length);
-        setZoom(1);
-    };
-
-    const handleNext = () => {
-        setActiveIndex((prev) => (prev + 1) % screenShorts.length);
-        setZoom(1);
-    };
-    const handleZoomIn = () => setZoom((z) => Math.min(z + 0.25, 3));
-    const handleZoomOut = () => setZoom((z) => Math.max(z - 0.25, 1));
-
-    // Updated toggleFullscreen function to use the Fullscreen API
     const toggleFullscreen = () => {
         if (!modalRef.current) return;
 
         if (!document.fullscreenElement) {
-            // Enter Fullscreen
-            modalRef.current.requestFullscreen().catch(err => {
-                console.error(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
-            });
-            setIsFullscreen(true);
+            modalRef.current.requestFullscreen().catch(console.error);
         } else {
-            // Exit Fullscreen
             document.exitFullscreen();
-            setIsFullscreen(false);
         }
     };
 
-    // Effect to listen for fullscreen changes (e.g., when the user presses ESC)
-    useEffect(() => {
-        const handleFullscreenChange = () => {
-            setIsFullscreen(!!document.fullscreenElement);
-        };
+    const handleDownload = () => {
+        const src = getSrc(screenShorts[activeIndex]);
+        const url = typeof src === "string" ? src : src.src;
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `screenshot-${activeIndex + 1}.png`;
+        link.click();
+    };
 
-        document.addEventListener('fullscreenchange', handleFullscreenChange);
-
-        return () => {
-            document.removeEventListener('fullscreenchange', handleFullscreenChange);
-        };
-    }, []);
-
-    // If the modal is not open, don't render anything
     if (!modalOpen) return null;
 
     return (
-        <div ref={modalRef} className="fixed inset-0 z-50 bg-[#000000e7] transition-all duration-100">
-
-            {/* Close Button */}
-            <div className=" px-5 mt-5 md:mt-4 flex justify-between items-center">
-                <div>
-
-                </div>
-                <div className=" flex gap-5 items-center">
-                    <ZoomOut onClick={handleZoomOut} className="text-white cursor-pointer h-8  z-50" />
-                    <ZoomIn onClick={handleZoomIn} className="text-white cursor-pointer h-8 z-50" />
-                    <Fullscreen onClick={toggleFullscreen} className="text-white cursor-pointer h-8 z-50" />
-                    <Download onClick={handleDownload} className="text-white cursor-pointer h-8 z-50" />
-                    <X className=" text-white cursor-pointer h-8 z-50" onClick={() => setModalOpen(!modalOpen)} />
-                </div>
-
+        <div
+            ref={modalRef}
+            className="fixed inset-0 z-50 bg-black/90 flex flex-col justify-center items-center"
+        >
+            <div className="absolute top-5 right-5 flex gap-5">
+                <ZoomOut onClick={() => setZoom(z => Math.max(1, z - 0.25))} className="text-white cursor-pointer h-8" />
+                <ZoomIn onClick={() => setZoom(z => Math.min(3, z + 0.25))} className="text-white cursor-pointer h-8" />
+                <Fullscreen onClick={toggleFullscreen} className="text-white cursor-pointer h-8" />
+                <Download onClick={handleDownload} className="text-white cursor-pointer h-8" />
+                <X onClick={() => setModalOpen(false)} className="text-white cursor-pointer h-8" />
             </div>
-            <div className=" w-full h-full lg:h-[90vh] flex flex-col justify-center">
-                {/* Main Image with Nav */}
-                <div className="flex flex-col items-center justify-center relative">
-                    <div className=" lg:w-[50%] ">
-                        <Image
-                            src={
-                                typeof screenShorts[activeIndex]?.screenShort === "string"
-                                    ? screenShorts[activeIndex].screenShort
-                                    : screenShorts[activeIndex].screenShort.src
-                            }
-                            style={{
-                                transform: `scale(${zoom})`,
-                                transition: "transform 0.3s ease",
-                                cursor: zoom > 1 ? "move" : "default",
-                            }}
-                            width={1000}
-                            height={1000}
-                            className="rounded-lg transition-all duration-300 w-full md:w-auto"
-                            alt={`screenshot-${activeIndex + 1}`}
-                        />
 
-                        {/* Prev/Next Buttons */}
-                        <button
-                            onClick={handlePrev}
-                            className="absolute left-0 top-1/2 -translate-y-1/2 bg-black/70 text-white p-2 rounded-r-md hover:bg-black transition cursor-pointer"
-                        >
-                            <ChevronLeft className="w-8 h-8" />
-                        </button>
-                        <button
-                            onClick={handleNext}
-                            className="absolute right-0 top-1/2 -translate-y-1/2 bg-black/70 text-white p-2 rounded-l-md hover:bg-black transition cursor-pointer"
-                        >
-                            <ChevronRight className="w-8 :h-8" />
-                        </button>
-                    </div>
-
-                </div>
-                {/* Thumbnails */}
-                <div className="mt-16 w-full flex flex-wrap justify-center gap-3 px-5">
-                    {screenShorts.map(
-                        (img: { screenShort: string | StaticImageData }, index: number) => (
-                            <div
-                                key={index}
-                                onClick={() => handleThumbClick(index)}
-                                className={`cursor-pointer rounded-md overflow-hidden border-2 transition-all duration-200 ${index === activeIndex
-                                    ? "border-primary scale-105"
-                                    : "border-transparent opacity-70 hover:opacity-100"
-                                    }`}
-                            >
+            <div className="w-full px-10 sm:px-16 mt-10">
+                <Carousel
+                    opts={{ loop: true, align: "center" }}
+                    setApi={(inst) => {
+                        if (!inst) return;
+                        setApi(inst);
+                        inst.on("select", () => {
+                            setActiveIndex(inst.selectedScrollSnap());
+                        });
+                    }}
+                >
+                    <CarouselContent>
+                        {screenShorts.map((item: ScreenShortType, index: number) => (
+                            <CarouselItem key={index} className="flex justify-center">
                                 <Image
-                                    src={img.screenShort}
-                                    width={100}
-                                    height={100}
-                                    alt={`thumb-${index + 1}`}
-                                    className=" w-[100px] md:w-[150px] rounded-md"
+                                    src={getSrc(item)}
+                                    width={1400}
+                                    height={900}
+                                    alt={`screenshot-${index}`}
+                                    className="rounded-xl max-h-[78vh] object-contain"
+                                    style={{
+                                        transform: `scale(${zoom})`,
+                                        transition: "0.25s ease",
+                                    }}
                                 />
-                            </div>
-                        )
-                    )}
-                </div>
+                            </CarouselItem>
+                        ))}
+                    </CarouselContent>
+
+                    <CarouselPrevious className="bg-black/40 text-white w-10 h-10 hover:bg-black/60 border-none" />
+                    <CarouselNext className="bg-black/40 text-white w-10 h-10 hover:bg-black/60 border-none" />
+                </Carousel>
             </div>
 
+            <div className="w-full flex flex-wrap justify-center gap-3 px-5 mt-10 mb-5">
+                {screenShorts.map((item: ScreenShortType, index: number) => (
+                    <div
+                        key={index}
+                        onClick={() => {
+                            setActiveIndex(index);
+                            api?.scrollTo(index);
+                        }}
+                        className={`cursor-pointer rounded-md overflow-hidden border-2 transition-all duration-200 
+                            ${index === activeIndex ? "border-primary scale-105" : "border-transparent opacity-70 hover:opacity-100"}
+                        `}
+                    >
+                        <Image
+                            src={getSrc(item)}
+                            width={120}
+                            height={80}
+                            alt={`thumb-${index}`}
+                            className="rounded-md object-cover w-[100px] md:w-[130px]"
+                        />
+                    </div>
+                ))}
+            </div>
         </div>
     );
 };

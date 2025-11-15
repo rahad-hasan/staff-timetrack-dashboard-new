@@ -98,7 +98,7 @@ const TestScreenModal = ({ screenShorts, modalOpen, setModalOpen }: any) => {
 
                 </div>
                 <div className=" w-full h-full lg:h-[90vh] flex flex-col justify-center">
-                    {/* Main Image with Nav */}
+
                     <div className="flex flex-col items-center justify-center relative">
                         <div className=" lg:w-[50%] ">
                             <Image
@@ -118,7 +118,7 @@ const TestScreenModal = ({ screenShorts, modalOpen, setModalOpen }: any) => {
                                 alt={`screenshot-${activeIndex + 1}`}
                             />
 
-                            {/* Prev/Next Buttons */}
+
                             <button
                                 onClick={handlePrev}
                                 className="absolute left-0 top-1/2 -translate-y-1/2 bg-black/70 text-white p-2 rounded-r-md hover:bg-black transition cursor-pointer"
