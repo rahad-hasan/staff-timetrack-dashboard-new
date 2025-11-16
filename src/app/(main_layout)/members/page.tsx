@@ -85,11 +85,9 @@ const TeamsPage = () => {
             {/* {
                 activeTab === "Members" && */}
                 <TeamsMemberTable></TeamsMemberTable>
+         
+                {/* <TeamsMemberTableSkeleton></TeamsMemberTableSkeleton> */}
             
-            {/* {
-                activeTab === "Members" &&
-                <TeamsMemberTableSkeleton></TeamsMemberTableSkeleton>
-            } */}
         </div >
     );
 };

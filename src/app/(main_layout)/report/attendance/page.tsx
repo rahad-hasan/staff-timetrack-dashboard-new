@@ -5,7 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import AttendanceTable from "@/components/Report/Attendance/AttendanceTable";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import HeadingComponent from "@/components/Common/HeadingComponent";
-// import AttendanceTableSkeleton from "@/skeleton/report/Attendance/AttendanceTableSkeleton";
+import AttendanceTableSkeleton from "@/skeleton/report/Attendance/AttendanceTableSkeleton";
 
 const AttendancePage = () => {
     const users = [
@@ -65,7 +65,7 @@ const AttendancePage = () => {
                 </div>
             </div>
             <AttendanceTable></AttendanceTable>
-            {/* <AttendanceTableSkeleton></AttendanceTableSkeleton> */}
+            <AttendanceTableSkeleton></AttendanceTableSkeleton>
         </div>
     );
 };

@@ -9,7 +9,7 @@ const TeamsMemberTableSkeleton = () => {
     const MIN_TABLE_WIDTH = 'min-w-[1200px]';
 
     return (
-        <div className="border-2 border-borderColor dark:border-darkBorder rounded-lg p-5 animate-pulse max-w-full">
+        <div className="border-2 border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg rounded-lg p-5 animate-pulse max-w-full">
             
             <div className="mb-5">
                 <PlaceholderBlock className="h-6 w-24" /> 

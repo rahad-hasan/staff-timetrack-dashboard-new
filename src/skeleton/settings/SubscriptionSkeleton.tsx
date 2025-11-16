@@ -7,7 +7,7 @@ const SubscriptionSkeleton = () => {
 
         <div
             key={index}
-            className="flex flex-col justify-between border rounded-lg shadow overflow-hidden h-full mt-5 dark:border-darkBorder"
+            className="flex flex-col justify-between border rounded-lg shadow overflow-hidden h-full mt-5 dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg"
         >
             {/* Top Section (Price, Button) */}
             <div className="px-6 pt-6">

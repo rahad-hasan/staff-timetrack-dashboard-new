@@ -10,7 +10,7 @@ const TimeAndActivitiesTableSkeleton = () => {
     const MIN_TABLE_WIDTH = 'min-w-[600px]'; 
 
     return (
-        <div className="mt-5 border-2 p-3 border-borderColor dark:border-darkBorder rounded-[12px] animate-pulse max-w-full">
+        <div className="mt-5 border-2 p-3 border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg rounded-[12px] animate-pulse max-w-full">
             <div className="mb-5">
                 <PlaceholderBlock className="h-6 w-32" /> 
             </div>
