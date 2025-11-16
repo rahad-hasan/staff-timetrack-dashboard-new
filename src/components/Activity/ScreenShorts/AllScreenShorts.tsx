@@ -4,8 +4,8 @@ import screenshort2 from "../../../assets/dashboard/screenshort2.png";
 import screenshort3 from "../../../assets/dashboard/screenshort3.png";
 import Image, { StaticImageData } from "next/image";
 import { useState } from "react";
-import TestScreenModal from "./TestScreenModal";
 import { AnimatePresence } from 'framer-motion';
+import ScreenShortsModal from "./ScreenShortsModal";
 
 const AllScreenShorts = () => {
     console.log('AllScreenShorts');
@@ -204,6 +204,12 @@ const AllScreenShorts = () => {
         {
             screenShort: screenshort3
         },
+        {
+            screenShort: screenshort2
+        },
+        {
+            screenShort: screenshort3
+        },
     ]
 
     return (
@@ -263,7 +269,7 @@ const AllScreenShorts = () => {
             {/* Wrap the modal with AnimatePresence for exit animation */}
             <AnimatePresence>
                 {modalOpen && (
-                    <TestScreenModal
+                    <ScreenShortsModal
                         screenShorts={dummyScreenShorts}
                         modalOpen={modalOpen}
                         setModalOpen={setModalOpen}

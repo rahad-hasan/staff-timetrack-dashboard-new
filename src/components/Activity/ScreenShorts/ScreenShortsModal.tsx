@@ -9,6 +9,7 @@ import {
     CarouselNext,
     CarouselPrevious,
 } from "@/components/ui/carousel";
+import { motion } from "framer-motion";
 
 type ScreenShortType = string | StaticImageData | { screenShort: string | StaticImageData };
 
@@ -23,6 +24,13 @@ const ScreenShortsModal = ({ screenShorts, modalOpen, setModalOpen }: any) => {
     const [zoom, setZoom] = useState(1);
     const [api, setApi] = useState<any>(null);
     const modalRef = useRef<HTMLDivElement>(null);
+
+    let start = activeIndex - 1;
+    if (start < 0) start = 0;
+    if (start > screenShorts.length - 4) start = screenShorts.length - 4;
+
+    const visibleThumbs = screenShorts.slice(start, start + 4);
+
 
     const toggleFullscreen = () => {
         if (!modalRef.current) return;
@@ -46,19 +54,23 @@ const ScreenShortsModal = ({ screenShorts, modalOpen, setModalOpen }: any) => {
     if (!modalOpen) return null;
 
     return (
-        <div
+        <motion.div
             ref={modalRef}
+            initial={{ opacity: 0, scale: 0.7 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.5 }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
             className="fixed inset-0 z-50 bg-black/90 flex flex-col justify-center items-center"
         >
             <div className="absolute top-5 right-5 flex gap-5">
-                <ZoomOut onClick={() => setZoom(z => Math.max(1, z - 0.25))} className="text-white cursor-pointer h-8" />
-                <ZoomIn onClick={() => setZoom(z => Math.min(3, z + 0.25))} className="text-white cursor-pointer h-8" />
+                <ZoomOut onClick={() => setZoom(z => Math.max(.75, z - 0.25))} className="text-white cursor-pointer h-8" />
+                <ZoomIn onClick={() => setZoom(z => Math.min(1.25, z + 0.25))} className="text-white cursor-pointer h-8" />
                 <Fullscreen onClick={toggleFullscreen} className="text-white cursor-pointer h-8" />
                 <Download onClick={handleDownload} className="text-white cursor-pointer h-8" />
                 <X onClick={() => setModalOpen(false)} className="text-white cursor-pointer h-8" />
             </div>
 
-            <div className="w-full px-10 sm:px-16 mt-10">
+            <div className="w-full px-0 sm:px-16 mt-10">
                 <Carousel
                     opts={{ loop: true, align: "center" }}
                     setApi={(inst) => {
@@ -77,7 +89,7 @@ const ScreenShortsModal = ({ screenShorts, modalOpen, setModalOpen }: any) => {
                                     width={1400}
                                     height={900}
                                     alt={`screenshot-${index}`}
-                                    className="rounded-xl max-h-[78vh] object-contain"
+                                    className="max-h-[78vh] object-contain"
                                     style={{
                                         transform: `scale(${zoom})`,
                                         transition: "0.25s ease",
@@ -87,34 +99,43 @@ const ScreenShortsModal = ({ screenShorts, modalOpen, setModalOpen }: any) => {
                         ))}
                     </CarouselContent>
 
-                    <CarouselPrevious className="bg-black/40 text-white w-10 h-10 hover:bg-black/60 border-none" />
-                    <CarouselNext className="bg-black/40 text-white w-10 h-10 hover:bg-black/60 border-none" />
+                    <CarouselPrevious className="bg-black/40 text-white w-10 h-10 hidden sm:block hover:bg-black/60 border-none" />
+                    <CarouselNext className="bg-black/40 text-white w-10 h-10 hidden sm:block hover:bg-black/60 border-none" />
                 </Carousel>
             </div>
 
             <div className="w-full flex flex-wrap justify-center gap-3 px-5 mt-10 mb-5">
-                {screenShorts.map((item: ScreenShortType, index: number) => (
-                    <div
-                        key={index}
-                        onClick={() => {
-                            setActiveIndex(index);
-                            api?.scrollTo(index);
-                        }}
-                        className={`cursor-pointer rounded-md overflow-hidden border-2 transition-all duration-200 
-                            ${index === activeIndex ? "border-primary scale-105" : "border-transparent opacity-70 hover:opacity-100"}
-                        `}
-                    >
-                        <Image
-                            src={getSrc(item)}
-                            width={120}
-                            height={80}
-                            alt={`thumb-${index}`}
-                            className="rounded-md object-cover w-[100px] md:w-[130px]"
-                        />
-                    </div>
-                ))}
+                {visibleThumbs.map((item: ScreenShortType, i: number) => {
+                    const realIndex = start + i;
+
+                    const handleThumbClick = () => {
+                        setActiveIndex(realIndex);
+                        api?.scrollTo(realIndex);
+                    };
+
+                    return (
+                        <motion.div
+                            layout
+                            key={realIndex}
+                            onClick={handleThumbClick}
+                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                            className={`cursor-pointer rounded-md overflow-hidden border-2 
+                            ${realIndex === activeIndex ? "border-primary scale-105" : "border-transparent opacity-70 hover:opacity-100"}
+                            `}
+                        >
+                            <Image
+                                src={getSrc(item)}
+                                width={120}
+                                height={80}
+                                alt={`thumb-${realIndex}`}
+                                className="rounded-md object-cover w-[100px] md:w-[130px]"
+                            />
+                        </motion.div>
+                    );
+                })}
             </div>
-        </div>
+
+        </motion.div>
     );
 };
 

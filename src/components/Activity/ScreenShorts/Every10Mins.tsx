@@ -13,6 +13,7 @@ import { useState } from "react";
 import ScreenShortsModal from "./ScreenShortsModal";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import ScreenShortsDeleteReason from "./ScreenShortsDeleteReason";
+import { AnimatePresence } from "framer-motion";
 
 const Every10Mins = () => {
     console.log('Every10Mins');
@@ -220,7 +221,7 @@ const Every10Mins = () => {
         {
             screenShort: screenshort3
         },
-                {
+        {
             screenShort: screenshort2
         },
         {
@@ -371,11 +372,12 @@ const Every10Mins = () => {
                     </div>
                 ))}
             </div>
-
-            {
-                modalOpen &&
-                <ScreenShortsModal screenShorts={dummyScreenShorts} modalOpen={modalOpen} setModalOpen={setModalOpen}></ScreenShortsModal>
-            }
+            <AnimatePresence>
+                {
+                    modalOpen &&
+                    <ScreenShortsModal screenShorts={dummyScreenShorts} modalOpen={modalOpen} setModalOpen={setModalOpen}></ScreenShortsModal>
+                }
+            </AnimatePresence>
         </>
     );
 };
