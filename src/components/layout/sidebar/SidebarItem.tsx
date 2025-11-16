@@ -4,6 +4,27 @@ import Link from "next/link";
 import clsx from "clsx";
 import { motion, AnimatePresence } from "framer-motion";
 
+const containerVariants = {
+  collapsed: {
+    height: 0,
+    opacity: 0,
+    transition: {
+      height: { duration: 0.2 },
+      opacity: { duration: 0.15 },
+    },
+  },
+  open: {
+    height: "auto",
+    opacity: 1,
+    transition: {
+      height: { duration: 0.25 },
+      opacity: { duration: 0.2 },
+      staggerChildren: 0.06,
+      delayChildren: 0.03,
+    },
+  },
+};
+
 const SidebarItem = ({
   icon: Icon,
   label,
@@ -51,13 +72,10 @@ const SidebarItem = ({
         {isOpen && children && (
           <motion.div
             key="content"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{
-              duration: 0.25,
-              ease: [0.4, 0, 0.2, 1],
-            }}
+            variants={containerVariants}
+            initial="collapsed"
+            animate="open"
+            exit="collapsed"
             className="overflow-hidden"
           >
             {children}
