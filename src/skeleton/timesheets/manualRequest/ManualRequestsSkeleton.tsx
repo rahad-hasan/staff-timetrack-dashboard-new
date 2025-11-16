@@ -1,7 +1,7 @@
 
 const ManualRequestsSkeleton = () => {
     return (
-        <div className="p-4 rounded-xl  border-2 border-borderColor dark:border-darkBorder">
+        <div className="p-4 rounded-xl  border-2 border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg">
             <div className="space-y-2  w-full overflow-x-auto">
                 {Array.from({ length: 8 }).map((_, i) => (
                     <div key={i} className="flex items-center w-full p-3  border-b border-gray-100 dark:border-darkBorder">
