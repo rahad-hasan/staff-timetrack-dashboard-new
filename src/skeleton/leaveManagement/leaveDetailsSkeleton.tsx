@@ -42,7 +42,7 @@ const leaveDetailsSkeleton = () => {
                             <div className="w-[15%]">Total Leave</div>
                             <div className="w-[15%]">Casual Leave</div>
                             <div className="w-[20%]">Sick Leave</div>
-                            <div className="w-[10%] ">Earned Leave</div>
+                            <div className="w-[10%] ">Paid Leave</div>
                             <div className="w-[10%] ">Available Leave</div>
                         </div>
 

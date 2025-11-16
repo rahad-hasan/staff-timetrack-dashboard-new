@@ -1,6 +1,6 @@
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import LeaveRequestTable from "@/components/LeaveManagement/LeaveRequest/LeaveRequestTable";
-import LeaveRequestTableSkeleton from "@/skeleton/leaveManagement/LeaveRequestTableSkeleton";
+// import LeaveRequestTableSkeleton from "@/skeleton/leaveManagement/LeaveRequestTableSkeleton";
 
 const LeaveRequest = () => {
     return (
@@ -9,7 +9,7 @@ const LeaveRequest = () => {
                 <HeadingComponent heading="Leave Management" subHeading="All the teams member leave details are displayed here"></HeadingComponent>
             </div>
             <LeaveRequestTable></LeaveRequestTable>
-            <LeaveRequestTableSkeleton></LeaveRequestTableSkeleton>
+            {/* <LeaveRequestTableSkeleton></LeaveRequestTableSkeleton> */}
         </div>
     );
 };
