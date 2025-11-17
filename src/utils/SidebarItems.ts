@@ -53,7 +53,7 @@ export const sidebarItems = [
     },
     {
         icon: BriefcaseBusiness,
-        label: 'Project Management',
+        label: 'Projects',
         key: 'project-management',
         collapsible: true,
         subItems: [
@@ -93,7 +93,7 @@ export const othersSidebarItems = [
     },
     {
         icon: AlarmClock,
-        label: 'Leave Management',
+        label: 'Leaves',
         key: '/leave-management',
         collapsible: true,
         subItems: [
