@@ -23,7 +23,7 @@ const Header = () => {
     console.log('header rendered');
 
     return (
-        <div className=" border-b-2 border-borderColor dark:border-darkBorder py-3 md:py-3.5 2xl:py-5 px-3 md:px-5 flex items-center justify-between rounded-t-lg dark:bg-darkPrimaryBg">
+        <div className=" border-b border-borderColor dark:border-darkBorder py-3 md:py-3.5 2xl:py-5 px-3 md:px-5 flex items-center justify-between rounded-t-lg dark:bg-darkPrimaryBg">
             <div>
                 <Popover>
                     <PopoverTrigger asChild>

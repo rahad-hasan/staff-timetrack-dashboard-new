@@ -221,7 +221,7 @@ const UnusualActivityTable = () => {
     });
 
     return (
-        <div className="border-2 border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg p-3 rounded-[12px] overflow-x-auto mt-5">
+        <div className="border border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg p-3 rounded-[12px] overflow-x-auto mt-5">
             <Table>
                 <TableHeader>
                     {table.getHeaderGroups().map((headerGroup) => (

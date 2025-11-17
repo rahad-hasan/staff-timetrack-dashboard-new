@@ -13,7 +13,7 @@ const Activity = () => {
     // const labels = ['100%', '80%', '60%', '40%', '20%'];
     const labels = ['20%', '40%', '60%', '80%', '100%'];
     return (
-        <div className=" border-2 border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg py-3 px-5 rounded-[12px] w-full">
+        <div className=" border border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg py-3 px-5 rounded-[12px] w-full">
             <div className=" flex gap-3 items-center mb-8">
                 <h2 className="text-base sm:text-lg text-headingTextColor dark:text-darkTextPrimary">Activity</h2>
                 <Info size={18} className=" cursor-pointer" />

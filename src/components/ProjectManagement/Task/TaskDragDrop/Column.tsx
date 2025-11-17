@@ -20,7 +20,7 @@ const Column = ({ id, label, task }: { id: string; label: string; task: ITask[] 
     return (
         <div
             ref={setNodeRef}
-            className="bg-[#f6f7f9] dark:bg-darkPrimaryBg border-2 border-borderColor dark:border-darkBorder rounded-lg p-4 min-h-[400px]"
+            className="bg-[#f6f7f9] dark:bg-darkPrimaryBg border border-borderColor dark:border-darkBorder rounded-lg p-4 min-h-[400px]"
         >
 
             <div className="flex items-center gap-2 mb-4">

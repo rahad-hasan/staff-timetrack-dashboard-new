@@ -9,6 +9,9 @@
   --color-borderColor: #dce3e3;
   --color-textGray: #505553;
 
+  /* border */
+
+
   /* Bg Color Combination */
   --color-bgPrimary: #F6F6F6;
   --color-bgSecondary: #ffffff;
@@ -197,6 +200,11 @@
   --shadow-lg: var(--shadow-lg);
   --shadow-xl: var(--shadow-xl);
   --shadow-2xl: var(--shadow-2xl);
+}
+@layer base {
+  :root {
+    --tw-border-width: 5px; /* Change default border width */
+  }
 }
 
 @layer base {

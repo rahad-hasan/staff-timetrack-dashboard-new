@@ -9,10 +9,10 @@ const TeamsMemberTableSkeleton = () => {
     const MIN_TABLE_WIDTH = 'min-w-[1200px]';
 
     return (
-        <div className="border-2 border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg rounded-lg p-5 animate-pulse max-w-full">
-            
+        <div className="border border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg rounded-lg p-5 animate-pulse max-w-full">
+
             <div className="mb-5">
-                <PlaceholderBlock className="h-6 w-24" /> 
+                <PlaceholderBlock className="h-6 w-24" />
             </div>
 
             <div className="w-full overflow-x-auto">
@@ -20,7 +20,7 @@ const TeamsMemberTableSkeleton = () => {
 
                     <div className="flex border-b border-gray-200 dark:border-darkBorder py-3 text-sm font-semibold text-gray-500 px-1">
                         <div className="w-[3%] flex items-center pr-2">
-                             <PlaceholderBlock className="h-5 w-5 bg-gray-300 rounded-sm" /> 
+                            <PlaceholderBlock className="h-5 w-5 bg-gray-300 rounded-sm" />
                         </div>
                         <div className="w-[20%]">Member name</div>
                         <div className="w-[10%]">Status</div>
@@ -42,7 +42,7 @@ const TeamsMemberTableSkeleton = () => {
 
                                 <div className="w-[20%] flex items-center gap-2">
                                     <PlaceholderBlock className="w-8 h-8 rounded-full" />
-                                    <PlaceholderBlock className="h-4 w-3/5" /> 
+                                    <PlaceholderBlock className="h-4 w-3/5" />
                                 </div>
 
                                 <div className="w-[10%] flex justify-start">

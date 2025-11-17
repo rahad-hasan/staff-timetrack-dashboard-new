@@ -32,7 +32,7 @@ export default function Subscription() {
         {
             name: "Premium",
             price: "$59",
-            period: "per month", 
+            period: "per month",
             description: "A plan that grows with your business.",
             color: "from-[#aae5c5] from-10% to-white dark:to-darkPrimaryBg to-80%",
             buttonColor: " bg-primary text-white cursor-pointer",
@@ -68,7 +68,7 @@ export default function Subscription() {
     const currentSubscription = "Premium";
 
     return (
-        <div className="border-2 border-borderColor rounded-lg p-3 sm:p-4 bg-white dark:bg-darkPrimaryBg dark:border-darkBorder mt-4">
+        <div className="border border-borderColor rounded-lg p-3 sm:p-4 bg-white dark:bg-darkPrimaryBg dark:border-darkBorder mt-4">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
                 <div>
                     <h2 className="text-xl mb-1.5 font-semibold text-headingTextColor dark:text-darkTextPrimary">Subscription</h2>

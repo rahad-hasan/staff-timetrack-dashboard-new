@@ -41,7 +41,7 @@ const Configuration = () => {
     }
 
     return (
-        <div className="rounded-lg border-2 border-borderColor p-3 md:p-4 mt-4 bg-white dark:bg-darkSecondaryBg dark:border-darkBorder">
+        <div className="rounded-lg border border-borderColor p-3 md:p-4 mt-4 bg-white dark:bg-darkSecondaryBg dark:border-darkBorder">
             {/* <h2 className="text-lg font-semibold mb-6 text-textGray dark:text-darkTextPrimary">Notifications Preferences</h2> */}
 
             {sections.map((section, idx) => (

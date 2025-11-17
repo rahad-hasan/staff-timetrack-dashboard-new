@@ -71,7 +71,7 @@ const VerificationCode = () => {
                                     <input
                                         {...props}
                                         style={{ width: width }}
-                                        className="responsive-otp-input w-12 h-10 md:h-12 border-2 border-borderColor dark:border-darkBorder rounded-md text-center text-lg focus:border-primary focus:outline-none"
+                                        className="responsive-otp-input w-12 h-10 md:h-12 border border-borderColor dark:border-darkBorder rounded-md text-center text-lg focus:border-primary focus:outline-none"
                                     />
                                 )}
                             />

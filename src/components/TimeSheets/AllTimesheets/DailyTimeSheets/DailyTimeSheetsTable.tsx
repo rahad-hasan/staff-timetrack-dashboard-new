@@ -138,7 +138,7 @@ const DailyTimeSheetsTable = () => {
                 const manual = row.getValue("manual") as string;
                 return (
                     <div className="flex items-center gap-2">
-                        <span>{manual ? <Check className=" text-primary border-2 border-primary rounded-full p-0.5" /> : ''}</span>
+                        <span>{manual ? <Check className=" text-primary border border-primary rounded-full p-0.5" /> : ''}</span>
                     </div>
                 );
             },
@@ -188,7 +188,7 @@ const DailyTimeSheetsTable = () => {
     });
 
     return (
-        <div className="border-2 border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg p-3 rounded-[12px]">
+        <div className="border border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg p-3 rounded-[12px]">
             <Table>
                 <TableHeader>
                     {table.getHeaderGroups().map(headerGroup => (

@@ -96,22 +96,22 @@ const CalenderTable = () => {
                                                     {cell.event.length >= 1 && (
                                                         <Tooltip>
                                                             <Dialog>
-                                                              
-                                                                    <DialogTrigger asChild>
-                                                                        <TooltipTrigger asChild>
+
+                                                                <DialogTrigger asChild>
+                                                                    <TooltipTrigger asChild>
 
 
-                                                                            <div
-                                                                                className={`${pillBaseClasses} bg-yellow-100 text-sm sm:text-base text-start text-yellow-800 border-l-4 border-yellow-500`}
-                                                                            >
-                                                                                {cell.event[0]}
-                                                                            </div>
+                                                                        <div
+                                                                            className={`${pillBaseClasses} bg-yellow-100 text-sm sm:text-base text-start text-yellow-800 border-l-4 border-yellow-500`}
+                                                                        >
+                                                                            {cell.event[0]}
+                                                                        </div>
 
 
-                                                                        </TooltipTrigger>
-                                                                    </DialogTrigger>
-                                                                    <EditEventModal></EditEventModal>
-                                                           
+                                                                    </TooltipTrigger>
+                                                                </DialogTrigger>
+                                                                <EditEventModal></EditEventModal>
+
                                                             </Dialog>
                                                             <TooltipContent
                                                                 className="bg-[#868686] dark:bg-darkPrimaryBg dark:fill-darkPrimaryBg shadow-xl rounded-lg px-5 py-4 max-w-xs"
@@ -132,11 +132,11 @@ const CalenderTable = () => {
                                                                             width={40}
                                                                             height={40}
                                                                             alt={`Assignee ${index + 1}`}
-                                                                            className="rounded-full w-10 h-10 -ml-3 first:ml-0 border-2 border-white dark:border-darkBorder shadow-sm"
+                                                                            className="rounded-full w-10 h-10 -ml-3 first:ml-0 border border-white dark:border-darkBorder shadow-sm"
                                                                         />
                                                                     ))}
 
-                                                                    <div className="w-10 h-10 -ml-3 text-headingTextColor rounded-full bg-[#ede7ff] flex items-center justify-center text-sm font-semibold  border-2 border-white shadow-sm">
+                                                                    <div className="w-10 h-10 -ml-3 text-headingTextColor rounded-full bg-[#ede7ff] flex items-center justify-center text-sm font-semibold  border border-white shadow-sm">
                                                                         10+
                                                                     </div>
                                                                 </div>

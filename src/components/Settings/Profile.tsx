@@ -47,7 +47,7 @@ const Profile = () => {
     }
 
     return (
-        <div className=" rounded-lg border-2 border-borderColor dark:border-darkBorder p-4 mt-4">
+        <div className=" rounded-lg border border-borderColor dark:border-darkBorder p-4 mt-4">
             <h2 className=" text-lg mb-4 text-headingTextColor dark:text-darkTextPrimary">Basic Information</h2>
             <div className="flex items-center gap-5 mb-6">
                 <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden">

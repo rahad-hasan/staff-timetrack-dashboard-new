@@ -11,7 +11,7 @@ const TrialCart = () => {
 
     if (!visible) return null;
     return (
-        <div className=" my-8  mx-4">
+        <div className=" my-8  mx-3.5">
             <div className="bg-bgPrimary dark:bg-darkPrimaryBg shadow-sm rounded-2xl border border-gray-200 dark:border-none dark:shadow-textPrimaryBg p-5 relative">
                 <button
                     onClick={() => setVisible(false)}
@@ -34,7 +34,7 @@ const TrialCart = () => {
                             className="h-2 bg-primary rounded-full relative"
                             style={{ width: `${progress}%` }}
                         >
-                            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-white border-2 border-primary rounded-full"></div>
+                            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-white border border-primary rounded-full"></div>
                         </div>
                     </div>
                     <p className="text-sm text-subTextColor dark:text-darkTextSecondary mt-2">

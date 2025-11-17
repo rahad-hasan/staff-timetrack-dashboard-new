@@ -256,7 +256,7 @@ const AppNameTable = () => {
     });
 
     return (
-        <div className="mt-5 border-2 border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg rounded-[12px]">
+        <div className="mt-5 border border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg rounded-[12px]">
 
             <Table>
                 <TableHeader>

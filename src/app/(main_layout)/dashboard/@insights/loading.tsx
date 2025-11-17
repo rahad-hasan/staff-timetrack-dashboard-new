@@ -2,7 +2,7 @@
 const loading = () => {
 
     return (
-        <div className="border-2 border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg p-3 rounded-[12px] w-full animate-pulse">
+        <div className="border border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg p-3 rounded-[12px] w-full animate-pulse">
             <div className="flex justify-between items-center">
                 <div className="h-5 w-24 rounded bg-gray-200 dark:bg-gray-700"></div>
                 <div className="flex items-center gap-3">

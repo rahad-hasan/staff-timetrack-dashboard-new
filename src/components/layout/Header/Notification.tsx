@@ -105,7 +105,7 @@ const Notification = () => {
                         alt="notification bell"
                     />
                     {unreadCount > 0 && (
-                        <span className="absolute -top-1 -right-1.5 w-4 h-4 text-[10px] font-bold text-white bg-red-600 rounded-full flex items-center justify-center border-2 border-white dark:border-red-600">
+                        <span className="absolute -top-1 -right-1.5 w-4 h-4 text-[10px] font-bold text-white bg-red-600 rounded-full flex items-center justify-center border border-white dark:border-red-600">
                             {unreadCount}
                         </span>
                     )}

@@ -4,7 +4,7 @@ const WeeklyTimeSheetsSkeleton = () => {
 
     return (
         <div className="pt-4">
-            <div className="overflow-x-auto rounded-2xl border-2 border-borderColor dark:border-darkBorder">
+            <div className="overflow-x-auto rounded-2xl border border-borderColor dark:border-darkBorder">
                 <table className="min-w-full divide-y divide-gray-200 dark:divide-darkBorder">
                     <thead className=" ">
                         <tr className="">
@@ -18,13 +18,13 @@ const WeeklyTimeSheetsSkeleton = () => {
                                     <div className="bg-gray-200 dark:bg-gray-700 rounded-md h-3 w-8 mx-auto" />
                                 </th>
                             ))}
-                            
+
                             <th className="px-4 py-5 text-center min-w-[120px]">
                                 <div className="bg-gray-200 dark:bg-gray-700 rounded-md h-4 w-20 mx-auto" />
                             </th>
                         </tr>
                     </thead>
-                    
+
                     <tbody className=" divide-y divide-gray-200 dark:divide-darkBorder">
                         {Array.from({ length: NUM_ROWS }).map((_, rowIndex) => (
                             <tr key={rowIndex} className="animate-pulse">

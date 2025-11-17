@@ -119,7 +119,7 @@ const ScreenShortsModal = ({ screenShorts, modalOpen, setModalOpen }: any) => {
                             key={realIndex}
                             onClick={handleThumbClick}
                             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                            className={`cursor-pointer rounded-md overflow-hidden border-2 
+                            className={`cursor-pointer rounded-md overflow-hidden border 
                             ${realIndex === activeIndex ? "border-primary scale-105" : "border-transparent opacity-70 hover:opacity-100"}
                             `}
                         >

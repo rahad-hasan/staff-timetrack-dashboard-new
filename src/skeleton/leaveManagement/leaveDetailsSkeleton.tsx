@@ -28,7 +28,7 @@ const leaveDetailsSkeleton = () => {
                 ))}
             </div>
 
-            <div className="border-2 border-borderColor dark:border-darkBorder rounded-lg p-5 animate-pulse max-w-full mt-5">
+            <div className="border border-borderColor dark:border-darkBorder rounded-lg p-5 animate-pulse max-w-full mt-5">
 
                 <div className="mb-5">
                     <PlaceholderBlock className="h-6 w-24" />

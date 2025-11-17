@@ -14,13 +14,13 @@ const loading = () => {
             {[...Array(3)].map((_, index) => (
                 <div
                     key={index}
-                    className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-600 border-2 border-white"
-                    style={index > 0 ? { marginLeft: '-12px' } : {}} 
+                    className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-600 border border-white"
+                    style={index > 0 ? { marginLeft: '-12px' } : {}}
                 ></div>
             ))}
 
-            <div 
-                className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 border-2 border-white flex items-center justify-center text-xs text-transparent font-semibold"
+            <div
+                className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 border border-white flex items-center justify-center text-xs text-transparent font-semibold"
                 style={{ marginLeft: '-12px' }}
             >
                 10+
@@ -29,8 +29,8 @@ const loading = () => {
     );
 
     return (
-        <div className="mt-5 border-2 border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg p-3 rounded-[12px] animate-pulse">
-            
+        <div className="mt-5 border border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg p-3 rounded-[12px] animate-pulse">
+
             <div className="flex justify-between items-center mb-5">
                 <PlaceholderBlock className="h-6 w-36" />
                 <div className="flex items-center gap-3">
