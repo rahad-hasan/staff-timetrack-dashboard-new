@@ -53,13 +53,13 @@ const UnusualActivity = () => {
 
                 <div className=" flex items-center gap-1.5 sm:gap-3">
                     <button
-                        className={`px-3 sm:px-4 py-2 sm:py-2 flex items-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 text-gray-600 hover:text-textGray dark:bg-darkSecondaryBg dark:text-darkTextSecondary border border-borderColor"
+                        className={`px-3 sm:px-4 py-2 sm:py-[7px] flex items-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 text-gray-600 hover:text-textGray bg-bgSecondary dark:bg-darkPrimaryBg dark:text-darkTextSecondary border border-borderColor"
                                 `}
                     >
                         <Bell size={20} /> <span className=" hidden sm:block">Smart Notification </span>
                     </button>
                     <button
-                        className={`px-3 py-2 flex items-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 text-gray-600 dark:border-darkBorder hover:text-textGray border border-borderColor "
+                        className={`px-3 py-2 flex items-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 text-gray-600 dark:border-darkBorder hover:text-textGray border border-borderColor bg-bgSecondary dark:bg-darkPrimaryBg"
                                 `}
                     >
                         <Settings className=" text-primary" size={20} />

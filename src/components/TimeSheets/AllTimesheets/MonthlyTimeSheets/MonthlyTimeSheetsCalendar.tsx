@@ -94,22 +94,24 @@ const MonthlyTimeSheetsCalendar = () => {
                         <h2 className="text-headingTextColor dark:text-darkTextPrimary">75.56%</h2>
                     </div>
                 </div>
-                <div className=" flex items-center gap-2">
+                <div className=" flex items-center gap-2 ">
                     <p className=" font-semibold text-headingTextColor dark:text-darkTextPrimary">Select Option: </p>
-
-                    <Select onValueChange={(value) => setViewType(value)} defaultValue="Hours">
-                        <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder="Select An Option" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectGroup>
-                                <SelectItem className=" cursor-pointer" value="Hours">Hours</SelectItem>
-                                <SelectItem className=" cursor-pointer" value="Activity">Activity</SelectItem>
-                            </SelectGroup>
-                        </SelectContent>
-                    </Select>
+                    <div className=" bg-bgSecondary dark:bg-darkPrimaryBg rounded-lg">
+                        <Select onValueChange={(value) => setViewType(value)} defaultValue="Hours">
+                            <SelectTrigger className="w-[180px]">
+                                <SelectValue placeholder="Select An Option" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectGroup className="bg-bgSecondary dark:bg-darkSecondaryBg">
+                                    <SelectItem className=" cursor-pointer" value="Hours">Hours</SelectItem>
+                                    <SelectItem className=" cursor-pointer" value="Activity">Activity</SelectItem>
+                                </SelectGroup>
+                            </SelectContent>
+                        </Select>
+                    </div>
                 </div>
             </div>
+            
             <div className=" overflow-auto ">
                 <div className="grid grid-cols-7 gap-2 min-w-[750px]">
                     {dayHeaders.map((day, index) => {

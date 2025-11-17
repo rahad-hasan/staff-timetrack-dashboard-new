@@ -159,7 +159,7 @@ const ScreenShorts = () => {
                     <Dialog>
                         <form>
                             <DialogTrigger asChild>
-                                <Button className="dark:text-darkTextPrimary bg-bgPrimary" variant={'outline2'}>
+                                <Button className="dark:text-darkTextPrimary bg-bgSecondary h-10" variant={'outline2'}>
                                     <NotepadText className=" text-sm md:text-base dark:text-darkTextPrimary" /> All Notes
                                 </Button>
                             </DialogTrigger>
