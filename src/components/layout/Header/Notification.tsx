@@ -112,7 +112,7 @@ const Notification = () => {
 
                 </div>
             </PopoverTrigger>
-            <PopoverContent side={'top'} align={'center'} className="w-80 p-0 shadow-lg mt-2">
+            <PopoverContent side={'top'} align={'center'} className="w-80 sm:w-[400px] p-0 shadow-lg mt-2">
                 <div className="p-4">
                     <h2 className="text-lg font-semibold  text-headingTextColor dark:text-darkTextPrimary">
                         Notifications {unreadCount > 0 && <span>({unreadCount} new)</span>}
@@ -146,9 +146,7 @@ const Notification = () => {
                                         )}
                                     </p>
                                 </div>
-                                <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full dark:bg-darkPrimaryBg capitalize ${styles.color}`}>
-                                    {notification.type}
-                                </span>
+                       
                             </div>
                         );
                     })}

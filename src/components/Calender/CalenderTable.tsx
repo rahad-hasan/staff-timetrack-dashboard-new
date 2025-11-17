@@ -167,11 +167,23 @@ const CalenderTable = () => {
                                                         </div>
                                                     )}
 
-                                                    {cell.event.length > 2 && (
+                                                    {cell.event.length >= 3 && (
+                                                        <div className={`${pillBaseClasses} bg-pink-100 text-sm sm:text-base text-start text-pink-800 border-l-4 border-red-500`}>
+                                                            {cell.event[2]}
+                                                        </div>
+                                                    )}
+
+                                                    {cell.event.length >= 4 && (
+                                                        <div className={`${pillBaseClasses} bg-pink-100 text-sm sm:text-base text-start text-pink-800 border-l-4 border-red-500`}>
+                                                            {cell.event[3]}
+                                                        </div>
+                                                    )}
+
+                                                    {/* {cell.event.length > 2 && (
                                                         <div className={`${pillBaseClasses} bg-green-100 text-sm sm:text-base text-start text-green-800 border-l-4 border-green-500`}>
                                                             + {cell.event.length - 2} others
                                                         </div>
-                                                    )}
+                                                    )} */}
                                                 </>
                                             )}
                                         </div>

@@ -112,7 +112,7 @@ const NotificationItem = ({ notification }: { notification: (typeof notification
     return (
         <div
             key={notification.id}
-            className={`flex items-start gap-4 py-3 border-b dark:border-darkBorder transition-colors `}
+            className={`flex items-start gap-4 py-3 px-4 shadow dark:border-darkBorder transition-colors bg-bgSecondary dark:bg-darkSecondaryBg mb-2 rounded-lg`}
         >
             <div className="flex-shrink-0">
                 <Image
@@ -134,9 +134,9 @@ const NotificationItem = ({ notification }: { notification: (typeof notification
                     {notification.isNew && (
                         <span className="ml-2 inline-block w-2 h-2 bg-red-500 rounded-full align-middle" aria-label="New notification"></span>
                     )}
-                    <span className={`ml-4 text-[10px] font-semibold px-2 py-0.5 rounded-full dark:bg-darkPrimaryBg capitalize ${styles.color}`}>
+                    {/* <span className={`ml-4 text-[10px] font-semibold px-2 py-0.5 rounded-full dark:bg-darkPrimaryBg capitalize ${styles.color}`}>
                         {styles.icon} {notification.type}
-                    </span>
+                    </span> */}
                 </div>
             </div>
             <div className="flex-shrink-0 self-center">
@@ -165,7 +165,7 @@ const NotificationPage = () => {
 
             {notifications.length > 0 && (
                 <section className="mb-8">
-                    <div className=" rounded-lg overflow-hidden">
+                    <div className="  overflow-hidden">
                         {notifications.map(notification => (
                             <NotificationItem key={notification.id} notification={notification} />
                         ))}
