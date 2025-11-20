@@ -1,3 +1,4 @@
+"use client"
 import { useState } from "react";
 import {
     Tooltip,
@@ -11,6 +12,7 @@ import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
 
 const DailyTimeSheets = () => {
+    const [value, setValue] = useState("")
     const projects = [
         {
             value: "Time Tracker",
@@ -86,7 +88,7 @@ const DailyTimeSheets = () => {
                             <SlidersHorizontal className=" dark:text-darkTextPrimary" /> Filters
                         </Button>
                     </div> */}
-                    <SelectProjectDropDown projects={projects}></SelectProjectDropDown>
+                    <SelectProjectDropDown projects={projects} setValue={setValue} value={value}></SelectProjectDropDown>
                 </div>
                 <div className=" ">
                     {/* <Select onValueChange={setUser} value={user ?? undefined}>

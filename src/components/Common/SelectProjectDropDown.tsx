@@ -20,9 +20,8 @@ import { useState } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 
 
-const SelectProjectDropDown = ({ projects }: any) => {
+const SelectProjectDropDown = ({ projects, value, setValue }: any) => {
     const [open, setOpen] = useState(false)
-    const [value, setValue] = useState("")
 
     return (
         <Popover open={open} onOpenChange={setOpen}>

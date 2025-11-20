@@ -1,11 +1,12 @@
+"use client"
 import MonthlyTimeSheetsCalendar from "./MonthlyTimeSheetsCalendar";
-import { Button } from "../../../ui/button";
-import { SlidersHorizontal } from "lucide-react";
 import { useState } from "react";
 import MonthPicker from "@/components/Common/MonthPicker";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
+import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
 
 const MonthlyTimeSheets = () => {
+    const [value, setValue] = useState("")
     const users = [
         {
             value: "Juyed Ahmed",
@@ -33,7 +34,33 @@ const MonthlyTimeSheets = () => {
             avatar: "https://avatar.iran.liara.run/public/22",
         },
     ]
-
+    const projects = [
+        {
+            value: "Time Tracker",
+            label: "Time Tracker",
+            avatar: "https://picsum.photos/200/300",
+        },
+        {
+            value: "E-commerce",
+            label: "E-commerce",
+            avatar: "https://picsum.photos/200/300",
+        },
+        {
+            value: "Fack News Detection",
+            label: "Fack News Detection",
+            avatar: "https://picsum.photos/200/300",
+        },
+        {
+            value: "Travel Together",
+            label: "Travel Together",
+            avatar: "https://picsum.photos/200/300",
+        },
+        {
+            value: "Time Tracker2",
+            label: "Time Tracker2",
+            avatar: "https://picsum.photos/200/300",
+        },
+    ]
     // month picker
     const [selectedDate, setSelectedDate] = useState(new Date());
 
@@ -43,9 +70,7 @@ const MonthlyTimeSheets = () => {
                 <div className="flex gap-3">
                     <MonthPicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></MonthPicker>
                     <div className=" hidden md:block">
-                        <Button className="dark:text-darkTextPrimary bg-bgSecondary dark:bg-darkPrimaryBg" variant={'filter'}>
-                            <SlidersHorizontal className="dark:text-darkTextPrimary" /> Filters
-                        </Button>
+                        <SelectProjectDropDown projects={projects} setValue={setValue} value={value}></SelectProjectDropDown>
                     </div>
                 </div>
                 <SelectUserDropDown users={users}></SelectUserDropDown>

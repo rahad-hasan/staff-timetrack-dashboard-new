@@ -25,19 +25,19 @@ const LeaveDetails = () => {
             </div>
             <div className=" mt-4 grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-6 w-full 2xl:w-[70%]">
                 <div className=" border border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg rounded-xl w-full">
-                    <h2 className="text-headingTextColor py-7 sm:py-10 bg-[#fff5db] text-3xl font-semibold text-center border-b border-borderColor dark:border-darkBorder rounded-t-xl dark:text-darkSecondaryBg">30</h2>
+                    <h2 className="text-headingTextColor py-7 sm:py-10 bg-[#fff5db] dark:bg-darkSecondaryBg text-5xl font-extrabold text-center border-b border-borderColor dark:border-darkBorder rounded-t-xl dark:text-darkTextPrimary">30</h2>
                     <div className=" text-sm sm:text-base text-center py-2 text-headingTextColor dark:text-darkTextPrimary bg-bgSecondary dark:bg-darkPrimaryBg rounded-b-xl">Yearly Paid Leave</div>
                 </div>
                 <div className=" border border-borderColor dark:border-darkBorder rounded-xl w-full">
-                    <h2 className="text-headingTextColor py-7 sm:py-10 bg-[#eff7fe] text-3xl font-semibold text-center border-b border-borderColor dark:border-darkBorder rounded-t-xl dark:text-darkSecondaryBg">14</h2>
+                    <h2 className="text-headingTextColor py-7 sm:py-10 bg-[#eff7fe] dark:bg-darkSecondaryBg text-5xl font-extrabold text-center border-b border-borderColor dark:border-darkBorder rounded-t-xl dark:text-darkTextPrimary">14</h2>
                     <div className=" text-sm sm:text-base text-center py-2 text-headingTextColor dark:text-darkTextPrimary bg-bgSecondary dark:bg-darkPrimaryBg rounded-b-xl">Sick Leave</div>
                 </div>
                 <div className=" border border-borderColor dark:border-darkBorder rounded-xl w-full">
-                    <h2 className="text-headingTextColor py-7 sm:py-10 bg-[#ede7ff] text-3xl font-semibold text-center border-b border-borderColor dark:border-darkBorder rounded-t-xl dark:text-darkSecondaryBg">14</h2>
+                    <h2 className="text-headingTextColor py-7 sm:py-10 bg-[#ede7ff] dark:bg-darkSecondaryBg text-5xl font-extrabold text-center border-b border-borderColor dark:border-darkBorder rounded-t-xl dark:text-darkTextPrimary">14</h2>
                     <div className=" text-sm sm:text-base text-center py-2 text-headingTextColor dark:text-darkTextPrimary bg-bgSecondary dark:bg-darkPrimaryBg rounded-b-xl">Yearly Casual Leave</div>
                 </div>
                 <div className=" border border-borderColor dark:border-darkBorder rounded-xl w-full">
-                    <h2 className="text-headingTextColor py-7 sm:py-10 bg-[#fee6eb] text-3xl font-semibold text-center border-b border-borderColor dark:border-darkBorder rounded-t-xl dark:text-darkSecondaryBg">4</h2>
+                    <h2 className="text-headingTextColor py-7 sm:py-10 bg-[#fee6eb] dark:bg-darkSecondaryBg text-5xl font-extrabold text-center border-b border-borderColor dark:border-darkBorder rounded-t-xl dark:text-darkTextPrimary">4</h2>
                     <div className=" text-sm sm:text-base text-center py-2 text-headingTextColor dark:text-darkTextPrimary bg-bgSecondary dark:bg-darkPrimaryBg rounded-b-xl">Maternity leave</div>
                 </div>
             </div>
