@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { ILeaveRequest } from "@/global/globalTypes";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import RejectLeaveRequestModal from "./RejectLeaveRequestModal";
+import LeaveHistory from "./LeaveHistory";
 
 const LeaveRequestTable = () => {
     const [sorting, setSorting] = useState<SortingState>([])
@@ -79,7 +80,14 @@ const LeaveRequestTable = () => {
                 return (
                     <div className="flex items-center gap-2 min-w-[160px]">
                         <Image src={img} alt="profile" width={200} height={200} className="w-8 h-8 object-cover rounded-full" />
-                        <span className="">{name}</span>
+                        <Dialog>
+                            <form>
+                                <DialogTrigger asChild>
+                                    <span className=" cursor-pointer">{name}</span>
+                                </DialogTrigger>
+                                <LeaveHistory></LeaveHistory>
+                            </form>
+                        </Dialog>
                     </div>
                 )
             }
