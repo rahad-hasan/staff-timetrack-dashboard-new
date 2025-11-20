@@ -23,6 +23,7 @@ const LeaveRequestTable = () => {
                 to: "14 Oct,2025",
                 days: 4,
                 reason: "Going to my village",
+                leaveType: "Casual Leave",
                 availableLeave: 10
             },
             {
@@ -32,6 +33,7 @@ const LeaveRequestTable = () => {
                 to: "14 Oct,2025",
                 days: 3,
                 reason: "Going to my village",
+                leaveType: "Sick Leave",
                 availableLeave: 22
             },
             {
@@ -41,6 +43,7 @@ const LeaveRequestTable = () => {
                 to: "14 Oct,2025",
                 days: 5,
                 reason: "Going to my village",
+                leaveType: "Sick Leave",
                 availableLeave: 18
             },
             {
@@ -50,6 +53,7 @@ const LeaveRequestTable = () => {
                 to: "14 Oct,2025",
                 days: 2,
                 reason: "Going to my village",
+                leaveType: "Paid Leave",
                 availableLeave: 6
             }
         ],
@@ -76,6 +80,27 @@ const LeaveRequestTable = () => {
                     <div className="flex items-center gap-2 min-w-[160px]">
                         <Image src={img} alt="profile" width={200} height={200} className="w-8 h-8 object-cover rounded-full" />
                         <span className="">{name}</span>
+                    </div>
+                )
+            }
+        },
+        {
+            accessorKey: "leaveType",
+            header: () => {
+                return (
+                    <div>
+                        <p>
+
+                            leave Type
+                        </p>
+                    </div>
+                )
+            },
+            cell: ({ row }) => {
+                const leaveType = row.getValue("leaveType") as string;
+                return (
+                    <div className="flex flex-col">
+                        <span className="">{leaveType}</span>
                     </div>
                 )
             }

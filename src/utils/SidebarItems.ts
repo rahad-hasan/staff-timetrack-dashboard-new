@@ -46,7 +46,7 @@ export const sidebarItems = [
         key: '/insights',
         collapsible: true,
         subItems: [
-            { label: 'Highlight', key: '/insights/highlight' },
+            // { label: 'Highlight', key: '/insights/highlight' },
             { label: 'Performance', key: '/insights/performance' },
             { label: 'Unusual Activity', key: '/insights/unusual-activity' },
         ],
