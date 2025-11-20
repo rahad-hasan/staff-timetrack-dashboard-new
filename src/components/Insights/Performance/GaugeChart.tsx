@@ -8,9 +8,9 @@ interface GaugeChartProps {
 }
 
 const GaugeChart: React.FC<GaugeChartProps> = ({
-  percentage = 60,
-  value = "4:38h",
-  label = "Daily work avg.",
+  percentage = 0,
+  value,
+  label,
 }) => {
   // Calculate rotation for needle (-90° to +90°)
   const rotation = (percentage / 100) * 180 - 90;
@@ -44,13 +44,13 @@ const GaugeChart: React.FC<GaugeChartProps> = ({
 
         {/* Needle */}
         <div
-          className="absolute left-1/2 bottom-[6px] origin-bottom w-[2px] h-[50px] text-headingTextColor dark:bg-darkTextPrimary"
+          className="absolute left-1/2 bottom-[6px] origin-bottom w-[2px] h-[50px] bg-headingTextColor dark:bg-darkTextPrimary"
           style={{
             transform: `translateX(-50%) rotate(${rotation}deg)`,
           }}
         >
           {/* pivot dot */}
-          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[8px] h-[8px] text-headingTextColor dark:bg-darkTextPrimary rounded-full"></div>
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[8px] h-[8px] bg-headingTextColor dark:bg-darkTextPrimary rounded-full"></div>
         </div>
       </div>
 
