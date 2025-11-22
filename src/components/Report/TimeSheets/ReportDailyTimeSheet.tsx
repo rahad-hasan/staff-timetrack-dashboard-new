@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useMemo, useState } from "react";
 
 const ReportDailyTimeSheet = () => {
@@ -160,21 +161,29 @@ const ReportDailyTimeSheet = () => {
         // );
 
         return (
-            <div
-                className={`flex flex-col ${baseClasses} ${colorClasses}`}
-                style={{
-                    top: `${topPosition}%`,
-                    height: `${heightPercentage}%`,
-                    left: `calc(${trackIndex * 300}px + ${marginLeftPx}px)`,
-                    width: `calc(${300}px - ${maxTracks > 1 ? 2 : 0}px)`,
-                    minHeight: '2rem'
-                }}
-            >
-                <div className="">{project}</div>
-                <div className="font-normal text-base opacity-80 mt-1">
-                    {formattedStartTime} - {formattedEndTime}
-                </div>
-            </div>
+            <Tooltip>
+                <TooltipTrigger asChild>
+                    <div
+                        className={`flex flex-col ${baseClasses} ${colorClasses}`}
+                        style={{
+                            top: `${topPosition}%`,
+                            height: `${heightPercentage}%`,
+                            left: `calc(${trackIndex * 300}px + ${marginLeftPx}px)`,
+                            width: `calc(${300}px - ${maxTracks > 1 ? 2 : 0}px)`,
+                            minHeight: '2rem'
+                        }}
+                    >
+                        <div className="">{project}</div>
+                        <div className="font-normal text-base opacity-80 mt-1">
+                            {formattedStartTime} - {formattedEndTime}
+                        </div>
+                    </div>
+                </TooltipTrigger>
+                <TooltipContent className="bg-[#868686] dark:bg-darkPrimaryBg dark:fill-darkPrimaryBg shadow-xl rounded-lg px-5 py-4 max-w-xs">
+                    <p>Looking for Info</p>
+                </TooltipContent>
+            </Tooltip>
+
         );
     };
 

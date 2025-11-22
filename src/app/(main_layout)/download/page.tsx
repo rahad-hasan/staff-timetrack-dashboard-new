@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Download as DownloadIcon } from 'lucide-react';
 
-const Download = () => {
+const DownloadPage = () => {
     return (
         <div className='container mx-auto py-4 sm:py-8 lg:py-12'>
             <div className='mb-8'>
@@ -65,4 +65,4 @@ const Download = () => {
     );
 };
 
-export default Download;
+export default DownloadPage;
