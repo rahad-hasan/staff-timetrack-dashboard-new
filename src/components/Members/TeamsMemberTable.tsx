@@ -3,12 +3,14 @@ import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useMemo, useState } from "react";
 import { ArrowUpDown, Download, EllipsisVertical, Pencil, Trash2 } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox"
+// import { Checkbox } from "@/components/ui/checkbox"
 import emptyBoxLogo from "../../assets/projects/emptyBox.svg"
 import Image from "next/image";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "../ui/button";
 import { ITeamMembers } from "@/global/globalTypes";
+import { Dialog, DialogTrigger } from "../ui/dialog";
+import EditNewMemberModal from "./EditNewMemberModal";
 
 const TeamsMemberTable = () => {
     const [sorting, setSorting] = useState<SortingState>([])
@@ -284,15 +286,23 @@ const TeamsMemberTable = () => {
                         <PopoverContent side="bottom" align="end" className=" w-[250px] px-2">
                             <div className="">
                                 <div className="space-y-2">
-                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100  hover:dark:bg-darkSecondaryBg px-3 cursor-pointer">
+                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100  hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
                                         <Download size={18} />
                                         <p>Export Report</p>
                                     </div>
-                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100  hover:dark:bg-darkSecondaryBg px-3 cursor-pointer">
-                                        <Pencil size={18} />
-                                        <p>Edit Team</p>
-                                    </div>
-                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100  hover:dark:bg-darkSecondaryBg px-3 cursor-pointer">
+                                    <Dialog>
+                                        <form>
+                                            <DialogTrigger asChild>
+                                                <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100  hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
+                                                    <Pencil size={18} />
+                                                    <p>Edit Team</p>
+                                                </div>
+                                            </DialogTrigger>
+                                            <EditNewMemberModal></EditNewMemberModal>
+                                        </form>
+                                    </Dialog>
+
+                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100  hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
                                         <Trash2 size={18} />
                                         <p>Delete Team</p>
                                     </div>
