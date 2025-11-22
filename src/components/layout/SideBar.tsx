@@ -122,7 +122,7 @@ const SideBar = () => {
                                     isCollapsed={isCollapsed}
                                 >
                                     {item.subItems.length > 0 && (
-                                        <div className={`${isCollapsed ? "absolute left-24 px-3 w-[180px] bg-white dark:bg-darkPrimaryBg shadow-2xl rounded-2xl" : "block"} py-3 mt-2 flex flex-col gap-1 transition-all duration-300`}>
+                                        <div className={`${isCollapsed ? "absolute left-24 px-3 w-[180px] bg-white dark:bg-darkSecondaryBg shadow-2xl rounded-2xl" : "block"} py-3 mt-2 flex flex-col gap-1 transition-all duration-300`}>
                                             {item.subItems.map((subItem) => (
                                                 <SubItem
                                                     key={subItem.key}
