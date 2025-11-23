@@ -7,8 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import EditManualTimeModal from "./EditManualTimeModal";
-import EmptyTableLogo from "@/assets/empty_table.svg";
-import Image from "next/image";
+import EmptyTableRow from "@/components/Common/EmptyTableRow";
 
 const ManualRequestsTable = () => {
     const [sorting, setSorting] = useState<SortingState>([])
@@ -247,12 +246,7 @@ const ManualRequestsTable = () => {
                         ))
                     ) : (
                         <TableRow className="">
-                            <TableCell colSpan={columns.length} className="h-24 text-center">
-                                <div className=" flex flex-col gap-2.5 items-center justify-center py-8">
-                                    <Image src={EmptyTableLogo} alt="table empty" width={150} height={150} />
-                                    <p className=" sm:text-lg">No tasks found.</p>
-                                </div>
-                            </TableCell>
+                            <EmptyTableRow columns={columns} text="No tasks found."></EmptyTableRow>
                         </TableRow>
                     )}
                 </TableBody>

@@ -26,7 +26,7 @@ export const useSidebarStore = create<SidebarState>()(
                 setOpenMenu: (menu) =>
                     set((state) => ({
                         openMenu: state.openMenu === menu ? null : menu,
-                        activeSubItem: "",
+                        // activeSubItem: "",
                     })),
 
                 setActiveSubItem: (subItem) => set({ activeSubItem: subItem }),
