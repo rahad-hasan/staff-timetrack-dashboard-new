@@ -12,7 +12,7 @@ const EmptyTableRow = ({ columns, text }: EmptyTableRowProps) => {
     return (
         <TableCell colSpan={columns.length} className="h-24 text-center">
             <div className=" flex flex-col gap-2.5 items-center justify-center py-8">
-                <Image src={EmptyTableLogo} alt="table empty" width={150} height={150} />
+                <Image src={EmptyTableLogo} alt="table empty" width={120} height={120} />
                 <p className=" sm:text-lg">{text}</p>
             </div>
         </TableCell>

@@ -7,8 +7,7 @@ import { ArrowUpDown } from "lucide-react";
 // import lowFlag from '../../assets/dashboard/lowFlag.svg'
 // import mediumFlag from '../../assets/dashboard/mediumFlag.svg'
 // import noneFlag from '../../assets/dashboard/noneFlag.svg'
-import { Checkbox } from "@/components/ui/checkbox"
-import noDataIcon from "../../../assets/no_data_icon.svg"
+import EmptyTableRow from "@/components/Common/EmptyTableRow";
 
 const ArchivedProjectTable = () => {
     console.log("ArchivedProjectTable");
@@ -276,12 +275,7 @@ const ArchivedProjectTable = () => {
                         ))
                     ) : (
                         <TableRow>
-                            <TableCell colSpan={columns.length} className=" py-16">
-                                <div className=" flex flex-col justify-center items-center">
-                                    <Image src={noDataIcon} className=" w-18 md:w-32" alt="No Data" width={200} height={200} />
-                                    <h2 className=" text-lg mt-3 font-semibold">No archive projects</h2>
-                                </div>
-                            </TableCell>
+                            <EmptyTableRow columns={columns} text="No archive projects."></EmptyTableRow>
                         </TableRow>
                     )}
                 </TableBody>

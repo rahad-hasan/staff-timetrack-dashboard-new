@@ -7,7 +7,7 @@ import {
     SortingState,
     useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, X } from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
 import { useMemo, useState } from "react";
 import {
     Table,
@@ -26,6 +26,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
+import EmptyTableRow from "@/components/Common/EmptyTableRow";
 
 const UnusualActivityTable = () => {
     const [sorting, setSorting] = useState<SortingState>([]);
@@ -255,9 +256,7 @@ const UnusualActivityTable = () => {
                         ))
                     ) : (
                         <TableRow>
-                            <TableCell colSpan={columns.length} className="h-24 text-center">
-                                No unusual activity found.
-                            </TableCell>
+                            <EmptyTableRow columns={columns} text="No unusual activity found."></EmptyTableRow>
                         </TableRow>
                     )}
                 </TableBody>

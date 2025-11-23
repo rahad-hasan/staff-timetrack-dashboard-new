@@ -4,6 +4,7 @@ import { ArrowUpDown, Check, EllipsisVertical } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../ui/table";
 import { Button } from "@/components/ui/button";
+import EmptyTableRow from "@/components/Common/EmptyTableRow";
 
 const DailyTimeSheetsTable = () => {
     const [sorting, setSorting] = useState<SortingState>([])
@@ -216,9 +217,7 @@ const DailyTimeSheetsTable = () => {
                         ))
                     ) : (
                         <TableRow>
-                            <TableCell colSpan={columns.length} className="h-24 text-center">
-                                No Project found.
-                            </TableCell>
+                            <EmptyTableRow columns={columns} text="No Project found."></EmptyTableRow>
                         </TableRow>
                     )}
                 </TableBody>

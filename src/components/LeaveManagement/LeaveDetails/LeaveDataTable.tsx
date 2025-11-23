@@ -4,9 +4,9 @@ import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useMemo, useState } from "react";
 import { ArrowUpDown } from "lucide-react";
-import emptyBoxLogo from "../../../assets/projects/emptyBox.svg"
 import Image from "next/image";
 import { ILeave } from "@/global/globalTypes";
+import EmptyTableRow from "@/components/Common/EmptyTableRow";
 
 const LeaveDataTable = () => {
     const [sorting, setSorting] = useState<SortingState>([])
@@ -253,14 +253,7 @@ const LeaveDataTable = () => {
                         ))
                     ) : (
                         <TableRow>
-                            <TableCell colSpan={columns.length} className="h-24 text-center">
-                                <div className=" flex flex-col items-center justify-center py-8">
-                                    <Image src={emptyBoxLogo} alt="Empty" width={200} height={200} className=" w-24 mb-3" />
-                                    <p className=" text-lg mb-1">No project found!</p>
-                                    <p>Currently this client have no project data</p>
-                                </div>
-
-                            </TableCell>
+                            <EmptyTableRow columns={columns} text="No leave data found."></EmptyTableRow>
                         </TableRow>
                     )}
                 </TableBody>

@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import EditTaskModal from "./EditTaskModal";
+import EmptyTableRow from "@/components/Common/EmptyTableRow";
 
 const TaskTable = () => {
     console.log("TaskTable");
@@ -347,9 +348,7 @@ const TaskTable = () => {
                         ))
                     ) : (
                         <TableRow>
-                            <TableCell colSpan={columns.length} className="h-24 text-center">
-                                No tasks found.
-                            </TableCell>
+                            <EmptyTableRow columns={columns} text="No tasks found."></EmptyTableRow>
                         </TableRow>
                     )}
                 </TableBody>

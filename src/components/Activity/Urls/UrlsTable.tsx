@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { ArrowUpDown } from "lucide-react";
 import teamsLogo from '../../../assets/activity/teams-logo.png'
 import Image from "next/image";
+import EmptyTableRow from "@/components/Common/EmptyTableRow";
 
 const UrlsTable = () => {
     const [sorting, setSorting] = useState<SortingState>([])
@@ -250,9 +251,7 @@ const UrlsTable = () => {
                         ))
                     ) : (
                         <TableRow>
-                            <TableCell colSpan={columns.length} className="h-24 text-center">
-                                No tasks found.
-                            </TableCell>
+                            <EmptyTableRow columns={columns} text="No urls activity found."></EmptyTableRow>
                         </TableRow>
                     )}
                 </TableBody>

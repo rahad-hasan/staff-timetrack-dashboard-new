@@ -10,6 +10,7 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import BlockAppModal from "./BlockAppModal";
+import EmptyTableRow from "@/components/Common/EmptyTableRow";
 
 const AppNameTable = () => {
     const [sorting, setSorting] = useState<SortingState>([])
@@ -285,9 +286,7 @@ const AppNameTable = () => {
                         ))
                     ) : (
                         <TableRow>
-                            <TableCell colSpan={columns.length} className="h-24 text-center">
-                                No tasks found.
-                            </TableCell>
+                            <EmptyTableRow columns={columns} text="No App Activity found."></EmptyTableRow>
                         </TableRow>
                     )}
                 </TableBody>

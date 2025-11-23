@@ -5,8 +5,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useMemo, useState } from "react";
 import { ArrowUpDown } from "lucide-react";
 import { ITimeActivity } from "@/global/globalTypes";
-import emptyBoxLogo from "../../../assets/projects/emptyBox.svg"
 import Image from "next/image";
+import EmptyTableRow from "@/components/Common/EmptyTableRow";
 
 const TimeAndActivitiesTable = () => {
     const [sorting, setSorting] = useState<SortingState>([])
@@ -193,14 +193,7 @@ const TimeAndActivitiesTable = () => {
                         ))
                     ) : (
                         <TableRow>
-                            <TableCell colSpan={columns.length} className="h-24 text-center">
-                                <div className=" flex flex-col items-center justify-center py-8">
-                                    <Image src={emptyBoxLogo} alt="Empty" width={200} height={200} className=" w-24 mb-3" />
-                                    <p className=" text-lg mb-1">No project found!</p>
-                                    <p>Currently this client have no project data</p>
-                                </div>
-
-                            </TableCell>
+                            <EmptyTableRow columns={columns} text="No data found."></EmptyTableRow>
                         </TableRow>
                     )}
                 </TableBody>

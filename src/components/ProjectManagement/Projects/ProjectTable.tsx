@@ -23,6 +23,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import EditProjectModal from "./EditProjectModal";
+import EmptyTableRow from "@/components/Common/EmptyTableRow";
 
 const ProjectTable = () => {
     console.log("ProjectTable");
@@ -409,9 +410,7 @@ const ProjectTable = () => {
                         ))
                     ) : (
                         <TableRow>
-                            <TableCell colSpan={columns.length} className="h-24 text-center">
-                                No tasks found.
-                            </TableCell>
+                            <EmptyTableRow columns={columns} text="No project found."></EmptyTableRow>
                         </TableRow>
                     )}
                 </TableBody>
