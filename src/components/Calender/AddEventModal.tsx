@@ -61,7 +61,7 @@ const AddEventModal = () => {
         console.log(values)
     }
     const memberData = [
-        { name: "Kalki Noland", image: "https://avatar.iran.liara.run/public/18" },
+        { name: "All Member", image: "https://avatar.iran.liara.run/public/18" },
         { name: "Minakshi Devi", image: "https://avatar.iran.liara.run/public/25" },
         { name: "Dani Wolvarin", image: "https://avatar.iran.liara.run/public/20" },
         { name: "Alex Johnson", image: "https://avatar.iran.liara.run/public/22" },

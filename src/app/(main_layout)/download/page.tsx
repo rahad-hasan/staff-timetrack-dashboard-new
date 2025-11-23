@@ -23,41 +23,43 @@ const DownloadPage = () => {
             <div className='flex flex-col sm:flex-row justify-center sm:items-end gap-12 lg:gap-20 xl:gap-32'>
 
                 <div className='flex flex-col items-center gap-3'>
-                    <Image 
-                        src={windows} 
-                        width={120} 
-                        height={120} 
-                        alt='Windows OS icon' 
+                    <Image
+                        src={windows}
+                        width={120}
+                        height={120}
+                        alt='Windows OS icon'
                     />
                     <div className='text-lg font-semibold'>Windows</div>
-                    <Button className='bg-blue-600 hover:bg-blue-700 dark:text-darkTextPrimary'>
-                        <DownloadIcon className='w-4 h-4 mr-2' /> Download
+                    <Button size={'sm'} variant={'download'} className='text-sm'>
+                        <DownloadIcon className='w-4 h-4 mr-1' /> Download
                     </Button>
                 </div>
 
                 <div className='flex flex-col items-center gap-3'>
-                    <Image 
-                        src={linux} 
-                        width={120} 
-                        height={120} 
-                        alt='Linux OS icon' 
+                    <Image
+                        src={linux}
+                        width={140}
+                        height={140}
+                        alt='Linux OS icon'
+                        className=' -mb-4'
                     />
                     <div className='text-lg font-semibold'>Linux</div>
-                    <Button className='bg-green-600 hover:bg-green-700 dark:text-darkTextPrimary'>
-                        <DownloadIcon className='w-4 h-4 mr-2' /> Download
+                    <Button size={'sm'} variant={'download'} className='text-sm'>
+                        <DownloadIcon className='w-4 h-4 mr-1' /> Download
                     </Button>
                 </div>
 
                 <div className='flex flex-col items-center gap-3'>
-                    <Image 
-                        src={apple} 
-                        width={120} 
-                        height={120} 
-                        alt='macOS OS icon' 
+                    <Image
+                        src={apple}
+                        width={120}
+                        height={120}
+                        alt='macOS OS icon'
+                        className="dark:invert"
                     />
                     <div className='text-lg font-semibold'>macOS</div>
-                    <Button className='bg-gray-700 hover:bg-gray-800 dark:text-darkTextPrimary'>
-                        <DownloadIcon className='w-4 h-4 mr-2' /> Download
+                    <Button size={'sm'} variant={'download'} className='text-sm'>
+                        <DownloadIcon className='w-4 h-4 mr-1' /> Download
                     </Button>
                 </div>
             </div>
