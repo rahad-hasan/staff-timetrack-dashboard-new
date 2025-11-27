@@ -18,7 +18,7 @@ const TeamsMemberTableSkeleton = () => {
             <div className="w-full overflow-x-auto">
                 <div className={`w-full ${MIN_TABLE_WIDTH}`}>
 
-                    <div className="flex border-b border-gray-200 dark:border-darkBorder py-3 text-sm font-semibold text-gray-500 px-1">
+                    <div className="flex border-b border-gray-200 dark:border-darkBorder py-3 text-sm font-medium text-gray-500 px-1">
                         <div className="w-[3%] flex items-center pr-2">
                             <PlaceholderBlock className="h-5 w-5 bg-gray-300 rounded-sm" />
                         </div>

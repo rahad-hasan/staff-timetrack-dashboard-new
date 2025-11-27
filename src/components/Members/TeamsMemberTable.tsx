@@ -190,7 +190,7 @@ const TeamsMemberTable = () => {
                 const project = row.getValue("project") as string;
                 return (
                     <div className="flex flex-col">
-                        <span className=" text-primary font-semibold">{project}</span>
+                        <span className=" text-primary font-medium">{project}</span>
                     </div>
                 )
             }

@@ -181,7 +181,7 @@ const ProjectListTable = () => {
                                 className="rounded-full w-10 -ml-3 border border-white"
                             />
                         ))}
-                        <div className="w-10 h-10 -ml-3 rounded-full bg-[#ede7ff] flex items-center justify-center text-sm font-semibold text-[#926fef] border border-white">
+                        <div className="w-10 h-10 -ml-3 rounded-full bg-[#ede7ff] flex items-center justify-center text-sm font-medium text-[#926fef] border border-white">
                             10+
                         </div>
                     </div>
@@ -281,7 +281,7 @@ const ProjectListTable = () => {
     });
 
     return (
-        <div className="mt-5 border border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg p-3 rounded-[12px]">
+        <div className="mt-5 border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">
             <div className=" flex justify-between items-center mb-5">
                 <h2 className=" text-base sm:text-lg text-headingTextColor dark:text-darkTextPrimary">Project list</h2>
                 <div className=" flex items-center gap-3">

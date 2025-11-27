@@ -44,26 +44,26 @@ const SingleClientPage = () => {
 
                 <div className="  mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 items-center gap-6">
                     <div className=" border border-borderColor dark:border-darkBorder rounded-xl w-full">
-                        <h2 className=" py-10 bg-[#fff5db] text-3xl font-semibold text-center border-b border-borderColor dark:border-darkBorder rounded-t-xl text-headingTextColor  dark:text-darkSecondaryBg">06</h2>
+                        <h2 className=" py-10 bg-[#fff5db] text-3xl font-medium text-center border-b border-borderColor dark:border-darkBorder rounded-t-xl text-headingTextColor  dark:text-darkSecondaryBg">06</h2>
                         <div className=" text-center py-2 text-headingTextColor dark:text-darkTextPrimary">Total Project</div>
                     </div>
                     <div className=" border border-borderColor dark:border-darkBorder rounded-xl w-full">
-                        <h2 className=" py-10 bg-[#eff7fe] text-3xl font-semibold text-center border-b border-borderColor dark:border-darkBorder rounded-t-xl text-headingTextColor  dark:text-darkSecondaryBg">5</h2>
+                        <h2 className=" py-10 bg-[#eff7fe] text-3xl font-medium text-center border-b border-borderColor dark:border-darkBorder rounded-t-xl text-headingTextColor  dark:text-darkSecondaryBg">5</h2>
                         <div className=" text-center py-2 text-headingTextColor dark:text-darkTextPrimary">Completed Project</div>
                     </div>
                     <div className=" border border-borderColor dark:border-darkBorder rounded-xl w-full">
-                        <h2 className=" py-10 bg-[#ede7ff] text-3xl font-semibold text-center border-b border-borderColor dark:border-darkBorder rounded-t-xl text-headingTextColor  dark:text-darkSecondaryBg">$4,302</h2>
+                        <h2 className=" py-10 bg-[#ede7ff] text-3xl font-medium text-center border-b border-borderColor dark:border-darkBorder rounded-t-xl text-headingTextColor  dark:text-darkSecondaryBg">$4,302</h2>
                         <div className=" text-center py-2 text-headingTextColor dark:text-darkTextPrimary">Total Paid</div>
                     </div>
                     <div className=" border border-borderColor dark:border-darkBorder rounded-xl w-full">
-                        <h2 className=" py-10 bg-[#fee6eb] text-3xl font-semibold text-center border-b border-borderColor dark:border-darkBorder rounded-t-xl text-headingTextColor  dark:text-darkSecondaryBg">$6,302</h2>
+                        <h2 className=" py-10 bg-[#fee6eb] text-3xl font-medium text-center border-b border-borderColor dark:border-darkBorder rounded-t-xl text-headingTextColor  dark:text-darkSecondaryBg">$6,302</h2>
                         <div className=" text-center py-2 text-headingTextColor dark:text-darkTextPrimary">Unbilled Amount</div>
                     </div>
                 </div>
             </div>
 
             <div className=" flex items-center justify-between mt-4">
-                <h2 className=" text-lg font-semibold text-headingTextColor dark:text-darkTextPrimary">Project (12)</h2>
+                <h2 className=" text-lg font-medium text-headingTextColor dark:text-darkTextPrimary">Project (12)</h2>
                 <Button className=" text-sm md:text-base"><Plus /> Add Project</Button>
 
             </div>

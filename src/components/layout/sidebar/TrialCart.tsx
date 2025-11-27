@@ -24,7 +24,7 @@ const TrialCart = () => {
                     <span className="text-primary"><Zap size={20} className=" text-white" /></span> Trial
                 </Button>
 
-                <h2 className="text-lg font-semibold mt-3 text-headingTextColor dark:text-darkTextPrimary">Basic</h2>
+                <h2 className="text-lg font-medium mt-3 text-headingTextColor dark:text-darkTextPrimary">Basic</h2>
 
                 <p className="text-subTextColor dark:text-darkTextSecondary text-sm mt-1">Trial expire reminder</p>
 

@@ -9,7 +9,7 @@ const DownloadPage = () => {
     return (
         <div className='container mx-auto py-4 sm:py-8 lg:py-12'>
             <div className='mb-8'>
-                <h1 className="text-center text-xl sm:text-2xl lg:text-3xl font-semibold text-gray-900 dark:text-darkTextPrimary">
+                <h1 className="text-center text-xl sm:text-2xl lg:text-3xl font-medium text-gray-900 dark:text-darkTextPrimary">
                     Download Staff Time Tracker
                 </h1>
                 <p className="text-center mt-2 text-sm sm:text-md text-gray-600 dark:text-darkTextSecondary">
@@ -29,7 +29,7 @@ const DownloadPage = () => {
                         height={120}
                         alt='Windows OS icon'
                     />
-                    <div className='text-lg font-semibold'>Windows</div>
+                    <div className='text-lg font-medium'>Windows</div>
                     <Button size={'sm'} variant={'download'} className='text-sm'>
                         <DownloadIcon className='w-4 h-4 mr-1' /> Download
                     </Button>
@@ -43,7 +43,7 @@ const DownloadPage = () => {
                         alt='Linux OS icon'
                         className=' -mb-4'
                     />
-                    <div className='text-lg font-semibold'>Linux</div>
+                    <div className='text-lg font-medium'>Linux</div>
                     <Button size={'sm'} variant={'download'} className='text-sm'>
                         <DownloadIcon className='w-4 h-4 mr-1' /> Download
                     </Button>
@@ -57,7 +57,7 @@ const DownloadPage = () => {
                         alt='macOS OS icon'
                         className="dark:invert"
                     />
-                    <div className='text-lg font-semibold'>macOS</div>
+                    <div className='text-lg font-medium'>macOS</div>
                     <Button size={'sm'} variant={'download'} className='text-sm'>
                         <DownloadIcon className='w-4 h-4 mr-1' /> Download
                     </Button>

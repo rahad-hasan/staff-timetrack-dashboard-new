@@ -30,7 +30,7 @@ const SingleProjectPage = () => {
 
             <div className="mt-4 xl:w-[80%] 2xl:w-[70%]">
                 <div className=" ">
-                    <h2 className=" text-lg font-semibold text-headingTextColor dark:text-darkTextPrimary">Orbit Management Project</h2>
+                    <h2 className=" text-lg font-medium text-headingTextColor dark:text-darkTextPrimary">Orbit Management Project</h2>
                     <p className="mt-2 text-subTextColor dark:text-darkTextSecondary">Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere explicabo autem dolorem deserunt minus voluptatem enim sit quidem repellat accusamus soluta, delectus cumque facilis, doloremque esse possimus, adipisci odio tempora architecto quos. Similique sequi impedit debitis autem quaerat exercitationem, dolorum, cumque, quis et laborum ratione sit sapiente aliquam praesentium enim.</p>
                 </div>
 
@@ -59,19 +59,19 @@ const SingleProjectPage = () => {
 
                 <div className=" mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 items-center gap-6">
                     <div className=" border border-borderColor rounded-xl w-full">
-                        <h2 className=" py-10 bg-[#fff5db] text-3xl font-semibold text-center border-b border-borderColor rounded-t-xl text-headingTextColor dark:text-black">420 hours</h2>
+                        <h2 className=" py-10 bg-[#fff5db] text-3xl font-medium text-center border-b border-borderColor rounded-t-xl text-headingTextColor dark:text-black">420 hours</h2>
                         <div className=" text-center py-2 text-headingTextColor dark:text-darkTextPrimary">Total Hours</div>
                     </div>
                     <div className=" border border-borderColor rounded-xl w-full">
-                        <h2 className=" py-10 bg-[#eff7fe] text-3xl font-semibold text-center border-b border-borderColor rounded-t-xl text-headingTextColor dark:text-black">180 hours</h2>
+                        <h2 className=" py-10 bg-[#eff7fe] text-3xl font-medium text-center border-b border-borderColor rounded-t-xl text-headingTextColor dark:text-black">180 hours</h2>
                         <div className=" text-center py-2 text-headingTextColor dark:text-darkTextPrimary">Billable Hours</div>
                     </div>
                     <div className=" border border-borderColor rounded-xl w-full">
-                        <h2 className=" py-10 bg-[#ede7ff] text-3xl font-semibold text-center border-b border-borderColor rounded-t-xl text-headingTextColor dark:text-black">240 hours</h2>
+                        <h2 className=" py-10 bg-[#ede7ff] text-3xl font-medium text-center border-b border-borderColor rounded-t-xl text-headingTextColor dark:text-black">240 hours</h2>
                         <div className=" text-center py-2 text-headingTextColor dark:text-darkTextPrimary">Unbilled Hours</div>
                     </div>
                     <div className=" border border-borderColor rounded-xl w-full">
-                        <h2 className=" py-10 bg-[#fee6eb] text-3xl font-semibold text-center border-b border-borderColor rounded-t-xl text-headingTextColor dark:text-black">$6,302</h2>
+                        <h2 className=" py-10 bg-[#fee6eb] text-3xl font-medium text-center border-b border-borderColor rounded-t-xl text-headingTextColor dark:text-black">$6,302</h2>
                         <div className=" text-center py-2 text-headingTextColor dark:text-darkTextPrimary">Unbilled Amount</div>
                     </div>
                 </div>

@@ -116,7 +116,7 @@ const CalenderTable = () => {
                                                             <TooltipContent
                                                                 className="bg-[#868686] dark:bg-darkPrimaryBg dark:fill-darkPrimaryBg shadow-xl rounded-lg px-5 py-4 max-w-xs"
                                                             >
-                                                                <h2 className="text-sm font-semibold text-white dark:text-darkTextPrimary mb-3 border-b dark:border-darkBorder pb-1">
+                                                                <h2 className="text-sm font-medium text-white dark:text-darkTextPrimary mb-3 border-b dark:border-darkBorder pb-1">
                                                                     Event Participants
                                                                 </h2>
 
@@ -136,12 +136,12 @@ const CalenderTable = () => {
                                                                         />
                                                                     ))}
 
-                                                                    <div className="w-10 h-10 -ml-3 text-headingTextColor rounded-full bg-[#ede7ff] flex items-center justify-center text-sm font-semibold  border border-white shadow-sm">
+                                                                    <div className="w-10 h-10 -ml-3 text-headingTextColor rounded-full bg-[#ede7ff] flex items-center justify-center text-sm font-medium  border border-white shadow-sm">
                                                                         10+
                                                                     </div>
                                                                 </div>
 
-                                                                <h3 className="text-sm font-semibold text-white dark:text-darkTextPrimary border-b dark:border-darkBorder pb-1 mb-2">
+                                                                <h3 className="text-sm font-medium text-white dark:text-darkTextPrimary border-b dark:border-darkBorder pb-1 mb-2">
                                                                     Assigned By
                                                                 </h3>
 

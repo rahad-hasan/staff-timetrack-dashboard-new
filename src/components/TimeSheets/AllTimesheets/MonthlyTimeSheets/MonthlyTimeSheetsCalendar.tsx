@@ -53,7 +53,7 @@ const MonthlyTimeSheetsCalendar = () => {
         <div
             className={`p-3 h-28 md:h-24 flex flex-col justify-center items-center border border-gray-200 bg-bgPrimary dark:bg-darkPrimaryBg text-headingTextColor dark:text-darkTextPrimary dark:border-darkBorder`}
         >
-            <span className="font-semibold text-lg mb-1">{day}</span>
+            <span className="font-medium text-lg mb-1">{day}</span>
             {
                 viewType === "Hours" ?
                     <div>
@@ -86,16 +86,16 @@ const MonthlyTimeSheetsCalendar = () => {
             <div className=" mb-5 flex flex-col gap-4 md:gap-0 md:flex-row justify-between">
                 <div className=" flex items-center gap-3 md:gap-5 ">
                     <div className=" flex items-center gap-0.5 md:gap-2">
-                        <h2 className=" font-semibold text-headingTextColor dark:text-darkTextPrimary">Total Hour:</h2>
+                        <h2 className=" font-medium text-headingTextColor dark:text-darkTextPrimary">Total Hour:</h2>
                         <h2 className="text-headingTextColor dark:text-darkTextPrimary">32:25:00</h2>
                     </div>
                     <div className=" flex items-center gap-0.5 md:gap-2">
-                        <h2 className=" font-semibold text-headingTextColor dark:text-darkTextPrimary">Monthly Activity:</h2>
+                        <h2 className=" font-medium text-headingTextColor dark:text-darkTextPrimary">Monthly Activity:</h2>
                         <h2 className="text-headingTextColor dark:text-darkTextPrimary">75.56%</h2>
                     </div>
                 </div>
                 <div className=" flex items-center gap-2 ">
-                    <p className=" font-semibold text-headingTextColor dark:text-darkTextPrimary">Select Option: </p>
+                    <p className=" font-medium text-headingTextColor dark:text-darkTextPrimary">Select Option: </p>
                     <div className=" bg-bgSecondary dark:bg-darkPrimaryBg rounded-lg">
                         <Select onValueChange={(value) => setViewType(value)} defaultValue="Hours">
                             <SelectTrigger className="w-[180px]">
@@ -111,7 +111,7 @@ const MonthlyTimeSheetsCalendar = () => {
                     </div>
                 </div>
             </div>
-            
+
             <div className=" overflow-auto ">
                 <div className="grid grid-cols-7 gap-2 min-w-[750px]">
                     {dayHeaders.map((day, index) => {

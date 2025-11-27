@@ -18,7 +18,7 @@ const TaskTableSkeleton = () => {
 
             <div className="w-full overflow-x-auto">
                 <div className={`w-full ${MIN_TABLE_WIDTH}`}>
-                    <div className="flex border-b border-gray-200 dark:border-darkBorder py-3 text-sm font-semibold text-gray-500">
+                    <div className="flex border-b border-gray-200 dark:border-darkBorder py-3 text-sm font-medium text-gray-500">
                         <div className="w-[33%] pl-2">Task Name</div>
                         <div className="w-[20%]">Assignee</div>
                         <div className="w-[15%]">Time Worked</div>

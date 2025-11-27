@@ -3,7 +3,7 @@ import { BellOff, CreditCard, Headset, LogOut, Plug, Share2, User, UserPlus } fr
 import Image from "next/image";
 import Link from "next/link";
 
-const ProfilePopoverContent = ({side, align}: { side: "top" | "right" | "bottom" | "left", align:  "center" | "end" | "start"}) => {
+const ProfilePopoverContent = ({ side, align }: { side: "top" | "right" | "bottom" | "left", align: "center" | "end" | "start" }) => {
     return (
         <PopoverContent side={side} align={align}>
             <div className="flex items-center gap-2 mb-4">
@@ -15,7 +15,7 @@ const ProfilePopoverContent = ({side, align}: { side: "top" | "right" | "bottom"
                     className="rounded-full w-14"
                 />
                 <div>
-                    <h4 className="font-semibold text-xl">Dannielis Vettori</h4>
+                    <h4 className="font-medium text-xl">Dannielis Vettori</h4>
                     <div className=" flex items-center gap-2 mt-1">
                         <span className="bg-[#5db0f1] text-white text-[12px]  px-2 py-1 rounded-full">Super admin</span>
                         <span className="bg-[#12cd69] text-white text-[12px] px-2 py-1 rounded-full">Starter plan</span>

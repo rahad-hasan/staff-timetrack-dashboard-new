@@ -134,7 +134,7 @@ const NotificationItem = ({ notification }: { notification: (typeof notification
                     {notification.isNew && (
                         <span className="ml-2 inline-block w-2 h-2 bg-red-500 rounded-full align-middle" aria-label="New notification"></span>
                     )}
-                    {/* <span className={`ml-4 text-[10px] font-semibold px-2 py-0.5 rounded-full dark:bg-darkPrimaryBg capitalize ${styles.color}`}>
+                    {/* <span className={`ml-4 text-[10px] font-medium px-2 py-0.5 rounded-full dark:bg-darkPrimaryBg capitalize ${styles.color}`}>
                         {styles.icon} {notification.type}
                     </span> */}
                 </div>
@@ -155,7 +155,7 @@ const NotificationPage = () => {
     return (
         <div className="">
             <div className=" flex justify-between items-center mb-3">
-                <h2 className="text-xl font-semibold text-headingTextColor dark:text-darkTextPrimary">Notifications</h2>
+                <h2 className="text-xl font-medium text-headingTextColor dark:text-darkTextPrimary">Notifications</h2>
                 <button
                     className="text-sm font-medium text-subTextColor dark:text-darkTextSecondary transition-colors rounded-md"
                 >

@@ -17,7 +17,7 @@ const Every10MinsSkeleton = () => {
                         </div>
 
                         <h2 className="text-lg text-subTextColor dark:text-darkTextSecondary flex items-center gap-1.5">
-                            Total time worked: <span className="font-semibold h-4 w-16 inline-block bg-gray-200 dark:bg-gray-700 dark:border-darkBorder rounded animate-pulse"></span>
+                            Total time worked: <span className="font-medium h-4 w-16 inline-block bg-gray-200 dark:bg-gray-700 dark:border-darkBorder rounded animate-pulse"></span>
                         </h2>
                     </div>
 
@@ -32,8 +32,8 @@ const Every10MinsSkeleton = () => {
                                         <div className="h-4 w-28 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
                                     </div>
                                     {/* Project Title Placeholder */}
-                                    <div className="mt-2 h-5 w-3/6 bg-gray-200 dark:bg-gray-700 rounded font-semibold animate-pulse"></div>
-                                    <div className="my-3 h-3 w-full bg-gray-200 dark:bg-gray-700 rounded font-semibold animate-pulse"></div>
+                                    <div className="mt-2 h-5 w-3/6 bg-gray-200 dark:bg-gray-700 rounded font-medium animate-pulse"></div>
+                                    <div className="my-3 h-3 w-full bg-gray-200 dark:bg-gray-700 rounded font-medium animate-pulse"></div>
                                     {/* Task Name Placeholder */}
                                     <div className="mt-1 h-4 w-1/3 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
                                 </div>

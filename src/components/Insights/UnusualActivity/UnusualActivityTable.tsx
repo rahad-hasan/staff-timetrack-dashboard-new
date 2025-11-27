@@ -110,7 +110,7 @@ const UnusualActivityTable = () => {
                 </div>
             ),
             cell: ({ row }) => (
-                <span className="font-semibold">{row.getValue("employee")}</span>
+                <span className="font-medium">{row.getValue("employee")}</span>
             ),
         },
         {
@@ -162,7 +162,7 @@ const UnusualActivityTable = () => {
                 </div>
             ),
             cell: ({ row }) => (
-                <span className="font-semibold">{row.getValue("duration")}</span>
+                <span className="font-medium">{row.getValue("duration")}</span>
             ),
         },
         {
@@ -188,7 +188,7 @@ const UnusualActivityTable = () => {
 
                         <DialogContent className="max-w-[95vw] md:max-w-[97vw] lg:max-w-[1400px] p-0 overflow-hidden">
                             <DialogHeader className="p-3 flex justify-between items-center border-b">
-                                <DialogTitle className="text-lg font-semibold">
+                                <DialogTitle className="text-lg font-medium">
                                     Screenshot Preview
                                 </DialogTitle>
                             </DialogHeader>

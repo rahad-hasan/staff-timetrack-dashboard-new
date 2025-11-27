@@ -12,7 +12,7 @@ const Insights = async () => {
     ];
 
     return (
-        <div className=" border border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg p-3 rounded-[12px] w-full">
+        <div className=" border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px] w-full">
             <div className=" flex justify-between items-center">
                 <h2 className=" text-base text-headingTextColor sm:text-lg dark:text-darkTextPrimary">INSIGHTS</h2>
                 <div className=" flex items-center gap-3">
@@ -27,7 +27,7 @@ const Insights = async () => {
                     <Info size={18} className=" cursor-pointer" />
                 </div>
                 <div className=" flex items-center gap-3 sm:w-1/2">
-                    <h2 className="text-base sm:text-lg text-headingTextColo dark:text-darkTextPrimary">Overall activity</h2>
+                    <h2 className="text-base sm:text-lg text-headingTextColor dark:text-darkTextPrimary">Overall activity</h2>
                     <Info size={18} className=" cursor-pointer" />
                 </div>
             </div>
@@ -36,15 +36,15 @@ const Insights = async () => {
                     <div className=" flex justify-between">
                         <div className=" mb-4">
                             <p className="text-3xl font-bold text-headingTextColor mr-2 dark:text-darkTextPrimary">9%</p>
-                            <p className="text-lg font-medium text-subTextColor dark:text-darkTextSecondary">Productive</p>
+                            <p className="text-lg font-medium text-headingTextColor dark:text-darkTextSecondary">Productive</p>
                         </div>
 
                         <div className="space-y-1">
                             {classificationData.map((item) => (
-                                <div key={item.label} className="flex items-center text-sm text-subTextColor dark:text-darkTextSecondary">
+                                <div key={item.label} className="flex items-center text-sm text-headingTextColor dark:text-darkTextSecondary">
                                     <span className={`w-2.5 h-2.5 rounded ${item.color} mr-2`}></span>
-                                    <span className="w-16">{`${item.percentage}%`}</span>
-                                    <span>{item.label}</span>
+                                    <span className="">{`${item.percentage}%`}</span>
+                                    <span className="ml-1">{item.label}</span>
                                 </div>
                             ))}
                         </div>

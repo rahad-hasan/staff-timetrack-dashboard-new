@@ -16,7 +16,7 @@ const loading = () => {
                     <div className="h-8 w-26 rounded-md bg-gray-200"></div>
                 </div>
             </div>
-            <div className="flex border-b border-gray-200 py-3 text-sm font-semibold text-gray-500 mt-5">
+            <div className="flex border-b border-gray-200 py-3 text-sm font-medium text-gray-500 mt-5">
                 <div className="w-[30%] pl-2">Member info</div>
                 <div className="w-[30%] text-center">Today</div>
                 <div className="w-[40%] text-center">This Week</div>

@@ -128,7 +128,7 @@ const AppNameTable = () => {
                     <div className="flex items-center gap-2">
                         <Image src={teamsLogo} alt="app_logo" width={200} height={200} className=" w-8 border border-borderColor rounded-full p-1" />
                         <div className="">
-                            <p className=" font-semibold">{appName}</p>
+                            <p className=" font-medium">{appName}</p>
                             <span className="">App</span>
                         </div>
                     </div>
@@ -155,7 +155,7 @@ const AppNameTable = () => {
 
                 return (
                     <div className="flex items-center gap-2">
-                        <span className=" font-semibold">{projectName}</span>
+                        <span className=" font-medium">{projectName}</span>
                     </div>
                 );
             }
@@ -208,7 +208,7 @@ const AppNameTable = () => {
                 return (
                     <div className=" flex items-center justify-between">
                         <div className=" flex flex-col">
-                            <span className=" font-semibold">{timeSpent}</span>
+                            <span className=" font-medium">{timeSpent}</span>
                             <span className=" text-textGray dark:text-darkTextSecondary">{time}</span>
                         </div>
                         <div className="flex justify-end">

@@ -104,7 +104,7 @@ const Members = () => {
                         <div className=" flex flex-col items-start">
                             <span className={` ${bgColor} rounded-full text-center text-white px-2  text-sm mb-0.5`}>{progress}</span>
                             <div className="flex flex-col">
-                                <span className=" font-semibold">{week_work}</span>
+                                <span className=" font-medium">{week_work}</span>
                                 <span className="">Last Active {lastActive}</span>
                             </div>
                         </div>
@@ -125,7 +125,7 @@ const Members = () => {
     })
 
     return (
-        <div className=" border border-borderColor dark:border-darkBorder  bg-bgSecondary dark:bg-darkPrimaryBg p-3 rounded-[12px] w-full">
+        <div className=" border border-borderColor dark:border-darkBorder  dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px] w-full">
             <div className=" flex justify-between items-center">
                 <h2 className=" text-base sm:text-lg text-headingTextColor dark:text-darkTextPrimary">MEMBERS</h2>
                 <div className=" flex items-center gap-3">

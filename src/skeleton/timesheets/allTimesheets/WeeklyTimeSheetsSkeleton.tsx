@@ -50,7 +50,7 @@ const WeeklyTimeSheetsSkeleton = () => {
 
                     <tfoot className=" border-t border-gray-300">
                         <tr className="text-slate-900 animate-pulse">
-                            <td className="px-4 py-5 text-left font-semibold border-r border-gray-200 dark:border-darkBorder">
+                            <td className="px-4 py-5 text-left font-medium border-r border-gray-200 dark:border-darkBorder">
                                 <div className="bg-gray-200 dark:bg-gray-700 rounded-md h-5 w-3/4 ml-4" />
                             </td>
 

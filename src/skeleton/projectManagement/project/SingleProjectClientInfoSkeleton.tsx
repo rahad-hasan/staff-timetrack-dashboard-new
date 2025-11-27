@@ -38,11 +38,11 @@ const SingleProjectClientInfoSkeleton = () => {
                     <table className="min-w-[700px] w-full border-collapse text-sm md:text-base">
                         <thead className=" dark:bg-gray-800">
                             <tr>
-                                <th className="text-left py-2 px-3 whitespace-nowrap text-sm font-semibold text-gray-500">Client</th>
-                                <th className="text-left py-2 px-3 whitespace-nowrap text-sm font-semibold text-gray-500">Phone</th>
-                                <th className="text-left py-2 px-3 whitespace-nowrap text-sm font-semibold text-gray-500">Starting Date</th>
-                                <th className="text-left py-2 px-3 whitespace-nowrap text-sm font-semibold text-gray-500">Deadline</th>
-                                <th className="text-left py-2 px-3 whitespace-nowrap text-sm font-semibold text-gray-500">Project Bill</th>
+                                <th className="text-left py-2 px-3 whitespace-nowrap text-sm font-medium text-gray-500">Client</th>
+                                <th className="text-left py-2 px-3 whitespace-nowrap text-sm font-medium text-gray-500">Phone</th>
+                                <th className="text-left py-2 px-3 whitespace-nowrap text-sm font-medium text-gray-500">Starting Date</th>
+                                <th className="text-left py-2 px-3 whitespace-nowrap text-sm font-medium text-gray-500">Deadline</th>
+                                <th className="text-left py-2 px-3 whitespace-nowrap text-sm font-medium text-gray-500">Project Bill</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -54,7 +54,7 @@ const SingleProjectClientInfoSkeleton = () => {
                 <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 items-center gap-6">
                     {cardColors.map((bgColor, index) => (
                         <div key={index} className="border border-borderColor rounded-xl w-full">
-                            <div className={`py-10 ${bgColor} text-3xl font-semibold text-center border-b border-borderColor rounded-t-xl`}>
+                            <div className={`py-10 ${bgColor} text-3xl font-medium text-center border-b border-borderColor rounded-t-xl`}>
                                 <PlaceholderBlock className="h-9 w-2/3 mx-auto" />
                             </div>
                             <div className="text-center py-4">

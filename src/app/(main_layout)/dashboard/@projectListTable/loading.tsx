@@ -20,7 +20,7 @@ const loading = () => {
             ))}
 
             <div
-                className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 border border-white flex items-center justify-center text-xs text-transparent font-semibold"
+                className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 border border-white flex items-center justify-center text-xs text-transparent font-medium"
                 style={{ marginLeft: '-12px' }}
             >
                 10+
@@ -44,7 +44,7 @@ const loading = () => {
             <div className="w-full overflow-x-auto">
                 <div className="min-w-max">
 
-                    <div className="flex border-b border-gray-200 dark:border-gray-700 py-3 text-sm font-semibold text-gray-500 min-w-full">
+                    <div className="flex border-b border-gray-200 dark:border-gray-700 py-3 text-sm font-medium text-gray-500 min-w-full">
 
                         <div className="w-[30%] min-w-[200px] pr-4">
                             <PlaceholderBlock className="h-4 w-28" />

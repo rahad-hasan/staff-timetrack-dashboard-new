@@ -57,7 +57,7 @@ const VerificationCode = () => {
                 <div style={{ boxShadow: "0px 10px 180px rgba(18, 205, 105, 0.3)" }} className="space-y-4 bg-white dark:bg-darkPrimaryBg py-8 px-6 md:px-10 rounded-lg border border-borderColor dark:border-darkBorder">
                     <div className=" flex flex-col items-center mb-5">
                         <Image src={roundedEmail} width={200} height={200} alt="icon" className=" w-16" />
-                        <h2 className=" text-2xl font-semibold mt-4 mb-2">Enter your code</h2>
+                        <h2 className=" text-2xl font-medium mt-4 mb-2">Enter your code</h2>
                         <p className="">Enter your 5 digit code in your email.</p>
                     </div>
                     <div className="flex justify-center">

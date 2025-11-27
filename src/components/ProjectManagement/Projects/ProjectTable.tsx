@@ -205,7 +205,7 @@ const ProjectTable = () => {
                                 className="rounded-full w-10 -ml-3 border border-white"
                             />
                         ))}
-                        <div className="w-10 h-10 -ml-3 rounded-full bg-[#ede7ff] flex items-center justify-center text-sm font-semibold text-[#926fef] border border-white">
+                        <div className="w-10 h-10 -ml-3 rounded-full bg-[#ede7ff] flex items-center justify-center text-sm font-medium text-[#926fef] border border-white">
                             10+
                         </div>
                     </div>

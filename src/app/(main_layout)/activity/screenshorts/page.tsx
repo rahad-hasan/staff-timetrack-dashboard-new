@@ -186,7 +186,7 @@ const ScreenShorts = () => {
                             <div className="flex items-center gap-2 px-3 py-5 bg-bgSecondary dark:bg-darkPrimaryBg rounded-t-2xl">
                                 <Icon size={40} className="border border-borderColor rounded-lg p-1.5" />
                                 <div>
-                                    <h2 className="text-xl font-semibold text-headingTextColor dark:text-darkTextPrimary">{value}</h2>
+                                    <h2 className="text-xl font-medium text-headingTextColor dark:text-darkTextPrimary">{value}</h2>
                                     <h3 className="text-subTextColor dark:text-darkTextSecondary">{title}</h3>
                                 </div>
                             </div>

@@ -112,9 +112,9 @@ const DailyTimeSheetsTable = () => {
                     <div className="flex items-center gap-2">
                         {
                             activity < 30 ?
-                                <span className=" bg-[#f40139] text-white font-semibold px-2 rounded-full">{activity} %</span>
+                                <span className=" bg-[#f40139] text-white font-medium px-2 rounded-full">{activity} %</span>
                                 :
-                                <span className=" bg-[#5db0f1] text-white font-semibold px-2 rounded-full">{activity} %</span>
+                                <span className=" bg-[#5db0f1] text-white font-medium px-2 rounded-full">{activity} %</span>
                         }
                     </div>
                 );
@@ -165,7 +165,7 @@ const DailyTimeSheetsTable = () => {
                 return (
                     <div className=" flex justify-between gap-4">
                         <div className="">
-                            <h1 className=" font-semibold">
+                            <h1 className=" font-medium">
                                 {totalTime}
                             </h1>
                             <p>8:00 am - 10:00 pm</p>

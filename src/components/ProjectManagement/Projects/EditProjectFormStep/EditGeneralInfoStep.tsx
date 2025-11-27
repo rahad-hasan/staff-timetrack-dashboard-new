@@ -77,7 +77,7 @@ const EditGeneralInfoStep = ({ setStep, handleStepSubmit }: GeneralInfoStepProps
 
     return (
         <div>
-            <h2 className=" text-xl font-semibold mb-4">General Info</h2>
+            <h2 className=" text-xl font-medium mb-4">General Info</h2>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 ">
                     <FormField

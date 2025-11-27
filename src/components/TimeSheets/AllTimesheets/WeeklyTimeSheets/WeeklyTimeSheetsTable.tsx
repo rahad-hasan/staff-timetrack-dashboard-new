@@ -74,7 +74,7 @@ const WeeklyTimeSheetsTable = () => {
                         {rows.map((project: Row, i: number) => (
                             <tr key={i} className="text-slate-900 border dark:border-darkBorder">
                                 <td className=" z-10 px-4 py-5 text-left border dark:border-darkBorder">
-                                    <h2 className=" font-semibold text-headingTextColor dark:text-darkTextPrimary">{project?.project}</h2>
+                                    <h2 className=" font-medium text-headingTextColor dark:text-darkTextPrimary">{project?.project}</h2>
                                     <p className=" text-sm dark:text-darkTextSecondary">{project?.task}</p>
                                 </td>
                                 {project?.times?.map((time, i) => (
@@ -91,7 +91,7 @@ const WeeklyTimeSheetsTable = () => {
                     <tfoot className="border dark:border-darkBorder">
                         <tr className="text-slate-900 border dark:border-darkBorder">
                             <td className=" z-10 px-4 py-5 text-left border dark:border-darkBorder">
-                                <h2 className=" font-semibold text-headingTextColor dark:text-darkTextPrimary">{tableFooter?.project}</h2>
+                                <h2 className=" font-medium text-headingTextColor dark:text-darkTextPrimary">{tableFooter?.project}</h2>
                             </td>
                             {tableFooter?.times?.map((time, i) => (
                                 <td key={i} className=" z-10 px-4 py-5 text-center border dark:border-darkBorder">

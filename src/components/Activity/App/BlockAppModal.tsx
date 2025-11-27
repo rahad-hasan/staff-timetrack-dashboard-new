@@ -9,7 +9,7 @@ const BlockAppModal = () => {
                 <Image src={BlockLogo} className=" w-16" alt="block logo" width={300} height={300} />
             </div>
             <div className=" text-center">
-                <h2 className="text-lg font-semibold">Block URL</h2>
+                <h2 className="text-lg font-medium">Block URL</h2>
                 <p>Are you sure you want to block this url? your team member won’t access this url until you unblock</p>
             </div>
             <div className=" flex items-center gap-2 justify-center">

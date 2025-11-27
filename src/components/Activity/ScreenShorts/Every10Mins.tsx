@@ -280,7 +280,7 @@ const Every10Mins = () => {
                                                 max={100}
                                                 step={1}
                                             />
-                                            <h2 className="mt-2 md:text-lg font-semibold dark:text-darkTextPrimary">
+                                            <h2 className="mt-2 md:text-lg font-medium dark:text-darkTextPrimary">
                                                 {screenShort.project}
                                             </h2>
                                             <p className="text-headingTextColor dark:text-darkTextPrimary">{screenShort.task}</p>
@@ -302,7 +302,7 @@ const Every10Mins = () => {
                                 <p className="text-subTextColor dark:text-darkTextSecondary">{block.time}</p>
                             </div>
                             <h2 className="text-lg text-subTextColor dark:text-darkTextSecondary">
-                                Total time worked: <span className="font-semibold">{block.totalTimeWorked}</span>
+                                Total time worked: <span className="font-medium">{block.totalTimeWorked}</span>
                             </h2>
                         </div>
 
@@ -359,7 +359,7 @@ const Every10Mins = () => {
                                             step={1}
                                         />
 
-                                        <h2 className="mt-2 text-sm sm:text-base font-semibold text-headingTextColor dark:text-darkTextPrimary">
+                                        <h2 className="mt-2 text-sm sm:text-base font-medium text-headingTextColor dark:text-darkTextPrimary">
                                             {screenShort.project}
                                         </h2>
                                         <p className="text-subTextColor text-sm sm:text-base dark:text-darkTextSecondary">

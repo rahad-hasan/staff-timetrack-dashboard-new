@@ -27,7 +27,7 @@ const AllNotesModal = () => {
   return (
     <DialogContent className="sm:max-w-[430px] max-h-[80vh] overflow-y-auto rounded-2xl shadow-lg">
       <DialogHeader className="pb-2 border-b">
-        <DialogTitle className="text-lg font-semibold">All notes</DialogTitle>
+        <DialogTitle className="text-lg font-medium">All notes</DialogTitle>
       </DialogHeader>
 
       <div className="mt-4 space-y-3">
@@ -37,7 +37,7 @@ const AllNotesModal = () => {
             className="border rounded-lg p-4 bg-[#f5f6f6] dark:bg-darkSecondaryBg hover:shadow-sm transition-all"
           >
             <p className="text-xs font-medium text-textGray mb-1 dark:text-darkTextPrimary">Member</p>
-            <h3 className="text-sm font-semibold ">
+            <h3 className="text-sm font-medium ">
               {note.member}&apos;s notes for {note.date}
             </h3>
 

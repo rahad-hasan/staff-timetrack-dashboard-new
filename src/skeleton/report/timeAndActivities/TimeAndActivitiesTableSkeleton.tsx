@@ -17,7 +17,7 @@ const TimeAndActivitiesTableSkeleton = () => {
 
             <div className="w-full overflow-x-auto">
                 <div className={`w-full ${MIN_TABLE_WIDTH}`}>
-                    <div className="flex border-b border-gray-200 dark:border-darkBorder py-3 text-sm font-semibold text-gray-500">
+                    <div className="flex border-b border-gray-200 dark:border-darkBorder py-3 text-sm font-medium text-gray-500">
                         <div className="w-[20%] pl-2">Member Name</div>
                         <div className="w-[30%] text-center">Project</div>
                         <div className="w-[25%] text-center">Duration</div>

@@ -42,7 +42,7 @@ const Configuration = () => {
 
     return (
         <div className="rounded-lg border border-borderColor p-3 md:p-4 mt-4 bg-white dark:bg-darkSecondaryBg dark:border-darkBorder">
-            {/* <h2 className="text-lg font-semibold mb-6 text-textGray dark:text-darkTextPrimary">Notifications Preferences</h2> */}
+            {/* <h2 className="text-lg font-medium mb-6 text-textGray dark:text-darkTextPrimary">Notifications Preferences</h2> */}
 
             {sections.map((section, idx) => (
                 <div
@@ -50,7 +50,7 @@ const Configuration = () => {
                     className={`rounded-md border border-borderColor dark:border-darkBorder p-3 md:p-4 mb-4`}
                 >
 
-                    <div className="flex justify-between items-center text-sm font-semibold text-gray-500 mb-2">
+                    <div className="flex justify-between items-center text-sm font-medium text-gray-500 mb-2">
                         <span className="text-subTextColor dark:text-darkTextPrimary">Notification Configuration</span>
                         <div className="flex gap-8 text-headingTextColor dark:text-darkTextPrimary">
                             <span>IN-APP</span>
@@ -77,7 +77,7 @@ const Configuration = () => {
                 </div>
             ))}
             <div className={`rounded-md border border-borderColor dark:border-darkBorder p-3 md:p-4`}>
-                <span className="text-subTextColor dark:text-darkTextPrimary  text-sm font-semibold ">Leave Configuration</span>
+                <span className="text-subTextColor dark:text-darkTextPrimary  text-sm font-medium ">Leave Configuration</span>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-2">
                         <div className="grid grid-cols-2 gap-4 sm:gap-3 items-start">

@@ -18,7 +18,7 @@ const LeaveRequestTableSkeleton = () => {
             <div className="w-full overflow-x-auto">
                 <div className={`w-full ${MIN_TABLE_WIDTH}`}>
 
-                    <div className="flex border-b border-gray-200 dark:border-darkBorder py-3 text-sm font-semibold text-gray-500 px-1">
+                    <div className="flex border-b border-gray-200 dark:border-darkBorder py-3 text-sm font-medium text-gray-500 px-1">
                         <div className="w-[20%]">Member name</div>
                         <div className="w-[15%]">From</div>
                         <div className="w-[10%]">To</div>

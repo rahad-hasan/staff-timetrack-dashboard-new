@@ -66,7 +66,7 @@ const StartTimer = () => {
                         className="w-10 cursor-pointer"
                     />
                     <div>
-                        <p className="font-semibold text-base sm:text-base text-headingTextColor dark:text-darkTextPrimary">{project || "Select Project"}</p>
+                        <p className="font-medium text-base sm:text-base text-headingTextColor dark:text-darkTextPrimary">{project || "Select Project"}</p>
                         <p className="text-subTextColor text-sm dark:text-darkTextSecondary">{task || "Select Task"}</p>
                         {
                             task &&
@@ -76,7 +76,7 @@ const StartTimer = () => {
                 </div>
 
                 <div>
-                    <h2 className="text-base sm:text-lg font-semibold text-headingTextColor dark:text-darkTextPrimary">{formatTime(time)}</h2>
+                    <h2 className="text-base sm:text-lg font-medium text-headingTextColor dark:text-darkTextPrimary">{formatTime(time)}</h2>
                     <p className="text-sm text-subTextColor dark:text-darkTextSecondary">Today: {formatTime(time)}</p>
                 </div>
 

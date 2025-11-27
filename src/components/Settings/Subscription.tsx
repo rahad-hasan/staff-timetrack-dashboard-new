@@ -71,7 +71,7 @@ export default function Subscription() {
         <div className="border border-borderColor rounded-lg p-3 sm:p-4 bg-white dark:bg-darkPrimaryBg dark:border-darkBorder mt-4">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
                 <div>
-                    <h2 className="text-xl mb-1.5 font-semibold text-headingTextColor dark:text-darkTextPrimary">Subscription</h2>
+                    <h2 className="text-xl mb-1.5 font-medium text-headingTextColor dark:text-darkTextPrimary">Subscription</h2>
                     <p className="text-subTextColor mb-4 dark:text-darkTextSecondary">
                         Manage your billing and payment details
                     </p>
@@ -94,7 +94,7 @@ export default function Subscription() {
             </div>
             <div className="mb-8 border rounded-lg p-4 bg-gradient-to-r from-[#f0f9ff] to-white flex items-center justify-between">
                 <div>
-                    <h3 className="text-lg font-semibold text-headingTextColor">
+                    <h3 className="text-lg font-medium text-headingTextColor">
                         Current Plan: <span className="text-primary">{currentSubscription}</span>
                     </h3>
                     <p className="text-sm text-subTextColor">
@@ -113,7 +113,7 @@ export default function Subscription() {
                         className={`flex flex-col justify-between border rounded-lg shadow dark:border-darkBorder dark:shadow-2xl dark:shadow-white ${plan.color}`}
                     >
                         <div className={` rounded-lg bg-gradient-to-b ${plan.color} p-6`}>
-                            <h3 className="text-xl font-semibold mb-5  text-headingTextColor dark:text-darkTextPrimary">{plan.name}</h3>
+                            <h3 className="text-xl font-medium mb-5  text-headingTextColor dark:text-darkTextPrimary">{plan.name}</h3>
                             <div className=" flex gap-2 items-end mb-5">
                                 <p className="text-4xl  text-headingTextColor dark:text-darkTextPrimary">{plan.price}</p>
                                 <p className="text-sm  text-headingTextColor dark:text-darkTextPrimary">/ {plan.period}</p>

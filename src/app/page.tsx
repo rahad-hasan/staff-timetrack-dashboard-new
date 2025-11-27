@@ -90,7 +90,7 @@ const SignIn = () => {
                     <div>
                         <div className=" flex flex-col items-center mb-5">
                             <Image src={loginIcon} width={200} height={200} alt="icon" className=" w-16" />
-                            <h2 className=" text-2xl font-semibold mt-4 mb-2">Sign in</h2>
+                            <h2 className=" text-2xl font-medium mt-4 mb-2">Sign in</h2>
                             <p className="">Enter your details to sign in</p>
                         </div>
                         <Form {...form}>

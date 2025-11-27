@@ -24,8 +24,10 @@ const CoreWorkMembers = () => {
     const memberData = useMemo(
         () => [
             { name: "Kalki Noland", image: "https://avatar.iran.liara.run/public/18", productivity: "78%", total_work: "24:08:00" },
+            { name: "Minakshi Devi", image: "https://avatar.iran.liara.run/public/25", productivity: "73%", total_work: "12:08:00" },
             { name: "Minakshi Devi", image: "https://avatar.iran.liara.run/public/25", productivity: "78%", total_work: "12:08:00" },
             { name: "Dani Wolvarin", image: "https://avatar.iran.liara.run/public/20", productivity: "35%", total_work: "08:00:00" },
+            { name: "Dani Wolvarin", image: "https://avatar.iran.liara.run/public/20", productivity: "50%", total_work: "08:00:00" },
             { name: "Alex Johnson", image: "https://avatar.iran.liara.run/public/22", productivity: "92%", total_work: "45:15:00" },
         ],
         []
@@ -47,7 +49,7 @@ const CoreWorkMembers = () => {
                             alt={name}
                             className="rounded-full w-10"
                         />
-                        <span className="font-medium">{name}</span>
+                        <span className="font-bold">{name}</span>
                     </div>
                 )
             }
@@ -55,6 +57,14 @@ const CoreWorkMembers = () => {
         {
             accessorKey: "productivity",
             header: "Productivity",
+            cell: ({ row }) => {
+                const productivity = row.getValue("productivity") as string
+                return (
+                    <div className="">
+                        <p className="font-medium">{productivity}</p>
+                    </div>
+                )
+            }
         },
         {
             accessorKey: "total_work",
@@ -111,6 +121,7 @@ const CoreWorkMembers = () => {
                                 <TableRow
                                     key={row.id}
                                     data-state={row.getIsSelected() && "selected"}
+                                    className=" py-10"
                                 >
                                     {row.getVisibleCells().map((cell) => (
                                         <TableCell key={cell.id}>

@@ -13,7 +13,7 @@ const TaskCart = ({ task }: { task: ITask }) => {
 
     return (
         <div className=" border p-6 rounded-lg bg-white dark:bg-darkSecondaryBg cursor-grab" >
-            <h2 className=' text-lg font-semibold text-headingTextColor dark:text-darkTextPrimary'>{task?.taskName}</h2>
+            <h2 className=' text-lg font-medium text-headingTextColor dark:text-darkTextPrimary'>{task?.taskName}</h2>
             <div className=' mt-3 flex items-center justify-between'>
                 <Image src={task?.image} alt='image' width={200} height={200} className=' w-9 rounded-full' />
                 <div className=' border border-borderColor dark:border-darkBorder rounded-lg flex items-center gap-4 justify-between px-2 py-2'>

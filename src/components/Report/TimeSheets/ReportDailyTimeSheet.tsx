@@ -129,7 +129,7 @@ const ReportDailyTimeSheet = () => {
     };
     const TimelineEntry = ({ project, startTime, endTime, color, topPosition, heightPercentage, leftPercentage, widthPercentage, trackIndex, maxTracks }: TimelineEntryProps) => {
 
-        const baseClasses = 'absolute p-2 text-xs font-semibold rounded-lg border-l-4 shadow-lg z-10 transition-all duration-300 hover:shadow-xl';
+        const baseClasses = 'absolute p-2 text-xs font-medium rounded-lg border-l-4 shadow-lg z-10 transition-all duration-300 hover:shadow-xl';
         let colorClasses;
 
         if (color === 'yellow') {

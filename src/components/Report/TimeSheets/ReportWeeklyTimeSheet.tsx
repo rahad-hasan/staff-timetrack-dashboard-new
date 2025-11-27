@@ -91,7 +91,7 @@ const ReportWeeklyTimeSheet = () => {
                                     key={i}
                                     className={`z-10 px-4 py-5 text-center ${i < rows.times.length - 1 ? 'border-r border-gray-200 dark:border-darkBorder' : ''}`}
                                 >
-                                    <h2 className=" text-lg text-primary font-semibold">{time.time}</h2>
+                                    <h2 className=" text-lg text-primary font-medium">{time.time}</h2>
                                 </td>
                             ))}
                         </tr>

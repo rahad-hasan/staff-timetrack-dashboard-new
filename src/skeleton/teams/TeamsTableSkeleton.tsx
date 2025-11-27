@@ -19,7 +19,7 @@ const TeamsTableSkeleton = () => {
             ))}
 
             <div
-                className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 border border-white dark:border-darkBorder flex items-center justify-center text-xs text-gray-400 font-semibold"
+                className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 border border-white dark:border-darkBorder flex items-center justify-center text-xs text-gray-400 font-medium"
                 style={{ marginLeft: '-12px' }}
             >
                 10+
@@ -37,7 +37,7 @@ const TeamsTableSkeleton = () => {
 
             <div className="w-full overflow-x-auto">
                 <div className={`w-full ${MIN_TABLE_WIDTH}`}>
-                    <div className="flex border-b border-gray-200 dark:border-darkBorder py-3 text-sm font-semibold text-gray-500">
+                    <div className="flex border-b border-gray-200 dark:border-darkBorder py-3 text-sm font-medium text-gray-500">
 
                         <div className="w-[33%] pl-2">Team Name</div>
                         <div className="w-[25%]">Members</div>

@@ -55,7 +55,7 @@ const GaugeChart: React.FC<GaugeChartProps> = ({
       </div>
 
       {/* Text Section */}
-      <p className="text-xl font-semibold text-subTextColor mt-1 dark:text-darkTextPrimary">{value}</p>
+      <p className="text-xl font-medium text-subTextColor mt-1 dark:text-darkTextPrimary">{value}</p>
       <p className="text-base text-subTextColor dark:text-darkTextSecondary">{label}</p>
     </div>
   );

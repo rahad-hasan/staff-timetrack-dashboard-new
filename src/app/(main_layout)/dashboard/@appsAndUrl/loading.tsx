@@ -17,7 +17,7 @@ const loading = () => {
                 </div>
             </div>
             <div className=" overflow-x-scroll sm:overflow-auto">
-                <div className="flex border-b border-gray-200 py-3 text-sm font-semibold text-gray-500 mt-5">
+                <div className="flex border-b border-gray-200 py-3 text-sm font-medium text-gray-500 mt-5">
                     <div className="w-[30%] pl-2 min-w-[200px]">App or Site</div>
                     <div className="w-[30%] text-center min-w-[100px]">Today</div>
                     <div className="w-[40%] text-center min-w-[100px]">This Week</div>

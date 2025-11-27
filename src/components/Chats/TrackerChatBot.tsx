@@ -58,7 +58,7 @@ const TrackerChatBot = () => {
                                 <h2 className="bg-white text-primary text-2xl font-bold h-10 w-10 flex items-center justify-center rounded-full">T</h2>
                             </div>
                             <div>
-                                <h3 className="text-lg font-semibold">Tracker</h3>
+                                <h3 className="text-lg font-medium">Tracker</h3>
                                 <p className="text-sm">A live chat interface that allows for seamless, natural communication.</p>
                             </div>
                             <div>
@@ -77,7 +77,7 @@ const TrackerChatBot = () => {
                                         </div>
                                     )}
                                     <div className="max-w-[75%]">
-                                        {message.sender !== 'user' && <h2 className="text-base font-semibold dark:text-black">Ai Assistant</h2>}
+                                        {message.sender !== 'user' && <h2 className="text-base font-medium dark:text-black">Ai Assistant</h2>}
                                         <div className={`p-2 rounded-lg ${message.sender === 'user' ? 'bg-primary text-white' : 'bg-gray-100 text-black'}`}>
                                             <p>{message.content}</p>
                                             <p className={`text-[10px] ${message.sender !== 'user' ? 'text-left' : 'text-right'}`}>8:05 PM</p>

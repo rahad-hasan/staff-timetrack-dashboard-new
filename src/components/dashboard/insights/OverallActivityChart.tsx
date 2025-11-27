@@ -3,9 +3,9 @@
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
 const data = [
-    { name: "Group A", value: 4567 },
-    { name: "Group B", value: 700 },
-    { name: "Group C", value: 1800 },
+    { name: "Production", value: 60 },
+    { name: "Offline", value: 10 },
+    { name: "Dull", value: 30 },
 
 ];
 

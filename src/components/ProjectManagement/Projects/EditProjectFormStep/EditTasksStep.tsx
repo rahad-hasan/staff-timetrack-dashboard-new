@@ -29,7 +29,7 @@ const EditTasksStep = ({ handleStepSubmit }: GeneralInfoStepProps) => {
     }
     return (
         <div>
-            <h2 className=" text-xl font-semibold mb-4">Edit Tasks</h2>
+            <h2 className=" text-xl font-medium mb-4">Edit Tasks</h2>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-full">
                     <FormField
