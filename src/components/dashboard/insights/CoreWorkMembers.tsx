@@ -26,9 +26,9 @@ const CoreWorkMembers = () => {
             { name: "Kalki Noland", image: "https://avatar.iran.liara.run/public/18", productivity: "78%", total_work: "24:08:00" },
             { name: "Minakshi Devi", image: "https://avatar.iran.liara.run/public/25", productivity: "73%", total_work: "12:08:00" },
             { name: "Minakshi Devi", image: "https://avatar.iran.liara.run/public/25", productivity: "78%", total_work: "12:08:00" },
-            { name: "Dani Wolvarin", image: "https://avatar.iran.liara.run/public/20", productivity: "35%", total_work: "08:00:00" },
-            { name: "Dani Wolvarin", image: "https://avatar.iran.liara.run/public/20", productivity: "50%", total_work: "08:00:00" },
-            { name: "Alex Johnson", image: "https://avatar.iran.liara.run/public/22", productivity: "92%", total_work: "45:15:00" },
+            { name: "Dani Wolvarin", image: "https://avatar.iran.liara.run/public/15", productivity: "35%", total_work: "08:00:00" },
+            // { name: "Dani Wolvarin", image: "https://avatar.iran.liara.run/public/20", productivity: "50%", total_work: "08:00:00" },
+            // { name: "Alex Johnson", image: "https://avatar.iran.liara.run/public/22", productivity: "92%", total_work: "45:15:00" },
         ],
         []
     );
@@ -49,6 +49,10 @@ const CoreWorkMembers = () => {
                             alt={name}
                             className="rounded-full w-10"
                         />
+                        {/* <Avatar className=" w-8 sm:w-10 h-8 sm:h-10">
+                            <AvatarImage src="https://github.com/shadcn.png" />
+                            <AvatarFallback>CN</AvatarFallback>
+                        </Avatar> */}
                         <span className="font-bold">{name}</span>
                     </div>
                 )

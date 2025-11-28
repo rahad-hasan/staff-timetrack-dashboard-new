@@ -12,7 +12,7 @@ const Insights = async () => {
     ];
 
     return (
-        <div className=" border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px] w-full">
+        <div className="w-full lg:w-[50%] border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">
             <div className=" flex justify-between items-center">
                 <h2 className=" text-base text-headingTextColor sm:text-lg dark:text-darkTextPrimary">INSIGHTS</h2>
                 <div className=" flex items-center gap-3">
@@ -31,7 +31,7 @@ const Insights = async () => {
                     <Info size={18} className=" cursor-pointer" />
                 </div>
             </div>
-            <div className=" flex flex-col sm:flex-row gap-5 border-b-2 border-borderColor dark:border-darkBorder">
+            <div className=" flex flex-col sm:flex-row gap-5 border-b border-borderColor dark:border-darkBorder">
                 <div className=" mt-5 sm:w-1/2">
                     <div className=" flex justify-between">
                         <div className=" mb-4">

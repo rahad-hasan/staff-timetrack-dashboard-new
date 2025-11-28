@@ -52,9 +52,9 @@ const Members = () => {
                             className="rounded-full w-10"
                         />
                         <div className="flex flex-col">
-                            <span className="font-medium">{name}</span>
-                            <span className="font-medium">{project}</span>
-                            <span className="">{task}</span>
+                            <span className="font-bold mb-1">{name}</span>
+                            <span className=" mb-1 font-normal">{project}</span>
+                            <span className=" text-xs font-normal text-subTextColor">{task}</span>
                         </div>
                     </div>
                 )
@@ -77,7 +77,7 @@ const Members = () => {
                 return (
                     <div className="flex items-center gap-3 min-w-[80px]">
                         <div className="flex flex-col">
-                            <span className={` ${bgColor} rounded-full text-center text-white px-1  text-sm mb-0.5`}>{progress}</span>
+                            <span className={` ${bgColor} rounded-full text-center text-white px-1  text-sm mb-1`}>{progress}</span>
                             <span className="">{today_work}</span>
                         </div>
                     </div>
@@ -102,13 +102,13 @@ const Members = () => {
                 return (
                     <div className=" flex justify-end gap-0">
                         <div className=" flex flex-col items-start">
-                            <span className={` ${bgColor} rounded-full text-center text-white px-2  text-sm mb-0.5`}>{progress}</span>
+                            <span className={` ${bgColor} rounded-full text-center text-white px-2  text-sm mb-1`}>{progress}</span>
                             <div className="flex flex-col">
-                                <span className=" font-medium">{week_work}</span>
-                                <span className="">Last Active {lastActive}</span>
+                                <span className=" font-medium mb-1">{week_work}</span>
+                                <span className=" font-normal text-xs text-subTextColor">Last Active {lastActive}</span>
                             </div>
                         </div>
-                        <div className="">
+                        <div className=" ">
                             <SmallChart></SmallChart>
                         </div>
                     </div>
@@ -125,7 +125,7 @@ const Members = () => {
     })
 
     return (
-        <div className=" border border-borderColor dark:border-darkBorder  dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px] w-full">
+        <div className="w-full border border-borderColor dark:border-darkBorder  dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">
             <div className=" flex justify-between items-center">
                 <h2 className=" text-base sm:text-lg text-headingTextColor dark:text-darkTextPrimary">MEMBERS</h2>
                 <div className=" flex items-center gap-3">

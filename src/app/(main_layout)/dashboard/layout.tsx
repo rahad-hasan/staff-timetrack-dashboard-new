@@ -21,12 +21,12 @@ export default function DashboardLayout({
             className={` w-full`}
         >
             {children}
-            <div className="flex flex-col lg:flex-row gap-5 mb-5">
+            <div className="flex flex-col lg:flex-row gap-5 mb-5 lg:items-stretch">
                 {recentActivity}
                 {insights}
             </div>
 
-            <div className="flex flex-col lg:flex-row gap-5 ">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 ">
                 {members}
                 {appsAndUrl}
             </div>

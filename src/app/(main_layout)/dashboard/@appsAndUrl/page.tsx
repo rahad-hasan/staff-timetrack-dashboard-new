@@ -52,8 +52,8 @@ const AppsAndUrl = () => {
                             className="rounded-full w-10"
                         />
                         <div className="flex flex-col">
-                            <span className="font-medium">{name}</span>
-                            <span className="">{soft}</span>
+                            <span className="font-bold mb-1">{name}</span>
+                            <span className=" text-sm font-normal">{soft}</span>
                         </div>
                     </div>
                 )
@@ -98,7 +98,6 @@ const AppsAndUrl = () => {
                 )
             }
         },
-
     ]
 
     const table = useReactTable({
@@ -108,7 +107,7 @@ const AppsAndUrl = () => {
     })
 
     return (
-        <div className=" border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px] w-full">
+        <div className=" w-full border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">
             <div className=" flex justify-between items-center">
                 <h2 className=" text-base sm:text-lg text-headingTextColor dark:text-darkTextPrimary">APPS & URL</h2>
                 <div className=" flex items-center gap-3">

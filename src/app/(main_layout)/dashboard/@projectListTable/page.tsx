@@ -114,8 +114,8 @@ const ProjectListTable = () => {
                 const date = row.original.date;
                 return (
                     <div className="flex flex-col">
-                        <span className="font-medium">{task}</span>
-                        <span className="">{date}</span>
+                        <span className="font-bold">{task}</span>
+                        <span className=" font-normal text-subTextColor">{date}</span>
                     </div>
                 )
             }
@@ -231,8 +231,8 @@ const ProjectListTable = () => {
 
                 const statusClass =
                     status === "In Progress"
-                        ? "bg-blue-100 dark:bg-darkPrimaryBg text-blue-800 dark:text-darkTextPrimary"
-                        : "bg-gray-100 dark:bg-darkPrimaryBg text-gray-800 dark:text-darkTextPrimary";
+                        ? "bg-[#fee6eb] border border-[#fcc2cf] text-[#f40139] hover:text-[#f40139]"
+                        : "bg-[#fff5db] border border-[#efaf07] text-[#efaf07] hover:text-[#efaf07]";
 
                 const handleStatusChange = (newStatus: string) => {
                     console.log(newStatus);
@@ -244,9 +244,9 @@ const ProjectListTable = () => {
                             <DropdownMenuTrigger asChild>
                                 <Button
                                     variant="outline2"
-                                    className={`px-2 py-1.5 rounded-full text-sm font-medium ${statusClass}`}
+                                    className={`px-2 py-1.5 rounded-xl text-sm font-medium ${statusClass}`}
                                 >
-                                    <span className={` w-2 h-2 rounded-full ${status === "In Progress" ? "bg-blue-300 dark:bg-gray-300 " : "bg-gray-300"}`}></span>
+                                    <span className={` w-2 h-2 rounded-full ${status === "In Progress" ? "bg-[#f40139] " : "bg-[#efaf07]"}`}></span>
                                     {status}
                                     <ChevronDown />
                                 </Button>
@@ -265,7 +265,6 @@ const ProjectListTable = () => {
             },
         }
     ];
-
 
     const table = useReactTable({
         data: taskList,
