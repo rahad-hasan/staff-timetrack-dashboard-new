@@ -1,5 +1,4 @@
 "use client"
-import { EllipsisVertical } from "lucide-react";
 import { useMemo } from "react";
 import Image from "next/image";
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
@@ -7,6 +6,7 @@ import SmallChart from "@/components/Dashboard/SmallChart/SmallChart";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Link from "next/link";
+import FilterButton from "@/components/Common/FilterButton";
 
 
 const Members = () => {
@@ -53,8 +53,8 @@ const Members = () => {
                         />
                         <div className="flex flex-col">
                             <span className="font-bold mb-1">{name}</span>
-                            <span className=" mb-1 font-normal">{project}</span>
-                            <span className=" text-xs font-normal text-subTextColor">{task}</span>
+                            <span className=" mb-1 font-normal text-headingTextColor dark:text-darkTextPrimary">{project}</span>
+                            <span className=" text-xs font-normal text-subTextColor dark:text-darkTextSecondary">{task}</span>
                         </div>
                     </div>
                 )
@@ -104,8 +104,8 @@ const Members = () => {
                         <div className=" flex flex-col items-start">
                             <span className={` ${bgColor} rounded-full text-center text-white px-2  text-sm mb-1`}>{progress}</span>
                             <div className="flex flex-col">
-                                <span className=" font-medium mb-1">{week_work}</span>
-                                <span className=" font-normal text-xs text-subTextColor">Last Active {lastActive}</span>
+                                <span className=" font-medium mb-1 text-headingTextColor dark:text-darkTextPrimary">{week_work}</span>
+                                <span className=" font-normal text-xs text-subTextColor dark:text-darkTextSecondary">Last Active {lastActive}</span>
                             </div>
                         </div>
                         <div className=" ">
@@ -129,9 +129,9 @@ const Members = () => {
             <div className=" flex justify-between items-center">
                 <h2 className=" text-base sm:text-lg text-headingTextColor dark:text-darkTextPrimary">MEMBERS</h2>
                 <div className=" flex items-center gap-3">
-                    <Button className=" text-sm md:text-base dark:text-darkTextPrimary" variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
+                    <FilterButton />
                     <Link href={`/teams`}>
-                        <Button className=" text-sm md:text-base " size={'sm'}>All Member</Button>
+                        <Button className="py-[14px] px-[16px] sm:py-[18px] sm:px-[20px] rounded-[8px]" size={'sm'}>All Member</Button>
                     </Link>
                 </div>
             </div>

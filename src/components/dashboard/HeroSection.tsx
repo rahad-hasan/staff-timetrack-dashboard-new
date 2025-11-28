@@ -8,13 +8,19 @@ import teamMemberChart from '../../assets/dashboard/teamMemberChart.svg'
 import totalProjectChart from '../../assets/dashboard/totalProjectChart.svg'
 import weeklyActivityChart from '../../assets/dashboard/weeklyActivityChart.svg'
 import weeklyWorkChart from '../../assets/dashboard/weeklyWorkChart.svg'
+import darkProjectChart from '../../assets/dashboard/darkProjectChart.svg'
+import darkTeamChart from '../../assets/dashboard/darkTeamChart.svg'
+import darkWeeklyChart from '../../assets/dashboard/darkWeeklyChart.svg'
+import darkWeeklyWorkChart from '../../assets/dashboard/darkWeeklyWorkChart.svg'
+import { useTheme } from 'next-themes';
 
 const HeroSection = () => {
+    const { theme } = useTheme();
     const metrics = [
         {
             id: 1,
             icon: weeklyActivityIcon,
-            chart: weeklyActivityChart,
+            chart: theme === 'dark' ? darkWeeklyChart : weeklyActivityChart,
             value: "48%",
             title: "Weekly ACTIVITY",
             change: "+1.5%",
@@ -24,7 +30,7 @@ const HeroSection = () => {
         {
             id: 2,
             icon: weeklyWorkIcon,
-            chart: weeklyWorkChart,
+            chart: theme === 'dark' ? darkWeeklyWorkChart : weeklyWorkChart,
             value: "30:31:05",
             title: "Weekly Work",
             change: "+30m",
@@ -34,7 +40,7 @@ const HeroSection = () => {
         {
             id: 3,
             icon: totalProjectIcon,
-            chart: totalProjectChart,
+            chart: theme === 'dark' ? darkProjectChart : totalProjectChart,
             value: "25",
             title: "Total project",
             change: "-15m",
@@ -44,7 +50,7 @@ const HeroSection = () => {
         {
             id: 4,
             icon: teamMemberIcon,
-            chart: teamMemberChart,
+            chart: theme === 'dark' ? darkTeamChart : teamMemberChart,
             value: "12",
             title: "Team Member",
             change: "+25m",
@@ -57,7 +63,7 @@ const HeroSection = () => {
             {metrics.map(({ id, icon: Icon, chart, value, title, change, direction, note }) => {
                 const isUp = direction === "up";
                 const TrendIcon = isUp ? TrendingUp : TrendingDown;
-                const trendColor = isUp ? "text-green-500" : "text-red-500";
+                const trendColor = isUp ? "text-[#12cd69]" : "text-[#f40139]";
 
                 return (
                     <div
@@ -70,7 +76,9 @@ const HeroSection = () => {
                                     <Image
                                         src={Icon}
                                         alt="icon"
-                                        className="p-1.5 object-contain w-full h-full"
+                                        className="p-1.5 object-contain w-full h-full dark:invert"
+                                        width={50}
+                                        height={50}
                                     />
                                 </div>
                                 <div>
@@ -86,8 +94,8 @@ const HeroSection = () => {
 
                         <div className="bg-bgSecondary dark:bg-darkSecondaryBg rounded-b-2xl border-t px-4 py-3 flex items-center gap-2 absolute left-0 right-0 bottom-0">
                             <TrendIcon size={20} className={trendColor} />
-                            <p className="text-primary">{change}</p>
-                            <p className="text-md text-muted-foreground dark:text-darkTextSecondary">{note}</p>
+                            <p className={`${trendColor}`}>{change}</p>
+                            <p className={`text-md text-muted-foreground dark:text-darkTextSecondary`}>{note}</p>
                         </div>
                     </div>
                 );

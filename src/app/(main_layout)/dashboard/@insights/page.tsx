@@ -1,7 +1,8 @@
+import FilterButton from "@/components/Common/FilterButton";
 import CoreWorkMembers from "@/components/Dashboard/insights/CoreWorkMembers";
 import OverallActivityChart from "@/components/Dashboard/insights/OverallActivityChart";
 import { Button } from "@/components/ui/button";
-import { EllipsisVertical, Info } from "lucide-react";
+import { Info } from "lucide-react";
 
 const Insights = async () => {
     await new Promise((resolve) => setTimeout(resolve, 6000));
@@ -16,8 +17,8 @@ const Insights = async () => {
             <div className=" flex justify-between items-center">
                 <h2 className=" text-base text-headingTextColor sm:text-lg dark:text-darkTextPrimary">INSIGHTS</h2>
                 <div className=" flex items-center gap-3">
-                    <Button className=" text-sm md:text-base dark:text-darkTextPrimary" variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
-                    <Button className=" text-sm md:text-base" size={'sm'}>View Insights</Button>
+                    <FilterButton />
+                    <Button className="py-[14px] px-[16px] sm:py-[18px] sm:px-[20px] rounded-[8px]" size={'sm'}>View Insights</Button>
                 </div>
             </div>
 

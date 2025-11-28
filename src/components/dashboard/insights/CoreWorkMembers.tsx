@@ -53,7 +53,7 @@ const CoreWorkMembers = () => {
                             <AvatarImage src="https://github.com/shadcn.png" />
                             <AvatarFallback>CN</AvatarFallback>
                         </Avatar> */}
-                        <span className="font-bold">{name}</span>
+                        <span className="font-bold text-headingTextColor dark:text-darkTextPrimary">{name}</span>
                     </div>
                 )
             }
@@ -65,7 +65,7 @@ const CoreWorkMembers = () => {
                 const productivity = row.getValue("productivity") as string
                 return (
                     <div className="">
-                        <p className="font-medium">{productivity}</p>
+                        <p className="font-medium text-headingTextColor dark:text-darkTextPrimary">{productivity}</p>
                     </div>
                 )
             }
@@ -77,7 +77,7 @@ const CoreWorkMembers = () => {
                 const total_work = row.getValue("total_work") as string
                 return (
                     <div className="">
-                        <p className=" text-right">{total_work}</p>
+                        <p className=" text-right text-headingTextColor dark:text-darkTextPrimary">{total_work}</p>
                     </div>
                 )
             }

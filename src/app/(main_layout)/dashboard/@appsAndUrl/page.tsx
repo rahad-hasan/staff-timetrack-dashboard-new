@@ -1,5 +1,4 @@
 "use client"
-import { EllipsisVertical } from "lucide-react";
 import { useMemo } from "react";
 import Image from "next/image";
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
@@ -7,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import SmallChart from "@/components/Dashboard/SmallChart/SmallChart";
 import Link from "next/link";
+import FilterButton from "@/components/Common/FilterButton";
 
 const AppsAndUrl = () => {
 
@@ -111,9 +111,9 @@ const AppsAndUrl = () => {
             <div className=" flex justify-between items-center">
                 <h2 className=" text-base sm:text-lg text-headingTextColor dark:text-darkTextPrimary">APPS & URL</h2>
                 <div className=" flex items-center gap-3">
-                    <Button className=" text-sm md:text-base dark:text-darkTextPrimary" variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
+                    <FilterButton />
                     <Link href={`/activity/app`}>
-                        <Button className=" text-sm md:text-base" size={'sm'}>View Report</Button>
+                        <Button className="py-[14px] px-[16px] sm:py-[18px] sm:px-[20px] rounded-[8px]" size={'sm'}>View Report</Button>
                     </Link>
                 </div>
             </div>

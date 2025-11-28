@@ -10,13 +10,14 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-import { ArrowUpDown, ChevronDown, EllipsisVertical } from "lucide-react";
+import { ArrowUpDown, ChevronDown } from "lucide-react";
 // import lowFlag from '../../assets/dashboard/lowFlag.svg'
 // import mediumFlag from '../../assets/dashboard/mediumFlag.svg'
 // import noneFlag from '../../assets/dashboard/noneFlag.svg'
 // import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import FilterButton from "@/components/Common/FilterButton";
 
 const ProjectListTable = () => {
     const [sorting, setSorting] = useState<SortingState>([])
@@ -114,8 +115,8 @@ const ProjectListTable = () => {
                 const date = row.original.date;
                 return (
                     <div className="flex flex-col">
-                        <span className="font-bold">{task}</span>
-                        <span className=" font-normal text-subTextColor">{date}</span>
+                        <span className="font-bold text-headingTextColor dark:text-darkTextPrimary">{task}</span>
+                        <span className=" font-normal text-subTextColor dark:text-darkTextSecondary">{date}</span>
                     </div>
                 )
             }
@@ -284,9 +285,9 @@ const ProjectListTable = () => {
             <div className=" flex justify-between items-center mb-5">
                 <h2 className=" text-base sm:text-lg text-headingTextColor dark:text-darkTextPrimary">Project list</h2>
                 <div className=" flex items-center gap-3">
-                    <Button className=" text-sm md:text-base dark:text-darkTextPrimary" variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
+                    <FilterButton />
                     <Link href={`/project-management/projects`}>
-                        <Button className=" text-sm md:text-base" size={'sm'}>All Project</Button>
+                        <Button className="py-[14px] px-[16px] sm:py-[18px] sm:px-[20px] rounded-[8px]" size={'sm'}>All Project</Button>
                     </Link>
                 </div>
             </div>
