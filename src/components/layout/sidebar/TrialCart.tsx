@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { X, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import TrailIcon from "@/components/Icons/TrailIcon";
 
 const TrialCart = () => {
     const [visible, setVisible] = useState(true);
@@ -21,7 +22,7 @@ const TrialCart = () => {
                 </button>
 
                 <Button className="" size={'sm'}>
-                    <span className="text-primary"><Zap size={20} className=" text-white" /></span> Trial
+                    <span className="text-primary"><TrailIcon size={30} color="#ffffff"></TrailIcon></span> Trial
                 </Button>
 
                 <h2 className="text-lg font-medium mt-3 text-headingTextColor dark:text-darkTextPrimary">Basic</h2>

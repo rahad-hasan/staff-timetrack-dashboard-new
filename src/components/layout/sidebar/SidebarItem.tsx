@@ -1,8 +1,30 @@
-"use client";
 import { Minus, Plus } from "lucide-react";
 import Link from "next/link";
 import clsx from "clsx";
 import { motion, AnimatePresence } from "framer-motion";
+import DashboardIcon from "@/components/Icons/DashboardIcon";
+import TimeSheetsIcon from "@/components/Icons/TimeSheetsIcon";
+import ActivityIcon from "@/components/Icons/ActivityIcon";
+import InsightsIcon from "@/components/Icons/InsightsIcon";
+import ReportIcon from "@/components/Icons/ReportIcon";
+import CalendarIcon from "@/components/Icons/CalendarIcon";
+import SettingsIcon from "@/components/Icons/SettingsIcon";
+import ProjectManagementIcon from "@/components/Icons/ProjectManagementIcon";
+import TeamsIcon from "@/components/Icons/TeamsIcon";
+import LeaveManagementIcon from "@/components/Icons/LeaveManagementIcon";
+
+const iconMapping = {
+  Dashboard: DashboardIcon,
+  Timesheets: TimeSheetsIcon,
+  Activity: ActivityIcon,
+  Insights: InsightsIcon,
+  Projects: ProjectManagementIcon,
+  Report: ReportIcon,
+  Members: TeamsIcon,
+  Calendar: CalendarIcon,
+  Leaves: LeaveManagementIcon,
+  Settings: SettingsIcon,
+};
 
 const containerVariants = {
   collapsed: {
@@ -44,6 +66,8 @@ const SidebarItem = ({
   onClick?: () => void;
   children?: React.ReactNode;
 }) => {
+
+  const IconComponent = iconMapping[label as keyof typeof iconMapping] || DashboardIcon; // Default to DashboardIcon if not found in mapping
   const content = (
     <div
       onClick={onClick}
@@ -52,10 +76,11 @@ const SidebarItem = ({
         isCollapsed ? "justify-center" : "",
         "py-2 cursor-pointer",
         isOpen && "text-primary dark:text-primary"
+
       )}
     >
-      <div className="flex items-center gap-2">
-        <Icon size={20} />
+      <div className={clsx("flex items-center gap-2", label ==="Activity" && 'ml-[1px]')}>
+        <IconComponent size={20} />
         {!isCollapsed && <span>{label}</span>}
       </div>
       {!isCollapsed && collapsible && (

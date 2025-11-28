@@ -14,6 +14,7 @@ import SidebarItem from './sidebar/SidebarItem';
 import SubItem from './sidebar/SubItem';
 import TrialCart from './sidebar/TrialCart';
 import timerLogo from '../../assets/timerLogo.svg'
+import CollapsedIcon from '../Icons/CollapsedIcon';
 
 const SideBar = () => {
     const pathname = usePathname();
@@ -62,13 +63,14 @@ const SideBar = () => {
 
                         <button
                             onClick={toggleCollapse}
-                            className="p-2 rounded-lg  hover:bg-gray-100 dark:hover:bg-darkSecondaryBg transition cursor-pointer"
+                            className="p-2 rounded-lg  hover:bg-gray-100 dark:hover:bg-darkSecondaryBg text-subTextColor dark:text-darkTextPrimary transition cursor-pointer"
                         >
-                            {isCollapsed ? (
+                            {/* {isCollapsed ? (
                                 <ChevronRight className='' size={22} />
                             ) : (
                                 <ChevronLeft className='' size={22} />
-                            )}
+                            )} */}
+                            <CollapsedIcon size={22}></CollapsedIcon>
                         </button>
                     </div>
 

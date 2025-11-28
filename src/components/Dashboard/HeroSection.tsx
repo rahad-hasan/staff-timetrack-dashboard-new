@@ -1,3 +1,4 @@
+"use client";
 import weeklyActivityIcon from '../../assets/dashboard/weeklyActivityIcon.svg'
 import weeklyWorkIcon from '../../assets/dashboard/weeklyWorkIcon.svg'
 import totalProjectIcon from '../../assets/dashboard/totalProjectIcon.svg'
