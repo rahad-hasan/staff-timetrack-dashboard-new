@@ -56,12 +56,12 @@ const WeeklyDatePicker = ({ centerDate, setCenterDate }: WeeklyDatePickerProps) 
     console.log("End Date:", endOfWeek.toISOString());
     return (
         <div className="flex">
-            <ChevronLeft onClick={() => handleNavigate(-1)} className="border p-2.5 w-10 h-10 bg-bgSecondary dark:bg-darkPrimaryBg border-borderColor dark:border-darkBorder text-headingTextColor dark:text-darkTextPrimary rounded-lg cursor-pointer" />
-            <div className=" flex items-center gap-2 border dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg rounded-md px-2 sm:px-4 mx-3">
+            <ChevronLeft onClick={() => handleNavigate(-1)} className="border p-2.5 w-10 h-10 dark:bg-darkPrimaryBg border-borderColor dark:border-darkBorder text-headingTextColor dark:text-darkTextPrimary rounded-lg cursor-pointer" />
+            <div className=" flex items-center gap-2 border dark:border-darkBorder dark:bg-darkPrimaryBg rounded-md px-2 sm:px-4 mx-3">
                 <Calendar className=" text-primary w-5.5" />
-                <span className="text-sm sm:text-[16px] text-headingTextColor dark:text-darkTextPrimary">{dateDisplay}</span>
+                <span className="text-sm sm:text-[16px] font-medium text-headingTextColor dark:text-darkTextPrimary">{dateDisplay}</span>
             </div>
-            <ChevronRight onClick={() => handleNavigate(1)} className="border p-2.5 w-10 h-10 bg-bgSecondary dark:bg-darkPrimaryBg border-borderColor dark:border-darkBorder text-headingTextColor dark:text-darkTextPrimary rounded-lg cursor-pointer" />
+            <ChevronRight onClick={() => handleNavigate(1)} className="border p-2.5 w-10 h-10 dark:bg-darkPrimaryBg border-borderColor dark:border-darkBorder text-headingTextColor dark:text-darkTextPrimary rounded-lg cursor-pointer" />
         </div>
     );
 };

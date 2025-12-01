@@ -56,7 +56,7 @@ const WeeklyTimeSheetsTable = () => {
                 <table className="w-full">
                     <thead className=" ">
                         <tr className="text-slate-900 border dark:border-darkBorder">
-                            <th className=" z-10 px-4 py-5 text-left border dark:border-darkBorder  text-headingTextColor dark:text-darkTextPrimary">
+                            <th className=" z-10 px-4 py-5 text-left dark:border-darkBorder text-headingTextColor dark:text-darkTextPrimary">
                                 Project name
                             </th>
                             {weekDays.map((d) => (
@@ -70,7 +70,7 @@ const WeeklyTimeSheetsTable = () => {
                             </th>
                         </tr>
                     </thead>
-                    <tbody className="border ">
+                    <tbody className=" ">
                         {rows.map((project: Row, i: number) => (
                             <tr key={i} className="text-slate-900 border dark:border-darkBorder">
                                 <td className=" z-10 px-4 py-5 text-left border dark:border-darkBorder">
@@ -88,7 +88,7 @@ const WeeklyTimeSheetsTable = () => {
                             </tr>
                         ))}
                     </tbody>
-                    <tfoot className="border dark:border-darkBorder">
+                    <tfoot className=" dark:border-darkBorder">
                         <tr className="text-slate-900 border dark:border-darkBorder">
                             <td className=" z-10 px-4 py-5 text-left border dark:border-darkBorder">
                                 <h2 className=" font-medium text-headingTextColor dark:text-darkTextPrimary">{tableFooter?.project}</h2>
@@ -102,7 +102,6 @@ const WeeklyTimeSheetsTable = () => {
                                 <h2 className="text-lg text-[#5db0f1] ">{tableFooter?.allWeekTotal}</h2>
                             </td>
                         </tr>
-
                     </tfoot>
                 </table>
             </div>

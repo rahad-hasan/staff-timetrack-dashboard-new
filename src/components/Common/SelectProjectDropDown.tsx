@@ -30,7 +30,7 @@ const SelectProjectDropDown = ({ projects, value, setValue }: any) => {
                     variant="outline2"
                     role="combobox"
                     aria-expanded={open}
-                    className="w-full sm:w-[250px] py-[7px] flex justify-between items-center gap-2 dark:border-darkBorder  dark:text-darkTextPrimary bg-bgSecondary dark:bg-darkPrimaryBg hover:dark:bg-darkPrimaryBg"
+                    className="w-full sm:w-[250px] h-10 bg-[#f6f7f9] flex justify-between items-center gap-2 dark:border-darkBorder dark:text-darkTextPrimary dark:bg-darkPrimaryBg hover:dark:bg-darkPrimaryBg"
                 >
                     <div className=" flex justify-between items-center gap-3">
                         {value && (
@@ -39,7 +39,7 @@ const SelectProjectDropDown = ({ projects, value, setValue }: any) => {
                                 <AvatarFallback>{projects.find((project: any) => project.value === value)?.label.charAt(0)}</AvatarFallback>
                             </Avatar>
                         )}
-                        <span>
+                        <span className="">
                             {value
                                 ? projects.find((project: any) => project.value === value)?.label
                                 : "Select Project..."}

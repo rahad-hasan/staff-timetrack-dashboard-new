@@ -2,7 +2,7 @@
 
 const DayWeekMonthSelection = ({ activeTab, handleTabClick }: any) => {
     return (
-        <div className="flex mt-3 sm:mt-0 bg-bgSecondary dark:bg-darkSecondaryBg rounded-lg box-border ">
+        <div className="grid grid-cols-3 lg:flex mt-3 w-[250px] lg:w-auto sm:mt-0 bg-bgSecondary dark:bg-darkSecondaryBg rounded-lg box-border ">
             {["Daily", "Weekly", "Monthly"].map((tab) => (
                 <button
                     key={tab}

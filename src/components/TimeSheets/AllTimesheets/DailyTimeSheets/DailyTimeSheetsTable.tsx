@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../ui/table";
 import { Button } from "@/components/ui/button";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
+import FilterButton from "@/components/Common/FilterButton";
 
 const DailyTimeSheetsTable = () => {
     const [sorting, setSorting] = useState<SortingState>([])
@@ -85,8 +86,8 @@ const DailyTimeSheetsTable = () => {
                 const taskName = row.original.taskName;
                 return (
                     <div className="flex flex-col">
-                        <span className="font-medium">{project}</span>
-                        <span className="">{taskName}</span>
+                        <span className="font-bold text-base">{project}</span>
+                        <span className=" font-normal">{taskName}</span>
                     </div>
                 )
             }
@@ -163,14 +164,17 @@ const DailyTimeSheetsTable = () => {
             cell: ({ row }) => {
                 const totalTime = row.getValue("totalTime") as string;
                 return (
+                    <div className=" flex items-center justify-between">
+
                     <div className=" flex justify-between gap-4">
                         <div className="">
                             <h1 className=" font-medium">
                                 {totalTime}
                             </h1>
-                            <p>8:00 am - 10:00 pm</p>
+                            <p className=" text-sm font-thin">8:00 am - 10:00 pm</p>
                         </div>
-                        <Button className="dark:text-darkTextPrimary" variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
+                    </div>
+                        <FilterButton />
                     </div>
                 );
             },
@@ -189,13 +193,13 @@ const DailyTimeSheetsTable = () => {
     });
 
     return (
-        <div className="border border-borderColor dark:border-darkBorder  dark:bg-darkPrimaryBg p-3 rounded-[12px]">
+        <div className="border border-borderColor dark:border-darkBorder  dark:bg-darkPrimaryBg pb-3 rounded-[12px] overflow-hidden">
             <Table>
                 <TableHeader>
                     {table.getHeaderGroups().map(headerGroup => (
                         <TableRow key={headerGroup.id}>
                             {headerGroup.headers.map(header => (
-                                <TableHead key={header.id}>
+                                <TableHead className="first:rounded-bl-none last:rounded-br-none" key={header.id}>
                                     {header.isPlaceholder
                                         ? null
                                         : flexRender(header.column.columnDef.header, header.getContext())}

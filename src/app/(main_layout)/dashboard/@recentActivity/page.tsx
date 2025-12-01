@@ -9,7 +9,7 @@ import Link from "next/link";
 import FilterButton from "@/components/Common/FilterButton";
 
 const RecentActivity = async () => {
-  await new Promise((resolve) => setTimeout(resolve, 3000));
+  // await new Promise((resolve) => setTimeout(resolve, 3000));
   const screenshorts = [
     { id: 1, img: screenshort1, progress: "5%", color: "bg-red-600" },
     { id: 2, img: screenshort2, progress: "100%", color: "bg-blue-600" },
@@ -57,7 +57,7 @@ const RecentActivity = async () => {
               </Link>
             </div>
             <div className=" overflow-x-scroll sm:overflow-auto">
-              <div className="flex justify-between gap-2 xl:gap-2.5">
+              <div className="flex justify-between gap-2 xl:gap-2.5 min-w-[500px]">
                 {screenshorts.map((p) => (
                   <div
                     key={p.id}
@@ -65,9 +65,8 @@ const RecentActivity = async () => {
                   >
                     <Image
                       src={p.img}
-                      width={350}
-                      height={170}
-                      className="object-cover"
+                      width={200} height={200}
+                      className="object-cover w-full"
                       alt="screenshot"
                     />
                     {/* <img

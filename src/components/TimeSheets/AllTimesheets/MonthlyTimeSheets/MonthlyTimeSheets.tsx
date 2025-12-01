@@ -69,7 +69,7 @@ const MonthlyTimeSheets = () => {
             <div className=" mb-5 flex flex-col gap-4 md:gap-0 sm:flex-row justify-between">
                 <div className="flex gap-3">
                     <MonthPicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></MonthPicker>
-                    <div className=" hidden md:block">
+                    <div className=" hidden md:block h-full">
                         <SelectProjectDropDown projects={projects} setValue={setValue} value={value}></SelectProjectDropDown>
                     </div>
                 </div>

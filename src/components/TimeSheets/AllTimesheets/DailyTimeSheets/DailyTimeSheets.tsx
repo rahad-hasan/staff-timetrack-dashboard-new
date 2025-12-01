@@ -90,7 +90,7 @@ const DailyTimeSheets = () => {
                     </div> */}
                     <SelectProjectDropDown projects={projects} setValue={setValue} value={value}></SelectProjectDropDown>
                 </div>
-                <div className=" ">
+                {/* <div className=" "> */}
                     {/* <Select onValueChange={setUser} value={user ?? undefined}>
                         <SelectTrigger size={'lg'} className="w-full">
                             {selectedUser ? (
@@ -126,7 +126,7 @@ const DailyTimeSheets = () => {
                         </SelectContent>
                     </Select> */}
                     <SelectUserDropDown users={users}></SelectUserDropDown>
-                </div>
+                {/* </div> */}
             </div>
 
             <div className=" mb-5">

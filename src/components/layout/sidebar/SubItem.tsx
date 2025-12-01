@@ -1,8 +1,9 @@
 "use client";
 import clsx from "clsx";
-import { GitCommitVertical } from "lucide-react";
+// import { GitCommitVertical } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import SubMenuIcon from "@/components/Icons/SubMenuIcon";
 
 const itemVariants = {
   collapsed: { opacity: 0, x: -16 },
@@ -28,14 +29,14 @@ const SubItem = ({
         variants={itemVariants}
         onClick={onClick}
         className={clsx(
-          "text-base px-2 py-2 rounded-lg cursor-pointer flex gap-1.5 items-center text-headingTextColor dark:text-darkTextPrimary ",
+          "text-base px-2 py-1.5 rounded-lg cursor-pointer flex gap-1.5 items-center text-headingTextColor dark:text-darkTextPrimary ",
           active
             ? "bg-bgPrimary border border-borderColor dark:border-none dark:text-primary dark:bg-darkPrimaryBg text-primary font-medium"
             : "text-subTextColor hover:text-primary",
-          isCollapsed && "!px-2 "
+          isCollapsed && "!px-3 "
         )}
       >
-        {active && !isCollapsed && <GitCommitVertical size={18} />}
+        {active && !isCollapsed && <SubMenuIcon size={20} />}
         <span>{label}</span>
       </motion.div>
     </Link>

@@ -20,7 +20,7 @@ const OverallActivityChart = () => {
                         data={data}
                         dataKey="value"
                         nameKey="name"
-                        innerRadius={60}
+                        innerRadius={57}
                         outerRadius={85}
                         fill="#8884d8"
                         paddingAngle={5}

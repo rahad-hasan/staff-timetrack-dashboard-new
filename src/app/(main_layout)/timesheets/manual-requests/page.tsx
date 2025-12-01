@@ -1,3 +1,4 @@
+"use client"
 import ManualRequestsTable from "@/components/TimeSheets/ManualRequests/ManualRequestsTable";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
@@ -9,9 +10,11 @@ import AddManualTimeModal from "@/components/TimeSheets/ManualRequests/AddManual
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
+import { useState } from "react";
 // import ManualRequestsSkeleton from "@/skeleton/timesheets/manualRequest/ManualRequestsSkeleton";
 
 const ManualRequests = () => {
+    const [value, setValue] = useState("")
     const projects = [
         {
             value: "Time Tracker",
@@ -87,7 +90,7 @@ const ManualRequests = () => {
                         <SlidersHorizontal className="" /> <span className=" hidden sm:block dark:text-darkTextPrimary">Filters</span>
                     </Button>
                 </div> */}
-                <SelectProjectDropDown projects={projects}></SelectProjectDropDown>
+                <SelectProjectDropDown projects={projects} setValue={setValue} value={value}></SelectProjectDropDown>
                 <SelectUserDropDown users={users}></SelectUserDropDown>
             </div>
             <ManualRequestsTable></ManualRequestsTable>

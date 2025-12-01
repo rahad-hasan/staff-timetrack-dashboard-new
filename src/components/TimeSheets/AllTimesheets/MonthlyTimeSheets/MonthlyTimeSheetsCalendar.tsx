@@ -96,13 +96,13 @@ const MonthlyTimeSheetsCalendar = () => {
                 </div>
                 <div className=" flex items-center gap-2 ">
                     <p className=" font-medium text-headingTextColor dark:text-darkTextPrimary">Select Option: </p>
-                    <div className=" bg-bgSecondary dark:bg-darkPrimaryBg rounded-lg">
+                    <div className="  dark:bg-darkPrimaryBg rounded-lg">
                         <Select onValueChange={(value) => setViewType(value)} defaultValue="Hours">
                             <SelectTrigger className="w-[180px]">
                                 <SelectValue placeholder="Select An Option" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectGroup className="bg-bgSecondary dark:bg-darkSecondaryBg">
+                                <SelectGroup className=" dark:bg-darkSecondaryBg">
                                     <SelectItem className=" cursor-pointer" value="Hours">Hours</SelectItem>
                                     <SelectItem className=" cursor-pointer" value="Activity">Activity</SelectItem>
                                 </SelectGroup>
