@@ -35,7 +35,7 @@ const RecentActivity = async () => {
 
       <div className="h-full flex flex-col justify-between">
         {Array.from({ length: 4 }).map((_, index) => (
-          <div key={index} className="space-y-1.5">
+          <div key={index} className="space-y-1.5 mt-5">
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-1.5 sm:gap-3">
                 <Avatar className="w-8 sm:w-10 h-8 sm:h-10">
@@ -56,12 +56,12 @@ const RecentActivity = async () => {
                 </Button>
               </Link>
             </div>
-            <div className="">
+            <div className=" overflow-x-scroll sm:overflow-auto">
               <div className="flex justify-between gap-2 xl:gap-2.5">
                 {screenshorts.map((p) => (
                   <div
                     key={p.id}
-                    className="h-28 w-full bg-amber-400 rounded-lg overflow-hidden"
+                    className=" w-full rounded-lg overflow-hidden"
                   >
                     <Image
                       src={p.img}
