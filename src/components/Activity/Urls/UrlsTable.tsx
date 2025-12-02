@@ -122,8 +122,8 @@ const UrlsTable = () => {
                     <div className="flex items-center gap-2">
                         <Image src={teamsLogo} alt="app_logo" width={200} height={200} className=" w-8 border border-borderColor rounded-full p-1" />
                         <div className="">
-                            <p className=" font-medium">{url}</p>
-                            <span className="">Site</span>
+                            <p className="text-base font-bold">{url}</p>
+                            <span className=" font-normal">Site</span>
                         </div>
                     </div>
                 )
@@ -201,7 +201,7 @@ const UrlsTable = () => {
                 return (
                     <div className=" flex flex-col">
                         <span className=" font-medium">{timeSpent}</span>
-                        <span className=" text-textGray dark:text-darkTextSecondary">{time}</span>
+                        <span className=" text-sm font-thin text-textGray dark:text-darkTextSecondary">{time}</span>
                     </div>
                 );
             },
@@ -222,14 +222,14 @@ const UrlsTable = () => {
     });
 
     return (
-        <div className="mt-5 border border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg rounded-[12px]">
+        <div className="mt-5 border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg pb-3 rounded-[12px]">
 
             <Table>
                 <TableHeader>
                     {table.getHeaderGroups().map(headerGroup => (
                         <TableRow key={headerGroup.id}>
                             {headerGroup.headers.map(header => (
-                                <TableHead key={header.id}>
+                                <TableHead className="first:rounded-bl-none last:rounded-br-none" key={header.id}>
                                     {header.isPlaceholder
                                         ? null
                                         : flexRender(header.column.columnDef.header, header.getContext())}

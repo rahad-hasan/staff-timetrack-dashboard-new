@@ -12,6 +12,7 @@ import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
 
 
 const App = () => {
+    const [value, setValue] = useState("")
     console.log('app');
     // Filter
     const projects = [
@@ -85,7 +86,7 @@ const App = () => {
                         <Download size={20} /> <span className=" hidden sm:block">Export</span>
                     </button> */}
                     <button
-                        className={`px-3 py-2 flex items-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 text-gray-600 dark:border-darkBorder hover:text-textGray border border-borderColor "
+                        className={`px-2.5 py-2 flex items-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 text-gray-600 dark:border-darkBorder hover:text-textGray border border-borderColor "
                                 `}
                     >
                         <Settings className=" text-primary" size={20} />
@@ -101,7 +102,7 @@ const App = () => {
                     {/* <Button className=" hidden md:flex dark:text-darkTextPrimary" variant={'filter'}>
                         <SlidersHorizontal className="dark:text-darkTextPrimary" /> Filters
                     </Button> */}
-                    <SelectProjectDropDown projects={projects}></SelectProjectDropDown>
+                    <SelectProjectDropDown  projects={projects} setValue={setValue} value={value}></SelectProjectDropDown>
                 </div>
 
                 <div className=" flex items-center gap-3">

@@ -14,13 +14,17 @@ import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
+import AvgActivityIcon from "@/components/Icons/AvgActivityIcon";
+import FocusTimeProjectIcon from "@/components/Icons/FocusTimeProjectIcon";
+import TeamMemberIcon from "@/components/Icons/TeamMemberIcon";
+import WorkedTimeIcon from "@/components/Icons/WorkedTimeIcon";
 // import AllScreenShortsSkeleton from "@/skeleton/activity/screenShorts/AllScreenShortsSkeleton";
 // import Every10MinsSkeleton from "@/skeleton/activity/screenShorts/Every10MinsSkeleton";
 
 const ScreenShorts = () => {
     console.log('screenShorts');
     const [activeTab, setActiveTab] = useState<"Every 10 min" | "All Screenshots">("Every 10 min");
-
+    const [value, setValue] = useState("")
     const handleTabClick = (tab: "Every 10 min" | "All Screenshots") => {
         setActiveTab(tab);
     };
@@ -126,13 +130,13 @@ const ScreenShorts = () => {
                 <HeadingComponent heading="Screenshot" subHeading="All the screenshot during the working hour by team member is here"></HeadingComponent>
 
                 <div className="flex gap-3">
-                    <div className="flex mt-3 sm:mt-0 bg-bgSecondary dark:bg-darkSecondaryBg rounded-lg overflow-hidden w-[271px]">
+                    <div className="grid grid-cols-2 mt-3 sm:mt-0 bg-bgSecondary dark:bg-darkSecondaryBg rounded-lg overflow-hidden">
                         {["Every 10 min", "All Screenshots"].map((tab) => (
                             <button
                                 key={tab}
                                 onClick={() => handleTabClick(tab as "Every 10 min" | "All Screenshots")}
-                                className={`px-4 py-2 text-sm font-medium transition-all cursor-pointer rounded-lg m-0.5  ${activeTab === tab
-                                    ? "bg-bgPrimary dark:bg-darkPrimaryBg dark:text-darkTextPrimary text-headingTextColor shadow-sm"
+                                className={`px-3 py-[9px] text-sm font-medium transition-all cursor-pointer rounded-lg m-0.5  ${activeTab === tab
+                                    ? "bg-bgPrimary dark:bg-darkPrimaryBg dark:text-darkTextPrimary text-headingTextColor shadow-sm outline-1 outline-borderColor dark:outline-darkBorder"
                                     : "text-subTextColor hover:text-gray-800 dark:text-darkTextPrimary"
                                     }`}
                             >
@@ -152,14 +156,14 @@ const ScreenShorts = () => {
                     <Button className=" hidden xl:flex dark:text-darkTextPrimary" variant={'filter'}>
                         <SlidersHorizontal className="dark:text-darkTextPrimary" /> Filters
                     </Button> */}
-                    <SelectProjectDropDown projects={projects}></SelectProjectDropDown>
+                    <SelectProjectDropDown projects={projects} setValue={setValue} value={value}></SelectProjectDropDown>
                 </div>
                 <div className=" flex items-center gap-3">
 
                     <Dialog>
                         <form>
                             <DialogTrigger asChild>
-                                <Button className="dark:text-darkTextPrimary bg-bgSecondary h-10" variant={'outline2'}>
+                                <Button className="dark:text-darkTextPrimary h-10" variant={'outline2'}>
                                     <NotepadText className=" text-sm md:text-base dark:text-darkTextPrimary" /> All Notes
                                 </Button>
                             </DialogTrigger>
@@ -183,8 +187,33 @@ const ScreenShorts = () => {
                             className="border border-borderColor rounded-2xl w-full dark:border-darkBorder transition-all hover:shadow duration-200"
                         >
                             {/* Card header */}
-                            <div className="flex items-center gap-2 px-3 py-5 bg-bgSecondary dark:bg-darkPrimaryBg rounded-t-2xl">
-                                <Icon size={40} className="border border-borderColor rounded-lg p-1.5" />
+                            <div className="flex items-center gap-2 px-3 py-5 dark:bg-darkPrimaryBg rounded-t-2xl">
+
+                                {
+                                    title === "AVG ACTIVITY" &&
+                                    <div className="border border-borderColor dark:border-darkBorder rounded-lg p-1.5 text-subTextColor dark:text-darkTextSecondary">
+                                        <AvgActivityIcon size={25}></AvgActivityIcon>
+                                    </div>
+                                }
+                                {
+                                    title === "CORE WORK" &&
+                                    <div className="border border-borderColor dark:border-darkBorder rounded-lg p-1.5 text-subTextColor dark:text-darkTextSecondary">
+                                        <FocusTimeProjectIcon size={25}></FocusTimeProjectIcon>
+                                    </div>
+                                }
+                                {
+                                    title === "WORKED TIME" &&
+                                    <div className="border border-borderColor dark:border-darkBorder rounded-lg p-1.5 text-subTextColor dark:text-darkTextSecondary">
+                                        <TeamMemberIcon size={25}></TeamMemberIcon>
+                                    </div>
+                                }
+                                {
+                                    title === "FOCUS TIME" &&
+                                    <div className="border border-borderColor dark:border-darkBorder rounded-lg p-1.5 text-subTextColor dark:text-darkTextSecondary">
+                                        <WorkedTimeIcon size={23}></WorkedTimeIcon>
+                                    </div>
+                                }
+
                                 <div>
                                     <h2 className="text-xl font-medium text-headingTextColor dark:text-darkTextPrimary">{value}</h2>
                                     <h3 className="text-subTextColor dark:text-darkTextSecondary">{title}</h3>
@@ -192,10 +221,10 @@ const ScreenShorts = () => {
                             </div>
 
                             {/* Card footer */}
-                            <div className="bg-bgPrimary dark:bg-darkSecondaryBg rounded-b-2xl px-3 py-3 flex items-center gap-2">
+                            <div className="bg-bgSecondary dark:bg-darkSecondaryBg rounded-b-2xl px-3 py-3 flex items-center gap-2">
                                 <TrendIcon size={20} className={trendColor} />
                                 <p className="text-primary">{change}</p>
-                                <p className="text-sm text-muted-foreground">{note}</p>
+                                <p className="text-sm text-subTextColor dark:text-darkTextSecondary">{note}</p>
                             </div>
                         </div>
                     );

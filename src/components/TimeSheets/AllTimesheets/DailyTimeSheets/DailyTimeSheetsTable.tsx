@@ -1,9 +1,8 @@
 "use client"
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
-import { ArrowUpDown, Check, EllipsisVertical } from "lucide-react";
+import { ArrowUpDown, Check } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../ui/table";
-import { Button } from "@/components/ui/button";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import FilterButton from "@/components/Common/FilterButton";
 
@@ -165,15 +164,14 @@ const DailyTimeSheetsTable = () => {
                 const totalTime = row.getValue("totalTime") as string;
                 return (
                     <div className=" flex items-center justify-between">
-
-                    <div className=" flex justify-between gap-4">
-                        <div className="">
-                            <h1 className=" font-medium">
-                                {totalTime}
-                            </h1>
-                            <p className=" text-sm font-thin">8:00 am - 10:00 pm</p>
+                        <div className=" flex justify-between gap-4">
+                            <div className="">
+                                <h1 className=" font-medium">
+                                    {totalTime}
+                                </h1>
+                                <p className=" text-sm font-thin">8:00 am - 10:00 pm</p>
+                            </div>
                         </div>
-                    </div>
                         <FilterButton />
                     </div>
                 );

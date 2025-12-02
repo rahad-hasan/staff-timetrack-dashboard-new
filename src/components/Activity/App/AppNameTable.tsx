@@ -126,10 +126,10 @@ const AppNameTable = () => {
                 // const image = row.original.image;
                 return (
                     <div className="flex items-center gap-2">
-                        <Image src={teamsLogo} alt="app_logo" width={200} height={200} className=" w-8 border border-borderColor rounded-full p-1" />
+                        <Image src={teamsLogo} alt="app_logo" width={200} height={200} className=" w-8 border border-borderColor dark:border-darkBorder rounded-full p-1" />
                         <div className="">
-                            <p className=" font-medium">{appName}</p>
-                            <span className="">App</span>
+                            <p className=" text-base font-bold">{appName}</p>
+                            <span className="font-normal">App</span>
                         </div>
                     </div>
                 )
@@ -209,14 +209,14 @@ const AppNameTable = () => {
                     <div className=" flex items-center justify-between">
                         <div className=" flex flex-col">
                             <span className=" font-medium">{timeSpent}</span>
-                            <span className=" text-textGray dark:text-darkTextSecondary">{time}</span>
+                            <span className="text-sm font-thin text-textGray dark:text-darkTextSecondary">{time}</span>
                         </div>
                         <div className="flex justify-end">
 
                             {
                                 isBlock ?
                                     <button
-                                        className={` w-[100px] py-1.5 flex items-center justify-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 bg-[#fee6eb]  text-red-400  border border-red-400"
+                                        className={` w-[95px] py-2 flex items-center justify-center gap-2 font-semibold transition-all cursor-pointer rounded-lg m-0.5 bg-[#fee6eb]  text-red-500  border-none"
                                 `}
                                     >
                                         Unblock
@@ -226,7 +226,7 @@ const AppNameTable = () => {
                                         <form>
                                             <DialogTrigger asChild>
                                                 <button
-                                                    className={` w-[100px] py-1.5 flex items-center justify-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 text-gray-600 hover:text-textGray dark:text-darkTextSecondary dark:border-darkBorder border border-borderColor"
+                                                    className={` w-[95px] py-2 flex items-center justify-center gap-2 font-semibold transition-all cursor-pointer rounded-lg m-0.5 text-gray-600 hover:text-textGray dark:text-darkTextSecondary dark:border-darkBorder border border-borderColor"
                                                 `}
                                                 >
                                                     Block App
@@ -257,14 +257,14 @@ const AppNameTable = () => {
     });
 
     return (
-        <div className="mt-5 border border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg rounded-[12px]">
+        <div className="mt-5 border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg pb-3 rounded-[12px]">
 
             <Table>
                 <TableHeader>
                     {table.getHeaderGroups().map(headerGroup => (
                         <TableRow key={headerGroup.id}>
                             {headerGroup.headers.map(header => (
-                                <TableHead key={header.id}>
+                                <TableHead className="first:rounded-bl-none last:rounded-br-none" key={header.id}>
                                     {header.isPlaceholder
                                         ? null
                                         : flexRender(header.column.columnDef.header, header.getContext())}

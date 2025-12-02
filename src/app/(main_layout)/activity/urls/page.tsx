@@ -10,6 +10,7 @@ import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
 
 const Urls = () => {
     console.log('urls');
+    const [value, setValue] = useState("")
     const projects = [
         {
             value: "Time Tracker",
@@ -80,7 +81,7 @@ const Urls = () => {
                         <Download size={20} /> <span className=" hidden sm:block">Export</span>
                     </button> */}
                     <button
-                        className={`px-3 py-2 flex items-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 text-gray-600 dark:border-darkBorder hover:text-textGray border border-borderColor "
+                        className={`px-2.5 py-2 flex items-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 text-gray-600 dark:border-darkBorder hover:text-textGray border border-borderColor "
                                 `}
                     >
                         <Settings className=" text-primary" size={20} />
@@ -95,7 +96,7 @@ const Urls = () => {
                     {/* <Button className=" hidden lg:flex dark:text-darkTextPrimary" variant={'filter'}>
                         <SlidersHorizontal className="dark:text-darkTextPrimary" /> Filters
                     </Button> */}
-                    <SelectProjectDropDown projects={projects}></SelectProjectDropDown>
+                    <SelectProjectDropDown  projects={projects} setValue={setValue} value={value}></SelectProjectDropDown>
                 </div>
                 <div className=" flex items-center gap-3">
                     <SelectUserDropDown users={users}></SelectUserDropDown>
