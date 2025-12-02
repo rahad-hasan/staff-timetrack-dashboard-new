@@ -1,13 +1,13 @@
 "use client"
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
-import { ArrowUpDown, Check, EllipsisVertical, Pencil, Trash2 } from "lucide-react";
+import { ArrowUpDown, Check, CircleCheck, CircleX, PencilLine } from "lucide-react";
 import { useMemo, useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import EditManualTimeModal from "./EditManualTimeModal";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
+import FilterButton from "@/components/Common/FilterButton";
 
 const ManualRequestsTable = () => {
     const [sorting, setSorting] = useState<SortingState>([])
@@ -88,8 +88,8 @@ const ManualRequestsTable = () => {
                 const taskName = row.original.taskName;
                 return (
                     <div className="flex flex-col">
-                        <span className="font-medium">{project}</span>
-                        <span className="">{taskName}</span>
+                        <span className="font-bold text-base">{project}</span>
+                        <span className=" font-normal">{taskName}</span>
                     </div>
                 )
             }
@@ -166,35 +166,40 @@ const ManualRequestsTable = () => {
             cell: ({ row }) => {
                 const totalTime = row.getValue("totalTime") as string;
                 return (
-                    <div className=" flex justify-between gap-4">
+                    <div className=" flex justify-between items-center gap-4">
                         <div className="">
                             <h1 className=" font-medium">
                                 {totalTime}
                             </h1>
-                            <p>8:00 am - 10:00 pm</p>
+                            <p className=" text-sm font-thin">8:00 am - 10:00 pm</p>
                         </div>
                         <Popover>
                             <PopoverTrigger asChild>
-                                <Button className="dark:text-darkTextPrimary" variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
+                                <div>
+                                    <FilterButton></FilterButton>
+                                </div>
                             </PopoverTrigger>
-                            <PopoverContent side="bottom" align="end" className=" w-[250px] px-2">
+                            <PopoverContent side="bottom" align="end" className=" w-[260px] px-2">
                                 <div className="">
                                     <div className="space-y-2">
                                         <Dialog>
                                             <form>
                                                 <DialogTrigger asChild>
                                                     <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                                        <Pencil size={18} />
+                                                        <PencilLine size={20} />
                                                         <p>Edit Time</p>
                                                     </div>
                                                 </DialogTrigger>
                                                 <EditManualTimeModal></EditManualTimeModal>
                                             </form>
                                         </Dialog>
-
                                         <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                            <Trash2 size={18} />
-                                            <p>Delete Time</p>
+                                            <CircleCheck size={20} />
+                                            <p>Approve requested time</p>
+                                        </div>
+                                        <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
+                                            <CircleX size={20} />
+                                            <p>Deny requested time</p>
                                         </div>
                                     </div>
                                 </div>
@@ -218,13 +223,13 @@ const ManualRequestsTable = () => {
     });
 
     return (
-        <div className="border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg pb-3 rounded-[12px]">
+        <div className="border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg pb-3 rounded-[12px] overflow-hidden">
             <Table>
                 <TableHeader>
                     {table.getHeaderGroups().map(headerGroup => (
                         <TableRow key={headerGroup.id}>
                             {headerGroup.headers.map(header => (
-                                <TableHead key={header.id}>
+                                <TableHead className="first:rounded-bl-none last:rounded-br-none" key={header.id}>
                                     {header.isPlaceholder
                                         ? null
                                         : flexRender(header.column.columnDef.header, header.getContext())}

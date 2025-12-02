@@ -66,7 +66,7 @@ const MonthlyTimeSheetsCalendar = () => {
                     :
                     <div>
                         {activity && (
-                            <div className="px-2 py-1 text-sm font-medium rounded-lg bg-primary dark:bg-darkSecondaryBg text-primary shadow-sm">
+                            <div className="px-2 py-1 text-sm font-medium rounded-lg bg-primary/5 dark:bg-darkSecondaryBg text-primary shadow-sm">
                                 {activity}%
                             </div>
                         )}
