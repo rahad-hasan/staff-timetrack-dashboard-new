@@ -15,8 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import Image from "next/image";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const CoreWorkMembers = () => {
@@ -53,11 +52,51 @@ const CoreWorkMembers = () => {
         productivity: "35%",
         total_work: "08:00:00",
       },
-      // { name: "Dani Wolvarin", image: "https://avatar.iran.liara.run/public/20", productivity: "50%", total_work: "08:00:00" },
-      // { name: "Alex Johnson", image: "https://avatar.iran.liara.run/public/22", productivity: "92%", total_work: "45:15:00" },
+      {
+        name: "Dani Wolvarin",
+        image: "https://avatar.iran.liara.run/public/15",
+        productivity: "35%",
+        total_work: "08:00:00",
+      },
+      {
+        name: "Dani Wolvarin",
+        image: "https://avatar.iran.liara.run/public/15",
+        productivity: "35%",
+        total_work: "08:00:00",
+      },
     ],
     []
   );
+
+  const [visibleRows, setVisibleRows] = useState<Member[]>(memberData);
+
+  useEffect(() => {
+    const handleResize = () => {
+     if (window.innerWidth < 1640) {
+        // Display only the first 5 members when screen width is below 1800px but above 1700px
+        setVisibleRows(memberData.slice(0, 4));
+      }
+      else if (window.innerWidth < 1850) {
+        // Display only the first 5 members when screen width is below 1800px but above 1700px
+        setVisibleRows(memberData.slice(0, 5));
+      } else {
+        // Display all members when screen width is 1800px or above
+        setVisibleRows(memberData);
+      }
+    };
+
+    // Set initial state based on current window size
+    handleResize();
+
+    // Listen for window resize events
+    window.addEventListener("resize", handleResize);
+
+    // Cleanup listener on component unmount
+    return () => window.removeEventListener("resize", handleResize);
+  }, [memberData]);
+  ;
+
+
   const columns: ColumnDef<Member>[] = [
     {
       accessorKey: "name",
@@ -110,7 +149,7 @@ const CoreWorkMembers = () => {
   ];
 
   const table = useReactTable({
-    data: memberData,
+    data: visibleRows,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
@@ -145,9 +184,9 @@ const CoreWorkMembers = () => {
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   );
                 })}
