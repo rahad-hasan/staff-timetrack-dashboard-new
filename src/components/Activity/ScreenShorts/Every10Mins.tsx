@@ -326,8 +326,8 @@ const Every10Mins = () => {
                                     />
 
                                     <div className="mt-3">
-                                        <div className="flex justify-between items-center">
-                                            <p className=" text-lg font-normal mb-2 text-subTextColor dark:text-darkTextPrimary">
+                                        <div className="flex justify-between items-center mb-2">
+                                            <p className=" text-lg font-normal text-subTextColor dark:text-darkTextPrimary">
                                                 {screenShort.start} - {screenShort.end}
                                             </p>
                                             <Dialog>

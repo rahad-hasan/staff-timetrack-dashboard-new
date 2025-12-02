@@ -222,7 +222,7 @@ const UrlsTable = () => {
     });
 
     return (
-        <div className="mt-5 border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg pb-3 rounded-[12px]">
+        <div className="mt-5 border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg pb-4.5 rounded-[12px]">
 
             <Table>
                 <TableHeader>

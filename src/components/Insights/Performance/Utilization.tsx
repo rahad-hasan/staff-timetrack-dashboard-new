@@ -5,7 +5,7 @@ const Utilization = () => {
     const secondBarValue = 20;
     const secondBarRange = { start: 50, end: 65 };
     return (
-        <div className=" border border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg py-3 px-5 rounded-[12px] w-full">
+        <div className=" border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg py-3 px-5 rounded-[12px] w-full">
             <div className=" flex gap-3 items-center">
                 <h2 className="text-base sm:text-lg text-headingTextColor dark:text-darkTextPrimary">Utilization</h2>
                 <Info size={18} className=" cursor-pointer" />

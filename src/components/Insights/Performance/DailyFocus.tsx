@@ -9,7 +9,7 @@ const DailyFocus = () => {
     const circumference = 2 * Math.PI * radius;
     const offset = circumference - (percentage / 100) * circumference;
     return (
-        <div className=" border border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg py-3 px-5 rounded-[12px] w-full">
+        <div className=" border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg py-3 px-5 rounded-[12px] w-full">
             <div className=" flex gap-3 items-center">
                 <h2 className="text-base sm:text-lg text-headingTextColor dark:text-darkTextPrimary">Daily Focus</h2>
                 <Info size={18} className=" cursor-pointer" />

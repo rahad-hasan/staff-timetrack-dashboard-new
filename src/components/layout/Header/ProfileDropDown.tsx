@@ -8,6 +8,11 @@ import ProfilePopoverContent from "../sidebar/ProfilePopoverContent";
 import Image from "next/image";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState, useEffect } from "react";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar"
 
 const ProfileDropDown = () => {
   const [open, setOpen] = useState(false);
@@ -25,13 +30,10 @@ const ProfileDropDown = () => {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button variant="outline2" className="py-[5px] dark:text-darkTextPrimary">
-          <Image
-            src={`https://avatar.iran.liara.run/public/18`}
-            width={200}
-            height={200}
-            className=" w-7 sm:w-8 rounded-full"
-            alt="User Avatar"
-          />
+          <Avatar className="w-8 h-8">
+            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+            <AvatarFallback>CN</AvatarFallback>
+          </Avatar>
           <span className="hidden md:block">Dannielis</span> Vettori
           <DropDownIcon size={20} />
         </Button>

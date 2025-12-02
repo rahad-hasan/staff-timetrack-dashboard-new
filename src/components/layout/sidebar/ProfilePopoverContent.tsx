@@ -2,18 +2,20 @@ import { PopoverContent } from "@/components/ui/popover";
 import { BellOff, CreditCard, Headset, LogOut, Plug, Share2, User, UserPlus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import {
+    Avatar,
+    AvatarFallback,
+    AvatarImage,
+} from "@/components/ui/avatar"
 
 const ProfilePopoverContent = ({ side, align }: { side: "top" | "right" | "bottom" | "left", align: "center" | "end" | "start" }) => {
     return (
         <PopoverContent side={side} align={align}>
             <div className="flex items-center gap-2 mb-4">
-                <Image
-                    src="https://avatar.iran.liara.run/public/18"
-                    alt="Dannielis Vettori"
-                    width={48}
-                    height={48}
-                    className="rounded-full w-14"
-                />
+                <Avatar className="w-12 h-12">
+                    <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+                    <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
                 <div>
                     <h4 className="font-medium text-xl">Dannielis Vettori</h4>
                     <div className=" flex items-center gap-2 mt-1">

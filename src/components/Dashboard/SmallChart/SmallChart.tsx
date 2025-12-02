@@ -20,7 +20,7 @@ const SmallChart = () => {
     const { color } = useColorStore();
 
     return (
-        <ResponsiveContainer width={105} height={50}>
+        <ResponsiveContainer width={105} height={40}>
             <BarChart
                 data={trainerData}
                 margin={{

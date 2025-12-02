@@ -104,7 +104,7 @@ const ProjectListTable = () => {
                             className=" cursor-pointer flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                         >
-                            Task Name
+                            Project Name
                             <ArrowUpDown className="ml-2 h-4 w-4" />
                         </span>
                     </div>
@@ -133,7 +133,7 @@ const ProjectListTable = () => {
                             Manager
                             <ArrowUpDown className="ml-2 h-4 w-4" />
                         </span>
-                    </div>
+                    </div> 
                 )
             },
             cell: ({ row }) => {
