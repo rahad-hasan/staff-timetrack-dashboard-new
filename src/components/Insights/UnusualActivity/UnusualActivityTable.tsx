@@ -222,13 +222,13 @@ const UnusualActivityTable = () => {
     });
 
     return (
-        <div className="border border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg p-3 rounded-[12px] overflow-x-auto mt-5">
+        <div className="border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg pb-4.5 rounded-[12px] overflow-x-auto mt-5">
             <Table>
                 <TableHeader>
                     {table.getHeaderGroups().map((headerGroup) => (
                         <TableRow key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
-                                <TableHead key={header.id}>
+                                <TableHead className="first:rounded-bl-none last:rounded-br-none" key={header.id}>
                                     {header.isPlaceholder
                                         ? null
                                         : flexRender(

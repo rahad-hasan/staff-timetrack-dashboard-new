@@ -120,7 +120,7 @@ const UrlsTable = () => {
                 // const image = row.original.image;
                 return (
                     <div className="flex items-center gap-2">
-                        <Image src={teamsLogo} alt="app_logo" width={200} height={200} className=" w-8 border border-borderColor rounded-full p-1" />
+                        <Image src={teamsLogo} alt="app_logo" width={200} height={200} className=" w-10 border border-borderColor rounded-full p-1.5" />
                         <div className="">
                             <p className="text-base font-bold">{url}</p>
                             <span className=" font-normal">Site</span>

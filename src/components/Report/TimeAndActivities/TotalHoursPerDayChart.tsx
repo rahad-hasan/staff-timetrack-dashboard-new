@@ -47,7 +47,7 @@ const TotalHoursPerDayChart = () => {
         },
     ];
     return (
-        <div className=' h-[400px] w-full border border-borderColor dark:border-darkBorder  bg-bgSecondary dark:bg-darkPrimaryBg px-4 pt-4 pb-12 rounded-xl mt-5'>
+        <div className=' h-[400px] w-full border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg px-4 pt-4 pb-12 rounded-xl mt-5'>
             <h2 className=' mb-4 text-subTextColor dark:text-darkTextPrimary'>Total hours worked per day a week</h2>
             <ResponsiveContainer width="100%" height="100%">
                 <BarChart width={150} height={40} data={data} barSize={60}>

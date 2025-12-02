@@ -77,20 +77,21 @@ export default function Subscription() {
                     </p>
                 </div>
 
-                <div className="flex items-center bg-[#f6f7f9] dark:bg-darkSecondaryBg rounded-lg ">
+                <div className="inline-flex mt-3 sm:mt-0 h-10 bg-bgSecondary dark:bg-darkSecondaryBg rounded-lg">
                     {["Monthly", "Yearly"].map((tab) => (
                         <button
                             key={tab}
                             onClick={() => handleTabClick(tab as "Monthly" | "Yearly")}
-                            className={`px-4 py-2 text-sm font-medium transition-all cursor-pointer rounded-lg m-0.5 dark:text-darkTextPrimary ${activeTab === tab
-                                ? "bg-white text-headingTextColor shadow-sm dark:bg-darkPrimaryBg"
-                                : "text-subTextColor hover:text-headingTextColor"
-                                }`}
+                            className={`px-3 py-2 text-[13px] sm:text-sm font-medium transition-all cursor-pointer rounded-lg ${activeTab === tab
+                                ? "bg-bgPrimary dark:bg-darkPrimaryBg dark:text-darkTextPrimary text-headingTextColor outline-1 outline-borderColor dark:outline-darkBorder shadow"
+                                : "text-subTextColor dark:text-darkTextPrimary hover:text-gray-800"
+                                } flex-shrink-0`}
                         >
                             {tab}
                         </button>
                     ))}
                 </div>
+
             </div>
             <div className="mb-8 border rounded-lg p-4 bg-gradient-to-r from-[#f0f9ff] to-white flex items-center justify-between">
                 <div>
@@ -121,7 +122,7 @@ export default function Subscription() {
 
                             <p className="text-sm text-subTextColor mb-6 dark:text-darkTextPrimary">{plan.description}</p>
                             <button
-                                className={`w-full py-2 border dark:border-darkBorder rounded-md text-sm font-medium transition text-headingTextColor dark:text-darkTextPrimary ${plan.buttonColor}`}
+                                className={`w-full py-3 border dark:border-darkBorder rounded-md text-sm font-medium transition text-headingTextColor dark:text-darkTextPrimary ${plan.buttonColor}`}
                             >
                                 Get Started
                             </button>

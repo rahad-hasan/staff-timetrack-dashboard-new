@@ -111,8 +111,8 @@ const ArchivedProjectTable = () => {
                 const date = row.original.date;
                 return (
                     <div className="flex flex-col">
-                        <span className="font-medium">{projectName}</span>
-                        <span className="">{date}</span>
+                        <span className="font-bold text-base">{projectName}</span>
+                        <span className=" font-normal">{date}</span>
                     </div>
                 )
             }
@@ -244,7 +244,7 @@ const ArchivedProjectTable = () => {
     });
 
     return (
-        <div className="mt-5 border border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg p-3 rounded-[12px]">
+        <div className="mt-5 border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">
             <div className=" mb-5">
                 <h2 className=" text-base sm:text-lg">Projects</h2>
             </div>

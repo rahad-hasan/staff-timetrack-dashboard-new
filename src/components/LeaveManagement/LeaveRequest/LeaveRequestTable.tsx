@@ -269,7 +269,7 @@ const LeaveRequestTable = () => {
     });
 
     return (
-        <div className="mt-5 border border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg p-3 rounded-[12px]">
+        <div className="mt-5 border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg  p-4 2xl:p-5  rounded-[12px]">
             <div className=" mb-5">
                 <h2 className=" text-base sm:text-lg dark:text-darkTextPrimary">Leave Request</h2>
             </div>

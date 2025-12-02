@@ -7,9 +7,9 @@ const DayWeekMonthSelection = ({ activeTab, handleTabClick }: any) => {
                 <button
                     key={tab}
                     onClick={() => handleTabClick(tab as "Daily" | "Weekly" | "Monthly")}
-                    className={`px-3.5 py-[9px] text-sm font-medium transition-all cursor-pointer rounded-lg min-w-[70px] text-center
+                    className={`px-3.5 h-10 text-sm font-medium transition-all cursor-pointer rounded-lg min-w-[70px] text-center
                     ${activeTab === tab
-                            ? "bg-bgPrimary dark:bg-darkPrimaryBg dark:text-darkTextPrimary text-headingTextColor outline-1 outline-borderColor dark:outline-darkBorder shadow"
+                            ? "bg-bgPrimary dark:bg-darkPrimaryBg dark:text-darkTextPrimary text-headingTextColor outline-1 outline-borderColor dark:outline-darkBorder"
                             : " text-headingTextColor dark:text-darkTextPrimary hover:text-gray-800"
                         }`}
                 >

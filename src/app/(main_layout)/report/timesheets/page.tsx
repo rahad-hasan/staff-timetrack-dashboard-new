@@ -1,4 +1,5 @@
 "use client"
+import DayWeekMonthSelection from "@/components/Common/DayWeekMonthSelection";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import ReportDailyTimeSheet from "@/components/Report/TimeSheets/ReportDailyTimeSheet";
 import ReportMonthlyTimeSheet from "@/components/Report/TimeSheets/ReportMonthlyTimeSheet";
@@ -18,22 +19,7 @@ const ReportTimeSheets = () => {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5">
                 <HeadingComponent heading="All Timesheets" subHeading="All the timesheet by team member who completed is displayed here"></HeadingComponent>
 
-                <div className="flex gap-3">
-                    <div className="flex mt-3 sm:mt-0 bg-bgSecondary dark:bg-darkSecondaryBg rounded-lg overflow-hidden">
-                        {["Daily", "Weekly", "Monthly"].map((tab) => (
-                            <button
-                                key={tab}
-                                onClick={() => handleTabClick(tab as "Daily" | "Weekly" | "Monthly")}
-                                className={`px-4 py-2 text-sm font-medium  transition-all cursor-pointer rounded-lg m-0.5 ${activeTab === tab
-                                    ? "bg-bgPrimary text-headingTextColor shadow-sm dark:bg-darkPrimaryBg dark:text-darkTextPrimary"
-                                    : "text-subTextColor hover:text-gray-800 dark:text-darkTextPrimary"
-                                    }`}
-                            >
-                                {tab}
-                            </button>
-                        ))}
-                    </div>
-                </div>
+                <DayWeekMonthSelection activeTab={activeTab} handleTabClick={handleTabClick}></DayWeekMonthSelection>
             </div>
             {
                 activeTab === "Daily" &&

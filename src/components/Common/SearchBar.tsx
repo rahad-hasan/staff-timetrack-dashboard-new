@@ -17,7 +17,7 @@ export default function SearchBar({ onSearch }: { onSearch: (query: string) => v
 
   return (
     <div className="relative">
-      <div className="relative hidden sm:block sm:w-[280px] dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg rounded-lg">
+      <div className="relative hidden sm:block h-10 sm:w-[280px] dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg rounded-lg">
         <Search
           className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-darkTextPrimary "
           size={18}
@@ -27,7 +27,7 @@ export default function SearchBar({ onSearch }: { onSearch: (query: string) => v
           placeholder="Search..."
           value={query}
           onChange={handleChange}
-          className="pl-9 py-4.5 dark:border-darkBorder dark:text-darkTextPrimary"
+          className="pl-9  h-10 dark:border-darkBorder dark:text-darkTextPrimary rounded-lg"
         />
       </div>
       {/* responsive */}

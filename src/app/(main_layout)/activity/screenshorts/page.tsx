@@ -126,18 +126,19 @@ const ScreenShorts = () => {
 
     return (
         <div>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-5">
                 <HeadingComponent heading="Screenshot" subHeading="All the screenshot during the working hour by team member is here"></HeadingComponent>
 
                 <div className="flex gap-3">
-                    <div className="grid grid-cols-2 mt-3 sm:mt-0 bg-bgSecondary dark:bg-darkSecondaryBg rounded-lg overflow-hidden">
+                    <div className="grid grid-cols-2 xl:flex mt-3 lg:mt-0 bg-bgSecondary dark:bg-darkSecondaryBg rounded-lg ">
                         {["Every 10 min", "All Screenshots"].map((tab) => (
                             <button
                                 key={tab}
                                 onClick={() => handleTabClick(tab as "Every 10 min" | "All Screenshots")}
-                                className={`px-3 py-[9px] text-sm font-medium transition-all cursor-pointer rounded-lg m-0.5  ${activeTab === tab
-                                    ? "bg-bgPrimary dark:bg-darkPrimaryBg dark:text-darkTextPrimary text-headingTextColor shadow-sm outline-1 outline-borderColor dark:outline-darkBorder"
-                                    : "text-subTextColor hover:text-gray-800 dark:text-darkTextPrimary"
+                                className={`px-3.5 h-10 text-sm font-medium transition-all cursor-pointer rounded-lg text-center
+                                    ${activeTab === tab
+                                        ? "bg-bgPrimary dark:bg-darkPrimaryBg dark:text-darkTextPrimary text-headingTextColor outline-1 outline-borderColor dark:outline-darkBorder shadow"
+                                        : " text-headingTextColor dark:text-darkTextPrimary hover:text-gray-800"
                                     }`}
                             >
                                 {tab}

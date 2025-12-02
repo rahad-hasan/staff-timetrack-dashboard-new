@@ -43,17 +43,17 @@ const Projects = () => {
             </div>
             <div className=" flex gap-3 items-center justify-between mt-3 sm:mt-0">
                 <div className="flex gap-3">
-                    <div className="flex bg-bgSecondary dark:bg-darkSecondaryBg rounded-lg overflow-hidden">
+                    <div className="inline-flex mt-3 sm:mt-0 h-10 bg-bgSecondary dark:bg-darkSecondaryBg rounded-lg">
                         {["Active", "Archived"].map((tab) => (
                             <button
                                 key={tab}
                                 onClick={() => handleTabClick(tab as "Active" | "Archived")}
-                                className={`px-4 py-2 text-sm font-medium transition-all cursor-pointer rounded-lg m-0.5 ${activeTab === tab
-                                    ? "bg-bgPrimary text-headingTextColor shadow-sm dark:bg-darkPrimaryBg dark:text-darkTextPrimary"
-                                    : "text-gray-600 hover:text-gray-800 dark:text-darkTextPrimary"
-                                    }`}
+                                className={`px-3 py-2 text-[13px] sm:text-sm font-medium transition-all cursor-pointer rounded-lg ${activeTab === tab
+                                    ? "bg-bgPrimary dark:bg-darkPrimaryBg dark:text-darkTextPrimary text-headingTextColor outline-1 outline-borderColor dark:outline-darkBorder shadow"
+                                    : "text-subTextColor dark:text-darkTextPrimary hover:text-gray-800"
+                                    } flex-shrink-0`} // Ensure buttons shrink to fit content
                             >
-                                {tab} (12)
+                                {tab}
                             </button>
                         ))}
                     </div>

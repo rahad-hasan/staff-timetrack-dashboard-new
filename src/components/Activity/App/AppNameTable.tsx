@@ -126,7 +126,7 @@ const AppNameTable = () => {
                 // const image = row.original.image;
                 return (
                     <div className="flex items-center gap-2">
-                        <Image src={teamsLogo} alt="app_logo" width={200} height={200} className=" w-11 border-[1.5px] border-borderColor dark:border-darkBorder rounded-full p-1.5" />
+                        <Image src={teamsLogo} alt="app_logo" width={200} height={200} className=" w-10 border-[1.5px] border-borderColor dark:border-darkBorder rounded-full p-1.5" />
                         <div className="">
                             <p className=" text-base font-bold">{appName}</p>
                             <span className="font-normal">App</span>
