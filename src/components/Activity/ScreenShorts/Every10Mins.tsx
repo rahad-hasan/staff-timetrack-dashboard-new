@@ -327,7 +327,7 @@ const Every10Mins = () => {
 
                                     <div className="mt-3">
                                         <div className="flex justify-between items-center">
-                                            <p className="text-sm sm:text-base text-headingTextColor dark:text-darkTextPrimary">
+                                            <p className=" text-lg font-normal mb-2 text-subTextColor dark:text-darkTextPrimary">
                                                 {screenShort.start} - {screenShort.end}
                                             </p>
                                             <Dialog>
@@ -340,7 +340,7 @@ const Every10Mins = () => {
                                             </Dialog>
                                         </div>
 
-                                        <p className="mb-2 text-sm sm:text-base text-headingTextColor dark:text-darkTextPrimary">
+                                        <p className=" text-sm mb-2 text-subTextColor dark:text-darkTextPrimary">
                                             {screenShort.activity}% of 10 minutes
                                         </p>
 
@@ -359,10 +359,10 @@ const Every10Mins = () => {
                                             step={1}
                                         />
 
-                                        <h2 className="mt-2 text-sm sm:text-base font-medium text-headingTextColor dark:text-darkTextPrimary">
+                                        <h2 className="mt-3 text-sm sm:text-base font-bold text-headingTextColor dark:text-darkTextPrimary">
                                             {screenShort.project}
                                         </h2>
-                                        <p className="text-subTextColor text-sm sm:text-base dark:text-darkTextSecondary">
+                                        <p className="text-subTextColor text-sm md:text-base dark:text-darkTextSecondary">
                                             {screenShort.task}
                                         </p>
                                     </div>

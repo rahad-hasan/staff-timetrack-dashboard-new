@@ -253,7 +253,7 @@ const AllScreenShorts = () => {
                                             {screenShort.start}
                                         </p>
                                     </div>
-                                    <h2 className=" text-sm sm:text-base font-medium text-headingTextColor dark:text-darkTextPrimary">
+                                    <h2 className=" text-sm sm:text-base font-bold text-headingTextColor dark:text-darkTextPrimary">
                                         {screenShort.project}
                                     </h2>
                                     <p className="text-sm sm:text-base text-subTextColor dark:text-darkTextSecondary">
