@@ -30,7 +30,7 @@ const ProfileDropDown = () => {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button variant="outline2" className="py-[5px] dark:text-darkTextPrimary">
-          <Avatar className="w-8 h-8">
+          <Avatar className="w-7.5 h-7.5">
             <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>

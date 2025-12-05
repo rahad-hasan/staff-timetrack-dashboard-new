@@ -7,11 +7,21 @@ import TimeSheetsIcon from "@/components/Icons/TimeSheetsIcon";
 import ActivityIcon from "@/components/Icons/ActivityIcon";
 import InsightsIcon from "@/components/Icons/InsightsIcon";
 import ReportIcon from "@/components/Icons/ReportIcon";
-import CalendarIcon from "@/components/Icons/CalendarIcon";
 import SettingsIcon from "@/components/Icons/SettingsIcon";
 import ProjectManagementIcon from "@/components/Icons/ProjectManagementIcon";
 import TeamsIcon from "@/components/Icons/TeamsIcon";
 import LeaveManagementIcon from "@/components/Icons/LeaveManagementIcon";
+import CalendarIcon from "@/components/Icons/CalendarIcon";
+import DashboardColoredIcon from "@/components/ColoredIcon/SidebarIcon/DashboardColoredIcon";
+import TimeSheetsColoredIcon from "@/components/ColoredIcon/SidebarIcon/TimeSheetsColoredIcon";
+import ActivityColoredIcon from "@/components/ColoredIcon/SidebarIcon/ActivityColoredIcon";
+import InsightsColoredIcon from "@/components/ColoredIcon/SidebarIcon/InsightsColoredIcon";
+import ProjectManagementColoredIcon from "@/components/ColoredIcon/SidebarIcon/ProjectManagementColoredIcon";
+import ReportColoredIcon from "@/components/ColoredIcon/SidebarIcon/ReportColoredIcon";
+import TeamsColoredIcon from "@/components/ColoredIcon/SidebarIcon/TeamsColoredIcon";
+import CalendarColoredIcon from "@/components/ColoredIcon/SidebarIcon/CalendarColoredIcon";
+import LeaveManagementColoredIcon from "@/components/ColoredIcon/SidebarIcon/LeaveManagementColoredIcon";
+import SettingsColoredIcon from "@/components/ColoredIcon/SidebarIcon/SettingsColoredIcon";
 
 const iconMapping = {
   Dashboard: DashboardIcon,
@@ -25,6 +35,19 @@ const iconMapping = {
   Leaves: LeaveManagementIcon,
   Settings: SettingsIcon,
 };
+
+const coloredIconMapping = {
+  Dashboard: DashboardColoredIcon,
+  Timesheets: TimeSheetsColoredIcon,
+  Activity: ActivityColoredIcon,
+  Insights: InsightsColoredIcon,
+  Projects: ProjectManagementColoredIcon,
+  Report: ReportColoredIcon,
+  Members: TeamsColoredIcon,
+  Calendar: CalendarColoredIcon,
+  Leaves: LeaveManagementColoredIcon,
+  Settings: SettingsColoredIcon,
+}
 
 const containerVariants = {
   collapsed: {
@@ -67,7 +90,7 @@ const SidebarItem = ({
   children?: React.ReactNode;
 }) => {
 
-  const IconComponent = iconMapping[label as keyof typeof iconMapping] || DashboardIcon; // Default to DashboardIcon if not found in mapping
+  const IconComponent = coloredIconMapping[label as keyof typeof coloredIconMapping] || DashboardIcon; // Default to DashboardIcon if not found in mapping
   const content = (
     <div
       onClick={onClick}
@@ -79,8 +102,8 @@ const SidebarItem = ({
 
       )}
     >
-      <div className={clsx("flex items-center gap-2", label ==="Activity" && 'ml-[1px]')}>
-        <IconComponent size={20} />
+      <div className={clsx("flex items-center gap-2", label === "Activity" && 'ml-[1px]')}>
+        <IconComponent size={32} />
         {!isCollapsed && <span>{label}</span>}
       </div>
       {!isCollapsed && collapsible && (

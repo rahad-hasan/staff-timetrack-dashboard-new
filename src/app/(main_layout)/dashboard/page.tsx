@@ -70,7 +70,7 @@ export default function Dashboard() {
         <DayWeekMonthSelection activeTab={activeTab} handleTabClick={handleTabClick}></DayWeekMonthSelection>
       </div>
       <HeroSection></HeroSection>
-      <DashboardHeroSkeleton></DashboardHeroSkeleton>
+      {/* <DashboardHeroSkeleton></DashboardHeroSkeleton> */}
     </div>
 
   );

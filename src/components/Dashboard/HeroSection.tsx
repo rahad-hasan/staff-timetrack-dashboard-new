@@ -14,6 +14,10 @@ import darkTeamChart from '../../assets/dashboard/darkTeamChart.svg'
 import darkWeeklyChart from '../../assets/dashboard/darkWeeklyChart.svg'
 import darkWeeklyWorkChart from '../../assets/dashboard/darkWeeklyWorkChart.svg'
 import { useTheme } from 'next-themes';
+import WeeklyActivityColoredIcon from '../ColoredIcon/HeroSectionIcon/WeeklyActivityColoredIcon';
+import TotalProjectColoredIcon from '../ColoredIcon/HeroSectionIcon/TotalProjectColoredIcon';
+import TeamMemberColoredIcon from '../ColoredIcon/HeroSectionIcon/TeamMemberColoredIcon';
+import WeeklyWorkColoredIcon from '../ColoredIcon/HeroSectionIcon/WeeklyWorkColoredIcon';
 
 const HeroSection = () => {
     const { theme } = useTheme();
@@ -73,14 +77,24 @@ const HeroSection = () => {
                     >
                         <div className="flex items-center justify-between px-4 py-5 bg-bgPrimary dark:bg-darkPrimaryBg rounded-t-2xl">
                             <div className=' flex items-center gap-3'>
-                                <div className='w-10 h-10 border border-borderColor dark:border-darkBorder rounded-lg'>
-                                    <Image
-                                        src={Icon}
-                                        alt="icon"
-                                        className="p-1.5 object-contain w-full h-full dark:invert"
-                                        width={50}
-                                        height={50}
-                                    />
+                                <div className=''>
+
+                                    {
+                                        title === "Weekly ACTIVITY" &&  
+                                        <WeeklyActivityColoredIcon size={36} />
+                                    }
+                                    {
+                                        title === "Total project" &&  
+                                        <TotalProjectColoredIcon size={36} />
+                                    }
+                                    {
+                                        title === "Weekly Work" &&  
+                                        <WeeklyWorkColoredIcon size={36} />
+                                    }
+                                    {
+                                        title === "Team Member" &&  
+                                        <TeamMemberColoredIcon size={36} />
+                                    }
                                 </div>
                                 <div>
                                     <h2 className="text-2xl font-medium text-headingTextColor dark:text-darkTextPrimary">{value}</h2>
