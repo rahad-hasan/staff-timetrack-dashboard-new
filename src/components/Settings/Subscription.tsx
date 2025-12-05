@@ -17,7 +17,7 @@ export default function Subscription() {
             price: "$0",
             period: "per month",
             description: "CRM most powerful free tier.",
-            color: "from-[#b6dbf9] from-10% to-white dark:to-darkPrimaryBg to-80%",
+            color: "from-[#b6dbf9] via-white to-[#b6dbf9] dark:to-darkPrimaryBg",
             buttonColor: "border-gray-300 text-gray-700 cursor-pointer",
             features: [
                 "All Templates",
@@ -113,8 +113,8 @@ export default function Subscription() {
                         key={plan.name}
                         className={`flex flex-col justify-between border rounded-lg shadow dark:border-darkBorder dark:shadow-2xl dark:shadow-white ${plan.color}`}
                     >
-                        <div className={` rounded-lg bg-gradient-to-b ${plan.color} p-6`}>
-                            <h3 className="text-xl font-medium mb-5  text-headingTextColor dark:text-darkTextPrimary">{plan.name}</h3>
+                        <div className={` rounded-lg bg-gradient-to-r ${plan.color} p-6`}>
+                            <h3 className="text-xl font-medium mb-5 text-headingTextColor dark:text-darkTextPrimary">{plan.name}</h3>
                             <div className=" flex gap-2 items-end mb-5">
                                 <p className="text-4xl  text-headingTextColor dark:text-darkTextPrimary">{plan.price}</p>
                                 <p className="text-sm  text-headingTextColor dark:text-darkTextPrimary">/ {plan.period}</p>
