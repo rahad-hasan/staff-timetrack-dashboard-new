@@ -1,6 +1,6 @@
 'use client';
 import { useState } from "react";
-import { X, Zap } from "lucide-react";
+import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import TrailIcon from "@/components/Icons/TrailIcon";
 
@@ -30,12 +30,12 @@ const TrialCart = () => {
                 <p className="text-subTextColor dark:text-darkTextSecondary text-sm mt-1">Trial expire reminder</p>
 
                 <div className="mt-4">
-                    <div className="h-2 bg-gray-200 rounded-full">
+                    <div className="h-2 bg-[#dce3e3] rounded-full">
                         <div
-                            className="h-2 bg-primary rounded-full relative"
+                            className="h-2 bg-[#268c56] rounded-full relative"
                             style={{ width: `${progress}%` }}
                         >
-                            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 bg-white border border-primary rounded-full"></div>
+                            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-4.5 h-4.5 shadow bg-[#268c56] border-5 border-[#e5e9fd] outline outline-white rounded-full"></div>
                         </div>
                     </div>
                     <p className="text-sm text-subTextColor dark:text-darkTextSecondary mt-2">

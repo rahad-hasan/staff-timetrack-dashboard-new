@@ -75,7 +75,7 @@ const WeeklyTimeSheetsTable = () => {
                             <tr key={i} className="text-slate-900 border-y dark:border-darkBorder">
                                 <td className=" z-10 px-4 py-5 text-left">
                                     <h2 className=" font-medium text-headingTextColor dark:text-darkTextPrimary">{project?.project}</h2>
-                                    <p className=" text-sm dark:text-darkTextSecondary">{project?.task}</p>
+                                    <p className=" text-sm font-normal dark:text-darkTextSecondary">{project?.task}</p>
                                 </td>
                                 {project?.times?.map((time, i) => (
                                     <td key={i} className=" z-10 px-4 py-5 text-center border dark:border-darkBorder">

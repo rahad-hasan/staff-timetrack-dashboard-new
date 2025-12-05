@@ -180,7 +180,7 @@ const AppNameTable = () => {
 
                 return (
                     <div className="flex items-center gap-2">
-                        <span className=" bg-[#5db0f1] text-white rounded-2xl px-3 py-0.5">{session}</span>
+                        <span className=" bg-[#5db0f1] text-white rounded-2xl font-normal px-3 py-0.5">{session}</span>
                     </div>
                 );
             }

@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../ui/table";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import FilterButton from "@/components/Common/FilterButton";
+import CheckIcon from "@/components/Icons/CheckIcon";
 
 const DailyTimeSheetsTable = () => {
     const [sorting, setSorting] = useState<SortingState>([])
@@ -112,9 +113,9 @@ const DailyTimeSheetsTable = () => {
                     <div className="flex items-center gap-2">
                         {
                             activity < 30 ?
-                                <span className=" bg-[#f40139] text-white font-medium px-2 rounded-full">{activity} %</span>
+                                <span className=" bg-[#f40139] text-white font-normal px-1.5 py-0.5 rounded-full">{activity}%</span>
                                 :
-                                <span className=" bg-[#5db0f1] text-white font-medium px-2 rounded-full">{activity} %</span>
+                                <span className=" bg-[#5db0f1] text-white font-normal px-1.5 py-0.5 rounded-full">{activity}%</span>
                         }
                     </div>
                 );
@@ -138,8 +139,8 @@ const DailyTimeSheetsTable = () => {
             cell: ({ row }) => {
                 const manual = row.getValue("manual") as string;
                 return (
-                    <div className="flex items-center gap-2">
-                        <span>{manual ? <Check className=" text-primary border border-primary rounded-full p-0.5" /> : ''}</span>
+                    <div className="flex items-center gap-2 text-primary">
+                        <span>{manual ? <CheckIcon size={22}/> : ''}</span>
                     </div>
                 );
             },

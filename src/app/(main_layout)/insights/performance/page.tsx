@@ -57,7 +57,7 @@ const Performance = () => {
                         <Bell size={20} /> <span className=" hidden sm:block text-headingTextColor dark:text-darkTextPrimary ">Smart Notification </span>
                     </button>
                     <button
-                        className={`px-3 py-2 flex items-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 text-gray-600 dark:border-darkBorder hover:text-textGray bg-bgSecondary dark:bg-darkPrimaryBg border border-borderColor "
+                        className={`px-2.5 py-2 flex items-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 text-gray-600 dark:border-darkBorder hover:text-textGray dark:bg-darkPrimaryBg border border-borderColor "
                                 `}
                     >
                         <Settings className=" text-primary" size={20} />

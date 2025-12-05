@@ -14,6 +14,7 @@ import ScreenShortsModal from "./ScreenShortsModal";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import ScreenShortsDeleteReason from "./ScreenShortsDeleteReason";
 import { AnimatePresence } from "framer-motion";
+import DeleteIcon from "@/components/Icons/DeleteIcon";
 
 const Every10Mins = () => {
     console.log('Every10Mins');
@@ -333,7 +334,9 @@ const Every10Mins = () => {
                                             <Dialog>
                                                 <form>
                                                     <DialogTrigger asChild>
-                                                        <Trash2 className="text-red-500 cursor-pointer" size={18} />
+                                                        <div className="text-red-500 cursor-pointer">
+                                                            <DeleteIcon size={18} />
+                                                        </div>
                                                     </DialogTrigger>
                                                     <ScreenShortsDeleteReason></ScreenShortsDeleteReason>
                                                 </form>
@@ -344,21 +347,27 @@ const Every10Mins = () => {
                                             {screenShort.activity}% of 10 minutes
                                         </p>
 
-                                        <Slider
-                                            className={`
-                                            rounded-full
-                                            ${screenShort.progress < 30
+
+                                        <div className="h-2 bg-[#dce3e3] rounded-full">
+
+                                            <div
+                                                className={`h-2 ${screenShort.progress < 30
                                                     ? "bg-red-500"
                                                     : screenShort.progress < 60
                                                         ? "bg-yellow-400"
                                                         : "bg-primary"}
-                                                        `}
-                                            disabled
-                                            defaultValue={[screenShort.progress ?? 0]}
-                                            max={100}
-                                            step={1}
-                                        />
+                                                     rounded-full relative`}
+                                                style={{ width: `${screenShort.progress}%` }}
+                                            >
+                                                <div className={`absolute right-0 top-1/2 -translate-y-1/2 w-4.5 h-4.5 shadow 
+                                                ${screenShort.progress < 30
+                                                        ? "bg-red-500"
+                                                        : screenShort.progress < 60
+                                                            ? "bg-yellow-400"
+                                                            : "bg-primary"} border-5 border-[#e5e9fd] outline outline-white rounded-full`}></div>
+                                            </div>
 
+                                        </div>
                                         <h2 className="mt-3 text-sm sm:text-base font-bold text-headingTextColor dark:text-darkTextPrimary">
                                             {screenShort.project}
                                         </h2>

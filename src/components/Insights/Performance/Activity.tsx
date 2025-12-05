@@ -6,9 +6,9 @@ const Activity = () => {
     const secondBarRange = { start: 50, end: 65 };
 
     const segments = [
-        { id: 'red', percentage: 20, color: 'bg-red-400', rounded: 'rounded-b-lg' },
-        { id: 'orange', percentage: 40, color: 'bg-orange-300' },
-        { id: 'green', percentage: 40, color: 'bg-green-400', rounded: 'rounded-t-lg' },
+        { id: 'red', percentage: 20, color: 'bg-[#d96055]', rounded: 'rounded-b-lg' },
+        { id: 'orange', percentage: 40, color: 'bg-[#efb35a]' },
+        { id: 'green', percentage: 40, color: 'bg-[#6bc38f]', rounded: 'rounded-t-lg' },
     ];
     // const labels = ['100%', '80%', '60%', '40%', '20%'];
     const labels = ['20%', '40%', '60%', '80%', '100%'];
@@ -24,7 +24,7 @@ const Activity = () => {
                     <p className="text-lg text-subTextColor dark:text-darkTextSecondary">Activity</p>
                 </div>
                 <div className="">
-                    <div className="flex items-end space-x-4 px-6  rounded-xl ">
+                    <div className="flex items-end space-x-4 px-6 rounded-xl ">
                         <div className="flex flex-col justify-between h-44 text-gray-700 text-sm font-medium">
                             {labels.reverse().map((label, index) => (
                                 <div key={index} className="h-full flex items-center text-subTextColor dark:text-darkTextSecondary">{label}</div>
