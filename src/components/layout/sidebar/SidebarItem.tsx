@@ -113,7 +113,7 @@ const SidebarItem = ({
   );
 
   return (
-    <div className="mb-2">
+    <div className="mb-0.5">
       {href ? <Link href={href}>{content}</Link> : content}
 
       <AnimatePresence initial={false}>

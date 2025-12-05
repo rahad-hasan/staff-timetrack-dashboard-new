@@ -31,7 +31,7 @@ const SubItem = ({
         className={clsx(
           "text-base px-2 py-1.5 rounded-lg cursor-pointer flex gap-1.5 items-center text-headingTextColor dark:text-darkTextPrimary ",
           active
-            ? "bg-bgPrimary border border-borderColor dark:border-none dark:text-primary dark:bg-darkPrimaryBg text-primary font-medium"
+            ? "bg-[#e9f8f0] shadow dark:border-none dark:text-primary dark:bg-darkPrimaryBg  font-medium"
             : "text-subTextColor hover:text-primary",
           isCollapsed && "!px-3 "
         )}
