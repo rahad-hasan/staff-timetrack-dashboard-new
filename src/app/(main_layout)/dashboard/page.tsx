@@ -3,7 +3,6 @@
 import DayWeekMonthSelection from "@/components/Common/DayWeekMonthSelection";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import HeroSection from "@/components/Dashboard/HeroSection";
-import DashboardHeroSkeleton from "@/skeleton/DashboardHeroSkeleton";
 import { useState } from "react";
 
 export default function Dashboard() {

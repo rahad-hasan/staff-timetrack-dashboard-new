@@ -102,7 +102,7 @@ const SidebarItem = ({
 
       )}
     >
-      <div className={clsx("flex items-center gap-2", label === "Activity" && 'ml-[1px]')}>
+      <div className={clsx("flex items-center gap-2")}>
         <IconComponent size={32} />
         {!isCollapsed && <span>{label}</span>}
       </div>
