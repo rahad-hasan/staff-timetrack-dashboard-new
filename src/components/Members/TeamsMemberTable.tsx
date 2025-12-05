@@ -11,6 +11,7 @@ import { ITeamMembers } from "@/global/globalTypes";
 import { Dialog, DialogTrigger } from "../ui/dialog";
 import EditNewMemberModal from "./EditNewMemberModal";
 import EmptyTableRow from "../Common/EmptyTableRow";
+import FilterButton from "../Common/FilterButton";
 
 const TeamsMemberTable = () => {
     const [sorting, setSorting] = useState<SortingState>([])
@@ -281,7 +282,9 @@ const TeamsMemberTable = () => {
                 return <div className="">
                     <Popover>
                         <PopoverTrigger asChild>
-                            <Button className=" dark:text-darkTextPrimary" variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
+                            <div>
+                                <FilterButton></FilterButton>
+                            </div>
                         </PopoverTrigger>
                         <PopoverContent side="bottom" align="end" className=" w-[250px] px-2">
                             <div className="">

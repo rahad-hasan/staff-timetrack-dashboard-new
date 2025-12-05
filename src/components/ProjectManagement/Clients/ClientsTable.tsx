@@ -3,14 +3,14 @@
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useMemo, useState } from "react";
-import { ArrowUpDown, EllipsisVertical, Eye, Pencil, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ArrowUpDown, Eye, Pencil, Trash2 } from "lucide-react";
 import { IClients } from "@/global/globalTypes";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import Link from "next/link";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import EditClientModal from "./EditClientModal";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
+import FilterButton from "@/components/Common/FilterButton";
 
 const ClientsTable = () => {
     const [sorting, setSorting] = useState<SortingState>([])
@@ -175,7 +175,9 @@ const ClientsTable = () => {
                 return <div className="">
                     <Popover>
                         <PopoverTrigger asChild>
-                            <Button className="dark:text-darkTextPrimary" variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
+                            <div>
+                                <FilterButton></FilterButton>
+                            </div>
                         </PopoverTrigger>
                         <PopoverContent side="bottom" align="end" className=" w-[250px] px-2">
                             <div className="">

@@ -14,7 +14,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
-import { ArrowUpDown, ChevronDown, Copy, EllipsisVertical, Eye, Package2, Pencil, Trash2, UsersRound } from "lucide-react";
+import { ArrowUpDown, ChevronDown, Copy, Eye, Package2, Pencil, Trash2, UsersRound } from "lucide-react";
 // import lowFlag from '../../assets/dashboard/lowFlag.svg'
 // import mediumFlag from '../../assets/dashboard/mediumFlag.svg'
 // import noneFlag from '../../assets/dashboard/noneFlag.svg'
@@ -24,6 +24,7 @@ import { useRouter } from "next/navigation";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import EditProjectModal from "./EditProjectModal";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
+import FilterButton from "@/components/Common/FilterButton";
 
 const ProjectTable = () => {
     console.log("ProjectTable");
@@ -317,7 +318,9 @@ const ProjectTable = () => {
                 return <div className="">
                     <Popover>
                         <PopoverTrigger asChild>
-                            <Button className=" dark:text-darkTextPrimary" variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
+                            <div>
+                                <FilterButton></FilterButton>
+                            </div>
                         </PopoverTrigger>
                         <PopoverContent side="bottom" align="end" className=" w-[250px] px-2">
                             <div className="">
