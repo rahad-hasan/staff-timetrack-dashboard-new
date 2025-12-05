@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
-import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useCallback, useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
+import CalendarIcon from "../Icons/CalendarIcon";
 
 const SpecificDatePicker = ({ selectedDate, setSelectedDate }: { selectedDate: Date, setSelectedDate: any }) => {
     // date picker
@@ -35,9 +36,9 @@ const SpecificDatePicker = ({ selectedDate, setSelectedDate }: { selectedDate: D
 
                 <Popover open={open} onOpenChange={setOpen}>
                     <PopoverTrigger asChild>
-                        <div className=" flex items-center  gap-2 border border-borderColor dark:border-darkBorder rounded-md px-4 mx-3 cursor-pointer w-full sm:w-auto dark:bg-darkPrimaryBg">
-                            <CalendarDays className=" text-primary w-5.5" />
-                            <span className="text-headingTextColor font-medium dark:text-darkTextPrimary">{dateDisplay}</span>
+                        <div className=" flex items-center text-primary gap-2 border border-borderColor dark:border-darkBorder rounded-md px-4 mx-3 cursor-pointer w-full sm:w-auto dark:bg-darkPrimaryBg">
+                            <CalendarIcon size={20} />
+                            <span className="text-sm 2xl:text-base text-headingTextColor font-medium dark:text-darkTextPrimary">{dateDisplay}</span>
                         </div>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto overflow-hidden p-0" align="start">

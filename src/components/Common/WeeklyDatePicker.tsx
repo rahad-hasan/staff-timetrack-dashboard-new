@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Calendar, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useCallback, Dispatch, SetStateAction } from "react";
+import CalendarIcon from "../Icons/CalendarIcon";
 
 
 interface WeeklyDatePickerProps {
@@ -57,9 +58,9 @@ const WeeklyDatePicker = ({ centerDate, setCenterDate }: WeeklyDatePickerProps) 
     return (
         <div className="flex">
             <ChevronLeft onClick={() => handleNavigate(-1)} className="border p-2.5 w-10 h-10 dark:bg-darkPrimaryBg border-borderColor dark:border-darkBorder text-headingTextColor dark:text-darkTextPrimary rounded-lg cursor-pointer" />
-            <div className=" flex items-center gap-2 border dark:border-darkBorder dark:bg-darkPrimaryBg rounded-md px-2 sm:px-4 mx-3">
-                <Calendar className=" text-primary w-5.5" />
-                <span className="text-sm sm:text-[16px] font-medium text-headingTextColor dark:text-darkTextPrimary">{dateDisplay}</span>
+            <div className=" flex items-center text-primary gap-2 border dark:border-darkBorder dark:bg-darkPrimaryBg rounded-md px-2 sm:px-4 mx-3">
+                <CalendarIcon size={20} />
+                <span className="text-sm 2xl:text-base font-medium text-headingTextColor dark:text-darkTextPrimary">{dateDisplay}</span>
             </div>
             <ChevronRight onClick={() => handleNavigate(1)} className="border p-2.5 w-10 h-10 dark:bg-darkPrimaryBg border-borderColor dark:border-darkBorder text-headingTextColor dark:text-darkTextPrimary rounded-lg cursor-pointer" />
         </div>
