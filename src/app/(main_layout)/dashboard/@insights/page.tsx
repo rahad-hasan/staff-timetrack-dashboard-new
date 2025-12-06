@@ -1,5 +1,4 @@
 import FilterButton from "@/components/Common/FilterButton";
-import CoreWorkMembers from "@/components/Dashboard/insights/CoreWorkMembers";
 import OverallActivityChart from "@/components/Dashboard/insights/OverallActivityChart";
 import { Button } from "@/components/ui/button";
 import { Info } from "lucide-react";
@@ -43,7 +42,7 @@ const Insights = async () => {
           <Info size={18} className=" cursor-pointer" />
         </div>
       </div>
-      <div className=" flex flex-col sm:flex-row gap-5 border-b border-borderColor dark:border-darkBorder">
+      <div className=" flex flex-col sm:flex-row gap-5 ">
         <div className=" mt-5 sm:w-1/2 ">
           <div className=" flex justify-between">
             <div className=" mb-4">
@@ -94,7 +93,7 @@ const Insights = async () => {
           <OverallActivityChart></OverallActivityChart>
         </div>
       </div>
-      <CoreWorkMembers></CoreWorkMembers>
+
     </div>
   );
 };

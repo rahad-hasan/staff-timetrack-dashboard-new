@@ -46,55 +46,37 @@ const CoreWorkMembers = () => {
         productivity: "78%",
         total_work: "12:08:00",
       },
-      {
-        name: "Dani Wolvarin",
-        image: "https://avatar.iran.liara.run/public/15",
-        productivity: "35%",
-        total_work: "08:00:00",
-      },
-      {
-        name: "Dani Wolvarin",
-        image: "https://avatar.iran.liara.run/public/15",
-        productivity: "35%",
-        total_work: "08:00:00",
-      },
-      {
-        name: "Dani Wolvarin",
-        image: "https://avatar.iran.liara.run/public/15",
-        productivity: "35%",
-        total_work: "08:00:00",
-      },
     ],
     []
   );
 
-  const [visibleRows, setVisibleRows] = useState<Member[]>(memberData);
+  // const [visibleRows, setVisibleRows] = useState<Member[]>(memberData);
 
-  useEffect(() => {
-    const handleResize = () => {
-     if (window.innerWidth < 1640) {
-        // Display only the first 5 members when screen width is below 1800px but above 1700px
-        setVisibleRows(memberData.slice(0, 4));
-      }
-      else if (window.innerWidth < 1850) {
-        // Display only the first 5 members when screen width is below 1800px but above 1700px
-        setVisibleRows(memberData.slice(0, 5));
-      } else {
-        // Display all members when screen width is 1800px or above
-        setVisibleRows(memberData);
-      }
-    };
+  // useEffect(() => {
+  //   const handleResize = () => {
+  //    if (window.innerWidth < 1640) {
+  //       // Display only the first 5 members when screen width is below 1800px but above 1700px
+  //       setVisibleRows(memberData.slice(0, 4));
+  //     }
+  //     else if (window.innerWidth < 1850) {
+  //       // Display only the first 5 members when screen width is below 1800px but above 1700px
+  //       setVisibleRows(memberData.slice(0, 5));
+  //     } else {
+  //       // Display all members when screen width is 1800px or above
+  //       setVisibleRows(memberData);
+  //     }
+  //   };
 
-    // Set initial state based on current window size
-    handleResize();
+  //   // Set initial state based on current window size
+  //   handleResize();
 
-    // Listen for window resize events
-    window.addEventListener("resize", handleResize);
+  //   // Listen for window resize events
+  //   window.addEventListener("resize", handleResize);
 
-    // Cleanup listener on component unmount
-    return () => window.removeEventListener("resize", handleResize);
-  }, [memberData]);
-  ;
+  //   // Cleanup listener on component unmount
+  //   return () => window.removeEventListener("resize", handleResize);
+  // }, [memberData]);
+  // ;
 
 
   const columns: ColumnDef<Member>[] = [
@@ -149,19 +131,19 @@ const CoreWorkMembers = () => {
   ];
 
   const table = useReactTable({
-    data: visibleRows,
+    data: memberData,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
 
   return (
-    <div>
-      <div className=" flex items-center justify-between mt-5">
+    <div className="w-full border border-borderColor dark:border-darkBorder  dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">
+      <div className=" flex items-center justify-between">
         <div className=" flex items-center gap-1.5 sm:gap-3 sm:w-1/2">
-          <h2 className="text-base sm:text-lg text-headingTextColor dark:text-darkTextPrimary">
+          <h2 className=" text-base sm:text-lg uppercase text-headingTextColor dark:text-darkTextPrimary">
             Core work members{" "}
           </h2>
-          <Info size={18} className=" cursor-pointer" />
+          {/* <Info size={18} className=" cursor-pointer" /> */}
         </div>
         <Button
           className=" text-sm md:text-base text-headingTextColor dark:text-darkTextSecondary"
@@ -173,7 +155,7 @@ const CoreWorkMembers = () => {
           <ChevronDown size={20} />
         </Button>
       </div>
-      <div className=" mt-5">
+      <div className=" mt-5  pb-1">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
