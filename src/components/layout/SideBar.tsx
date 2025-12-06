@@ -33,7 +33,7 @@ const SideBar = () => {
             <div className='overflow-y-scroll no-scrollbar scroll-smooth'>
                 <div className={`${isCollapsed ? "w-[90px]" : "w-[260px]"} h-screen py-5 z-50  flex flex-col transition-all duration-300`}>
                     <div
-                        className={`flex items-center justify-between bg-bgPrimary dark:bg-darkPrimaryBg px-4  mx-3 rounded-2xl border border-borderColor dark:border-darkBorder ${isCollapsed ? "flex-col py-2" : "flex-row py-2.5"
+                        className={`flex items-center justify-between bg-bgPrimary dark:bg-darkPrimaryBg  mx-4 rounded-2xl border border-borderColor dark:border-darkBorder ${isCollapsed ? "flex-col py-2 px-2" : "flex-row py-2.5 px-3"
                             } transition-all duration-300`}
                     >
                         <div
@@ -70,9 +70,9 @@ const SideBar = () => {
                         </button>
                     </div>
 
-                    <div className=" px-5 mt-6">
+                    <div className=" px-4 mt-6 mb-3">
                         {!isCollapsed && (
-                            <h2 className="text-xs uppercase text-gray-400 mb-3">Main menu</h2>
+                            <h2 className="text-xs uppercase text-subTextColor mb-3">Main menu</h2>
                         )}
                         {sidebarItems.map((item) => (
                             <div key={item.key}>
@@ -104,9 +104,9 @@ const SideBar = () => {
                         ))}
                     </div>
 
-                    <div className=" mx-5 pt-3 border-t-2 border-borderColor dark:border-darkBorder">
+                    <div className=" mx-4 pt-3 border-t-2 border-borderColor dark:border-darkBorder">
                         {!isCollapsed && (
-                            <h2 className="text-xs uppercase text-gray-400 mb-4">Others</h2>
+                            <h2 className="text-xs uppercase text-subTextColor mb-2">Others</h2>
                         )}
                         {othersSidebarItems.map((item) => (
                             <div key={item.key}>

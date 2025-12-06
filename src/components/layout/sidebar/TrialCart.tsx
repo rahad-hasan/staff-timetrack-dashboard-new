@@ -13,7 +13,7 @@ const TrialCart = () => {
     if (!visible) return null;
     return (
         <div className=" my-8  mx-3.5">
-            <div className="bg-bgPrimary dark:bg-darkPrimaryBg shadow-sm rounded-2xl border border-gray-200 dark:border-none dark:shadow-textPrimaryBg p-5 relative">
+            <div className="bg-bgPrimary dark:bg-darkPrimaryBg shadow-sm rounded-2xl border border-gray-200 dark:border-none dark:shadow-textPrimaryBg p-3 relative">
                 <button
                     onClick={() => setVisible(false)}
                     className="absolute top-3 right-3 text-subTextColor hover:text-gray-600 cursor-pointer"
@@ -22,7 +22,7 @@ const TrialCart = () => {
                 </button>
 
                 <Button className="" size={'sm'}>
-                    <span className="text-primary"><TrailIcon size={30} color="#ffffff"></TrailIcon></span> Trial
+                    <TrailIcon size={28} color="#ffffff"></TrailIcon><span className=" text-white ml-1">Trial</span>
                 </Button>
 
                 <h2 className="text-lg font-medium mt-3 text-headingTextColor dark:text-darkTextPrimary">Basic</h2>
@@ -35,7 +35,11 @@ const TrialCart = () => {
                             className="h-2 bg-[#268c56] rounded-full relative"
                             style={{ width: `${progress}%` }}
                         >
-                            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-4.5 h-4.5 shadow bg-[#268c56] border-5 border-[#e5e9fd] outline outline-white rounded-full"></div>
+                            {/* <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[17px] h-[17px] shadow bg-[#268c56] border-5 border-[#e5e9fd] outline outline-white rounded-full"></div> */}
+                            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[22px] h-[22px] bg-gradient-to-b from-[#ffffff] to-[#dfe5fd] border-2 border-white rounded-full flex items-center justify-center">
+                                <div className="w-[8px] h-[8px] shadow bg-[#268c56] rounded-full">
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <p className="text-sm text-subTextColor dark:text-darkTextSecondary mt-2">

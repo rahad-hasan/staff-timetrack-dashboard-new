@@ -95,11 +95,11 @@ const SidebarItem = ({
     <div
       onClick={onClick}
       className={clsx(
-        "flex items-center justify-between w-full text-base text-headingTextColor dark:text-darkTextPrimary dark:hover:text-primary hover:text-primary transition-all duration-200 ease-in-out",
+        "flex items-center justify-between w-full px-3 text-base text-headingTextColor dark:text-darkTextPrimary dark:hover:text-primary hover:text-primary transition-all duration-200 ease-in-out",
         isCollapsed ? "justify-center" : "",
         "py-2 cursor-pointer",
-        isOpen && "text-primary dark:text-primary"
-
+        isOpen && !collapsible && "bg-[#E9F8F0] text-headingTextColor dark:text-darkTextPrimary shadow rounded-lg",
+        isOpen && collapsible && "text-primary dark:text-primary",
       )}
     >
       <div className={clsx("flex items-center gap-2")}>

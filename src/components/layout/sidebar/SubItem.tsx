@@ -29,11 +29,11 @@ const SubItem = ({
         variants={itemVariants}
         onClick={onClick}
         className={clsx(
-          "text-base px-2 py-1.5 rounded-lg cursor-pointer flex gap-1.5 items-center text-headingTextColor dark:text-darkTextPrimary ",
+          "text-base py-1.5 rounded-lg cursor-pointer flex gap-3 items-center text-headingTextColor dark:text-darkTextPrimary ",
           active
-            ? "bg-[#e9f8f0] shadow dark:border-none dark:text-primary dark:bg-darkPrimaryBg  font-medium"
-            : "text-subTextColor hover:text-primary",
-          isCollapsed && "!px-3 "
+            ? "bg-[#e9f8f0] pl-5 shadow dark:border-none dark:text-primary dark:bg-darkPrimaryBg  font-medium"
+            : " pl-13 text-subTextColor hover:text-primary",
+          isCollapsed && " !pl-3"
         )}
       >
         {active && !isCollapsed && <SubMenuIcon size={20} />}
