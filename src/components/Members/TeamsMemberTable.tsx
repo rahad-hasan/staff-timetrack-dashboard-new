@@ -2,11 +2,10 @@
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useMemo, useState } from "react";
-import { ArrowUpDown, Download, EllipsisVertical, Pencil, Trash2 } from "lucide-react";
+import { ArrowUpDown, Download, Pencil, Trash2 } from "lucide-react";
 // import { Checkbox } from "@/components/ui/checkbox"
 import Image from "next/image";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Button } from "../ui/button";
 import { ITeamMembers } from "@/global/globalTypes";
 import { Dialog, DialogTrigger } from "../ui/dialog";
 import EditNewMemberModal from "./EditNewMemberModal";
@@ -139,9 +138,9 @@ const TeamsMemberTable = () => {
                     <div className="">
                         {
                             status === "Active" ?
-                                <button className=" bg-[#e9f8f0] text-primary border border-primary rounded-lg px-2">Active</button>
+                                <button className=" bg-[#e9f8f0] text-primary border border-primary rounded-lg px-2 py-1">Active</button>
                                 :
-                                <button className=" bg-[#fee6eb] text-red-500 border border-red-500 rounded-lg px-2">Inactive</button>
+                                <button className=" bg-[#fee6eb] text-red-500 border border-red-500 rounded-lg px-2 py-1">Inactive</button>
                         }
                     </div>
                 )
@@ -267,9 +266,9 @@ const TeamsMemberTable = () => {
                     <div className="">
                         {
                             tracking ?
-                                <button className=" bg-[#e9f8f0] text-primary border border-primary rounded-lg px-2">Active</button>
+                                <button className=" bg-[#e9f8f0] text-primary border border-primary rounded-lg px-2 py-1">Active</button>
                                 :
-                                <button className=" bg-[#fee6eb] text-red-500 border border-red-500 rounded-lg px-2">Inactive</button>
+                                <button className=" bg-[#fee6eb] text-red-500 border border-red-500 rounded-lg px-2 py-1">Inactive</button>
                         }
                     </div>
                 )

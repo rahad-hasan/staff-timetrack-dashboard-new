@@ -139,8 +139,8 @@ const ProjectTable = () => {
                 const date = row.original.date;
                 return (
                     <div className="flex flex-col">
-                        <span className="font-bold text-base">{task}</span>
-                        <span className=" font-normal">{date}</span>
+                        <span className="font-bold text-base text-headingTextColor dark:text-darkTextPrimary">{task}</span>
+                        <span className=" font-normal text-subTextColor dark:text-darkTextSecondary">{date}</span>
                     </div>
                 )
             }

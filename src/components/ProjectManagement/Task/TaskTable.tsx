@@ -125,8 +125,8 @@ const TaskTable = () => {
                 const project = row.original.project;
                 return (
                     <div className="flex flex-col">
-                        <span className="font-bold text-base">{task}</span>
-                        <span className=" font-normal">{project}</span>
+                        <span className="font-bold text-base text-headingTextColor dark:text-darkTextPrimary">{task}</span>
+                        <span className=" font-normal text-subTextColor dark:text-darkTextSecondary">{project}</span>
                     </div>
                 )
             }

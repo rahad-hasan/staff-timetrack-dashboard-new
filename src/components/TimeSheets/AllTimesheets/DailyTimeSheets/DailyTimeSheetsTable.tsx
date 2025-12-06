@@ -86,8 +86,8 @@ const DailyTimeSheetsTable = () => {
                 const taskName = row.original.taskName;
                 return (
                     <div className="flex flex-col">
-                        <span className="font-bold text-base">{project}</span>
-                        <span className=" font-normal">{taskName}</span>
+                        <span className="font-bold text-base text-headingTextColor dark:text-darkTextPrimary">{project}</span>
+                        <span className=" font-normal text-subTextColor dark:text-darkTextSecondary">{taskName}</span>
                     </div>
                 )
             }
@@ -167,10 +167,10 @@ const DailyTimeSheetsTable = () => {
                     <div className=" flex items-center justify-between">
                         <div className=" flex justify-between gap-4">
                             <div className="">
-                                <h1 className=" font-medium">
+                                <h1 className=" font-medium text-headingTextColor dark:text-darkTextPrimary">
                                     {totalTime}
                                 </h1>
-                                <p className=" text-sm font-thin">8:00 am - 10:00 pm</p>
+                                <p className=" text-sm font-thin text-subTextColor dark:text-darkTextSecondary">8:00 am - 10:00 pm</p>
                             </div>
                         </div>
                         <FilterButton />

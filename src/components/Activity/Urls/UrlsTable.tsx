@@ -120,10 +120,10 @@ const UrlsTable = () => {
                 // const image = row.original.image;
                 return (
                     <div className="flex items-center gap-2">
-                        <Image src={teamsLogo} alt="app_logo" width={200} height={200} className=" w-10 border border-borderColor rounded-full p-1.5" />
+                        <Image src={teamsLogo} alt="app_logo" width={200} height={200} className=" w-10 border border-borderColor dark:border-darkBorder rounded-full p-1.5" />
                         <div className="">
-                            <p className="text-base font-bold">{url}</p>
-                            <span className=" font-normal">Site</span>
+                            <p className="text-base font-bold text-headingTextColor dark:text-darkTextPrimary">{url}</p>
+                            <span className=" font-normal text-subTextColor dark:text-darkTextSecondary">Site</span>
                         </div>
                     </div>
                 )
@@ -200,8 +200,8 @@ const UrlsTable = () => {
                 const time = row.original.time as string;
                 return (
                     <div className=" flex flex-col">
-                        <span className=" font-medium">{timeSpent}</span>
-                        <span className=" text-sm font-thin text-textGray dark:text-darkTextSecondary">{time}</span>
+                        <span className=" font-medium text-headingTextColor dark:text-darkTextPrimary">{timeSpent}</span>
+                        <span className=" text-sm font-thin text-subTextColor dark:text-darkTextSecondary">{time}</span>
                     </div>
                 );
             },

@@ -3,10 +3,6 @@ import Image from 'next/image';
 // import logo from '../../assets/logo.svg'
 // import fit from '../../assets/fit.svg'
 // import { useEffect, useState } from 'react';
-import {
-    ChevronRight,
-    ChevronLeft,
-} from 'lucide-react';
 import { othersSidebarItems, sidebarItems } from '@/utils/SidebarItems';
 import { useSidebarStore } from '@/store/sidebarStore';
 import { usePathname } from 'next/navigation';

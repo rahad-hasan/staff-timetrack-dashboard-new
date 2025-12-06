@@ -240,11 +240,11 @@ const LeaveRequestTable = () => {
 
                 return (
                     <div className="flex items-center gap-3">
-                        <Button size={'sm'} className=" text-sm">Approve</Button>
+                        <Button size={'sm'} className=" text-sm px-2">Approve</Button>
                         <Dialog>
                             <form>
                                 <DialogTrigger asChild>
-                                    <Button size={'sm'} className=" text-sm bg-red-500 hover:bg-red-500 dark:text-white">Reject</Button>
+                                    <Button size={'sm'} className=" text-sm bg-red-500 hover:bg-red-500 dark:text-white px-2">Reject</Button>
                                 </DialogTrigger>
                                 <RejectLeaveRequestModal></RejectLeaveRequestModal>
                             </form>
