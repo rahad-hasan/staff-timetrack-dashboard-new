@@ -5,6 +5,7 @@ import { persist, devtools } from "zustand/middleware";
 
 interface SidebarState {
     openMenu: string | null;
+    activeMenu: string | null;
     activeSubItem: string;
     isCollapsed: boolean;
     setOpenMenu: (menu: string | null) => void;
@@ -19,6 +20,7 @@ export const useSidebarStore = create<SidebarState>()(
             (set, get) => ({
                 // these are initial state
                 openMenu: null,
+                activeMenu: null,
                 activeSubItem: "",
                 isCollapsed: false,
 
@@ -26,6 +28,7 @@ export const useSidebarStore = create<SidebarState>()(
                 setOpenMenu: (menu) =>
                     set((state) => ({
                         openMenu: state.openMenu === menu ? null : menu,
+                        activeMenu: state.activeMenu === menu ? state.activeMenu : menu,
                         // activeSubItem: "",
                     })),
 

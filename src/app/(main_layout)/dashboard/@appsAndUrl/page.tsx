@@ -86,12 +86,12 @@ const AppsAndUrl = () => {
                     bgColor = "bg-yellow-500";
                 }
                 return (
-                    <div className=" flex justify-end">
+                    <div className=" flex justify-end items-center">
                         <div className=" flex justify-center items-center">
                             <span className="">{week_work}</span>
                         </div>
 
-                        <div className="">
+                        <div className=" -mt-4">
                             <SmallChart></SmallChart>
                         </div>
                     </div>

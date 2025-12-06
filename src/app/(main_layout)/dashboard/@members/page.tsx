@@ -76,7 +76,7 @@ const Members = () => {
                 }
                 return (
                     <div className="flex items-center gap-3 min-w-[80px]">
-                        <div className="flex flex-col">
+                        <div className="flex flex-col  -mt-5">
                             <span className={` ${bgColor} rounded-full text-center text-white px-1  text-sm mb-1`}>{progress}</span>
                             <span className="">{today_work}</span>
                         </div>

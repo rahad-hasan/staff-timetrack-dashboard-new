@@ -17,6 +17,7 @@ const SideBar = () => {
     console.log(pathname);
     const {
         openMenu,
+        activeMenu,
         activeSubItem,
         isCollapsed,
         setOpenMenu,
@@ -26,7 +27,6 @@ const SideBar = () => {
 
     console.log('isCollapsed', isCollapsed);
     console.log('openMenu', openMenu);
-
 
     return (
         <div className='sticky top-0 z-[50]'>
@@ -82,11 +82,12 @@ const SideBar = () => {
                                     href={item.subItems.length > 0 ? undefined : item.key}
                                     collapsible={item.collapsible}
                                     isOpen={openMenu === item.key}
+                                    activeMenu={activeMenu === item.key}
                                     onClick={() => setOpenMenu(item.key)}
                                     isCollapsed={isCollapsed}
                                 >
                                     {item.subItems.length > 0 && (
-                                        <div className={`${isCollapsed ? "absolute left-24 px-3 w-[180px] bg-white dark:bg-darkSecondaryBg shadow-2xl rounded-2xl" : "block"} py-3 flex flex-col gap-1 transition-all duration-300`}>
+                                        <div className={`${isCollapsed ? "absolute left-24 px-3 w-[180px] bg-white dark:bg-darkSecondaryBg shadow-2xl rounded-2xl" : "block"} py-2.5 flex flex-col gap-1 transition-all duration-300`}>
                                             {item.subItems.map((subItem) => (
                                                 <SubItem
                                                     key={subItem.key}
@@ -116,11 +117,12 @@ const SideBar = () => {
                                     href={item.subItems.length > 0 ? undefined : item.key}
                                     collapsible={item.collapsible}
                                     isOpen={openMenu === item.key}
+                                    activeMenu={activeMenu === item.key}
                                     onClick={() => setOpenMenu(item.key)}
                                     isCollapsed={isCollapsed}
                                 >
                                     {item.subItems.length > 0 && (
-                                        <div className={`${isCollapsed ? "absolute left-24 px-3 w-[180px] bg-white dark:bg-darkSecondaryBg shadow-2xl rounded-2xl" : "block"} py-3 mt-2 flex flex-col gap-1 transition-all duration-300`}>
+                                        <div className={`${isCollapsed ? "absolute left-24 px-3 w-[180px] bg-white dark:bg-darkSecondaryBg shadow-2xl rounded-2xl" : "block"} py-2.5 flex flex-col gap-1 transition-all duration-300`}>
                                             {item.subItems.map((subItem) => (
                                                 <SubItem
                                                     key={subItem.key}
