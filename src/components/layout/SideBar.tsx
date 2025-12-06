@@ -11,6 +11,7 @@ import SubItem from './sidebar/SubItem';
 import TrialCart from './sidebar/TrialCart';
 import timerLogo from '../../assets/timerLogo.svg'
 import CollapsedIcon from '../Icons/CollapsedIcon';
+import clsx from 'clsx';
 
 const SideBar = () => {
     const pathname = usePathname();
@@ -70,7 +71,7 @@ const SideBar = () => {
                         </button>
                     </div>
 
-                    <div className=" px-4 mt-6 mb-3">
+                    <div className={clsx(isCollapsed ? "px-5" : "px-4", " px-4 mt-6 mb-3")}>
                         {!isCollapsed && (
                             <h2 className="text-xs uppercase text-subTextColor mb-3">Main menu</h2>
                         )}
@@ -83,6 +84,7 @@ const SideBar = () => {
                                     collapsible={item.collapsible}
                                     isOpen={openMenu === item.key}
                                     activeMenu={activeMenu === item.key}
+                                    subMenuActive={item.subItems.some(subItem => subItem.key === activeSubItem)}
                                     onClick={() => setOpenMenu(item.key)}
                                     isCollapsed={isCollapsed}
                                 >
@@ -105,7 +107,7 @@ const SideBar = () => {
                         ))}
                     </div>
 
-                    <div className=" mx-4 pt-3 border-t-2 border-borderColor dark:border-darkBorder">
+                    <div className={clsx(isCollapsed ? "px-5" : "px-4"," pt-3 border-t-2 border-borderColor dark:border-darkBorder")}>
                         {!isCollapsed && (
                             <h2 className="text-xs uppercase text-subTextColor mb-2">Others</h2>
                         )}
