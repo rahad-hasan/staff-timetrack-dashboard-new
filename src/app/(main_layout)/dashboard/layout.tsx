@@ -22,12 +22,11 @@ export default function DashboardLayout({
         {recentActivity}
         {insights}
       </div>
-
+      {taskListTable}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {members}
         {appsAndUrl}
       </div>
-      {taskListTable}
       {projectListTable}
     </div>
   );
