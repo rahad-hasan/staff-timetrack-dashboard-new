@@ -359,12 +359,15 @@ const Every10Mins = () => {
                                                      rounded-full relative`}
                                                 style={{ width: `${screenShort.progress}%` }}
                                             >
-                                                <div className={`absolute right-0 top-1/2 -translate-y-1/2 w-4.5 h-4.5 shadow 
-                                                ${screenShort.progress < 30
+                                                {/* bar circle */}
+                                                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[22px] h-[22px] bg-gradient-to-b from-[#ffffff] to-[#dfe5fd] border-2 border-white rounded-full flex items-center justify-center">
+                                                    <div className={`w-[8px] h-[8px] shadow ${screenShort.progress < 30
                                                         ? "bg-red-500"
                                                         : screenShort.progress < 60
                                                             ? "bg-yellow-400"
-                                                            : "bg-primary"} border-5 border-[#e5e9fd] outline outline-white rounded-full`}></div>
+                                                            : "bg-primary"} rounded-full`}>
+                                                    </div>
+                                                </div>
                                             </div>
 
                                         </div>
