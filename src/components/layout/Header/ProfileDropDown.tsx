@@ -29,7 +29,7 @@ const ProfileDropDown = () => {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline2" className="py-[5px] dark:text-darkTextPrimary">
+        <Button variant="outline2" className="h-10.5 dark:text-darkTextPrimary">
           <Avatar className="w-7.5 h-7.5">
             <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
             <AvatarFallback>CN</AvatarFallback>
