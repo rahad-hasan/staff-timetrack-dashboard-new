@@ -120,6 +120,7 @@ const SideBar = () => {
                                     collapsible={item.collapsible}
                                     isOpen={openMenu === item.key}
                                     activeMenu={activeMenu === item.key}
+                                    subMenuActive={item.subItems.some(subItem => subItem.key === activeSubItem)}
                                     onClick={() => setOpenMenu(item.key)}
                                     isCollapsed={isCollapsed}
                                 >
