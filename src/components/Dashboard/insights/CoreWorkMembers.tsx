@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { Button } from "@/components/ui/button";
 import {
@@ -6,7 +7,6 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ChevronDown } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -15,9 +15,25 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import DownArrow from "@/components/Icons/DownArrow";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  // CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { cn } from "@/lib/utils";
+import { Check } from "lucide-react";
+
 
 const CoreWorkMembers = () => {
   type Member = {
@@ -136,6 +152,15 @@ const CoreWorkMembers = () => {
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
+  // for dropdown
+  const [open, setOpen] = useState(false)
+  const [value, setValue] = useState("top-core-worker")
+
+  const menuItems = [
+    { value: "top-core-worker", label: "Top Core worker" },
+    { value: "top-activity", label: "Top Activity" },
+    { value: "low-activity", label: "Low Activity" },
+  ];
 
   return (
     <div className="w-full border border-borderColor dark:border-darkBorder  dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">
@@ -146,16 +171,61 @@ const CoreWorkMembers = () => {
           </h2>
           {/* <Info size={18} className=" cursor-pointer" /> */}
         </div>
-        <Button
-          className=" text-sm h-9 text-headingTextColor dark:text-darkTextSecondary rounded-[8px]"
-          variant={"outline2"}
-          size={"sm"}
-        >
-          <span className=" hidden sm:block">Top Core worker</span>
-          <span className=" sm:hidden">Top worker</span>{" "}
-          <DownArrow size={10} />
-        </Button>
+
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger className="" asChild>
+            <Button
+              variant="outline2"
+              role="combobox"
+              aria-expanded={open}
+              className="w-full sm:w-[200px] h-9 flex justify-between items-center gap-2
+            dark:border-darkBorder dark:text-darkTextPrimary
+            dark:bg-darkPrimaryBg hover:dark:bg-darkPrimaryBg"
+              >
+              <span className="truncate">
+                {value
+                  ? menuItems.find((item: any) => item.value === value)?.label
+                  : "Select item..."}
+              </span>
+
+              <DownArrow size={16} />
+            </Button>
+          </PopoverTrigger>
+
+          <PopoverContent className="sm:w-[200px] px-0 py-1 dark:bg-darkSecondaryBg">
+            <Command className="dark:bg-darkSecondaryBg">
+              <CommandList>
+                <CommandEmpty>No item found.</CommandEmpty>
+
+                <CommandGroup>
+                  {menuItems.map((item: any) => (
+                    <CommandItem
+                      key={item.value}
+                      value={item.value}
+                      className="cursor-pointer hover:dark:bg-darkPrimaryBg flex items-center gap-2"
+                      onSelect={(currentValue) => {
+                        setValue(currentValue);
+                        setOpen(false);
+                      }}
+                    >
+                      <span className="flex-1">{item.label}</span>
+
+                      <Check
+                        className={cn(
+                          "ml-auto",
+                          value === item.value ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
+
       </div>
+
       <div className=" mt-5  pb-1">
         <Table>
           <TableHeader>
