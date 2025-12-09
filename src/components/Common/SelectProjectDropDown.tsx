@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
-import { Check, ChevronsUpDown } from "lucide-react"
+import { Check } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/popover"
 import { useState } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
+import DownArrow from "../Icons/DownArrow"
 
 
 const SelectProjectDropDown = ({ projects, value, setValue }: any) => {
@@ -45,7 +46,9 @@ const SelectProjectDropDown = ({ projects, value, setValue }: any) => {
                                 : "Select Project..."}
                         </span>
                     </div>
-                    <ChevronsUpDown className="opacity-50" />
+                    {/* <ChevronsUpDown className="opacity-50" />
+                     */}
+                    <DownArrow size={16} />
                 </Button>
             </PopoverTrigger>
 

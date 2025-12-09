@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
-import { Check, ChevronsUpDown } from "lucide-react"
+import { Check } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -18,9 +18,10 @@ import {
 } from "@/components/ui/popover"
 import { useState } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
+import DownArrow from "../Icons/DownArrow"
 
 
-const SelectUserDropDown = ({users}:any) => {
+const SelectUserDropDown = ({ users }: any) => {
     const [open, setOpen] = useState(false)
     const [value, setValue] = useState("")
 
@@ -36,17 +37,17 @@ const SelectUserDropDown = ({users}:any) => {
                     <div className=" flex justify-between items-center gap-3">
                         {value && (
                             <Avatar className="w-6 h-6">
-                                <AvatarImage src={users.find((user:any) => user.value === value)?.avatar} alt={value} />
-                                <AvatarFallback>{users.find((user:any) => user.value === value)?.label.charAt(0)}</AvatarFallback>
+                                <AvatarImage src={users.find((user: any) => user.value === value)?.avatar} alt={value} />
+                                <AvatarFallback>{users.find((user: any) => user.value === value)?.label.charAt(0)}</AvatarFallback>
                             </Avatar>
                         )}
                         <span className="">
                             {value
-                                ? users.find((user:any) => user.value === value)?.label
+                                ? users.find((user: any) => user.value === value)?.label
                                 : "Select User..."}
                         </span>
                     </div>
-                    <ChevronsUpDown className="opacity-50" />
+                    <DownArrow size={16} />
                 </Button>
             </PopoverTrigger>
 
@@ -56,7 +57,7 @@ const SelectUserDropDown = ({users}:any) => {
                     <CommandList>
                         <CommandEmpty>No user found.</CommandEmpty>
                         <CommandGroup>
-                            {users.map((user:any) => (
+                            {users.map((user: any) => (
                                 <CommandItem
                                     key={user.value}
                                     className="cursor-pointer hover:dark:bg-darkSecondaryBg"

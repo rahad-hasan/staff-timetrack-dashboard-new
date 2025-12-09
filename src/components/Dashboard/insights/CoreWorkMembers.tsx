@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/table";
 import { useMemo } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import DownArrow from "@/components/Icons/DownArrow";
 
 const CoreWorkMembers = () => {
   type Member = {
@@ -146,13 +147,13 @@ const CoreWorkMembers = () => {
           {/* <Info size={18} className=" cursor-pointer" /> */}
         </div>
         <Button
-          className=" text-sm md:text-base text-headingTextColor dark:text-darkTextSecondary"
+          className=" text-sm h-9 text-headingTextColor dark:text-darkTextSecondary rounded-[8px]"
           variant={"outline2"}
           size={"sm"}
         >
           <span className=" hidden sm:block">Top Core worker</span>
           <span className=" sm:hidden">Top worker</span>{" "}
-          <ChevronDown size={20} />
+          <DownArrow size={10} />
         </Button>
       </div>
       <div className=" mt-5  pb-1">
