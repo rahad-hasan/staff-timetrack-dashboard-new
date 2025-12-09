@@ -50,16 +50,16 @@ const ScreenShortsDeleteReason = () => {
                                 </FormItem>
                             )}
                         />
-                        <div className=" flex items-center gap-2 justify-center">
+                        <div className=" flex items-center gap-2 justify-center mt-2">
                             <DialogClose asChild>
                                 <button
 
-                                    className={` w-[100px] py-1.5 flex items-center justify-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 border border-borderColor`}>
+                                    className={` w-[100px] py-1.5 text-headingTextColor dark:text-darkTextSecondary  flex items-center justify-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 border border-borderColor dark:border-darkBorder`}>
                                     No Cancel
                                 </button>
                             </DialogClose>
                             <button
-                                className={` w-[100px] py-1.5 flex items-center justify-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 bg-[#f40139] text-white`}>
+                                className={` w-[100px] py-1.5 dark:text-darkTextPrimary flex items-center justify-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 bg-[#f40139] text-white`}>
                                 Delete
                             </button>
                         </div>
