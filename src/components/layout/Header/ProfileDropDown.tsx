@@ -5,7 +5,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import ProfilePopoverContent from "../sidebar/ProfilePopoverContent";
-import Image from "next/image";
+// import Image from "next/image";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState, useEffect } from "react";
 import {
@@ -29,12 +29,12 @@ const ProfileDropDown = () => {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline2" className="h-10.5 dark:text-darkTextPrimary">
+        <Button variant="outline2" className="h-10.5 dark:text-darkTextPrimary dark:hover:bg-darkSecondaryBg">
           <Avatar className="w-7.5 h-7.5">
             <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
-          <span className="hidden md:block">Dannielis</span> Vettori
+          <span className="hidden md:block text-headingTextColor dark:text-darkTextPrimary">Dannielis</span> Vettori
           <DropDownIcon size={20} />
         </Button>
       </PopoverTrigger>

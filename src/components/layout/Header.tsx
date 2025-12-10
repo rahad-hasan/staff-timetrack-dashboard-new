@@ -31,7 +31,7 @@ const Header = () => {
                 <Popover open={open} onOpenChange={setOpen} modal>
                     <PopoverTrigger asChild>
                         {/* <Button className=" px-2 sm:px-3 dark:border-darkBorder" variant={'filter'}><Image src={startTimerIcon} width={0} height={0} className=" w-7 lg:w-5" alt="download" /><span className=" hidden lg:block dark:text-darkTextPrimary">Start Timer</span></Button> */}
-                        <Button className=" dark:border-darkBorder " variant={'filter'}><CirclePlay className="text-primary size-5.5 sm:size-5.5" /><span className=" hidden lg:block dark:text-darkTextPrimary">Start Timer</span></Button>
+                        <Button className=" dark:border-darkBorder dark:hover:bg-darkSecondaryBg" variant={'filter'}><CirclePlay className="text-primary size-5.5 sm:size-5.5" /><span className=" hidden lg:block dark:text-darkTextPrimary">Start Timer</span></Button>
                     </PopoverTrigger>
                     <StartTimer onClose={() => setOpen(false)}></StartTimer>
                 </Popover>
@@ -47,7 +47,7 @@ const Header = () => {
                 <div className="hidden lg:block ">
                     {/* <Button className=" dark:border-primary " variant={'outline'}><Image src={downloadIcon} width={0} height={0} className="w-5" alt="download" />Download App</Button> */}
                     <Link href={`/download`}>
-                        <Button className=" dark:border-primary " variant={'outline'}><Download className=" text-primary w-8" />Download App</Button>
+                        <Button className=" dark:border-primary dark:hover:bg-darkSecondaryBg" variant={'outline'}><Download className=" text-primary w-8" />Download App</Button>
                     </Link>
                 </div>
                 <ProfileDropDown></ProfileDropDown>

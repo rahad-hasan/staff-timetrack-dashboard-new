@@ -15,7 +15,7 @@ import SignOutIcon from "@/components/Icons/SignOutIcon";
 
 const ProfilePopoverContent = ({ side, align }: { side: "top" | "right" | "bottom" | "left", align: "center" | "end" | "start" }) => {
     return (
-        <PopoverContent className=" px-0 shadow-none py-3" side={side} align={align}>
+        <PopoverContent className=" px-0 shadow-none py-3 border-borderColor dark:border-darkBorder" side={side} align={align}>
             <div className="flex items-center gap-2 mb-4 px-3 ">
                 <Avatar className="w-12 h-12">
                     <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
@@ -29,32 +29,32 @@ const ProfilePopoverContent = ({ side, align }: { side: "top" | "right" | "botto
                     </div>
                 </div>
             </div>
-            <div className="flex flex-col gap-2 mb-2 px-3 pt-2 border-t border-borderColor">
-                <button className="flex items-center gap-2 text-sm font-medium hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-2 py-2 rounded-md cursor-pointer">
+            <div className="flex flex-col gap-2 mb-2 px-3 pt-2 border-t border-borderColor dark:border-darkBorder">
+                <button className="flex items-center gap-2 text-sm font-medium text-headingTextColor dark:text-darkTextPrimary hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-2 py-2 rounded-md cursor-pointer">
                     <MyProfileIcon size={18}/> My account
                 </button>
-                <button className="flex items-center gap-2 text-sm font-medium hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-2 py-2 rounded-md cursor-pointer">
+                <button className="flex items-center gap-2 text-sm font-medium text-headingTextColor dark:text-darkTextPrimary hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-2 py-2 rounded-md cursor-pointer">
                     <InviteMemberIcon size={18} /> Invite member to team
                 </button>
-                <button className="flex items-center gap-2 text-sm font-medium hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-2 py-2 rounded-md cursor-pointer">
+                <button className="flex items-center gap-2 text-sm font-medium text-headingTextColor dark:text-darkTextPrimary hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-2 py-2 rounded-md cursor-pointer">
                     <CustomerSupportIcon size={18} /> Customer Support
                 </button>
-                {/* <button className="flex items-center gap-2 text-sm font-medium hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-2 py-2 rounded-md cursor-pointer">
+                {/* <button className="flex items-center gap-2 text-sm font-medium text-headingTextColor dark:text-darkTextPrimary hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-2 py-2 rounded-md cursor-pointer">
                     <Plug size={18} /> Integration
                 </button> */}
-                <button className="flex items-center gap-2 text-sm font-medium hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-2 py-2 rounded-md cursor-pointer">
+                <button className="flex items-center gap-2 text-sm font-medium text-headingTextColor dark:text-darkTextPrimary hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-2 py-2 rounded-md cursor-pointer">
                     <ReferFriendIcon size={18} /> Refer a friend
                 </button>
-                <button className="flex items-center gap-2 text-sm font-medium hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-2 py-2 rounded-md cursor-pointer">
+                <button className="flex items-center gap-2 text-sm font-medium text-headingTextColor dark:text-darkTextPrimary hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-2 py-2 rounded-md cursor-pointer">
                     <SubscriptionIcon size={18} /> Subscription
                 </button>
             </div>
-            <div className="border-t border-borderColor mt-2 pt-3.5 flex flex-col gap-2 px-3">
-                <button className="flex items-center gap-2 text-sm font-medium border w-full px-3.5 hover:bg-gray-100 hover:dark:bg-darkPrimaryBg py-2 rounded-md cursor-pointer">
+            <div className="border-t border-borderColor dark:border-darkBorder mt-2 pt-3.5 flex flex-col gap-2 px-3">
+                <button className="flex items-center text-headingTextColor dark:text-darkTextPrimary border-borderColor dark:border-darkBorder gap-2 text-sm font-medium border w-full px-3.5 hover:bg-gray-100 hover:dark:bg-darkPrimaryBg py-2 rounded-md cursor-pointer">
                     <PauseNotificationIcon size={18} /> Pause notification
                 </button>
                 <Link className="hover:bg-gray-100 hover:dark:bg-darkPrimaryBg rounded-md cursor-pointer" href={`/`}>
-                    <button className="flex items-center font-medium gap-2 border w-full px-3.5 text-sm hover:bg-gray-100 hover:dark:bg-darkPrimaryBg text-red-500 py-2 rounded-md cursor-pointer">
+                    <button className="flex items-center font-medium gap-2 border border-borderColor dark:border-darkBorder w-full px-3.5 text-sm hover:bg-gray-100 hover:dark:bg-darkPrimaryBg text-red-500 py-2 rounded-md cursor-pointer">
                         <SignOutIcon size={18} /> Sign out
                     </button>
                 </Link>
