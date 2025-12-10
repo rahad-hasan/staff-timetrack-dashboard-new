@@ -179,7 +179,7 @@ const ManualRequestsTable = () => {
                                     <FilterButton></FilterButton>
                                 </div>
                             </PopoverTrigger>
-                            <PopoverContent side="bottom" align="end" className=" w-[260px] px-2">
+                            <PopoverContent side="bottom" align="end" className=" w-[260px] p-2">
                                 <div className="">
                                     <div className="space-y-2">
                                         <Dialog>

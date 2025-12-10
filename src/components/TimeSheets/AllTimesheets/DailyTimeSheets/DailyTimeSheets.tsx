@@ -137,7 +137,7 @@ const DailyTimeSheets = () => {
                 <div className="relative h-5 bg-[#dce3e3] dark:bg-darkPrimaryBg rounded-4xl outline outline-borderColor dark:outline-darkBorder">
                     {/* day time pass */}
                     <div
-                        className="absolute h-5 bg-[#f6f7f9] rounded-l-4xl border-r-3 border-[#bdbfbe]"
+                        className="absolute h-5 bg-[#f6f7f9] dark:bg-darkSecondaryBg rounded-l-4xl border-r-3 border-[#bdbfbe] dark:border-[#afafaf]"
                         style={{
                             left: `0%`,
                             width: `80%`,

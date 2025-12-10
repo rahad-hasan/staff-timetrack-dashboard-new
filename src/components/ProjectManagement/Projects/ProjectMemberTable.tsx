@@ -3,10 +3,9 @@ import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Image from "next/image";
 import { useMemo, useState } from "react";
-import { ArrowUpDown, EllipsisVertical, Pencil, Trash2 } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
+import { ArrowUpDown, Pencil, Trash2 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import FilterButton from "@/components/Common/FilterButton";
 
 const ProjectMemberTable = () => {
     const [sorting, setSorting] = useState<SortingState>([])
@@ -76,30 +75,6 @@ const ProjectMemberTable = () => {
 
     const columns: ColumnDef<IMember>[] = [
         {
-            id: "select",
-            header: ({ table }) => (
-                <Checkbox
-                    checked={
-                        table.getIsAllPageRowsSelected() ||
-                        (table.getIsSomePageRowsSelected() && "indeterminate")
-                    }
-                    onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-                    aria-label="Select all"
-                    className=" cursor-pointer"
-                />
-            ),
-            cell: ({ row }) => (
-                <Checkbox
-                    checked={row.getIsSelected()}
-                    onCheckedChange={(value) => row.toggleSelected(!!value)}
-                    aria-label="Select row"
-                    className=" cursor-pointer"
-                />
-            ),
-            enableSorting: false,
-            enableHiding: false,
-        },
-        {
             accessorKey: "memberName",
             header: ({ column }) => {
                 return (
@@ -152,12 +127,12 @@ const ProjectMemberTable = () => {
                     <div className="">
                         {
                             status === "Active" ?
-                                <button className=" bg-[#e9f8f0] text-primary border border-primary rounded-lg px-2">{status}</button>
+                                <button className=" bg-[#e9f8f0] text-primary border border-primary rounded-lg px-2 py-1">{status}</button>
                                 :
                                 status === "Inactive" ?
-                                    <button className=" bg-[#fee6eb] text-red-500 border border-red-500 rounded-lg px-2">{status}</button>
+                                    <button className=" bg-[#fee6eb] text-red-500 border border-red-500 rounded-lg px-2 py-1">{status}</button>
                                     :
-                                    <button className=" bg-[#fff5db] text-yellow-600 border border-yellow-600 rounded-lg px-2">{status}</button>
+                                    <button className=" bg-[#fff5db] text-yellow-600 border border-yellow-600 rounded-lg px-2 py-1">{status}</button>
                         }
                     </div>
                 )
@@ -181,7 +156,7 @@ const ProjectMemberTable = () => {
             },
             cell: ({ row }) => {
                 const role = row.getValue("role") as string;
-                return <div className="">{role}</div>;
+                return <div className=" text-base">{role}</div>;
             },
         },
         {
@@ -204,8 +179,8 @@ const ProjectMemberTable = () => {
                 const weeklyLimit = row.original.weeklyLimit
                 const dailyLimit = row.original.dailyLimit
                 return <div className="">
-                    <p>{weeklyLimit}</p>
-                    <p>{dailyLimit}</p>
+                    <p className=" font-thin">{weeklyLimit}</p>
+                    <p className=" font-thin">{dailyLimit}</p>
                 </div>;
             },
         },
@@ -253,9 +228,9 @@ const ProjectMemberTable = () => {
                     <div className="">
                         {
                             timeTracking ?
-                                <button className=" bg-[#e9f8f0] text-primary border border-primary rounded-lg px-2">Enable</button>
+                                <button className=" bg-[#e9f8f0] text-primary border border-primary rounded-lg px-2 py-1">Enable</button>
                                 :
-                                <button className=" bg-[#fee6eb] text-red-500 border border-red-500 rounded-lg px-2">Not Enable</button>
+                                <button className=" bg-[#fee6eb] text-red-500 border border-red-500 rounded-lg px-2 py-1">Not Enable</button>
                         }
                     </div>
                 )
@@ -268,9 +243,11 @@ const ProjectMemberTable = () => {
                 return <div className="">
                     <Popover>
                         <PopoverTrigger asChild>
-                            <Button className=" dark:text-darkTextPrimary" variant={'outline2'} size={'sm'}><EllipsisVertical /></Button>
+                                <div>
+                                    <FilterButton></FilterButton>
+                                </div>
                         </PopoverTrigger>
-                        <PopoverContent side="bottom" align="end" className=" w-[250px] px-2">
+                        <PopoverContent side="bottom" align="end" className=" w-[250px] p-2">
                             <div className="">
                                 <div className="space-y-2">
                                     <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100  hover:dark:bg-darkSecondaryBg px-3 cursor-pointer">
@@ -305,7 +282,7 @@ const ProjectMemberTable = () => {
     });
 
     return (
-        <div className="mt-5 border border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg p-3 rounded-[12px]">
+        <div className="mt-5 border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">
             <div className=" mb-5">
                 <h2 className=" text-base sm:text-lg">TASK LIST</h2>
             </div>
