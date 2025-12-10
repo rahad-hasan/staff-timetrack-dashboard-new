@@ -14,7 +14,6 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { useState, useEffect } from "react";
-import { AppWindow, CalendarDays, ChevronDownIcon, ClipboardList, Clock8Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -24,6 +23,10 @@ import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { addManualTimeSchema } from "@/zod/schema";
+import JobIcon from "@/components/Icons/JobIcon";
+import TaskListIcon from "@/components/Icons/TaskListIcon";
+import CalendarIcon from "@/components/Icons/CalendarIcon";
+import ClockIcon from "@/components/Icons/ClockIcon";
 
 interface TimePeriod {
     start: number;
@@ -155,8 +158,8 @@ const AddManualTimeModal = () => {
                                                         onValueChange={field.onChange}
                                                     >
                                                         <SelectTrigger className="w-full">
-                                                            <div className=" flex gap-1 items-center">
-                                                                <AppWindow className="mr-2" />
+                                                            <div className=" flex gap-2 items-center">
+                                                                <JobIcon size={20} className=" text-headingTextColor dark:text-darkTextPrimary" />
                                                                 <SelectValue className=" text-start" placeholder="Select Project" />
                                                             </div>
                                                         </SelectTrigger>
@@ -193,8 +196,8 @@ const AddManualTimeModal = () => {
                                                         onValueChange={field.onChange}
                                                     >
                                                         <SelectTrigger className="w-full">
-                                                            <div className=" flex gap-1 items-center">
-                                                                <ClipboardList className="mr-2" />
+                                                            <div className=" flex gap-2 items-center">
+                                                                <TaskListIcon size={20} className=" text-headingTextColor dark:text-darkTextPrimary" />
                                                                 <SelectValue className=" text-start" placeholder="Select Task" />
                                                             </div>
                                                         </SelectTrigger>
@@ -229,17 +232,16 @@ const AddManualTimeModal = () => {
                                                     <Button
                                                         variant="outline2"
                                                         id="date"
-                                                        className="w-full justify-between font-normal py-[5px] flex items-center dark:hover:bg-darkPrimaryBg dark:bg-darkPrimaryBg"
+                                                        className="w-full justify-between font-normal px-3 flex items-center dark:hover:bg-darkPrimaryBg dark:bg-darkPrimaryBg"
                                                     >
-                                                        <div className=" flex items-center dark:text-darkTextPrimary ">
-                                                            <CalendarDays className="mr-2 text-muted-foreground" />
+                                                        <div className=" flex items-center gap-2 dark:text-darkTextPrimary ">
+                                                            <CalendarIcon size={20} className=" text-headingTextColor dark:text-darkTextPrimary" />
                                                             {date ? date.toLocaleDateString() : "Select date"}
                                                         </div>
 
-                                                        <ChevronDownIcon className="ml-2 w-10 h-10" />
                                                     </Button>
                                                 </PopoverTrigger>
-                                                <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+                                                <PopoverContent className="w-auto overflow-hidden" align="start">
                                                     <Calendar
                                                         mode="single"
                                                         selected={date}
@@ -267,7 +269,7 @@ const AddManualTimeModal = () => {
                                                 <FormControl className="">
                                                     <div className='relative '>
                                                         <div className='text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 peer-disabled:opacity-50'>
-                                                            <Clock8Icon className='size-4' />
+                                                            <ClockIcon size={16} className=" text-headingTextColor dark:text-darkTextPrimary" />
                                                             <span className='sr-only'>Time From</span>
                                                         </div>
                                                         <Input
@@ -294,7 +296,7 @@ const AddManualTimeModal = () => {
                                                 <FormControl>
                                                     <div className='relative'>
                                                         <div className='text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 peer-disabled:opacity-50'>
-                                                            <Clock8Icon className='size-4' />
+                                                            <ClockIcon size={16} className=" text-headingTextColor dark:text-darkTextPrimary" />
                                                             <span className='sr-only'>Time To</span>
                                                         </div>
                                                         <Input
