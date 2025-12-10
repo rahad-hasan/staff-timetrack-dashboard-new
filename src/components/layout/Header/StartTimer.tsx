@@ -14,11 +14,15 @@ import {
 } from "@/components/ui/select";
 // import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import CrossIcon from "@/components/Icons/CrossIcon";
+import JobIcon from "@/components/Icons/JobIcon";
+import TaskListIcon from "@/components/Icons/TaskListIcon";
+import { Label } from "@/components/ui/label";
 
 const projects = ["Orbit Project", "App Redesign", "Marketing Campaign", "New Website"];
 const tasks = ["Website Design", "Working on App Design", "New Landing Page", "Work on helsenist Project"];
 
-const StartTimer = () => {
+const StartTimer = ({ onClose }: { onClose: () => void }) => {
     const [isRunning, setIsRunning] = useState(false);
     const [time, setTime] = useState(0);
     const [project, setProject] = useState<string | null>(null);
@@ -54,9 +58,14 @@ const StartTimer = () => {
     const filteredTasks = tasks.filter(t => t.toLowerCase().includes(taskSearch.toLowerCase()));
 
     return (
-        <PopoverContent side="bottom" align="start" className="sm:w-[450px] sm:px-4 dark:bg-darkSecondaryBg">
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 md:gap-4">
-                <div className=" flex items-center gap-1 md:gap-4">
+        <PopoverContent side="bottom" align="start" onInteractOutside={(e) => e.preventDefault()} className="sm:w-[450px] border-borderColor dark:border-darkBorder dark:bg-darkSecondaryBg">
+            <div className="  border-b border-borderColor dark:border-darkBorder py-3.5 px-5 flex justify-end ">
+                <div onClick={onClose} className="cursor-pointer">
+                    <CrossIcon size={16} />
+                </div>
+            </div>
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 md:gap-4 px-5 py-4">
+                <div className=" flex items-center gap-1 md:gap-2">
                     <Image
                         onClick={toggleTimer}
                         src={isRunning ? pauseIcon : playIcon}
@@ -79,23 +88,27 @@ const StartTimer = () => {
                     <h2 className="text-base sm:text-lg font-medium text-headingTextColor dark:text-darkTextPrimary">{formatTime(time)}</h2>
                     <p className="text-sm text-subTextColor dark:text-darkTextSecondary">Today: {formatTime(time)}</p>
                 </div>
-
             </div>
 
             {
                 !task &&
-                <div className="flex flex-col gap-4 mt-4">
+                <div className="flex flex-col gap-4 px-5 pb-5">
                     {/* Project Select with Search */}
+                    <Label className=" -mb-1.5">Project</Label>
                     <Select onValueChange={setProject}>
                         <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select Project" />
+                            <div className=" flex gap-2 items-center text-headingTextColor dark:text-darkTextPrimary">
+                                <div className="text-headingTextColor dark:text-darkTextPrimary">
+                                    <JobIcon className="text-headingTextColor dark:text-darkTextPrimary" size={18} />
+                                </div>
+                                <SelectValue className=" text-start" placeholder="Select Project" />
+                            </div>
                         </SelectTrigger>
                         <SelectContent className="flex items-center">
-
                             <Input
                                 type="text"
                                 placeholder="Search project..."
-                                className="flex-1 border-none focus:ring-0 focus:outline-none"
+                                className="flex-1 border-none focus:ring-0 focus:outline-none dark:bg-darkSecondaryBg"
                                 value={projectSearch}
                                 onChange={(e) => setProjectSearch(e.target.value)}
                             />
@@ -107,16 +120,20 @@ const StartTimer = () => {
                     </Select>
 
                     {/* Task Select with Search */}
+                    <Label className=" -mb-1.5">Select Task</Label>
                     <Select onValueChange={setTask}>
                         <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select Task" />
+                            <div className=" flex gap-2 items-center text-headingTextColor dark:text-darkTextPrimary">
+                                <TaskListIcon className="text-headingTextColor dark:text-darkTextPrimary" size={18} />
+                                <SelectValue className=" text-start" placeholder="Select Task" />
+                            </div>
                         </SelectTrigger>
 
                         <SelectContent>
                             <Input
                                 type="text"
                                 placeholder="Search task..."
-                                className="flex-1 border-none focus:ring-0 focus:outline-none"
+                                className="flex-1 border-none focus:ring-0 focus:outline-none dark:bg-darkSecondaryBg"
                                 value={taskSearch}
                                 onChange={(e) => setTaskSearch(e.target.value)}
                             />

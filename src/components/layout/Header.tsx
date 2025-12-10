@@ -1,3 +1,4 @@
+"use client";
 import { Button } from "../ui/button";
 // import downloadIcon from '../../assets/header/download.svg'
 // import startTimerIcon from '../../assets/header/start_timer_icon.svg'
@@ -17,20 +18,22 @@ import DarkMoodToggle from "./Header/DarkMoodToogle";
 import ProfileDropDown from "./Header/ProfileDropDown";
 import Notification from "./Header/Notification";
 import Link from "next/link";
+import { useState } from "react";
 // import bellIcon from '../../assets/header/bell.svg'
 
 const Header = () => {
+    const [open, setOpen] = useState(false);
     console.log('header rendered');
 
     return (
         <div className=" border-b border-borderColor dark:border-darkBorder py-3 md:py-3.5 2xl:py-5 px-3 md:px-5 flex items-center justify-between rounded-t-lg dark:bg-darkPrimaryBg">
             <div>
-                <Popover>
+                <Popover open={open} onOpenChange={setOpen} modal>
                     <PopoverTrigger asChild>
                         {/* <Button className=" px-2 sm:px-3 dark:border-darkBorder" variant={'filter'}><Image src={startTimerIcon} width={0} height={0} className=" w-7 lg:w-5" alt="download" /><span className=" hidden lg:block dark:text-darkTextPrimary">Start Timer</span></Button> */}
                         <Button className=" dark:border-darkBorder " variant={'filter'}><CirclePlay className="text-primary size-5.5 sm:size-5.5" /><span className=" hidden lg:block dark:text-darkTextPrimary">Start Timer</span></Button>
                     </PopoverTrigger>
-                    <StartTimer></StartTimer>
+                    <StartTimer onClose={() => setOpen(false)}></StartTimer>
                 </Popover>
             </div>
 

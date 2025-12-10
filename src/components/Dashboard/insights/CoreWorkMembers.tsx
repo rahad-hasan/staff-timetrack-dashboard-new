@@ -178,7 +178,7 @@ const CoreWorkMembers = () => {
               variant="outline2"
               role="combobox"
               aria-expanded={open}
-              className="w-full sm:w-[200px] h-9 flex justify-between items-center gap-2
+              className="w-[170px] sm:w-[200px] h-9 flex justify-between items-center gap-2
             dark:border-darkBorder dark:text-darkTextPrimary
             dark:bg-darkPrimaryBg hover:dark:bg-darkPrimaryBg"
               >
@@ -192,7 +192,7 @@ const CoreWorkMembers = () => {
             </Button>
           </PopoverTrigger>
 
-          <PopoverContent className="sm:w-[200px] px-0 py-1 dark:bg-darkSecondaryBg">
+          <PopoverContent className="w-[170px] sm:w-[200px] px-0 py-1 dark:bg-darkSecondaryBg">
             <Command className="dark:bg-darkSecondaryBg">
               <CommandList>
                 <CommandEmpty>No item found.</CommandEmpty>
