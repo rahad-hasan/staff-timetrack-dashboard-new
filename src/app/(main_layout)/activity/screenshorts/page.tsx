@@ -18,11 +18,23 @@ import AvgActivityIcon from "@/components/Icons/AvgActivityIcon";
 import FocusTimeProjectIcon from "@/components/Icons/FocusTimeProjectIcon";
 import TeamMemberIcon from "@/components/Icons/TeamMemberIcon";
 import WorkedTimeIcon from "@/components/Icons/WorkedTimeIcon";
+
+import teamMemberChart from '../../../../assets/dashboard/teamMemberChart.svg'
+import totalProjectChart from '../../../../assets/dashboard/totalProjectChart.svg'
+import weeklyActivityChart from '../../../../assets/dashboard/weeklyActivityChart.svg'
+import weeklyWorkChart from '../../../../assets/dashboard/weeklyWorkChart.svg'
+import darkProjectChart from '../../../../assets/dashboard/darkProjectChart.svg'
+import darkTeamChart from '../../../../assets/dashboard/darkTeamChart.svg'
+import darkWeeklyChart from '../../../../assets/dashboard/darkWeeklyChart.svg'
+import darkWeeklyWorkChart from '../../../../assets/dashboard/darkWeeklyWorkChart.svg'
+import Image from "next/image";
+import { useTheme } from "next-themes";
 // import AllScreenShortsSkeleton from "@/skeleton/activity/screenShorts/AllScreenShortsSkeleton";
 // import Every10MinsSkeleton from "@/skeleton/activity/screenShorts/Every10MinsSkeleton";
 
 const ScreenShorts = () => {
     console.log('screenShorts');
+    const { theme } = useTheme();
     const [activeTab, setActiveTab] = useState<"Every 10 min" | "All Screenshots">("Every 10 min");
     const [value, setValue] = useState("")
     const handleTabClick = (tab: "Every 10 min" | "All Screenshots") => {
@@ -87,6 +99,7 @@ const ScreenShorts = () => {
         {
             id: 1,
             icon: SquareActivity,
+            chart: theme === 'dark' ? darkWeeklyChart : weeklyActivityChart,
             value: "48%",
             title: "AVG ACTIVITY",
             change: "+1.5%",
@@ -96,29 +109,32 @@ const ScreenShorts = () => {
         {
             id: 2,
             icon: BriefcaseBusiness,
+            chart: theme === 'dark' ? darkWeeklyWorkChart : weeklyWorkChart,
             value: "7h 24m",
             title: "WORKED TIME",
             change: "+30m",
             direction: "up",
-            note: "from yesterday",
+            note: "last Monday",
         },
         {
             id: 3,
             icon: ClipboardList,
+            chart: theme === 'dark' ? darkProjectChart : totalProjectChart,
             value: "4h 12m",
             title: "FOCUS TIME",
             change: "-15m",
             direction: "down",
-            note: "from yesterday",
+            note: "last Monday",
         },
         {
             id: 4,
             icon: UsersRound,
+            chart: theme === 'dark' ? darkTeamChart : teamMemberChart,
             value: "6h 02m",
             title: "CORE WORK",
             change: "+25m",
             direction: "up",
-            note: "from yesterday",
+            note: "last Monday",
         },
     ];
     // date picker
@@ -176,56 +192,53 @@ const ScreenShorts = () => {
                     </div>
                 </div>
             </div>
-            <div className="mb-4 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-5">
-                {metrics.map(({ id, icon: Icon, value, title, change, direction, note }) => {
+            <div className="mb-5 grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-4 gap-5">
+                {metrics.map(({ id, icon: Icon, chart, value, title, change, direction, note }) => {
                     const isUp = direction === "up";
                     const TrendIcon = isUp ? TrendingUp : TrendingDown;
-                    const trendColor = isUp ? "text-green-500" : "text-red-500";
+                    const trendColor = isUp ? "text-[#12cd69]" : "text-[#f40139]";
 
                     return (
                         <div
                             key={id}
-                            className="border border-borderColor rounded-2xl w-full dark:border-darkBorder transition-all hover:shadow duration-200"
+                            className="border border-borderColor rounded-2xl w-full dark:border-darkBorder transition-all hover:shadow duration-200 relative h-38"
                         >
-                            {/* Card header */}
-                            <div className="flex items-center gap-2 px-3 py-5 dark:bg-darkPrimaryBg rounded-t-2xl">
+                            <div className="flex items-center justify-between px-4 py-5 bg-bgPrimary dark:bg-darkPrimaryBg rounded-t-2xl">
+                                <div className=' flex items-center gap-3'>
+                                    <div className=' border border-borderColor dark:border-darkBorder p-2 text-subTextColor dark:text-darkTextSecondary rounded-lg'>
 
-                                {
-                                    title === "AVG ACTIVITY" &&
-                                    <div className="border border-borderColor dark:border-darkBorder rounded-lg p-1.5 text-subTextColor dark:text-darkTextSecondary">
-                                        <AvgActivityIcon size={25}></AvgActivityIcon>
+                                        {
+                                            title === "AVG ACTIVITY" &&
+                                            <AvgActivityIcon size={22} />
+                                        }
+                                        {
+                                            title === "WORKED TIME" &&
+                                            <FocusTimeProjectIcon size={22} />
+                                        }
+                                        {
+                                            title === "FOCUS TIME" &&
+                                            <TeamMemberIcon size={22} />
+                                        }
+                                        {
+                                            title === "CORE WORK" &&
+                                            <WorkedTimeIcon size={22} />
+                                        }
                                     </div>
-                                }
-                                {
-                                    title === "CORE WORK" &&
-                                    <div className="border border-borderColor dark:border-darkBorder rounded-lg p-1.5 text-subTextColor dark:text-darkTextSecondary">
-                                        <FocusTimeProjectIcon size={25}></FocusTimeProjectIcon>
+                                    <div>
+                                        <h2 className="text-2xl font-medium text-headingTextColor dark:text-darkTextPrimary">{value}</h2>
+                                        <h3 className=" uppercase text-subTextColor dark:text-darkTextSecondary">{title}</h3>
                                     </div>
-                                }
-                                {
-                                    title === "WORKED TIME" &&
-                                    <div className="border border-borderColor dark:border-darkBorder rounded-lg p-1.5 text-subTextColor dark:text-darkTextSecondary">
-                                        <TeamMemberIcon size={25}></TeamMemberIcon>
-                                    </div>
-                                }
-                                {
-                                    title === "FOCUS TIME" &&
-                                    <div className="border border-borderColor dark:border-darkBorder rounded-lg p-1.5 text-subTextColor dark:text-darkTextSecondary">
-                                        <WorkedTimeIcon size={23}></WorkedTimeIcon>
-                                    </div>
-                                }
+                                </div>
 
                                 <div>
-                                    <h2 className="text-xl font-medium text-headingTextColor dark:text-darkTextPrimary">{value}</h2>
-                                    <h3 className="text-subTextColor dark:text-darkTextSecondary">{title}</h3>
+                                    <Image src={chart} className=' w-18 2xl:w-20' width={150} height={150} alt='chart' />
                                 </div>
                             </div>
 
-                            {/* Card footer */}
-                            <div className="bg-bgSecondary dark:bg-darkSecondaryBg rounded-b-2xl px-3 py-3 flex items-center gap-2">
+                            <div className="bg-bgSecondary dark:bg-darkSecondaryBg rounded-b-2xl border-t px-4 py-3 flex items-center gap-2 absolute left-0 right-0 bottom-0">
                                 <TrendIcon size={20} className={trendColor} />
-                                <p className="text-primary">{change}</p>
-                                <p className="text-sm text-subTextColor dark:text-darkTextSecondary">{note}</p>
+                                <p className={`${trendColor}`}>{change}</p>
+                                <p className={`text-md text-muted-foreground dark:text-darkTextSecondary`}>{note}</p>
                             </div>
                         </div>
                     );
