@@ -69,8 +69,8 @@ const DailyTimeSheets = () => {
     ]
     const activePeriods = [
         { start: 5, end: 7, project: 'project', task: 'task', duration: '2:00:00' }, // Active from 5 AM to 7 AM
-        { start: 13, end: 16, project: 'project', task: 'task', duration: '2:00:00' }, // Active from 1 PM to 4 PM
-        { start: 18, end: 20, project: 'project', task: 'task', duration: '2:00:00' }, // Active from 6 PM to 8 PM
+        { start: 10, end: 14, project: 'project', task: 'task', duration: '2:00:00' }, // Active from 1 PM to 4 PM
+        { start: 16, end: 18, project: 'project', task: 'task', duration: '2:00:00' }, // Active from 6 PM to 8 PM
     ];
 
     // date picker
@@ -91,7 +91,7 @@ const DailyTimeSheets = () => {
                     <SelectProjectDropDown projects={projects} setValue={setValue} value={value}></SelectProjectDropDown>
                 </div>
                 {/* <div className=" "> */}
-                    {/* <Select onValueChange={setUser} value={user ?? undefined}>
+                {/* <Select onValueChange={setUser} value={user ?? undefined}>
                         <SelectTrigger size={'lg'} className="w-full">
                             {selectedUser ? (
                                 <div className="flex items-center gap-2">
@@ -125,7 +125,7 @@ const DailyTimeSheets = () => {
                             ))}
                         </SelectContent>
                     </Select> */}
-                    <SelectUserDropDown users={users}></SelectUserDropDown>
+                <SelectUserDropDown users={users}></SelectUserDropDown>
                 {/* </div> */}
             </div>
 
@@ -134,7 +134,16 @@ const DailyTimeSheets = () => {
                     <h1 className=" font-bold text-headingTextColor dark:text-darkTextPrimary">Today:</h1>
                     <p className="text-headingTextColor dark:text-darkTextPrimary">6:00:00</p>
                 </div>
-                <div className="relative h-5 bg-bgSecondary dark:bg-darkPrimaryBg rounded-4xl border border-borderColor dark:border-darkBorder">
+                <div className="relative h-5 bg-[#dce3e3] dark:bg-darkPrimaryBg rounded-4xl outline outline-borderColor dark:outline-darkBorder">
+                    {/* day time pass */}
+                    <div
+                        className="absolute h-5 bg-[#f6f7f9] rounded-l-4xl border-r-3 border-[#bdbfbe]"
+                        style={{
+                            left: `0%`,
+                            width: `80%`,
+                        }}
+                    ></div>
+                    {/* work start and end time */}
                     {activePeriods.map((period, index) => {
                         const startPercent = (period.start / 24) * 100;
                         const endPercent = (period.end / 24) * 100;
@@ -145,7 +154,7 @@ const DailyTimeSheets = () => {
                                 <TooltipTrigger asChild>
                                     <div
                                         key={index}
-                                        className="absolute h-5 bg-primary rounded-4xl"
+                                        className="absolute h-5 bg-primary rounded-4xl z-50"
                                         style={{
                                             left: `${startPercent}%`,
                                             width: `${width}%`,
@@ -164,6 +173,25 @@ const DailyTimeSheets = () => {
                         );
                     })}
                 </div>
+                {/* <div className="flex justify-between mt-[2px]">
+                    {Array.from({ length: 24 }, (_, i) => {
+                        const hour = i + 1;
+                        // choose which hours to always show
+                        const isAlwaysVisible = hour === 1 || hour === 6 || hour === 12 || hour === 18 || hour === 24;
+
+                        return (
+                            <span
+                                key={i}
+                                className={`text-sm text-gray-400 dark:text-darkTextSecondary
+                                ${!isAlwaysVisible ? "hidden lg:inline xl:inline" : ""}
+                                sm:first:ml-1
+                                `}
+                            >
+                                {hour}h
+                            </span>
+                        );
+                    })}
+                </div> */}
                 <div className="flex justify-between mt-[2px]">
                     {Array.from({ length: 24 }, (_, i) => {
                         const hour = i + 1;
@@ -183,7 +211,6 @@ const DailyTimeSheets = () => {
                         );
                     })}
                 </div>
-
 
             </div>
             <DailyTimeSheetsTable></DailyTimeSheetsTable>
