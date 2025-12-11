@@ -64,7 +64,7 @@ const LeaveHistory = () => {
                 {history.map((item, index) => (
                     <div
                         key={index}
-                        className="border dark:border-darkBorder rounded-md p-3 bg-bgSecondary dark:bg-darkSecondaryBg"
+                        className="border dark:border-darkBorder rounded-md p-3 bg-[#fcfcfc] dark:bg-darkSecondaryBg"
                     >
 
                         <div className="flex items-center justify-between mb-2">
