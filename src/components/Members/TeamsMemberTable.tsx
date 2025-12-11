@@ -165,7 +165,7 @@ const TeamsMemberTable = () => {
                 const role = row.getValue("role") as string;
                 return (
                     <div className="flex flex-col">
-                        <span className="">{role}</span>
+                        <span className=" text-base">{role}</span>
                     </div>
                 )
             }
@@ -215,8 +215,8 @@ const TeamsMemberTable = () => {
                 const dailyLimit = row.original.dailyLimit
                 return (
                     <div className="flex flex-col">
-                        <span className="">{weeklyLimit}</span>
-                        <span className="">{dailyLimit}</span>
+                        <span className=" font-thin">{weeklyLimit}</span>
+                        <span className=" font-thin">{dailyLimit}</span>
                     </div>
                 )
             }
