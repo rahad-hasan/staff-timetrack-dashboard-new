@@ -18,6 +18,7 @@ import HeadingComponent from "@/components/Common/HeadingComponent";
 
 const TaskPage = () => {
     console.log("Task");
+    const [value, setValue] = useState("")
     const [activeTab, setActiveTab] = useState<"List view" | "Kanban">("List view");
 
     const handleTabClick = (tab: "List view" | "Kanban") => {
@@ -120,7 +121,7 @@ const TaskPage = () => {
             </div>
             <div className=" flex flex-col gap-4 md:gap-0 md:flex-row justify-between">
                 <div className=" flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
-                    <SelectProjectDropDown projects={projects}></SelectProjectDropDown>
+                    <SelectProjectDropDown projects={projects} setValue={setValue} value={value}></SelectProjectDropDown>
                     <div className=" flex items-center gap-3 w-full">
                         <div className=" w-full">
                             <SelectUserDropDown users={users}></SelectUserDropDown>

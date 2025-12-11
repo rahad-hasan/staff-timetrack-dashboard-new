@@ -1,6 +1,6 @@
 "use client"
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
-import { ArrowUpDown, Check, CircleCheck, CircleX, PencilLine } from "lucide-react";
+import { ArrowUpDown, Check } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -8,6 +8,9 @@ import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import EditManualTimeModal from "./EditManualTimeModal";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import FilterButton from "@/components/Common/FilterButton";
+import EditIcon from "@/components/Icons/FilterOptionIcon/EditIcon";
+import ApproveIcon from "@/components/Icons/FilterOptionIcon/ApproveIcon";
+import DenyIcon from "@/components/Icons/FilterOptionIcon/DenyIcon";
 
 const ManualRequestsTable = () => {
     const [sorting, setSorting] = useState<SortingState>([])
@@ -186,7 +189,7 @@ const ManualRequestsTable = () => {
                                             <form>
                                                 <DialogTrigger asChild>
                                                     <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                                        <PencilLine size={20} />
+                                                        <EditIcon size={20} />
                                                         <p>Edit Time</p>
                                                     </div>
                                                 </DialogTrigger>
@@ -194,11 +197,11 @@ const ManualRequestsTable = () => {
                                             </form>
                                         </Dialog>
                                         <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                            <CircleCheck size={20} />
+                                            <ApproveIcon size={20} />
                                             <p>Approve requested time</p>
                                         </div>
                                         <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                            <CircleX size={20} />
+                                            <DenyIcon size={20} />
                                             <p>Deny requested time</p>
                                         </div>
                                     </div>
@@ -251,7 +254,7 @@ const ManualRequestsTable = () => {
                         ))
                     ) : (
                         <TableRow className="">
-                            <EmptyTableRow columns={columns} text="No tasks found."></EmptyTableRow>
+                            <EmptyTableRow columns={columns} text="No manual request found."></EmptyTableRow>
                         </TableRow>
                     )}
                 </TableBody>

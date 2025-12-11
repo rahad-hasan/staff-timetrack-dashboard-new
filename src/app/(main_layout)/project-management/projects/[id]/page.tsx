@@ -48,11 +48,11 @@ const SingleProjectPage = () => {
                         </thead>
                         <tbody>
                             <tr className="">
-                                <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextPrimary">Daniel Vector</td>
-                                <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextPrimary">+880 - 1324 4524 452</td>
-                                <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextPrimary">12 Aug, 2025</td>
-                                <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextPrimary">12 Aug, 2025</td>
-                                <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextPrimary">Hourly: $35</td>
+                                <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary">Daniel Vector</td>
+                                <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary">+880 - 1324 4524 452</td>
+                                <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary">12 Aug, 2025</td>
+                                <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary">12 Aug, 2025</td>
+                                <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary">Hourly: $35</td>
                             </tr>
                         </tbody>
                     </table>

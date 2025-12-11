@@ -284,7 +284,7 @@ const ProjectMemberTable = () => {
     return (
         <div className="mt-5 border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">
             <div className=" mb-5">
-                <h2 className=" text-base sm:text-lg">TASK LIST</h2>
+                <h2 className=" text-base sm:text-lg">MEMBER LIST</h2>
             </div>
             <Table>
                 <TableHeader>
