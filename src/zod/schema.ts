@@ -1,9 +1,15 @@
 import { z } from "zod"
 
 export const loginSchema = z.object({
-    email: z.string().email("Invalid email address"),
-    password: z.string().min(8, "Password must be at least 8 characters"),
-})
+  email: z.string().email("Invalid email address"),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .regex(
+      /[!@#$%^&*(),.?":{}|<>]/,
+      "Password must contain at least one special character"
+    ),
+});
 
 export const forgetPasswordSchema = z.object({
     email: z.string().email("Invalid email address"),

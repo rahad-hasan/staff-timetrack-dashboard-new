@@ -1,5 +1,4 @@
 import { PopoverContent } from "@/components/ui/popover";
-import Link from "next/link";
 import {
     Avatar,
     AvatarFallback,
@@ -12,8 +11,20 @@ import ReferFriendIcon from "@/components/Icons/ReferFriendIcon";
 import SubscriptionIcon from "@/components/Icons/SubscriptionIcon";
 import PauseNotificationIcon from "@/components/Icons/PauseNotificationIcon";
 import SignOutIcon from "@/components/Icons/SignOutIcon";
+import { useAuthStore } from "@/api/features/auth/authCSRStore";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
 const ProfilePopoverContent = ({ side, align }: { side: "top" | "right" | "bottom" | "left", align: "center" | "end" | "start" }) => {
+    const { logOut } = useAuthStore();
+    const router = useRouter();
+    const handleLogOut = () => {
+        Cookies.remove("accessToken");
+        logOut();
+        router.push('/')
+        router.refresh();
+    }
+    
     return (
         <PopoverContent className=" px-0 shadow-none py-3 border-borderColor dark:border-darkBorder" side={side} align={align}>
             <div className="flex items-center gap-2 mb-4 px-3 ">
@@ -31,7 +42,7 @@ const ProfilePopoverContent = ({ side, align }: { side: "top" | "right" | "botto
             </div>
             <div className="flex flex-col gap-2 mb-2 px-3 pt-2 border-t border-borderColor dark:border-darkBorder">
                 <button className="flex items-center gap-2 text-sm font-medium text-headingTextColor dark:text-darkTextPrimary hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-2 py-2 rounded-md cursor-pointer">
-                    <MyProfileIcon size={18}/> My account
+                    <MyProfileIcon size={18} /> My account
                 </button>
                 <button className="flex items-center gap-2 text-sm font-medium text-headingTextColor dark:text-darkTextPrimary hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-2 py-2 rounded-md cursor-pointer">
                     <InviteMemberIcon size={18} /> Invite member to team
@@ -53,11 +64,11 @@ const ProfilePopoverContent = ({ side, align }: { side: "top" | "right" | "botto
                 <button className="flex items-center text-headingTextColor dark:text-darkTextPrimary border-borderColor dark:border-darkBorder gap-2 text-sm font-medium border w-full px-3.5 hover:bg-gray-100 hover:dark:bg-darkPrimaryBg py-2 rounded-md cursor-pointer">
                     <PauseNotificationIcon size={18} /> Pause notification
                 </button>
-                <Link className="hover:bg-gray-100 hover:dark:bg-darkPrimaryBg rounded-md cursor-pointer" href={`/`}>
-                    <button className="flex items-center font-medium gap-2 border border-borderColor dark:border-darkBorder w-full px-3.5 text-sm hover:bg-gray-100 hover:dark:bg-darkPrimaryBg text-red-500 py-2 rounded-md cursor-pointer">
+                {/* <Link className="hover:bg-gray-100 hover:dark:bg-darkPrimaryBg rounded-md cursor-pointer" href={`/`}> */}
+                    <button onClick={handleLogOut} className="flex items-center font-medium gap-2 border border-borderColor dark:border-darkBorder w-full px-3.5 text-sm hover:bg-gray-100 hover:dark:bg-darkPrimaryBg text-red-500 py-2 rounded-md cursor-pointer">
                         <SignOutIcon size={18} /> Sign out
                     </button>
-                </Link>
+                {/* </Link> */}
             </div>
         </PopoverContent>
     );

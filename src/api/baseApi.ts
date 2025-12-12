@@ -35,9 +35,5 @@ export async function baseApi(
     options
   );
 
-  if (!res.ok) {
-    throw new Error(await res.text());
-  }
-
   return res.json();
 }

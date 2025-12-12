@@ -80,19 +80,19 @@ const HeroSection = () => {
                                 <div className=''>
 
                                     {
-                                        title === "Weekly ACTIVITY" &&  
+                                        title === "Weekly ACTIVITY" &&
                                         <WeeklyActivityColoredIcon size={36} />
                                     }
                                     {
-                                        title === "Total project" &&  
+                                        title === "Total project" &&
                                         <TotalProjectColoredIcon size={36} />
                                     }
                                     {
-                                        title === "Weekly Work" &&  
+                                        title === "Weekly Work" &&
                                         <WeeklyWorkColoredIcon size={36} />
                                     }
                                     {
-                                        title === "Team Member" &&  
+                                        title === "Team Member" &&
                                         <TeamMemberColoredIcon size={36} />
                                     }
                                 </div>

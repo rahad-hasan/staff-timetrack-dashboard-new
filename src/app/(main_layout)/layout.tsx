@@ -7,6 +7,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  
   return (
     <div
       className={` w-full flex bg-bgSecondary dark:bg-darkSecondaryBg`}

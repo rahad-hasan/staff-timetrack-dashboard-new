@@ -24,6 +24,8 @@ import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useAuthStore } from "@/api/features/auth/authCSRStore";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner"
+import Cookies from "js-cookie";
 
 const SignIn = () => {
     const [showPassword, setShowPassword] = useState(false);
@@ -42,7 +44,7 @@ const SignIn = () => {
         setShowPassword((prev) => !prev);
     };
 
-    const { logIn, isLogging, error } = useAuthStore();
+    const { logIn, isLogging } = useAuthStore();
     // const currentError = useAuthStore.getState().error;
     // console.log(getUser());
     // console.log(getError());
@@ -69,21 +71,19 @@ const SignIn = () => {
             .then((res: any) => {
                 console.log("Login success:", res);
                 if (res?.success) {
+                    Cookies.set("accessToken", res?.data?.accessToken);
                     router.push('/dashboard')
+                    toast.success(res?.message)
                 }
                 if (!res?.success) {
-                    alert(res?.message)
+                    toast.error(res?.message)
                 }
-                // alert("Login successful 🎉");
-                // console.log('from then block',user);
-                console.log('error from then block', error);
                 // const currentError = useAuthStore.getState().error;
                 // console.log("Updated error:", currentError);
                 // console.log(error);
             })
             .catch((error) => {
                 console.error("Login failed:", error);
-                alert(error.message || "Invalid credentials");
             });
     }
 

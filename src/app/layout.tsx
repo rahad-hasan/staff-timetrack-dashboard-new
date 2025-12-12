@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/Theme/theme-provider";
 import { SidebarRouteSync } from "@/utils/SidebarRouteSync";
 import SetGlobalColor from "@/components/Common/SetGlobalColor";
+import { Toaster } from "@/components/ui/sonner"
 
 const inter = Inter({
     subsets: ['latin'],
@@ -32,6 +33,7 @@ export default function RootLayout({
                 monica-version="7.9.7"
                 data-new-gr-c-s-check-loaded="14.1263.0"
             >
+                <Toaster position="top-center"/>
                 <ThemeProvider
                     attribute="class"
                     defaultTheme="system"

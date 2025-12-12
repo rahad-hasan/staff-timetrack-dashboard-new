@@ -4,8 +4,8 @@ import HeadingComponent from "@/components/Common/HeadingComponent";
 import NotificationIcon from "@/components/Icons/NotificationIcon";
 import ProfilePlusIcon from "@/components/Icons/ProfilePlusIcon";
 import SubscriptionManagementIcon from "@/components/Icons/SubscriptionManagementIcon";
-import TimeTrackingIcon from "@/components/Icons/TimeTrackingIcon";
-import UserRoleIcon from "@/components/Icons/UserRoleIcon";
+// import TimeTrackingIcon from "@/components/Icons/TimeTrackingIcon";
+// import UserRoleIcon from "@/components/Icons/UserRoleIcon";
 import Configuration from "@/components/Settings/Configuration";
 import Profile from "@/components/Settings/Profile";
 import Subscription from "@/components/Settings/Subscription";
@@ -13,10 +13,12 @@ import Subscription from "@/components/Settings/Subscription";
 import { useState } from "react"
 
 const SettingsPage = () => {
-    const [activeTab, setActiveTab] = useState<"Profile" | "Configuration" | "User Role" | "Tracking" | "Subscription Management">("Profile");
+    // const [activeTab, setActiveTab] = useState<"Profile" | "Configuration" | "User Role" | "Tracking" | "Subscription Management">("Profile");
+    const [activeTab, setActiveTab] = useState<"Profile" | "Configuration" | "Subscription Management">("Profile");
     console.log("Dashboard Rendered", activeTab);
 
-    const handleTabClick = (tab: "Profile" | "Configuration" | "User Role" | "Tracking" | "Subscription Management") => {
+    // const handleTabClick = (tab: "Profile" | "Configuration" | "User Role" | "Tracking" | "Subscription Management") => {
+    const handleTabClick = (tab: "Profile" | "Configuration" | "Subscription Management") => {
         setActiveTab(tab);
     };
 
@@ -30,7 +32,8 @@ const SettingsPage = () => {
             </div>
 
             <div className="flex gap-1 md:gap-3 mt-3 sm:mt-0 rounded-lg">
-                {["Profile", "Configuration", "User Role", "Tracking", "Subscription Management"].map((tab) => (
+                {["Profile", "Configuration", "Subscription Management"].map((tab) => (
+                // {["Profile", "Configuration", "User Role", "Tracking", "Subscription Management"].map((tab) => (
                     <button
                         key={tab}
                         onClick={() => handleTabClick(tab as "Profile" | "Configuration" | "Subscription Management")}
@@ -47,14 +50,14 @@ const SettingsPage = () => {
                             tab === "Configuration" &&
                             <NotificationIcon size={16}></NotificationIcon>
                         }
-                        {
+                        {/* {
                             tab === "User Role" &&
                             <UserRoleIcon size={16}></UserRoleIcon>
                         }
                         {
                             tab === "Tracking" &&
                             <TimeTrackingIcon size={16}></TimeTrackingIcon>
-                        }
+                        } */}
                         {
                             tab === "Subscription Management" &&
                             <SubscriptionManagementIcon size={16}></SubscriptionManagementIcon>
