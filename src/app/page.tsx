@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import { loginSchema } from "@/zod/schema";
@@ -21,10 +22,13 @@ import signInImage from '../assets/auth/signImage.webp'
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
+import { useAuthStore } from "@/api/features/auth/authCSRStore";
+import { useRouter } from "next/navigation";
 
 const SignIn = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [currentSlide, setCurrentSlide] = useState(0);
+    const router = useRouter();
 
     const form = useForm<z.infer<typeof loginSchema>>({
         resolver: zodResolver(loginSchema),
@@ -38,8 +42,49 @@ const SignIn = () => {
         setShowPassword((prev) => !prev);
     };
 
+    const { logIn, isLogging, error } = useAuthStore();
+    // const currentError = useAuthStore.getState().error;
+    // console.log(getUser());
+    // console.log(getError());
+    const user = useAuthStore((state) => state.user);
+    console.log('user from component', user);
+
     function onSubmit(values: z.infer<typeof loginSchema>) {
-        console.log(values)
+        // fetch('http://localhost:5000/api/v1/auth//signin', {
+        //     headers: {
+        //         'Accept': 'application/json',
+        //         'Content-Type': 'application/json'
+        //     },
+        //     method: "POST",
+        //     body: JSON.stringify(values),
+        // })
+        //     .then( async(res) => {
+        //         const result = await res.json()
+        //         console.log('success',result);
+        //     })
+        //     .catch((error) => {
+        //         console.log('error',error);
+        //     })
+        logIn(values)
+            .then((res: any) => {
+                console.log("Login success:", res);
+                if (res?.success) {
+                    router.push('/dashboard')
+                }
+                if (!res?.success) {
+                    alert(res?.message)
+                }
+                // alert("Login successful 🎉");
+                // console.log('from then block',user);
+                console.log('error from then block', error);
+                // const currentError = useAuthStore.getState().error;
+                // console.log("Updated error:", currentError);
+                // console.log(error);
+            })
+            .catch((error) => {
+                console.error("Login failed:", error);
+                alert(error.message || "Invalid credentials");
+            });
     }
 
     const sliderContent = [
@@ -140,9 +185,9 @@ const SignIn = () => {
                                         </FormItem>
                                     )}
                                 />
-                                <Link href={`/dashboard`}>
-                                    <Button className=" w-full" type="submit">Sign in</Button>
-                                </Link>
+                                {/* <Link href={`/dashboard`}> */}
+                                <Button disabled={isLogging} className=" w-full" type="submit">{isLogging ? "Loading..." : "Sign in"}</Button>
+                                {/* </Link> */}
                                 <h3 className=" text-center mt-2">Don’t have a account? <span className=" text-primary cursor-pointer">Sign Up</span></h3>
                             </form>
                         </Form>
