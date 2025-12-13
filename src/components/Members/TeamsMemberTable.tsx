@@ -125,7 +125,7 @@ const TeamsMemberTable = ({ data }: any) => {
                 const role = row.getValue("role") as string;
                 return (
                     <div className="flex flex-col">
-                        <span className=" text-base">{role}</span>
+                        <span className=" text-base capitalize">{role}</span>
                     </div>
                 )
             }
@@ -257,7 +257,7 @@ const TeamsMemberTable = ({ data }: any) => {
                                             <DialogTrigger asChild>
                                                 <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100  hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
                                                     <Pencil size={18} />
-                                                    <p>Edit Team</p>
+                                                    <p>Edit Member</p>
                                                 </div>
                                             </DialogTrigger>
                                             <EditNewMemberModal></EditNewMemberModal>
@@ -266,7 +266,7 @@ const TeamsMemberTable = ({ data }: any) => {
 
                                     <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100  hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
                                         <Trash2 size={18} />
-                                        <p>Delete Team</p>
+                                        <p>Delete Member</p>
                                     </div>
                                 </div>
                             </div>
