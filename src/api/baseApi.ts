@@ -1,20 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import Cookies from "js-cookie";
 export async function baseApi(
   endpoint: string,
   {
     method = "GET",
     data,
-    token,
     cache = "no-store",     // ⬅ DEFAULT: secure
     revalidate,
   }: {
     method?: string;
     data?: any;
-    token?: string;
     cache?: RequestCache;
     revalidate?: number;
   } = {}
 ) {
+
+  const token = Cookies.get("accessToken");
+
   const options: RequestInit & { next?: { revalidate?: number } } = {
     method,
     headers: {

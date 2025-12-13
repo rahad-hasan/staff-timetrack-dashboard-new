@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -12,7 +13,8 @@ import EditNewMemberModal from "./EditNewMemberModal";
 import EmptyTableRow from "../Common/EmptyTableRow";
 import FilterButton from "../Common/FilterButton";
 
-const TeamsMemberTable = () => {
+const TeamsMemberTable = ({ data }: any) => {
+    console.log('getting from api', data);
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
 
@@ -285,7 +287,7 @@ const TeamsMemberTable = () => {
                                 <FilterButton></FilterButton>
                             </div>
                         </PopoverTrigger>
-                        <PopoverContent side="bottom" align="end" className=" w-[250px] px-2">
+                        <PopoverContent side="bottom" align="end" className=" w-[250px] p-2">
                             <div className="">
                                 <div className="space-y-2">
                                     <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100  hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">

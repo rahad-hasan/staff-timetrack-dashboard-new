@@ -1,14 +1,14 @@
 import { z } from "zod"
 
 export const loginSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .regex(
-      /[!@#$%^&*(),.?":{}|<>]/,
-      "Password must contain at least one special character"
-    ),
+    email: z.string().email("Invalid email address"),
+    password: z
+        .string()
+        .min(8, "Password must be at least 8 characters")
+        .regex(
+            /[!@#$%^&*(),.?":{}|<>]/,
+            "Password must contain at least one special character"
+        ),
 });
 
 export const forgetPasswordSchema = z.object({
@@ -98,9 +98,14 @@ export const newTeamSchema = z.object({
 
 export const addNewMemberSchema = z.object({
     name: z.string().min(1, "Name is required"),
-    email: z.string().min(1, "Email is required"),
+    email: z.string().email("Invalid email address"),
     role: z.string().min(1, "Role is required"),
-    password: z.string().min(1, "Password is required"),
+    password: z.string()
+        .min(8, "Minimum 8 characters")
+        .regex(/[a-z]/, "At least one lowercase letter")
+        .regex(/[A-Z]/, "At least one uppercase letter")
+        .regex(/\d/, "At least one number")
+        .regex(/[!@#$%^&*(),.?":{}|<>]/, "At least one special character"),
 })
 
 export const addNewEventSchema = z.object({
@@ -121,7 +126,6 @@ export const editEventSchema = z.object({
             message: "Date is required",
         }),
 });
-
 
 export const leaveRequestSchema = z.object({
     leaveType: z.string().min(1, "Leave type is required"),

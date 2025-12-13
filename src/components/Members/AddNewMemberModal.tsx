@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import { Button } from "@/components/ui/button";
 import {
@@ -27,13 +28,17 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import { useMembersStore } from "@/api/features/members/membersCSRStore";
+import { Eye, EyeOff } from "lucide-react";
+import { toast } from "sonner";
 
-const AddNewMemberModal = () => {
+const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
 
-    const manager = ["Website Design", "Full Stack Developer", "UI/UX Designer"];
+    const manager = ["admin", "manager", "hr", "project_manager", "employee"];
     const [managerSearch, setManagerSearch] = useState("");
-
+    const [showPassword, setShowPassword] = useState(false);
     const filteredManager = manager.filter(t => t.toLowerCase().includes(managerSearch.toLowerCase()));
+    const { addEmployee, isMemberAdding } = useMembersStore();
 
     const form = useForm<z.infer<typeof addNewMemberSchema>>({
         resolver: zodResolver(addNewMemberSchema),
@@ -45,10 +50,31 @@ const AddNewMemberModal = () => {
         },
     })
 
+    const togglePasswordVisibility = () => {
+        setShowPassword((prev) => !prev);
+    };
+
     function onSubmit(values: z.infer<typeof addNewMemberSchema>) {
         console.log(values)
+        addEmployee(values)
+            .then((res: any) => {
+                console.log("Login success:", res);
+                if (!res?.success) {
+                    toast.error(res?.message)
+                }
+                if (res?.success) {
+                    onClose();
+                    form.reset()
+                    toast.success(res?.message)
+                }
+                // const currentError = useAuthStore.getState().error;
+                // console.log("Updated error:", currentError);
+                // console.log(error);
+            })
+            .catch((error) => {
+                console.error("Login failed:", error);
+            });
     }
-
 
     return (
         <DialogContent className="sm:max-w-[525px]">
@@ -127,14 +153,28 @@ const AddNewMemberModal = () => {
                             <FormItem>
                                 <FormLabel>Password</FormLabel>
                                 <FormControl>
-                                    <Input type="password" className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Set Password" {...field} />
+                                    <div className="relative">
+                                        <Input
+                                            type={showPassword ? "text" : "password"}
+                                            className=" dark:border-darkBorder"
+                                            placeholder="Password"
+                                            {...field}
+                                        />
+                                        <div
+                                            className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
+                                            onClick={togglePasswordVisibility}
+                                        >
+                                            {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+                                        </div>
+                                    </div>
+                                    {/* <Input type="password" className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Set Password" {...field} /> */}
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
                     {/* <DialogClose asChild> */}
-                    <Button className=" w-full" type="submit">Add Member</Button>
+                    <Button disabled={isMemberAdding} className=" w-full" type="submit">{isMemberAdding ? "Loading..." : "Add Member"}</Button>
                     {/* </DialogClose> */}
                 </form>
             </Form>
