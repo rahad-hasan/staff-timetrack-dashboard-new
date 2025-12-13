@@ -2,97 +2,43 @@
 "use client"
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { ArrowUpDown, Download, Pencil, Trash2 } from "lucide-react";
 // import { Checkbox } from "@/components/ui/checkbox"
-import Image from "next/image";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ITeamMembers } from "@/global/globalTypes";
+// import { ITeamMembers } from "@/global/globalTypes";
 import { Dialog, DialogTrigger } from "../ui/dialog";
 import EditNewMemberModal from "./EditNewMemberModal";
 import EmptyTableRow from "../Common/EmptyTableRow";
 import FilterButton from "../Common/FilterButton";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { format } from "date-fns";
 
 const TeamsMemberTable = ({ data }: any) => {
     console.log('getting from api', data);
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
 
-    const attendanceList: ITeamMembers[] = useMemo(
-        () => [
-            {
-                image: "https://picsum.photos/200/300",
-                name: "Orbit Design Agency",
-                memberSince: "Feb 18, 2025",
-                status: "Active",
-                role: "Front End Developer",
-                project: 2,
-                weeklyLimit: "No weekly limit",
-                tracking: true,
-                dailyLimit: "No daily limit",
-            },
-            {
-                image: "https://picsum.photos/200/300",
-                name: "Orbit Design Agency",
-                memberSince: "Feb 18, 2025",
-                status: "Inactive",
-                role: "Back End Developer",
-                project: 2,
-                weeklyLimit: "No weekly limit",
-                tracking: true,
-                dailyLimit: "No daily limit",
-            },
-            {
-                image: "https://picsum.photos/200/300",
-                name: "Orbit Design Agency",
-                memberSince: "Feb 18, 2025",
-                status: "Inactive",
-                role: "Front End Developer",
-                project: 2,
-                weeklyLimit: "No weekly limit",
-                tracking: false,
-                dailyLimit: "No daily limit",
-            },
-            {
-                image: "https://picsum.photos/200/300",
-                name: "Orbit Design Agency",
-                memberSince: "Feb 18, 2025",
-                status: "Active",
-                role: "Full Stack Developer",
-                project: 2,
-                weeklyLimit: "No weekly limit",
-                tracking: true,
-                dailyLimit: "No daily limit",
-            }
-        ],
-        []
-    );
+    interface ITeamMembers {
+        id: number,
+        company_id: number,
+        name: string,
+        email: string,
+        role: "admin" | "manager" | "hr" | "project_manager" | "employee",
+        phone: string | null,
+        image: string | null,
+        pay_rate_hourly: number,
+        time_zone: string,
+        is_active: boolean,
+        is_deleted: boolean,
+        is_tracking: boolean,
+        url_tracking: boolean,
+        multi_factor_auth: boolean,
+        created_at: string,
+        updated_at: string,
+    }
 
     const columns: ColumnDef<ITeamMembers>[] = [
-        // {
-        //     id: "select",
-        //     header: ({ table }) => (
-        //         <Checkbox
-        //             checked={
-        //                 table.getIsAllPageRowsSelected() ||
-        //                 (table.getIsSomePageRowsSelected() && "indeterminate")
-        //             }
-        //             onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        //             aria-label="Select all"
-        //             className=" cursor-pointer"
-        //         />
-        //     ),
-        //     cell: ({ row }) => (
-        //         <Checkbox
-        //             checked={row.getIsSelected()}
-        //             onCheckedChange={(value) => row.toggleSelected(!!value)}
-        //             aria-label="Select row"
-        //             className=" cursor-pointer"
-        //         />
-        //     ),
-        //     enableSorting: false,
-        //     enableHiding: false,
-        // },
         {
             accessorKey: "name",
             header: ({ column }) => {
@@ -113,14 +59,26 @@ const TeamsMemberTable = ({ data }: any) => {
                 const img = row.original.image;
                 return (
                     <div className="flex items-center gap-2 min-w-[200px]">
-                        <Image src={img} alt="profile" width={200} height={200} className="w-8 h-8 object-cover rounded-full" />
+                        <Avatar>
+                            <AvatarImage src={img || undefined} alt={name} />
+                            <AvatarFallback>
+                                {name
+                                    ?.trim()
+                                    .split(" ")
+                                    .map(word => word[0])
+                                    .join("")
+                                    .slice(0, 2)
+                                    .toUpperCase()}
+                            </AvatarFallback>
+                        </Avatar>
+
                         <span className="">{name}</span>
                     </div>
                 )
             }
         },
         {
-            accessorKey: "status",
+            accessorKey: "is_active",
             header: ({ column }) => {
                 return (
                     <div>
@@ -135,11 +93,11 @@ const TeamsMemberTable = ({ data }: any) => {
                 )
             },
             cell: ({ row }) => {
-                const status = row.getValue("status") as string;
+                const is_active = row.getValue("is_active") as string;
                 return (
                     <div className="">
                         {
-                            status === "Active" ?
+                            is_active ?
                                 <button className=" bg-[#e9f8f0] text-primary border border-primary rounded-lg px-2 py-1">Active</button>
                                 :
                                 <button className=" bg-[#fee6eb] text-red-500 border border-red-500 rounded-lg px-2 py-1">Inactive</button>
@@ -224,7 +182,7 @@ const TeamsMemberTable = ({ data }: any) => {
             }
         },
         {
-            accessorKey: "memberSince",
+            accessorKey: "created_at",
             header: ({ column }) => {
                 return (
                     <div>
@@ -239,16 +197,16 @@ const TeamsMemberTable = ({ data }: any) => {
                 )
             },
             cell: ({ row }) => {
-                const memberSince = row.getValue("memberSince") as string;
+                const created_at = row.getValue("created_at") as string;
                 return (
                     <div className="flex flex-col">
-                        <span className="">{memberSince}</span>
+                        <span className="">{format(new Date(created_at), "EEE, MMM d, yyyy")}</span>
                     </div>
                 )
             }
         },
         {
-            accessorKey: "tracking",
+            accessorKey: "is_tracking",
             header: ({ column }) => {
                 return (
                     <div>
@@ -263,11 +221,11 @@ const TeamsMemberTable = ({ data }: any) => {
                 )
             },
             cell: ({ row }) => {
-                const tracking = row.getValue("tracking") as string;
+                const is_tracking = row.getValue("is_tracking") as string;
                 return (
                     <div className="">
                         {
-                            tracking ?
+                            is_tracking ?
                                 <button className=" bg-[#e9f8f0] text-primary border border-primary rounded-lg px-2 py-1">Active</button>
                                 :
                                 <button className=" bg-[#fee6eb] text-red-500 border border-red-500 rounded-lg px-2 py-1">Inactive</button>
@@ -321,7 +279,7 @@ const TeamsMemberTable = ({ data }: any) => {
 
 
     const table = useReactTable({
-        data: attendanceList,
+        data: data,
         columns,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,
