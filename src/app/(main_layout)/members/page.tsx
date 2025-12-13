@@ -15,6 +15,18 @@ const MemberPage = async ({ searchParams }: any) => {
     // const handleTabClick = (tab: "Teams" | "Members") => {
     //     setActiveTab(tab);
     // };
+    const query = await searchParams;
+
+    // const query = {
+    //     search: params.search ?? "",
+    //     page: Number(params.page ?? 1),
+    //     limit: Number(params.limit ?? 10),
+    //     sortBy: params.sortBy ?? "created_at",
+    //     order: params.order ?? "desc",
+    //     role: params.role ?? undefined,
+    //     status: params.status ?? undefined,
+    // };
+
     return (
         <div>
             <MemberHeroSection></MemberHeroSection>
@@ -29,7 +41,7 @@ const MemberPage = async ({ searchParams }: any) => {
             {/* {
                 activeTab === "Members" && */}
             <Suspense fallback={<TeamsMemberTableSkeleton />}>
-                <MemberTableServer searchParams={searchParams} />
+                <MemberTableServer query={query} />
             </Suspense>
 
             {/* <TeamsMemberTableSkeleton></TeamsMemberTableSkeleton> */}
