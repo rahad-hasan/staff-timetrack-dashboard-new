@@ -13,6 +13,9 @@ import EmptyTableRow from "../Common/EmptyTableRow";
 import FilterButton from "../Common/FilterButton";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { format } from "date-fns";
+import DownloadIcon from "../Icons/DownloadIcon";
+import EditIcon from "../Icons/FilterOptionIcon/EditIcon";
+import DeleteIcon from "../Icons/DeleteIcon";
 
 const TeamsMemberTable = ({ data }: any) => {
     console.log('getting from api', data);
@@ -249,14 +252,14 @@ const TeamsMemberTable = ({ data }: any) => {
                             <div className="">
                                 <div className="space-y-2">
                                     <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100  hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                        <Download size={18} />
+                                        <DownloadIcon size={18} />
                                         <p>Export Report</p>
                                     </div>
                                     <Dialog>
                                         <form>
                                             <DialogTrigger asChild>
                                                 <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100  hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                                    <Pencil size={18} />
+                                                    <EditIcon size={18} />
                                                     <p>Edit Member</p>
                                                 </div>
                                             </DialogTrigger>
@@ -265,7 +268,7 @@ const TeamsMemberTable = ({ data }: any) => {
                                     </Dialog>
 
                                     <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100  hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                        <Trash2 size={18} />
+                                        <DeleteIcon size={18} />
                                         <p>Delete Member</p>
                                     </div>
                                 </div>
