@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
+
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useState } from "react";
-import { ArrowUpDown, Download, Pencil, Trash2 } from "lucide-react";
-// import { Checkbox } from "@/components/ui/checkbox"
+import { ArrowUpDown, } from "lucide-react";
+// import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-// import { ITeamMembers } from "@/global/globalTypes";
-import { Dialog, DialogTrigger } from "../ui/dialog";
+import { Dialog } from "../ui/dialog";
 import EditNewMemberModal from "./EditNewMemberModal";
 import EmptyTableRow from "../Common/EmptyTableRow";
 import FilterButton from "../Common/FilterButton";
@@ -16,30 +16,17 @@ import { format } from "date-fns";
 import DownloadIcon from "../Icons/DownloadIcon";
 import EditIcon from "../Icons/FilterOptionIcon/EditIcon";
 import DeleteIcon from "../Icons/DeleteIcon";
+import { ITeamMembers } from "@/global/globalTypes";
 
 const TeamsMemberTable = ({ data }: any) => {
-    console.log('getting from api', data);
+    // console.log('getting from api', data);
+
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
 
-    interface ITeamMembers {
-        id: number,
-        company_id: number,
-        name: string,
-        email: string,
-        role: "admin" | "manager" | "hr" | "project_manager" | "employee",
-        phone: string | null,
-        image: string | null,
-        pay_rate_hourly: number,
-        time_zone: string,
-        is_active: boolean,
-        is_deleted: boolean,
-        is_tracking: boolean,
-        url_tracking: boolean,
-        multi_factor_auth: boolean,
-        created_at: string,
-        updated_at: string,
-    }
+    const [open, setOpen] = useState(false)
+    const [selectedUser, setSelectedUser] = useState<ITeamMembers | null>(null)
+    console.log('selected user', selectedUser);
 
     const columns: ColumnDef<ITeamMembers>[] = [
         {
@@ -133,7 +120,6 @@ const TeamsMemberTable = ({ data }: any) => {
                 )
             }
         },
-
         {
             accessorKey: "project",
             header: ({ column }) => {
@@ -240,7 +226,7 @@ const TeamsMemberTable = ({ data }: any) => {
         {
             accessorKey: "action",
             header: () => <div className="">Action</div>,
-            cell: () => {
+            cell: (row) => {
                 return <div className="">
                     <Popover>
                         <PopoverTrigger asChild>
@@ -251,21 +237,24 @@ const TeamsMemberTable = ({ data }: any) => {
                         <PopoverContent side="bottom" align="end" className=" w-[250px] p-2">
                             <div className="">
                                 <div className="space-y-2">
-                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100  hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
+                                    <div
+
+                                        className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100  hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
                                         <DownloadIcon size={18} />
                                         <p>Export Report</p>
                                     </div>
-                                    <Dialog>
-                                        <form>
-                                            <DialogTrigger asChild>
-                                                <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100  hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                                    <EditIcon size={18} />
-                                                    <p>Edit Member</p>
-                                                </div>
-                                            </DialogTrigger>
-                                            <EditNewMemberModal></EditNewMemberModal>
-                                        </form>
-                                    </Dialog>
+                                    <div
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setSelectedUser(row.row.original);
+                                            setOpen(true);
+                                        }}
+                                        className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100  hover:dark:bg-darkPrimaryBg px-3 cursor-pointer"
+                                    >
+                                        <EditIcon size={20} />
+                                        <p>Edit Time</p>
+                                    </div>
+
 
                                     <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100  hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
                                         <DeleteIcon size={18} />
@@ -331,6 +320,15 @@ const TeamsMemberTable = ({ data }: any) => {
                     )}
                 </TableBody>
             </Table>
+            {/* modal here */}
+            <Dialog open={open} onOpenChange={setOpen}>
+                {selectedUser && (
+                    <EditNewMemberModal
+                        selectedUser={selectedUser}
+                        onClose={() => setOpen(false)}
+                    />
+                )}
+            </Dialog>
         </div>
     );
 };

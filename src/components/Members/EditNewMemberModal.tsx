@@ -26,11 +26,15 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
-
-const EditNewMemberModal = () => {
-
-    const manager = ["Website Design", "Full Stack Developer", "UI/UX Designer"];
+import { useEffect, useState } from "react";
+import { ITeamMembers } from "@/global/globalTypes";
+interface EditNewMemberModalProps {
+    onClose: () => void
+    selectedUser: ITeamMembers | null
+}
+const EditNewMemberModal = ({ onClose, selectedUser }: EditNewMemberModalProps) => {
+    console.log('user details', selectedUser);
+    const manager = ["admin", "manager", "hr", "project_manager", "employee"];
     const [managerSearch, setManagerSearch] = useState("");
 
     const filteredManager = manager.filter(t => t.toLowerCase().includes(managerSearch.toLowerCase()));
@@ -38,17 +42,25 @@ const EditNewMemberModal = () => {
     const form = useForm<z.infer<typeof addNewMemberSchema>>({
         resolver: zodResolver(addNewMemberSchema),
         defaultValues: {
-            name: "Emon",
-            email: "emon@gmail.com",
-            role: "Full Stack Developer",
+            name: selectedUser?.name,
+            email: selectedUser?.email,
+            role: selectedUser?.role,
             password: "",
         },
     })
-
+    useEffect(() => {
+        if (selectedUser) {
+            form.reset({
+                name: selectedUser.name ?? "",
+                email: selectedUser.email ?? "",
+                role: selectedUser.role ?? "",
+                password: "",
+            });
+        }
+    }, [selectedUser, form]);
     function onSubmit(values: z.infer<typeof addNewMemberSchema>) {
         console.log(values)
     }
-
 
     return (
         <DialogContent className="sm:max-w-[525px]">
