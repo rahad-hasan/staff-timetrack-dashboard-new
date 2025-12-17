@@ -51,9 +51,6 @@ const AddClientModal = ({ onClose }: { onClose: () => void }) => {
                     toast.success(res?.message)
                     router.refresh();
                 }
-                // const currentError = useAuthStore.getState().error;
-                // console.log("Updated error:", currentError);
-                // console.log(error);
             })
             .catch((error) => {
                 console.error("failed:", error);

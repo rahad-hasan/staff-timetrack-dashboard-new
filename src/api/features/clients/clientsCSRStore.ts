@@ -21,9 +21,9 @@ interface ClientsStore {
     editClient: (params: {
         data: {
             name: string,
-            // email: string,
-            role: string,
-            password: string,
+            address: string,
+            email: string,
+            phone: string
         },
         id: number | undefined
     }) => Promise<any>;

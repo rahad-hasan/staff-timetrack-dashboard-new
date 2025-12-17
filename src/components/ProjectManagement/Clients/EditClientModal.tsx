@@ -1,7 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import { Button } from "@/components/ui/button";
 import {
-    DialogClose,
     DialogContent,
     DialogHeader,
     DialogTitle,
@@ -19,21 +19,57 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-
-const EditClientModal = () => {
+import { IClients } from "@/global/globalTypes";
+import { useEffect } from "react";
+import { toast } from "sonner";
+import { useClientsStore } from "@/api/features/clients/clientsCSRStore";
+import { useRouter } from "next/navigation";
+interface EditClientModalProps {
+    onClose: () => void
+    selectedClient: IClients | null
+}
+const EditClientModal = ({ onClose, selectedClient }: EditClientModalProps) => {
+    console.log('from modal', selectedClient);
 
     const form = useForm<z.infer<typeof newClientSchema>>({
         resolver: zodResolver(newClientSchema) as Resolver<z.infer<typeof newClientSchema>>,
         defaultValues: {
-            name: "Jonson",
-            address: "USA",
-            email: "client@gmail.com",
-            phone: 145875789
+            name: selectedClient?.name,
+            address: selectedClient?.address,
+            email: selectedClient?.email,
+            phone: selectedClient?.phone,
         },
     })
+    useEffect(() => {
+        if (selectedClient) {
+            form.reset({
+                name: selectedClient.name ?? "",
+                address: selectedClient.address ?? "",
+                email: selectedClient.email ?? "",
+                phone: selectedClient.phone ?? "",
+            });
+        }
+    }, [selectedClient, form]);
+
+    const router = useRouter();
+
+    const { editClient, isClientEditing } = useClientsStore();
 
     function onSubmit(values: z.infer<typeof newClientSchema>) {
-        console.log(values)
+        editClient({ data: values, id: selectedClient?.id }).then((res: any) => {
+            if (!res?.success) {
+                toast.error(res?.message)
+            }
+            if (res?.success) {
+                onClose();
+                form.reset()
+                toast.success(res?.message)
+                router.refresh();
+            }
+        })
+            .catch((error) => {
+                console.error("failed:", error);
+            });
     }
 
     return (
@@ -59,7 +95,7 @@ const EditClientModal = () => {
                     />
                     <FormField
                         control={form.control}
-                        name="address"   
+                        name="address"
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Address</FormLabel>
@@ -90,15 +126,26 @@ const EditClientModal = () => {
                             <FormItem>
                                 <FormLabel>Phone</FormLabel>
                                 <FormControl>
-                                    <Input type="number" className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Enter Phone" {...field} />
+                                    <Input
+                                        type="text"
+                                        placeholder="Enter Phone Number"
+                                        className="dark:bg-darkPrimaryBg dark:border-darkBorder"
+                                        {...field}
+                                        onChange={(e) => {
+                                            // This Regex allows ONLY the '+' sign and numbers 0-9
+                                            // It replaces any other character (like 'a', 'b', '!', etc.) with an empty string
+                                            const sanitizedValue = e.target.value.replace(/[^\d+]/g, "");
+                                            field.onChange(sanitizedValue);
+                                        }}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
-                    <DialogClose asChild>
-                        <Button className=" w-full" type="submit">Create Task</Button>
-                    </DialogClose>
+
+                    <Button className=" w-full" disabled={isClientEditing} type="submit">{isClientEditing ? "Loading..." : "Update Task"}</Button>
+
                 </form>
             </Form>
         </DialogContent>

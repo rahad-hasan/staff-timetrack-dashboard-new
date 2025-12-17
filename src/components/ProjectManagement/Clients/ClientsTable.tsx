@@ -8,7 +8,7 @@ import { ArrowUpDown } from "lucide-react";
 import { IClients } from "@/global/globalTypes";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import Link from "next/link";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog } from "@/components/ui/dialog";
 import EditClientModal from "./EditClientModal";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import FilterButton from "@/components/Common/FilterButton";
@@ -17,9 +17,10 @@ import EditIcon from "@/components/Icons/FilterOptionIcon/EditIcon";
 import DeleteIcon from "@/components/Icons/DeleteIcon";
 
 const ClientsTable = ({ data }: any) => {
-    console.log('getting data from api', data);
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
+    const [open, setOpen] = useState(false)
+    const [selectedClient, setSelectedClient] = useState<IClients | null>(null)
 
     const columns: ColumnDef<IClients>[] = [
         {
@@ -121,8 +122,7 @@ const ClientsTable = ({ data }: any) => {
         {
             accessorKey: "action",
             header: () => <div className="">Action</div>,
-            cell: ({ row }) => {
-                console.log(row);
+            cell: (row) => {
                 return <div className="">
                     <Popover>
                         <PopoverTrigger asChild>
@@ -139,17 +139,18 @@ const ClientsTable = ({ data }: any) => {
                                             <p>View Client</p>
                                         </div>
                                     </Link>
-                                    <Dialog>
-                                        <form>
-                                            <DialogTrigger asChild>
-                                                <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                                    <EditIcon size={18} />
-                                                    <p>Edit Client</p>
-                                                </div>
-                                            </DialogTrigger>
-                                            <EditClientModal></EditClientModal>
-                                        </form>
-                                    </Dialog>
+
+                                    <div
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setSelectedClient(row?.row?.original);
+                                            setOpen(true);
+                                        }}
+                                        className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
+                                        <EditIcon size={18} />
+                                        <p>Edit Client</p>
+                                    </div>
+
 
                                     <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
                                         <DeleteIcon size={18} />
@@ -215,6 +216,15 @@ const ClientsTable = ({ data }: any) => {
                     )}
                 </TableBody>
             </Table>
+            {/* modal here */}
+            <Dialog open={open} onOpenChange={setOpen}>
+                {selectedClient && (
+                    <EditClientModal
+                        onClose={() => setOpen(false)}
+                        selectedClient={selectedClient}
+                    />
+                )}
+            </Dialog>
         </div>
     );
 };

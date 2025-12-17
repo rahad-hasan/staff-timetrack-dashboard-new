@@ -259,7 +259,6 @@ const TeamsMemberTable = ({ data }: any) => {
                             <div className="">
                                 <div className="space-y-2">
                                     <div
-
                                         className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100  hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
                                         <DownloadIcon size={18} />
                                         <p>Export Report</p>
