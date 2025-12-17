@@ -30,7 +30,7 @@ const LeaveDataTable = () => {
                 casualLeave: 14,
                 sickLeave: 12,
                 earnedLeave: 7,
-                availableLeave: 10
+                availableLeave: 30
             },
             {
                 image: "https://picsum.photos/200/300",
@@ -76,7 +76,7 @@ const LeaveDataTable = () => {
                 return (
                     <div className="flex items-center gap-2 min-w-[180px]">
                         <Image src={img} alt="profile" width={200} height={200} className="w-8 h-8 object-cover rounded-full" />
-                        <span className="">{name}</span>
+                        <span className=" font-medium">{name}</span>
                     </div>
                 )
             }
@@ -100,7 +100,7 @@ const LeaveDataTable = () => {
                 const totalLeave = row.getValue("totalLeave") as string;
                 return (
                     <div className="flex flex-col">
-                        <span className="">{totalLeave}</span>
+                        <span className=" font-medium">{totalLeave}</span>
                     </div>
                 )
             }
@@ -124,7 +124,7 @@ const LeaveDataTable = () => {
                 const casualLeave = row.getValue("casualLeave") as string;
                 return (
                     <div className="flex flex-col">
-                        <span className="">{casualLeave}</span>
+                        <span className=" font-medium">{casualLeave}</span>
                     </div>
                 )
             }
@@ -148,7 +148,7 @@ const LeaveDataTable = () => {
                 const sickLeave = row.getValue("sickLeave") as string;
                 return (
                     <div className="flex flex-col">
-                        <span className="">{sickLeave}</span>
+                        <span className=" font-medium">{sickLeave}</span>
                     </div>
                 )
             }
@@ -172,7 +172,7 @@ const LeaveDataTable = () => {
                 const earnedLeave = row.getValue("earnedLeave") as string;
                 return (
                     <div className="flex flex-col">
-                        <span className="">{earnedLeave}</span>
+                        <span className=" font-medium">{earnedLeave}</span>
                     </div>
                 )
             }
@@ -198,8 +198,8 @@ const LeaveDataTable = () => {
                 const withColor = widthPercentage > 50 ? 'bg-red-500' : widthPercentage > 40 ? 'bg-yellow-500' : 'bg-green-500';
                 return (
                     <div className=" ">
-                        <div className={`bg-gray-100 dark:bg-gray-500 flex h-4 w-16 rounded-full relative`}>
-                            <p className={`${withColor} flex h-4 rounded-full absolute top-0 left-0`} style={{ width: `${widthPercentage}%` }}></p>
+                        <div className={` bg-[#ececec] dark:bg-gray-500 flex h-4.5 w-16 rounded-full relative`}>
+                            <p className={`${withColor} flex h-4.5 rounded-full absolute top-0 left-0`} style={{ width: `${widthPercentage}%` }}></p>
                         </div>
                     </div>
                 )

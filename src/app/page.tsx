@@ -19,11 +19,11 @@ import loginIcon from '../assets/auth/loginIcon.svg'
 import Image from "next/image";
 import logo from '../assets/logo.svg'
 import signInImage from '../assets/auth/signImage.webp'
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useAuthStore } from "@/api/features/auth/authCSRStore";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner"
 import Cookies from "js-cookie";
 
@@ -31,6 +31,15 @@ const SignIn = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [currentSlide, setCurrentSlide] = useState(0);
     const router = useRouter();
+    // session expire
+    const params = useSearchParams();
+    const reason = params.get("reason");
+    useEffect(() => {
+        if (reason === "session_expired") {
+            toast.error("Session expired. Please login again.");
+            Cookies.remove("refreshToken");
+        }
+    }, [reason]);
 
     const form = useForm<z.infer<typeof loginSchema>>({
         resolver: zodResolver(loginSchema),
@@ -72,6 +81,7 @@ const SignIn = () => {
                 console.log("Login success:", res);
                 if (res?.success) {
                     Cookies.set("accessToken", res?.data?.accessToken);
+                    Cookies.set("refreshToken", res?.data?.refreshToken);
                     router.push('/dashboard')
                     toast.success(res?.message)
                 }

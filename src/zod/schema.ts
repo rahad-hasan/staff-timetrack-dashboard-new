@@ -108,6 +108,21 @@ export const addNewMemberSchema = z.object({
         .regex(/[!@#$%^&*(),.?":{}|<>]/, "At least one special character"),
 })
 
+export const editMemberSchema = z.object({
+    name: z
+        .string()
+        .min(1, "Name is required")
+        .regex(/^[a-zA-Z\s]+$/, "Name can only contain letters and spaces")
+        .trim(),
+    role: z.string().min(1, "Role is required"),
+    password: z.string()
+        .min(8, "Minimum 8 characters")
+        .regex(/[a-z]/, "At least one lowercase letter")
+        .regex(/[A-Z]/, "At least one uppercase letter")
+        .regex(/\d/, "At least one number")
+        .regex(/[!@#$%^&*(),.?":{}|<>]/, "At least one special character"),
+})
+
 export const addNewEventSchema = z.object({
     eventName: z.string().min(1, "Event name is required"),
     date: z.date().refine(date => !isNaN(date.getTime()), {

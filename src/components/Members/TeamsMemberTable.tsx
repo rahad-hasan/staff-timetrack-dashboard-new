@@ -19,7 +19,7 @@ import DeleteIcon from "../Icons/DeleteIcon";
 import { ITeamMembers } from "@/global/globalTypes";
 
 const TeamsMemberTable = ({ data }: any) => {
-    // console.log('getting from api', data);
+    console.log('getting from api', data);
 
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})

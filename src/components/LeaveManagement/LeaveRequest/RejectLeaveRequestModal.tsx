@@ -102,7 +102,7 @@ const RejectLeaveRequestModal = () => {
                             <FormItem>
                                 <FormLabel>Details</FormLabel>
                                 <FormControl>
-                                    <Textarea className="dark:border-darkBorder" placeholder="Enter details" {...field} />
+                                    <Textarea className="border-borderColor dark:border-darkBorder" placeholder="Enter details" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>

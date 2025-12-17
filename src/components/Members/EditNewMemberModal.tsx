@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import { Button } from "@/components/ui/button";
 import {
@@ -6,7 +7,6 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog"
-import { addNewMemberSchema } from "@/zod/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import z from "zod";
@@ -28,6 +28,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { ITeamMembers } from "@/global/globalTypes";
+import { useMembersStore } from "@/api/features/members/membersCSRStore";
+import { editMemberSchema } from "@/zod/schema";
+import { toast } from "sonner";
+
 interface EditNewMemberModalProps {
     onClose: () => void
     selectedUser: ITeamMembers | null
@@ -39,11 +43,11 @@ const EditNewMemberModal = ({ onClose, selectedUser }: EditNewMemberModalProps) 
 
     const filteredManager = manager.filter(t => t.toLowerCase().includes(managerSearch.toLowerCase()));
 
-    const form = useForm<z.infer<typeof addNewMemberSchema>>({
-        resolver: zodResolver(addNewMemberSchema),
+    const form = useForm<z.infer<typeof editMemberSchema>>({
+        resolver: zodResolver(editMemberSchema),
         defaultValues: {
             name: selectedUser?.name,
-            email: selectedUser?.email,
+            // email: selectedUser?.email,
             role: selectedUser?.role,
             password: "",
         },
@@ -52,14 +56,35 @@ const EditNewMemberModal = ({ onClose, selectedUser }: EditNewMemberModalProps) 
         if (selectedUser) {
             form.reset({
                 name: selectedUser.name ?? "",
-                email: selectedUser.email ?? "",
+                // email: selectedUser.email ?? "",
                 role: selectedUser.role ?? "",
                 password: "",
             });
         }
     }, [selectedUser, form]);
-    function onSubmit(values: z.infer<typeof addNewMemberSchema>) {
-        console.log(values)
+
+
+    const { editEmployee, isMemberEditing } = useMembersStore();
+
+    function onSubmit(values: z.infer<typeof editMemberSchema>) {
+        console.log('the updated value', values)
+        editEmployee({ data: values, id: selectedUser?.id }).then((res: any) => {
+            console.log("Login success:", res);
+            if (!res?.success) {
+                toast.error(res?.message)
+            }
+            if (res?.success) {
+                onClose();
+                form.reset()
+                toast.success(res?.message)
+            }
+            // const currentError = useAuthStore.getState().error;
+            // console.log("Updated error:", currentError);
+            // console.log(error);
+        })
+            .catch((error) => {
+                console.error("Login failed:", error);
+            });
     }
 
     return (
@@ -83,7 +108,7 @@ const EditNewMemberModal = ({ onClose, selectedUser }: EditNewMemberModalProps) 
                             </FormItem>
                         )}
                     />
-                    <FormField
+                    {/* <FormField
                         control={form.control}
                         name="email"
                         render={({ field }) => (
@@ -95,7 +120,7 @@ const EditNewMemberModal = ({ onClose, selectedUser }: EditNewMemberModalProps) 
                                 <FormMessage />
                             </FormItem>
                         )}
-                    />
+                    /> */}
                     <FormField
                         control={form.control}
                         name="role"
@@ -146,7 +171,7 @@ const EditNewMemberModal = ({ onClose, selectedUser }: EditNewMemberModalProps) 
                         )}
                     />
                     {/* <DialogClose asChild> */}
-                    <Button className=" w-full" type="submit">Submit</Button>
+                    <Button className=" w-full" disabled={isMemberEditing} type="submit">{isMemberEditing? "Loading...": "Submit"}</Button>
                     {/* </DialogClose> */}
                 </form>
             </Form>

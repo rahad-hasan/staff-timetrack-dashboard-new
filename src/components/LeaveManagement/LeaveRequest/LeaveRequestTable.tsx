@@ -55,7 +55,7 @@ const LeaveRequestTable = () => {
                 days: 2,
                 reason: "Going to my village",
                 leaveType: "Paid Leave",
-                availableLeave: 6
+                availableLeave: 10
             }
         ],
         []
@@ -218,8 +218,8 @@ const LeaveRequestTable = () => {
                 return (
                     <div className=" flex items-center ">
                         <p className=" w-7">{availableLeave}</p>
-                        <div className={`bg-gray-100 dark:bg-gray-500 flex h-4 w-16 rounded-full relative`}>
-                            <p className={`${barColor} flex h-4 rounded-full absolute top-0 left-0`} style={{ width: `${widthPercentage}%` }}></p>
+                        <div className={`bg-gray-100 dark:bg-gray-500 flex h-4.5 w-16 rounded-full relative`}>
+                            <p className={`${barColor} flex h-4.5 rounded-full absolute top-0 left-0`} style={{ width: `${widthPercentage}%` }}></p>
                         </div>
                     </div>
                 )
@@ -240,11 +240,11 @@ const LeaveRequestTable = () => {
 
                 return (
                     <div className="flex items-center gap-3">
-                        <Button size={'sm'} className=" text-sm px-2">Approve</Button>
+                        <Button size={'sm'} className=" text-sm px-2 rounded-lg">Approve</Button>
                         <Dialog>
                             <form>
                                 <DialogTrigger asChild>
-                                    <Button size={'sm'} className=" text-sm bg-red-500 hover:bg-red-500 dark:text-white px-2">Reject</Button>
+                                    <Button size={'sm'} className=" text-sm bg-red-500 hover:bg-red-500 dark:text-white px-2 rounded-lg">Reject</Button>
                                 </DialogTrigger>
                                 <RejectLeaveRequestModal></RejectLeaveRequestModal>
                             </form>

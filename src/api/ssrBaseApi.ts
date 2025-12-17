@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import "server-only";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 export async function ssrBaseApi(
     endpoint: string,
@@ -45,6 +46,11 @@ export async function ssrBaseApi(
         `http://localhost:5000/api/v1${endpoint}`,
         options
     );
-
+    if (res.status === 401) {
+        redirect("/?reason=session_expired");
+    }
+    if (!res.ok) {
+        throw new Error("Session expires Login again!");
+    }
     return res.json();
 }
