@@ -4,7 +4,7 @@
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useState } from "react";
-import { ArrowUpDown, Eye, Pencil, Trash2 } from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
 import { IClients } from "@/global/globalTypes";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import Link from "next/link";
@@ -12,6 +12,9 @@ import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import EditClientModal from "./EditClientModal";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import FilterButton from "@/components/Common/FilterButton";
+import EyeIcon from "@/components/Icons/EyeIcon";
+import EditIcon from "@/components/Icons/FilterOptionIcon/EditIcon";
+import DeleteIcon from "@/components/Icons/DeleteIcon";
 
 const ClientsTable = ({ data }: any) => {
     console.log('getting data from api', data);
@@ -127,12 +130,12 @@ const ClientsTable = ({ data }: any) => {
                                 <FilterButton></FilterButton>
                             </div>
                         </PopoverTrigger>
-                        <PopoverContent side="bottom" align="end" className=" w-[250px] px-2">
+                        <PopoverContent side="bottom" align="end" className=" w-[250px] p-2">
                             <div className="">
                                 <div className="space-y-2">
                                     <Link href={`/project-management/clients/777`}>
                                         <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                            <Eye size={18} />
+                                            <EyeIcon size={18} />
                                             <p>View Client</p>
                                         </div>
                                     </Link>
@@ -140,7 +143,7 @@ const ClientsTable = ({ data }: any) => {
                                         <form>
                                             <DialogTrigger asChild>
                                                 <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                                    <Pencil size={18} />
+                                                    <EditIcon size={18} />
                                                     <p>Edit Client</p>
                                                 </div>
                                             </DialogTrigger>
@@ -149,7 +152,7 @@ const ClientsTable = ({ data }: any) => {
                                     </Dialog>
 
                                     <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                        <Trash2 size={18} />
+                                        <DeleteIcon size={18} />
                                         <p>Delete Client</p>
                                     </div>
                                 </div>

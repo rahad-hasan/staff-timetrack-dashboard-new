@@ -12,9 +12,9 @@ interface ClientsStore {
 
     addClient: (data: {
         name: string,
+        address: string,
         email: string,
-        role: string,
-        password: string,
+        phone: string
     }) => Promise<any>;
     clearError: () => void;
 
@@ -65,7 +65,7 @@ export const useClientsStore = create<ClientsStore>()(
                 set({ isClientAdding: false });
             }
         },
-        
+
         editClient: async ({ data, id }) => {
             set({ isClientEditing: true, error: null });
 

@@ -1,7 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import { Button } from "@/components/ui/button";
 import {
-    DialogClose,
     DialogContent,
     DialogHeader,
     DialogTitle,
@@ -19,8 +19,11 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useClientsStore } from "@/api/features/clients/clientsCSRStore";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
-const AddClientModal = () => {
+const AddClientModal = ({ onClose }: { onClose: () => void }) => {
 
     const form = useForm<z.infer<typeof newClientSchema>>({
         resolver: zodResolver(newClientSchema) as Resolver<z.infer<typeof newClientSchema>>,
@@ -31,9 +34,30 @@ const AddClientModal = () => {
             phone: ""
         },
     })
+    const router = useRouter();
 
+    const { addClient, isClientAdding } = useClientsStore();
     function onSubmit(values: z.infer<typeof newClientSchema>) {
         console.log(values)
+        addClient(values)
+            .then((res: any) => {
+                console.log("success:", res);
+                if (!res?.success) {
+                    toast.error(res?.message)
+                }
+                if (res?.success) {
+                    onClose();
+                    form.reset()
+                    toast.success(res?.message)
+                    router.refresh();
+                }
+                // const currentError = useAuthStore.getState().error;
+                // console.log("Updated error:", currentError);
+                // console.log(error);
+            })
+            .catch((error) => {
+                console.error("failed:", error);
+            });
     }
 
     return (
@@ -93,15 +117,24 @@ const AddClientModal = () => {
                                 <FormLabel>Phone</FormLabel>
                                 <FormControl>
                                     <Input
-                                        type="number"
-                                        className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Enter Phone" {...field} />
+                                        type="text"
+                                        placeholder="Enter Phone Number"
+                                        className="dark:bg-darkPrimaryBg dark:border-darkBorder"
+                                        {...field}
+                                        onChange={(e) => {
+                                            // This Regex allows ONLY the '+' sign and numbers 0-9
+                                            // It replaces any other character (like 'a', 'b', '!', etc.) with an empty string
+                                            const sanitizedValue = e.target.value.replace(/[^\d+]/g, "");
+                                            field.onChange(sanitizedValue);
+                                        }}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
                     {/* <DialogClose asChild> */}
-                        <Button className=" w-full" type="submit">Create Task</Button>
+                    <Button className="w-full" disabled={isClientAdding} type="submit">{isClientAdding ? "Loading..." : "Create Task"}</Button>
                     {/* </DialogClose> */}
                 </form>
             </Form>

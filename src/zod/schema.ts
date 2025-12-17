@@ -1,4 +1,6 @@
 import { z } from "zod"
+import parsePhoneNumberFromString from 'libphonenumber-js';
+
 
 export const loginSchema = z.object({
     email: z.string().email("Invalid email address"),
@@ -85,12 +87,16 @@ export const newClientSchema = z.object({
     name: z.string().min(1, "Name is required"),
     address: z.string().min(1, "Address is required"),
     email: z.string().email("Invalid email address"),
-    phone: z.string()
-        .min(1, "Phone number is required")
-        // Regex for E.164 format: Optional +, followed by 7 to 15 digits
-        .regex(
-            /^\+?[1-9]\d{1,14}$/,
-            "Invalid international phone format (e.g., +1234567890)"
+    phone: z
+        .string()
+        .refine(
+            (val) => {
+                const parsed = parsePhoneNumberFromString(val);
+                return parsed?.isValid();
+            },
+            {
+                message: 'Phone number must be a valid international format',
+            }
         )
 });
 

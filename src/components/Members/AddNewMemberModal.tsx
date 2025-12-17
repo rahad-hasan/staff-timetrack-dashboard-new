@@ -58,7 +58,7 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
         console.log(values)
         addEmployee(values)
             .then((res: any) => {
-                console.log("Login success:", res);
+                console.log("success:", res);
                 if (!res?.success) {
                     toast.error(res?.message)
                 }
@@ -72,7 +72,7 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
                 // console.log(error);
             })
             .catch((error) => {
-                console.error("Login failed:", error);
+                console.error("failed:", error);
             });
     }
 
