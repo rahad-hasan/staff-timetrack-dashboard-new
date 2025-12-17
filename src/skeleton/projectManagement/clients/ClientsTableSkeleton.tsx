@@ -1,9 +1,9 @@
 
 const ClientsTableSkeleton = () => {
     return (
-        <div className="p-2 rounded-xl  border border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg mt-5">
+        <div className=" p-4 2xl:p-5 rounded-[12px]  border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg mt-5">
             <div className="space-y-2  w-full overflow-x-auto">
-                {Array.from({ length: 8 }).map((_, i) => (
+                {Array.from({ length: 6 }).map((_, i) => (
                     <div key={i} className="flex items-center w-full p-3  border-b border-gray-100 dark:border-darkBorder ">
 
                         <div className="bg-gray-200 dark:bg-gray-700 rounded-md animate-pulse h-6 min-w-[200px] md:w-2/12" />
