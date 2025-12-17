@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { ArrowUpDown, Eye, Pencil, Trash2 } from "lucide-react";
 import { IClients } from "@/global/globalTypes";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -12,65 +13,12 @@ import EditClientModal from "./EditClientModal";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import FilterButton from "@/components/Common/FilterButton";
 
-const ClientsTable = () => {
+const ClientsTable = ({ data }: any) => {
+    console.log('getting data from api', data);
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
 
-    const clients: IClients[] = useMemo(
-        () => [
-            {
-                name: "Orbit Design Agency",
-                email: "orbitagency@gmail.com",
-                phone: "880 124 214 3134",
-                address: "Dhaka, Bangladesh"
-            },
-            {
-                name: "Orbit Design Agency",
-                email: "orbitagency@gmail.com",
-                phone: "880 124 214 3134",
-                address: "Dhaka, Bangladesh"
-            },
-            {
-                name: "Orbit Design Agency",
-                email: "orbitagency@gmail.com",
-                phone: "880 124 214 3134",
-                address: "Dhaka, Bangladesh"
-            },
-            {
-                name: "Orbit Design Agency",
-                email: "orbitagency@gmail.com",
-                phone: "880 124 214 3134",
-                address: "Dhaka, Bangladesh"
-            }
-        ],
-        []
-    );
-
     const columns: ColumnDef<IClients>[] = [
-        // {
-        //     id: "select",
-        //     header: ({ table }) => (
-        //         <Checkbox
-        //             checked={
-        //                 table.getIsAllPageRowsSelected() ||
-        //                 (table.getIsSomePageRowsSelected() && "indeterminate")
-        //             }
-        //             onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        //             aria-label="Select all"
-        //             className=" cursor-pointer"
-        //         />
-        //     ),
-        //     cell: ({ row }) => (
-        //         <Checkbox
-        //             checked={row.getIsSelected()}
-        //             onCheckedChange={(value) => row.toggleSelected(!!value)}
-        //             aria-label="Select row"
-        //             className=" cursor-pointer"
-        //         />
-        //     ),
-        //     enableSorting: false,
-        //     enableHiding: false,
-        // },
         {
             accessorKey: "name",
             header: ({ column }) => {
@@ -215,7 +163,7 @@ const ClientsTable = () => {
 
 
     const table = useReactTable({
-        data: clients,
+        data: data,
         columns,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,

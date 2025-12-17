@@ -4,13 +4,13 @@
 import { baseApi } from "@/api/baseApi";
 import { create } from "zustand";
 
-interface MembersStore {
-    isMemberAdding: boolean;
-    isMemberEditing: boolean;
-    isMemberDeactivating: boolean;
+interface ClientsStore {
+    isClientAdding: boolean;
+    isClientEditing: boolean;
+    isClientDeleting: boolean;
     error: string | null;
 
-    addEmployee: (data: {
+    addClient: (data: {
         name: string,
         email: string,
         role: string,
@@ -18,7 +18,7 @@ interface MembersStore {
     }) => Promise<any>;
     clearError: () => void;
 
-    editEmployee: (params: {
+    editClient: (params: {
         data: {
             name: string,
             // email: string,
@@ -28,7 +28,7 @@ interface MembersStore {
         id: number | undefined
     }) => Promise<any>;
 
-    deactivateEmployee: (params: {
+    deleteClient: (params: {
         data: {
             is_active: boolean
         },
@@ -36,21 +36,21 @@ interface MembersStore {
     }) => Promise<any>;
 }
 
-export const useMembersStore = create<MembersStore>()(
+export const useClientsStore = create<ClientsStore>()(
 
     (set) => ({
-        isMemberAdding: false,
-        isMemberEditing: false,
-        isMemberDeactivating: false,
+        isClientAdding: false,
+        isClientEditing: false,
+        isClientDeleting: false,
         error: null,
 
         clearError: () => set({ error: null }),
 
-        addEmployee: async (data) => {
-            set({ isMemberAdding: true, error: null });
+        addClient: async (data) => {
+            set({ isClientAdding: true, error: null });
 
             try {
-                const result = await baseApi("/auth/employees", {
+                const result = await baseApi("/clients", {
                     method: "POST",
                     data,
                 });
@@ -62,15 +62,15 @@ export const useMembersStore = create<MembersStore>()(
 
                 return result;
             } finally {
-                set({ isMemberAdding: false });
+                set({ isClientAdding: false });
             }
         },
         
-        editEmployee: async ({ data, id }) => {
-            set({ isMemberEditing: true, error: null });
+        editClient: async ({ data, id }) => {
+            set({ isClientEditing: true, error: null });
 
             try {
-                const result = await baseApi(`/auth/employees/${id}`, {
+                const result = await baseApi(`/clients/${id}`, {
                     method: "PATCH",
                     data,
                 });
@@ -82,15 +82,15 @@ export const useMembersStore = create<MembersStore>()(
 
                 return result;
             } finally {
-                set({ isMemberEditing: false });
+                set({ isClientEditing: false });
             }
         },
 
-        deactivateEmployee: async ({ data, id }) => {
-            set({ isMemberDeactivating: true, error: null });
+        deleteClient: async ({ data, id }) => {
+            set({ isClientDeleting: true, error: null });
 
             try {
-                const result = await baseApi(`/auth/employees/${id}`, {
+                const result = await baseApi(`/clients/${id}`, {
                     method: "PATCH",
                     data,
                 });
@@ -102,7 +102,7 @@ export const useMembersStore = create<MembersStore>()(
 
                 return result;
             } finally {
-                set({ isMemberDeactivating: false });
+                set({ isClientDeleting: false });
             }
         },
     }),

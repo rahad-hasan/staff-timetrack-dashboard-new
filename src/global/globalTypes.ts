@@ -14,10 +14,15 @@ export interface ITask {
 }
 
 export interface IClients {
+    id: number;
     name: string;
     email: string;
     phone: string;
     address: string;
+    company_id: number;
+    is_active: boolean;
+    updated_at: string;
+    created_at: string;
 }
 
 export interface IAttendance {
