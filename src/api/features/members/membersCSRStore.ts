@@ -7,6 +7,7 @@ import { create } from "zustand";
 interface MembersStore {
     isMemberAdding: boolean;
     isMemberEditing: boolean;
+    isMemberDeactivating: boolean;
     error: string | null;
 
     addEmployee: (data: {
@@ -26,6 +27,13 @@ interface MembersStore {
         },
         id: number | undefined
     }) => Promise<any>;
+
+    deactivateEmployee: (params: {
+        data: {
+            is_active: boolean
+        },
+        id: number | undefined
+    }) => Promise<any>;
 }
 
 export const useMembersStore = create<MembersStore>()(
@@ -33,6 +41,7 @@ export const useMembersStore = create<MembersStore>()(
     (set) => ({
         isMemberAdding: false,
         isMemberEditing: false,
+        isMemberDeactivating: false,
         error: null,
 
         clearError: () => set({ error: null }),
@@ -94,6 +103,26 @@ export const useMembersStore = create<MembersStore>()(
                 return result;
             } finally {
                 set({ isMemberEditing: false });
+            }
+        },
+
+        deactivateEmployee: async ({ data, id }) => {
+            set({ isMemberDeactivating: true, error: null });
+
+            try {
+                const result = await baseApi(`/auth/employees/${id}`, {
+                    method: "PATCH",
+                    data,
+                });
+
+                if (!result.success) {
+                    set({ error: result.message });
+                    return result;
+                }
+
+                return result;
+            } finally {
+                set({ isMemberDeactivating: false });
             }
         },
     }),

@@ -69,7 +69,7 @@ const EditNewMemberModal = ({ onClose, selectedUser }: EditNewMemberModalProps) 
     function onSubmit(values: z.infer<typeof editMemberSchema>) {
         console.log('the updated value', values)
         editEmployee({ data: values, id: selectedUser?.id }).then((res: any) => {
-            console.log("Login success:", res);
+            console.log("success:", res);
             if (!res?.success) {
                 toast.error(res?.message)
             }
@@ -83,7 +83,7 @@ const EditNewMemberModal = ({ onClose, selectedUser }: EditNewMemberModalProps) 
             // console.log(error);
         })
             .catch((error) => {
-                console.error("Login failed:", error);
+                console.error("failed:", error);
             });
     }
 

@@ -4,7 +4,7 @@
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useState } from "react";
-import { ArrowUpDown, } from "lucide-react";
+import { Activity, ArrowUpDown, } from "lucide-react";
 // import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog } from "../ui/dialog";
@@ -17,6 +17,8 @@ import DownloadIcon from "../Icons/DownloadIcon";
 import EditIcon from "../Icons/FilterOptionIcon/EditIcon";
 import DeleteIcon from "../Icons/DeleteIcon";
 import { ITeamMembers } from "@/global/globalTypes";
+import { useMembersStore } from "@/api/features/members/membersCSRStore";
+import { toast } from "sonner";
 
 const TeamsMemberTable = ({ data }: any) => {
     console.log('getting from api', data);
@@ -27,6 +29,25 @@ const TeamsMemberTable = ({ data }: any) => {
     const [open, setOpen] = useState(false)
     const [selectedUser, setSelectedUser] = useState<ITeamMembers | null>(null)
     console.log('selected user', selectedUser);
+
+
+    const { deactivateEmployee, isMemberEditing } = useMembersStore();
+
+    function handleDeactivate(info: ITeamMembers) {
+        console.log('info', info);
+        deactivateEmployee({ data: { is_active: info?.is_active ? false : true }, id: info?.id }).then((res: any) => {
+            console.log("Login success:", res);
+            if (!res?.success) {
+                toast.error(res?.message)
+            }
+            if (res?.success) {
+                toast.success(res?.message)
+            }
+        })
+            .catch((error) => {
+                console.error("Login failed:", error);
+            });
+    }
 
     const columns: ColumnDef<ITeamMembers>[] = [
         {
@@ -246,7 +267,7 @@ const TeamsMemberTable = ({ data }: any) => {
                                     <div
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            setSelectedUser(row.row.original);
+                                            setSelectedUser(row?.row?.original);
                                             setOpen(true);
                                         }}
                                         className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100  hover:dark:bg-darkPrimaryBg px-3 cursor-pointer"
@@ -254,12 +275,14 @@ const TeamsMemberTable = ({ data }: any) => {
                                         <EditIcon size={20} />
                                         <p>Edit Time</p>
                                     </div>
+                                    <button
+                                        disabled={isMemberEditing}
+                                        onClick={() => handleDeactivate(row?.row?.original)}
+                                        className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100  hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
+                                        {row?.row?.original?.is_active ? <DeleteIcon size={18} /> : <Activity size={18} />}
 
-
-                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100  hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                        <DeleteIcon size={18} />
-                                        <p>Delete Member</p>
-                                    </div>
+                                        <p>{row?.row?.original?.is_active ? "Deactivate Member" : "Activate Member"}</p>
+                                    </button>
                                 </div>
                             </div>
                         </PopoverContent>
