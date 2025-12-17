@@ -28,7 +28,7 @@ const AddClientModal = () => {
             name: "",
             address: "",
             email: "",
-            
+            phone: ""
         },
     })
 
@@ -100,9 +100,9 @@ const AddClientModal = () => {
                             </FormItem>
                         )}
                     />
-                    <DialogClose asChild>
+                    {/* <DialogClose asChild> */}
                         <Button className=" w-full" type="submit">Create Task</Button>
-                    </DialogClose>
+                    {/* </DialogClose> */}
                 </form>
             </Form>
         </DialogContent>

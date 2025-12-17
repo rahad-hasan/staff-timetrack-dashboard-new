@@ -84,10 +84,14 @@ export const newTaskCreationSchema = z.object({
 export const newClientSchema = z.object({
     name: z.string().min(1, "Name is required"),
     address: z.string().min(1, "Address is required"),
-    email: z.string().min(1, "Email is required").email("Invalid email format"),
-    phone: z.number()
-        .min(10, "Phone number must have at least 10 digits")
-        .max(15, "Phone number cannot exceed 15 digits")
+    email: z.string().email("Invalid email address"),
+    phone: z.string()
+        .min(1, "Phone number is required")
+        // Regex for E.164 format: Optional +, followed by 7 to 15 digits
+        .regex(
+            /^\+?[1-9]\d{1,14}$/,
+            "Invalid international phone format (e.g., +1234567890)"
+        )
 });
 
 export const newTeamSchema = z.object({
