@@ -79,3 +79,57 @@ export type ILeaveRequest = {
     reason: string;
     availableLeave: number;
 }
+
+export interface IMeta {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+}
+
+
+// project types
+export type ProjectStatus = "pending" | "active" | "completed" | "archived";
+
+export interface User {
+    id: number;
+    name: string;
+    email: string;
+    image: string | null;
+}
+
+export interface ProjectAssign {
+    user: User;
+    assignedBy: {
+        id: number;
+        name: string;
+    };
+    assigned_at: string;
+}
+
+export interface ProjectManagerAssign {
+    user: User;
+}
+
+export interface ProjectSummary {
+    spend: string;
+    is_over_budget: boolean;
+    duration: string;
+}
+
+export interface IProject {
+    id: number;
+    company_id: number;
+    name: string;
+    client_id: number | null;
+    status: ProjectStatus;
+    description: string | null;
+    start_date: string;
+    deadline: string | null;
+    is_idle_time: boolean;
+    budget: number | null;
+    client: null;
+    projectAssigns: ProjectAssign[];
+    projectManagerAssigns: ProjectManagerAssign[];
+    summary: ProjectSummary;
+}

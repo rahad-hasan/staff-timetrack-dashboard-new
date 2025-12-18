@@ -1,8 +1,7 @@
 "use client"
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -25,9 +24,12 @@ import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import EditProjectModal from "./EditProjectModal";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import FilterButton from "@/components/Common/FilterButton";
+import { IProject } from "@/global/globalTypes";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { format } from "date-fns";
 
-const ProjectTable = () => {
-    console.log("ProjectTable");
+const ProjectTable = ({ data }: { data: IProject[] }) => {
+    console.log("data from api", data);
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
     const router = useRouter();
@@ -37,90 +39,9 @@ const ProjectTable = () => {
         router.push(`/project-management/projects/${taskId}`);
     };
 
-    interface Task {
-        _id: number;
-        taskName: string;
-        date: string;
-        image: string;
-        manager: string;
-        timeWorked: string;
-        status: string;
-        deadline: string;
-    }
-
-    const taskList = useMemo(
-        () => [
-            {
-                _id: 15645,
-                taskName: "Do the Logic for Orbit Home page project",
-                date: "From 12 Aug, 2025",
-                image: "https://avatar.iran.liara.run/public/25",
-                manager: "Juyed Ahmed",
-                timeWorked: "12:03:00",
-                status: "In Progress",
-                deadline: "Dec 20, 2025",
-            },
-            {
-                _id: 53452,
-                taskName: "Marketing Tools",
-                date: "From 12 Aug, 2025",
-                image: "https://avatar.iran.liara.run/public/22",
-                manager: "Cameron Williamson",
-                timeWorked: "12:03:00",
-                status: "Pending",
-                deadline: "Jan 10, 2026",
-            },
-            {
-                _id: 15644,
-                taskName: "Design Idea",
-                date: "From 12 Aug, 2025",
-                image: "https://avatar.iran.liara.run/public/26",
-                manager: "Jenny Wilson",
-                timeWorked: "11:03:00",
-                status: "In Progress",
-                deadline: "Jun 05, 2025",
-            },
-            {
-                _id: 12465,
-                taskName: "Do the Logic for Orbit Home page project wi...",
-                date: "From 12 Aug, 2025",
-                image: "https://avatar.iran.liara.run/public/27",
-                manager: "Esther Howard",
-                timeWorked: "10:03:00",
-                status: "Pending",
-                deadline: "Feb 01, 2026",
-            }
-        ],
-        []
-    );
-
-    const columns: ColumnDef<Task>[] = [
-        // {
-        //     id: "select",
-        //     header: ({ table }) => (
-        //         <Checkbox
-        //             checked={
-        //                 table.getIsAllPageRowsSelected() ||
-        //                 (table.getIsSomePageRowsSelected() && "indeterminate")
-        //             }
-        //             onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        //             aria-label="Select all"
-        //             className=" cursor-pointer"
-        //         />
-        //     ),
-        //     cell: ({ row }) => (
-        //         <Checkbox
-        //             checked={row.getIsSelected()}
-        //             onCheckedChange={(value) => row.toggleSelected(!!value)}
-        //             aria-label="Select row"
-        //             className=" cursor-pointer"
-        //         />
-        //     ),
-        //     enableSorting: false,
-        //     enableHiding: false,
-        // },
+    const columns: ColumnDef<IProject>[] = [
         {
-            accessorKey: "taskName",
+            accessorKey: "name",
             header: ({ column }) => {
                 return (
                     <div>
@@ -135,12 +56,12 @@ const ProjectTable = () => {
                 )
             },
             cell: ({ row }) => {
-                const task = row.getValue("taskName") as string;
-                const date = row.original.date;
+                const task = row.getValue("name") as string;
+                const start_date = row.original.start_date;
                 return (
                     <div className="flex flex-col">
                         <span className="font-bold text-base text-headingTextColor dark:text-darkTextPrimary">{task}</span>
-                        <span className=" font-normal text-subTextColor dark:text-darkTextSecondary">{date}</span>
+                        <span className=" font-normal text-subTextColor dark:text-darkTextSecondary">{format(new Date(start_date), "EEE, MMM d, yyyy")}</span>
                     </div>
                 )
             }
@@ -149,7 +70,7 @@ const ProjectTable = () => {
             accessorKey: "manager",
             header: ({ column }) => {
                 return (
-                    <div className=" min-w-[190px]">
+                    <div className="  min-w-[180px]">
                         <span
                             className=" cursor-pointer flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
@@ -161,19 +82,37 @@ const ProjectTable = () => {
                 )
             },
             cell: ({ row }) => {
-                const manager = row.getValue("manager") as string;
-                const image = row.original.image;
+                const managers = row.original.projectManagerAssigns ?? [];
+                const MAX_VISIBLE = 3;
+
+                const visibleManagers = managers.slice(0, MAX_VISIBLE);
+                const remainingCount = managers.length - MAX_VISIBLE;
+
                 return (
-                    <div className="flex items-center gap-2">
-                        <Image
-                            src={image}
-                            width={40}
-                            height={40}
-                            alt={manager}
-                            className="rounded-full w-10"
-                        />
-                        <span>{manager}</span>
+                    <div className="flex items-center">
+                        {visibleManagers.map((item, index) => (
+                            <Avatar key={index} className={index !== 0 ? "-ml-3" : ""}>
+                                <AvatarImage
+                                    src={item?.user?.image ?? ""}
+                                    alt={item.user.name}
+                                />
+                                <AvatarFallback>
+                                    {item.user.name
+                                        .split(" ")
+                                        .map((n) => n[0])
+                                        .join("")
+                                        .slice(0, 2)}
+                                </AvatarFallback>
+                            </Avatar>
+                        ))}
+
+                        {remainingCount > 0 && (
+                            <div className="-ml-3 w-11 h-11 z-50 rounded-full bg-[#ede7ff] flex items-center justify-center text-sm font-medium text-[#926fef] border border-white">
+                                {remainingCount}+
+                            </div>
+                        )}
                     </div>
+
                 );
             }
         },
@@ -181,7 +120,7 @@ const ProjectTable = () => {
             accessorKey: "assignee",
             header: ({ column }) => {
                 return (
-                    <div className="  min-w-[120px]">
+                    <div className="  min-w-[150px]">
                         <span
                             className=" cursor-pointer flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
@@ -193,23 +132,36 @@ const ProjectTable = () => {
                 )
             },
             cell: ({ row }) => {
-                const image = row.original.image;
+                const assignee = row.original.projectAssigns ?? [];
+                const MAX_VISIBLE = 3;
+
+                const visibleAssignee = assignee.slice(0, MAX_VISIBLE);
+                const remainingCount = assignee.length - MAX_VISIBLE;
                 return (
                     <div className="flex items-center">
-                        {[image, image, image].map((imgSrc, index) => (
-                            <Image
-                                key={index}
-                                src={imgSrc}
-                                width={40}
-                                height={40}
-                                alt={`Assignee ${index + 1}`}
-                                className="rounded-full w-10 -ml-3 border border-white"
-                            />
+                        {visibleAssignee.map((item, index) => (
+                            <Avatar key={index} className={index !== 0 ? "-ml-3" : ""}>
+                                <AvatarImage
+                                    src={item?.user?.image ?? ""}
+                                    alt={item.user.name}
+                                />
+                                <AvatarFallback>
+                                    {item.user.name
+                                        .split(" ")
+                                        .map((n) => n[0])
+                                        .join("")
+                                        .slice(0, 2)}
+                                </AvatarFallback>
+                            </Avatar>
                         ))}
-                        <div className="w-10 h-10 -ml-3 rounded-full bg-[#ede7ff] flex items-center justify-center text-sm font-medium text-[#926fef] border border-white">
-                            10+
-                        </div>
+
+                        {remainingCount > 0 && (
+                            <div className="-ml-3 w-11 h-11 z-50 rounded-full bg-[#ede7ff] flex items-center justify-center text-sm font-medium text-[#926fef] border border-white">
+                                {remainingCount}+
+                            </div>
+                        )}
                     </div>
+
                 );
             }
         },
@@ -252,7 +204,7 @@ const ProjectTable = () => {
             },
             cell: ({ row }) => {
                 const deadline = row.getValue("deadline") as string;
-                return <div className="">{deadline}</div>;
+                return <div className="">{format(new Date(deadline), "EEE, MMM d, yyyy")}</div>;
             },
         },
         {
@@ -325,7 +277,7 @@ const ProjectTable = () => {
                         <PopoverContent side="bottom" align="end" className=" w-[250px] p-2">
                             <div className="">
                                 <div className="space-y-2">
-                                    <div onClick={() => handleRowClick(row.original._id)} className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
+                                    <div onClick={() => handleRowClick(row?.original?.id)} className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
                                         <Eye size={18} />
                                         <p>View Project</p>
                                     </div>
@@ -367,7 +319,7 @@ const ProjectTable = () => {
 
 
     const table = useReactTable({
-        data: taskList,
+        data: data,
         columns,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,
