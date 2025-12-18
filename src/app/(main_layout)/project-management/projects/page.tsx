@@ -1,14 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { getAllProject } from "@/api/features/projects/projectsSSRApi";
-import ProjectsPage from "@/components/ProjectManagement/Projects/ProjectsPage";
+
+import ProjectHeroSection from "@/components/ProjectManagement/Projects/ProjectHeroSection";
+import ProjectsTableServer from "@/components/ProjectManagement/Projects/ProjectsTableServer";
+import ProjectTableSkeleton from "@/skeleton/projectManagement/project/ProjectTableSkeleton";
+import { Suspense } from "react";
 
 const Projects = async ({ searchParams }: any) => {
-    const query = await searchParams;
-    const result = await getAllProject({
-        search: query.search,
-    });
+
     return (
-        <ProjectsPage data={result.data} />
+        <div>
+            <ProjectHeroSection></ProjectHeroSection>
+
+            <Suspense fallback={<ProjectTableSkeleton />}>
+                <ProjectsTableServer searchParams={searchParams} />
+            </Suspense>
+        </div>
     );
 };
 
