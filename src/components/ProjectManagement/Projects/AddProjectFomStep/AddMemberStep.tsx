@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 // import { Button } from "@/components/ui/button";
 import { addMemberSchema } from "@/zod/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,23 +21,25 @@ import {
 } from "@/components/ui/multi-select"
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useProjectFormStore } from "@/store/ProjectFormStore";
 
 interface GeneralInfoStepProps {
     setStep: (step: number) => void;
-    handleStepSubmit: (data: any) => void;
 }
 
-const AddMemberStep = ({ setStep, handleStepSubmit }: GeneralInfoStepProps) => {
+const AddMemberStep = ({ setStep }: GeneralInfoStepProps) => {
+    const data = useProjectFormStore(state => state.data);
     const form = useForm<z.infer<typeof addMemberSchema>>({
         resolver: zodResolver(addMemberSchema),
         defaultValues: {
-            members: [],
+            members: data.members ?? [],
         },
     });
 
+    const { updateData } = useProjectFormStore();
     function onSubmit(values: z.infer<typeof addMemberSchema>) {
+        updateData(values);
         console.log(values);
-        handleStepSubmit(values);
         setStep(3);
     }
 

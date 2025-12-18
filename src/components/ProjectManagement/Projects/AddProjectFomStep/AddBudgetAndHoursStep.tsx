@@ -1,5 +1,5 @@
 "use client"
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 // import { Button } from "@/components/ui/button";
 import { addBudgetAndHoursSchema } from "@/zod/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,27 +22,29 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { Input } from "@/components/ui/input";
-import { DialogClose } from "@radix-ui/react-dialog";
 import { ChevronLeft } from "lucide-react";
+import { useProjectFormStore } from "@/store/ProjectFormStore";
 
 interface GeneralInfoStepProps {
     setStep: (step: number) => void;
-    handleStepSubmit: (data: any) => void;
 }
-const AddBudgetAndHoursStep = ({ setStep, handleStepSubmit }: GeneralInfoStepProps) => {
+const AddBudgetAndHoursStep = ({ setStep }: GeneralInfoStepProps) => {
 
+    const { data } = useProjectFormStore(state => state);
+    console.log('gettting from zustand', data);
     const form = useForm<z.infer<typeof addBudgetAndHoursSchema>>({
         resolver: zodResolver(addBudgetAndHoursSchema) as Resolver<z.infer<typeof addBudgetAndHoursSchema>>,
         defaultValues: {
-            budgetType: "",
-            rate: 0,
-            basedOn: "",
+            budgetType: data.budgetType ?? "",
+            rate: data.rate ?? undefined,
+            basedOn: data.basedOn ?? "",
         },
     });
 
+    const { updateData } = useProjectFormStore();
     function onSubmit(values: z.infer<typeof addBudgetAndHoursSchema>) {
+        updateData(values);
         console.log(values);
-        handleStepSubmit(values);
         // setStep(4);
     }
     // Project rate => hourly, fixed
@@ -135,9 +137,9 @@ const AddBudgetAndHoursStep = ({ setStep, handleStepSubmit }: GeneralInfoStepPro
                         }
                         <div className=" flex items-center justify-between gap-3">
                             <button onClick={() => setStep(2)} className=" bg-primary rounded-lg text-white p-2 cursor-pointer" type="button"><ChevronLeft size={25} /></button>
-                            <DialogClose asChild>
-                                <button className=" bg-primary rounded-lg text-white py-2 px-3 cursor-pointer" type="submit">Create Project</button>
-                            </DialogClose>
+                            {/* <DialogClose asChild> */}
+                            <button className=" bg-primary rounded-lg text-white py-2 px-3 cursor-pointer" type="submit">Create Project</button>
+                            {/* </DialogClose> */}
                         </div>
                     </form>
                 </Form>

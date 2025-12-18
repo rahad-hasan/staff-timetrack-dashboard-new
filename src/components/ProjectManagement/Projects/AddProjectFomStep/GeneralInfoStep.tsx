@@ -1,5 +1,5 @@
 "use client"
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { Button } from "@/components/ui/button";
 import { generalInfoSchema } from "@/zod/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -32,13 +32,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { MultiSelect, MultiSelectContent, MultiSelectGroup, MultiSelectItem, MultiSelectTrigger, MultiSelectValue } from "@/components/ui/multi-select";
 import Image from "next/image";
+import { useProjectFormStore } from "@/store/ProjectFormStore";
 
 interface GeneralInfoStepProps {
     setStep: (step: number) => void;
-    handleStepSubmit: (data: any) => void;
 }
 
-const GeneralInfoStep = ({ setStep, handleStepSubmit }: GeneralInfoStepProps) => {
+const GeneralInfoStep = ({ setStep }: GeneralInfoStepProps) => {
     const client = ["Orbit Project", "App Redesign", "Marketing Campaign", "New Website"];
     const managersData = [
         { name: "Kalki Noland", image: "https://avatar.iran.liara.run/public/18" },
@@ -46,33 +46,38 @@ const GeneralInfoStep = ({ setStep, handleStepSubmit }: GeneralInfoStepProps) =>
         { name: "Dani Wolvarin", image: "https://avatar.iran.liara.run/public/20" },
         { name: "Alex Johnson", image: "https://avatar.iran.liara.run/public/22" },
     ]
+    const data = useProjectFormStore(state => state.data);
     const [clientSearch, setClientSearch] = useState("");
 
     const filteredClient = client.filter(p => p.toLowerCase().includes(clientSearch.toLowerCase()));
 
     const [openStartDate, setOpenStartDate] = useState(false);
-    const [dateStartDate, setStartDate] = useState<Date | undefined>(undefined);
+    const [dateStartDate, setStartDate] = useState<Date | undefined>(
+        data.startDate ? new Date(data.startDate) : undefined
+    );
 
     const [openDeadLine, setDeadLineOpen] = useState(false);
-    const [dateDeadLine, setDeadLineDate] = useState<Date | undefined>(undefined);
+    const [dateDeadLine, setDeadLineDate] = useState<Date | undefined>(
+        data.deadline ? new Date(data.deadline) : undefined
+    );
 
 
     const form = useForm<z.infer<typeof generalInfoSchema>>({
         resolver: zodResolver(generalInfoSchema),
         defaultValues: {
-            projectName: "",
-            client: "",
-            manager: [],
-            description: "",
-            startDate: null,  // must match schema nullable
-            deadline: null,   // must match schema nullable
-            phone: "",
+            projectName: data.projectName ?? "",
+            client: data.client ?? "",
+            manager: data.manager ?? [],
+            description: data.description ?? "",
+            startDate: data.startDate ?? null,
+            deadline: data.deadline ?? null,
+            phone: data.phone ?? "",
         },
     })
-
+    const { updateData } = useProjectFormStore();
     function onSubmit(values: z.infer<typeof generalInfoSchema>) {
+        updateData(values)
         console.log(values)
-        handleStepSubmit(values)
         setStep(2);
     }
 

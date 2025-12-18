@@ -55,6 +55,38 @@ export const generalInfoSchema = z.object({
     phone: z.string().optional(),
 });
 
+export const addProjectSchema = z.object({
+    projectName: z.string().min(1, "Project name is required"),
+    client: z.string().min(1, "Client is required"),
+
+    members: z.array(z.string().min(1)).min(1, "At least one member is required"),
+
+    description: z.string().min(1, "Description is required"),
+
+    startDate: z
+        .date()
+        .nullable()
+        .refine((d) => d !== null, { message: "Start date is required" }),
+
+    deadline: z
+        .date()
+        .nullable()
+        .refine((d) => d !== null, { message: "Deadline is required" }),
+
+    manager: z.array(z.string().min(1)).min(1, "At least one manager is required"),
+
+    budgetType: z.enum(["Hourly Rate", "Fixed Budget"]).optional(),
+
+    rate: z.coerce
+        .number()
+        .optional()
+        .refine((v) => v === undefined || v > 0, { message: "Rate must not be 0" }),
+
+    basedOn: z.string().optional(),
+});
+
+export type FormValues = z.infer<typeof addProjectSchema>;
+
 // Step 2: Add Members Schema
 export const addMemberSchema = z.object({
     members: z.array(z.string().min(1, "Member name is required")).min(1, "At least one member is required"),

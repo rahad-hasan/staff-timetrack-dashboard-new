@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import {
     DialogContent,
@@ -13,11 +12,7 @@ import AddBudgetAndHoursStep from "./AddProjectFomStep/AddBudgetAndHoursStep";
 
 const AddProjectModal = () => {
     const [step, setStep] = useState<number>(1);
-    const [formData, setFormData] = useState<any>({});
-    const handleStepSubmit = (data: any) => {
-        setFormData((prevData: any) => ({ ...prevData, ...data }));
-    };
-    console.log(formData);
+
     return (
         <DialogContent
             onInteractOutside={(event) => event.preventDefault()}
@@ -35,15 +30,15 @@ const AddProjectModal = () => {
             </DialogHeader>
             {
                 step === 1 &&
-                <GeneralInfoStep setStep={setStep} handleStepSubmit={handleStepSubmit}></GeneralInfoStep>
+                <GeneralInfoStep setStep={setStep}></GeneralInfoStep>
             }
             {
                 step === 2 &&
-                <AddMemberStep setStep={setStep} handleStepSubmit={handleStepSubmit}></AddMemberStep>
+                <AddMemberStep setStep={setStep}></AddMemberStep>
             }
             {
                 step === 3 &&
-                <AddBudgetAndHoursStep setStep={setStep} handleStepSubmit={handleStepSubmit}></AddBudgetAndHoursStep>
+                <AddBudgetAndHoursStep setStep={setStep}></AddBudgetAndHoursStep>
             }
             {/* {
                 step === 4 &&
