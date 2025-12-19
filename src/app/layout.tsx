@@ -33,7 +33,7 @@ export default function RootLayout({
                 monica-version="7.9.7"
                 data-new-gr-c-s-check-loaded="14.1263.0"
             >
-                <Toaster position="top-center"/>
+                <Toaster position='bottom-right'/>
                 <ThemeProvider
                     attribute="class"
                     defaultTheme="system"

@@ -17,12 +17,12 @@ import DownloadIcon from "../Icons/DownloadIcon";
 import EditIcon from "../Icons/FilterOptionIcon/EditIcon";
 import DeleteIcon from "../Icons/DeleteIcon";
 import { ITeamMembers } from "@/global/globalTypes";
-import { useMembersStore } from "@/api/features/members/membersCSRStore";
 import { toast } from "sonner";
+import { deleteMember } from "@/actions/members/membersAction";
 
 const TeamsMemberTable = ({ data }: any) => {
-    console.log('getting from api', data);
 
+    const [loading, setLoading] = useState(false);
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
 
@@ -31,22 +31,24 @@ const TeamsMemberTable = ({ data }: any) => {
     console.log('selected user', selectedUser);
 
 
-    const { deactivateEmployee, isMemberEditing } = useMembersStore();
-
-    function handleDeactivate(info: ITeamMembers) {
+    async function handleDelete(info: ITeamMembers) {
         console.log('info', info);
-        deactivateEmployee({ data: { is_active: info?.is_active ? false : true }, id: info?.id }).then((res: any) => {
-            console.log("Login success:", res);
-            if (!res?.success) {
-                toast.error(res?.message)
-            }
+        setLoading(true);
+        try {
+            const res = await deleteMember({ data: { is_deleted: info?.is_deleted ? false : true }, id: info?.id });
+            console.log("success:", res);
+
             if (res?.success) {
-                toast.success(res?.message)
+                toast.success(res?.message || "Member deleted successfully");
+            } else {
+                toast.error(res?.message || "Failed to delete member");
             }
-        })
-            .catch((error) => {
-                console.error("Login failed:", error);
-            });
+        } catch (error: any) {
+            console.error("failed:", error);
+            toast.error(error?.message || "Something went wrong!");
+        } finally {
+            setLoading(false);
+        }
     }
 
     const columns: ColumnDef<ITeamMembers>[] = [
@@ -275,12 +277,12 @@ const TeamsMemberTable = ({ data }: any) => {
                                         <p>Edit Time</p>
                                     </div>
                                     <button
-                                        disabled={isMemberEditing}
-                                        onClick={() => handleDeactivate(row?.row?.original)}
+                                        disabled={loading}
+                                        onClick={() => handleDelete(row?.row?.original)}
                                         className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100  hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                        {row?.row?.original?.is_active ? <DeleteIcon size={18} /> : <Activity size={18} />}
+                                        {<DeleteIcon size={18} />}
 
-                                        <p>{row?.row?.original?.is_active ? "Deactivate Member" : "Activate Member"}</p>
+                                        <p>{"Delete Member"}</p>
                                     </button>
                                 </div>
                             </div>

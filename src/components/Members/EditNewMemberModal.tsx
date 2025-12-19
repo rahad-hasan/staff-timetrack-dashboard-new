@@ -28,15 +28,16 @@ import {
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { ITeamMembers } from "@/global/globalTypes";
-import { useMembersStore } from "@/api/features/members/membersCSRStore";
 import { editMemberSchema } from "@/zod/schema";
 import { toast } from "sonner";
+import { editMember } from "@/actions/members/membersAction";
 
 interface EditNewMemberModalProps {
     onClose: () => void
     selectedUser: ITeamMembers | null
 }
 const EditNewMemberModal = ({ onClose, selectedUser }: EditNewMemberModalProps) => {
+    const [loading, setLoading] = useState(false);
     console.log('user details', selectedUser);
     const manager = ["admin", "manager", "hr", "project_manager", "employee"];
     const [managerSearch, setManagerSearch] = useState("");
@@ -63,28 +64,26 @@ const EditNewMemberModal = ({ onClose, selectedUser }: EditNewMemberModalProps) 
         }
     }, [selectedUser, form]);
 
-
-    const { editEmployee, isMemberEditing } = useMembersStore();
-
-    function onSubmit(values: z.infer<typeof editMemberSchema>) {
-        console.log('the updated value', values)
-        editEmployee({ data: values, id: selectedUser?.id }).then((res: any) => {
+    async function onSubmit(values: z.infer<typeof editMemberSchema>) {
+        console.log(values);
+        setLoading(true);
+        try {
+            const res = await editMember({data:values, id:selectedUser?.id});
             console.log("success:", res);
-            if (!res?.success) {
-                toast.error(res?.message)
-            }
+
             if (res?.success) {
                 onClose();
-                form.reset()
-                toast.success(res?.message)
+                form.reset();
+                toast.success(res?.message || "Member edited successfully");
+            } else {
+                toast.error(res?.message || "Failed to edit member");
             }
-            // const currentError = useAuthStore.getState().error;
-            // console.log("Updated error:", currentError);
-            // console.log(error);
-        })
-            .catch((error) => {
-                console.error("failed:", error);
-            });
+        } catch (error: any) {
+            console.error("failed:", error);
+            toast.error(error?.message || "Something went wrong!");
+        } finally {
+            setLoading(false);
+        }
     }
 
     return (
@@ -171,7 +170,7 @@ const EditNewMemberModal = ({ onClose, selectedUser }: EditNewMemberModalProps) 
                         )}
                     />
                     {/* <DialogClose asChild> */}
-                    <Button className=" w-full" disabled={isMemberEditing} type="submit">{isMemberEditing? "Loading...": "Submit"}</Button>
+                    <Button className=" w-full" disabled={loading} type="submit">{loading ? "Loading..." : "Submit"}</Button>
                     {/* </DialogClose> */}
                 </form>
             </Form>

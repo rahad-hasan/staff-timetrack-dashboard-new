@@ -69,8 +69,8 @@ const SignIn = () => {
             console.log("Login success:", res);
 
             if (res?.success) {
-                Cookies.set("accessToken", res?.data?.accessToken);
-                Cookies.set("refreshToken", res?.data?.refreshToken);
+                // Cookies.set("accessToken", res?.data?.accessToken);
+                // Cookies.set("refreshToken", res?.data?.refreshToken);
                 toast.success(res?.message || "Login successful");
                 router.push("/dashboard");
             } else {

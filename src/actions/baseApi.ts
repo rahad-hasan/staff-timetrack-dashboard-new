@@ -3,6 +3,7 @@
 
 import { cookies } from "next/headers";
 import { revalidateTag } from "next/cache";
+import { refreshAccessTokenFromServer } from "./getRefreshToken";
 
 const BASE_URL = "http://localhost:5000/api/v1";
 
@@ -23,37 +24,6 @@ interface BaseApiOptions {
 async function getAccessToken() {
     const cookieStore = await cookies();
     return cookieStore.get("accessToken")?.value;
-}
-
-async function refreshAccessTokenFromServer() {
-    const res = await fetch(`${BASE_URL}/auth/refresh-token`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        cache: "no-store",
-    });
-
-    if (!res.ok) {
-        throw new Error("Failed to refresh access token");
-    }
-
-    const { success, accessToken, refreshToken, message } = await res.json();
-
-    if (!success) {
-        throw new Error(message || "Refresh token invalid");
-    }
-
-    const cookieStore = await cookies();
-    cookieStore.set("accessToken", accessToken, {
-        httpOnly: true,
-        secure: true,
-        path: "/",
-    });
-    cookieStore.set("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: true,
-        path: "/",
-    });
 }
 
 async function buildHeaders(
@@ -86,7 +56,8 @@ export async function baseApi<T = any>(
         isFormData = false,
         tag,
         headers: customHeaders,
-        cache = "force-cache",
+        // cache = "force-cache",
+        cache = "no-cache",
         revalidate,
     } = options;
 
@@ -112,6 +83,7 @@ export async function baseApi<T = any>(
                 },
             }),
         });
+    console.log('api call');
     let res;
     try {
         res = await doFetch();
@@ -125,6 +97,17 @@ export async function baseApi<T = any>(
         await refreshAccessTokenFromServer();
         res = await doFetch();
     }
+
+    /* 🚀 DEBUG BLOCK: Request Details */
+    // const requestHeaders = await buildHeaders(isFormData, customHeaders);
+    // console.log("--- 🏁 API REQUEST ---");
+    // console.log(`📡 URL:    [${method}] ${fullUrl}`);
+    // console.log(`🔑 Token:  ${requestHeaders["Authorization"] || "No Token Found"}`);
+    // if (body) {
+    //     console.log(`📦 Payload:`, isFormData ? "FormData (Binary)" : JSON.stringify(body, null, 2));
+    // }
+    // console.log("--------response----------", res);
+    /* 🚀 END DEBUG BLOCK */
 
     if (method !== "GET" && !res.ok) {
         return res.json() as Promise<T>;

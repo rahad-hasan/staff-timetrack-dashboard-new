@@ -10,7 +10,6 @@ export const getMembers = async (query = {}) => {
     });
 };
 
-
 export const addMember = async (data: {
     name: string,
     email: string,
@@ -19,6 +18,35 @@ export const addMember = async (data: {
 }) => {
     return await baseApi(`/auth/employees`, {
         method: "POST",
+        body: data,
+        tag: "members",
+    });
+};
+
+export const editMember = async ({ data, id }: {
+    data: {
+        name: string,
+        // email: string,
+        role: string,
+        password: string,
+    },
+    id: number | undefined
+}) => {
+    return await baseApi(`/auth/employees/${id}`, {
+        method: "PATCH",
+        body: data,
+        tag: "members",
+    });
+};
+
+export const deleteMember = async ({ data, id }: {
+    data: {
+        is_deleted: boolean,
+    },
+    id: number | undefined
+}) => {
+    return await baseApi(`/auth/employees/${id}`, {
+        method: "PATCH",
         body: data,
         tag: "members",
     });
