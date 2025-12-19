@@ -28,17 +28,16 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { useMembersStore } from "@/api/features/members/membersCSRStore";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
+import { addMember } from "@/actions/members/membersAction";
 
 const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
-
+    const [loading, setLoading] = useState(false);
     const manager = ["admin", "manager", "hr", "project_manager", "employee"];
     const [managerSearch, setManagerSearch] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const filteredManager = manager.filter(t => t.toLowerCase().includes(managerSearch.toLowerCase()));
-    const { addEmployee, isMemberAdding } = useMembersStore();
 
     const form = useForm<z.infer<typeof addNewMemberSchema>>({
         resolver: zodResolver(addNewMemberSchema),
@@ -53,28 +52,28 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
     const togglePasswordVisibility = () => {
         setShowPassword((prev) => !prev);
     };
+    async function onSubmit(values: z.infer<typeof addNewMemberSchema>) {
+        console.log(values);
+        setLoading(true);
+        try {
+            const res = await addMember(values);
+            console.log("success:", res);
 
-    function onSubmit(values: z.infer<typeof addNewMemberSchema>) {
-        console.log(values)
-        addEmployee(values)
-            .then((res: any) => {
-                console.log("success:", res);
-                if (!res?.success) {
-                    toast.error(res?.message)
-                }
-                if (res?.success) {
-                    onClose();
-                    form.reset()
-                    toast.success(res?.message)
-                }
-                // const currentError = useAuthStore.getState().error;
-                // console.log("Updated error:", currentError);
-                // console.log(error);
-            })
-            .catch((error) => {
-                console.error("failed:", error);
-            });
+            if (res?.success) {
+                onClose();
+                form.reset();
+                toast.success(res?.message || "Member added successfully");
+            } else {
+                toast.error(res?.message || "Failed to add member");
+            }
+        } catch (error: any) {
+            console.error("failed:", error);
+            toast.error(error.message || "Something went wrong!");
+        } finally {
+            setLoading(false);
+        }
     }
+
 
     return (
         <DialogContent className="sm:max-w-[525px]">
@@ -174,7 +173,8 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
                         )}
                     />
                     {/* <DialogClose asChild> */}
-                    <Button disabled={isMemberAdding} className=" w-full" type="submit">{isMemberAdding ? "Loading..." : "Add Member"}</Button>
+                    <Button disabled={loading} className=" w-full" type="submit">{loading ? "Loading..." : "Add Member"}</Button>
+                    {/* <Button className=" w-full" type="submit">{"Add Member"}</Button> */}
                     {/* </DialogClose> */}
                 </form>
             </Form>

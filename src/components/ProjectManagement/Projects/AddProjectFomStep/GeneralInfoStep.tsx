@@ -40,7 +40,7 @@ interface GeneralInfoStepProps {
 
 const GeneralInfoStep = ({ setStep }: GeneralInfoStepProps) => {
     const client = ["Orbit Project", "App Redesign", "Marketing Campaign", "New Website"];
-    const managersData = [
+    const memberData = [
         { name: "Kalki Noland", image: "https://avatar.iran.liara.run/public/18" },
         { name: "Minakshi Devi", image: "https://avatar.iran.liara.run/public/25" },
         { name: "Dani Wolvarin", image: "https://avatar.iran.liara.run/public/20" },
@@ -67,7 +67,7 @@ const GeneralInfoStep = ({ setStep }: GeneralInfoStepProps) => {
         defaultValues: {
             projectName: data.projectName ?? "",
             client: data.client ?? "",
-            manager: data.manager ?? [],
+            members: data.members ?? [],
             description: data.description ?? "",
             startDate: data.startDate ?? null,
             deadline: data.deadline ?? null,
@@ -136,25 +136,26 @@ const GeneralInfoStep = ({ setStep }: GeneralInfoStepProps) => {
                             </FormItem>
                         )}
                     />
+
                     <FormField
                         control={form.control}
-                        name="manager"
+                        name="members"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Manager</FormLabel>
+                                <FormLabel>Members</FormLabel>
                                 <FormControl>
                                     <MultiSelect
                                         values={field.value}
                                         onValuesChange={field.onChange}
                                     >
                                         <MultiSelectTrigger className=" w-full hover:bg-white py-2 dark:bg-darkSecondaryBg hover:dark:bg-darkSecondaryBg">
-                                            <MultiSelectValue placeholder="Select managers..." />
+                                            <MultiSelectValue placeholder="Select frameworks..." />
                                         </MultiSelectTrigger>
                                         <MultiSelectContent className="dark:bg-darkSecondaryBg">
                                             {/* Items must be wrapped in a group for proper styling */}
                                             <MultiSelectGroup className="dark:bg-darkSecondaryBg">
                                                 {
-                                                    managersData?.map((member, i) => (
+                                                    memberData?.map((member, i) => (
 
                                                         <MultiSelectItem className=" px-0 cursor-pointer hover:dark:bg-darkPrimaryBg" key={i} value={member?.name}>
                                                             <Image src={member?.image} className=" w-8" width={200} height={200} alt="profile_image" />

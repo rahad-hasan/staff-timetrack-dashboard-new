@@ -26,8 +26,10 @@ import { useAuthStore } from "@/api/features/auth/authCSRStore";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner"
 import Cookies from "js-cookie";
+import { logIn } from "@/actions/auth/authAction";
 
 const SignIn = () => {
+    const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [currentSlide, setCurrentSlide] = useState(0);
     const router = useRouter();
@@ -53,48 +55,33 @@ const SignIn = () => {
         setShowPassword((prev) => !prev);
     };
 
-    const { logIn, isLogging } = useAuthStore();
+    // const { logIn, isLogging } = useAuthStore();
     // const currentError = useAuthStore.getState().error;
     // console.log(getUser());
     // console.log(getError());
     const user = useAuthStore((state) => state.user);
     console.log('user from component', user);
 
-    function onSubmit(values: z.infer<typeof loginSchema>) {
-        // fetch('http://localhost:5000/api/v1/auth//signin', {
-        //     headers: {
-        //         'Accept': 'application/json',
-        //         'Content-Type': 'application/json'
-        //     },
-        //     method: "POST",
-        //     body: JSON.stringify(values),
-        // })
-        //     .then( async(res) => {
-        //         const result = await res.json()
-        //         console.log('success',result);
-        //     })
-        //     .catch((error) => {
-        //         console.log('error',error);
-        //     })
-        logIn(values)
-            .then((res: any) => {
-                console.log("Login success:", res);
-                if (res?.success) {
-                    Cookies.set("accessToken", res?.data?.accessToken);
-                    Cookies.set("refreshToken", res?.data?.refreshToken);
-                    router.push('/dashboard')
-                    toast.success(res?.message)
-                }
-                if (!res?.success) {
-                    toast.error(res?.message)
-                }
-                // const currentError = useAuthStore.getState().error;
-                // console.log("Updated error:", currentError);
-                // console.log(error);
-            })
-            .catch((error) => {
-                console.error("Login failed:", error);
-            });
+    async function onSubmit(values: z.infer<typeof loginSchema>) {
+        setLoading(true);
+        try {
+            const res: any = await logIn(values);
+            console.log("Login success:", res);
+
+            if (res?.success) {
+                Cookies.set("accessToken", res?.data?.accessToken);
+                Cookies.set("refreshToken", res?.data?.refreshToken);
+                toast.success(res?.message || "Login successful");
+                router.push("/dashboard");
+            } else {
+                toast.error(res?.message || "Invalid credentials");
+            }
+        } catch (error: any) {
+            console.error("Login failed:", error);
+            toast.error(error.message || "Server is not active");
+        } finally {
+            setLoading(false);
+        }
     }
 
     const sliderContent = [
@@ -196,7 +183,8 @@ const SignIn = () => {
                                     )}
                                 />
                                 {/* <Link href={`/dashboard`}> */}
-                                <Button disabled={isLogging} className=" w-full" type="submit">{isLogging ? "Loading..." : "Sign in"}</Button>
+                                <Button disabled={loading} className=" w-full" type="submit">{loading ? "Loading..." : "Sign in"}</Button>
+                                {/* <Button className=" w-full" type="submit">{"Sign in"}</Button> */}
                                 {/* </Link> */}
                                 <h3 className=" text-center mt-2">Don’t have a account? <span className=" text-primary cursor-pointer">Sign Up</span></h3>
                             </form>

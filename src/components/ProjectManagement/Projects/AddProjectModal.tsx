@@ -25,7 +25,6 @@ const AddProjectModal = () => {
                         <span className={` h-1.5 rounded-full ${step >= 3 ? "bg-primary" : "bg-[#dce3e3]"}  w-full `}></span>
                         {/* <span className={` h-1.5 rounded-full ${step >= 4 ? "bg-primary" : "bg-[#dce3e3]"}  w-full `}></span> */}
                     </div>
-
                 </DialogTitle>
             </DialogHeader>
             {

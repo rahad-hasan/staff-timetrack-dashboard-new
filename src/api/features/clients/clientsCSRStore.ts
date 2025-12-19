@@ -46,6 +46,25 @@ export const useClientsStore = create<ClientsStore>()(
 
         clearError: () => set({ error: null }),
 
+        getClient: async () => {
+            set({ isClientAdding: true, error: null });
+
+            try {
+                const result = await baseApi("/clients", {
+                    method: "GET",
+                });
+
+                if (!result.success) {
+                    set({ error: result.message });
+                    return result;
+                }
+
+                return result;
+            } finally {
+                set({ isClientAdding: false });
+            }
+        },
+
         addClient: async (data) => {
             set({ isClientAdding: true, error: null });
 

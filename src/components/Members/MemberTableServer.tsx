@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { getAllMember } from "@/api/features/members/memberSSRApi";
 import TeamsMemberTable from "./TeamsMemberTable";
+import { getMembers } from "@/actions/members/membersAction";
 
 export default async function MemberTableServer({ query }: any) {
-  const result = await getAllMember({
+  const result = await getMembers({
     search: query.search,
   });
 

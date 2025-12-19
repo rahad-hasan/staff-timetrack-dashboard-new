@@ -41,17 +41,14 @@ export const addManualTimeSchema = z.object({
 export const generalInfoSchema = z.object({
     projectName: z.string().min(1, "Project name is required"),
     client: z.string().min(1, "Client is required"),
-    manager: z.array(z.string().min(1, "Manager name is required")).min(1, "At least one manager is required"),
+    members: z.array(z.string().min(1, "Members name is required")).min(1, "At least one members is required"),
     description: z.string().min(1, "Description is required"),
-
     startDate: z.date().nullable().refine((date) => date !== null && !isNaN(date.getTime()), {
         message: "Start date is required",
     }),
-
     deadline: z.date().nullable().refine((date) => date !== null && !isNaN(date.getTime()), {
         message: "Deadline is required",
     }),
-
     phone: z.string().optional(),
 });
 
@@ -89,7 +86,7 @@ export type FormValues = z.infer<typeof addProjectSchema>;
 
 // Step 2: Add Members Schema
 export const addMemberSchema = z.object({
-    members: z.array(z.string().min(1, "Member name is required")).min(1, "At least one member is required"),
+    manager: z.array(z.string().min(1, "Manager name is required")).min(1, "At least one manager is required"),
 });
 
 // Step 3: Add Budget & Hours Schema
