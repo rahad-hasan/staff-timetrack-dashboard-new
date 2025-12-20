@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { getAllMember } from "@/api/features/members/memberSSRApi";
+
 import TeamsMemberTable from "./TeamsMemberTable";
 import { getMembers } from "@/actions/members/membersAction";
 

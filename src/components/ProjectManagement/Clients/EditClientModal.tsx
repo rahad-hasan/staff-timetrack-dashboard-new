@@ -20,17 +20,18 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { IClients } from "@/global/globalTypes";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useClientsStore } from "@/api/features/clients/clientsCSRStore";
 import { useRouter } from "next/navigation";
+import { editClient } from "@/actions/clients/clientsAction";
 interface EditClientModalProps {
     onClose: () => void
     selectedClient: IClients | null
 }
 const EditClientModal = ({ onClose, selectedClient }: EditClientModalProps) => {
     console.log('from modal', selectedClient);
-
+    const [loading, setLoading] = useState(false);
     const form = useForm<z.infer<typeof newClientSchema>>({
         resolver: zodResolver(newClientSchema) as Resolver<z.infer<typeof newClientSchema>>,
         defaultValues: {
@@ -51,25 +52,26 @@ const EditClientModal = ({ onClose, selectedClient }: EditClientModalProps) => {
         }
     }, [selectedClient, form]);
 
-    const router = useRouter();
+    async function onSubmit(values: z.infer<typeof newClientSchema>) {
+        console.log(values);
+        setLoading(true);
+        try {
+            const res = await editClient({ data: values, id: selectedClient?.id });
+            console.log("success:", res);
 
-    const { editClient, isClientEditing } = useClientsStore();
-
-    function onSubmit(values: z.infer<typeof newClientSchema>) {
-        editClient({ data: values, id: selectedClient?.id }).then((res: any) => {
-            if (!res?.success) {
-                toast.error(res?.message)
-            }
             if (res?.success) {
                 onClose();
-                form.reset()
-                toast.success(res?.message)
-                router.refresh();
+                form.reset();
+                toast.success(res?.message || "Client edited successfully");
+            } else {
+                toast.error(res?.message || "Failed to edit client");
             }
-        })
-            .catch((error) => {
-                console.error("failed:", error);
-            });
+        } catch (error: any) {
+            console.error("failed:", error);
+            toast.error(error?.message || "Something went wrong!");
+        } finally {
+            setLoading(false);
+        }
     }
 
     return (
@@ -144,7 +146,7 @@ const EditClientModal = ({ onClose, selectedClient }: EditClientModalProps) => {
                         )}
                     />
 
-                    <Button className=" w-full" disabled={isClientEditing} type="submit">{isClientEditing ? "Loading..." : "Update Task"}</Button>
+                    <Button className=" w-full" disabled={loading} type="submit">{loading ? "Loading..." : "Update Task"}</Button>
 
                 </form>
             </Form>

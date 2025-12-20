@@ -4,7 +4,7 @@
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useState } from "react";
-import { Activity, ArrowUpDown, } from "lucide-react";
+import { ArrowUpDown, } from "lucide-react";
 // import { Checkbox } from "@/components/ui/checkbox";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog } from "../ui/dialog";

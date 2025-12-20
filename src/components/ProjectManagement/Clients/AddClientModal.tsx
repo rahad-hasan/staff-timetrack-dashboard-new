@@ -19,12 +19,12 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useClientsStore } from "@/api/features/clients/clientsCSRStore";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { addClient } from "@/actions/clients/clientsAction";
 
 const AddClientModal = ({ onClose }: { onClose: () => void }) => {
-
+    const [loading, setLoading] = useState(false);
     const form = useForm<z.infer<typeof newClientSchema>>({
         resolver: zodResolver(newClientSchema) as Resolver<z.infer<typeof newClientSchema>>,
         defaultValues: {
@@ -34,29 +34,29 @@ const AddClientModal = ({ onClose }: { onClose: () => void }) => {
             phone: ""
         },
     })
-    const router = useRouter();
 
-    const { addClient, isClientAdding } = useClientsStore();
-    function onSubmit(values: z.infer<typeof newClientSchema>) {
-        console.log(values)
-        addClient(values)
-            .then((res: any) => {
-                console.log("success:", res);
-                if (!res?.success) {
-                    toast.error(res?.message)
-                }
-                if (res?.success) {
-                    onClose();
-                    form.reset()
-                    toast.success(res?.message)
-                    router.refresh();
-                }
-            })
-            .catch((error) => {
-                console.error("failed:", error);
-            });
-    }
+    async function onSubmit(values: z.infer<typeof newClientSchema>) {
+        console.log(values);
+        setLoading(true);
+        try {
+            const res = await addClient(values);
+            console.log("success:", res);
 
+            if (res?.success) {
+                onClose();
+                form.reset();
+                toast.success(res?.message || "Client added successfully");
+            } else {
+                toast.error(res?.message || "Failed to add client");
+            }
+        } catch (error: any) {
+            console.error("failed:", error);
+            toast.error(error.message || "Something went wrong!");
+        } finally {
+            setLoading(false);
+        }
+    } 
+    
     return (
         <DialogContent
             onInteractOutside={(event) => event.preventDefault()}
@@ -131,7 +131,7 @@ const AddClientModal = ({ onClose }: { onClose: () => void }) => {
                         )}
                     />
                     {/* <DialogClose asChild> */}
-                    <Button className="w-full" disabled={isClientAdding} type="submit">{isClientAdding ? "Loading..." : "Create Task"}</Button>
+                    <Button className="w-full" disabled={loading} type="submit">{loading ? "Loading..." : "Create Task"}</Button>
                     {/* </DialogClose> */}
                 </form>
             </Form>
