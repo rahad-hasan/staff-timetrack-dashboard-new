@@ -10,6 +10,10 @@ export const getMembers = async (query = {}) => {
     });
 };
 
+export const getMembersForProject = async () => {
+    return await baseApi(`/dashboard/members`);
+};
+
 export const addMember = async (data: {
     name: string,
     email: string,

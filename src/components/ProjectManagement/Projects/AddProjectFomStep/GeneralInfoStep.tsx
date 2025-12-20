@@ -26,19 +26,44 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronDownIcon, CircleUserRound, } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { MultiSelect, MultiSelectContent, MultiSelectGroup, MultiSelectItem, MultiSelectTrigger, MultiSelectValue } from "@/components/ui/multi-select";
 import Image from "next/image";
 import { useProjectFormStore } from "@/store/ProjectFormStore";
+import { getClients } from "@/actions/clients/clientsAction";
 
 interface GeneralInfoStepProps {
     setStep: (step: number) => void;
 }
 
 const GeneralInfoStep = ({ setStep }: GeneralInfoStepProps) => {
+
+    const [clients, setClients] = useState<{ id: number; name: string }[]>([]);
+    console.log('clients', clients);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        const loadClients = async () => {
+            setLoading(true);
+            try {
+                const res = await getClients();
+                if (res?.success) {
+                    setClients(res.data);
+                }
+            } catch (err) {
+                console.error("Failed to fetch clients", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadClients();
+    }, []);
+
+
     const client = ["Orbit Project", "App Redesign", "Marketing Campaign", "New Website"];
     const memberData = [
         { name: "Kalki Noland", image: "https://avatar.iran.liara.run/public/18" },
@@ -49,7 +74,10 @@ const GeneralInfoStep = ({ setStep }: GeneralInfoStepProps) => {
     const data = useProjectFormStore(state => state.data);
     const [clientSearch, setClientSearch] = useState("");
 
-    const filteredClient = client.filter(p => p.toLowerCase().includes(clientSearch.toLowerCase()));
+    const filteredClient = clients.filter(c =>
+        c.name.toLowerCase().includes(clientSearch.toLowerCase())
+    );
+
 
     const [openStartDate, setOpenStartDate] = useState(false);
     const [dateStartDate, setStartDate] = useState<Date | undefined>(
@@ -125,9 +153,12 @@ const GeneralInfoStep = ({ setStep }: GeneralInfoStepProps) => {
                                                     value={clientSearch}
                                                     onChange={(e) => setClientSearch(e.target.value)}
                                                 />
-                                                {filteredClient.map(p => (
-                                                    <SelectItem key={p} value={p}>{p}</SelectItem>
+                                                {filteredClient.map(c => (
+                                                    <SelectItem key={c.id} value={c.name}>
+                                                        {c.name}
+                                                    </SelectItem>
                                                 ))}
+
                                             </SelectContent>
                                         </Select>
                                     </div>
