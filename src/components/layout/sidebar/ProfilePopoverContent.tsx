@@ -11,20 +11,20 @@ import ReferFriendIcon from "@/components/Icons/ReferFriendIcon";
 import SubscriptionIcon from "@/components/Icons/SubscriptionIcon";
 import PauseNotificationIcon from "@/components/Icons/PauseNotificationIcon";
 import SignOutIcon from "@/components/Icons/SignOutIcon";
-import { useAuthStore } from "@/api/features/auth/authCSRStore";
-import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
+import { clearSessionCookie } from "@/actions/auth/action";
 
 const ProfilePopoverContent = ({ side, align }: { side: "top" | "right" | "bottom" | "left", align: "center" | "end" | "start" }) => {
-    const { logOut } = useAuthStore();
     const router = useRouter();
-    const handleLogOut = () => {
-        Cookies.remove("accessToken");
-        logOut();
-        router.push('/')
-        router.refresh();
+    const handleLogOut = async () => {
+        try {
+            await clearSessionCookie();
+            router.refresh();
+            router.push('/auth/login');
+        } catch (error) {
+            console.error("Logout failed:", error);
+        }
     }
-    
     return (
         <PopoverContent className=" px-0 shadow-none py-3 border-borderColor dark:border-darkBorder" side={side} align={align}>
             <div className="flex items-center gap-2 mb-4 px-3 ">
@@ -65,9 +65,9 @@ const ProfilePopoverContent = ({ side, align }: { side: "top" | "right" | "botto
                     <PauseNotificationIcon size={18} /> Pause notification
                 </button>
                 {/* <Link className="hover:bg-gray-100 hover:dark:bg-darkPrimaryBg rounded-md cursor-pointer" href={`/`}> */}
-                    <button onClick={handleLogOut} className="flex items-center font-medium gap-2 border border-borderColor dark:border-darkBorder w-full px-3.5 text-sm hover:bg-gray-100 hover:dark:bg-darkPrimaryBg text-red-500 py-2 rounded-md cursor-pointer">
-                        <SignOutIcon size={18} /> Sign out
-                    </button>
+                <button onClick={handleLogOut} className="flex items-center font-medium gap-2 border border-borderColor dark:border-darkBorder w-full px-3.5 text-sm hover:bg-gray-100 hover:dark:bg-darkPrimaryBg text-red-500 py-2 rounded-md cursor-pointer">
+                    <SignOutIcon size={18} /> Sign out
+                </button>
                 {/* </Link> */}
             </div>
         </PopoverContent>

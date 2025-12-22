@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { getProjects } from "@/actions/projects/projectsAction";
+import { getProjects } from "@/actions/projects/action";
 import ProjectsPage from "@/components/ProjectManagement/Projects/ProjectsPage";
 
 const ProjectsTableServer = async ({ searchParams }: any) => {

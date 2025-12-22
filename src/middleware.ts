@@ -2,11 +2,11 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
-  const token = request.cookies.get("refreshToken");
+  const token = request.cookies.get("accessToken");
 
   if (!token) {
     return NextResponse.redirect(
-      new URL("/", request.url)
+      new URL("/auth/login", request.url)
     );
   }
 
@@ -18,7 +18,7 @@ export const config = {
     "/dashboard/:path*",
     "/timesheets/:path*",
     "/activity/:path*",
-    "/calendar/:path*",
+    "/calender/:path*",
     "/insights/:path*",
     "/members/:path*",
     "/project-management/:path*",

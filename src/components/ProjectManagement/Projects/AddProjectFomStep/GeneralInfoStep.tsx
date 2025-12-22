@@ -33,7 +33,9 @@ import { Calendar } from "@/components/ui/calendar";
 import { MultiSelect, MultiSelectContent, MultiSelectGroup, MultiSelectItem, MultiSelectTrigger, MultiSelectValue } from "@/components/ui/multi-select";
 import Image from "next/image";
 import { useProjectFormStore } from "@/store/ProjectFormStore";
-import { getClients } from "@/actions/clients/clientsAction";
+import { getClients } from "@/actions/clients/action";
+import { getMembersForProject } from "@/actions/members/action";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface GeneralInfoStepProps {
     setStep: (step: number) => void;
@@ -42,7 +44,8 @@ interface GeneralInfoStepProps {
 const GeneralInfoStep = ({ setStep }: GeneralInfoStepProps) => {
 
     const [clients, setClients] = useState<{ id: number; name: string }[]>([]);
-    console.log('clients', clients);
+    const [members, setMembers] = useState<{ id: number; name: string; image?: string }[]>([]);
+    console.log('members', members);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -63,6 +66,23 @@ const GeneralInfoStep = ({ setStep }: GeneralInfoStepProps) => {
         loadClients();
     }, []);
 
+    useEffect(() => {
+        const loadMembers = async () => {
+            setLoading(true);
+            try {
+                const res = await getMembersForProject();
+                if (res?.success) {
+                    setMembers(res.data);
+                }
+            } catch (err) {
+                console.error("Failed to fetch clients", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadMembers();
+    }, []);
 
     const client = ["Orbit Project", "App Redesign", "Marketing Campaign", "New Website"];
     const memberData = [
@@ -78,7 +98,6 @@ const GeneralInfoStep = ({ setStep }: GeneralInfoStepProps) => {
         c.name.toLowerCase().includes(clientSearch.toLowerCase())
     );
 
-
     const [openStartDate, setOpenStartDate] = useState(false);
     const [dateStartDate, setStartDate] = useState<Date | undefined>(
         data.startDate ? new Date(data.startDate) : undefined
@@ -88,7 +107,6 @@ const GeneralInfoStep = ({ setStep }: GeneralInfoStepProps) => {
     const [dateDeadLine, setDeadLineDate] = useState<Date | undefined>(
         data.deadline ? new Date(data.deadline) : undefined
     );
-
 
     const form = useForm<z.infer<typeof generalInfoSchema>>({
         resolver: zodResolver(generalInfoSchema),
@@ -108,6 +126,9 @@ const GeneralInfoStep = ({ setStep }: GeneralInfoStepProps) => {
         console.log(values)
         setStep(2);
     }
+
+    const selectedMemberIds =
+        form.watch("members")?.map(m => String(m.id)) || [];
 
     return (
         <div>
@@ -134,34 +155,31 @@ const GeneralInfoStep = ({ setStep }: GeneralInfoStepProps) => {
                             <FormItem>
                                 <FormLabel>Client</FormLabel>
                                 <FormControl>
-                                    <div className="relative">
-                                        <Select
-                                            value={field.value}
-                                            onValueChange={field.onChange}
-                                        >
-                                            <SelectTrigger className="w-full">
-                                                <div className=" flex gap-1 items-center">
-                                                    <CircleUserRound className="mr-2" />
-                                                    <SelectValue className=" text-start" placeholder="Select Client" />
-                                                </div>
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <Input
-                                                    type="text"
-                                                    placeholder="Select Client"
-                                                    className="flex-1 border-none focus:ring-0 focus:outline-none"
-                                                    value={clientSearch}
-                                                    onChange={(e) => setClientSearch(e.target.value)}
-                                                />
-                                                {filteredClient.map(c => (
-                                                    <SelectItem key={c.id} value={c.name}>
-                                                        {c.name}
-                                                    </SelectItem>
-                                                ))}
+                                    <Select
+                                        value={field.value ? String(field.value) : ""}
+                                        onValueChange={(val) => field.onChange(Number(val))}
+                                    >
+                                        <SelectTrigger className="w-full">
+                                            <div className=" flex gap-1 items-center">
+                                                <CircleUserRound className="mr-2" />
+                                                <SelectValue placeholder="Select Client" />
+                                            </div>
+                                        </SelectTrigger>
 
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
+                                        <SelectContent>
+                                            <Input
+                                                placeholder="Search client"
+                                                value={clientSearch}
+                                                onChange={(e) => setClientSearch(e.target.value)}
+                                                className="flex-1 border-none focus:ring-0 focus:outline-none"
+                                            />
+                                            {filteredClient.map(c => (
+                                                <SelectItem key={c.id} value={String(c.id)}>
+                                                    {c.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -176,25 +194,36 @@ const GeneralInfoStep = ({ setStep }: GeneralInfoStepProps) => {
                                 <FormLabel>Members</FormLabel>
                                 <FormControl>
                                     <MultiSelect
-                                        values={field.value}
-                                        onValuesChange={field.onChange}
+                                        values={selectedMemberIds}
+                                        onValuesChange={(vals) => {
+                                            const selected = members
+                                                .filter(m => vals.includes(String(m.id)))
+                                                .map(m => ({ id: m.id, name: m.name }));
+
+                                            field.onChange(selected);
+                                        }}
                                     >
                                         <MultiSelectTrigger className=" w-full hover:bg-white py-2 dark:bg-darkSecondaryBg hover:dark:bg-darkSecondaryBg">
-                                            <MultiSelectValue placeholder="Select frameworks..." />
+                                            <MultiSelectValue placeholder="Select members..." />
                                         </MultiSelectTrigger>
+
                                         <MultiSelectContent className="dark:bg-darkSecondaryBg">
-                                            {/* Items must be wrapped in a group for proper styling */}
                                             <MultiSelectGroup className="dark:bg-darkSecondaryBg">
-                                                {
-                                                    memberData?.map((member, i) => (
-
-                                                        <MultiSelectItem className=" px-0 cursor-pointer hover:dark:bg-darkPrimaryBg" key={i} value={member?.name}>
-                                                            <Image src={member?.image} className=" w-8" width={200} height={200} alt="profile_image" />
-                                                            <p>{member?.name}</p>
-                                                        </MultiSelectItem>
-                                                    ))
-                                                }
-
+                                                {members.map(member => (
+                                                    <MultiSelectItem
+                                                        key={member.id}
+                                                        value={String(member.id)}
+                                                        className=" px-0 cursor-pointer hover:dark:bg-darkPrimaryBg"
+                                                    >
+                                                        <Avatar>
+                                                            <AvatarImage src={member.image || ""} />
+                                                            <AvatarFallback>
+                                                                {member.name.charAt(0)}
+                                                            </AvatarFallback>
+                                                        </Avatar>
+                                                        <p>{member.name}</p>
+                                                    </MultiSelectItem>
+                                                ))}
                                             </MultiSelectGroup>
                                         </MultiSelectContent>
                                     </MultiSelect>
@@ -203,6 +232,7 @@ const GeneralInfoStep = ({ setStep }: GeneralInfoStepProps) => {
                             </FormItem>
                         )}
                     />
+
                     <FormField
                         control={form.control}
                         name="description"
@@ -313,7 +343,7 @@ const GeneralInfoStep = ({ setStep }: GeneralInfoStepProps) => {
                     <Button className=" w-full" type="submit">Next</Button>
                 </form>
             </Form>
-        </div>
+        </div >
     );
 };
 

@@ -10,6 +10,7 @@ export async function getRefreshToken() {
 
 export async function refreshAccessTokenFromServer() {
     const token = await getRefreshToken();
+    console.log('refresh called 😑😑😑😑😑');
     const res = await fetch(`${BASE_URL}/auth/refresh-token`, {
         method: "POST",
         headers: {
@@ -19,31 +20,12 @@ export async function refreshAccessTokenFromServer() {
         credentials: "include",
         cache: "no-store",
     });
-
-    console.log("🔁 Refresh status:", res.status);
-
-    const text = await res.text();
-    console.log("🔁 Refresh response:", text);
-
-    if (!res.ok) {
-        throw new Error("Failed to refresh access token");
+    if (res.ok) {
+        const result = await res.json();
+        const { accessToken } = result.data;
+        return accessToken; // Return the new token to use it immediately
     }
 
-    const { success, data, message } = JSON.parse(text);
+    return null;
 
-    if (!success) {
-        throw new Error(message || "Refresh token invalid");
-    }
-
-    const cookieStore = await cookies();
-    cookieStore.set("accessToken", data?.accessToken, {
-        httpOnly: true,
-        secure: isProd,
-        path: "/",
-    });
-    cookieStore.set("refreshToken", data?.refreshToken, {
-        httpOnly: true,
-        secure: isProd,
-        path: "/",
-    });
 }

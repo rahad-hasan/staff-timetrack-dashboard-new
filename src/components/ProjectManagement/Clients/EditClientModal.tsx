@@ -24,7 +24,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useClientsStore } from "@/api/features/clients/clientsCSRStore";
 import { useRouter } from "next/navigation";
-import { editClient } from "@/actions/clients/clientsAction";
+import { editClient } from "@/actions/clients/action";
 interface EditClientModalProps {
     onClose: () => void
     selectedClient: IClients | null

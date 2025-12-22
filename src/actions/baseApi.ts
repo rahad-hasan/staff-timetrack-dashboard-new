@@ -3,7 +3,7 @@
 
 import { cookies } from "next/headers";
 import { revalidateTag } from "next/cache";
-import { refreshAccessTokenFromServer } from "./getRefreshToken";
+import { redirect } from "next/navigation";
 
 const BASE_URL = "http://localhost:5000/api/v1";
 
@@ -83,7 +83,7 @@ export async function baseApi<T = any>(
                 },
             }),
         });
-    console.log('api call');
+    console.log('api call🙂🙂🙂🙂');
     let res;
     try {
         res = await doFetch();
@@ -92,10 +92,27 @@ export async function baseApi<T = any>(
         throw new Error("Server is not active. Please try again later.");
     }
 
-    // 🔁 auto refresh on 401
+    // if (res.status === 401) {
+    //     const headerList = await headers();
+    //     const referer = headerList.get("referer") || "";
+
+    //     // 🛑 STOP the loop if we already tried refreshing once
+    //     if (referer.includes("refreshed=true")) {
+    //         console.log("Refresh loop detected. Redirecting to login.");
+    //         redirect("/?reason=session_expired");
+    //     }
+
+    //     const urlObj = new URL(referer || "http://localhost:3000/");
+    //     // Add a flag to the redirect URL
+    //     urlObj.searchParams.set("refreshed", "true");
+    //     const currentPath = urlObj.pathname + urlObj.search;
+
+    //     redirect(`/api/auth/refresh?redirect=${encodeURIComponent(currentPath)}`);
+    // }
     if (res.status === 401) {
-        await refreshAccessTokenFromServer();
-        res = await doFetch();
+        // const cookieStore = await cookies();
+        // cookieStore.delete("accessToken");
+        redirect("/session-expired");
     }
 
     /* 🚀 DEBUG BLOCK: Request Details */

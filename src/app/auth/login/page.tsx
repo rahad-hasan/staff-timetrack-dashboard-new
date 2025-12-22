@@ -15,18 +15,17 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { useForm } from "react-hook-form";
-import loginIcon from '../assets/auth/loginIcon.svg'
+import loginIcon from '../../../assets/auth/loginIcon.svg'
 import Image from "next/image";
-import logo from '../assets/logo.svg'
-import signInImage from '../assets/auth/signImage.webp'
+import logo from '../../../assets/logo.svg'
+import signInImage from '../../../assets/auth/signImage.webp'
 import { useEffect, useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
-import { useAuthStore } from "@/api/features/auth/authCSRStore";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner"
 import Cookies from "js-cookie";
-import { logIn } from "@/actions/auth/authAction";
+import { logIn } from "@/actions/auth/action";
 
 const SignIn = () => {
     const [loading, setLoading] = useState(false);
@@ -59,8 +58,6 @@ const SignIn = () => {
     // const currentError = useAuthStore.getState().error;
     // console.log(getUser());
     // console.log(getError());
-    const user = useAuthStore((state) => state.user);
-    console.log('user from component', user);
 
     async function onSubmit(values: z.infer<typeof loginSchema>) {
         setLoading(true);

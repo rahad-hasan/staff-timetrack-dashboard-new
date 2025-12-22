@@ -22,6 +22,7 @@ import {
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useProjectFormStore } from "@/store/ProjectFormStore";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface GeneralInfoStepProps {
     setStep: (step: number) => void;
@@ -29,6 +30,7 @@ interface GeneralInfoStepProps {
 
 const AddMemberStep = ({ setStep }: GeneralInfoStepProps) => {
     const data = useProjectFormStore(state => state.data);
+    console.log('from zustand', data);
     const form = useForm<z.infer<typeof addMemberSchema>>({
         resolver: zodResolver(addMemberSchema),
         defaultValues: {
@@ -43,12 +45,7 @@ const AddMemberStep = ({ setStep }: GeneralInfoStepProps) => {
         setStep(3);
     }
 
-    const managersData = [
-        { name: "Kalki Noland", image: "https://avatar.iran.liara.run/public/18" },
-        { name: "Minakshi Devi", image: "https://avatar.iran.liara.run/public/25" },
-        { name: "Dani Wolvarin", image: "https://avatar.iran.liara.run/public/20" },
-        { name: "Alex Johnson", image: "https://avatar.iran.liara.run/public/22" },
-    ]
+    const managersData = data?.members;
 
     return (
         <div>
@@ -63,8 +60,10 @@ const AddMemberStep = ({ setStep }: GeneralInfoStepProps) => {
                                 <FormLabel>Manager</FormLabel>
                                 <FormControl>
                                     <MultiSelect
-                                        values={field.value}
-                                        onValuesChange={field.onChange}
+                                        values={field.value?.map(String) || []}
+                                        onValuesChange={(vals) =>
+                                            field.onChange(vals.map(Number))
+                                        }
                                     >
                                         <MultiSelectTrigger className=" w-full hover:bg-white py-2 dark:bg-darkSecondaryBg hover:dark:bg-darkSecondaryBg">
                                             <MultiSelectValue placeholder="Select managers..." />
@@ -72,15 +71,21 @@ const AddMemberStep = ({ setStep }: GeneralInfoStepProps) => {
                                         <MultiSelectContent className="dark:bg-darkSecondaryBg">
                                             {/* Items must be wrapped in a group for proper styling */}
                                             <MultiSelectGroup className="dark:bg-darkSecondaryBg">
-                                                {
-                                                    managersData?.map((member, i) => (
-
-                                                        <MultiSelectItem className=" px-0 cursor-pointer hover:dark:bg-darkPrimaryBg" key={i} value={member?.name}>
-                                                            <Image src={member?.image} className=" w-8" width={200} height={200} alt="profile_image" />
-                                                            <p>{member?.name}</p>
-                                                        </MultiSelectItem>
-                                                    ))
-                                                }
+                                                {managersData.map((manager: { id: number | string; image?: string | null; name: string }) => (
+                                                    <MultiSelectItem
+                                                        key={manager.id}
+                                                        value={String(manager.id)}
+                                                        className=" px-0 cursor-pointer hover:dark:bg-darkPrimaryBg"
+                                                    >
+                                                        <Avatar>
+                                                            <AvatarImage src={manager.image || ""} />
+                                                            <AvatarFallback>
+                                                                {manager.name.charAt(0)}
+                                                            </AvatarFallback>
+                                                        </Avatar>
+                                                        <p>{manager.name}</p>
+                                                    </MultiSelectItem>
+                                                ))}
 
                                             </MultiSelectGroup>
                                         </MultiSelectContent>

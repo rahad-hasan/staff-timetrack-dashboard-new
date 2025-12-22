@@ -18,7 +18,7 @@ import EditIcon from "../Icons/FilterOptionIcon/EditIcon";
 import DeleteIcon from "../Icons/DeleteIcon";
 import { ITeamMembers } from "@/global/globalTypes";
 import { toast } from "sonner";
-import { deleteMember } from "@/actions/members/membersAction";
+import { deleteMember } from "@/actions/members/action";
 
 const TeamsMemberTable = ({ data }: any) => {
 

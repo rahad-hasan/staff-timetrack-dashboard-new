@@ -30,7 +30,7 @@ import { useEffect, useState } from "react";
 import { ITeamMembers } from "@/global/globalTypes";
 import { editMemberSchema } from "@/zod/schema";
 import { toast } from "sonner";
-import { editMember } from "@/actions/members/membersAction";
+import { editMember } from "@/actions/members/action";
 
 interface EditNewMemberModalProps {
     onClose: () => void
@@ -68,7 +68,7 @@ const EditNewMemberModal = ({ onClose, selectedUser }: EditNewMemberModalProps) 
         console.log(values);
         setLoading(true);
         try {
-            const res = await editMember({data:values, id:selectedUser?.id});
+            const res = await editMember({ data: values, id: selectedUser?.id });
             console.log("success:", res);
 
             if (res?.success) {

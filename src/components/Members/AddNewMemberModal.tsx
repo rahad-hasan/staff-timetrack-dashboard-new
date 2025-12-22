@@ -30,7 +30,7 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
-import { addMember } from "@/actions/members/membersAction";
+import { addMember } from "@/actions/members/action";
 
 const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
     const [loading, setLoading] = useState(false);

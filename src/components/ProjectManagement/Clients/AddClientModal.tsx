@@ -21,7 +21,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useState } from "react";
-import { addClient } from "@/actions/clients/clientsAction";
+import { addClient } from "@/actions/clients/action";
 
 const AddClientModal = ({ onClose }: { onClose: () => void }) => {
     const [loading, setLoading] = useState(false);
@@ -55,8 +55,8 @@ const AddClientModal = ({ onClose }: { onClose: () => void }) => {
         } finally {
             setLoading(false);
         }
-    } 
-    
+    }
+
     return (
         <DialogContent
             onInteractOutside={(event) => event.preventDefault()}
