@@ -9,10 +9,11 @@ import {
 import AddProjectModal from "@/components/ProjectManagement/Projects/AddProjectModal";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 
 const ProjectHeroSection = () => {
+    const [open, setOpen] = useState(false)
     type Tab = "active" | "archived";
-
     const router = useRouter();
     const searchParams = useSearchParams();
     const handleSearch = (query: string) => {
@@ -28,18 +29,19 @@ const ProjectHeroSection = () => {
         params.set("page", "1"); // reset pagination if needed
         router.push(`?${params.toString()}`);
     };
+
     return (
         <div>
             <div className="flex items-center justify-between gap-3 mb-2 md:mb-5">
                 <HeadingComponent heading="Projects" subHeading="All the projects during the working hour by team member is here"></HeadingComponent>
 
                 <div className="">
-                    <Dialog>
+                    <Dialog open={open} onOpenChange={setOpen}>
                         <form>
                             <DialogTrigger asChild>
                                 <Button className=""><Plus className="size-5" /> <span className=" hidden sm:block">Add Project</span></Button>
                             </DialogTrigger>
-                            <AddProjectModal></AddProjectModal>
+                            <AddProjectModal onClose={() => setOpen(false)}></AddProjectModal>
                         </form>
                     </Dialog>
                 </div>

@@ -24,14 +24,13 @@ import {
     Popover,
     PopoverContent,
     PopoverTrigger,
-} from "@/components/ui/popover"
+} from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import { ChevronDownIcon, CircleUserRound, } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { MultiSelect, MultiSelectContent, MultiSelectGroup, MultiSelectItem, MultiSelectTrigger, MultiSelectValue } from "@/components/ui/multi-select";
-import Image from "next/image";
 import { useProjectFormStore } from "@/store/ProjectFormStore";
 import { getClients } from "@/actions/clients/action";
 import { getMembersForProject } from "@/actions/members/action";
@@ -84,13 +83,6 @@ const GeneralInfoStep = ({ setStep }: GeneralInfoStepProps) => {
         loadMembers();
     }, []);
 
-    const client = ["Orbit Project", "App Redesign", "Marketing Campaign", "New Website"];
-    const memberData = [
-        { name: "Kalki Noland", image: "https://avatar.iran.liara.run/public/18" },
-        { name: "Minakshi Devi", image: "https://avatar.iran.liara.run/public/25" },
-        { name: "Dani Wolvarin", image: "https://avatar.iran.liara.run/public/20" },
-        { name: "Alex Johnson", image: "https://avatar.iran.liara.run/public/22" },
-    ]
     const data = useProjectFormStore(state => state.data);
     const [clientSearch, setClientSearch] = useState("");
 
@@ -120,6 +112,7 @@ const GeneralInfoStep = ({ setStep }: GeneralInfoStepProps) => {
             phone: data.phone ?? "",
         },
     })
+
     const { updateData } = useProjectFormStore();
     function onSubmit(values: z.infer<typeof generalInfoSchema>) {
         updateData(values)

@@ -1,9 +1,9 @@
 "use client"
 
-import { IProject } from "@/global/globalTypes";
 import { useSearchParams } from "next/navigation";
 import ProjectTable from "./ProjectTable";
 import ArchivedProjectTable from "./ArchivedProjectTable";
+import { IProject } from "@/types/type";
 
 const ProjectsPage = ({ data }: { data: IProject[] }) => {
     type Tab = "active" | "archived";

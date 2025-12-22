@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 // import { Button } from "@/components/ui/button";
@@ -13,54 +14,87 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
-import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
+// import {
+//     Select,
+//     SelectContent,
+//     SelectGroup,
+//     SelectItem,
+//     SelectTrigger,
+//     SelectValue,
+// } from "@/components/ui/select"
 import { Input } from "@/components/ui/input";
 import { ChevronLeft } from "lucide-react";
 import { useProjectFormStore } from "@/store/ProjectFormStore";
+import { useState } from "react";
+import { toast } from "sonner";
+import { addProject } from "@/actions/projects/action";
 
 interface GeneralInfoStepProps {
-    setStep: (step: number) => void;
+    setStep: (step: number) => void,
+    onClose: () => void
 }
-const AddBudgetAndHoursStep = ({ setStep }: GeneralInfoStepProps) => {
+const AddBudgetAndHoursStep = ({ setStep, onClose }: GeneralInfoStepProps) => {
 
+    const [loading, setLoading] = useState(false);
     const { data } = useProjectFormStore(state => state);
-    console.log('gettting from zustand', data);
+
     const form = useForm<z.infer<typeof addBudgetAndHoursSchema>>({
         resolver: zodResolver(addBudgetAndHoursSchema) as Resolver<z.infer<typeof addBudgetAndHoursSchema>>,
         defaultValues: {
-            budgetType: data.budgetType ?? "",
-            rate: data.rate ?? undefined,
-            basedOn: data.basedOn ?? "",
+            // budgetType: data.budgetType ?? "",
+            rate: data.rate ?? "",
+            // basedOn: data.basedOn ?? "",
         },
     });
 
-    const { updateData } = useProjectFormStore();
-    function onSubmit(values: z.infer<typeof addBudgetAndHoursSchema>) {
-        updateData(values);
-        console.log(values);
-        // setStep(4);
-    }
-    // Project rate => hourly, fixed
-    // if hourly
+    const { updateData, resetData } = useProjectFormStore();
 
-    // 1. WATCH THE PROJECT TYPE FIELD
-    const budgetType = form.watch("budgetType");
-    const isHourlyRate = budgetType === "Hourly Rate";
+    async function onSubmit(values: z.infer<typeof addBudgetAndHoursSchema>) {
+        updateData(values);
+        console.log('getting from zustand', data);
+        const finalData =
+        {
+            name: data?.projectName,
+            client_id: data?.client,
+            manager_ids: data?.manager,
+            user_ids: data?.members.map((member: { id: number, name: string }) => member?.id),
+            description: data?.description,
+            start_date: new Date(data?.startDate).toISOString(),
+            deadline: new Date(data?.deadline).toISOString(),
+            budget: data?.rate
+        }
+        setLoading(true);
+        try {
+            const res = await addProject(finalData);
+            console.log("success:", res);
+
+            if (res?.success) {
+                onClose();
+                form.reset();
+                resetData();
+                setStep(1);
+                toast.success(res?.message || "Project added successfully");
+            } else {
+                toast.error(res?.message || "Failed to add project");
+            }
+        } catch (error: any) {
+            console.error("failed:", error);
+            toast.error(error.message || "Something went wrong!");
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    // const budgetType = form.watch("budgetType");
+    // const isHourlyRate = budgetType === "Hourly Rate";
 
     return (
         <div>
-            <h2 className=" text-xl font-medium mb-4 text-headingTextColor dark:text-darkTextPrimary">Add Budget & Hours</h2>
+            <h2 className=" text-xl font-medium mb-4 text-headingTextColor dark:text-darkTextPrimary">Add Budget</h2>
             <div className="flex gap-3">
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-full">
-                        <FormField
+                        {/* <FormField
                             control={form.control}
                             name="budgetType"
                             render={({ field }) => (
@@ -85,18 +119,19 @@ const AddBudgetAndHoursStep = ({ setStep }: GeneralInfoStepProps) => {
                                     <FormMessage />
                                 </FormItem>
                             )}
-                        />
+                        /> */}
                         <FormField
                             control={form.control}
                             name="rate"
                             render={({ field }) => (
                                 <FormItem>
-                                    {
-                                        budgetType === "Fixed Budget" ?
-                                            <FormLabel>Fixed Rate</FormLabel>
-                                            :
+                                    {/* {
+                                        budgetType === "Fixed Budget" ? */}
+                                    {/* <FormLabel>Fixed Rate</FormLabel> */}
+                                    <FormLabel>Project Budget</FormLabel>
+                                    {/*        :
                                             <FormLabel>Hourly Rate</FormLabel>
-                                    }
+                                     */}
                                     <FormControl className="dark:bg-darkPrimaryBg dark:border-darkBorder">
                                         <Input type="number" className="" placeholder="Project rate" {...field} />
                                     </FormControl>
@@ -104,7 +139,7 @@ const AddBudgetAndHoursStep = ({ setStep }: GeneralInfoStepProps) => {
                                 </FormItem>
                             )}
                         />
-                        {
+                        {/* {
                             isHourlyRate &&
                             <div className=" flex items-center gap-3">
                                 <FormField
@@ -134,11 +169,11 @@ const AddBudgetAndHoursStep = ({ setStep }: GeneralInfoStepProps) => {
                                     )}
                                 />
                             </div>
-                        }
+                        } */}
                         <div className=" flex items-center justify-between gap-3">
                             <button onClick={() => setStep(2)} className=" bg-primary rounded-lg text-white p-2 cursor-pointer" type="button"><ChevronLeft size={25} /></button>
                             {/* <DialogClose asChild> */}
-                            <button className=" bg-primary rounded-lg text-white py-2 px-3 cursor-pointer" type="submit">Create Project</button>
+                            <button className=" bg-primary rounded-lg text-white py-2 px-3 cursor-pointer" disabled={loading} type="submit">{loading ? "Loading..." : "Create Project"}</button>
                             {/* </DialogClose> */}
                         </div>
                     </form>

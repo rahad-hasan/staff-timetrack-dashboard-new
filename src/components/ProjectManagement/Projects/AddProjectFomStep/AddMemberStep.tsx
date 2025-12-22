@@ -19,7 +19,7 @@ import {
     MultiSelectTrigger,
     MultiSelectValue,
 } from "@/components/ui/multi-select"
-import Image from "next/image";
+// import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useProjectFormStore } from "@/store/ProjectFormStore";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";

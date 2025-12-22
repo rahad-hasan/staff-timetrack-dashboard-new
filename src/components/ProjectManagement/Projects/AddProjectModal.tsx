@@ -10,7 +10,7 @@ import AddMemberStep from "./AddProjectFomStep/AddMemberStep";
 import AddBudgetAndHoursStep from "./AddProjectFomStep/AddBudgetAndHoursStep";
 // import AddTasksStep from "./AddProjectFomStep/AddTasksStep";
 
-const AddProjectModal = () => {
+const AddProjectModal = ({ onClose }: { onClose: () => void }) => {
     const [step, setStep] = useState<number>(1);
 
     return (
@@ -37,7 +37,7 @@ const AddProjectModal = () => {
             }
             {
                 step === 3 &&
-                <AddBudgetAndHoursStep setStep={setStep}></AddBudgetAndHoursStep>
+                <AddBudgetAndHoursStep setStep={setStep} onClose={onClose}></AddBudgetAndHoursStep>
             }
             {/* {
                 step === 4 &&

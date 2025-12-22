@@ -24,9 +24,10 @@ import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import EditProjectModal from "./EditProjectModal";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import FilterButton from "@/components/Common/FilterButton";
-import { IProject } from "@/global/globalTypes";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { format } from "date-fns";
+import { IProject } from "@/types/type";
+
 
 const ProjectTable = ({ data }: { data: IProject[] }) => {
     console.log("data from api", data);

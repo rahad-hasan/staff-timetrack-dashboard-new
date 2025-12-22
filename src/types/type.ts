@@ -67,3 +67,60 @@ export interface IMutation<T> {
   data: T;
   id: number | undefined
 }
+
+export interface ProjectAssign {
+  user: User;
+  assignedBy: {
+    id: number;
+    name: string;
+  };
+  assigned_at: string;
+}
+
+export interface ProjectManagerAssign {
+  user: User;
+}
+// project types
+export type ProjectStatus = "pending" | "active" | "completed" | "archived";
+
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+  image: string | null;
+}
+
+
+export interface ProjectSummary {
+  spend: string;
+  is_over_budget: boolean;
+  duration: string;
+}
+
+export interface IProject {
+  id: number;
+  company_id: number;
+  name: string;
+  client_id: number | null;
+  status: ProjectStatus;
+  description: string | null;
+  start_date: string;
+  deadline: string | null;
+  is_idle_time: boolean;
+  budget: number | null;
+  client: null;
+  projectAssigns: ProjectAssign[];
+  projectManagerAssigns: ProjectManagerAssign[];
+  summary: ProjectSummary;
+}
+
+export interface ICreateProjectPayload {
+  name: string;
+  client_id: number | string;
+  manager_ids: number[] | string[];
+  user_ids: number[];
+  description: string;
+  start_date: string;
+  deadline: string;
+  budget: number | string;
+}

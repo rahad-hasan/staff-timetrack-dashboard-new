@@ -2,20 +2,16 @@
 
 import { buildQuery } from "@/utils/buildQuery";
 import { baseApi } from "../baseApi";
+import { ICreateProjectPayload, IProject, IResponse } from "@/types/type";
 
-export const getProjects = async (query = {}) => {
+export const getProjects = async (query = {}):Promise<IResponse<IProject[]>> => {
     const queryString = buildQuery(query);
     return await baseApi(`/projects${queryString ? `?${queryString}` : ""}`, {
         tag: "projects",
     });
 };
 
-export const addProject = async (data: {
-    name: string,
-    email: string,
-    phone: string,
-    address: string
-}) => {
+export const addProject = async (data: ICreateProjectPayload) => {
     return await baseApi(`/projects`, {
         method: "POST",
         body: data,
