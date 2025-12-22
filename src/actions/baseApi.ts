@@ -123,7 +123,7 @@ export async function baseApi<T = any>(
     if (body) {
         console.log(`📦 Payload:`, isFormData ? "FormData (Binary)" : JSON.stringify(body, null, 2));
     }
-    console.log("--------response----------", res);
+    console.log("--------😀😀😀😀response😀😀😀😀----------", res);
     /* 🚀 END DEBUG BLOCK */
 
     if (method !== "GET" && !res.ok) {

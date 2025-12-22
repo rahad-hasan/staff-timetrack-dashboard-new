@@ -2,7 +2,7 @@
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import { useEffect, useState } from "react";
 import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import {
@@ -13,54 +13,23 @@ import AddClientModal from "@/components/ProjectManagement/Clients/AddClientModa
 
 const ClientHereSection = () => {
     const [open, setOpen] = useState(false)
-    const [value, setValue] = useState("")
+    const pathname = usePathname();
     const searchParams = useSearchParams();
     const router = useRouter();
     useEffect(() => {
-        if (!value) return;
-
         const params = new URLSearchParams(searchParams.toString());
-        params.set("project", value);
         params.set("page", "1");
 
         router.push(`?${params.toString()}`);
-    }, [value, searchParams, router]);
+    }, [searchParams, router]);
 
     useEffect(() => {
-        // This runs once when the component mounts (on refresh)
-        const params = new URLSearchParams(window.location.search);
-        if (params.has("project")) {
-            router.replace(window.location.pathname); // Removes all query strings
+        // If there are any search params at all, clear them on mount
+        if (searchParams.toString()) {
+            router.replace(pathname, { scroll: false });
         }
-    }, []); // Empty dependency array
+    }, []);
 
-    const projects = [
-        {
-            value: "Time Tracker",
-            label: "Time Tracker",
-            avatar: "https://picsum.photos/200/300",
-        },
-        {
-            value: "E-commerce",
-            label: "E-commerce",
-            avatar: "https://picsum.photos/200/300",
-        },
-        {
-            value: "Fack News Detection",
-            label: "Fack News Detection",
-            avatar: "https://picsum.photos/200/300",
-        },
-        {
-            value: "Travel Together",
-            label: "Travel Together",
-            avatar: "https://picsum.photos/200/300",
-        },
-        {
-            value: "Time Tracker2",
-            label: "Time Tracker2",
-            avatar: "https://picsum.photos/200/300",
-        },
-    ]
 
     return (
         <div>
@@ -77,7 +46,7 @@ const ClientHereSection = () => {
                     </Dialog>
                 </div>
             </div>
-            <SelectProjectDropDown projects={projects} setValue={setValue} value={value}></SelectProjectDropDown>
+            <SelectProjectDropDown></SelectProjectDropDown>
         </div>
     );
 };

@@ -1,7 +1,7 @@
 "use client"
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { useState } from "react";
+import { useEffect } from "react";
 import SearchBar from "@/components/Common/SearchBar";
 import {
     Dialog,
@@ -11,14 +11,14 @@ import CreateTaskModal from "@/components/ProjectManagement/Task/CreateTaskModal
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
 import HeadingComponent from "@/components/Common/HeadingComponent";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 const TaskHeroSection = () => {
-    const [value, setValue] = useState("");
 
     type Tab = "List view" | "Kanban";
     const router = useRouter();
     const searchParams = useSearchParams();
+    const pathname = usePathname();
     const handleSearch = (query: string) => {
         const params = new URLSearchParams(searchParams.toString());
         params.set("search", query);
@@ -33,33 +33,13 @@ const TaskHeroSection = () => {
         params.set("page", "1"); // reset pagination if needed
         router.push(`?${params.toString()}`);
     };
-    const projects = [
-        {
-            value: "Time Tracker",
-            label: "Time Tracker",
-            avatar: "https://picsum.photos/200/300",
-        },
-        {
-            value: "E-commerce",
-            label: "E-commerce",
-            avatar: "https://picsum.photos/200/300",
-        },
-        {
-            value: "Fack News Detection",
-            label: "Fack News Detection",
-            avatar: "https://picsum.photos/200/300",
-        },
-        {
-            value: "Travel Together",
-            label: "Travel Together",
-            avatar: "https://picsum.photos/200/300",
-        },
-        {
-            value: "Time Tracker2",
-            label: "Time Tracker2",
-            avatar: "https://picsum.photos/200/300",
-        },
-    ]
+    
+    useEffect(() => {
+        // If there are any search params at all, clear them on mount
+        if (searchParams.toString()) {
+            router.replace(pathname, { scroll: false });
+        }
+    }, []);
 
     const users = [
         {
@@ -126,7 +106,7 @@ const TaskHeroSection = () => {
             </div>
             <div className=" flex flex-col gap-4 md:gap-0 md:flex-row justify-between">
                 <div className=" flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
-                    <SelectProjectDropDown projects={projects} setValue={setValue} value={value}></SelectProjectDropDown>
+                    <SelectProjectDropDown></SelectProjectDropDown>
                     <div className=" flex items-center gap-3 w-full">
                         <div className=" w-full">
                             <SelectUserDropDown users={users}></SelectUserDropDown>

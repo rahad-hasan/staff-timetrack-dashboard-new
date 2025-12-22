@@ -15,6 +15,7 @@ export const logIn = async (data: any) => {
   const res = await baseApi("/auth/signin", {
     method: "POST",
     body: data,
+    cache: "no-cache", // login should not be cached
   });
 
   if (res?.success) {

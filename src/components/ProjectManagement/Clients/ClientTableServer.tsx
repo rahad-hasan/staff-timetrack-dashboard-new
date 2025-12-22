@@ -5,6 +5,7 @@ import { getClients } from "@/actions/clients/action";
 const ClientTableServer = async ({ query }: any) => {
     const result = await getClients({
         search: query.search,
+        project_id: query.project_id,
     });
 
     return (

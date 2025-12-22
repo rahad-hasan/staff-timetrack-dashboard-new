@@ -5,6 +5,7 @@ import TaskToggle from "./TaskToggle";
 const TaskServer = async ({ searchParams }: any) => {
     const result = await getTasks({
         search: searchParams.search,
+        project_id: searchParams.project_id,
     });
 
     return (
