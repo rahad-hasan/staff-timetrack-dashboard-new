@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import {
     DialogContent,
@@ -9,15 +8,13 @@ import { useState } from "react";
 import EditGeneralInfoStep from "./EditProjectFormStep/EditGeneralInfoStep";
 import EditMemberStep from "./EditProjectFormStep/EditMemberStep";
 import EditBudgetAndHoursStep from "./EditProjectFormStep/EditBudgetAndHoursStep";
-// import EditTasksStep from "./EditProjectFormStep/EditTasksStep";
+import { IProject } from "@/types/type";
+// import AddTasksStep from "./AddProjectFomStep/AddTasksStep";
 
-const EditProjectModal = () => {
+const EditProjectModal = ({ onClose, selectedProject }: { onClose: () => void; selectedProject: IProject }) => {
+
     const [step, setStep] = useState<number>(1);
-    const [formData, setFormData] = useState<any>({});
-    const handleStepSubmit = (data: any) => {
-        setFormData((prevData: any) => ({ ...prevData, ...data }));
-    };
-    console.log(formData);
+
     return (
         <DialogContent
             onInteractOutside={(event) => event.preventDefault()}
@@ -30,24 +27,23 @@ const EditProjectModal = () => {
                         <span className={` h-1.5 rounded-full ${step >= 3 ? "bg-primary" : "bg-[#dce3e3]"}  w-full `}></span>
                         {/* <span className={` h-1.5 rounded-full ${step >= 4 ? "bg-primary" : "bg-[#dce3e3]"}  w-full `}></span> */}
                     </div>
-
                 </DialogTitle>
             </DialogHeader>
             {
                 step === 1 &&
-                <EditGeneralInfoStep setStep={setStep} handleStepSubmit={handleStepSubmit}></EditGeneralInfoStep>
+                <EditGeneralInfoStep setStep={setStep} selectedProject={selectedProject}></EditGeneralInfoStep>
             }
             {
                 step === 2 &&
-                <EditMemberStep setStep={setStep} handleStepSubmit={handleStepSubmit}></EditMemberStep>
+                <EditMemberStep setStep={setStep} selectedProject={selectedProject}></EditMemberStep>
             }
             {
                 step === 3 &&
-                <EditBudgetAndHoursStep setStep={setStep} handleStepSubmit={handleStepSubmit}></EditBudgetAndHoursStep>
+                <EditBudgetAndHoursStep setStep={setStep} onClose={onClose} selectedProject={selectedProject}></EditBudgetAndHoursStep>
             }
             {/* {
                 step === 4 &&
-                <EditTasksStep handleStepSubmit={handleStepSubmit}></EditTasksStep>
+                <AddTasksStep handleStepSubmit={handleStepSubmit}></AddTasksStep>
             } */}
 
         </DialogContent>

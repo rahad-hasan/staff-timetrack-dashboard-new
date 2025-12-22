@@ -56,8 +56,8 @@ export async function baseApi<T = any>(
         isFormData = false,
         tag,
         headers: customHeaders,
-        // cache = "force-cache",
-        cache = "no-cache",
+        cache = "force-cache",
+        // cache = "no-cache",
         revalidate,
     } = options;
 
@@ -116,14 +116,14 @@ export async function baseApi<T = any>(
     }
 
     /* 🚀 DEBUG BLOCK: Request Details */
-    // const requestHeaders = await buildHeaders(isFormData, customHeaders);
-    // console.log("--- 🏁 API REQUEST ---");
-    // console.log(`📡 URL:    [${method}] ${fullUrl}`);
-    // console.log(`🔑 Token:  ${requestHeaders["Authorization"] || "No Token Found"}`);
-    // if (body) {
-    //     console.log(`📦 Payload:`, isFormData ? "FormData (Binary)" : JSON.stringify(body, null, 2));
-    // }
-    // console.log("--------response----------", res);
+    const requestHeaders = await buildHeaders(isFormData, customHeaders);
+    console.log("--- 🏁 API REQUEST ---");
+    console.log(`📡 URL:    [${method}] ${fullUrl}`);
+    console.log(`🔑 Token:  ${requestHeaders["Authorization"] || "No Token Found"}`);
+    if (body) {
+        console.log(`📦 Payload:`, isFormData ? "FormData (Binary)" : JSON.stringify(body, null, 2));
+    }
+    console.log("--------response----------", res);
     /* 🚀 END DEBUG BLOCK */
 
     if (method !== "GET" && !res.ok) {

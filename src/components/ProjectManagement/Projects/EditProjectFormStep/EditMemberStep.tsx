@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 // import { Button } from "@/components/ui/button";
 import { addMemberSchema } from "@/zod/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,66 +19,75 @@ import {
     MultiSelectTrigger,
     MultiSelectValue,
 } from "@/components/ui/multi-select"
-import Image from "next/image";
+// import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useProjectFormStore } from "@/store/ProjectFormStore";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { IProject } from "@/types/type";
 
 interface GeneralInfoStepProps {
     setStep: (step: number) => void;
-    handleStepSubmit: (data: any) => void;
+    selectedProject: IProject;
 }
 
-const EditMemberStep = ({ setStep, handleStepSubmit }: GeneralInfoStepProps) => {
+const EditMemberStep = ({ setStep, selectedProject }: GeneralInfoStepProps) => {
+    const data = useProjectFormStore(state => state.data);
+    console.log('from zustand', data);
     const form = useForm<z.infer<typeof addMemberSchema>>({
         resolver: zodResolver(addMemberSchema),
         defaultValues: {
-            members: ["Minakshi Devi"],
+            manager: data.manager ? data.manager : selectedProject?.projectManagerAssigns?.map(p => p?.user?.id) ?? [],
         },
     });
 
+    const { updateData } = useProjectFormStore();
     function onSubmit(values: z.infer<typeof addMemberSchema>) {
+        updateData(values);
         console.log(values);
-        handleStepSubmit(values);
         setStep(3);
     }
 
-    const memberData = [
-        { name: "Kalki Noland", image: "https://avatar.iran.liara.run/public/18" },
-        { name: "Minakshi Devi", image: "https://avatar.iran.liara.run/public/25" },
-        { name: "Dani Wolvarin", image: "https://avatar.iran.liara.run/public/20" },
-        { name: "Alex Johnson", image: "https://avatar.iran.liara.run/public/22" },
-    ]
+    const managersData = data?.members;
 
     return (
         <div>
-            <h2 className=" text-xl font-medium mb-4">Add Member</h2>
+            <h2 className=" text-xl font-medium mb-4 text-headingTextColor dark:text-darkTextPrimary">Edit Manager</h2>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                     <FormField
                         control={form.control}
-                        name="members"
+                        name="manager"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Members</FormLabel>
+                                <FormLabel>Manager</FormLabel>
                                 <FormControl>
                                     <MultiSelect
-                                        values={field.value}
-                                        onValuesChange={field.onChange}
+                                        values={field.value?.map(String) || []}
+                                        onValuesChange={(vals) =>
+                                            field.onChange(vals.map(Number))
+                                        }
                                     >
                                         <MultiSelectTrigger className=" w-full hover:bg-white py-2 dark:bg-darkSecondaryBg hover:dark:bg-darkSecondaryBg">
-                                            <MultiSelectValue placeholder="Select frameworks..." />
+                                            <MultiSelectValue placeholder="Select managers..." />
                                         </MultiSelectTrigger>
                                         <MultiSelectContent className="dark:bg-darkSecondaryBg">
                                             {/* Items must be wrapped in a group for proper styling */}
                                             <MultiSelectGroup className="dark:bg-darkSecondaryBg">
-                                                {
-                                                    memberData?.map((member, i) => (
-
-                                                        <MultiSelectItem className=" px-0 cursor-pointer hover:dark:bg-darkPrimaryBg" key={i} value={member?.name}>
-                                                            <Image src={member?.image} className=" w-8" width={200} height={200} alt="profile_image" />
-                                                            <p>{member?.name}</p>
-                                                        </MultiSelectItem>
-                                                    ))
-                                                }
+                                                {managersData.map((manager: { id: number | string; image?: string | null; name: string }) => (
+                                                    <MultiSelectItem
+                                                        key={manager.id}
+                                                        value={String(manager.id)}
+                                                        className=" px-0 cursor-pointer hover:dark:bg-darkPrimaryBg"
+                                                    >
+                                                        <Avatar>
+                                                            <AvatarImage src={manager.image || ""} />
+                                                            <AvatarFallback>
+                                                                {manager.name.charAt(0)}
+                                                            </AvatarFallback>
+                                                        </Avatar>
+                                                        <p>{manager.name}</p>
+                                                    </MultiSelectItem>
+                                                ))}
 
                                             </MultiSelectGroup>
                                         </MultiSelectContent>

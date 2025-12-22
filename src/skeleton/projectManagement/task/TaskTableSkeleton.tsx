@@ -11,7 +11,7 @@ const TaskTableSkeleton = () => {
     const MIN_TABLE_WIDTH = 'min-w-[1000px]';
 
     return (
-        <div className="mt-5 border p-3 border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg rounded-[12px] animate-pulse max-w-full">
+        <div className="mt-5 border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px] animate-pulse max-w-full">
             <div className="mb-5">
                 <PlaceholderBlock className="h-6 w-20" />
             </div>

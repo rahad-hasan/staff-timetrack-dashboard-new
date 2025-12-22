@@ -21,7 +21,6 @@ import { ArrowUpDown, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
-import EditProjectModal from "./EditProjectModal";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import FilterButton from "@/components/Common/FilterButton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -33,10 +32,13 @@ import DuplicateIcon from "@/components/Icons/FilterOptionIcon/DuplicateIcon";
 import ArchiveIcon from "@/components/Icons/FilterOptionIcon/ArchiveIcon";
 import DeleteIcon from "@/components/Icons/DeleteIcon";
 import MemberIcon from "@/components/Icons/FilterOptionIcon/MemberIcon";
+import EditProjectModal from "./EditProjectModal";
 
 
 const ProjectTable = ({ data }: { data: IProject[] }) => {
     console.log("data from api", data);
+    const [open, setOpen] = useState(false)
+    const [selectedProject, setSelectedProject] = useState<IProject | null>(null)
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
     const router = useRouter();
@@ -288,17 +290,18 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                                         <EyeIcon size={18} />
                                         <p>View Project</p>
                                     </div>
-                                    <Dialog>
-                                        <form>
-                                            <DialogTrigger asChild>
-                                                <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                                    <EditIcon size={18} />
-                                                    <p>Edit Project</p>
-                                                </div>
-                                            </DialogTrigger>
-                                            <EditProjectModal></EditProjectModal>
-                                        </form>
-                                    </Dialog>
+
+                                    <div
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setSelectedProject(row?.original);
+                                            setOpen(true);
+                                        }}
+                                        className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
+                                        <EditIcon size={18} />
+                                        <p>Edit Project</p>
+                                    </div>
+
                                     <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
                                         <MemberIcon size={18} />
                                         <p>Manage member</p>
@@ -377,6 +380,15 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                     )}
                 </TableBody>
             </Table>
+            {/* Edit modal here */}
+            <Dialog open={open} onOpenChange={setOpen}>
+                {selectedProject && (
+                    <EditProjectModal
+                        onClose={() => setOpen(false)}
+                        selectedProject={selectedProject}
+                    />
+                )}
+            </Dialog>
         </div>
     );
 };

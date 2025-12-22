@@ -3,7 +3,7 @@
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -11,7 +11,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-import { ArrowUpDown, ChevronDown, Pencil, Trash2 } from "lucide-react";
+import { ArrowUpDown, ChevronDown } from "lucide-react";
 import lowFlag from '../../../assets/dashboard/lowFlag.svg'
 import mediumFlag from '../../../assets/dashboard/mediumFlag.svg'
 import noneFlag from '../../../assets/dashboard/noneFlag.svg'
@@ -22,91 +22,30 @@ import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import EditTaskModal from "./EditTaskModal";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import FilterButton from "@/components/Common/FilterButton";
+import { ITask } from "@/types/type";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import EditIcon from "@/components/Icons/FilterOptionIcon/EditIcon";
+import DeleteIcon from "@/components/Icons/DeleteIcon";
 
-const TaskTable = () => {
-    console.log("TaskTable");
+const TaskTable = ({ data }: { data: ITask[] }) => {
+    console.log("TaskTable", data);
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
-    console.log(rowSelection);
-    interface Task {
-        taskName: string;
-        project: string;
-        image: string;
-        assignee: string;
-        timeWorked: string;
-        priority: string;
-        status: string;
-    }
 
-    const taskList = useMemo(
-        () => [
-            {
-                taskName: "Do the Logic for Orbit Home page project",
-                project: "Orbit Technology's project",
-                image: "https://avatar.iran.liara.run/public/25",
-                assignee: "Juyed Ahmed",
-                timeWorked: "12:03:00",
-                priority: "Low",
-                status: "In Progress"
-            },
-            {
-                taskName: "Marketing Tools",
-                project: "Orbit Technology's project",
-                image: "https://avatar.iran.liara.run/public/22",
-                assignee: "Cameron Williamson",
-                timeWorked: "12:03:00",
-                priority: "Medium",
-                status: "Pending"
-            },
-            {
-                taskName: "Design Idea",
-                project: "Orbit Technology's project",
-                image: "https://avatar.iran.liara.run/public/26",
-                assignee: "Jenny Wilson",
-                timeWorked: "11:03:00",
-                priority: "None",
-                status: "In Progress"
-            },
-            {
-                taskName: "Do the Logic for Orbit Home page project wi...",
-                project: "Orbit Technology's project",
-                image: "https://avatar.iran.liara.run/public/27",
-                assignee: "Esther Howard",
-                timeWorked: "10:03:00",
-                priority: "Medium",
-                status: "Pending"
-            }
-        ],
-        []
-    );
+    // {
+    //     taskName: "Do the Logic for Orbit Home page project",
+    //     project: "Orbit Technology's project",
+    //     image: "https://avatar.iran.liara.run/public/25",
+    //     assignee: "Juyed Ahmed",
+    //     timeWorked: "12:03:00",
+    //     priority: "Low",
+    //     status: "In Progress"
+    // },
 
-    const columns: ColumnDef<Task>[] = [
-        // {
-        //     id: "select",
-        //     header: ({ table }) => (
-        //         <Checkbox
-        //             checked={
-        //                 table.getIsAllPageRowsSelected() ||
-        //                 (table.getIsSomePageRowsSelected() && "indeterminate")
-        //             }
-        //             onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        //             aria-label="Select all"
-        //             className=" cursor-pointer"
-        //         />
-        //     ),
-        //     cell: ({ row }) => (
-        //         <Checkbox
-        //             checked={row.getIsSelected()}
-        //             onCheckedChange={(value) => row.toggleSelected(!!value)}
-        //             aria-label="Select row"
-        //             className=" cursor-pointer"
-        //         />
-        //     ),
-        //     enableSorting: false,
-        //     enableHiding: false,
-        // },
+
+    const columns: ColumnDef<ITask>[] = [
         {
-            accessorKey: "taskName",
+            accessorKey: "name",
             header: ({ column }) => {
                 return (
                     <div>
@@ -121,18 +60,18 @@ const TaskTable = () => {
                 )
             },
             cell: ({ row }) => {
-                const task = row.getValue("taskName") as string;
-                const project = row.original.project;
+                const name = row.getValue("name") as string;
+                const project = row?.original?.project?.name;
                 return (
                     <div className="flex flex-col">
-                        <span className="font-bold text-base text-headingTextColor dark:text-darkTextPrimary">{task}</span>
+                        <span className="font-bold text-base text-headingTextColor dark:text-darkTextPrimary">{name}</span>
                         <span className=" font-normal text-subTextColor dark:text-darkTextSecondary">{project}</span>
                     </div>
                 )
             }
         },
         {
-            accessorKey: "assignee",
+            accessorKey: "assignedBy",
             header: ({ column }) => {
                 return (
                     <div>
@@ -147,17 +86,14 @@ const TaskTable = () => {
                 )
             },
             cell: ({ row }) => {
-                const assignee = row.getValue("assignee") as string;
-                const image = row.original.image;
+                const assignee = row?.original?.assignedBy?.name;
+                const image = row?.original?.assignedBy?.image;
                 return (
                     <div className="flex items-center gap-2 min-w-[180px]">
-                        <Image
-                            src={image}
-                            width={40}
-                            height={40}
-                            alt={assignee}
-                            className="rounded-full w-10"
-                        />
+                        <Avatar>
+                            <AvatarImage src={image} alt={assignee} />
+                            <AvatarFallback>{assignee?.charAt(0)}</AvatarFallback>
+                        </Avatar>
                         <span>{assignee}</span>
                     </div>
                 );
@@ -277,14 +213,14 @@ const TaskTable = () => {
                                 <FilterButton></FilterButton>
                             </div>
                         </PopoverTrigger>
-                        <PopoverContent side="bottom" align="end" className=" w-[250px] px-2">
+                        <PopoverContent side="bottom" align="end" className=" w-[250px] p-2">
                             <div className="">
                                 <div className="space-y-2">
                                     <Dialog>
                                         <form>
                                             <DialogTrigger asChild>
                                                 <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                                    <Pencil size={18} />
+                                                    <EditIcon size={18} />
                                                     <p>Edit Client</p>
                                                 </div>
                                             </DialogTrigger>
@@ -293,7 +229,7 @@ const TaskTable = () => {
                                     </Dialog>
 
                                     <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                        <Trash2 size={18} />
+                                        <DeleteIcon size={18} />
                                         <p>Delete Client</p>
                                     </div>
                                 </div>
@@ -307,7 +243,7 @@ const TaskTable = () => {
 
 
     const table = useReactTable({
-        data: taskList,
+        data: data,
         columns,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,

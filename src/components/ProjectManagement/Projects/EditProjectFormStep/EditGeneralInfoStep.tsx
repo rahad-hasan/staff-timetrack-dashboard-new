@@ -1,5 +1,5 @@
 "use client"
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { Button } from "@/components/ui/button";
 import { generalInfoSchema } from "@/zod/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,60 +24,112 @@ import {
     Popover,
     PopoverContent,
     PopoverTrigger,
-} from "@/components/ui/popover"
+} from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronDownIcon, CircleUserRound, } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { MultiSelect, MultiSelectContent, MultiSelectGroup, MultiSelectItem, MultiSelectTrigger, MultiSelectValue } from "@/components/ui/multi-select";
-import Image from "next/image";
+import { useProjectFormStore } from "@/store/ProjectFormStore";
+import { getClients } from "@/actions/clients/action";
+import { getMembersForProject } from "@/actions/members/action";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { IProject } from "@/types/type";
 
 interface GeneralInfoStepProps {
     setStep: (step: number) => void;
-    handleStepSubmit: (data: any) => void;
+    selectedProject: IProject;
 }
 
-const EditGeneralInfoStep = ({ setStep, handleStepSubmit }: GeneralInfoStepProps) => {
-    const client = ["Orbit Client", "App Redesign", "Marketing Campaign", "New Website"];
-    const managersData = [
-        { name: "Kalki Noland", image: "https://avatar.iran.liara.run/public/18" },
-        { name: "Minakshi Devi", image: "https://avatar.iran.liara.run/public/25" },
-        { name: "Dani Wolvarin", image: "https://avatar.iran.liara.run/public/20" },
-        { name: "Alex Johnson", image: "https://avatar.iran.liara.run/public/22" },
-    ]
+const EditGeneralInfoStep = ({ setStep, selectedProject }: GeneralInfoStepProps) => {
+    console.log('from edit modal selected project', selectedProject);
+    const [clients, setClients] = useState<{ id: number; name: string }[]>([]);
+    const [members, setMembers] = useState<{ id: number; name: string; image?: string }[]>([]);
+    console.log('members', members);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        const loadClients = async () => {
+            setLoading(true);
+            try {
+                const res = await getClients();
+                if (res?.success) {
+                    setClients(res.data);
+                }
+            } catch (err) {
+                console.error("Failed to fetch clients", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadClients();
+    }, []);
+
+    useEffect(() => {
+        const loadMembers = async () => {
+            setLoading(true);
+            try {
+                const res = await getMembersForProject();
+                if (res?.success) {
+                    setMembers(res.data);
+                }
+            } catch (err) {
+                console.error("Failed to fetch clients", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadMembers();
+    }, []);
+
+    const data = useProjectFormStore(state => state.data);
     const [clientSearch, setClientSearch] = useState("");
 
-    const filteredClient = client.filter(p => p.toLowerCase().includes(clientSearch.toLowerCase()));
+    const filteredClient = clients.filter(c =>
+        c.name.toLowerCase().includes(clientSearch.toLowerCase())
+    );
 
     const [openStartDate, setOpenStartDate] = useState(false);
-    const [dateStartDate, setStartDate] = useState<Date | undefined>(undefined);
+    const [dateStartDate, setStartDate] = useState<Date | undefined>(
+        data.startDate ? new Date(data.startDate) : selectedProject?.start_date ? new Date(selectedProject?.start_date) : undefined
+    );
 
     const [openDeadLine, setDeadLineOpen] = useState(false);
-    const [dateDeadLine, setDeadLineDate] = useState<Date | undefined>(undefined);
-
+    const [dateDeadLine, setDeadLineDate] = useState<Date | undefined>(
+        data.deadline ? new Date(data.deadline) : selectedProject?.deadline ? new Date(selectedProject?.deadline) : undefined
+    );
 
     const form = useForm<z.infer<typeof generalInfoSchema>>({
         resolver: zodResolver(generalInfoSchema),
         defaultValues: {
-            projectName: "Project Name",
-            client: "Orbit Client",
-            manager: ["Kalki Noland"],
-            description: "This is description",
-            startDate: new Date(Date.now()),
-            deadline: new Date(Date.now()),
+            projectName: data.projectName ? data.projectName : selectedProject?.name,
+            client: data.client ? data.client : selectedProject?.client_id,
+            members: data.members ? data.members : selectedProject?.projectAssigns?.map(p => ({ id: p?.user?.id, name: p?.user?.name })),
+            description: data.description ? data?.description : selectedProject?.description,
+            startDate: data.startDate ? data.startDate : selectedProject?.start_date ? new Date(selectedProject?.start_date) : null,
+            deadline: data.deadline ? data.deadline : selectedProject?.deadline ? new Date(selectedProject?.deadline) : null,
+            // phone: data.phone ?? "",
         },
     })
 
+    const { updateData } = useProjectFormStore();
+
+
     function onSubmit(values: z.infer<typeof generalInfoSchema>) {
+        updateData(values)
         console.log(values)
-        handleStepSubmit(values)
         setStep(2);
     }
 
+    const selectedMemberIds =
+        form.watch("members")?.map(m => String(m.id)) || [];
+
     return (
         <div>
-            <h2 className=" text-xl font-medium mb-4">General Info</h2>
+            <h2 className=" text-xl font-medium mb-4 text-headingTextColor dark:text-darkTextPrimary">Edit General Info</h2>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 ">
                     <FormField
@@ -100,63 +152,75 @@ const EditGeneralInfoStep = ({ setStep, handleStepSubmit }: GeneralInfoStepProps
                             <FormItem>
                                 <FormLabel>Client</FormLabel>
                                 <FormControl>
-                                    <div className="relative">
-                                        <Select
-                                            value={field.value}
-                                            onValueChange={field.onChange}
-                                        >
-                                            <SelectTrigger className="w-full">
-                                                <div className=" flex gap-1 items-center">
-                                                    <CircleUserRound className="mr-2" />
-                                                    <SelectValue className=" text-start" placeholder="Select Client" />
-                                                </div>
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <Input
-                                                    type="text"
-                                                    placeholder="Select Client"
-                                                    className="flex-1 border-none focus:ring-0 focus:outline-none"
-                                                    value={clientSearch}
-                                                    onChange={(e) => setClientSearch(e.target.value)}
-                                                />
-                                                {filteredClient.map(p => (
-                                                    <SelectItem key={p} value={p}>{p}</SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
+                                    <Select
+                                        value={field.value ? String(field.value) : ""}
+                                        onValueChange={(val) => field.onChange(Number(val))}
+                                    >
+                                        <SelectTrigger className="w-full">
+                                            <div className=" flex gap-1 items-center">
+                                                <CircleUserRound className="mr-2" />
+                                                <SelectValue placeholder="Select Client" />
+                                            </div>
+                                        </SelectTrigger>
+
+                                        <SelectContent>
+                                            <Input
+                                                placeholder="Search client"
+                                                value={clientSearch}
+                                                onChange={(e) => setClientSearch(e.target.value)}
+                                                className="flex-1 border-none focus:ring-0 focus:outline-none"
+                                            />
+                                            {filteredClient.map(c => (
+                                                <SelectItem key={c.id} value={String(c.id)}>
+                                                    {c.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
+
                     <FormField
                         control={form.control}
-                        name="manager"
+                        name="members"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Manager</FormLabel>
+                                <FormLabel>Members</FormLabel>
                                 <FormControl>
                                     <MultiSelect
-                                        values={field.value}
-                                        onValuesChange={field.onChange}
+                                        values={selectedMemberIds}
+                                        onValuesChange={(vals) => {
+                                            const selected = members
+                                                .filter(m => vals.includes(String(m.id)))
+                                                .map(m => ({ id: m.id, name: m.name }));
+
+                                            field.onChange(selected);
+                                        }}
                                     >
                                         <MultiSelectTrigger className=" w-full hover:bg-white py-2 dark:bg-darkSecondaryBg hover:dark:bg-darkSecondaryBg">
-                                            <MultiSelectValue placeholder="Select managers..." />
+                                            <MultiSelectValue placeholder="Select members..." />
                                         </MultiSelectTrigger>
+
                                         <MultiSelectContent className="dark:bg-darkSecondaryBg">
-                                            {/* Items must be wrapped in a group for proper styling */}
                                             <MultiSelectGroup className="dark:bg-darkSecondaryBg">
-                                                {
-                                                    managersData?.map((member, i) => (
-
-                                                        <MultiSelectItem className=" px-0 cursor-pointer hover:dark:bg-darkPrimaryBg" key={i} value={member?.name}>
-                                                            <Image src={member?.image} className=" w-8" width={200} height={200} alt="profile_image" />
-                                                            <p>{member?.name}</p>
-                                                        </MultiSelectItem>
-                                                    ))
-                                                }
-
+                                                {members.map(member => (
+                                                    <MultiSelectItem
+                                                        key={member.id}
+                                                        value={String(member.id)}
+                                                        className=" px-0 cursor-pointer hover:dark:bg-darkPrimaryBg"
+                                                    >
+                                                        <Avatar>
+                                                            <AvatarImage src={member.image || ""} />
+                                                            <AvatarFallback>
+                                                                {member.name.charAt(0)}
+                                                            </AvatarFallback>
+                                                        </Avatar>
+                                                        <p>{member.name}</p>
+                                                    </MultiSelectItem>
+                                                ))}
                                             </MultiSelectGroup>
                                         </MultiSelectContent>
                                     </MultiSelect>
@@ -165,6 +229,7 @@ const EditGeneralInfoStep = ({ setStep, handleStepSubmit }: GeneralInfoStepProps
                             </FormItem>
                         )}
                     />
+
                     <FormField
                         control={form.control}
                         name="description"
@@ -275,7 +340,7 @@ const EditGeneralInfoStep = ({ setStep, handleStepSubmit }: GeneralInfoStepProps
                     <Button className=" w-full" type="submit">Next</Button>
                 </form>
             </Form>
-        </div>
+        </div >
     );
 };
 

@@ -90,7 +90,6 @@ export interface User {
   image: string | null;
 }
 
-
 export interface ProjectSummary {
   spend: string;
   is_over_budget: boolean;
@@ -123,4 +122,32 @@ export interface ICreateProjectPayload {
   start_date: string;
   deadline: string;
   budget: number | string;
+}
+
+export interface ITask {
+  id: number;
+  company_id: number;
+  project_id: number;
+  user_id: number;
+  name: string;
+  description: string | null;
+  deadline: string | null;
+  priority: string | null;
+  assigned_by: number;
+  status: 'pending' | 'processing' | 'complete' | 'cancelled';
+  updated_at: string;
+  created_at: string;
+  duration: string;
+  project: {
+    id: number;
+    name: string;
+  };
+  assignedBy: IUser;
+  user: IUser;
+}
+
+export type ISearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
+
+export interface ISearchParamsProps {
+    searchParams: ISearchParams;
 }
