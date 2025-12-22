@@ -13,7 +13,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
-import { ArrowUpDown, ChevronDown, Copy, Eye, Package2, Pencil, Trash2, UsersRound } from "lucide-react";
+import { ArrowUpDown, ChevronDown } from "lucide-react";
 // import lowFlag from '../../assets/dashboard/lowFlag.svg'
 // import mediumFlag from '../../assets/dashboard/mediumFlag.svg'
 // import noneFlag from '../../assets/dashboard/noneFlag.svg'
@@ -27,6 +27,12 @@ import FilterButton from "@/components/Common/FilterButton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { format } from "date-fns";
 import { IProject } from "@/types/type";
+import EyeIcon from "@/components/Icons/EyeIcon";
+import EditIcon from "@/components/Icons/FilterOptionIcon/EditIcon";
+import DuplicateIcon from "@/components/Icons/FilterOptionIcon/DuplicateIcon";
+import ArchiveIcon from "@/components/Icons/FilterOptionIcon/ArchiveIcon";
+import DeleteIcon from "@/components/Icons/DeleteIcon";
+import MemberIcon from "@/components/Icons/FilterOptionIcon/MemberIcon";
 
 
 const ProjectTable = ({ data }: { data: IProject[] }) => {
@@ -279,14 +285,14 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                             <div className="">
                                 <div className="space-y-2">
                                     <div onClick={() => handleRowClick(row?.original?.id)} className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                        <Eye size={18} />
+                                        <EyeIcon size={18} />
                                         <p>View Project</p>
                                     </div>
                                     <Dialog>
                                         <form>
                                             <DialogTrigger asChild>
                                                 <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                                    <Pencil size={18} />
+                                                    <EditIcon size={18} />
                                                     <p>Edit Project</p>
                                                 </div>
                                             </DialogTrigger>
@@ -294,19 +300,19 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                                         </form>
                                     </Dialog>
                                     <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                        <UsersRound size={18} />
+                                        <MemberIcon size={18} />
                                         <p>Manage member</p>
                                     </div>
                                     <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                        <Copy size={18} />
+                                        <DuplicateIcon size={18} />
                                         <p>Duplicate Project</p>
                                     </div>
                                     <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                        <Package2 size={18} />
+                                        <ArchiveIcon size={18} />
                                         <p>Archive Project</p>
                                     </div>
                                     <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                        <Trash2 size={18} />
+                                        <DeleteIcon size={18} />
                                         <p>Delete Project</p>
                                     </div>
                                 </div>
