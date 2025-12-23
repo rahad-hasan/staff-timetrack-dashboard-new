@@ -13,12 +13,16 @@ import PauseNotificationIcon from "@/components/Icons/PauseNotificationIcon";
 import SignOutIcon from "@/components/Icons/SignOutIcon";
 import { useRouter } from "next/navigation";
 import { clearSessionCookie } from "@/actions/auth/action";
+import { useLogInUserStore } from "@/store/logInUserStore";
 
 const ProfilePopoverContent = ({ side, align }: { side: "top" | "right" | "bottom" | "left", align: "center" | "end" | "start" }) => {
     const router = useRouter();
+    const { resetData } = useLogInUserStore();
+
     const handleLogOut = async () => {
         try {
             await clearSessionCookie();
+            resetData();
             router.refresh();
             router.push('/auth/login');
         } catch (error) {

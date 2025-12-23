@@ -11,7 +11,7 @@ export const getMembers = async (query = {}):Promise<IResponse<IMember[]>> => {
     });
 };
 
-export const getMembersForProject = async () => {
+export const getMembersDashboard = async () => {
     return await baseApi(`/dashboard/members`);
 };
 

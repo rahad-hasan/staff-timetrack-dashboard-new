@@ -1,3 +1,4 @@
+"use client"
 import MonthPicker from "@/components/Common/MonthPicker";
 import { useState } from "react";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";

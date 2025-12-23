@@ -36,7 +36,7 @@ import { ChevronDownIcon, CircleUserRound, } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 
-const CreateTaskModal = () => {
+const CreateTaskModal = ({ onClose }: { onClose: () => void }) => {
     const client = ["Orbit Project", "App Redesign", "Marketing Campaign", "New Website"];
     const manager = ["Website Design", "Working on App Design", "New Landing Page", "Work on helsenist Project"];
     const [managerSearch, setManagerSearch] = useState("");

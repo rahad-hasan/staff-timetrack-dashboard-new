@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+"use client"
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -6,33 +7,6 @@ import { useMemo, useState } from "react";
 
 const ReportDailyTimeSheet = () => {
     console.log("ReportDailyTimeSheet");
-    const users = [
-        {
-            value: "Juyed Ahmed",
-            label: "Juyed Ahmed",
-            avatar: "https://avatar.iran.liara.run/public/18",
-        },
-        {
-            value: "Cameron Williamson",
-            label: "Cameron Williamson",
-            avatar: "https://avatar.iran.liara.run/public/19",
-        },
-        {
-            value: "Jenny Wilson",
-            label: "Jenny Wilson",
-            avatar: "https://avatar.iran.liara.run/public/20",
-        },
-        {
-            value: "Esther Howard",
-            label: "Esther Howard",
-            avatar: "https://avatar.iran.liara.run/public/21",
-        },
-        {
-            value: "Walid Ahmed",
-            label: "Walid Ahmed",
-            avatar: "https://avatar.iran.liara.run/public/22",
-        },
-    ]
 
     // date picker
     const [selectedDate, setSelectedDate] = useState(new Date());
@@ -191,7 +165,7 @@ const ReportDailyTimeSheet = () => {
         <div className="">
             <div className="mb-5 flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between">
                 <SpecificDatePicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></SpecificDatePicker>
-                <SelectUserDropDown users={users}></SelectUserDropDown>
+                <SelectUserDropDown></SelectUserDropDown>
             </div>
 
             <div className="  overflow-x-auto">

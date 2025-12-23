@@ -19,28 +19,19 @@ import loginIcon from '../../../assets/auth/loginIcon.svg'
 import Image from "next/image";
 import logo from '../../../assets/logo.svg'
 import signInImage from '../../../assets/auth/signImage.webp'
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner"
-import Cookies from "js-cookie";
 import { logIn } from "@/actions/auth/action";
+import { useLogInUserStore } from "@/store/logInUserStore";
 
 const SignIn = () => {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [currentSlide, setCurrentSlide] = useState(0);
     const router = useRouter();
-    // session expire
-    const params = useSearchParams();
-    const reason = params.get("reason");
-    useEffect(() => {
-        if (reason === "session_expired") {
-            toast.error("Session expired. Please login again.");
-            Cookies.remove("refreshToken");
-        }
-    }, [reason]);
 
     const form = useForm<z.infer<typeof loginSchema>>({
         resolver: zodResolver(loginSchema),
@@ -58,6 +49,7 @@ const SignIn = () => {
     // const currentError = useAuthStore.getState().error;
     // console.log(getUser());
     // console.log(getError());
+    const { setLogInUserData } = useLogInUserStore();
 
     async function onSubmit(values: z.infer<typeof loginSchema>) {
         setLoading(true);
@@ -69,6 +61,15 @@ const SignIn = () => {
                 // Cookies.set("accessToken", res?.data?.accessToken);
                 // Cookies.set("refreshToken", res?.data?.refreshToken);
                 toast.success(res?.message || "Login successful");
+                setLogInUserData({
+                    id: res?.data?.id,
+                    name: res?.data?.name,
+                    email: res?.data?.email,
+                    role: res?.data?.role,
+                    phone: res?.data?.phone,
+                    pay_rate_hourly: res?.data?.pay_rate_hourly,
+                    timezone: res?.data?.timezone,
+                })
                 router.push("/dashboard");
             } else {
                 toast.error(res?.message || "Invalid credentials");

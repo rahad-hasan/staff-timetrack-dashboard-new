@@ -33,7 +33,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { MultiSelect, MultiSelectContent, MultiSelectGroup, MultiSelectItem, MultiSelectTrigger, MultiSelectValue } from "@/components/ui/multi-select";
 import { useProjectFormStore } from "@/store/ProjectFormStore";
 import { getClients } from "@/actions/clients/action";
-import { getMembersForProject } from "@/actions/members/action";
+import { getMembersDashboard } from "@/actions/members/action";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface GeneralInfoStepProps {
@@ -69,7 +69,7 @@ const GeneralInfoStep = ({ setStep }: GeneralInfoStepProps) => {
         const loadMembers = async () => {
             setLoading(true);
             try {
-                const res = await getMembersForProject();
+                const res = await getMembersDashboard();
                 if (res?.success) {
                     setMembers(res.data);
                 }

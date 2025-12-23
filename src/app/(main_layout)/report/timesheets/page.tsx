@@ -1,25 +1,22 @@
-"use client"
 import DayWeekMonthSelection from "@/components/Common/DayWeekMonthSelection";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import ReportDailyTimeSheet from "@/components/Report/TimeSheets/ReportDailyTimeSheet";
 import ReportMonthlyTimeSheet from "@/components/Report/TimeSheets/ReportMonthlyTimeSheet";
 import ReportWeeklyTimeSheet from "@/components/Report/TimeSheets/ReportWeeklyTimeSheet";
-import { useState } from "react";
+import { ISearchParamsProps } from "@/types/type";
 
-const ReportTimeSheets = () => {
+const ReportTimeSheets = async ({ searchParams }: ISearchParamsProps) => {
     console.log("ReportTimeSheets");
-    const [activeTab, setActiveTab] = useState<"Daily" | "Weekly" | "Monthly">("Daily");
-
-    const handleTabClick = (tab: "Daily" | "Weekly" | "Monthly") => {
-        setActiveTab(tab);
-    };
+    const params = await searchParams;
+    type Tab = "Daily" | "Weekly" | "Monthly";
+    const activeTab = (params?.tab as Tab) ?? "Daily";
 
     return (
         <div>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5">
                 <HeadingComponent heading="All Timesheets" subHeading="All the timesheet by team member who completed is displayed here"></HeadingComponent>
 
-                <DayWeekMonthSelection activeTab={activeTab} handleTabClick={handleTabClick}></DayWeekMonthSelection>
+                <DayWeekMonthSelection></DayWeekMonthSelection>
             </div>
             {
                 activeTab === "Daily" &&

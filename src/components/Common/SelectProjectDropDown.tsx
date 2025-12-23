@@ -16,7 +16,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import DownArrow from "../Icons/DownArrow"
 import { getProjects } from "@/actions/projects/action"
@@ -61,12 +61,12 @@ const SelectProjectDropDown = () => {
 
     }, [searchInput])
 
-    useEffect(() => {
-        // If there are any search params at all, clear them on mount
-        if (searchParams.toString()) {
-            router.replace(pathname, { scroll: false });
-        }
-    }, []);
+    // useEffect(() => {
+    //     // If there are any search params at all, clear them on mount
+    //     if (searchParams.toString()) {
+    //         router.replace(pathname, { scroll: false });
+    //     }
+    // }, []);
 
     const handleSelect = (currentValue: string) => {
         const params = new URLSearchParams(searchParams.toString());
@@ -144,4 +144,4 @@ const SelectProjectDropDown = () => {
     );
 };
 
-export default SelectProjectDropDown;
+export default React.memo(SelectProjectDropDown);

@@ -16,35 +16,34 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
-import { useEffect, useState } from "react"
+import React, { useEffect, useState, useMemo } from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import DownArrow from "../Icons/DownArrow"
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
-import { getMembers } from "@/actions/members/action"
+import { getMembersDashboard } from "@/actions/members/action"
 
 const SelectUserDropDown = () => {
     const [value, setValue] = useState<string | null>(null)
     const [open, setOpen] = useState(false)
     const [users, setUsers] = useState<any[]>([])
     const [loading, setLoading] = useState(false)
+    
+    // searchInput is now used ONLY for the controlled input, not for triggering API
     const [searchInput, setSearchInput] = useState("")
 
     const router = useRouter()
     const pathname = usePathname()
-    console.log('sdfdsflsdjflsdjf', pathname);
     const searchParams = useSearchParams()
 
-    // 2. Fetch Users with Debounce
+    // 1. Fetch Users ONCE on mount
     useEffect(() => {
         const fetchMembers = async () => {
             setLoading(true)
             try {
-                // Fetch members based on search input
-                const res = await getMembers({ search: searchInput })
-
+                const res = await getMembersDashboard()
                 if (res?.success) {
                     const formatted = res?.data?.map((u: any) => ({
-                        value: String(u?.name), // Using name as requested for the value
+                        id: String(u?.id), 
                         label: u?.name,
                         avatar: u?.image || u?.avatar || ""
                     }))
@@ -56,27 +55,24 @@ const SelectUserDropDown = () => {
                 setLoading(false)
             }
         }
-
         fetchMembers()
-    }, [searchInput])
+    }, []) // Empty dependency array = only runs once
 
-    useEffect(() => {
-        // If there are any search params at all, clear them on mount
-        if (searchParams.toString()) {
-            router.replace(pathname, { scroll: false });
-        }
-    }, []);
+    // Memoize selected user for display efficiency
+    const selectedUser = useMemo(() => 
+        users.find((u) => u.id === value), 
+    [users, value])
 
-    // 3. Update URL and Local State on Selection
-    const handleSelect = (currentValue: string) => {
+    const handleSelect = (currentId: string) => {
         const params = new URLSearchParams(searchParams.toString())
 
-        if (currentValue === value) {
-            setValue("")
+        if (currentId === value) {
+            setValue(null)
             params.delete("user_name")
         } else {
-            setValue(currentValue)
-            params.set("user_name", currentValue)
+            setValue(currentId)
+            // Assuming you want the ID or Label in the URL:
+            params.set("user_name", currentId) 
         }
 
         router.push(`${pathname}?${params.toString()}`, { scroll: false })
@@ -93,16 +89,16 @@ const SelectUserDropDown = () => {
                     className="w-full sm:w-[250px] h-10 bg-[#f6f7f9] flex justify-between items-center gap-2 dark:border-darkBorder dark:text-darkTextPrimary dark:bg-darkPrimaryBg hover:dark:bg-darkPrimaryBg"
                 >
                     <div className="flex justify-between items-center gap-3">
-                        {value && (
+                        {selectedUser && (
                             <Avatar className="w-6 h-6">
-                                <AvatarImage src={users.find((u) => u?.value === value)?.avatar} alt={value} />
+                                <AvatarImage src={selectedUser.avatar} alt={selectedUser.label} />
                                 <AvatarFallback className="bg-gray-100">
-                                    {users.find((u) => u.value === value)?.label?.charAt(0)}
+                                    {selectedUser.label?.charAt(0)}
                                 </AvatarFallback>
                             </Avatar>
                         )}
                         <span className="truncate max-w-[150px]">
-                            {value ? users.find((u) => u.value === value)?.label : "Select User..."}
+                            {selectedUser ? selectedUser.label : "Select User..."}
                         </span>
                     </div>
                     <DownArrow size={16} />
@@ -110,8 +106,8 @@ const SelectUserDropDown = () => {
             </PopoverTrigger>
 
             <PopoverContent className="sm:w-[250px] p-0 dark:bg-darkSecondaryBg">
-                {/* Important: shouldFilter={false} to allow server-side results to show */}
-                <Command shouldFilter={false} className="dark:bg-darkSecondaryBg">
+                {/* 2. REMOVED shouldFilter={false} to enable default local search */}
+                <Command className="dark:bg-darkSecondaryBg">
                     <CommandInput
                         placeholder="Search User..."
                         className="h-9"
@@ -123,9 +119,10 @@ const SelectUserDropDown = () => {
                         <CommandGroup>
                             {users.map((user: any) => (
                                 <CommandItem
-                                    key={user?.value}
-                                    value={user?.label}
-                                    onSelect={() => handleSelect(user?.value)}
+                                    key={user.id}
+                                    // 3. The value prop here is what the local search filters against
+                                    value={user.label} 
+                                    onSelect={() => handleSelect(user.id)}
                                     className="cursor-pointer hover:dark:bg-darkPrimaryBg"
                                 >
                                     <Avatar className="w-6 h-6 mr-2">
@@ -136,7 +133,7 @@ const SelectUserDropDown = () => {
                                     <Check
                                         className={cn(
                                             "ml-auto h-4 w-4",
-                                            value === user?.value ? "opacity-100" : "opacity-0"
+                                            value === user.id ? "opacity-100" : "opacity-0"
                                         )}
                                     />
                                 </CommandItem>
@@ -149,4 +146,4 @@ const SelectUserDropDown = () => {
     )
 }
 
-export default SelectUserDropDown
+export default React.memo(SelectUserDropDown);

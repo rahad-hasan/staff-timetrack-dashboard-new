@@ -1,7 +1,7 @@
 "use client"
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import SearchBar from "@/components/Common/SearchBar";
 import {
     Dialog,
@@ -14,7 +14,7 @@ import HeadingComponent from "@/components/Common/HeadingComponent";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 const TaskHeroSection = () => {
-
+    const [open, setOpen] = useState(false)
     type Tab = "List view" | "Kanban";
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -33,7 +33,7 @@ const TaskHeroSection = () => {
         params.set("page", "1"); // reset pagination if needed
         router.push(`?${params.toString()}`);
     };
-    
+
     useEffect(() => {
         // If there are any search params at all, clear them on mount
         if (searchParams.toString()) {
@@ -65,12 +65,12 @@ const TaskHeroSection = () => {
                         </div>
                     </div>
 
-                    <Dialog>
+                    <Dialog open={open} onOpenChange={setOpen}>
                         <form>
                             <DialogTrigger asChild>
                                 <Button className=""><Plus className="size-5" /> <span className=" hidden sm:block">Create Task</span></Button>
                             </DialogTrigger>
-                            <CreateTaskModal></CreateTaskModal>
+                            <CreateTaskModal onClose={() => setOpen(false)}></CreateTaskModal>
                         </form>
                     </Dialog>
 
