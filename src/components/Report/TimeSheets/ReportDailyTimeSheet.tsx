@@ -3,20 +3,23 @@
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { useMemo, useState } from "react";
+import { useLogInUserStore } from "@/store/logInUserStore";
+import { useMemo } from "react";
+import { format } from 'date-fns';
+import { CheckCircle2, ClipboardList, Clock, MousePointer2, RefreshCcw } from "lucide-react";
 
-const ReportDailyTimeSheet = () => {
-    console.log("ReportDailyTimeSheet");
+const ReportDailyTimeSheet = ({ dailyTimeEntry }: any) => {
+    console.log("ReportDailyTimeSheet", dailyTimeEntry);
+    const { logInUserData } = useLogInUserStore(state => state);
+    console.log('user getting from store', logInUserData);
+    const taskEntries = dailyTimeEntry?.data ?? []
 
-    // date picker
-    const [selectedDate, setSelectedDate] = useState(new Date());
-
-    const taskEntries = [
-        { project: 'Project Alpha', startTime: '05:34', endTime: '09:19', color: 'yellow' },
-        { project: 'Project Alpha', startTime: '07:34', endTime: '10:19', color: 'yellow' },
-        { project: 'Project Beta', startTime: '14:41', endTime: '16:31', color: 'amber' },
-        { project: 'Project Gamma', startTime: '17:55', endTime: '19:05', color: 'yellow' },
-    ];
+    // const taskEntries = [
+    //     { project: 'Project Alpha', start_time: '05:34', end_time: '09:19', color: 'yellow' },
+    //     { project: 'Project Alpha', start_time: '07:34', end_time: '10:19', color: 'yellow' },
+    //     { project: 'Project Beta', start_time: '14:41', end_time: '16:31', color: 'amber' },
+    //     { project: 'Project Gamma', start_time: '17:55', end_time: '19:05', color: 'yellow' },
+    // ];
 
     // Time sheet timeline calculations
     const TOTAL_MINUTES_IN_DAY = 24 * 60; // 1440
@@ -27,21 +30,24 @@ const ReportDailyTimeSheet = () => {
         return hours * 60 + minutes;
     };
 
-    const getDurationMinutes = (startTime: string, endTime: string) => {
-        return timeToMinutes(endTime) - timeToMinutes(startTime);
+    const getDurationMinutes = (start_time: string, end_time: string) => {
+        return timeToMinutes(format(new Date(end_time), 'HH:mm')) - timeToMinutes(format(new Date(start_time), 'HH:mm'));
     };
 
     const tasksWithLayout = useMemo(() => {
         const sortedTasks = [...taskEntries].sort((a, b) =>
-            timeToMinutes(a.startTime) - timeToMinutes(b.startTime)
+            // timeToMinutes(a.start_time) - timeToMinutes(b.start_time)
+            timeToMinutes(format(new Date(a.start_time), 'HH:mm')) - timeToMinutes(format(new Date(b.start_time), 'HH:mm'))
         );
 
         const tracks: any = []; // tracks means columns
 
         const tasksWithTrack = sortedTasks.map(task => {
-            const currentTaskStart = timeToMinutes(task.startTime);
-            const currentTaskEnd = timeToMinutes(task.endTime);
+            const currentTaskStart = timeToMinutes(format(new Date(task.start_time), 'HH:mm'));
+            const currentTaskEnd = timeToMinutes(format(new Date(task.end_time), 'HH:mm'));
 
+            console.log('currentTaskStart', currentTaskStart);
+            console.log('currentTaskEnd', currentTaskEnd);
             let assignedTrackIndex = -1;
 
             for (let i = 0; i < tracks.length; i++) {
@@ -62,11 +68,9 @@ const ReportDailyTimeSheet = () => {
                 ...task,
                 trackIndex: assignedTrackIndex,
                 startMinutes: currentTaskStart,
-                durationMinutes: getDurationMinutes(task.startTime, task.endTime),
+                durationMinutes: getDurationMinutes(task.start_time, task.end_time),
             };
         });
-        console.log('tasksWithTrack', tasksWithTrack);
-        console.log('tracks', tracks);
 
         const maxTracks = tracks.length;
 
@@ -89,31 +93,34 @@ const ReportDailyTimeSheet = () => {
 
     const timeLineHours = Array.from({ length: 24 }, (_, i) => i);
 
-    type TimelineEntryProps = {
-        project: string;
-        startTime: string;
-        endTime: string;
-        color?: string;
-        topPosition: number;
-        heightPercentage: number;
-        leftPercentage: number;
-        widthPercentage: number;
-        trackIndex: number;
-        maxTracks: number;
-    };
-    const TimelineEntry = ({ project, startTime, endTime, color, topPosition, heightPercentage, leftPercentage, widthPercentage, trackIndex, maxTracks }: TimelineEntryProps) => {
+    // type TimelineEntryProps = {
+    //     project: string;
+    //     start_time: string;
+    //     endTime: string;
+    //     color?: string;
+    //     topPosition: number;
+    //     heightPercentage: number;
+    //     leftPercentage: number;
+    //     widthPercentage: number;
+    //     trackIndex: number;
+    //     maxTracks: number;
+    // };
+    const TimelineEntry = ({ project, start_time, end_time, topPosition, heightPercentage, leftPercentage, widthPercentage, trackIndex, maxTracks, index, duration, system_update, status, timeEntry, task }: any) => {
 
         const baseClasses = 'absolute p-2 text-xs font-medium rounded-lg border-l-4 shadow-lg z-10 transition-all duration-300 hover:shadow-xl';
-        let colorClasses;
+        // let colorClasses;
 
-        if (color === 'yellow') {
-            colorClasses = 'bg-[#fff5db] text-black border-yellow-400';
-        } else {
-            colorClasses = 'bg-[#fee6eb] text-black border-red-500';
-        }
+        // if (color === 'yellow') {
+        //     colorClasses = 'bg-[#fff5db] text-black border-yellow-400';
+        // } else {
+        //     colorClasses = 'bg-[#fee6eb] text-black border-red-500';
+        // }
+        const colorClasses = index % 2 === 0
+            ? 'bg-[#fff5db] text-black border-yellow-400'
+            : 'bg-[#fee6eb] text-black border-red-500';
 
-        const formattedStartTime = startTime;
-        const formattedEndTime = endTime;
+        const formattedStartTime = format(new Date(start_time), 'HH:mm');
+        const formattedEndTime = format(new Date(end_time), 'HH:mm');
         const marginLeftPx = trackIndex === 0 ? 1 : 2;
 
         // return (
@@ -129,7 +136,7 @@ const ReportDailyTimeSheet = () => {
         //     >
         //         <div className="">{project}</div>
         //         <div className="font-normal text-base opacity-80 mt-1">
-        //             {formattedStartTime} - {formattedEndTime}
+        //             {formattedstart_time} - {formattedEndTime}
         //         </div>
         //     </div>
         // );
@@ -147,14 +154,72 @@ const ReportDailyTimeSheet = () => {
                             minHeight: '2rem'
                         }}
                     >
-                        <div className="">{project}</div>
+                        <div className="">{project?.name}</div>
                         <div className="font-normal text-base opacity-80 mt-1">
                             {formattedStartTime} - {formattedEndTime}
                         </div>
                     </div>
                 </TooltipTrigger>
-                <TooltipContent className="bg-[#868686] dark:bg-darkPrimaryBg dark:fill-darkPrimaryBg shadow-xl rounded-lg px-5 py-4 max-w-xs">
-                    <p>Looking for Info</p>
+
+                <TooltipContent className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-800 shadow-2xl rounded-xl p-0 overflow-hidden max-w-[280px]">
+                    {/* Header Section */}
+                    <div className="bg-gray-50 dark:bg-gray-900 px-4 py-3 border-b border-gray-100 dark:border-gray-800">
+                        <div className="flex items-center gap-2">
+                            <ClipboardList className="w-4 h-4 text-blue-500" />
+                            <span className="font-bold text-sm text-gray-900 dark:text-gray-100 truncate">
+                                {project?.name || "No Project"}
+                            </span>
+                        </div>
+                        <p className="text-[11px] text-gray-500 mt-0.5 ml-6">{task?.name || "No Task Name"}</p>
+                    </div>
+
+                    {/* Details Section */}
+                    <div className="p-4 space-y-3">
+                        {/* Duration */}
+                        <div className="flex items-center justify-between text-xs">
+                            <div className="flex items-center gap-2 text-gray-500">
+                                <Clock className="w-3.5 h-3.5" />
+                                <span>Duration</span>
+                            </div>
+                            <span className="font-semibold text-gray-700 dark:text-gray-300">{duration}</span>
+                        </div>
+
+                        {/* Status */}
+                        <div className="flex items-center justify-between text-xs">
+                            <div className="flex items-center gap-2 text-gray-500">
+                                <CheckCircle2 className="w-3.5 h-3.5" />
+                                <span>Status</span>
+                            </div>
+                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${status === 'Completed' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'
+                                }`}>
+                                {status}
+                            </span>
+                        </div>
+
+                        {/* Last Updated */}
+                        <div className="flex items-center justify-between text-xs">
+                            <div className="flex items-center gap-2 text-gray-500">
+                                <RefreshCcw className="w-3.5 h-3.5" />
+                                <span>Updated</span>
+                            </div>
+                            <span className="text-gray-600 dark:text-gray-400">{system_update}</span>
+                        </div>
+
+                        {/* Manual Entry Boolean Logic */}
+                        <div className="pt-2 border-t border-gray-100 dark:border-gray-800 flex items-center gap-2 text-[10px]">
+                            {timeEntry?.is_manual_entry ? (
+                                <div className="flex items-center gap-1.5 text-amber-600 font-medium">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                                    Manual Entry
+                                </div>
+                            ) : (
+                                <div className="flex items-center gap-1.5 text-blue-600 font-medium">
+                                    <MousePointer2 className="w-3 h-3" />
+                                    System Tracked
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </TooltipContent>
             </Tooltip>
 
@@ -164,8 +229,8 @@ const ReportDailyTimeSheet = () => {
     return (
         <div className="">
             <div className="mb-5 flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between">
-                <SpecificDatePicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></SpecificDatePicker>
-                <SelectUserDropDown></SelectUserDropDown>
+                <SpecificDatePicker></SpecificDatePicker>
+                <SelectUserDropDown userId={logInUserData?.id}></SelectUserDropDown>
             </div>
 
             <div className="  overflow-x-auto">
@@ -202,6 +267,7 @@ const ReportDailyTimeSheet = () => {
                         {tasksWithLayout.map((entry, index) => (
                             <TimelineEntry
                                 key={index}
+                                index={index}
                                 {...entry}
                             />
                         ))}

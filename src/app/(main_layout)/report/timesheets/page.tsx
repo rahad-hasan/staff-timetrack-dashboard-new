@@ -1,3 +1,4 @@
+import { getTimeEntry } from "@/actions/report/action";
 import DayWeekMonthSelection from "@/components/Common/DayWeekMonthSelection";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import ReportDailyTimeSheet from "@/components/Report/TimeSheets/ReportDailyTimeSheet";
@@ -10,7 +11,14 @@ const ReportTimeSheets = async ({ searchParams }: ISearchParamsProps) => {
     const params = await searchParams;
     type Tab = "Daily" | "Weekly" | "Monthly";
     const activeTab = (params?.tab as Tab) ?? "Daily";
-
+    let dailyTimeEntry = null;
+    if (params.date && params.user_id) {
+        dailyTimeEntry = await getTimeEntry({
+            date: params.date as string,
+            user_id: Number(params.user_id),
+        });
+    }
+    console.log('testing rendering every render');
     return (
         <div>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5">
@@ -20,7 +28,7 @@ const ReportTimeSheets = async ({ searchParams }: ISearchParamsProps) => {
             </div>
             {
                 activeTab === "Daily" &&
-                <ReportDailyTimeSheet></ReportDailyTimeSheet>
+                <ReportDailyTimeSheet dailyTimeEntry={dailyTimeEntry}></ReportDailyTimeSheet>
             }
             {
                 activeTab === "Weekly" &&

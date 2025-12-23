@@ -23,8 +23,8 @@ const ProfilePopoverContent = ({ side, align }: { side: "top" | "right" | "botto
         try {
             await clearSessionCookie();
             resetData();
-            router.refresh();
             router.push('/auth/login');
+            router.refresh();
         } catch (error) {
             console.error("Logout failed:", error);
         }

@@ -4,7 +4,7 @@ import { useState } from "react";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 
 const ReportMonthlyTimeSheet = () => {
-    console.log("ReportMonthlyTimeSheet");
+    console.log("ReportMonthlyTimeSheet😐😐😐");
     type DayMeta = { name: string };
     const days: DayMeta[] = [
         { name: 'MON' },
@@ -49,7 +49,7 @@ const ReportMonthlyTimeSheet = () => {
     };
 
     const weeks = chunkArray(calendarData, ROWS_PER_WEEK);
-    console.log(weeks);
+
     // month picker
     const [selectedDate, setSelectedDate] = useState(new Date());
 

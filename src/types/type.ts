@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface IMeta {
   page: number;
   limit: number;
@@ -149,5 +150,31 @@ export interface ITask {
 export type ISearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
 export interface ISearchParamsProps {
-    searchParams: ISearchParams;
+  searchParams: ISearchParams;
+}
+
+
+export interface ITimeSheetEntry {
+  id: number;
+  company_id: number;
+  user_id: number;
+  project_id: number;
+  task_id: number | null;
+  time_entries_id: number;
+  start_time: string;
+  end_time: string;
+  duration: number;
+  system_update: string;
+  status: 'pending' | 'processing' | 'complete' | 'cancelled';
+  updated_at: string;
+  created_at: string;
+  project: {
+    id: number;
+    name: string;
+  };
+  task: any | null;
+  timeEntry: {
+    id: number;
+    is_manual_entry: boolean;
+  };
 }

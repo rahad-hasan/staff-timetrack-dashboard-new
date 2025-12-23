@@ -5,17 +5,18 @@ import Image from 'next/image';
 // import { useEffect, useState } from 'react';
 import { othersSidebarItems, sidebarItems } from '@/utils/SidebarItems';
 import { useSidebarStore } from '@/store/sidebarStore';
-import { usePathname } from 'next/navigation';
+// import { usePathname } from 'next/navigation';
 import SidebarItem from './sidebar/SidebarItem';
 import SubItem from './sidebar/SubItem';
 import TrialCart from './sidebar/TrialCart';
 import timerLogo from '../../assets/timerLogo.svg'
 import CollapsedIcon from '../Icons/CollapsedIcon';
 import clsx from 'clsx';
+import React from 'react';
 
 const SideBar = () => {
-    const pathname = usePathname();
-    console.log(pathname);
+    // const pathname = usePathname();
+    // console.log(pathname);
     const {
         openMenu,
         activeMenu,
@@ -26,8 +27,8 @@ const SideBar = () => {
         toggleCollapse,
     } = useSidebarStore();
 
-    console.log('isCollapsed', isCollapsed);
-    console.log('openMenu', openMenu);
+    // console.log('isCollapsed', isCollapsed);
+    // console.log('openMenu', openMenu);
 
     return (
         <div className='sticky top-0 z-[50]'>
@@ -150,4 +151,4 @@ const SideBar = () => {
     );
 };
 
-export default SideBar;
+export default React.memo(SideBar);

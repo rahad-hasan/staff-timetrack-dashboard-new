@@ -22,20 +22,20 @@ import DownArrow from "../Icons/DownArrow"
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { getMembersDashboard } from "@/actions/members/action"
 
-const SelectUserDropDown = () => {
-    const [value, setValue] = useState<string | null>(null)
+const SelectUserDropDown = ({ userId }: { userId?: string | number }) => {
+    console.log("userId", userId);
+    console.log('render😐😐😐😐😐');
+    const [value, setValue] = useState<string | null>(userId ? String(userId) : null)
     const [open, setOpen] = useState(false)
     const [users, setUsers] = useState<any[]>([])
     const [loading, setLoading] = useState(false)
-    
-    // searchInput is now used ONLY for the controlled input, not for triggering API
+
     const [searchInput, setSearchInput] = useState("")
 
     const router = useRouter()
     const pathname = usePathname()
     const searchParams = useSearchParams()
 
-    // 1. Fetch Users ONCE on mount
     useEffect(() => {
         const fetchMembers = async () => {
             setLoading(true)
@@ -43,7 +43,7 @@ const SelectUserDropDown = () => {
                 const res = await getMembersDashboard()
                 if (res?.success) {
                     const formatted = res?.data?.map((u: any) => ({
-                        id: String(u?.id), 
+                        id: String(u?.id),
                         label: u?.name,
                         avatar: u?.image || u?.avatar || ""
                     }))
@@ -56,23 +56,46 @@ const SelectUserDropDown = () => {
             }
         }
         fetchMembers()
-    }, []) // Empty dependency array = only runs once
+    }, [])
 
     // Memoize selected user for display efficiency
-    const selectedUser = useMemo(() => 
-        users.find((u) => u.id === value), 
-    [users, value])
+    const selectedUser = useMemo(() =>
+        users.find((u) => u.id === value),
+        [users, value])
+
+
+    // Sync internal state AND URL parameters when userId prop is available
+    useEffect(() => {
+        const params = new URLSearchParams(searchParams.toString());
+
+        if (userId) {
+            const stringId = String(userId);
+            setValue(stringId);
+
+            // Only update URL if it's not already set to this ID to avoid infinite loops
+            if (params.get("user_id") !== stringId) {
+                params.set("user_id", stringId);
+                router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+            }
+        } else {
+            // Optional: If you want to clear the URL when the prop is null
+            if (params.has("user_id")) {
+                setValue(null);
+                router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+            }
+        }
+    }, [userId, pathname, router]); // searchParams is omitted to prevent unnecessary triggers
+
 
     const handleSelect = (currentId: string) => {
         const params = new URLSearchParams(searchParams.toString())
 
         if (currentId === value) {
             setValue(null)
-            params.delete("user_name")
+            params.delete("user_id")
         } else {
             setValue(currentId)
-            // Assuming you want the ID or Label in the URL:
-            params.set("user_name", currentId) 
+            params.set("user_id", currentId)
         }
 
         router.push(`${pathname}?${params.toString()}`, { scroll: false })
@@ -106,7 +129,6 @@ const SelectUserDropDown = () => {
             </PopoverTrigger>
 
             <PopoverContent className="sm:w-[250px] p-0 dark:bg-darkSecondaryBg">
-                {/* 2. REMOVED shouldFilter={false} to enable default local search */}
                 <Command className="dark:bg-darkSecondaryBg">
                     <CommandInput
                         placeholder="Search User..."
@@ -120,8 +142,7 @@ const SelectUserDropDown = () => {
                             {users.map((user: any) => (
                                 <CommandItem
                                     key={user.id}
-                                    // 3. The value prop here is what the local search filters against
-                                    value={user.label} 
+                                    value={user.label}
                                     onSelect={() => handleSelect(user.id)}
                                     className="cursor-pointer hover:dark:bg-darkPrimaryBg"
                                 >
