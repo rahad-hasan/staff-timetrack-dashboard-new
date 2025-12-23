@@ -41,34 +41,6 @@ const TaskHeroSection = () => {
         }
     }, []);
 
-    const users = [
-        {
-            value: "Juyed Ahmed",
-            label: "Juyed Ahmed",
-            avatar: "https://avatar.iran.liara.run/public/18",
-        },
-        {
-            value: "Cameron Williamson",
-            label: "Cameron Williamson",
-            avatar: "https://avatar.iran.liara.run/public/19",
-        },
-        {
-            value: "Jenny Wilson",
-            label: "Jenny Wilson",
-            avatar: "https://avatar.iran.liara.run/public/20",
-        },
-        {
-            value: "Esther Howard",
-            label: "Esther Howard",
-            avatar: "https://avatar.iran.liara.run/public/21",
-        },
-        {
-            value: "Walid Ahmed",
-            label: "Walid Ahmed",
-            avatar: "https://avatar.iran.liara.run/public/22",
-        },
-    ]
-
 
     return (
         <div>
@@ -109,7 +81,7 @@ const TaskHeroSection = () => {
                     <SelectProjectDropDown></SelectProjectDropDown>
                     <div className=" flex items-center gap-3 w-full">
                         <div className=" w-full">
-                            <SelectUserDropDown users={users}></SelectUserDropDown>
+                            <SelectUserDropDown></SelectUserDropDown>
                         </div>
                         <div className=" block sm:hidden">
                             <SearchBar onSearch={handleSearch}></SearchBar>

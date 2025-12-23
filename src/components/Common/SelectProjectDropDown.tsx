@@ -37,7 +37,7 @@ const SelectProjectDropDown = () => {
 
     useEffect(() => {
         // Wait 500ms after the user stops typing before calling the action
-        const delayDebounceFn = setTimeout(async () => {
+        const fetchProjects = async () => {
             setLoading(true)
             try {
                 const res = await getProjects({ search: searchInput })
@@ -55,10 +55,18 @@ const SelectProjectDropDown = () => {
             } finally {
                 setLoading(false)
             }
-        }, 500)
+        }
 
-        return () => clearTimeout(delayDebounceFn)
+        fetchProjects()
+
     }, [searchInput])
+
+    useEffect(() => {
+        // If there are any search params at all, clear them on mount
+        if (searchParams.toString()) {
+            router.replace(pathname, { scroll: false });
+        }
+    }, []);
 
     const handleSelect = (currentValue: string) => {
         const params = new URLSearchParams(searchParams.toString());
