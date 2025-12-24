@@ -1,14 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
-import { useState } from "react";
 import WeeklyDatePicker from "@/components/Common/WeeklyDatePicker";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 
 
-const ReportWeeklyTimeSheet = () => {
-    console.log("ReportWeeklyTimeSheet");
-    // date picker
-    const [centerDate, setCenterDate] = useState(new Date());
+const ReportWeeklyTimeSheet = ({ dateBasedTimeEntry }: any) => {
+    console.log("ReportWeeklyTimeSheet", dateBasedTimeEntry?.data);
+
 
     // table data
     type DayMeta = { name: string };
@@ -28,15 +27,16 @@ const ReportWeeklyTimeSheet = () => {
     ];
     const rows: Row =
     {
-        times: [{ time: "8h 0m" }, { time: "8h 0m" }, { time: "-" }, { time: "-" }, { time: "8h 0m" }, { time: "8h 0m" }, { time: "-" }],
-        weekTotal: "7:00:00"
+        // times: [{ time: "8h 0m" }, { time: "8h 0m" }, { time: "-" }, { time: "-" }, { time: "8h 0m" }, { time: "8h 0m" }, { time: "-" }],
+        times: dateBasedTimeEntry?.data?.daily_data,
+        weekTotal:  dateBasedTimeEntry?.data?.total_time
     }
 
     return (
         <div>
             <div className="mb-5 flex flex-col gap-4 lg:gap-0 lg:flex-row justify-between">
                 <div className=" flex gap-3">
-                    <WeeklyDatePicker centerDate={centerDate} setCenterDate={setCenterDate} />
+                    <WeeklyDatePicker />
                     {/* <Button className=" hidden sm:flex text-headingTextColor dark:text-darkTextPrimary" variant={'filter'}>
                         <SlidersHorizontal className="text-headingTextColor dark:text-darkTextPrimary" /> Filters
                     </Button> */}
@@ -64,7 +64,9 @@ const ReportWeeklyTimeSheet = () => {
                                     key={i}
                                     className={`z-10 px-4 py-5 text-center ${i < rows.times.length - 1 ? 'border-r border-gray-200 dark:border-darkBorder' : ''}`}
                                 >
-                                    <h2 className=" text-lg text-primary font-medium">{time.time}</h2>
+                                    <h2 className="text-lg text-primary font-medium">
+                                        {time.duration.split(':').slice(0, 2).map((v, i) => parseInt(v) + (i === 0 ? 'h' : 'm')).join(' ')}
+                                    </h2>
                                 </td>
                             ))}
                         </tr>

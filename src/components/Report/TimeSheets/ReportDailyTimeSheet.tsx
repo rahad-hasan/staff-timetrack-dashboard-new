@@ -3,15 +3,12 @@
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { useLogInUserStore } from "@/store/logInUserStore";
 import { useMemo } from "react";
 import { differenceInMinutes, format } from 'date-fns';
 import { CheckCircle2, ClipboardList, Clock, MousePointer2, RefreshCcw } from "lucide-react";
 
 const ReportDailyTimeSheet = ({ dailyTimeEntry }: any) => {
     console.log("ReportDailyTimeSheet", dailyTimeEntry);
-    const { logInUserData } = useLogInUserStore(state => state);
-    console.log('user getting from store', logInUserData);
     const taskEntries = dailyTimeEntry?.data ?? []
 
     // const taskEntries = [
@@ -231,7 +228,7 @@ const ReportDailyTimeSheet = ({ dailyTimeEntry }: any) => {
         <div className="">
             <div className="mb-5 flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between">
                 <SpecificDatePicker></SpecificDatePicker>
-                <SelectUserDropDown userId={logInUserData?.id}></SelectUserDropDown>
+                <SelectUserDropDown></SelectUserDropDown>
             </div>
 
             <div className="  overflow-x-auto">

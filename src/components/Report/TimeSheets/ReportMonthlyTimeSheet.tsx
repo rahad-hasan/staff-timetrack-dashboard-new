@@ -39,7 +39,6 @@ const ReportMonthlyTimeSheet = () => {
 
     const ROWS_PER_WEEK = 7;
 
-
     const chunkArray = (array: CalendarDay[], chunkSize: number) => {
         const chunks = [];
         for (let i = 0; i < array.length; i += chunkSize) {
@@ -103,7 +102,6 @@ const ReportMonthlyTimeSheet = () => {
                     </tbody>
                 </table>
             </div>
-
         </div>
     );
 };

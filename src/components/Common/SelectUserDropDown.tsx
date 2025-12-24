@@ -21,85 +21,84 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import DownArrow from "../Icons/DownArrow"
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { getMembersDashboard } from "@/actions/members/action"
+import { useLogInUserStore } from "@/store/logInUserStore"
 
-const SelectUserDropDown = ({ userId }: { userId?: string | number }) => {
-    console.log("userId", userId);
-    console.log('render😐😐😐😐😐');
-    const [value, setValue] = useState<string | null>(userId ? String(userId) : null)
-    const [open, setOpen] = useState(false)
-    const [users, setUsers] = useState<any[]>([])
-    const [loading, setLoading] = useState(false)
+const SelectUserDropDown = ({ defaultSelect = true }: { defaultSelect?: boolean }) => {
+    const { logInUserData } = useLogInUserStore();
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
 
-    const [searchInput, setSearchInput] = useState("")
+    // 1. Initialize value from URL or null
+    const [value, setValue] = useState<string | null>(searchParams.get("user_id"));
+    const [open, setOpen] = useState(false);
+    const [users, setUsers] = useState<any[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [searchInput, setSearchInput] = useState("");
 
-    const router = useRouter()
-    const pathname = usePathname()
-    const searchParams = useSearchParams()
-
+    // 2. Fetch Members
     useEffect(() => {
         const fetchMembers = async () => {
-            setLoading(true)
+            setLoading(true);
             try {
-                const res = await getMembersDashboard()
+                const res = await getMembersDashboard();
                 if (res?.success) {
                     const formatted = res?.data?.map((u: any) => ({
                         id: String(u?.id),
                         label: u?.name,
                         avatar: u?.image || u?.avatar || ""
-                    }))
-                    setUsers(formatted)
+                    }));
+                    setUsers(formatted);
                 }
             } catch (err) {
-                console.error("Fetch members error:", err)
+                console.error("Fetch members error:", err);
             } finally {
-                setLoading(false)
+                setLoading(false);
             }
-        }
-        fetchMembers()
-    }, [])
+        };
+        fetchMembers();
+    }, []);
 
-    // Memoize selected user for display efficiency
-    const selectedUser = useMemo(() =>
-        users.find((u) => u.id === value),
-        [users, value])
-
-
-    // Sync internal state AND URL parameters when userId prop is available
+    // 3. Logic to handle Default Selection on Mount or Store Update
     useEffect(() => {
         const params = new URLSearchParams(searchParams.toString());
+        const urlId = params.get("user_id");
 
-        if (userId) {
-            const stringId = String(userId);
-            setValue(stringId);
-
-            // Only update URL if it's not already set to this ID to avoid infinite loops
-            if (params.get("user_id") !== stringId) {
-                params.set("user_id", stringId);
-                router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-            }
-        } else {
-            // Optional: If you want to clear the URL when the prop is null
-            if (params.has("user_id")) {
-                setValue(null);
-                router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-            }
+        // If there's already a URL ID, just sync local state to it
+        if (urlId) {
+            setValue(urlId);
+            return;
         }
-    }, [userId, pathname, router]); // searchParams is omitted to prevent unnecessary triggers
 
+        // If no URL ID, defaultSelect is true, and we have the logged-in user data
+        if (defaultSelect && logInUserData?.id) {
+            const userIdString = String(logInUserData.id);
+            setValue(userIdString);
+
+            // Update URL to match default selection
+            params.set("user_id", userIdString);
+            router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+        }
+    }, [logInUserData?.id, defaultSelect, pathname, router]);
+
+
+    const selectedUser = useMemo(() =>
+        users.find((u) => u.id === value),
+        [users, value]);
 
     const handleSelect = (currentId: string) => {
-        const params = new URLSearchParams(searchParams.toString())
+        const params = new URLSearchParams(searchParams.toString());
 
         if (currentId === value) {
-            setValue(null)
-            params.delete("user_id")
+            setValue(null);
+            params.delete("user_id");
         } else {
-            setValue(currentId)
-            params.set("user_id", currentId)
+            setValue(currentId);
+            params.set("user_id", currentId);
         }
 
-        router.push(`${pathname}?${params.toString()}`, { scroll: false })
-        setOpen(false)
+        router.push(`${pathname}?${params.toString()}`, { scroll: false });
+        setOpen(false);
     }
 
     return (
@@ -111,14 +110,21 @@ const SelectUserDropDown = ({ userId }: { userId?: string | number }) => {
                     aria-expanded={open}
                     className="w-full sm:w-[250px] h-10 bg-[#f6f7f9] flex justify-between items-center gap-2 dark:border-darkBorder dark:text-darkTextPrimary dark:bg-darkPrimaryBg hover:dark:bg-darkPrimaryBg"
                 >
-                    <div className="flex justify-between items-center gap-3">
+                    <div className="flex items-center gap-3 overflow-hidden">
                         {selectedUser && (
+
                             <Avatar className="w-6 h-6">
+
                                 <AvatarImage src={selectedUser.avatar} alt={selectedUser.label} />
+
                                 <AvatarFallback className="">
+
                                     {selectedUser.label?.charAt(0)}
+
                                 </AvatarFallback>
+
                             </Avatar>
+
                         )}
                         <span className="truncate max-w-[150px]">
                             {selectedUser ? selectedUser.label : "Select User..."}
@@ -146,14 +152,14 @@ const SelectUserDropDown = ({ userId }: { userId?: string | number }) => {
                                     onSelect={() => handleSelect(user.id)}
                                     className="cursor-pointer hover:dark:bg-darkPrimaryBg"
                                 >
-                                    <Avatar className="w-6 h-6 mr-2">
+                                    <Avatar className="w-6 h-6 mr-2 shrink-0">
                                         <AvatarImage src={user?.avatar} alt={user?.label} />
                                         <AvatarFallback>{user?.label.charAt(0)}</AvatarFallback>
                                     </Avatar>
-                                    {user?.label}
+                                    <span className="truncate">{user?.label}</span>
                                     <Check
                                         className={cn(
-                                            "ml-auto h-4 w-4",
+                                            "ml-auto h-4 w-4 shrink-0",
                                             value === user.id ? "opacity-100" : "opacity-0"
                                         )}
                                     />
