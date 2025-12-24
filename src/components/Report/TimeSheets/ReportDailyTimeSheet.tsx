@@ -5,7 +5,7 @@ import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import { useMemo } from "react";
-import { format } from 'date-fns';
+import { differenceInMinutes, format } from 'date-fns';
 import { CheckCircle2, ClipboardList, Clock, MousePointer2, RefreshCcw } from "lucide-react";
 
 const ReportDailyTimeSheet = ({ dailyTimeEntry }: any) => {
@@ -141,6 +141,13 @@ const ReportDailyTimeSheet = ({ dailyTimeEntry }: any) => {
         //     </div>
         // );
 
+        const formatTimeDuration = (startTime: string | number | Date, endTime: string | number | Date) => {
+            const mins = differenceInMinutes(new Date(endTime), new Date(startTime));
+            const h = Math.floor(mins / 60);
+            const m = mins % 60;
+            return h > 0 ? `${h}:${m.toString().padStart(2, '0')}h` : `${m}m`;
+        }
+
         return (
             <Tooltip>
                 <TooltipTrigger asChild>
@@ -161,59 +168,53 @@ const ReportDailyTimeSheet = ({ dailyTimeEntry }: any) => {
                     </div>
                 </TooltipTrigger>
 
-                <TooltipContent className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-gray-800 shadow-2xl rounded-xl p-0 overflow-hidden max-w-[280px]">
-                    {/* Header Section */}
-                    <div className="bg-gray-50 dark:bg-gray-900 px-4 py-3 border-b border-gray-100 dark:border-gray-800">
+                <TooltipContent className="bg-white dark:bg-darkSecondaryBg border border-gray-200 dark:border-darkBorder shadow-2xl rounded-xl p-0 overflow-hidden min-w-[240px]">
+                    <div className="bg-gray-50 dark:bg-darkSecondaryBg px-4 py-3 border-b border-borderColor dark:border-darkBorder">
                         <div className="flex items-center gap-2">
-                            <ClipboardList className="w-4 h-4 text-blue-500" />
-                            <span className="font-bold text-sm text-gray-900 dark:text-gray-100 truncate">
+                            <ClipboardList className="w-4 h-4 text-primary" />
+                            <span className="font-bold text-sm text-gray-900 dark:text-darkTextPrimary truncate">
                                 {project?.name || "No Project"}
                             </span>
                         </div>
-                        <p className="text-[11px] text-gray-500 mt-0.5 ml-6">{task?.name || "No Task Name"}</p>
+                        <p className="text-[11px] text-gray-500 dark:text-darkTextSecondary mt-0.5 ml-6">{task?.name || "No Task Name"}</p>
                     </div>
 
-                    {/* Details Section */}
                     <div className="p-4 space-y-3">
-                        {/* Duration */}
                         <div className="flex items-center justify-between text-xs">
-                            <div className="flex items-center gap-2 text-gray-500">
+                            <div className="flex items-center gap-2 text-gray-500 dark:text-darkTextSecondary">
                                 <Clock className="w-3.5 h-3.5" />
-                                <span>Duration</span>
+                                <span>Duration </span>
                             </div>
-                            <span className="font-semibold text-gray-700 dark:text-gray-300">{duration}</span>
+                            <span className="font-semibold text-gray-700 dark:text-darkTextSecondary"> {formatTimeDuration(start_time, end_time)}</span>
                         </div>
 
-                        {/* Status */}
                         <div className="flex items-center justify-between text-xs">
-                            <div className="flex items-center gap-2 text-gray-500">
+                            <div className="flex items-center gap-2 text-gray-500 dark:text-darkTextSecondary">
                                 <CheckCircle2 className="w-3.5 h-3.5" />
                                 <span>Status</span>
                             </div>
-                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${status === 'Completed' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'
+                            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${status === 'complete' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'
                                 }`}>
                                 {status}
                             </span>
                         </div>
 
-                        {/* Last Updated */}
                         <div className="flex items-center justify-between text-xs">
-                            <div className="flex items-center gap-2 text-gray-500">
+                            <div className="flex items-center gap-2 text-gray-500 dark:text-darkTextSecondary">
                                 <RefreshCcw className="w-3.5 h-3.5" />
-                                <span>Updated</span>
+                                <span>App Version</span>
                             </div>
-                            <span className="text-gray-600 dark:text-gray-400">{system_update}</span>
+                            <span className="text-gray-600 dark:text-darkTextSecondary">{system_update}</span>
                         </div>
 
-                        {/* Manual Entry Boolean Logic */}
-                        <div className="pt-2 border-t border-gray-100 dark:border-gray-800 flex items-center gap-2 text-[10px]">
+                        <div className="pt-2 border-t border-borderColor dark:border-darkBorder flex items-center gap-2 text-[10px]">
                             {timeEntry?.is_manual_entry ? (
                                 <div className="flex items-center gap-1.5 text-amber-600 font-medium">
                                     <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
                                     Manual Entry
                                 </div>
                             ) : (
-                                <div className="flex items-center gap-1.5 text-blue-600 font-medium">
+                                <div className="flex items-center gap-1.5 text-primary font-medium">
                                     <MousePointer2 className="w-3 h-3" />
                                     System Tracked
                                 </div>
@@ -239,25 +240,25 @@ const ReportDailyTimeSheet = ({ dailyTimeEntry }: any) => {
                     <div className="flex-grow font-bold text-sm text-subTextColor ml-4"></div>
                 </div>
 
-                <div className="flex min-w-[800px] border-t border-gray-200">
+                <div className="flex min-w-[800px] border-t border-gray-200 dark:border-darkBorder">
 
                     <div className="w-[80px]">
                         {timeLineHours.map((hour) => (
                             <div
                                 key={hour}
-                                className="h-[60px] text-xs font-medium text-gray-500 flex items-center justify-center border-b border-borderColor dark:text-darkTextSecondary"
+                                className="h-[60px] text-xs font-medium text-gray-500 flex items-center justify-center border-b border-borderColor dark:border-darkBorder dark:text-darkTextSecondary"
                             >
                                 {hour.toString().padStart(2, '0')}:00
                             </div>
                         ))}
                     </div>
 
-                    <div className="flex-grow relative border-l border-gray-200 " style={{ height: `${TOTAL_MINUTES_IN_DAY / 60 * 60}px` }}>
+                    <div className="flex-grow relative border-l border-gray-200 dark:border-darkBorder " style={{ height: `${TOTAL_MINUTES_IN_DAY / 60 * 60}px` }}>
 
                         {timeLineHours.map((hour) => (
                             <div
                                 key={`grid-${hour}`}
-                                className="absolute left-0 right-0 border-b border-borderColor"
+                                className="absolute left-0 right-0 border-b border-borderColor dark:border-darkBorder"
                                 style={{ top: `${(hour / 24) * 100}%`, height: '60px', zIndex: 0 }}
                             >
                                 <div className="h-full"></div>

@@ -53,40 +53,11 @@ const ReportMonthlyTimeSheet = () => {
     // month picker
     const [selectedDate, setSelectedDate] = useState(new Date());
 
-    // search user
-    const users = [
-        {
-            value: "Juyed Ahmed",
-            label: "Juyed Ahmed",
-            avatar: "https://avatar.iran.liara.run/public/18",
-        },
-        {
-            value: "Cameron Williamson",
-            label: "Cameron Williamson",
-            avatar: "https://avatar.iran.liara.run/public/19",
-        },
-        {
-            value: "Jenny Wilson",
-            label: "Jenny Wilson",
-            avatar: "https://avatar.iran.liara.run/public/20",
-        },
-        {
-            value: "Esther Howard",
-            label: "Esther Howard",
-            avatar: "https://avatar.iran.liara.run/public/21",
-        },
-        {
-            value: "Walid Ahmed",
-            label: "Walid Ahmed",
-            avatar: "https://avatar.iran.liara.run/public/22",
-        },
-    ]
-
     return (
         <div className="">
             <div className="mb-5 flex flex-col gap-4 md:gap-0 md:flex-row justify-between">
                 <MonthPicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></MonthPicker>
-                <SelectUserDropDown users={users}></SelectUserDropDown>
+                <SelectUserDropDown></SelectUserDropDown>
             </div>
             <div className="overflow-x-auto rounded-2xl border border-borderColor dark:border-darkBorder mt-5">
                 <table className="w-full border-collapse">

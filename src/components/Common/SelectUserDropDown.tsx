@@ -115,7 +115,7 @@ const SelectUserDropDown = ({ userId }: { userId?: string | number }) => {
                         {selectedUser && (
                             <Avatar className="w-6 h-6">
                                 <AvatarImage src={selectedUser.avatar} alt={selectedUser.label} />
-                                <AvatarFallback className="bg-gray-100">
+                                <AvatarFallback className="">
                                     {selectedUser.label?.charAt(0)}
                                 </AvatarFallback>
                             </Avatar>
