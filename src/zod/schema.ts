@@ -196,13 +196,13 @@ export const editEventSchema = z.object({
 
 export const leaveRequestSchema = z.object({
     leaveType: z.string().min(1, "Leave type is required"),
-    startDate: z.date().refine(date => !isNaN(date.getTime()), {
+    startDate: z.date().nullable().refine((date) => date !== null && !isNaN(date.getTime()), {
         message: "Start date is required",
     }),
-    endDate: z.date().refine(date => !isNaN(date.getTime()), {
+    endDate: z.date().nullable().refine((date) => date !== null && !isNaN(date.getTime()), {
         message: "End date is required",
     }),
-    details: z.string().min(1, "Details is required"),
+    reason: z.string().min(1, "Reason is required"),
 })
 
 export const leaveRejectRequestSchema = z.object({

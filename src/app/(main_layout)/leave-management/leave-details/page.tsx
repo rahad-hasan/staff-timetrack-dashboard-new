@@ -1,3 +1,4 @@
+"use client"
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import LeaveDataTable from "@/components/LeaveManagement/LeaveDetails/LeaveDataTable";
 import LeaveRequestModal from "@/components/LeaveManagement/LeaveDetails/LeaveRequestModal";
@@ -5,20 +6,22 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 // import LeaveDetailsSkeleton from "@/skeleton/leaveManagement/leaveDetailsSkeleton";
 import { Plus } from "lucide-react";
+import { useState } from "react";
 
 const LeaveDetails = () => {
+    const [open, setOpen] = useState(false)
     return (
         <div>
             <div className="flex items-center justify-between gap-3 mb-5">
                 <HeadingComponent heading="Leave Management" subHeading="All the teams member leave details are displayed here"></HeadingComponent>
 
                 <div className="">
-                    <Dialog>
+                    <Dialog open={open} onOpenChange={setOpen}>
                         <form>
                             <DialogTrigger asChild>
                                 <Button className=""><Plus className="size-5" /> <span className=" hidden sm:block">Leave request</span></Button>
                             </DialogTrigger>
-                            <LeaveRequestModal></LeaveRequestModal>
+                            <LeaveRequestModal onClose={() => setOpen(false)}></LeaveRequestModal>
                         </form>
                     </Dialog>
                 </div>

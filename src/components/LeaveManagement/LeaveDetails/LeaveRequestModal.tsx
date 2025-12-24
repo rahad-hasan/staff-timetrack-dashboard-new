@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import { Button } from "@/components/ui/button";
 import {
@@ -35,13 +36,35 @@ import { useState } from "react";
 import { ChevronDownIcon } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
+import { toast } from "sonner";
+import { addLeave } from "@/actions/leaves/action";
+import { format } from "date-fns";
 
-const LeaveRequestModal = () => {
-    const leave = ["Casul Leave", "Sick Leave ", "Earned Leave"];
-    const [clientSearch, setClientSearch] = useState("");
+const LeaveRequestModal = ({ onClose }: { onClose: () => void }) => {
+    const [loading, setLoading] = useState(false);
+    // const leave = ["Casual Leave", "Sick Leave ", "Earned Leave"];
+    const leave = [
+        {
+            label: "Casual Leave",
+            value: "casual"
+        },
+        {
+            label: "Sick Leave",
+            value: "sick"
+        },
+        {
+            label: "Maternity Leave",
+            value: "maternity"
+        },
+        {
+            label: "Paid Leave",
+            value: "paid"
+        },
+    ]
+    const [leaveTypeSearch, setLeaveTypeSearch] = useState("");
 
     const filteredLeave = leave.filter((p) =>
-        p.toLowerCase().includes(clientSearch.toLowerCase())
+        p.label.toLowerCase().includes(leaveTypeSearch.toLowerCase())
     );
 
     const [openStartDate, setOpenStartDate] = useState(false);
@@ -54,14 +77,40 @@ const LeaveRequestModal = () => {
         resolver: zodResolver(leaveRequestSchema),
         defaultValues: {
             leaveType: "",
-            startDate: undefined,
-            endDate: undefined,
-            details: "",
+            startDate: null,
+            endDate: null,
+            reason: "",
         },
     });
 
-    function onSubmit(values: z.infer<typeof leaveRequestSchema>) {
-        console.log(values);
+    async function onSubmit(values: z.infer<typeof leaveRequestSchema>) {
+
+        const finalData = {
+            type: values.leaveType,
+            // Non-null Assertion Operator (!)
+            start_date: format(new Date(values.startDate!), "yyyy-MM-dd"),
+            end_date: format(new Date(values.endDate!), "yyyy-MM-dd"),
+            reason: values.reason
+        }
+
+        setLoading(true);
+        try {
+            const res = await addLeave(finalData);
+            console.log("success:", res);
+
+            if (res?.success) {
+                onClose();
+                form.reset();
+                toast.success(res?.message || "Leave request successfully");
+            } else {
+                toast.error(res?.message || "Failed to request leave");
+            }
+        } catch (error: any) {
+            console.error("failed:", error);
+            toast.error(error?.message || "Something went wrong!");
+        } finally {
+            setLoading(false);
+        }
     }
 
     return (
@@ -94,12 +143,12 @@ const LeaveRequestModal = () => {
                                                     type="text"
                                                     placeholder="Search..."
                                                     className="flex-1 border-none focus:ring-0 focus:outline-none mb-1"
-                                                    value={clientSearch}
-                                                    onChange={(e) => setClientSearch(e.target.value)}
+                                                    value={leaveTypeSearch}
+                                                    onChange={(e) => setLeaveTypeSearch(e.target.value)}
                                                 />
                                                 {filteredLeave.map((p) => (
-                                                    <SelectItem key={p} value={p}>
-                                                        {p}
+                                                    <SelectItem key={p.value} value={p.value}>
+                                                        {p.label}
                                                     </SelectItem>
                                                 ))}
                                             </SelectContent>
@@ -191,12 +240,12 @@ const LeaveRequestModal = () => {
 
                     <FormField
                         control={form.control}
-                        name="details"
+                        name="reason"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Details</FormLabel>
+                                <FormLabel>Reason</FormLabel>
                                 <FormControl>
-                                    <Textarea className="dark:border-darkBorder" placeholder="Enter details" {...field} />
+                                    <Textarea className="dark:border-darkBorder" placeholder="Type reason" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -207,9 +256,7 @@ const LeaveRequestModal = () => {
                         <DialogClose asChild>
                             <Button variant="outline2" className="dark:border-darkBorder dark:text-darkTextPrimary dark:bg-darkPrimaryBg">Cancel</Button>
                         </DialogClose>
-                        <DialogClose asChild>
-                            <Button type="submit">Submit Request</Button>
-                        </DialogClose>
+                        <Button type="submit" disabled={loading}> {loading ? "Loading..." : "Submit Request"}</Button>
                     </div>
                 </form>
             </Form>
