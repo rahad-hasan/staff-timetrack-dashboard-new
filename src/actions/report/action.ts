@@ -18,6 +18,13 @@ export const getDateBaseTimeEntry = async (query = {}):Promise<IResponse<ITimeSh
     });
 };
 
+export const getAttendance = async (query = {}):Promise<IResponse<ITimeSheetEntry[]>> => {
+    const queryString = buildQuery(query);
+    return await baseApi(`/check-in-out${queryString ? `?${queryString}` : ""}`, {
+        tag: "attendance",
+    });
+};
+
 // export const addTimeEntry = async (data: {
 //     name: string,
 //     email: string,

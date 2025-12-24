@@ -1,58 +1,19 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { ArrowUpDown } from "lucide-react";
 import { IAttendance } from "@/global/globalTypes";
-import Image from "next/image";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { format } from "date-fns";
 
-const AttendanceTable = () => {
+const AttendanceTable = ({ attendanceListData = [] }: any) => {
+    console.log('getting data for attendance', attendanceListData);
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
-
-    const attendanceList: IAttendance[] = useMemo(
-        () => [
-            {
-                image: "https://picsum.photos/200/300",
-                name: "Orbit Design Agency",
-                date: "Feb 18, 2025",
-                status: "Active",
-                appVersion: "12.07.02",
-                checkIn: "11:00 AM",
-                checkOut: "8:00 PM"
-            },
-            {
-                image: "https://picsum.photos/200/300",
-                name: "Orbit Design Agency",
-                date: "Feb 18, 2025",
-                status: "Inactive",
-                appVersion: "12.07.05",
-                checkIn: "10:00 AM",
-                checkOut: "7:00 PM"
-            },
-            {
-                image: "https://picsum.photos/200/300",
-                name: "Orbit Design Agency",
-                date: "Feb 18, 2025",
-                status: "Inactive",
-                appVersion: "12.07.01",
-                checkIn: "8:00 AM",
-                checkOut: "6:00 PM"
-            },
-            {
-                image: "https://picsum.photos/200/300",
-                name: "Orbit Design Agency",
-                date: "Feb 18, 2025",
-                status: "Active",
-                appVersion: "11.09.05",
-                checkIn: "12:00 PM",
-                checkOut: "10:00 PM"
-            }
-        ],
-        []
-    );
 
     const columns: ColumnDef<IAttendance>[] = [
         {
@@ -72,39 +33,45 @@ const AttendanceTable = () => {
             },
             cell: ({ row }) => {
                 const name = row.getValue("name") as string;
-                const img = row.original.image;
+                const img = row?.original?.image;
                 return (
                     <div className="flex items-center gap-2 min-w-[200px]">
-                        <Image src={img} alt="profile" width={200} height={200} className="w-8 h-8 object-cover rounded-full" />
+                        <Avatar className="rounded-full w-8 h-8">
+                            <AvatarImage
+                                src={img ? img : ""}
+                                alt={name}
+                            />
+                            <AvatarFallback>{name?.charAt(0)}</AvatarFallback>
+                        </Avatar>
                         <span className="">{name}</span>
                     </div>
                 )
             }
         },
-        {
-            accessorKey: "date",
-            header: ({ column }) => {
-                return (
-                    <div>
-                        <span
-                            className=" cursor-pointer flex items-center gap-1"
-                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        >
-                            Date
-                            <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </span>
-                    </div>
-                )
-            },
-            cell: ({ row }) => {
-                const date = row.getValue("date") as string;
-                return (
-                    <div className="flex flex-col">
-                        <span className="">{date}</span>
-                    </div>
-                )
-            }
-        },
+        // {
+        //     accessorKey: "date",
+        //     header: ({ column }) => {
+        //         return (
+        //             <div>
+        //                 <span
+        //                     className=" cursor-pointer flex items-center gap-1"
+        //                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        //                 >
+        //                     Date
+        //                     <ArrowUpDown className="ml-2 h-4 w-4" />
+        //                 </span>
+        //             </div>
+        //         )
+        //     },
+        //     cell: ({ row }) => {
+        //         const date = row.getValue("date") as string;
+        //         return (
+        //             <div className="flex flex-col">
+        //                 <span className="">{date}</span>
+        //             </div>
+        //         )
+        //     }
+        // },
         {
             accessorKey: "status",
             header: ({ column }) => {
@@ -126,9 +93,9 @@ const AttendanceTable = () => {
                     <div className="">
                         {
                             status === "Active" ?
-                                <button className=" bg-[#e9f8f0] text-primary border border-primary rounded-lg px-2">Active</button>
+                                <button className=" bg-[#e9f8f0] text-primary border border-primary rounded-lg px-2 py-1">Active</button>
                                 :
-                                <button className=" bg-[#fee6eb] text-red-500 border border-red-500 rounded-lg px-2">Inactive</button>
+                                <button className=" bg-[#fee6eb] text-red-500 border border-red-500 rounded-lg px-2 py-1">Inactive</button>
                         }
                     </div>
                 )
@@ -159,7 +126,7 @@ const AttendanceTable = () => {
             }
         },
         {
-            accessorKey: "checkIn",
+            accessorKey: "check_in",
             header: ({ column }) => {
                 return (
                     <div>
@@ -174,16 +141,16 @@ const AttendanceTable = () => {
                 )
             },
             cell: ({ row }) => {
-                const checkIn = row.getValue("checkIn") as string;
+                const checkIn = row.getValue("check_in") as string;
                 return (
                     <div className="flex flex-col">
-                        <span className="">{checkIn}</span>
+                        <span className="">{checkIn !== "-" ? format(new Date(checkIn), "hh:mm a"): "-"}</span>
                     </div>
                 )
             }
         },
         {
-            accessorKey: "checkOut",
+            accessorKey: "check_out",
             header: ({ column }) => {
                 return (
                     <div>
@@ -198,10 +165,10 @@ const AttendanceTable = () => {
                 )
             },
             cell: ({ row }) => {
-                const checkOut = row.getValue("checkOut") as string;
+                const checkOut = row?.getValue("check_out") as string;
                 return (
                     <div className="flex flex-col">
-                        <span className="">{checkOut}</span>
+                        <span className="">{checkOut !== "-" ? format(new Date(checkOut), "hh:mm a"): "-"}</span>
                     </div>
                 )
             }
@@ -210,7 +177,7 @@ const AttendanceTable = () => {
 
 
     const table = useReactTable({
-        data: attendanceList,
+        data: attendanceListData,
         columns,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,
@@ -229,7 +196,7 @@ const AttendanceTable = () => {
             </div>
             <Table>
                 <TableHeader>
-                    {table.getHeaderGroups().map(headerGroup => (
+                    {table?.getHeaderGroups().map(headerGroup => (
                         <TableRow key={headerGroup.id}>
                             {headerGroup.headers.map(header => (
                                 <TableHead key={header.id}>
@@ -242,8 +209,8 @@ const AttendanceTable = () => {
                     ))}
                 </TableHeader>
                 <TableBody>
-                    {table.getRowModel().rows?.length ? (
-                        table.getRowModel().rows.map(row => (
+                    {table?.getRowModel().rows?.length ? (
+                        table?.getRowModel().rows.map(row => (
                             <TableRow key={row.id}>
                                 {row.getVisibleCells().map(cell => (
                                     <TableCell key={cell.id}>
