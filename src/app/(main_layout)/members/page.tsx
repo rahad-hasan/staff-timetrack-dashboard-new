@@ -45,7 +45,7 @@ const MemberPage = async ({ searchParams }: any) => {
             </Suspense>
 
             {/* <TeamsMemberTableSkeleton></TeamsMemberTableSkeleton> */}
-
+                
         </div >
     );
 };

@@ -215,10 +215,9 @@ const DailyTimeSheets = () => {
             </div>
             <DailyTimeSheetsTable></DailyTimeSheetsTable>
             <AppPagination
-                total={120}     // total items
-                currentPage={page}
-                limit={10}      // items per page
-                onPageChange={setPage}
+                total={12}
+                currentPage={1} // have to put here currentPage from params
+                limit={10}
             />
         </>
     );
