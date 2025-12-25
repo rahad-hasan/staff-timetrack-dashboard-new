@@ -65,6 +65,7 @@ const SignIn = () => {
                     id: res?.data?.id,
                     name: res?.data?.name,
                     email: res?.data?.email,
+                    image: res?.data?.image,
                     role: res?.data?.role,
                     phone: res?.data?.phone,
                     pay_rate_hourly: res?.data?.pay_rate_hourly,

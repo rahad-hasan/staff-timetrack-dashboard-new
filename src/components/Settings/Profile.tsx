@@ -1,4 +1,5 @@
 "use client"
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@/components/ui/button";
 import { userBasicInfoSchema } from "@/zod/schema";
@@ -16,21 +17,32 @@ import {
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import Image from "next/image";
-import { Briefcase, Mail, Upload, User } from "lucide-react";
+import { Upload } from "lucide-react";
 import profileAvatar from '../../assets/profile_image_avatar.webp';
 import { Label } from "@/components/ui/label";
 import UserIcon from "../Icons/UserIcon";
 import JobIcon from "../Icons/JobIcon";
 import EmailIcon from "../Icons/EmailIcon";
+import { useLogInUserStore } from "@/store/logInUserStore";
+import { uploadProfileImage } from "@/actions/auth/action";
+import { toast } from "sonner";
 
 const Profile = () => {
-    const [preview, setPreview] = useState(profileAvatar)
-
+    const { logInUserData } = useLogInUserStore(state => state);
+    const [loading, setLoading] = useState(false);
+    const [preview, setPreview] = useState<any>(logInUserData?.image ? logInUserData?.image : profileAvatar)
+    const [image, setImage] = useState<any>(null)
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (file) {
             const reader = new FileReader()
-            reader.onloadend = () => setPreview(reader.result as any)
+            reader.onloadend = () => {
+                const base64String = reader.result as string;
+                setPreview(base64String);
+                setImage(base64String);
+                console.log("Selected Image Base64:", base64String);
+            };
+            // reader.onloadend = () => setPreview(reader.result as any)
             reader.readAsDataURL(file)
         }
     }
@@ -38,15 +50,34 @@ const Profile = () => {
     const form = useForm<z.infer<typeof userBasicInfoSchema>>({
         resolver: zodResolver(userBasicInfoSchema),
         defaultValues: {
-            name: "",
-            title: "",
-            email: "",
+            name: logInUserData?.name ? logInUserData?.name : "",
+            title: logInUserData?.role ? logInUserData?.role : "",
+            email: logInUserData?.email ? logInUserData?.email : "",
             // password: "",
         },
     });
 
-    function onSubmit(values: z.infer<typeof userBasicInfoSchema>) {
+    async function onSubmit(values: z.infer<typeof userBasicInfoSchema>) {
         console.log(values);
+
+        if (image) {
+            setLoading(true);
+            try {
+                const res = await uploadProfileImage({ data: { image } });
+                console.log("success:", res);
+
+                if (res?.success) {
+                    toast.success(res?.message || "Image uploaded successfully");
+                } else {
+                    toast.error(res?.message || "Failed to upload image");
+                }
+            } catch (error: any) {
+                console.error("failed:", error);
+                toast.error(error?.message || "Something went wrong!");
+            } finally {
+                setLoading(false);
+            }
+        }
     }
 
     return (
@@ -65,6 +96,10 @@ const Profile = () => {
                 <div>
                     <p className="font-medium text-headingTextColor dark:text-darkTextPrimary">Profile Picture</p>
                     <p className="text-sm text-subTextColor mb-3 dark:text-darkTextPrimary">400px, JPG or PNG, max 200kb</p>
+                    {/* {
+                        image ?
+                            <Button type="button">Save Changes</Button>
+                            : */}
                     <Label
                         htmlFor="photo-upload"
                         className=" w-[150px] cursor-pointer flex items-center justify-center gap-2 text-sm font-medium border rounded-md px-3 py-1.5 hover:bg-gray-50 dark:bg-darkPrimaryBg"
@@ -191,8 +226,8 @@ const Profile = () => {
                     </div>
 
                     <div className="flex items-center gap-3 w-full pt-3">
-                        <Button type="submit">Save Changes</Button>
-                        <Button variant="outline2" className=" dark:bg-darkPrimaryBg dark:border-darkBorder dark:text-darkTextPrimary">Cancel</Button>
+                        <Button type="submit" disabled={loading}>{loading ? "Loading..." : "Save Changes"}</Button>
+                        <Button type="button" variant="outline2" className=" dark:bg-darkPrimaryBg dark:border-darkBorder dark:text-darkTextPrimary">Cancel</Button>
                     </div>
                 </form>
             </Form>

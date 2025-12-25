@@ -40,6 +40,19 @@ export const logIn = async (data: any) => {
   return res;
 };
 
+export const uploadProfileImage = async ({ data }: {
+  data: {
+    image: string
+  }
+}) => {
+  return await baseApi(`/auth/update-profile-image`, {
+    method: "PATCH",
+    body: data,
+    tag: "profile",
+  });
+};
+
+
 export async function clearSessionCookie() {
   const cookieStore = await cookies();
   cookieStore.delete("accessToken");

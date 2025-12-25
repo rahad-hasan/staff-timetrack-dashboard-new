@@ -1,4 +1,5 @@
-"use client";
+"use client"
+
 import GlobalColorPicker from "@/components/Common/GlobalColorPicker";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import NotificationIcon from "@/components/Icons/NotificationIcon";
