@@ -24,31 +24,29 @@ export const addLeave = async (data: {
     });
 };
 
-export const editLeave = async ({ data, id }: {
+export const approveRejectLeave = async ({ data }: {
     data: {
-        type: string;
-        start_date: string;
-        end_date: string;
-        reason: string;
-    },
-    id: number | undefined
+        leave_id: number,
+        approved: boolean,
+        reject_reason?: string
+    }
 }) => {
-    return await baseApi(`/leaves/${id}`, {
+    return await baseApi(`/leaves/update-status`, {
         method: "PATCH",
         body: data,
         tag: "leaves",
     });
 };
 
-export const deleteLeave = async ({ data, id }: {
-    data: {
-        is_deleted: boolean,
-    },
-    id: number | undefined
-}) => {
-    return await baseApi(`/leaves/${id}`, {
-        method: "PATCH",
-        body: data,
-        tag: "leaves",
-    });
-};
+// export const deleteLeave = async ({ data, id }: {
+//     data: {
+//         is_deleted: boolean,
+//     },
+//     id: number | undefined
+// }) => {
+//     return await baseApi(`/leaves/${id}`, {
+//         method: "PATCH",
+//         body: data,
+//         tag: "leaves",
+//     });
+// };

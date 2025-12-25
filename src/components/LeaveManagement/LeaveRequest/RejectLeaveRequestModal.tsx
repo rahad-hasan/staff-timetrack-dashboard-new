@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import { Button } from "@/components/ui/button";
 import {
@@ -18,36 +19,44 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
+import { ILeaveRequest } from "@/types/type";
+import { useState } from "react";
+import { toast } from "sonner";
+import { approveRejectLeave } from "@/actions/leaves/action";
 
-const RejectLeaveRequestModal = () => {
-    const project = ["Time Tracker", "Quantum Network", "The Shift"];
-    const [projectSearch, setProjectSearch] = useState("");
-
-    const filteredProject = project.filter((p) =>
-        p.toLowerCase().includes(projectSearch.toLowerCase())
-    );
-
-
+const RejectLeaveRequestModal = ({ data }: { data: ILeaveRequest }) => {
+    console.log(data);
+    const userId = data?.id
+    const [loading, setLoading] = useState(false);
     const form = useForm<z.infer<typeof leaveRejectRequestSchema>>({
         resolver: zodResolver(leaveRejectRequestSchema),
         defaultValues: {
-            project: "",
-            details: "",
+            reason: "",
         },
     });
 
-    function onSubmit(values: z.infer<typeof leaveRejectRequestSchema>) {
-        console.log(values);
+    async function onSubmit(values: z.infer<typeof leaveRejectRequestSchema>) {
+        setLoading(true);
+        try {
+            const res = await approveRejectLeave({
+                data: {
+                    leave_id: userId,
+                    approved: false,
+                    reject_reason: values?.reason
+                }
+            });
+
+            if (res?.success) {
+                toast.success(res?.message || "Request reject successfully");
+            } else {
+                toast.error(res?.message || "Failed to reject request");
+            }
+        } catch (error: any) {
+            toast.error(error.message || "Something went wrong!");
+        } finally {
+            setLoading(false);
+        }
     }
 
     return (
@@ -58,51 +67,15 @@ const RejectLeaveRequestModal = () => {
 
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                    <FormField
-                        control={form.control}
-                        name="project"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Select a reason</FormLabel>
-                                <FormControl>
-                                    <div className="relative">
-                                        <Select
-                                            value={field.value}
-                                            onValueChange={field.onChange}
-                                        >
-                                            <SelectTrigger className="w-full">
-                                                <SelectValue placeholder="Select a project" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <Input
-                                                    type="text"
-                                                    placeholder="Search..."
-                                                    className="flex-1 border-none focus:ring-0 focus:outline-none mb-1"
-                                                    value={projectSearch}
-                                                    onChange={(e) => setProjectSearch(e.target.value)}
-                                                />
-                                                {filteredProject.map((p) => (
-                                                    <SelectItem key={p} value={p}>
-                                                        {p}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
 
                     <FormField
                         control={form.control}
-                        name="details"
+                        name="reason"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Details</FormLabel>
+                                <FormLabel>Reason</FormLabel>
                                 <FormControl>
-                                    <Textarea className="border-borderColor dark:border-darkBorder" placeholder="Enter details" {...field} />
+                                    <Textarea className="border-borderColor dark:border-darkBorder" placeholder="Type Reason" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -113,7 +86,7 @@ const RejectLeaveRequestModal = () => {
                         <DialogClose asChild>
                             <Button className="dark:border-darkBorder dark:text-darkTextPrimary" variant="outline2">Cancel</Button>
                         </DialogClose>
-                            <Button className="  bg-red-500 hover:bg-red-500 dark:text-darkTextPrimary" type="submit">Reject Request</Button>
+                        <Button className="bg-red-500 hover:bg-red-500 dark:text-darkTextPrimary" disabled={loading} type="submit">{loading ? "Loading..." : "Reject Request"}</Button>
                     </div>
                 </form>
             </Form>

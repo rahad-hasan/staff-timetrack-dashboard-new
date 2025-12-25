@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useMemo, useState } from "react";
-import Image from "next/image";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import RejectLeaveRequestModal from "./RejectLeaveRequestModal";
@@ -12,11 +12,37 @@ import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { ILeaveRequest } from "@/types/type";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { format } from "date-fns";
+import { toast } from "sonner";
+import { approveRejectLeave } from "@/actions/leaves/action";
 
 const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
     console.log('data from server', data);
+    const [loadingId, setLoadingId] = useState<number | null>(null);
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
+
+    async function handleApprove(values: ILeaveRequest) {
+
+        setLoadingId(values.id);
+        try {
+            const res = await approveRejectLeave({
+                data: {
+                    leave_id: values.id,
+                    approved: true
+                }
+            });
+
+            if (res?.success) {
+                toast.success(res?.message || "Request approved successfully");
+            } else {
+                toast.error(res?.message || "Failed to approve request");
+            }
+        } catch (error: any) {
+            toast.error(error.message || "Something went wrong!");
+        } finally {
+            setLoadingId(null);
+        }
+    }
 
     const columns: ColumnDef<ILeaveRequest>[] = [
         {
@@ -203,17 +229,17 @@ const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
                     </div>
                 )
             },
-            cell: () => {
-
+            cell: ({ row }) => {
+                const isThisRowLoading = loadingId === row?.original?.id;
                 return (
                     <div className="flex items-center gap-3">
-                        <Button size={'sm'} className=" text-sm px-2 rounded-lg">Approve</Button>
+                        <Button onClick={() => handleApprove(row?.original)} size={'sm'} disabled={isThisRowLoading} className=" text-sm px-2 rounded-lg">{isThisRowLoading ? "Loading..." : "Approve"}</Button>
                         <Dialog>
                             <form>
                                 <DialogTrigger asChild>
                                     <Button size={'sm'} className=" text-sm bg-red-500 hover:bg-red-500 dark:text-white px-2 rounded-lg">Reject</Button>
                                 </DialogTrigger>
-                                <RejectLeaveRequestModal></RejectLeaveRequestModal>
+                                <RejectLeaveRequestModal data={row?.original}></RejectLeaveRequestModal>
                             </form>
                         </Dialog>
                     </div>
