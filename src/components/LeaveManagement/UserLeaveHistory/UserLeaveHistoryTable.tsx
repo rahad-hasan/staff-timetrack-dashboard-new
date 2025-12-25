@@ -1,49 +1,18 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
-import RejectLeaveRequestModal from "./RejectLeaveRequestModal";
-import LeaveHistory from "./LeaveHistory";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { ILeaveRequest } from "@/types/type";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { format } from "date-fns";
-import { toast } from "sonner";
-import { approveRejectLeave } from "@/actions/leaves/action";
-import Link from "next/link";
 
-const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
-    console.log('data from server', data);
-    const [loadingId, setLoadingId] = useState<number | null>(null);
+const UserLeaveHistoryTable = ({ data }: { data: ILeaveRequest[] }) => {
+    const userName = data?.length ? data?.[0]?.user?.name : null
+
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
-
-    async function handleApprove(values: ILeaveRequest) {
-
-        setLoadingId(values.id);
-        try {
-            const res = await approveRejectLeave({
-                data: {
-                    leave_id: values.id,
-                    approved: true
-                }
-            });
-
-            if (res?.success) {
-                toast.success(res?.message || "Request approved successfully");
-            } else {
-                toast.error(res?.message || "Failed to approve request");
-            }
-        } catch (error: any) {
-            toast.error(error.message || "Something went wrong!");
-        } finally {
-            setLoadingId(null);
-        }
-    }
 
     const columns: ColumnDef<ILeaveRequest>[] = [
         {
@@ -74,14 +43,8 @@ const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
                                     .toUpperCase()}
                             </AvatarFallback>
                         </Avatar>
-                        {/* <Dialog>
-                            <form>
-                                <DialogTrigger asChild> */}
-                        <Link href={`/leave-management/user-leave-history/${row?.original?.user?.id}`}><p className=" cursor-pointer">{name}</p></Link>
-                        {/* </DialogTrigger>
-                                <LeaveHistory></LeaveHistory>
-                            </form>
-                        </Dialog> */}
+                        <p className=" cursor-pointer">{name}</p>
+
                     </div>
                 )
             }
@@ -190,6 +153,31 @@ const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
             }
         },
         {
+            accessorKey: "approve",
+            header: () => {
+                return (
+                    <div>
+                        <p>
+                            Status
+                        </p>
+                    </div>
+                )
+            },
+            cell: ({ row }) => {
+                const status = row?.original?.hr_approved && row?.original?.admin_approved
+                return (
+                    <div className=" flex items-center ">
+                        {
+                            status ?
+                                <p className=" text-green-500">Approved</p>
+                                :
+                                <p className=" text-red-500">Rejected</p>
+                        }
+                    </div>
+                )
+            }
+        },
+        {
             accessorKey: "availableLeave",
             header: () => {
                 return (
@@ -219,34 +207,6 @@ const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
                 )
             }
         },
-        {
-            accessorKey: "action",
-            header: () => {
-                return (
-                    <div>
-                        <p>
-                            Action
-                        </p>
-                    </div>
-                )
-            },
-            cell: ({ row }) => {
-                const isThisRowLoading = loadingId === row?.original?.id;
-                return (
-                    <div className="flex items-center gap-3">
-                        <Button onClick={() => handleApprove(row?.original)} size={'sm'} disabled={isThisRowLoading} className=" text-sm px-2 rounded-lg">{isThisRowLoading ? "Loading..." : "Approve"}</Button>
-                        <Dialog>
-                            <form>
-                                <DialogTrigger asChild>
-                                    <Button size={'sm'} className=" text-sm bg-red-500 hover:bg-red-500 dark:text-white px-2 rounded-lg">Reject</Button>
-                                </DialogTrigger>
-                                <RejectLeaveRequestModal data={row?.original}></RejectLeaveRequestModal>
-                            </form>
-                        </Dialog>
-                    </div>
-                )
-            }
-        },
     ];
 
     const table = useReactTable({
@@ -265,7 +225,7 @@ const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
     return (
         <div className="mt-5 border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5  rounded-[12px]">
             <div className=" mb-5">
-                <h2 className=" text-base sm:text-lg dark:text-darkTextPrimary">Leave Request</h2>
+                <h2 className=" text-base sm:text-lg dark:text-darkTextPrimary">Leave History {userName && `Of ${userName}`}</h2>
             </div>
             <Table>
                 <TableHeader>
@@ -303,4 +263,4 @@ const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
     );
 };
 
-export default LeaveRequestTable;
+export default UserLeaveHistoryTable;
