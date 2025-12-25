@@ -56,16 +56,6 @@ export interface ILeave {
     availableLeave: number
 }
 
-export type ILeaveRequest = {
-    image: string;
-    name: string;
-    from: string;
-    to: string;
-    days: number;
-    reason: string;
-    availableLeave: number;
-}
-
 export interface IMeta {
     total: number;
     page: number;

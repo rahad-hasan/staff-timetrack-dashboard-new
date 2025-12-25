@@ -5,61 +5,18 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { ILeaveRequest } from "@/global/globalTypes";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import RejectLeaveRequestModal from "./RejectLeaveRequestModal";
 import LeaveHistory from "./LeaveHistory";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
+import { ILeaveRequest } from "@/types/type";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { format } from "date-fns";
 
-const LeaveRequestTable = () => {
+const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
+    console.log('data from server', data);
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
-
-    const leaveRequestList: ILeaveRequest[] = useMemo(
-        () => [
-            {
-                image: "https://picsum.photos/200/300",
-                name: "Guy Hawkins",
-                from: "12 Oct,2025",
-                to: "14 Oct,2025",
-                days: 4,
-                reason: "Going to my village",
-                leaveType: "Casual Leave",
-                availableLeave: 10
-            },
-            {
-                image: "https://picsum.photos/200/300",
-                name: "Darlene Robertson",
-                from: "12 Oct,2025",
-                to: "14 Oct,2025",
-                days: 3,
-                reason: "Going to my village",
-                leaveType: "Sick Leave",
-                availableLeave: 22
-            },
-            {
-                image: "https://picsum.photos/200/300",
-                name: "Marvin McKinney",
-                from: "12 Oct,2025",
-                to: "14 Oct,2025",
-                days: 5,
-                reason: "Going to my village",
-                leaveType: "Sick Leave",
-                availableLeave: 18
-            },
-            {
-                image: "https://picsum.photos/200/300",
-                name: "Ronald Richards",
-                from: "12 Oct,2025",
-                to: "14 Oct,2025",
-                days: 2,
-                reason: "Going to my village",
-                leaveType: "Paid Leave",
-                availableLeave: 10
-            }
-        ],
-        []
-    );
 
     const columns: ColumnDef<ILeaveRequest>[] = [
         {
@@ -68,18 +25,28 @@ const LeaveRequestTable = () => {
                 return (
                     <div>
                         <p>
-
                             Member name
                         </p>
                     </div>
                 )
             },
             cell: ({ row }) => {
-                const name = row.getValue("name") as string;
-                const img = row.original.image;
+                const img = row?.original?.user?.image ? row?.original?.user?.image : ''
+                const name = row?.original?.user?.name
                 return (
                     <div className="flex items-center gap-2 min-w-[160px]">
-                        <Image src={img} alt="profile" width={200} height={200} className="w-8 h-8 object-cover rounded-full" />
+                        <Avatar>
+                            <AvatarImage src={img} alt={name} />
+                            <AvatarFallback>
+                                {name
+                                    ?.trim()
+                                    .split(" ")
+                                    .map(word => word[0])
+                                    .join("")
+                                    .slice(0, 2)
+                                    .toUpperCase()}
+                            </AvatarFallback>
+                        </Avatar>
                         <Dialog>
                             <form>
                                 <DialogTrigger asChild>
@@ -93,7 +60,7 @@ const LeaveRequestTable = () => {
             }
         },
         {
-            accessorKey: "leaveType",
+            accessorKey: "type",
             header: () => {
                 return (
                     <div>
@@ -105,16 +72,16 @@ const LeaveRequestTable = () => {
                 )
             },
             cell: ({ row }) => {
-                const leaveType = row.getValue("leaveType") as string;
+                const leaveType = row.getValue("type") as string;
                 return (
                     <div className="flex flex-col">
-                        <span className="">{leaveType}</span>
+                        <span className="capitalize">{leaveType} Leave</span>
                     </div>
                 )
             }
         },
         {
-            accessorKey: "from",
+            accessorKey: "start_date",
             header: () => {
                 return (
                     <div>
@@ -126,16 +93,16 @@ const LeaveRequestTable = () => {
                 )
             },
             cell: ({ row }) => {
-                const from = row.getValue("from") as string;
+                const start_date = row.getValue("start_date") as string;
                 return (
                     <div className="flex flex-col">
-                        <span className="">{from}</span>
+                        <span className="">{format(new Date(start_date), "EEE, MMM d, yyyy")}</span>
                     </div>
                 )
             }
         },
         {
-            accessorKey: "to",
+            accessorKey: "end_date",
             header: () => {
                 return (
                     <div>
@@ -147,16 +114,16 @@ const LeaveRequestTable = () => {
                 )
             },
             cell: ({ row }) => {
-                const to = row.getValue("to") as string;
+                const end_date = row.getValue("end_date") as string;
                 return (
                     <div className="flex flex-col">
-                        <span className="">{to}</span>
+                        <span className="">{format(new Date(end_date), "EEE, MMM d, yyyy")}</span>
                     </div>
                 )
             }
         },
         {
-            accessorKey: "days",
+            accessorKey: "leave_count",
             header: () => {
                 return (
                     <div>
@@ -167,10 +134,10 @@ const LeaveRequestTable = () => {
                 )
             },
             cell: ({ row }) => {
-                const days = row.getValue("days") as string;
+                const leave_count = row.getValue("leave_count") as string;
                 return (
                     <div className="flex flex-col">
-                        <span className="">{days}</span>
+                        <span className="">{leave_count}</span>
                     </div>
                 )
             }
@@ -256,7 +223,7 @@ const LeaveRequestTable = () => {
     ];
 
     const table = useReactTable({
-        data: leaveRequestList,
+        data: data,
         columns,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,
@@ -269,7 +236,7 @@ const LeaveRequestTable = () => {
     });
 
     return (
-        <div className="mt-5 border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg  p-4 2xl:p-5  rounded-[12px]">
+        <div className="mt-5 border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5  rounded-[12px]">
             <div className=" mb-5">
                 <h2 className=" text-base sm:text-lg dark:text-darkTextPrimary">Leave Request</h2>
             </div>

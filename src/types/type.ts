@@ -147,7 +147,7 @@ export interface ITask {
   user: IUser;
 }
 
-export type ISearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
+export type ISearchParams = Promise<{ [key: string]: string | string[] | number | undefined }>;
 
 export interface ISearchParamsProps {
   searchParams: ISearchParams;
@@ -177,4 +177,33 @@ export interface ITimeSheetEntry {
     id: number;
     is_manual_entry: boolean;
   };
+}
+
+
+export interface Company {
+  id: number;
+  name: string;
+  phone: string;
+  address: string;
+  email: string;
+}
+
+export interface ILeaveRequest {
+  id: number;
+  company_id: number;
+  user_id: number;
+  type: string;
+  start_date: string;
+  end_date: string;
+  leave_count: number;
+  reason: string;
+  hr_approved: boolean;
+  admin_approved: boolean;
+  is_rejected: boolean;
+  rejected_by: number | null;
+  reject_reason: string | null;
+  created_at: string;
+  updated_at: string;
+  user: User;
+  company: Company;
 }

@@ -2,9 +2,9 @@
 
 import { buildQuery } from "@/utils/buildQuery";
 import { baseApi } from "../baseApi";
-import { IMember, IResponse } from "@/types/type";
+import { ILeaveRequest, IResponse } from "@/types/type";
 
-export const getLeave = async (query = {}): Promise<IResponse<IMember[]>> => {
+export const getLeave = async (query = {}): Promise<IResponse<ILeaveRequest[]>> => {
     const queryString = buildQuery(query);
     return await baseApi(`/leaves${queryString ? `?${queryString}` : ""}`, {
         tag: "leaves",

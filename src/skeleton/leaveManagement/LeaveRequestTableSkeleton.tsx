@@ -9,7 +9,7 @@ const LeaveRequestTableSkeleton = () => {
 
     const MIN_TABLE_WIDTH = 'min-w-[800px]';
     return (
-        <div className="border border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg rounded-lg p-5 animate-pulse max-w-full mt-5">
+        <div className="border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg  p-4 2xl:p-5  rounded-[12px] animate-pulse max-w-full mt-5">
 
             <div className="mb-5">
                 <PlaceholderBlock className="h-6 w-24" />
