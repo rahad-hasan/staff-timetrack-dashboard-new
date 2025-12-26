@@ -207,3 +207,25 @@ export interface ILeaveRequest {
   user: User;
   company: Company;
 }
+
+
+export interface Project {
+  id: number;
+  name: string;
+}
+
+export interface IManualTimeEntry {
+  id: number;
+  start_time: string;
+  end_time: string;
+  duration: number;
+  status: 'pending' | 'processing' | 'complete' | 'cancelled';
+  user_id: number;
+  project_id: number;
+  task_id: number;
+  system_update: string;
+  notes: string | null;
+  created_at: string;
+  user: User;
+  project: Project;
+}

@@ -1,74 +1,18 @@
-"use client"
-import ManualRequestsTable from "@/components/TimeSheets/ManualRequests/ManualRequestsTable";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import {
     Dialog,
     DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import AddManualTimeModal from "@/components/TimeSheets/ManualRequests/AddManualTimeModal";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
-import { useState } from "react";
-// import ManualRequestsSkeleton from "@/skeleton/timesheets/manualRequest/ManualRequestsSkeleton";
+import ManualRequestTableServer from "@/components/TimeSheets/ManualRequests/ManualRequestTableServer";
+import { ISearchParamsProps } from "@/types/type";
 
-const ManualRequests = () => {
-    const [value, setValue] = useState("")
-    const projects = [
-        {
-            value: "Time Tracker",
-            label: "Time Tracker",
-            avatar: "https://picsum.photos/200/300",
-        },
-        {
-            value: "E-commerce",
-            label: "E-commerce",
-            avatar: "https://picsum.photos/200/300",
-        },
-        {
-            value: "Fack News Detection",
-            label: "Fack News Detection",
-            avatar: "https://picsum.photos/200/300",
-        },
-        {
-            value: "Travel Together",
-            label: "Travel Together",
-            avatar: "https://picsum.photos/200/300",
-        },
-        {
-            value: "Time Tracker2",
-            label: "Time Tracker2",
-            avatar: "https://picsum.photos/200/300",
-        },
-    ]
-    const users = [
-        {
-            value: "Juyed Ahmed",
-            label: "Juyed Ahmed",
-            avatar: "https://avatar.iran.liara.run/public/18",
-        },
-        {
-            value: "Cameron Williamson",
-            label: "Cameron Williamson",
-            avatar: "https://avatar.iran.liara.run/public/19",
-        },
-        {
-            value: "Jenny Wilson",
-            label: "Jenny Wilson",
-            avatar: "https://avatar.iran.liara.run/public/20",
-        },
-        {
-            value: "Esther Howard",
-            label: "Esther Howard",
-            avatar: "https://avatar.iran.liara.run/public/21",
-        },
-        {
-            value: "Walid Ahmed",
-            label: "Walid Ahmed",
-            avatar: "https://avatar.iran.liara.run/public/22",
-        },
-    ]
+const ManualRequests = async ({ searchParams }: ISearchParamsProps) => {
+
     return (
         <div>
             <div className="flex items-center justify-between gap-3 md:gap-0 mb-5">
@@ -90,10 +34,10 @@ const ManualRequests = () => {
                         <SlidersHorizontal className="" /> <span className=" hidden sm:block dark:text-darkTextPrimary">Filters</span>
                     </Button>
                 </div> */}
-                <SelectProjectDropDown projects={projects} setValue={setValue} value={value}></SelectProjectDropDown>
-                <SelectUserDropDown users={users}></SelectUserDropDown>
+                <SelectProjectDropDown></SelectProjectDropDown>
+                <SelectUserDropDown></SelectUserDropDown>
             </div>
-            <ManualRequestsTable></ManualRequestsTable>
+            <ManualRequestTableServer searchParams={searchParams}/>
             {/* <ManualRequestsSkeleton></ManualRequestsSkeleton> */}
         </div>
     );

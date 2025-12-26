@@ -1,5 +1,3 @@
-"use client"
-import { useState } from "react";
 import {
     Tooltip,
     TooltipContent,
@@ -7,88 +5,28 @@ import {
 } from "@/components/ui/tooltip"
 import DailyTimeSheetsTable from "./DailyTimeSheetsTable";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
-import AppPagination from "@/components/Common/AppPagination";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
 
 const DailyTimeSheets = () => {
-    const [value, setValue] = useState("")
-    const projects = [
-        {
-            value: "Time Tracker",
-            label: "Time Tracker",
-            avatar: "https://picsum.photos/200/300",
-        },
-        {
-            value: "E-commerce",
-            label: "E-commerce",
-            avatar: "https://picsum.photos/200/300",
-        },
-        {
-            value: "Fack News Detection",
-            label: "Fack News Detection",
-            avatar: "https://picsum.photos/200/300",
-        },
-        {
-            value: "Travel Together",
-            label: "Travel Together",
-            avatar: "https://picsum.photos/200/300",
-        },
-        {
-            value: "Time Tracker2",
-            label: "Time Tracker2",
-            avatar: "https://picsum.photos/200/300",
-        },
-    ]
-    const users = [
-        {
-            value: "Juyed Ahmed",
-            label: "Juyed Ahmed",
-            avatar: "https://avatar.iran.liara.run/public/18",
-        },
-        {
-            value: "Cameron Williamson",
-            label: "Cameron Williamson",
-            avatar: "https://avatar.iran.liara.run/public/19",
-        },
-        {
-            value: "Jenny Wilson",
-            label: "Jenny Wilson",
-            avatar: "https://avatar.iran.liara.run/public/20",
-        },
-        {
-            value: "Esther Howard",
-            label: "Esther Howard",
-            avatar: "https://avatar.iran.liara.run/public/21",
-        },
-        {
-            value: "Walid Ahmed",
-            label: "Walid Ahmed",
-            avatar: "https://avatar.iran.liara.run/public/22",
-        },
-    ]
+
     const activePeriods = [
         { start: 5, end: 7, project: 'project', task: 'task', duration: '2:00:00' }, // Active from 5 AM to 7 AM
         { start: 10, end: 14, project: 'project', task: 'task', duration: '2:00:00' }, // Active from 1 PM to 4 PM
         { start: 16, end: 18, project: 'project', task: 'task', duration: '2:00:00' }, // Active from 6 PM to 8 PM
     ];
 
-    // date picker
-    const [selectedDate, setSelectedDate] = useState(new Date());
-    console.log('selectedDate', selectedDate);
-    const [page, setPage] = useState(1);
-    console.log(page);
     return (
         <>
             <div className=" mb-5 flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between h-full">
                 <div className=" flex flex-col sm:flex-col-reverse xl:flex-row gap-4 md:gap-3">
-                    <SpecificDatePicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></SpecificDatePicker>
+                    <SpecificDatePicker></SpecificDatePicker>
                     {/* <div className="hidden md:block">
                         <Button className=" py-0 dark:text-darkTextPrimary" variant={'filter'}>
                             <SlidersHorizontal className=" dark:text-darkTextPrimary" /> Filters
                         </Button>
                     </div> */}
-                    <SelectProjectDropDown projects={projects} setValue={setValue} value={value}></SelectProjectDropDown>
+                    <SelectProjectDropDown></SelectProjectDropDown>
                 </div>
                 {/* <div className=" "> */}
                 {/* <Select onValueChange={setUser} value={user ?? undefined}>
@@ -125,7 +63,7 @@ const DailyTimeSheets = () => {
                             ))}
                         </SelectContent>
                     </Select> */}
-                <SelectUserDropDown users={users}></SelectUserDropDown>
+                <SelectUserDropDown></SelectUserDropDown>
                 {/* </div> */}
             </div>
 
@@ -214,11 +152,7 @@ const DailyTimeSheets = () => {
 
             </div>
             <DailyTimeSheetsTable></DailyTimeSheetsTable>
-            <AppPagination
-                total={12}
-                currentPage={1} // have to put here currentPage from params
-                limit={10}
-            />
+
         </>
     );
 };
