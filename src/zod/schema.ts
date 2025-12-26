@@ -26,8 +26,14 @@ export const createNewPasswordSchema = z.object({
 })
 
 export const addManualTimeSchema = z.object({
-    project: z.string().min(1, "Project is required"),
-    task: z.string().min(1, "Task is required"),
+    // project: z.string().min(1, "Project is required"),
+    // task: z.string().min(1, "Task is required"),
+    project: z.any().refine((val) => val !== undefined && val !== null && val !== "", {
+        message: "Project is required",
+    }),
+    task: z.any().refine((val) => val !== undefined && val !== null && val !== "", {
+        message: "Task is required",
+    }),
     date: z.date().nullable().refine((date) => date !== null && !isNaN(date.getTime()), {
         message: "Date is required",
     }),

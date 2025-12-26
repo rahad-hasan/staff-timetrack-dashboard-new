@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import {
     DialogContent,
@@ -31,20 +32,23 @@ import { getProjects } from "@/actions/projects/action";
 import { IProject, ITask } from "@/types/type";
 import { useDebounce } from "@/hooks/use-debounce";
 import { getTasks } from "@/actions/task/action";
+import { toast } from "sonner";
+import { addManualTimeEntry } from "@/actions/timesheets/action";
 
 interface TimePeriod {
     start: number;
     end: number;
 }
 
-const AddManualTimeModal = () => {
+const AddManualTimeModal = ({ onClose }: { onClose: () => void }) => {
     const [loading, setLoading] = useState(false);
+    const [projectLoading, setProjectLoading] = useState(false);
     const [taskLoading, setTaskLoading] = useState(false);
     const form = useForm<z.infer<typeof addManualTimeSchema>>({
         resolver: zodResolver(addManualTimeSchema),
         defaultValues: {
-            project: "",
-            task: "",
+            project: undefined,
+            task: undefined,
             date: null,
             timeFrom: "07:30:00",
             timeTo: "08:30:00",
@@ -74,7 +78,7 @@ const AddManualTimeModal = () => {
 
     useEffect(() => {
         const loadProjects = async () => {
-            setLoading(true);
+            setProjectLoading(true);
             try {
                 const res = await getProjects({ search: debouncedProjectSearch });
                 if (res?.success) {
@@ -83,7 +87,7 @@ const AddManualTimeModal = () => {
             } catch (err) {
                 console.error("Failed to fetch projects", err);
             } finally {
-                setLoading(false);
+                setProjectLoading(false);
             }
         };
 
@@ -148,7 +152,7 @@ const AddManualTimeModal = () => {
     }, [timeFrom, timeTo]);
 
 
-    const onSubmit = (data: z.infer<typeof addManualTimeSchema>) => {
+    const onSubmit = async (data: z.infer<typeof addManualTimeSchema>) => {
         if (data.date && data.timeFrom && data.timeTo) {
             // Combine the selected date with timeFrom and timeTo
             const dateOnly = new Date(data.date);
@@ -169,10 +173,35 @@ const AddManualTimeModal = () => {
                 timeFrom: timeFromISO.toISOString(),
                 timeTo: timeToISO.toISOString(),
             };
-
+            // format(new Date(values.startDate!), "yyyy-MM-dd")
             console.log("Final Data:", formattedData);
-        } else {
-            console.error("Missing date or time fields");
+
+            const finalData = {
+                project_id: formattedData?.project,
+                task_id: formattedData?.task,
+                start_time: formattedData?.timeFrom,
+                end_time: formattedData?.timeTo,
+                notes: formattedData?.message
+            }
+
+            // setLoading(true);
+            // try {
+            //     const res = await addManualTimeEntry(formattedData);
+            //     console.log("success:", res);
+
+            //     if (res?.success) {
+            //         onClose();
+            //         form.reset();
+            //         toast.success(res?.message || "Manual Time added successfully");
+            //     } else {
+            //         toast.error(res?.message || "Failed to add manual time");
+            //     }
+            // } catch (error: any) {
+            //     console.error("failed:", error);
+            //     toast.error(error.message || "Something went wrong!");
+            // } finally {
+            //     setLoading(false);
+            // }
         }
     };
 
@@ -191,18 +220,19 @@ const AddManualTimeModal = () => {
                                     control={form.control}
                                     name="project"
                                     render={({ field }) => (
-                                        <FormItem className=" w-full">
+                                        <FormItem className="w-full">
                                             <FormLabel>Project</FormLabel>
                                             <FormControl>
                                                 <div className="relative">
                                                     <Select
-                                                        value={field.value}
-                                                        onValueChange={field.onChange}
+                                                        // Convert number to string for the Select component
+                                                        value={field.value?.toString()}
+                                                        onValueChange={(val) => field.onChange(Number(val))}
                                                     >
                                                         <SelectTrigger className="w-full">
-                                                            <div className=" flex gap-2 items-center">
-                                                                <JobIcon size={20} className=" text-headingTextColor dark:text-darkTextPrimary" />
-                                                                <SelectValue className=" text-start" placeholder="Select Project" />
+                                                            <div className="flex gap-2 items-center">
+                                                                <JobIcon size={20} className="text-headingTextColor dark:text-darkTextPrimary" />
+                                                                <SelectValue placeholder="Select Project" />
                                                             </div>
                                                         </SelectTrigger>
                                                         <SelectContent>
@@ -212,15 +242,15 @@ const AddManualTimeModal = () => {
                                                                 className="flex-1 border-none focus:ring-0 focus:outline-none"
                                                                 value={projectSearch}
                                                                 onChange={(e) => setProjectSearch(e.target.value)}
-                                                                // Prevent clicking the input from closing the Select
                                                                 onKeyDown={(e) => e.stopPropagation()}
                                                             />
-                                                            {loading ? (
+                                                            {projectLoading ? (
                                                                 <div className="p-2 text-sm text-muted-foreground">Loading...</div>
                                                             ) : projects && projects.length > 0 ? (
-                                                                projects.map(p => (
-                                                                    <SelectItem key={p?.id} value={p?.name}>
-                                                                        {p?.name}
+                                                                projects.map((p) => (
+                                                                    // Radix Select Item value must be a string
+                                                                    <SelectItem key={p.id} value={p.id.toString()}>
+                                                                        {p.name}
                                                                     </SelectItem>
                                                                 ))
                                                             ) : (
@@ -239,18 +269,18 @@ const AddManualTimeModal = () => {
                                     control={form.control}
                                     name="task"
                                     render={({ field }) => (
-                                        <FormItem className=" w-full">
+                                        <FormItem className="w-full">
                                             <FormLabel>Task</FormLabel>
                                             <FormControl>
                                                 <div className="relative">
                                                     <Select
-                                                        value={field.value}
-                                                        onValueChange={field.onChange}
+                                                        value={field.value?.toString()}
+                                                        onValueChange={(val) => field.onChange(Number(val))}
                                                     >
                                                         <SelectTrigger className="w-full">
-                                                            <div className=" flex gap-2 items-center">
-                                                                <TaskListIcon size={20} className=" text-headingTextColor dark:text-darkTextPrimary" />
-                                                                <SelectValue className=" text-start" placeholder="Select Task" />
+                                                            <div className="flex gap-2 items-center">
+                                                                <TaskListIcon size={20} className="text-headingTextColor dark:text-darkTextPrimary" />
+                                                                <SelectValue placeholder="Select Task" />
                                                             </div>
                                                         </SelectTrigger>
                                                         <SelectContent>
@@ -260,13 +290,14 @@ const AddManualTimeModal = () => {
                                                                 className="flex-1 border-none focus:ring-0 focus:outline-none"
                                                                 value={taskSearch}
                                                                 onChange={(e) => setTaskSearch(e.target.value)}
+                                                                onKeyDown={(e) => e.stopPropagation()}
                                                             />
                                                             {taskLoading ? (
                                                                 <div className="p-2 text-sm text-muted-foreground">Loading...</div>
                                                             ) : tasks && tasks.length > 0 ? (
-                                                                tasks.map(p => (
-                                                                    <SelectItem key={p?.id} value={p?.name}>
-                                                                        {p?.name}
+                                                                tasks.map((t) => (
+                                                                    <SelectItem key={t.id} value={t.id.toString()}>
+                                                                        {t.name}
                                                                     </SelectItem>
                                                                 ))
                                                             ) : (

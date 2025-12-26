@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 
 import { buildQuery } from "@/utils/buildQuery";
@@ -11,12 +12,7 @@ export const getManualTimeEntry = async (query = {}):Promise<IResponse<IManualTi
     });
 };
 
-export const addManualTimeEntry = async (data: {
-    name: string,
-    email: string,
-    role: string,
-    password: string,
-}) => {
+export const addManualTimeEntry = async (data: any) => {
     return await baseApi(`/time-entries/manual-time-entry`, {
         method: "POST",
         body: data,
