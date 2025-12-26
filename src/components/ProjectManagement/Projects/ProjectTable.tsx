@@ -20,7 +20,7 @@ import { ArrowUpDown, ChevronDown } from "lucide-react";
 // import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog } from "@/components/ui/dialog";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import FilterButton from "@/components/Common/FilterButton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";

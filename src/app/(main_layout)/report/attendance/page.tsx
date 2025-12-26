@@ -7,7 +7,6 @@ import { Suspense } from "react";
 import AttendanceTableSkeleton from "@/skeleton/report/Attendance/AttendanceTableSkeleton";
 
 const AttendancePage = async ({ searchParams }: ISearchParamsProps) => {
-    const params = searchParams;
 
     return (
         <div>
@@ -35,7 +34,7 @@ const AttendancePage = async ({ searchParams }: ISearchParamsProps) => {
                 </div> */}
             </div>
             <Suspense fallback={<AttendanceTableSkeleton />}>
-                <AttendanceServer searchParams={params}></AttendanceServer>
+                <AttendanceServer searchParams={searchParams}></AttendanceServer>
             </Suspense>
 
         </div>
