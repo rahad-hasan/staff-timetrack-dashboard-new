@@ -27,6 +27,10 @@ import JobIcon from "@/components/Icons/JobIcon";
 import TaskListIcon from "@/components/Icons/TaskListIcon";
 import CalendarIcon from "@/components/Icons/CalendarIcon";
 import ClockIcon from "@/components/Icons/ClockIcon";
+import { getProjects } from "@/actions/projects/action";
+import { IProject, ITask } from "@/types/type";
+import { useDebounce } from "@/hooks/use-debounce";
+import { getTasks } from "@/actions/task/action";
 
 interface TimePeriod {
     start: number;
@@ -34,6 +38,8 @@ interface TimePeriod {
 }
 
 const AddManualTimeModal = () => {
+    const [loading, setLoading] = useState(false);
+    const [taskLoading, setTaskLoading] = useState(false);
     const form = useForm<z.infer<typeof addManualTimeSchema>>({
         resolver: zodResolver(addManualTimeSchema),
         defaultValues: {
@@ -50,21 +56,57 @@ const AddManualTimeModal = () => {
         const parts = time.split(':');
         // Nullish Coalescing Operator
         // f parts[0] is null or undefined (which are called nullish values)
-        // parseInt(..., 10)	This is the standard JavaScript function that takes a string and converts it into an integer (a whole number). 
+        // parseInt(..., 10)	This is the standard JavaScript function that takes a string and converts it into an integer (a whole number).
         // The 10 specifies that the conversion should use base 10 (decimal) counting.
         // By using ?? '0', you ensure that parseInt always receives a string that it can attempt to convert.
         const hours = parseInt(parts[0] ?? '0', 10);
         const minutes = parseInt(parts[1] ?? '0', 10);
         return hours + minutes / 60;
     };
-
-    const projects = ["Orbit Project", "App Redesign", "Marketing Campaign", "New Website"];
-    const tasks = ["Website Design", "Working on App Design", "New Landing Page", "Work on helsenist Project"];
+    const [projects, setProjects] = useState<IProject[]>();
+    const [tasks, setTasks] = useState<ITask[]>();
+    // // const projects = ["Orbit Project", "App Redesign", "Marketing Campaign", "New Website"];
+    // const tasks = ["Website Design", "Working on App Design", "New Landing Page", "Work on helsenist Project"];
     const [taskSearch, setTaskSearch] = useState("");
     const [projectSearch, setProjectSearch] = useState("");
+    const debouncedProjectSearch = useDebounce(projectSearch, 500);
+    const debouncedTaskSearch = useDebounce(taskSearch, 500);
 
-    const filteredProjects = projects.filter(p => p.toLowerCase().includes(projectSearch.toLowerCase()));
-    const filteredTasks = tasks.filter(t => t.toLowerCase().includes(taskSearch.toLowerCase()));
+    useEffect(() => {
+        const loadProjects = async () => {
+            setLoading(true);
+            try {
+                const res = await getProjects({ search: debouncedProjectSearch });
+                if (res?.success) {
+                    setProjects(res.data);
+                }
+            } catch (err) {
+                console.error("Failed to fetch projects", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadProjects();
+    }, [debouncedProjectSearch]);
+
+    useEffect(() => {
+        const loadProjects = async () => {
+            setTaskLoading(true);
+            try {
+                const res = await getTasks({ search: debouncedTaskSearch });
+                if (res?.success) {
+                    setTasks(res.data);
+                }
+            } catch (err) {
+                console.error("Failed to fetch projects", err);
+            } finally {
+                setTaskLoading(false);
+            }
+        };
+
+        loadProjects();
+    }, [debouncedTaskSearch]);
 
     const [open, setOpen] = useState(false);
     const [date, setDate] = useState<Date | undefined>(undefined);
@@ -170,10 +212,20 @@ const AddManualTimeModal = () => {
                                                                 className="flex-1 border-none focus:ring-0 focus:outline-none"
                                                                 value={projectSearch}
                                                                 onChange={(e) => setProjectSearch(e.target.value)}
+                                                                // Prevent clicking the input from closing the Select
+                                                                onKeyDown={(e) => e.stopPropagation()}
                                                             />
-                                                            {filteredProjects.map(p => (
-                                                                <SelectItem key={p} value={p}>{p}</SelectItem>
-                                                            ))}
+                                                            {loading ? (
+                                                                <div className="p-2 text-sm text-muted-foreground">Loading...</div>
+                                                            ) : projects && projects.length > 0 ? (
+                                                                projects.map(p => (
+                                                                    <SelectItem key={p?.id} value={p?.name}>
+                                                                        {p?.name}
+                                                                    </SelectItem>
+                                                                ))
+                                                            ) : (
+                                                                <div className="p-2 text-sm text-center text-muted-foreground">No projects found</div>
+                                                            )}
                                                         </SelectContent>
                                                     </Select>
                                                 </div>
@@ -209,9 +261,17 @@ const AddManualTimeModal = () => {
                                                                 value={taskSearch}
                                                                 onChange={(e) => setTaskSearch(e.target.value)}
                                                             />
-                                                            {filteredTasks.map(t => (
-                                                                <SelectItem key={t} value={t}>{t}</SelectItem>
-                                                            ))}
+                                                            {taskLoading ? (
+                                                                <div className="p-2 text-sm text-muted-foreground">Loading...</div>
+                                                            ) : tasks && tasks.length > 0 ? (
+                                                                tasks.map(p => (
+                                                                    <SelectItem key={p?.id} value={p?.name}>
+                                                                        {p?.name}
+                                                                    </SelectItem>
+                                                                ))
+                                                            ) : (
+                                                                <div className="p-2 text-sm text-center text-muted-foreground">No tasks found</div>
+                                                            )}
                                                         </SelectContent>
                                                     </Select>
                                                 </div>
