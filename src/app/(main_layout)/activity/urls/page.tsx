@@ -1,6 +1,4 @@
-'use client'
 import { Settings } from "lucide-react";
-import { useState } from "react";
 import UrlsTable from "@/components/Activity/Urls/UrlsTable";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
@@ -9,64 +7,6 @@ import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
 // import UrlsTableSkeleton from "@/skeleton/activity/url/UrlsTableSkeleton";
 
 const Urls = () => {
-    console.log('urls');
-    const [value, setValue] = useState("")
-    const projects = [
-        {
-            value: "Time Tracker",
-            label: "Time Tracker",
-            avatar: "https://picsum.photos/200/300",
-        },
-        {
-            value: "E-commerce",
-            label: "E-commerce",
-            avatar: "https://picsum.photos/200/300",
-        },
-        {
-            value: "Fack News Detection",
-            label: "Fack News Detection",
-            avatar: "https://picsum.photos/200/300",
-        },
-        {
-            value: "Travel Together",
-            label: "Travel Together",
-            avatar: "https://picsum.photos/200/300",
-        },
-        {
-            value: "Time Tracker2",
-            label: "Time Tracker2",
-            avatar: "https://picsum.photos/200/300",
-        },
-    ]
-    const users = [
-        {
-            value: "Juyed Ahmed",
-            label: "Juyed Ahmed",
-            avatar: "https://avatar.iran.liara.run/public/18",
-        },
-        {
-            value: "Cameron Williamson",
-            label: "Cameron Williamson",
-            avatar: "https://avatar.iran.liara.run/public/19",
-        },
-        {
-            value: "Jenny Wilson",
-            label: "Jenny Wilson",
-            avatar: "https://avatar.iran.liara.run/public/20",
-        },
-        {
-            value: "Esther Howard",
-            label: "Esther Howard",
-            avatar: "https://avatar.iran.liara.run/public/21",
-        },
-        {
-            value: "Walid Ahmed",
-            label: "Walid Ahmed",
-            avatar: "https://avatar.iran.liara.run/public/22",
-        },
-    ]
-    // date picker
-    const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
     return (
         <div>
@@ -91,15 +31,15 @@ const Urls = () => {
 
             <div className=" mb-5 flex flex-col gap-4 sm:gap-3 xl:flex-row justify-between">
                 <div className=" flex flex-col sm:flex-row gap-3">
-                    <SpecificDatePicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></SpecificDatePicker>
+                    <SpecificDatePicker></SpecificDatePicker>
                     {/* Filter */}
                     {/* <Button className=" hidden lg:flex dark:text-darkTextPrimary" variant={'filter'}>
                         <SlidersHorizontal className="dark:text-darkTextPrimary" /> Filters
                     </Button> */}
-                    <SelectProjectDropDown  projects={projects} setValue={setValue} value={value}></SelectProjectDropDown>
+                    <SelectProjectDropDown></SelectProjectDropDown>
                 </div>
                 <div className=" flex items-center gap-3">
-                    <SelectUserDropDown users={users}></SelectUserDropDown>
+                    <SelectUserDropDown></SelectUserDropDown>
                 </div>
             </div>
             <UrlsTable></UrlsTable>

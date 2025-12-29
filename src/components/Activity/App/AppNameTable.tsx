@@ -1,7 +1,7 @@
 "use client"
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { ArrowUpDown } from "lucide-react";
 import teamsLogo from '../../../assets/activity/teams-logo.png'
 import Image from "next/image";
@@ -11,103 +11,19 @@ import {
 } from "@/components/ui/dialog"
 import BlockAppModal from "./BlockAppModal";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
+import { IApps } from "@/types/type";
 
-const AppNameTable = () => {
+const AppNameTable = ({ data }: { data: IApps[] }) => {
+    console.log('get data from', data);
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
     console.log(rowSelection);
-    interface Task {
-        appName: string;
-        projectName: string;
-        session: number;
-        timeSpent: string;
-        time: string;
-        isBlock: boolean;
-        startTime: string;
-        endTime: string;
-    }
 
-    const taskList: Task[] = useMemo(
-        () => [
-            {
-                appName: "VS Code",
-                projectName: "Staff Time Tracker – Desktop",
-                session: 50,
-                timeSpent: "01:15:22",
-                time: "8:00 AM - 11:00 AM",
-                isBlock: false,
-                startTime: "8:00 am",
-                endTime: "10:00 pm"
 
-            },
-            {
-                appName: "Google Chrome",
-                projectName: "Staff Time Tracker – Admin",
-                session: 47,
-                timeSpent: "00:35:10",
-                time: "8:00 AM - 11:00 AM",
-                isBlock: false,
-                startTime: "8:00 am",
-                endTime: "10:00 pm"
-            },
-            {
-                appName: "Postman",
-                projectName: "API v2 – Reports",
-                session: 69,
-                timeSpent: "00:34:29",
-                time: "8:00 AM - 11:00 AM",
-                isBlock: false,
-                startTime: "8:00 am",
-                endTime: "10:00 pm"
-            },
-            {
-                appName: "Terminal",
-                projectName: "DevOps – PM2/Redis",
-                session: 75,
-                timeSpent: "00:45:03",
-                time: "8:00 AM - 11:00 AM",
-                isBlock: false,
-                startTime: "8:00 am",
-                endTime: "10:00 pm"
-            },
-            {
-                appName: "Facebook",
-                projectName: "DB – TimeEntries cleanup",
-                session: 23,
-                timeSpent: "00:45:18",
-                time: "8:00 AM - 11:00 AM",
-                isBlock: true,
-                startTime: "8:00 am",
-                endTime: "10:00 pm"
-            },
-            {
-                appName: "Figma",
-                projectName: "Dashboard UI Polish",
-                session: 35,
-                timeSpent: "00:40:02",
-                time: "8:00 AM - 11:00 AM",
-                isBlock: false,
-                startTime: "8:00 am",
-                endTime: "10:00 pm"
-            },
-            {
-                appName: "Slack",
-                projectName: "Team Sync",
-                session: 59,
-                timeSpent: "00:20:31",
-                time: "8:00 AM - 11:00 AM",
-                isBlock: false,
-                startTime: "8:00 am",
-                endTime: "10:00 pm"
-            }
-        ],
-        []
-    );
-
-    const columns: ColumnDef<Task>[] = [
+    const columns: ColumnDef<IApps>[] = [
 
         {
-            accessorKey: "appName",
+            accessorKey: "app_name",
             header: ({ column }) => {
                 return (
                     <div className="  min-w-[160px]">
@@ -122,13 +38,13 @@ const AppNameTable = () => {
                 )
             },
             cell: ({ row }) => {
-                const appName = row.getValue("appName") as string;
+                const appName = row.getValue("app_name") as string;
                 // const image = row.original.image;
                 return (
                     <div className="flex items-center gap-2">
                         <Image src={teamsLogo} alt="app_logo" width={200} height={200} className=" w-10 border-[1.5px] border-borderColor dark:border-darkBorder rounded-full p-1.5" />
                         <div className="">
-                            <p className=" text-base font-bold text-headingTextColor dark:text-darkTextPrimary">{appName}</p>
+                            <p className=" text-base font-bold text-headingTextColor dark:text-darkTextPrimary capitalize">{appName}</p>
                             <span className="font-normal text-subTextColor dark:text-darkTextSecondary">App</span>
                         </div>
                     </div>
@@ -151,40 +67,39 @@ const AppNameTable = () => {
                 )
             },
             cell: ({ row }) => {
-                const projectName = row.getValue("projectName") as string;
 
                 return (
                     <div className="flex items-center gap-2">
-                        <span className=" font-medium">{projectName}</span>
+                        <span className=" font-medium">{row?.original?.project?.name}</span>
                     </div>
                 );
             }
         },
-        {
-            accessorKey: "session",
-            header: ({ column }) => {
-                return (
-                    <div>
-                        <span
-                            className=" cursor-pointer flex items-center gap-1"
-                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        >
-                            Sessions
-                            <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </span>
-                    </div>
-                )
-            },
-            cell: ({ row }) => {
-                const session = row.getValue("session") as string;
+        // {
+        //     accessorKey: "session",
+        //     header: ({ column }) => {
+        //         return (
+        //             <div>
+        //                 <span
+        //                     className=" cursor-pointer flex items-center gap-1"
+        //                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        //                 >
+        //                     Sessions
+        //                     <ArrowUpDown className="ml-2 h-4 w-4" />
+        //                 </span>
+        //             </div>
+        //         )
+        //     },
+        //     cell: ({ row }) => {
+        //         const session = row.getValue("session") as string;
 
-                return (
-                    <div className="flex items-center gap-2">
-                        <span className=" bg-[#5db0f1] text-white rounded-2xl font-normal px-3 py-0.5">{session}</span>
-                    </div>
-                );
-            }
-        },
+        //         return (
+        //             <div className="flex items-center gap-2">
+        //                 <span className=" bg-[#5db0f1] text-white rounded-2xl font-normal px-3 py-0.5">nai</span>
+        //             </div>
+        //         );
+        //     }
+        // },
         {
             accessorKey: "timeSpent",
             // header: () => <div className="">Time Worked</div>,
@@ -202,14 +117,14 @@ const AppNameTable = () => {
                 )
             },
             cell: ({ row }) => {
-                const timeSpent = row.getValue("timeSpent") as string;
-                const time = row.original.time as string;
-                const isBlock = row.original.isBlock as boolean;
+                // const time = row.original.time as string;
+                // const isBlock = row.original.isBlock as boolean;
+                const isBlock = false
                 return (
                     <div className=" flex items-center justify-between">
                         <div className=" flex flex-col">
-                            <span className=" font-medium text-headingTextColor dark:text-darkTextPrimary">{timeSpent}</span>
-                            <span className="text-sm font-thin text-subTextColor dark:text-darkTextSecondary">{time}</span>
+                            <span className=" font-medium text-headingTextColor dark:text-darkTextPrimary">{row?.original?.duration}</span>
+                            <span className="text-sm font-thin text-subTextColor dark:text-darkTextSecondary">nai-nai</span>
                         </div>
                         <div className="flex justify-end">
 
@@ -244,7 +159,7 @@ const AppNameTable = () => {
     ];
 
     const table = useReactTable({
-        data: taskList,
+        data: data,
         columns,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,
