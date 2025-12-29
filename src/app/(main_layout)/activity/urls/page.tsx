@@ -1,12 +1,14 @@
 import { Settings } from "lucide-react";
-import UrlsTable from "@/components/Activity/Urls/UrlsTable";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
-// import UrlsTableSkeleton from "@/skeleton/activity/url/UrlsTableSkeleton";
+import UrlsTableServer from "@/components/Activity/Urls/UrlsTableServer";
+import UrlsTableSkeleton from "@/skeleton/activity/url/UrlsTableSkeleton";
+import { Suspense } from "react";
+import { ISearchParamsProps } from "@/types/type";
 
-const Urls = () => {
+const Urls = ({searchParams}: ISearchParamsProps) => {
 
     return (
         <div>
@@ -42,7 +44,9 @@ const Urls = () => {
                     <SelectUserDropDown></SelectUserDropDown>
                 </div>
             </div>
-            <UrlsTable></UrlsTable>
+            <Suspense fallback={<UrlsTableSkeleton />}>
+                <UrlsTableServer searchParams={searchParams} />
+            </Suspense>
             {/* <UrlsTableSkeleton></UrlsTableSkeleton> */}
         </div>
     );

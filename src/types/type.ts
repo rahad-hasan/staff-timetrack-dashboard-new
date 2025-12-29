@@ -242,7 +242,25 @@ export interface IApps {
   url: string;
   duration: string;
   tab_id: number | null;
-  updated_at: string; 
+  updated_at: string;
+  created_at: string;
+  user: User;
+  project: Project;
+}
+
+export interface IUrls {
+  id: number;
+  company_id: number;
+  user_id: number;
+  app_id: number | null;
+  project_id: number;
+  task_id: number;
+  date: string;
+  app_name: string;
+  url: string;
+  duration: string;
+  tab_id: number | null;
+  updated_at: string;
   created_at: string;
   user: User;
   project: Project;
