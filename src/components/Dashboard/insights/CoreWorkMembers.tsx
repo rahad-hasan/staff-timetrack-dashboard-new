@@ -15,7 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import DownArrow from "@/components/Icons/DownArrow";
 import {
@@ -33,39 +33,20 @@ import {
 } from "@/components/ui/popover"
 import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { ICoreMember } from "@/types/type";
 
 
-const CoreWorkMembers = () => {
-  type Member = {
-    name: string;
-    image: string;
-    productivity: string;
-    total_work: string;
+const CoreWorkMembers = ({ data }: { data: ICoreMember[] }) => {
+
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const setType = (type: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("type", type);
+    router.push(`?${params.toString()}`);
   };
-
-  const memberData = useMemo(
-    () => [
-      {
-        name: "Kalki Noland",
-        image: "https://avatar.iran.liara.run/public/18",
-        productivity: "78%",
-        total_work: "24:08:00",
-      },
-      {
-        name: "Minakshi Devi",
-        image: "https://avatar.iran.liara.run/public/25",
-        productivity: "73%",
-        total_work: "12:08:00",
-      },
-      {
-        name: "Minakshi Devi",
-        image: "https://avatar.iran.liara.run/public/25",
-        productivity: "78%",
-        total_work: "12:08:00",
-      },
-    ],
-    []
-  );
 
   // const [visibleRows, setVisibleRows] = useState<Member[]>(memberData);
 
@@ -96,19 +77,19 @@ const CoreWorkMembers = () => {
   // ;
 
 
-  const columns: ColumnDef<Member>[] = [
+  const columns: ColumnDef<ICoreMember>[] = [
     {
       accessorKey: "name",
       // header: "Name",
       header: () => <div className="">Name</div>,
       cell: ({ row }) => {
         const name = row.getValue("name") as string;
-        const image = row.original.image;
+        const image = row.original.image ? row.original.image : "";
         return (
           <div className="flex items-center gap-3 min-w-[160px]">
             <Avatar className="size-10">
               <AvatarImage src={image} alt={name}></AvatarImage>
-              <AvatarFallback>UA</AvatarFallback>
+              <AvatarFallback>{name?.charAt(0)}</AvatarFallback>
             </Avatar>
             <span className="font-bold text-headingTextColor dark:text-darkTextPrimary">
               {name}
@@ -121,11 +102,10 @@ const CoreWorkMembers = () => {
       accessorKey: "productivity",
       header: "Productivity",
       cell: ({ row }) => {
-        const productivity = row.getValue("productivity") as string;
         return (
           <div className="">
             <p className="font-medium text-headingTextColor dark:text-darkTextPrimary">
-              {productivity}
+              {row?.original?.activity_percentage}%
             </p>
           </div>
         );
@@ -135,11 +115,10 @@ const CoreWorkMembers = () => {
       accessorKey: "total_work",
       header: () => <div className=" text-right">Total Work</div>,
       cell: ({ row }) => {
-        const total_work = row.getValue("total_work") as string;
         return (
           <div className="">
             <p className=" text-right text-headingTextColor dark:text-darkTextPrimary">
-              {total_work}
+              {row?.original?.work_duration?.formatted}
             </p>
           </div>
         );
@@ -148,22 +127,21 @@ const CoreWorkMembers = () => {
   ];
 
   const table = useReactTable({
-    data: memberData,
+    data: data,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
   // for dropdown
   const [open, setOpen] = useState(false)
-  const [value, setValue] = useState("top-core-worker")
+  const [value, setValue] = useState("highest")
 
   const menuItems = [
-    { value: "top-core-worker", label: "Top Core worker" },
-    { value: "top-activity", label: "Top Activity" },
-    { value: "low-activity", label: "Low Activity" },
+    { value: "highest", label: "Top Activity" },
+    { value: "lowest", label: "Low Activity" },
   ];
 
   return (
-    <div className="w-full border border-borderColor dark:border-darkBorder  dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">
+    <div className="w-full border border-borderColor dark:border-darkBorder  dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px] h-full">
       <div className=" flex items-center justify-between">
         <div className=" flex items-center gap-1.5 sm:gap-3 sm:w-1/2">
           <h2 className=" text-base sm:text-lg uppercase text-headingTextColor dark:text-darkTextPrimary">
@@ -181,7 +159,7 @@ const CoreWorkMembers = () => {
               className="w-[170px] sm:w-[200px] h-9 flex justify-between items-center gap-2
             dark:border-darkBorder dark:text-darkTextPrimary
             dark:bg-darkPrimaryBg hover:dark:bg-darkPrimaryBg"
-              >
+            >
               <span className="truncate">
                 {value
                   ? menuItems.find((item: any) => item.value === value)?.label
@@ -205,6 +183,7 @@ const CoreWorkMembers = () => {
                       className="cursor-pointer hover:dark:bg-darkPrimaryBg flex items-center gap-2"
                       onSelect={(currentValue) => {
                         setValue(currentValue);
+                        setType(currentValue);
                         setOpen(false);
                       }}
                     >

@@ -93,12 +93,21 @@
 // };
 
 // export default RecentActivity;
-import CoreWorkMembers from "@/components/Dashboard/insights/CoreWorkMembers";
 
-const CoreWorkMember = () => {
+import { getCoreMembers } from "@/actions/dashboard/action";
+import CoreWorkMembers from "@/components/Dashboard/insights/CoreWorkMembers";
+import { ISearchParamsProps } from "@/types/type";
+
+const CoreWorkMember = async ({ searchParams }: ISearchParamsProps) => {
+  const params = await searchParams;
+  const statsType = params.type ? params.type : "lowest";
+  const result = await getCoreMembers({
+    type: statsType,
+  });
+  console.log(result);
   return (
     <div>
-      <CoreWorkMembers></CoreWorkMembers>
+      <CoreWorkMembers data={result?.data?.members}></CoreWorkMembers>
     </div>
   );
 };

@@ -283,3 +283,22 @@ export interface IDashboardStats {
   projects: IStatItem;
   members: IStatItem;
 }
+
+export interface IDuration {
+  hours: number;
+  formatted: string;
+}
+
+export interface ICoreMember {
+  user_id: number;
+  name: string;
+  email: string;
+  image: string;
+  work_duration: IDuration;
+  idle_duration: IDuration;
+  active_duration: IDuration;
+  activity_percentage: number;
+  projects_count: number;
+  tasks_count: number;
+  rank: number;
+}

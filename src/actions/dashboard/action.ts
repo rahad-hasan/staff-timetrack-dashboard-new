@@ -9,3 +9,10 @@ export const getDashboardStats = async (query = {}) => {
         tag: "dashboardStats",
     });
 };
+
+export const getCoreMembers = async (query = {}) => {
+    const queryString = buildQuery(query);
+    return await baseApi(`/admin/core-member${queryString ? `?${queryString}` : ""}`, {
+        tag: "coreMember",
+    });
+};
