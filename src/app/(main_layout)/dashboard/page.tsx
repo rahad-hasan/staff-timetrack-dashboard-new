@@ -1,17 +1,13 @@
-"use client";
-
 import DayWeekMonthSelection from "@/components/Common/DayWeekMonthSelection";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import HeroSection from "@/components/Dashboard/HeroSection";
-import { useState } from "react";
+import { ISearchParamsProps } from "@/types/type";
 
-export default function Dashboard() {
-  const [activeTab, setActiveTab] = useState<"Daily" | "Weekly" | "Monthly">("Daily");
-  console.log("Dashboard Rendered", activeTab);
+export default async function Dashboard({ searchParams }: ISearchParamsProps) {
+  const params = await searchParams;
+  type Tab = "Daily" | "Weekly" | "Monthly";
+  const activeTab = (params?.tab as Tab) ?? "Daily";
 
-  const handleTabClick = (tab: "Daily" | "Weekly" | "Monthly") => {
-    setActiveTab(tab);
-  };
 
   const getDailyDate = () => {
     return new Date().toLocaleDateString("en-US", {
@@ -66,7 +62,7 @@ export default function Dashboard() {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5">
         <HeadingComponent heading="Dashboard" subHeading={date}></HeadingComponent>
-        <DayWeekMonthSelection activeTab={activeTab} handleTabClick={handleTabClick}></DayWeekMonthSelection>
+        <DayWeekMonthSelection></DayWeekMonthSelection>
       </div>
       <HeroSection></HeroSection>
       {/* <DashboardHeroSkeleton></DashboardHeroSkeleton> */}
