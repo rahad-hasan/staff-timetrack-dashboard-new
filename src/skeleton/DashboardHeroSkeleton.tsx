@@ -30,7 +30,7 @@ const DashboardHeroSkeleton = () => {
 
           <div className="bg-bgSecondary dark:bg-darkSecondaryBg rounded-b-2xl border-t border-borderColor dark:border-darkBorder px-4 py-3 flex items-center gap-2 absolute bottom-0 left-0 right-0">
             {/* <div className={`h-5 w-5 rounded-full ${skeletonBg}`}></div> */}
-            <TrendingUp className=" text-[#b9b9b9]" size={20} />
+            <TrendingUp className=" text-[#b9b9b9] dark:text-darkBorder" size={20} />
             <div className={`h-4 w-8 rounded ${skeletonBg}`}></div>
             <div className={`h-4 w-16 rounded ${skeletonBg}`}></div>
           </div>

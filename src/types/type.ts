@@ -265,3 +265,21 @@ export interface IUrls {
   user: User;
   project: Project;
 }
+
+export interface IStatItem {
+  label: string;
+  value: string;
+  change: string;
+  is_improved: boolean;
+}
+
+export interface IWorkStat extends IStatItem {
+  raw_hours: number;
+}
+
+export interface IDashboardStats {
+  activity: IStatItem;
+  work: IWorkStat;
+  projects: IStatItem;
+  members: IStatItem;
+}
