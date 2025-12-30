@@ -24,11 +24,11 @@ import { getMembersDashboard } from "@/actions/members/action"
 import { useLogInUserStore } from "@/store/logInUserStore"
 
 const SelectUserDropDown = ({ defaultSelect = true }: { defaultSelect?: boolean }) => {
-    const { logInUserData } = useLogInUserStore();
+
+    const logInUserData = useLogInUserStore(state => state.logInUserData);
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
-
     // 1. Initialize value from URL or null
     const [value, setValue] = useState<string | null>(searchParams.get("user_id"));
     const [open, setOpen] = useState(false);
@@ -76,7 +76,6 @@ const SelectUserDropDown = ({ defaultSelect = true }: { defaultSelect?: boolean 
     }, [defaultSelect, logInUserData?.id]);
 
 
-
     const selectedUser = useMemo(() =>
         users.find((u) => u.id === value),
         [users, value]);
@@ -103,6 +102,7 @@ const SelectUserDropDown = ({ defaultSelect = true }: { defaultSelect?: boolean 
                     variant="outline2"
                     role="combobox"
                     aria-expanded={open}
+                    disabled={logInUserData?.role === "employee"}
                     className="w-full sm:w-[250px] h-10 bg-[#f6f7f9] flex justify-between items-center gap-2 dark:border-darkBorder dark:text-darkTextPrimary dark:bg-darkPrimaryBg hover:dark:bg-darkPrimaryBg"
                 >
                     <div className="flex items-center gap-3 overflow-hidden">

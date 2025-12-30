@@ -33,7 +33,7 @@ import { IManualTimeEntry, IProject, ITask } from "@/types/type";
 import { useDebounce } from "@/hooks/use-debounce";
 import { getTasks } from "@/actions/task/action";
 import { toast } from "sonner";
-import { addManualTimeEntry } from "@/actions/timesheets/action";
+import { editManualTimeEntry } from "@/actions/timesheets/action";
 import { format, parseISO } from "date-fns";
 
 interface TimePeriod {
@@ -184,33 +184,32 @@ const EditManualTimeModal = ({ onClose, selectedItem }: { onClose: () => void, s
 
             console.log("Final Data:", formattedData);
 
-            // const finalData = {
-            //     project_id: formattedData?.project,
-            //     task_id: formattedData?.task,
-            //     start_time: formattedData?.timeFrom,
-            //     end_time: formattedData?.timeTo,
-            //     note: formattedData?.message
-            // }
+            const finalData = {
+                project_id: formattedData?.project,
+                task_id: formattedData?.task,
+                start_time: formattedData?.timeFrom,
+                end_time: formattedData?.timeTo,
+                note: formattedData?.message
+            }
 
-            // setLoading(true);
-            // try {
-            //     const res = await addManualTimeEntry(finalData);
-            //     console.log("success:", res);
-
-            //     if (res?.success) {
-            //         form.reset();
-            //         setDate(undefined);
-            //         toast.success(res?.message || "Manual Time added successfully");
-            //         onClose();
-            //     } else {
-            //         toast.error(res?.message || "Failed to add manual time");
-            //     }
-            // } catch (error: any) {
-            //     console.error("failed:", error);
-            //     toast.error(error.message || "Something went wrong!");
-            // } finally {
-            //     setLoading(false);
-            // }
+            setLoading(true);
+            try {
+                const res = await editManualTimeEntry({ data: finalData, id: selectedItem?.id });
+                console.log("success:", res);
+                if (res?.success) {
+                    form.reset();
+                    setDate(undefined);
+                    toast.success(res?.message || "Manual Time edited successfully");
+                    onClose();
+                } else {
+                    toast.error(res?.message || "Failed to edit manual time");
+                }
+            } catch (error: any) {
+                console.error("failed:", error);
+                toast.error(error.message || "Something went wrong!");
+            } finally {
+                setLoading(false);
+            }
         }
     };
 
@@ -459,7 +458,7 @@ const EditManualTimeModal = ({ onClose, selectedItem }: { onClose: () => void, s
                                 />
                             </div>
                             <div className="flex justify-end">
-                                <Button type="submit" disabled={loading}>{loading ? "Loading..." : "Save"}</Button>
+                                <Button type="submit" disabled={loading}>{loading ? "Loading..." : "Submit"}</Button>
                             </div>
                         </form>
                     </Form>

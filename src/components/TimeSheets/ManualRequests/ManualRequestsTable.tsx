@@ -13,11 +13,20 @@ import { IManualTimeEntry } from "@/types/type";
 import { format } from "date-fns";
 import EditManualTimeModal from "./EditManualTimeModal";
 import { Dialog } from "@/components/ui/dialog";
+import { useLogInUserStore } from "@/store/logInUserStore";
+import ConfirmDialog from "@/components/Common/ConfirmDialog";
+import { toast } from "sonner";
+
 
 const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
     const [sorting, setSorting] = useState<SortingState>([])
     const [open, setOpen] = useState(false)
     const [selectedItem, setSelectedItem] = useState<IManualTimeEntry | null>(null)
+    const logInUserData = useLogInUserStore(state => state.logInUserData);
+
+    const handleApprove = () => {
+        toast.success("Deleted successfully");
+    }
 
     const columns: ColumnDef<IManualTimeEntry>[] = [
         {
@@ -144,14 +153,34 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
                                             <EditIcon size={20} />
                                             <p>Edit Time</p>
                                         </div>
-                                        <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                            <ApproveIcon size={20} />
-                                            <p>Approve requested time</p>
-                                        </div>
-                                        <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                            <DenyIcon size={20} />
-                                            <p>Deny requested time</p>
-                                        </div>
+
+                                        {
+                                            // logInUserData?.role !== "employee" && logInUserData?.role !== "project_manager"  &&
+                                            logInUserData?.role !== "employee" &&
+                                            <>
+                                                <ConfirmDialog
+                                                    trigger={
+                                                        <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
+                                                            <ApproveIcon size={20} />
+                                                            <p>Approve requested time</p>
+                                                        </div>
+                                                    }
+                                                    title="Delete the task"
+                                                    description="Are you sure you want to delete this task? This action cannot be undone."
+                                                    confirmText="Confirm"
+                                                    cancelText="Cancel"
+                                                    onConfirm={handleApprove}
+                                                    // onCancel={() => {
+                                                    //     toast.info("Delete cancelled");
+                                                    // }}
+                                                />
+                                                <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
+                                                    <DenyIcon size={20} />
+                                                    <p>Deny requested time</p>
+                                                </div>
+                                            </>
+                                        }
+
                                     </div>
                                 </div>
                             </PopoverContent>
