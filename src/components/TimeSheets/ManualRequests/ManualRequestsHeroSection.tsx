@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import {
     Dialog,
-    DialogTrigger,
 } from "@/components/ui/dialog";
 import AddManualTimeModal from "@/components/TimeSheets/ManualRequests/AddManualTimeModal";
 import { useState } from "react";
@@ -12,12 +11,11 @@ const ManualRequestsHeroSection = () => {
     return (
         <div className="">
             <Dialog open={open} onOpenChange={setOpen}>
-                <DialogTrigger asChild>
-                    <Button className=""><Plus className="size-5" /> <span className=" hidden sm:block">Add Time</span></Button>
-                </DialogTrigger>
+                {/* ❌ You must NOT use DialogTrigger when the Dialog is fully controlled
+                DialogTrigger for this flicker happen */}
+                <Button onClick={() => setOpen(true)} className=""><Plus className="size-5" /> <span className=" hidden sm:block">Add Time</span></Button>
                 <AddManualTimeModal onClose={() => setOpen(false)}></AddManualTimeModal>
             </Dialog>
-
         </div>
     );
 };

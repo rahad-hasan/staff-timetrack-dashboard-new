@@ -5,14 +5,22 @@ import { buildQuery } from "@/utils/buildQuery";
 import { baseApi } from "../baseApi";
 import { IManualTimeEntry, IResponse } from "@/types/type";
 
-export const getManualTimeEntry = async (query = {}):Promise<IResponse<IManualTimeEntry[]>> => {
+export const getManualTimeEntry = async (query = {}): Promise<IResponse<IManualTimeEntry[]>> => {
     const queryString = buildQuery(query);
     return await baseApi(`/time-entries/manual-time-entry${queryString ? `?${queryString}` : ""}`, {
         tag: "manualTimeEntry",
     });
 };
 
-export const addManualTimeEntry = async (data: any) => {
+export const addManualTimeEntry = async (
+    data: {
+        project_id: number;
+        task_id: number;
+        start_time: string;
+        end_time: string;
+        note?: string;
+    }
+) => {
     return await baseApi(`/time-entries/manual-time-entry`, {
         method: "POST",
         body: data,
@@ -22,10 +30,11 @@ export const addManualTimeEntry = async (data: any) => {
 
 export const editManualTimeEntry = async ({ data, id }: {
     data: {
-        name: string,
-        // email: string,
-        role: string,
-        password: string,
+        project_id: number;
+        task_id: number;
+        start_time: string;
+        end_time: string;
+        note?: string;
     },
     id: number | undefined
 }) => {

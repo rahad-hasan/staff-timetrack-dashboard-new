@@ -116,9 +116,7 @@ const AddManualTimeModal = ({ onClose }: { onClose: () => void }) => {
     const [date, setDate] = useState<Date | undefined>(undefined);
     const [activePeriods, setActivePeriods] = useState<TimePeriod[] | undefined>(undefined);
     const [totalTime, setTotalTime] = useState<string>("1:00:00");
-
-
-    const timeFrom = form.watch("timeFrom"); // form.watch, getting real time data like onChange from react hook form
+    const timeFrom = form.watch("timeFrom");
     const timeTo = form.watch("timeTo");
     console.log('time From', timeFrom);
 
@@ -154,15 +152,11 @@ const AddManualTimeModal = ({ onClose }: { onClose: () => void }) => {
 
     const onSubmit = async (data: z.infer<typeof addManualTimeSchema>) => {
         if (data.date && data.timeFrom && data.timeTo) {
-            // Combine the selected date with timeFrom and timeTo
             const dateOnly = new Date(data.date);
-
-            // Construct ISO datetime for timeFrom
             const [fromHours, fromMinutes, fromSeconds] = data.timeFrom.split(":").map(Number);
             const timeFromISO = new Date(dateOnly);
             timeFromISO.setHours(fromHours, fromMinutes, fromSeconds || 0, 0);
 
-            // Construct ISO datetime for timeTo
             const [toHours, toMinutes, toSeconds] = data.timeTo.split(":").map(Number);
             const timeToISO = new Date(dateOnly);
             timeToISO.setHours(toHours, toMinutes, toSeconds || 0, 0);
@@ -173,7 +167,7 @@ const AddManualTimeModal = ({ onClose }: { onClose: () => void }) => {
                 timeFrom: timeFromISO.toISOString(),
                 timeTo: timeToISO.toISOString(),
             };
-            // format(new Date(values.startDate!), "yyyy-MM-dd")
+
             console.log("Final Data:", formattedData);
 
             const finalData = {
@@ -181,30 +175,30 @@ const AddManualTimeModal = ({ onClose }: { onClose: () => void }) => {
                 task_id: formattedData?.task,
                 start_time: formattedData?.timeFrom,
                 end_time: formattedData?.timeTo,
-                notes: formattedData?.message
+                note: formattedData?.message
             }
 
-            // setLoading(true);
-            // try {
-            //     const res = await addManualTimeEntry(formattedData);
-            //     console.log("success:", res);
+            setLoading(true);
+            try {
+                const res = await addManualTimeEntry(finalData);
+                console.log("success:", res);
 
-            //     if (res?.success) {
-            //         onClose();
-            //         form.reset();
-            //         toast.success(res?.message || "Manual Time added successfully");
-            //     } else {
-            //         toast.error(res?.message || "Failed to add manual time");
-            //     }
-            // } catch (error: any) {
-            //     console.error("failed:", error);
-            //     toast.error(error.message || "Something went wrong!");
-            // } finally {
-            //     setLoading(false);
-            // }
+                if (res?.success) {
+                    form.reset();
+                    setDate(undefined);
+                    toast.success(res?.message || "Manual Time added successfully");
+                    onClose();
+                } else {
+                    toast.error(res?.message || "Failed to add manual time");
+                }
+            } catch (error: any) {
+                console.error("failed:", error);
+                toast.error(error.message || "Something went wrong!");
+            } finally {
+                setLoading(false);
+            }
         }
     };
-
 
     return (
         <DialogContent
@@ -449,7 +443,7 @@ const AddManualTimeModal = ({ onClose }: { onClose: () => void }) => {
                                 />
                             </div>
                             <div className="flex justify-end">
-                                <Button type="submit">Save</Button>
+                                <Button type="submit" disabled={loading}>{loading ? "Loading..." : "Save"}</Button>
                             </div>
                         </form>
                     </Form>
