@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import {
     DialogContent,
@@ -14,7 +15,6 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { useState, useEffect } from "react";
-import { AppWindow, CalendarDays, ChevronDownIcon, ClipboardList, Clock8Icon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -24,53 +24,115 @@ import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { addManualTimeSchema } from "@/zod/schema";
+import JobIcon from "@/components/Icons/JobIcon";
+import TaskListIcon from "@/components/Icons/TaskListIcon";
+import CalendarIcon from "@/components/Icons/CalendarIcon";
+import ClockIcon from "@/components/Icons/ClockIcon";
+import { getProjects } from "@/actions/projects/action";
+import { IManualTimeEntry, IProject, ITask } from "@/types/type";
+import { useDebounce } from "@/hooks/use-debounce";
+import { getTasks } from "@/actions/task/action";
+import { toast } from "sonner";
+import { addManualTimeEntry } from "@/actions/timesheets/action";
+import { format, parseISO } from "date-fns";
 
 interface TimePeriod {
     start: number;
     end: number;
 }
 
-const EditManualTimeModal = () => {
+const EditManualTimeModal = ({ onClose, selectedItem }: { onClose: () => void, selectedItem: IManualTimeEntry }) => {
+    console.log('selectedItem', selectedItem);
+    const [loading, setLoading] = useState(false);
+    const [projectLoading, setProjectLoading] = useState(false);
+    const [taskLoading, setTaskLoading] = useState(false);
     const form = useForm<z.infer<typeof addManualTimeSchema>>({
         resolver: zodResolver(addManualTimeSchema),
         defaultValues: {
-            project: "App Redesign",
-            task: "Working on App Design",
-            date: new Date(),
-            timeFrom: "07:30:00",
-            timeTo: "12:30:00",
-            message: "Message here",
+            project: selectedItem?.project_id,
+            task: selectedItem?.task_id,
+            date: new Date(selectedItem?.start_time),
+            timeFrom: format(parseISO(selectedItem?.start_time), "HH:mm:ss"),
+            timeTo: format(parseISO(selectedItem?.end_time), "HH:mm:ss"),
+            message: selectedItem?.notes ? selectedItem?.notes : "",
         },
     });
+    useEffect(() => {
+        if (!selectedItem) return;
+
+        form.reset({
+            project: selectedItem.project_id,
+            task: selectedItem.task_id,
+            date: new Date(selectedItem.start_time),
+            timeFrom: format(parseISO(selectedItem.start_time), "HH:mm:ss"),
+            timeTo: format(parseISO(selectedItem.end_time), "HH:mm:ss"),
+            message: selectedItem.notes || "",
+        });
+    }, [selectedItem]);
 
     const timeToDecimal = (time: string): number => {
         const parts = time.split(':');
         // Nullish Coalescing Operator
         // f parts[0] is null or undefined (which are called nullish values)
-        // parseInt(..., 10)	This is the standard JavaScript function that takes a string and converts it into an integer (a whole number). 
+        // parseInt(..., 10)	This is the standard JavaScript function that takes a string and converts it into an integer (a whole number).
         // The 10 specifies that the conversion should use base 10 (decimal) counting.
         // By using ?? '0', you ensure that parseInt always receives a string that it can attempt to convert.
         const hours = parseInt(parts[0] ?? '0', 10);
         const minutes = parseInt(parts[1] ?? '0', 10);
         return hours + minutes / 60;
     };
-
-    const projects = ["Orbit Project", "App Redesign", "Marketing Campaign", "New Website"];
-    const tasks = ["Website Design", "Working on App Design", "New Landing Page", "Work on helsenist Project"];
+    const [projects, setProjects] = useState<IProject[]>();
+    const [tasks, setTasks] = useState<ITask[]>();
+    // // const projects = ["Orbit Project", "App Redesign", "Marketing Campaign", "New Website"];
+    // const tasks = ["Website Design", "Working on App Design", "New Landing Page", "Work on helsenist Project"];
     const [taskSearch, setTaskSearch] = useState("");
     const [projectSearch, setProjectSearch] = useState("");
+    const debouncedProjectSearch = useDebounce(projectSearch, 500);
+    const debouncedTaskSearch = useDebounce(taskSearch, 500);
 
-    const filteredProjects = projects.filter(p => p.toLowerCase().includes(projectSearch.toLowerCase()));
-    const filteredTasks = tasks.filter(t => t.toLowerCase().includes(taskSearch.toLowerCase()));
+    useEffect(() => {
+        const loadProjects = async () => {
+            setProjectLoading(true);
+            try {
+                const res = await getProjects({ search: debouncedProjectSearch });
+                if (res?.success) {
+                    setProjects(res.data);
+                }
+            } catch (err) {
+                console.error("Failed to fetch projects", err);
+            } finally {
+                setProjectLoading(false);
+            }
+        };
+
+        loadProjects();
+    }, [debouncedProjectSearch]);
+
+    useEffect(() => {
+        const loadProjects = async () => {
+            setTaskLoading(true);
+            try {
+                const res = await getTasks({ search: debouncedTaskSearch });
+                if (res?.success) {
+                    setTasks(res.data);
+                }
+            } catch (err) {
+                console.error("Failed to fetch projects", err);
+            } finally {
+                setTaskLoading(false);
+            }
+        };
+
+        loadProjects();
+    }, [debouncedTaskSearch]);
 
     const [open, setOpen] = useState(false);
-    const [date, setDate] = useState<Date | undefined>(form.getValues("date") || undefined);
+    const [date, setDate] = useState<Date | undefined>(new Date(selectedItem?.start_time));
     const [activePeriods, setActivePeriods] = useState<TimePeriod[] | undefined>(undefined);
     const [totalTime, setTotalTime] = useState<string>("1:00:00");
-
-
-    const timeFrom = form.watch("timeFrom"); // form.watch, getting real time data like onChange from react hook form
+    const timeFrom = form.watch("timeFrom");
     const timeTo = form.watch("timeTo");
+    console.log('time From', timeFrom);
 
 
     useEffect(() => {
@@ -102,14 +164,62 @@ const EditManualTimeModal = () => {
     }, [timeFrom, timeTo]);
 
 
-    const onSubmit = (data: z.infer<typeof addManualTimeSchema>) => {
-        console.log(data);
+    const onSubmit = async (data: z.infer<typeof addManualTimeSchema>) => {
+        if (data.date && data.timeFrom && data.timeTo) {
+            const dateOnly = new Date(data.date);
+            const [fromHours, fromMinutes, fromSeconds] = data.timeFrom.split(":").map(Number);
+            const timeFromISO = new Date(dateOnly);
+            timeFromISO.setHours(fromHours, fromMinutes, fromSeconds || 0, 0);
+
+            const [toHours, toMinutes, toSeconds] = data.timeTo.split(":").map(Number);
+            const timeToISO = new Date(dateOnly);
+            timeToISO.setHours(toHours, toMinutes, toSeconds || 0, 0);
+
+            // Replace the raw values with ISO strings
+            const formattedData = {
+                ...data,
+                timeFrom: timeFromISO.toISOString(),
+                timeTo: timeToISO.toISOString(),
+            };
+
+            console.log("Final Data:", formattedData);
+
+            // const finalData = {
+            //     project_id: formattedData?.project,
+            //     task_id: formattedData?.task,
+            //     start_time: formattedData?.timeFrom,
+            //     end_time: formattedData?.timeTo,
+            //     note: formattedData?.message
+            // }
+
+            // setLoading(true);
+            // try {
+            //     const res = await addManualTimeEntry(finalData);
+            //     console.log("success:", res);
+
+            //     if (res?.success) {
+            //         form.reset();
+            //         setDate(undefined);
+            //         toast.success(res?.message || "Manual Time added successfully");
+            //         onClose();
+            //     } else {
+            //         toast.error(res?.message || "Failed to add manual time");
+            //     }
+            // } catch (error: any) {
+            //     console.error("failed:", error);
+            //     toast.error(error.message || "Something went wrong!");
+            // } finally {
+            //     setLoading(false);
+            // }
+        }
     };
 
     return (
-        <DialogContent className=" w-full sm:max-w-[525px] max-h-[95vh] overflow-y-auto">
+        <DialogContent
+            onInteractOutside={(event) => event.preventDefault()}
+            className=" w-full sm:max-w-[525px] max-h-[95vh] overflow-y-auto">
             <DialogHeader>
-                <DialogTitle>Edit Time</DialogTitle>
+                <DialogTitle>Edit Manual Time</DialogTitle>
                 <DialogDescription asChild className="">
                     <Form {...form}>
                         <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
@@ -118,18 +228,19 @@ const EditManualTimeModal = () => {
                                     control={form.control}
                                     name="project"
                                     render={({ field }) => (
-                                        <FormItem className=" w-full">
+                                        <FormItem className="w-full">
                                             <FormLabel>Project</FormLabel>
                                             <FormControl>
                                                 <div className="relative">
                                                     <Select
-                                                        value={field.value}
-                                                        onValueChange={field.onChange}
+                                                        // Convert number to string for the Select component
+                                                        value={field.value?.toString()}
+                                                        onValueChange={(val) => field.onChange(Number(val))}
                                                     >
                                                         <SelectTrigger className="w-full">
-                                                            <div className=" flex gap-1 items-center">
-                                                                <AppWindow className="mr-2" />
-                                                                <SelectValue className=" text-start" placeholder="Select Project" />
+                                                            <div className="flex gap-2 items-center">
+                                                                <JobIcon size={20} className="text-headingTextColor dark:text-darkTextPrimary" />
+                                                                <SelectValue placeholder="Select Project" />
                                                             </div>
                                                         </SelectTrigger>
                                                         <SelectContent>
@@ -139,10 +250,20 @@ const EditManualTimeModal = () => {
                                                                 className="flex-1 border-none focus:ring-0 focus:outline-none"
                                                                 value={projectSearch}
                                                                 onChange={(e) => setProjectSearch(e.target.value)}
+                                                                onKeyDown={(e) => e.stopPropagation()}
                                                             />
-                                                            {filteredProjects.map(p => (
-                                                                <SelectItem key={p} value={p}>{p}</SelectItem>
-                                                            ))}
+                                                            {projectLoading ? (
+                                                                <div className="p-2 text-sm text-muted-foreground">Loading...</div>
+                                                            ) : projects && projects.length > 0 ? (
+                                                                projects.map((p) => (
+                                                                    // Radix Select Item value must be a string
+                                                                    <SelectItem key={p.id} value={p.id.toString()}>
+                                                                        {p.name}
+                                                                    </SelectItem>
+                                                                ))
+                                                            ) : (
+                                                                <div className="p-2 text-sm text-center text-muted-foreground">No projects found</div>
+                                                            )}
                                                         </SelectContent>
                                                     </Select>
                                                 </div>
@@ -156,18 +277,18 @@ const EditManualTimeModal = () => {
                                     control={form.control}
                                     name="task"
                                     render={({ field }) => (
-                                        <FormItem className=" w-full">
+                                        <FormItem className="w-full">
                                             <FormLabel>Task</FormLabel>
                                             <FormControl>
                                                 <div className="relative">
                                                     <Select
-                                                        value={field.value}
-                                                        onValueChange={field.onChange}
+                                                        value={field.value?.toString()}
+                                                        onValueChange={(val) => field.onChange(Number(val))}
                                                     >
                                                         <SelectTrigger className="w-full">
-                                                            <div className=" flex gap-1 items-center">
-                                                                <ClipboardList className="mr-2" />
-                                                                <SelectValue className=" text-start" placeholder="Select Task" />
+                                                            <div className="flex gap-2 items-center">
+                                                                <TaskListIcon size={20} className="text-headingTextColor dark:text-darkTextPrimary" />
+                                                                <SelectValue placeholder="Select Task" />
                                                             </div>
                                                         </SelectTrigger>
                                                         <SelectContent>
@@ -177,10 +298,19 @@ const EditManualTimeModal = () => {
                                                                 className="flex-1 border-none focus:ring-0 focus:outline-none"
                                                                 value={taskSearch}
                                                                 onChange={(e) => setTaskSearch(e.target.value)}
+                                                                onKeyDown={(e) => e.stopPropagation()}
                                                             />
-                                                            {filteredTasks.map(t => (
-                                                                <SelectItem key={t} value={t}>{t}</SelectItem>
-                                                            ))}
+                                                            {taskLoading ? (
+                                                                <div className="p-2 text-sm text-muted-foreground">Loading...</div>
+                                                            ) : tasks && tasks.length > 0 ? (
+                                                                tasks.map((t) => (
+                                                                    <SelectItem key={t.id} value={t.id.toString()}>
+                                                                        {t.name}
+                                                                    </SelectItem>
+                                                                ))
+                                                            ) : (
+                                                                <div className="p-2 text-sm text-center text-muted-foreground">No tasks found</div>
+                                                            )}
                                                         </SelectContent>
                                                     </Select>
                                                 </div>
@@ -201,17 +331,18 @@ const EditManualTimeModal = () => {
                                                     <Button
                                                         variant="outline2"
                                                         id="date"
-                                                        className="w-full justify-between font-normal py-[5px] flex items-center dark:hover:bg-darkPrimaryBg dark:bg-darkPrimaryBg"
+                                                        className="w-full justify-between font-normal px-3 flex items-center dark:hover:bg-darkPrimaryBg dark:bg-darkPrimaryBg"
                                                     >
-                                                        <div className=" flex items-center dark:text-darkTextPrimary ">
-                                                            <CalendarDays className="mr-2 text-muted-foreground" />
-                                                            {date ? date.toLocaleDateString() : "Select date"}
+                                                        <div className=" flex items-center gap-2 dark:text-darkTextPrimary ">
+                                                            <CalendarIcon size={20} className=" text-headingTextColor dark:text-darkTextPrimary" />
+                                                            {field.value
+                                                                ? format(field.value, "dd/MM/yyyy")
+                                                                : "Select date"}
                                                         </div>
 
-                                                        <ChevronDownIcon className="ml-2 w-10 h-10" />
                                                     </Button>
                                                 </PopoverTrigger>
-                                                <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+                                                <PopoverContent className="w-auto overflow-hidden" align="start">
                                                     <Calendar
                                                         mode="single"
                                                         selected={date}
@@ -239,7 +370,7 @@ const EditManualTimeModal = () => {
                                                 <FormControl className="">
                                                     <div className='relative '>
                                                         <div className='text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 peer-disabled:opacity-50'>
-                                                            <Clock8Icon className='size-4' />
+                                                            <ClockIcon size={16} className=" text-headingTextColor dark:text-darkTextPrimary" />
                                                             <span className='sr-only'>Time From</span>
                                                         </div>
                                                         <Input
@@ -266,7 +397,7 @@ const EditManualTimeModal = () => {
                                                 <FormControl>
                                                     <div className='relative'>
                                                         <div className='text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 peer-disabled:opacity-50'>
-                                                            <Clock8Icon className='size-4' />
+                                                            <ClockIcon size={16} className=" text-headingTextColor dark:text-darkTextPrimary" />
                                                             <span className='sr-only'>Time To</span>
                                                         </div>
                                                         <Input
@@ -328,7 +459,7 @@ const EditManualTimeModal = () => {
                                 />
                             </div>
                             <div className="flex justify-end">
-                                <Button type="submit">Save</Button>
+                                <Button type="submit" disabled={loading}>{loading ? "Loading..." : "Save"}</Button>
                             </div>
                         </form>
                     </Form>
