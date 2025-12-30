@@ -167,32 +167,32 @@ const TeamsMemberTable = ({ data }: any) => {
                 )
             }
         },
-        {
-            accessorKey: "weeklyLimit",
-            header: ({ column }) => {
-                return (
-                    <div>
-                        <span
-                            className=" cursor-pointer flex items-center gap-1"
-                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        >
-                            Limit
-                            <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </span>
-                    </div>
-                )
-            },
-            cell: ({ row }) => {
-                const weeklyLimit = row.getValue("weeklyLimit") as string;
-                const dailyLimit = row.original.dailyLimit
-                return (
-                    <div className="flex flex-col">
-                        <span className=" font-thin">{weeklyLimit}</span>
-                        <span className=" font-thin">{dailyLimit}</span>
-                    </div>
-                )
-            }
-        },
+        // {
+        //     accessorKey: "weeklyLimit",
+        //     header: ({ column }) => {
+        //         return (
+        //             <div>
+        //                 <span
+        //                     className=" cursor-pointer flex items-center gap-1"
+        //                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        //                 >
+        //                     Limit
+        //                     <ArrowUpDown className="ml-2 h-4 w-4" />
+        //                 </span>
+        //             </div>
+        //         )
+        //     },
+        //     cell: ({ row }) => {
+        //         const weeklyLimit = row.getValue("weeklyLimit") as string;
+        //         const dailyLimit = row.original.dailyLimit
+        //         return (
+        //             <div className="flex flex-col">
+        //                 <span className=" font-thin">{weeklyLimit}</span>
+        //                 <span className=" font-thin">{dailyLimit}</span>
+        //             </div>
+        //         )
+        //     }
+        // },
         {
             accessorKey: "created_at",
             header: ({ column }) => {

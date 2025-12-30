@@ -4,7 +4,7 @@ import Every10Mins from "@/components/Activity/ScreenShorts/Every10Mins";
 import { Button } from "@/components/ui/button";
 import { BriefcaseBusiness, ClipboardList, NotepadText, SquareActivity, TrendingDown, TrendingUp, UsersRound } from "lucide-react";
 // import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import {
     Dialog,
     DialogTrigger,
@@ -36,64 +36,64 @@ const ScreenShorts = () => {
     console.log('screenShorts');
     const { theme } = useTheme();
     const [activeTab, setActiveTab] = useState<"Every 10 min" | "All Screenshots">("Every 10 min");
-    const [value, setValue] = useState("")
+    // const [value, setValue] = useState("")
     const handleTabClick = (tab: "Every 10 min" | "All Screenshots") => {
         setActiveTab(tab);
     };
-    const projects = [
-        {
-            value: "Time Tracker",
-            label: "Time Tracker",
-            avatar: "https://picsum.photos/200/300",
-        },
-        {
-            value: "E-commerce",
-            label: "E-commerce",
-            avatar: "https://picsum.photos/200/300",
-        },
-        {
-            value: "Fack News Detection",
-            label: "Fack News Detection",
-            avatar: "https://picsum.photos/200/300",
-        },
-        {
-            value: "Travel Together",
-            label: "Travel Together",
-            avatar: "https://picsum.photos/200/300",
-        },
-        {
-            value: "Time Tracker2",
-            label: "Time Tracker2",
-            avatar: "https://picsum.photos/200/300",
-        },
-    ]
-    const users = [
-        {
-            value: "Juyed Ahmed",
-            label: "Juyed Ahmed",
-            avatar: "https://avatar.iran.liara.run/public/18",
-        },
-        {
-            value: "Cameron Williamson",
-            label: "Cameron Williamson",
-            avatar: "https://avatar.iran.liara.run/public/19",
-        },
-        {
-            value: "Jenny Wilson",
-            label: "Jenny Wilson",
-            avatar: "https://avatar.iran.liara.run/public/20",
-        },
-        {
-            value: "Esther Howard",
-            label: "Esther Howard",
-            avatar: "https://avatar.iran.liara.run/public/21",
-        },
-        {
-            value: "Walid Ahmed",
-            label: "Walid Ahmed",
-            avatar: "https://avatar.iran.liara.run/public/22",
-        },
-    ]
+    // const projects = [
+    //     {
+    //         value: "Time Tracker",
+    //         label: "Time Tracker",
+    //         avatar: "https://picsum.photos/200/300",
+    //     },
+    //     {
+    //         value: "E-commerce",
+    //         label: "E-commerce",
+    //         avatar: "https://picsum.photos/200/300",
+    //     },
+    //     {
+    //         value: "Fack News Detection",
+    //         label: "Fack News Detection",
+    //         avatar: "https://picsum.photos/200/300",
+    //     },
+    //     {
+    //         value: "Travel Together",
+    //         label: "Travel Together",
+    //         avatar: "https://picsum.photos/200/300",
+    //     },
+    //     {
+    //         value: "Time Tracker2",
+    //         label: "Time Tracker2",
+    //         avatar: "https://picsum.photos/200/300",
+    //     },
+    // ]
+    // const users = [
+    //     {
+    //         value: "Juyed Ahmed",
+    //         label: "Juyed Ahmed",
+    //         avatar: "https://avatar.iran.liara.run/public/18",
+    //     },
+    //     {
+    //         value: "Cameron Williamson",
+    //         label: "Cameron Williamson",
+    //         avatar: "https://avatar.iran.liara.run/public/19",
+    //     },
+    //     {
+    //         value: "Jenny Wilson",
+    //         label: "Jenny Wilson",
+    //         avatar: "https://avatar.iran.liara.run/public/20",
+    //     },
+    //     {
+    //         value: "Esther Howard",
+    //         label: "Esther Howard",
+    //         avatar: "https://avatar.iran.liara.run/public/21",
+    //     },
+    //     {
+    //         value: "Walid Ahmed",
+    //         label: "Walid Ahmed",
+    //         avatar: "https://avatar.iran.liara.run/public/22",
+    //     },
+    // ]
 
     const metrics = [
         {
@@ -138,7 +138,7 @@ const ScreenShorts = () => {
         },
     ];
     // date picker
-    const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+    // const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
     return (
         <div>
@@ -165,16 +165,17 @@ const ScreenShorts = () => {
                 </div>
             </div>
             <div className="mb-5 flex flex-col gap-4 lg:gap-4 xl:flex-row justify-between">
-
-                <div className=" flex flex-col lg:flex-row gap-3">
-                    <SpecificDatePicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></SpecificDatePicker>
-                    {/* Filter */}
-                    {/* 
+                <Suspense fallback={null}>
+                    <div className=" flex flex-col lg:flex-row gap-3">
+                        <SpecificDatePicker></SpecificDatePicker>
+                        {/* Filter */}
+                        {/* 
                     <Button className=" hidden xl:flex dark:text-darkTextPrimary" variant={'filter'}>
                         <SlidersHorizontal className="dark:text-darkTextPrimary" /> Filters
                     </Button> */}
-                    <SelectProjectDropDown projects={projects} setValue={setValue} value={value}></SelectProjectDropDown>
-                </div>
+                        <SelectProjectDropDown></SelectProjectDropDown>
+                    </div>
+                </Suspense>
                 <div className=" flex items-center gap-3">
 
                     <Dialog>
@@ -187,9 +188,12 @@ const ScreenShorts = () => {
                             <AllNotesModal></AllNotesModal>
                         </form>
                     </Dialog>
-                    <div className=" w-full">
-                        <SelectUserDropDown users={users}></SelectUserDropDown>
-                    </div>
+                    <Suspense fallback={null}>
+                        <div className=" w-full">
+                            <SelectUserDropDown></SelectUserDropDown>
+                        </div>
+                    </Suspense>
+
                 </div>
             </div>
             <div className="mb-5 grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-4 gap-5">

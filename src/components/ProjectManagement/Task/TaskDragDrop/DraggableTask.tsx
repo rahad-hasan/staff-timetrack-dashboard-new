@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     useDraggable,
 } from "@dnd-kit/core";
 import TaskCart from "./TaskCart";
-import { ITask } from "@/global/globalTypes";
 
-const DraggableTask = ({ task }: { task: ITask }) => {
+
+const DraggableTask = ({ task }: { task: any }) => {
     const { attributes, listeners, setNodeRef, transform } = useDraggable({
         id: task.id,
     });

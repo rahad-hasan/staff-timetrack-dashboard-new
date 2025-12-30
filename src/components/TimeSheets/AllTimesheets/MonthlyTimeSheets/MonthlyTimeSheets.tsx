@@ -6,61 +6,6 @@ import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
 
 const MonthlyTimeSheets = () => {
-    const [value, setValue] = useState("")
-    const users = [
-        {
-            value: "Juyed Ahmed",
-            label: "Juyed Ahmed",
-            avatar: "https://avatar.iran.liara.run/public/18",
-        },
-        {
-            value: "Cameron Williamson",
-            label: "Cameron Williamson",
-            avatar: "https://avatar.iran.liara.run/public/19",
-        },
-        {
-            value: "Jenny Wilson",
-            label: "Jenny Wilson",
-            avatar: "https://avatar.iran.liara.run/public/20",
-        },
-        {
-            value: "Esther Howard",
-            label: "Esther Howard",
-            avatar: "https://avatar.iran.liara.run/public/21",
-        },
-        {
-            value: "Walid Ahmed",
-            label: "Walid Ahmed",
-            avatar: "https://avatar.iran.liara.run/public/22",
-        },
-    ]
-    const projects = [
-        {
-            value: "Time Tracker",
-            label: "Time Tracker",
-            avatar: "https://picsum.photos/200/300",
-        },
-        {
-            value: "E-commerce",
-            label: "E-commerce",
-            avatar: "https://picsum.photos/200/300",
-        },
-        {
-            value: "Fack News Detection",
-            label: "Fack News Detection",
-            avatar: "https://picsum.photos/200/300",
-        },
-        {
-            value: "Travel Together",
-            label: "Travel Together",
-            avatar: "https://picsum.photos/200/300",
-        },
-        {
-            value: "Time Tracker2",
-            label: "Time Tracker2",
-            avatar: "https://picsum.photos/200/300",
-        },
-    ]
     // month picker
     const [selectedDate, setSelectedDate] = useState(new Date());
 
@@ -70,10 +15,10 @@ const MonthlyTimeSheets = () => {
                 <div className="flex gap-3">
                     <MonthPicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></MonthPicker>
                     <div className=" hidden md:block h-full">
-                        <SelectProjectDropDown projects={projects} setValue={setValue} value={value}></SelectProjectDropDown>
+                        <SelectProjectDropDown ></SelectProjectDropDown>
                     </div>
                 </div>
-                <SelectUserDropDown users={users}></SelectUserDropDown>
+                <SelectUserDropDown ></SelectUserDropDown>
             </div>
             <MonthlyTimeSheetsCalendar></MonthlyTimeSheetsCalendar>
         </div>

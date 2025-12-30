@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import TotalHoursPerDayChart from "@/components/Report/TimeAndActivities/TotalHoursPerDayChart";
 import TimeAndActivitiesTable from "@/components/Report/TimeAndActivities/TimeAndActivitiesTable";
@@ -8,36 +8,6 @@ import HeadingComponent from "@/components/Common/HeadingComponent";
 // import TimeAndActivitiesTableSkeleton from "@/skeleton/report/timeAndActivities/TimeAndActivitiesTableSkeleton";
 
 const TimeAndActivitiesPage = () => {
-    // project select
-    const projects = [
-        {
-            value: "Time Tracker",
-            label: "Time Tracker",
-            avatar: "https://picsum.photos/200/300",
-        },
-        {
-            value: "E-commerce",
-            label: "E-commerce",
-            avatar: "https://picsum.photos/200/300",
-        },
-        {
-            value: "Fack News Detection",
-            label: "Fack News Detection",
-            avatar: "https://picsum.photos/200/300",
-        },
-        {
-            value: "Travel Together",
-            label: "Travel Together",
-            avatar: "https://picsum.photos/200/300",
-        },
-        {
-            value: "Time Tracker2",
-            label: "Time Tracker2",
-            avatar: "https://picsum.photos/200/300",
-        },
-    ]
-    // date picker
-    const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
     return (
         <div>
@@ -45,12 +15,14 @@ const TimeAndActivitiesPage = () => {
                 <HeadingComponent heading="Time & activities" subHeading="All the Time & activities during the working hour by team member is here"></HeadingComponent>
 
             </div>
-            <div className=" flex items-center justify-between">
-                <div className=" w-full flex flex-col sm:flex-row gap-4 sm:gap-4">
-                    <SpecificDatePicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></SpecificDatePicker>
-                    <SelectProjectDropDown projects={projects}></SelectProjectDropDown>
+            <Suspense fallback={null}>
+                <div className=" flex items-center justify-between">
+                    <div className=" w-full flex flex-col sm:flex-row gap-4 sm:gap-4">
+                        <SpecificDatePicker></SpecificDatePicker>
+                        <SelectProjectDropDown></SelectProjectDropDown>
+                    </div>
                 </div>
-            </div>
+            </Suspense>
             <div className="mt-4 flex items-stretch gap-3 sm:gap-6 max-w-[600px]">
                 <div className="border border-borderColor dark:border-darkBorder rounded-xl w-full flex flex-col justify-between">
                     <div className="flex items-center justify-center py-6 bg-[#eff7fe] border-b border-borderColor dark:border-darkBorder rounded-t-xl flex-1">

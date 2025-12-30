@@ -8,7 +8,7 @@ import UrlsTableSkeleton from "@/skeleton/activity/url/UrlsTableSkeleton";
 import { Suspense } from "react";
 import { ISearchParamsProps } from "@/types/type";
 
-const Urls = ({searchParams}: ISearchParamsProps) => {
+const Urls = ({ searchParams }: ISearchParamsProps) => {
 
     return (
         <div>
@@ -31,19 +31,33 @@ const Urls = ({searchParams}: ISearchParamsProps) => {
                 </div>
             </div>
 
-            <div className=" mb-5 flex flex-col gap-4 sm:gap-3 xl:flex-row justify-between">
+            {/* <div className=" mb-5 flex flex-col gap-4 sm:gap-3 xl:flex-row justify-between">
                 <div className=" flex flex-col sm:flex-row gap-3">
                     <SpecificDatePicker></SpecificDatePicker>
                     {/* Filter */}
-                    {/* <Button className=" hidden lg:flex dark:text-darkTextPrimary" variant={'filter'}>
+            {/* <Button className=" hidden lg:flex dark:text-darkTextPrimary" variant={'filter'}>
                         <SlidersHorizontal className="dark:text-darkTextPrimary" /> Filters
-                    </Button> */}
+                    </Button> 
                     <SelectProjectDropDown></SelectProjectDropDown>
                 </div>
                 <div className=" flex items-center gap-3">
                     <SelectUserDropDown></SelectUserDropDown>
                 </div>
             </div>
+             */}
+
+            <Suspense fallback={null}>
+                <div className="mb-5 flex flex-col gap-4 sm:gap-3 xl:flex-row justify-between">
+                    <div className="flex flex-col sm:flex-row gap-3">
+                        <SpecificDatePicker />
+                        <SelectProjectDropDown />
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                        <SelectUserDropDown />
+                    </div>
+                </div>
+            </Suspense>
             <Suspense fallback={<UrlsTableSkeleton />}>
                 <UrlsTableServer searchParams={searchParams} />
             </Suspense>

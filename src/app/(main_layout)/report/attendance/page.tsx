@@ -14,25 +14,27 @@ const AttendancePage = async ({ searchParams }: ISearchParamsProps) => {
                 <HeadingComponent heading="Attendance" subHeading="All the Attendance during the working hour by team member is here"></HeadingComponent>
 
             </div>
-            <div className=" flex items-center justify-between w-full">
-                <div className="flex flex-col md:flex-row gap-4 md:gap-3 w-full">
-                    <SpecificDatePicker></SpecificDatePicker>
-                    <div className=" flex items-center justify-between">
-                        <div className="w-1/2">
-                            <SelectUserDropDown defaultSelect={false} ></SelectUserDropDown>
-                        </div>
-                        {/* <div className=" flex md:hidden items-center gap-2">
+            <Suspense fallback={null}>
+                <div className=" flex items-center justify-between w-full">
+                    <div className="flex flex-col md:flex-row gap-4 md:gap-3 w-full">
+                        <SpecificDatePicker></SpecificDatePicker>
+                        <div className=" flex items-center justify-between">
+                            <div className="w-1/2">
+                                <SelectUserDropDown defaultSelect={false} ></SelectUserDropDown>
+                            </div>
+                            {/* <div className=" flex md:hidden items-center gap-2">
                             <Checkbox className=" cursor-pointer border-primary" />
                             <p>No check in data</p>
                         </div> */}
+                        </div>
                     </div>
-                </div>
 
-                {/* <div className=" w-[180px] hidden md:flex items-center justify-end gap-2">
+                    {/* <div className=" w-[180px] hidden md:flex items-center justify-end gap-2">
                     <Checkbox className=" cursor-pointer border-primary" />
                     <p className=" text-base">No check in data</p>
                 </div> */}
-            </div>
+                </div>
+            </Suspense>
             <Suspense fallback={<AttendanceTableSkeleton />}>
                 <AttendanceServer searchParams={searchParams}></AttendanceServer>
             </Suspense>

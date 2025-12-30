@@ -1,7 +1,7 @@
 "use client"
 import { Bell, Settings } from "lucide-react";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import UnusualActivityTable from "@/components/Insights/UnusualActivity/UnusualActivityTable";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import HeadingComponent from "@/components/Common/HeadingComponent";
@@ -15,36 +15,6 @@ const UnusualActivity = () => {
         setActiveTab(tab);
     };
 
-    const users = [
-        {
-            value: "Juyed Ahmed",
-            label: "Juyed Ahmed",
-            avatar: "https://avatar.iran.liara.run/public/18",
-        },
-        {
-            value: "Cameron Williamson",
-            label: "Cameron Williamson",
-            avatar: "https://avatar.iran.liara.run/public/19",
-        },
-        {
-            value: "Jenny Wilson",
-            label: "Jenny Wilson",
-            avatar: "https://avatar.iran.liara.run/public/20",
-        },
-        {
-            value: "Esther Howard",
-            label: "Esther Howard",
-            avatar: "https://avatar.iran.liara.run/public/21",
-        },
-        {
-            value: "Walid Ahmed",
-            label: "Walid Ahmed",
-            avatar: "https://avatar.iran.liara.run/public/22",
-        },
-    ]
-
-    // date picker
-    const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
     return (
         <div>
@@ -66,15 +36,18 @@ const UnusualActivity = () => {
                     </button>
                 </div>
             </div>
-            <div className=" mb-5 flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between">
-                <div className=" flex flex-col md:flex-row gap-4 md:gap-3">
-                    <SpecificDatePicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></SpecificDatePicker>
-                </div>
-                <div className=" flex items-center gap-3">
+            <Suspense fallback={null}>
+                <div className=" mb-5 flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between">
+                    <div className=" flex flex-col md:flex-row gap-4 md:gap-3">
+                        <SpecificDatePicker></SpecificDatePicker>
+                    </div>
+                    <div className=" flex items-center gap-3">
 
-                    <SelectUserDropDown users={users}></SelectUserDropDown>
+                        <SelectUserDropDown></SelectUserDropDown>
+                    </div>
                 </div>
-            </div>
+            </Suspense>
+
             <div className="inline-flex mt-3 sm:mt-0 h-10 bg-bgSecondary dark:bg-darkSecondaryBg rounded-lg">
                 {["Highly Unusual", "Unusual", "Slightly Unusual"].map((tab) => (
                     <button

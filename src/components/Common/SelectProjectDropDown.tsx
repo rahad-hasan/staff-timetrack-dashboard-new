@@ -69,6 +69,7 @@ const SelectProjectDropDown = () => {
     // }, []);
 
     const handleSelect = (currentValue: string) => {
+        if (currentValue === value) return; // ⛔ prevents loop
         const params = new URLSearchParams(searchParams.toString());
 
         if (currentValue === value) {

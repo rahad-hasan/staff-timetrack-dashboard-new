@@ -1,8 +1,7 @@
-"use client"
 import { Bell, Settings } from "lucide-react";
 import { Switch } from "@/components/ui/switch"
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
-import { useState } from "react";
+import { Suspense } from "react";
 import CoreWork from "@/components/Insights/Performance/CoreWork";
 import Utilization from "@/components/Insights/Performance/Utilization";
 import DailyFocus from "@/components/Insights/Performance/DailyFocus";
@@ -13,36 +12,6 @@ import HeadingComponent from "@/components/Common/HeadingComponent";
 const Performance = () => {
     console.log('Performance');
 
-    const users = [
-        {
-            value: "Juyed Ahmed",
-            label: "Juyed Ahmed",
-            avatar: "https://avatar.iran.liara.run/public/18",
-        },
-        {
-            value: "Cameron Williamson",
-            label: "Cameron Williamson",
-            avatar: "https://avatar.iran.liara.run/public/19",
-        },
-        {
-            value: "Jenny Wilson",
-            label: "Jenny Wilson",
-            avatar: "https://avatar.iran.liara.run/public/20",
-        },
-        {
-            value: "Esther Howard",
-            label: "Esther Howard",
-            avatar: "https://avatar.iran.liara.run/public/21",
-        },
-        {
-            value: "Walid Ahmed",
-            label: "Walid Ahmed",
-            avatar: "https://avatar.iran.liara.run/public/22",
-        },
-    ]
-
-    // date picker
-    const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
     return (
         <div>
@@ -64,14 +33,16 @@ const Performance = () => {
                     </button>
                 </div>
             </div>
-            <div className=" mb-5 flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between">
-                <div className=" flex flex-col md:flex-row gap-4 md:gap-3">
-                    <SpecificDatePicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></SpecificDatePicker>
+            <Suspense fallback={null}>
+                <div className=" mb-5 flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between">
+                    <div className=" flex flex-col md:flex-row gap-4 md:gap-3">
+                        <SpecificDatePicker></SpecificDatePicker>
+                    </div>
+                    <div className=" flex items-center gap-3">
+                        <SelectUserDropDown></SelectUserDropDown>
+                    </div>
                 </div>
-                <div className=" flex items-center gap-3">
-                    <SelectUserDropDown users={users}></SelectUserDropDown>
-                </div>
-            </div>
+            </Suspense>
             <div className="flex items-center gap-3">
                 <Switch id="benchmarks" />
                 <label

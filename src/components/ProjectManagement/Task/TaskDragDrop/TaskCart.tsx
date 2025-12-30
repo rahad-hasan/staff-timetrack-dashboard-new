@@ -1,12 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Slider } from '@/components/ui/slider';
-import { ITask } from '@/global/globalTypes';
 import { Clock9, FileArchive, MessageSquareText } from 'lucide-react';
 import Image from 'next/image';
 import lowFlag from '../../../../assets/dashboard/lowFlag.svg'
 import mediumFlag from '../../../../assets/dashboard/mediumFlag.svg'
 import urgentFlag from '../../../../assets/dashboard/urgentFlag.svg'
 
-const TaskCart = ({ task }: { task: ITask }) => {
+const TaskCart = ({ task }: { task: any }) => {
 
     const selectedFlag = task?.priority === "Low" ? lowFlag : task?.priority === "Medium" ? mediumFlag : urgentFlag
     const sliderClass = task?.checklist < 5 ? "bg-red-500 border-white" : task?.checklist < 8 ? " bg-yellow-400 border-white" : ""

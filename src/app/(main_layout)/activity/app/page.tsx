@@ -32,21 +32,22 @@ const App = ({ searchParams }: ISearchParamsProps) => {
                 </div>
             </div>
 
-
-            <div className=" mb-5 flex flex-col gap-4 sm:gap-3 xl:flex-row justify-between">
-                <div className=" flex flex-col sm:flex-row gap-4 md:gap-3">
-                    <SpecificDatePicker></SpecificDatePicker>
-                    {/* Filter */}
-                    {/* <Button className=" hidden md:flex dark:text-darkTextPrimary" variant={'filter'}>
+            <Suspense fallback={null}>
+                <div className=" mb-5 flex flex-col gap-4 sm:gap-3 xl:flex-row justify-between">
+                    <div className=" flex flex-col sm:flex-row gap-4 md:gap-3">
+                        <SpecificDatePicker></SpecificDatePicker>
+                        {/* Filter */}
+                        {/* <Button className=" hidden md:flex dark:text-darkTextPrimary" variant={'filter'}>
                         <SlidersHorizontal className="dark:text-darkTextPrimary" /> Filters
                     </Button> */}
-                    <SelectProjectDropDown></SelectProjectDropDown>
-                </div>
+                        <SelectProjectDropDown></SelectProjectDropDown>
+                    </div>
 
-                <div className=" flex items-center gap-3">
-                    <SelectUserDropDown></SelectUserDropDown>
+                    <div className=" flex items-center gap-3">
+                        <SelectUserDropDown></SelectUserDropDown>
+                    </div>
                 </div>
-            </div>
+            </Suspense>
             <Suspense fallback={<AppNameTableSkeleton />}>
                 <AppTableServer searchParams={searchParams} />
             </Suspense>

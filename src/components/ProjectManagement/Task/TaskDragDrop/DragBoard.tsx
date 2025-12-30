@@ -8,13 +8,13 @@ import {
 } from "@dnd-kit/core";
 import Column from "./Column";
 import type { Dispatch, SetStateAction } from "react";
-import { ITask } from "@/global/globalTypes";
+;
 
 const columns = ["todo", "in_progress", "pending"] as const;
 
 
 
-const DragBoard = ({ task, setTasks }: { task: ITask[]; setTasks: Dispatch<SetStateAction<ITask[]>> }) => {
+const DragBoard = ({ task, setTasks }: { task: any; setTasks: Dispatch<SetStateAction<any>> }) => {
 
     const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event;
@@ -23,11 +23,11 @@ const DragBoard = ({ task, setTasks }: { task: ITask[]; setTasks: Dispatch<SetSt
         const taskId = active.id;
         const newStatus = over.id;
 
-        const dTask = task.find((t) => t.id === taskId);
+        const dTask = task.find((t:any) => t.id === taskId);
 
         // update in ui
         setTasks((prev: any) =>
-            prev.map((t: ITask) =>
+            prev.map((t: any) =>
                 t.id === taskId && t.status !== newStatus
                     ? { ...t, status: newStatus }
                     : t
@@ -53,7 +53,7 @@ const DragBoard = ({ task, setTasks }: { task: ITask[]; setTasks: Dispatch<SetSt
         <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 ">
                 {columns.map((col) => (
-                    <Column key={col} id={col} label={col} task={task.filter((t) => t.status === col)} />
+                    <Column key={col} id={col} label={col} task={task.filter((t:any) => t.status === col)} />
                 ))}
             </div>
         </DndContext>

@@ -8,7 +8,9 @@ const Projects = async ({ searchParams }: ISearchParamsProps) => {
 
     return (
         <div>
-            <ProjectHeroSection></ProjectHeroSection>
+            <Suspense fallback={null}>
+                <ProjectHeroSection></ProjectHeroSection>
+            </Suspense>
 
             <Suspense fallback={<ProjectTableSkeleton />}>
                 <ProjectsTableServer searchParams={searchParams} />

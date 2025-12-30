@@ -2,7 +2,7 @@
 import MonthPicker from "@/components/Common/MonthPicker";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import CalenderTable from "@/components/Calender/CalenderTable";
 import {
     Dialog,
@@ -13,33 +13,7 @@ import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 
 const CalenderPage = () => {
-    const users = [
-        {
-            value: "Juyed Ahmed",
-            label: "Juyed Ahmed",
-            avatar: "https://avatar.iran.liara.run/public/18",
-        },
-        {
-            value: "Cameron Williamson",
-            label: "Cameron Williamson",
-            avatar: "https://avatar.iran.liara.run/public/19",
-        },
-        {
-            value: "Jenny Wilson",
-            label: "Jenny Wilson",
-            avatar: "https://avatar.iran.liara.run/public/20",
-        },
-        {
-            value: "Esther Howard",
-            label: "Esther Howard",
-            avatar: "https://avatar.iran.liara.run/public/21",
-        },
-        {
-            value: "Walid Ahmed",
-            label: "Walid Ahmed",
-            avatar: "https://avatar.iran.liara.run/public/22",
-        },
-    ]
+
     // date picker
     const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
@@ -58,11 +32,12 @@ const CalenderPage = () => {
                 </Dialog>
 
             </div>
-
-            <div className=" flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between w-full">
-                <MonthPicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></MonthPicker>
-                <SelectUserDropDown users={users}></SelectUserDropDown>
-            </div>
+            <Suspense fallback={null}>
+                <div className=" flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between w-full">
+                    <MonthPicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></MonthPicker>
+                    <SelectUserDropDown></SelectUserDropDown>
+                </div>
+            </Suspense>
             <CalenderTable></CalenderTable>
         </div>
     );

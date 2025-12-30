@@ -61,25 +61,20 @@ const SelectUserDropDown = ({ defaultSelect = true }: { defaultSelect?: boolean 
 
     // 3. Logic to handle Default Selection on Mount or Store Update
     useEffect(() => {
+        if (!defaultSelect) return;
+
+        const urlId = searchParams.get("user_id");
+        if (urlId || !logInUserData?.id) return;
+
         const params = new URLSearchParams(searchParams.toString());
-        const urlId = params.get("user_id");
+        const userIdString = String(logInUserData.id);
 
-        // If there's already a URL ID, just sync local state to it
-        if (urlId) {
-            setValue(urlId);
-            return;
-        }
+        setValue(userIdString);
+        params.set("user_id", userIdString);
 
-        // If no URL ID, defaultSelect is true, and we have the logged-in user data
-        if (defaultSelect && logInUserData?.id) {
-            const userIdString = String(logInUserData.id);
-            setValue(userIdString);
+        router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    }, [defaultSelect, logInUserData?.id]);
 
-            // Update URL to match default selection
-            params.set("user_id", userIdString);
-            router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-        }
-    }, [logInUserData?.id, defaultSelect, pathname, router]);
 
 
     const selectedUser = useMemo(() =>

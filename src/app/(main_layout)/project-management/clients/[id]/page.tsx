@@ -67,7 +67,7 @@ const SingleClientPage = () => {
                 <Button className=" text-sm md:text-base"><Plus /> Add Project</Button>
 
             </div>
-            <ProjectTable></ProjectTable>
+            {/* <ProjectTable></ProjectTable> */}
         </div>
     );
 };

@@ -113,12 +113,12 @@ const SingleProjectPage = () => {
                         <Button className=" text-sm md:text-base"><PlusIcon size={20} /> Add Task</Button>
                 }
             </div>
-            {
+            {/* {
                 activeTab === "Members" ?
                     <ProjectMemberTable></ProjectMemberTable>
                     :
                     <TaskTable></TaskTable>
-            }
+            } */}
         </div>
     );
 };

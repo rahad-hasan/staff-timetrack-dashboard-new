@@ -5,6 +5,9 @@ import AppPagination from "@/components/Common/AppPagination";
 
 const ManualRequestTableServer = async ({ searchParams }: ISearchParamsProps) => {
     const params = await searchParams;
+    // if(params?.user_id && params?.page){
+
+    // }
     const result = await getManualTimeEntry({
         user_id: params?.user_id,
         search: params.search,

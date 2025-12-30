@@ -1,8 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useDroppable } from "@dnd-kit/core";
 import DraggableTask from "./DraggableTask";
-import { ITask } from "@/global/globalTypes";
 
-const Column = ({ id, label, task }: { id: string; label: string; task: ITask[] }) => {
+const Column = ({ id, label, task }: { id: string; label: string; task: any }) => {
     const { setNodeRef } = useDroppable({ id });
 
     const buttonClass = label === "todo"
@@ -34,7 +34,7 @@ const Column = ({ id, label, task }: { id: string; label: string; task: ITask[] 
             </div>
 
             <div className="space-y-4">
-                {task.map((t) => (
+                {task.map((t:any) => (
                     <DraggableTask key={t.id} task={t} />
                 ))}
             </div>

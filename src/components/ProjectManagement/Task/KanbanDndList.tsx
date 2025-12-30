@@ -1,11 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import { useState } from "react";
 import DragBoard from "./TaskDragDrop/DragBoard";
-import { ITask } from "@/global/globalTypes";
+// import { ITask } from "@/global/globalTypes";
 
 const KanbanDndList = () => {
     console.log("KanbanDndList");
-    const [taskList, setTaskList] = useState<ITask[]>([
+    const [taskList, setTaskList] = useState<any>([
         {
             id: "s2as1fdazdsd14",
             taskName: "Do the Logic for Orbit Home page project",
