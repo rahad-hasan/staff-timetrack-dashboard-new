@@ -43,3 +43,16 @@ export const editManualTimeEntry = async ({ data, id }: {
         tag: "manualTimeEntry",
     });
 };
+
+export const approveRejectManualTimeEntry = async ({ data, id }: {
+    data: {
+        is_approved: boolean;
+    },
+    id: number | undefined
+}) => {
+    return await baseApi(`/time-entries/approved/${id}`, {
+        method: "PATCH",
+        body: data,
+        tag: "manualTimeEntry",
+    });
+};

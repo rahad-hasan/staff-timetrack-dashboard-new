@@ -11,7 +11,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { cn } from "@/lib/utils";
 
 interface ConfirmDialogProps {
@@ -37,8 +37,25 @@ const ConfirmDialog = ({
   loading = false,
   confirmClassName,
 }: ConfirmDialogProps) => {
+  const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleConfirm = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    // 1. Prevent Radix from auto-closing the dialog
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      await onConfirm();
+      setOpen(false);
+    } catch (error) {
+      console.error("Error confirming:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <AlertDialog>
+    <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
         {trigger}
       </AlertDialogTrigger>
@@ -60,8 +77,9 @@ const ConfirmDialog = ({
           </AlertDialogCancel>
 
           <AlertDialogAction
-            onClick={onConfirm}
-            disabled={loading}
+            // onClick={onConfirm}
+            onClick={handleConfirm}
+            disabled={isLoading}
             className={cn(
               "bg-destructive text-white hover:bg-destructive/90",
               confirmClassName
