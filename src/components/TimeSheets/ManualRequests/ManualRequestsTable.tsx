@@ -25,10 +25,9 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
     const [open, setOpen] = useState(false)
     const [selectedItem, setSelectedItem] = useState<IManualTimeEntry | null>(null)
     const logInUserData = useLogInUserStore(state => state.logInUserData);
-    // const [loading, setLoading] = useState(false)
 
+    // handle approve or reject manual request
     const handleApproveReject = async ({ is_approved, id }: { is_approved: boolean, id: number }) => {
-        // setLoading(true);
         try {
             const res = await approveRejectManualTimeEntry({
                 data: {
@@ -39,17 +38,14 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
             console.log("success:", res);
 
             if (res?.success) {
-                toast.success(res?.message || "Client added successfully");
+                toast.success(res?.message || `Manual request ${is_approved ? "approved" : "rejected"} successfully`);
             } else {
-                toast.error(res?.message || "Failed to add client");
+                toast.error(res?.message || `Failed to ${is_approved ? "approved" : "rejected"} manual request`);
             }
         } catch (error: any) {
             console.error("failed:", error);
             toast.error(error.message || "Something went wrong!");
         }
-        // finally {
-        //     setLoading(false);
-        // }
     }
 
     const columns: ColumnDef<IManualTimeEntry>[] = [
@@ -194,15 +190,20 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
                                                     confirmText="Confirm"
                                                     cancelText="Cancel"
                                                     onConfirm={() => handleApproveReject({ is_approved: true, id: row?.original?.id })}
-                                                // loading={loading}
-                                                // onCancel={() => {
-                                                //     toast.info("Delete cancelled");
-                                                // }}
                                                 />
-                                                <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                                    <DenyIcon size={20} />
-                                                    <p>Deny requested time</p>
-                                                </div>
+                                                <ConfirmDialog
+                                                    trigger={
+                                                        <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
+                                                            <DenyIcon size={20} />
+                                                            <p>Deny requested time</p>
+                                                        </div>
+                                                    }
+                                                    title="Reject the entry"
+                                                    description="Are you sure you want to reject this entry? This action cannot be undone."
+                                                    confirmText="Confirm"
+                                                    cancelText="Cancel"
+                                                    onConfirm={() => handleApproveReject({ is_approved: false, id: row?.original?.id })}
+                                                />
                                             </>
                                         }
 
