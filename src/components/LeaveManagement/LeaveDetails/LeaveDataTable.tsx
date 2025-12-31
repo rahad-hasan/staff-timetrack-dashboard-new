@@ -5,56 +5,16 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useMemo, useState } from "react";
 import { ArrowUpDown } from "lucide-react";
 import Image from "next/image";
-import { ILeave } from "@/global/globalTypes";
-import EmptyTableRow from "@/components/Common/EmptyTableRow";
 
-const LeaveDataTable = () => {
+import EmptyTableRow from "@/components/Common/EmptyTableRow";
+import { IUserLeaveData } from "@/types/type";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
+const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
 
-    const leaveList: ILeave[] = useMemo(
-        () => [
-            {
-                image: "https://picsum.photos/200/300",
-                name: "Guy Hawkins",
-                totalLeave: 14,
-                casualLeave: 14,
-                sickLeave: 12,
-                earnedLeave: 7,
-                availableLeave: 50
-            },
-            {
-                image: "https://picsum.photos/200/300",
-                name: "Darlene Robertson",
-                totalLeave: 14,
-                casualLeave: 14,
-                sickLeave: 12,
-                earnedLeave: 7,
-                availableLeave: 30
-            },
-            {
-                image: "https://picsum.photos/200/300",
-                name: "Marvin McKinney",
-                totalLeave: 14,
-                casualLeave: 14,
-                sickLeave: 12,
-                earnedLeave: 7,
-                availableLeave: 70
-            },
-            {
-                image: "https://picsum.photos/200/300",
-                name: "Ronald Richards",
-                totalLeave: 14,
-                casualLeave: 14,
-                sickLeave: 12,
-                earnedLeave: 7,
-                availableLeave: 30
-            }
-        ],
-        []
-    );
-
-    const columns: ColumnDef<ILeave>[] = [
+    const columns: ColumnDef<IUserLeaveData>[] = [
         {
             accessorKey: "name",
             header: ({ column }) => {
@@ -71,11 +31,14 @@ const LeaveDataTable = () => {
                 )
             },
             cell: ({ row }) => {
-                const name = row.getValue("name") as string;
-                const img = row.original.image;
+                const name = row?.original?.user?.name;
+                const image = row?.original?.user?.image ? row?.original?.user?.image : ""
                 return (
                     <div className="flex items-center gap-2 min-w-[180px]">
-                        <Image src={img} alt="profile" width={200} height={200} className="w-8 h-8 object-cover rounded-full" />
+                        <Avatar className="">
+                            <AvatarImage src={image} alt={name}></AvatarImage>
+                            <AvatarFallback>{name?.charAt(0)}</AvatarFallback>
+                        </Avatar>
                         <span className=" font-medium">{name}</span>
                     </div>
                 )
@@ -97,10 +60,9 @@ const LeaveDataTable = () => {
                 )
             },
             cell: ({ row }) => {
-                const totalLeave = row.getValue("totalLeave") as string;
                 return (
                     <div className="flex flex-col">
-                        <span className=" font-medium">{totalLeave}</span>
+                        <span className=" font-medium">{row?.original?.total_remaining}</span>
                     </div>
                 )
             }
@@ -121,10 +83,10 @@ const LeaveDataTable = () => {
                 )
             },
             cell: ({ row }) => {
-                const casualLeave = row.getValue("casualLeave") as string;
+
                 return (
                     <div className="flex flex-col">
-                        <span className=" font-medium">{casualLeave}</span>
+                        <span className=" font-medium">{row?.original?.casual?.remaining}</span>
                     </div>
                 )
             }
@@ -145,16 +107,15 @@ const LeaveDataTable = () => {
                 )
             },
             cell: ({ row }) => {
-                const sickLeave = row.getValue("sickLeave") as string;
                 return (
                     <div className="flex flex-col">
-                        <span className=" font-medium">{sickLeave}</span>
+                        <span className=" font-medium">{row?.original?.sick?.remaining}</span>
                     </div>
                 )
             }
         },
         {
-            accessorKey: "earnedLeave",
+            accessorKey: "paidLeave",
             header: ({ column }) => {
                 return (
                     <div>
@@ -169,10 +130,9 @@ const LeaveDataTable = () => {
                 )
             },
             cell: ({ row }) => {
-                const earnedLeave = row.getValue("earnedLeave") as string;
                 return (
                     <div className="flex flex-col">
-                        <span className=" font-medium">{earnedLeave}</span>
+                        <span className=" font-medium">{row?.original?.paid?.remaining}</span>
                     </div>
                 )
             }
@@ -193,23 +153,34 @@ const LeaveDataTable = () => {
                 )
             },
             cell: ({ row }) => {
-                const availableLeave = row.getValue("availableLeave") as string;
-                const widthPercentage = (Number(availableLeave) / 100) * 100;
-                const withColor = widthPercentage > 50 ? 'bg-red-500' : widthPercentage > 40 ? 'bg-yellow-500' : 'bg-green-500';
+                const taken = row?.original?.total_taken || 0;
+                const allowed = row?.original?.total_allowed || 1;
+                const percentage = Math.min((taken / allowed) * 100, 100);
+                const withColor =
+                    percentage > 80 ? 'bg-red-500' :
+                        percentage > 50 ? 'bg-yellow-500' :
+                            'bg-green-500';
+
                 return (
-                    <div className=" ">
-                        <div className={` bg-[#ececec] dark:bg-gray-500 flex h-4.5 w-16 rounded-full relative`}>
-                            <p className={`${withColor} flex h-4.5 rounded-full absolute top-0 left-0`} style={{ width: `${widthPercentage}%` }}></p>
+                    <div className="flex items-center gap-2">
+                        <div className="bg-[#ececec] dark:bg-gray-700 flex h-4 w-24 rounded-full relative overflow-hidden">
+                            <div
+                                className={`${withColor} h-full rounded-full transition-all duration-300`}
+                                style={{ width: `${percentage}%` }}
+                            />
                         </div>
+                        <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                            {Math.round(percentage)}%
+                        </span>
                     </div>
-                )
+                );
             }
         }
     ];
 
 
     const table = useReactTable({
-        data: leaveList,
+        data: data,
         columns,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,

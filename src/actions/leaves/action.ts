@@ -2,12 +2,19 @@
 
 import { buildQuery } from "@/utils/buildQuery";
 import { baseApi } from "../baseApi";
-import { ILeaveRequest, IResponse } from "@/types/type";
+import { ILeaveDetailsResponse, ILeaveRequest, IResponse } from "@/types/type";
 
 export const getLeave = async (query = {}): Promise<IResponse<ILeaveRequest[]>> => {
     const queryString = buildQuery(query);
     return await baseApi(`/leaves${queryString ? `?${queryString}` : ""}`, {
         tag: "leaves",
+    });
+};
+
+export const getLeaveDetails = async (query = {}): Promise<IResponse<ILeaveDetailsResponse>> => {
+    const queryString = buildQuery(query);
+    return await baseApi(`/leaves/details${queryString ? `?${queryString}` : ""}`, {
+        tag: "leavesDetails",
     });
 };
 

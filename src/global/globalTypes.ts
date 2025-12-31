@@ -46,15 +46,6 @@ export interface ITeamMembers {
     created_at: string,
     updated_at: string,
 }
-export interface ILeave {
-    image: string,
-    name: string,
-    totalLeave: number,
-    casualLeave: number,
-    sickLeave: number,
-    earnedLeave: number,
-    availableLeave: number
-}
 
 export interface IMeta {
     total: number;

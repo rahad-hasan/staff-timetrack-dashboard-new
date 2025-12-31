@@ -18,11 +18,11 @@ const leaveDetailsSkeleton = () => {
             <div className="mt-4 grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-6 w-full 2xl:w-[70%] animate-pulse">
                 {skeletonCards.map((_, index) => (
                     <div key={index} className="border border-gray-200 dark:border-darkBorder rounded-xl w-full overflow-hidden">
-                        <div className="py-7 sm:py-10 flex justify-center items-center border-b border-gray-200 dark:border-darkBorder rounded-t-xl">
+                        <div className="py-7 sm:py-9 px-6 flex items-center border-b border-gray-200 dark:border-darkBorder rounded-t-xl">
                             <PlaceholderBox className="h-8 w-12 bg-gray-300" />
                         </div>
-                        <div className="text-sm sm:text-base text-center py-3 px-2">
-                            <PlaceholderBox className="h-4 w-4/5 mx-auto" />
+                        <div className="text-sm sm:text-base py-3 px-6">
+                            <PlaceholderBox className="h-4 px-6 w-3/5" />
                         </div>
                     </div>
                 ))}

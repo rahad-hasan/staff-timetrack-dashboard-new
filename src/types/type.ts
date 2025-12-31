@@ -302,3 +302,34 @@ export interface ICoreMember {
   tasks_count: number;
   rank: number;
 }
+
+export interface ILeaveStats {
+  allowed: number;
+  taken: number;
+  remaining: number;
+}
+
+export interface ILeaveDetails {
+  paid_leave: number;
+  casual_leave: number;
+  sick_leave: number;
+  maternity_leave: number;
+}
+
+export interface IUserLeaveData {
+  user: User;
+  year: number;
+  total_allowed: number;
+  total_taken: number;
+  total_remaining: number;
+  available: number;
+  casual: ILeaveStats;
+  sick: ILeaveStats;
+  maternity: ILeaveStats;
+  paid: ILeaveStats;
+}
+
+export interface ILeaveDetailsResponse {
+    data: IUserLeaveData[];
+    details: ILeaveDetails;
+}
