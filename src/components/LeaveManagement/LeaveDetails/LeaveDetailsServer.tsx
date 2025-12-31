@@ -1,6 +1,7 @@
 import { ISearchParamsProps } from '@/types/type';
 import LeaveDataTable from './LeaveDataTable';
 import { getLeaveDetails } from '@/actions/leaves/action';
+import AppPagination from '@/components/Common/AppPagination';
 
 const LeaveDetailsServer = async ({ searchParams }: ISearchParamsProps) => {
     const params = await searchParams;
@@ -38,6 +39,11 @@ const LeaveDetailsServer = async ({ searchParams }: ISearchParamsProps) => {
                 </div>
             </div>
             <LeaveDataTable data={result?.data?.data}></LeaveDataTable>
+            <AppPagination
+                total={result?.meta?.total ?? 1}
+                currentPage={params.page as number}
+                limit={result?.meta?.limit ?? 10}
+            />
         </div>
     );
 };

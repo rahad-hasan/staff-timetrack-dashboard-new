@@ -7,7 +7,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import RejectLeaveRequestModal from "./RejectLeaveRequestModal";
-import LeaveHistory from "./LeaveHistory";
+import LeaveHistory from "../LeaveDetails/LeaveDataDetailsModal";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { ILeaveRequest } from "@/types/type";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";

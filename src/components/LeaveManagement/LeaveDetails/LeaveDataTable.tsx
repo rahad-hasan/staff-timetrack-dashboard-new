@@ -2,13 +2,13 @@
 
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { ArrowUpDown } from "lucide-react";
-import Image from "next/image";
-
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { IUserLeaveData } from "@/types/type";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import LeaveDataDetailsModal from "./LeaveDataDetailsModal";
 
 const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
     const [sorting, setSorting] = useState<SortingState>([])
@@ -39,7 +39,15 @@ const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
                             <AvatarImage src={image} alt={name}></AvatarImage>
                             <AvatarFallback>{name?.charAt(0)}</AvatarFallback>
                         </Avatar>
-                        <span className=" font-medium">{name}</span>
+                        <Dialog>
+                            <form>
+                                <DialogTrigger asChild>
+                                    <span className=" font-medium cursor-pointer">{name}</span>
+
+                                </DialogTrigger>
+                                <LeaveDataDetailsModal data={row?.original}></LeaveDataDetailsModal>
+                            </form>
+                        </Dialog>
                     </div>
                 )
             }
