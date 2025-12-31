@@ -85,7 +85,7 @@ const ConfirmDialog = ({
               confirmClassName
             )}
           >
-            {loading ? "Please wait..." : confirmText}
+            {isLoading ? "Please wait..." : confirmText}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

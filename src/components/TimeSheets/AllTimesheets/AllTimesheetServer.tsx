@@ -5,23 +5,23 @@ import WeeklyTimeSheets from "./WeeklyTimeSheets/WeeklyTimeSheets";
 
 const AllTimesheetServer = async({ searchParams }: ISearchParamsProps) => {
     const params = await searchParams;
-    console.log(params);
-    type Tab = "Daily" | "Weekly" | "Monthly";
-    const activeTab = (params?.tab as Tab) ?? "Daily";
+    console.log("test test test test",params);
+    type Tab = "daily" | "weekly" | "monthly";
+    const activeTab = (params?.tab as Tab) ?? "daily";
     return (
         <div>
             {
-                activeTab === "Daily" &&
+                activeTab === "daily" &&
                 <DailyTimeSheets></DailyTimeSheets>
             }
 
             {
-                activeTab === "Weekly" &&
+                activeTab === "weekly" &&
                 <WeeklyTimeSheets></WeeklyTimeSheets>
             }
 
             {
-                activeTab === "Monthly" &&
+                activeTab === "monthly" &&
                 <MonthlyTimeSheets></MonthlyTimeSheets>
             }
         </div>

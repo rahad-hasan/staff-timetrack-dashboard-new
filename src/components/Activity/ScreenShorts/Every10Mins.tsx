@@ -1,9 +1,10 @@
-import { Circle, Trash2 } from "lucide-react";
+"use client"
+import { Circle } from "lucide-react";
 import screenshort1 from "../../../assets/dashboard/screenshort1.png";
 import screenshort2 from "../../../assets/dashboard/screenshort2.png";
 import screenshort3 from "../../../assets/dashboard/screenshort3.png";
 import Image, { StaticImageData } from "next/image";
-import { Slider } from "@/components/ui/slider"
+// import { Slider } from "@/components/ui/slider"
 // import {
 //     Carousel,
 //     CarouselContent,

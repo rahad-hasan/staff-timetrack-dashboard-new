@@ -70,6 +70,7 @@ const SignIn = () => {
                     phone: res?.data?.phone,
                     pay_rate_hourly: res?.data?.pay_rate_hourly,
                     timezone: res?.data?.timezone,
+                    company_id: res?.data?.company_id,
                 })
                 router.push("/dashboard");
             } else {

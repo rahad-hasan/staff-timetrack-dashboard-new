@@ -9,8 +9,8 @@ import { ISearchParamsProps } from "@/types/type";
 const ReportTimeSheets = async ({ searchParams }: ISearchParamsProps) => {
     console.log("ReportTimeSheets");
     const params = await searchParams;
-    type Tab = "Daily" | "Weekly" | "Monthly";
-    const activeTab = (params?.tab as Tab) ?? "Daily";
+    type Tab = "daily" | "weekly" | "monthly";
+    const activeTab = (params?.tab as Tab) ?? "daily";
     let dailyTimeEntry = null;
     if (params.date && params.user_id) {
         dailyTimeEntry = await getTimeEntry({
@@ -35,15 +35,15 @@ const ReportTimeSheets = async ({ searchParams }: ISearchParamsProps) => {
                 <DayWeekMonthSelection></DayWeekMonthSelection>
             </div>
             {
-                activeTab === "Daily" &&
+                activeTab === "daily" &&
                 <ReportDailyTimeSheet dailyTimeEntry={dailyTimeEntry}></ReportDailyTimeSheet>
             }
             {
-                activeTab === "Weekly" &&
+                activeTab === "weekly" &&
                 <ReportWeeklyTimeSheet dateBasedTimeEntry={dateBasedTimeEntry}></ReportWeeklyTimeSheet>
             }
             {
-                activeTab === "Monthly" &&
+                activeTab === "monthly" &&
                 <ReportMonthlyTimeSheet></ReportMonthlyTimeSheet>
             }
         </div>

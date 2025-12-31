@@ -1,3 +1,4 @@
+"use client"
 import { Circle } from "lucide-react";
 import screenshort1 from "../../../assets/dashboard/screenshort1.png";
 import screenshort2 from "../../../assets/dashboard/screenshort2.png";
