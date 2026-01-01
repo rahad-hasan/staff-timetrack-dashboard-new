@@ -66,12 +66,8 @@ const TaskHeroSection = () => {
                     </div>
 
                     <Dialog open={open} onOpenChange={setOpen}>
-                        <form>
-                            <DialogTrigger asChild>
-                                <Button className=""><Plus className="size-5" /> <span className=" hidden sm:block">Create Task</span></Button>
-                            </DialogTrigger>
-                            <CreateTaskModal onClose={() => setOpen(false)}></CreateTaskModal>
-                        </form>
+                        <Button onClick={() => setOpen(true)} className=""><Plus className="size-5" /> <span className=" hidden sm:block">Create Task</span></Button>
+                        <CreateTaskModal onClose={() => setOpen(false)}></CreateTaskModal>
                     </Dialog>
 
                 </div>

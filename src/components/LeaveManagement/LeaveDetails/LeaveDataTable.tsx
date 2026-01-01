@@ -70,7 +70,7 @@ const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
             cell: ({ row }) => {
                 return (
                     <div className="flex flex-col">
-                        <span className=" font-medium">{row?.original?.total_remaining}</span>
+                        <span className=" font-medium">{row?.original?.total_taken}</span>
                     </div>
                 )
             }
@@ -94,7 +94,7 @@ const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
 
                 return (
                     <div className="flex flex-col">
-                        <span className=" font-medium">{row?.original?.casual?.remaining}</span>
+                        <span className=" font-medium">{row?.original?.casual?.taken}</span>
                     </div>
                 )
             }
@@ -117,7 +117,7 @@ const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
             cell: ({ row }) => {
                 return (
                     <div className="flex flex-col">
-                        <span className=" font-medium">{row?.original?.sick?.remaining}</span>
+                        <span className=" font-medium">{row?.original?.sick?.taken}</span>
                     </div>
                 )
             }
@@ -140,7 +140,7 @@ const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
             cell: ({ row }) => {
                 return (
                     <div className="flex flex-col">
-                        <span className=" font-medium">{row?.original?.paid?.remaining}</span>
+                        <span className=" font-medium">{row?.original?.paid?.taken}</span>
                     </div>
                 )
             }

@@ -3,9 +3,10 @@ import { getTasks } from "@/actions/task/action";
 import TaskToggle from "./TaskToggle";
 
 const TaskServer = async ({ searchParams }: any) => {
+    const params = await searchParams;
     const result = await getTasks({
-        search: searchParams.search,
-        project_id: searchParams.project_id,
+        search: params.search,
+        project_id: params.project_id,
     });
 
     return (

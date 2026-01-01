@@ -1,204 +1,28 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
-import { Circle } from "lucide-react";
+import { Circle, Keyboard, MousePointer2 } from "lucide-react";
 import screenshort1 from "../../../assets/dashboard/screenshort1.png";
 import screenshort2 from "../../../assets/dashboard/screenshort2.png";
 import screenshort3 from "../../../assets/dashboard/screenshort3.png";
 import Image, { StaticImageData } from "next/image";
-// import { Slider } from "@/components/ui/slider"
-// import {
-//     Carousel,
-//     CarouselContent,
-//     CarouselItem,
-// } from "@/components/ui/carousel"
 import { useState } from "react";
 import ScreenShortsModal from "./ScreenShortsModal";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import ScreenShortsDeleteReason from "./ScreenShortsDeleteReason";
 import { AnimatePresence } from "framer-motion";
 import DeleteIcon from "@/components/Icons/DeleteIcon";
+import { format, parseISO } from "date-fns";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
+// import emptyActivity from "../../../assets/empty_activity.png";
 
-const Every10Mins = () => {
+const Every10Mins = ({ data }: any) => {
     console.log('Every10Mins');
     const [selectedImage, setSelectedImage] = useState<string | StaticImageData>();
     const [modalOpen, setModalOpen] = useState<boolean>(false);
-
-    interface IScreenShort {
-        _id: number;
-        start: string;
-        end: string;
-        duration: string;
-        progress: number;
-        activity: number;
-        screenshotCount: number;
-        screenShort: string | StaticImageData;
-        project: string;
-        task: string;
-    }
-
-    interface IScreenShortsTimely {
-        time: string;
-        totalTimeWorked: string;
-        allScreenshorts: IScreenShort[];
-    }
-
-    const screenShortsTimely: IScreenShortsTimely[] = [
-        {
-            time: "9:10 am - 10:00 am",
-            totalTimeWorked: "1:00:00",
-            allScreenshorts: [
-                {
-                    _id: 1,
-                    start: "9:00 am",
-                    end: "9:10 am",
-                    duration: "10 minutes",
-                    progress: 20,
-                    activity: 45,
-                    screenshotCount: 3,
-                    screenShort: screenshort1,
-                    project: "Orbit Technology's Project",
-                    task: "No Task",
-                },
-                {
-                    _id: 2,
-                    start: "9:10 am",
-                    end: "9:20 am",
-                    duration: "10 minutes",
-                    progress: 49,
-                    activity: 70,
-                    screenshotCount: 3,
-                    screenShort: screenshort2,
-                    project: "Orbit Technology's Project",
-                    task: "No Task",
-                },
-                {
-                    _id: 3,
-                    start: "9:20 am",
-                    end: "9:30 am",
-                    duration: "10 minutes",
-                    progress: 80,
-                    activity: 25,
-                    screenshotCount: 0,
-                    screenShort: screenshort1,
-                    project: "No Activity Listed",
-                    task: "No Task",
-                },
-                {
-                    _id: 4,
-                    start: "9:10 am",
-                    end: "9:20 am",
-                    duration: "10 minutes",
-                    progress: 49,
-                    activity: 70,
-                    screenshotCount: 3,
-                    screenShort: screenshort2,
-                    project: "Orbit Technology's Project",
-                    task: "No Task",
-                },
-                {
-                    _id: 5,
-                    start: "9:00 am",
-                    end: "9:10 am",
-                    duration: "10 minutes",
-                    progress: 20,
-                    activity: 45,
-                    screenshotCount: 3,
-                    screenShort: screenshort1,
-                    project: "Orbit Technology's Project",
-                    task: "No Task",
-                },
-                {
-                    _id: 6,
-                    start: "9:20 am",
-                    end: "9:30 am",
-                    duration: "10 minutes",
-                    progress: 80,
-                    activity: 25,
-                    screenshotCount: 0,
-                    screenShort: screenshort1,
-                    project: "No Activity Listed",
-                    task: "No Task",
-                },
-            ],
-        },
-        {
-            time: "10:00 am - 11:00 am",
-            totalTimeWorked: "0:50:00",
-            allScreenshorts: [
-                {
-                    _id: 1,
-                    start: "10:00 am",
-                    end: "10:10 am",
-                    duration: "10 minutes",
-                    progress: 25,
-                    activity: 65,
-                    screenshotCount: 3,
-                    screenShort: screenshort3,
-                    project: "Orbit Technology's Project",
-                    task: "No Task",
-                },
-                {
-                    _id: 2,
-                    start: "10:10 am",
-                    end: "10:20 am",
-                    duration: "10 minutes",
-                    progress: 40,
-                    activity: 55,
-                    screenshotCount: 3,
-                    screenShort: screenshort2,
-                    project: "Orbit Technology's Project",
-                    task: "No Task",
-                },
-                {
-                    _id: 3,
-                    start: "9:20 am",
-                    end: "9:30 am",
-                    duration: "10 minutes",
-                    progress: 80,
-                    activity: 25,
-                    screenshotCount: 0,
-                    screenShort: screenshort1,
-                    project: "No Activity Listed",
-                    task: "No Task",
-                },
-                {
-                    _id: 4,
-                    start: "9:10 am",
-                    end: "9:20 am",
-                    duration: "10 minutes",
-                    progress: 49,
-                    activity: 70,
-                    screenshotCount: 3,
-                    screenShort: screenshort2,
-                    project: "Orbit Technology's Project",
-                    task: "No Task",
-                },
-                {
-                    _id: 5,
-                    start: "9:00 am",
-                    end: "9:10 am",
-                    duration: "10 minutes",
-                    progress: 20,
-                    activity: 45,
-                    screenshotCount: 3,
-                    screenShort: screenshort1,
-                    project: "Orbit Technology's Project",
-                    task: "No Task",
-                },
-                {
-                    _id: 6,
-                    start: "9:20 am",
-                    end: "9:30 am",
-                    duration: "10 minutes",
-                    progress: 80,
-                    activity: 25,
-                    screenshotCount: 0,
-                    screenShort: screenshort1,
-                    project: "No Activity Listed",
-                    task: "No Task",
-                },
-            ],
-        },
-    ];
 
     // assume I have many screenShorts
     const dummyScreenShorts = [
@@ -231,106 +55,106 @@ const Every10Mins = () => {
         },
     ]
 
+    const formatDuration = (totalSeconds: number) => {
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = Math.floor(totalSeconds % 60);
+        if (hours > 0) {
+            return `${hours}h ${minutes}m ${seconds}s`;
+        }
+        if (minutes > 0) {
+            return `${minutes}m ${seconds}s`;
+        }
+        return `${seconds}s`;
+    };
+
+    const groupDataByHour = (intervals: any[]) => {
+        const hours: Record<string, any[]> = {};
+
+        // 1. Group intervals by their hour start (e.g., "2025-12-30T11:00:00")
+        intervals?.forEach((interval) => {
+            const date = new Date(interval?.from_time);
+            date?.setMinutes(0, 0, 0);
+            const hourKey = date?.toISOString();
+            if (!hours[hourKey]) hours[hourKey] = [];
+            hours[hourKey].push(interval);
+        });
+
+        return Object.entries(hours)?.map(([hourKey, blockIntervals]) => {
+            const hourStart = new Date(hourKey);
+            const hourEnd = new Date(hourStart);
+            hourEnd.setHours(hourEnd.getHours() + 1);
+
+            // 2. Generate all six 10-minute slots for this hour
+            const slots = [];
+            let totalWorkedSeconds = 0;
+
+            for (let i = 0; i < 60; i += 10) {
+                const slotStart = new Date(hourStart);
+                slotStart?.setMinutes(i);
+                const slotEnd = new Date(slotStart);
+                slotEnd?.setMinutes(i + 10);
+
+                // Find if an interval matches this specific 10m slot
+                const match = blockIntervals.find(
+                    (int) => new Date(int.from_time).getTime() === slotStart.getTime()
+                );
+
+                if (match) {
+                    totalWorkedSeconds += match.total_duration;
+                    slots.push({ type: "data", ...match });
+                } else {
+                    slots.push({ type: "empty", from_time: slotStart.toISOString(), to_time: slotEnd.toISOString() });
+                }
+            }
+
+            return {
+                hourLabel: `${format(hourStart, "h:mm a")} - ${format(hourEnd, "h:mm a")}`,
+                totalWorked: totalWorkedSeconds,
+                slots,
+            };
+        });
+    };
+    const processedHours = groupDataByHour(data || []);
+
     return (
         <>
-            {/* map and under map */}
-
-
-            {/* 
-                <div className=" mt-1">
-                    <Carousel className="w-full ">
-                        <CarouselContent className="">
-                            {screenShortsTimely.map((screenShort) => (
-                                <CarouselItem key={screenShort._id} className=" basis-[70%] sm:basis-[45%] lg:basis-[30%] 2xl:basis-[23%] p-3">
-                                    <div className=" p-3 flex-nowrap rounded-lg border border-borderColor dark:border-darkBorder cursor-grab">
-
-                                        <Image
-                                            src={screenShort.screenShort}
-                                            onClick={() => {
-                                                setSelectedImage(screenShort.screenShort)
-                                                setModalOpen(!modalOpen)
-                                            }}
-                                            width={300}
-                                            height={300}
-                                            className="rounded-lg w-full transition-transform duration-300 hover:scale-[1.01]"
-                                            alt="screenshot"
-                                        />
-
-
-                                        <div className="mt-3">
-                                            <div className="flex justify-between items-center">
-                                                <p className="text-lg text-headingTextColor dark:text-darkTextPrimary">
-                                                    {screenShort.start} - {screenShort.end}
-                                                </p>
-                                                <Pencil className="text-primary cursor-pointer" size={18} />
-                                            </div>
-                                            <p className="mb-2 text-headingTextColor dark:text-darkTextPrimary">
-                                                {screenShort.activity}% of 10 minutes
-                                            </p>
-                                            <Slider
-                                                className={`
-                                            rounded-full
-                                            ${screenShort.progress < 30
-                                                        ? "bg-red-500 border-white"
-                                                        : screenShort.progress < 60
-                                                            ? "bg-yellow-400 border-white"
-                                                            : "bg-primary border-white"
-                                                    }
-                                            `}
-                                                disabled
-                                                defaultValue={[screenShort.progress ?? 0]}
-                                                max={100}
-                                                step={1}
-                                            />
-                                            <h2 className="mt-2 md:text-lg font-medium dark:text-darkTextPrimary">
-                                                {screenShort.project}
-                                            </h2>
-                                            <p className="text-headingTextColor dark:text-darkTextPrimary">{screenShort.task}</p>
-                                        </div>
-                                    </div>
-                                </CarouselItem>
-                            ))}
-                        </CarouselContent>
-                    </Carousel>
-                </div > */}
-
-            <div className="">
-                {screenShortsTimely.map((block, blockIndex) => (
+            {/* <div className="">
+                {data?.map((block: any, blockIndex: any) => (
                     <div key={blockIndex} className="mt-5">
-                        {/* Header (time and total worked) */}
+
                         <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 sm:justify-between sm:items-center">
                             <div className="flex items-center gap-2">
                                 <Circle size={20} className="text-gray-200 dark:text-darkTextPrimary" />
-                                <p className="text-subTextColor dark:text-darkTextSecondary">{block.time}</p>
+                                <p className="text-subTextColor dark:text-darkTextSecondary">{format(parseISO(block.from_time), 'h:mm a')} - {format(parseISO(block.to_time), 'h:mm a')}</p>
                             </div>
                             <h2 className="text-lg text-subTextColor dark:text-darkTextSecondary">
-                                Total time worked: <span className="font-medium">{block.totalTimeWorked}</span>
+                                Total time worked: <span className="font-medium">{formatDuration(block.total_duration)}</span>
                             </h2>
                         </div>
 
-                        {/* Screenshot grid */}
                         <div className="mt-3 grid grid-cols-2 xl:grid-cols-4 2xl:grid-cols-6 3xl:grid-cols-6 gap-4">
-                            {block.allScreenshorts.map((screenShort) => (
+                            {block?.details.map((screenShort: any, index: any) => (
                                 <div
-                                    key={screenShort._id}
+                                    key={index}
                                     className="p-2 flex-nowrap rounded-lg border border-borderColor dark:border-darkBorder"
                                 >
                                     <Image
-                                        src={screenShort.screenShort}
+                                        src={screenShort?.image}
                                         onClick={() => {
                                             setSelectedImage(screenShort.screenShort);
                                             setModalOpen(true);
                                         }}
                                         width={300}
                                         height={300}
-                                        className="rounded-lg w-full transition-transform duration-300 hover:scale-[1.01] cursor-pointer"
+                                        className="rounded-lg w-full h-34 object-cover transition-transform duration-300 hover:scale-[1.01] cursor-pointer"
                                         alt="screenshot"
                                     />
 
                                     <div className="mt-3">
                                         <div className="flex justify-between items-center mb-2">
                                             <p className=" text-lg font-normal text-subTextColor dark:text-darkTextPrimary">
-                                                {screenShort.start} - {screenShort.end}
+                                                {screenShort.start}nai - nai{screenShort.end}
                                             </p>
                                             <Dialog>
                                                 <form>
@@ -345,26 +169,26 @@ const Every10Mins = () => {
                                         </div>
 
                                         <p className=" text-sm mb-2 text-subTextColor dark:text-darkTextPrimary">
-                                            {screenShort.activity}% of 10 minutes
+                                            {screenShort?.score}% of {screenShort?.duration} minutes
                                         </p>
 
 
                                         <div className="h-2 bg-[#dce3e3] rounded-full">
 
                                             <div
-                                                className={`h-2 ${screenShort.progress < 30
+                                                className={`h-2 ${screenShort.score < 30
                                                     ? "bg-red-500"
-                                                    : screenShort.progress < 60
+                                                    : screenShort.score < 60
                                                         ? "bg-yellow-400"
                                                         : "bg-primary"}
                                                      rounded-full relative`}
-                                                style={{ width: `${screenShort.progress}%` }}
+                                                style={{ width: `${screenShort.score}%` }}
                                             >
-                                                {/* bar circle */}
+
                                                 <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[22px] h-[22px] bg-gradient-to-b from-[#ffffff] to-[#dfe5fd] border-2 border-white rounded-full flex items-center justify-center">
-                                                    <div className={`w-[8px] h-[8px] shadow ${screenShort.progress < 30
+                                                    <div className={`w-[8px] h-[8px] shadow ${screenShort.score < 30
                                                         ? "bg-red-500"
-                                                        : screenShort.progress < 60
+                                                        : screenShort.score < 60
                                                             ? "bg-yellow-400"
                                                             : "bg-primary"} rounded-full`}>
                                                     </div>
@@ -373,10 +197,10 @@ const Every10Mins = () => {
 
                                         </div>
                                         <h2 className="mt-3 text-sm sm:text-base font-bold text-headingTextColor dark:text-darkTextPrimary">
-                                            {screenShort.project}
+                                            {screenShort?.project_name}
                                         </h2>
                                         <p className="text-subTextColor text-sm md:text-base dark:text-darkTextSecondary">
-                                            {screenShort.task}
+                                            {screenShort?.task_name ? screenShort?.task_name : "No Task"}
                                         </p>
                                     </div>
                                 </div>
@@ -384,14 +208,163 @@ const Every10Mins = () => {
                         </div>
                     </div>
                 ))}
-            </div>
+            </div> */}
+
+            {
+                processedHours.map((hourGroup, groupIdx) => (
+                    < div key={groupIdx} className="mt-3" >
+                        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 sm:justify-between sm:items-center">
+                            <div className="flex items-center gap-2">
+                                <Circle size={20} className="text-gray-200 dark:text-darkTextPrimary" />
+                                <p className="text-subTextColor dark:text-darkTextSecondary">{hourGroup?.hourLabel}</p>
+                            </div>
+                            <h2 className="text-lg text-subTextColor dark:text-darkTextSecondary">
+                                Total time worked: <span className="font-medium">{formatDuration(hourGroup?.totalWorked)}</span>
+                            </h2>
+                        </div>
+                        <div className="mt-3 grid grid-cols-2 xl:grid-cols-4 2xl:grid-cols-6 3xl:grid-cols-6 gap-4">
+                            {hourGroup?.slots?.map((block: any, blockIndex: any) => (
+                                block.type === "empty" ?
+                                    <div
+                                        key={blockIndex}
+                                        className=" min-h-64 flex items-center justify-center border border-dashed border-borderColor dark:border-darkBorder rounded-lg bg-gray-50/50 dark:bg-darkSecondaryBg"
+                                    >
+                                        {/* <Image src={emptyActivity} alt="No Activity" className="w-full rounded-lg" height={200} width={200} /> */}
+                                        <span className="text-gray-400 text-sm dark:text-darkTextSecondary">No activity</span>
+                                    </div>
+                                    :
+                                    <div
+                                        key={blockIndex}
+                                        className="p-2 flex-nowrap rounded-lg border border-borderColor dark:border-darkBorder"
+                                    >
+                                        <Image
+                                            src={block?.details?.[0]?.image}
+                                            onClick={() => {
+                                                setSelectedImage(block?.details?.[0]?.image);
+                                                setModalOpen(true);
+                                            }}
+                                            width={300}
+                                            height={300}
+                                            className="rounded-lg w-full h-34 object-cover transition-transform duration-300 hover:scale-[1.01] cursor-pointer"
+                                            alt="screenshot"
+                                        />
+
+                                        <div className="mt-3">
+                                            <div className="flex justify-between items-center mb-2">
+                                                <p className=" text-sm sm:text-lg font-normal text-subTextColor dark:text-darkTextPrimary">
+                                                    {format(parseISO(block?.from_time), 'h:mm a')} - {format(parseISO(block?.to_time), 'h:mm a')}
+                                                </p>
+                                                <Dialog>
+                                                    <form>
+                                                        <DialogTrigger asChild>
+                                                            <div className="text-red-500 cursor-pointer">
+                                                                <DeleteIcon size={18} />
+                                                            </div>
+                                                        </DialogTrigger>
+                                                        <ScreenShortsDeleteReason></ScreenShortsDeleteReason>
+                                                    </form>
+                                                </Dialog>
+                                            </div>
+
+                                            <p className=" text-sm mb-2 text-subTextColor dark:text-darkTextPrimary">
+                                                {block?.avg_score}% of {formatDuration(block?.total_duration)} minutes
+                                            </p>
+
+
+                                            <div className="h-2 bg-[#dce3e3] dark:bg-darkSecondaryBg rounded-full">
+
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <div
+                                                            className={`h-2 ${block?.avg_score < 30
+                                                                ? "bg-red-500"
+                                                                : block?.avg_score < 60
+                                                                    ? "bg-yellow-400"
+                                                                    : "bg-primary"}
+                                                                rounded-full relative`}
+                                                            style={{ width: `${block?.avg_score}%` }}
+                                                        >
+                                                            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[22px] h-[22px] bg-gradient-to-b from-[#ffffff] dark:from-[#dadada] to-[#dfe5fd] dark:to-darkSecondaryBg border-2 border-white dark:border-[#b1b1b1] rounded-full flex items-center justify-center">
+                                                                <div className={`w-[8px] h-[8px] shadow ${block?.avg_score < 30
+                                                                    ? "bg-red-500"
+                                                                    : block?.avg_score < 60
+                                                                        ? "bg-yellow-400"
+                                                                        : "bg-primary"} rounded-full`}>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent className="p-3 w-56 bg-white dark:bg-darkSecondary shadow-xl border-borderColor dark:border-darkBorder">
+                                                        <div className="space-y-3">
+                                                            <h4 className="text-xs font-semibold text-headingTextColor dark:text-darkTextPrimary uppercase tracking-wider">
+                                                                Activity Breakdown
+                                                            </h4>
+
+                                                            <div className="space-y-2">
+                                                                <div>
+                                                                    <div className="flex justify-between text-xs mb-1">
+                                                                        <span className="text-subTextColor dark:text-darkTextSecondary">Avg. Performance</span>
+                                                                        <span className="font-medium text-headingTextColor">{block?.avg_score}%</span>
+                                                                    </div>
+                                                                    <div className="h-1.5 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+
+                                                                        <div
+                                                                            className={`h-1.5 ${block?.avg_score < 30
+                                                                                ? "bg-red-500"
+                                                                                : block?.avg_score < 60
+                                                                                    ? "bg-yellow-400"
+                                                                                    : "bg-primary"}
+                                                                    rounded-full relative`}
+                                                                            style={{ width: `${block.avg_score}%` }}
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                                <div className="flex items-center justify-between text-xs">
+                                                                    <div className="flex items-center gap-1.5 text-subTextColor dark:text-darkTextSecondary">
+                                                                        <MousePointer2 size={12} />
+                                                                        <span>Mouse</span>
+                                                                    </div>
+                                                                    <span className="font-medium text-headingTextColor dark:text-darkTextPrimary">
+                                                                        {block.avg_mouse_activity}%
+                                                                    </span>
+                                                                </div>
+                                                                <div className="flex items-center justify-between text-xs">
+                                                                    <div className="flex items-center gap-1.5 text-subTextColor dark:text-darkTextSecondary">
+                                                                        <Keyboard size={12} />
+                                                                        <span>Keyboard</span>
+                                                                    </div>
+                                                                    <span className="font-medium text-headingTextColor dark:text-darkTextPrimary">
+                                                                        {block.avg_keyboard_activity}%
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </div>
+
+                                            <h2 className="mt-3 text-sm sm:text-base font-bold text-headingTextColor dark:text-darkTextPrimary">
+                                                {block?.details?.[0]?.project_name}
+                                            </h2>
+                                            <p className="text-subTextColor text-sm md:text-base dark:text-darkTextSecondary">
+                                                {block?.details?.[0]?.task_name ? block?.details?.[0]?.task_name : "No Task"}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                            ))}
+                        </div >
+                    </div >
+                ))}
+
             <AnimatePresence>
                 {
                     modalOpen &&
                     <ScreenShortsModal screenShorts={dummyScreenShorts} modalOpen={modalOpen} setModalOpen={setModalOpen}></ScreenShortsModal>
                 }
             </AnimatePresence>
-        </>
+        </ >
+
     );
 };
 
