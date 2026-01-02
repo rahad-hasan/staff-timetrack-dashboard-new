@@ -1,10 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import { Circle, Keyboard, MousePointer2 } from "lucide-react";
-import screenshort1 from "../../../assets/dashboard/screenshort1.png";
-import screenshort2 from "../../../assets/dashboard/screenshort2.png";
-import screenshort3 from "../../../assets/dashboard/screenshort3.png";
-import Image, { StaticImageData } from "next/image";
+import Image from "next/image";
 import { useState } from "react";
 import ScreenShortsModal from "./ScreenShortsModal";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
@@ -21,39 +18,39 @@ import {
 
 const Every10Mins = ({ data }: any) => {
     console.log('Every10Mins');
-    const [selectedImage, setSelectedImage] = useState<string | StaticImageData>();
+    const [selectedImage, setSelectedImage] = useState<any>();
     const [modalOpen, setModalOpen] = useState<boolean>(false);
 
     // assume I have many screenShorts
-    const dummyScreenShorts = [
-        {
-            screenShort: selectedImage
-        },
-        {
-            screenShort: screenshort1
-        },
-        {
-            screenShort: screenshort2
-        },
-        {
-            screenShort: screenshort3
-        },
-        {
-            screenShort: screenshort3
-        },
-        {
-            screenShort: screenshort2
-        },
-        {
-            screenShort: screenshort3
-        },
-        {
-            screenShort: screenshort2
-        },
-        {
-            screenShort: screenshort3
-        },
-    ]
+    // const dummyScreenShorts = [
+    //     {
+    //         screenShort: selectedImage
+    //     },
+    //     {
+    //         screenShort: screenshort1
+    //     },
+    //     {
+    //         screenShort: screenshort2
+    //     },
+    //     {
+    //         screenShort: screenshort3
+    //     },
+    //     {
+    //         screenShort: screenshort3
+    //     },
+    //     {
+    //         screenShort: screenshort2
+    //     },
+    //     {
+    //         screenShort: screenshort3
+    //     },
+    //     {
+    //         screenShort: screenshort2
+    //     },
+    //     {
+    //         screenShort: screenshort3
+    //     },
+    // ]
 
     const formatDuration = (totalSeconds: number) => {
         const hours = Math.floor(totalSeconds / 3600);
@@ -240,7 +237,7 @@ const Every10Mins = ({ data }: any) => {
                                         <Image
                                             src={block?.details?.[0]?.image}
                                             onClick={() => {
-                                                setSelectedImage(block?.details?.[0]?.image);
+                                                setSelectedImage(block?.details);
                                                 setModalOpen(true);
                                             }}
                                             width={300}
@@ -360,7 +357,7 @@ const Every10Mins = ({ data }: any) => {
             <AnimatePresence>
                 {
                     modalOpen &&
-                    <ScreenShortsModal screenShorts={dummyScreenShorts} modalOpen={modalOpen} setModalOpen={setModalOpen}></ScreenShortsModal>
+                    <ScreenShortsModal screenShorts={selectedImage} modalOpen={modalOpen} setModalOpen={setModalOpen}></ScreenShortsModal>
                 }
             </AnimatePresence>
         </ >
