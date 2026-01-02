@@ -330,6 +330,29 @@ export interface IUserLeaveData {
 }
 
 export interface ILeaveDetailsResponse {
-    data: IUserLeaveData[];
-    details: ILeaveDetails;
+  data: IUserLeaveData[];
+  details: ILeaveDetails;
 }
+
+
+export type ICompany = {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  is_active: boolean;
+  has_trialed_once: boolean;
+  address: string;
+  time_zone: string;
+  idle_minutes_limit: number;
+  url_tracking_enabled: boolean;
+  week_start: string;
+  paid_leave: number;
+  casual_leave: number;
+  sick_leave: number;
+  maternity_leave: number;
+  app_notify: boolean;
+  email_notify: boolean;
+  updated_at: string;
+  created_at: string;
+};

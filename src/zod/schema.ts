@@ -231,4 +231,16 @@ export const leaveSettingsSchema = z.object({
     casual_leave: z.number().min(1, "Casual Leave is required"),
     sick_leave: z.number().min(1, "Sick Leave is required"),
     maternity_leave: z.number().min(1, "Maternity Leave is required"),
+    address: z.string()
+        .min(1, "Address is required")
+        .max(255, "Address is too long"),
+
+    time_zone: z.string()
+        .min(1, "Time Zone is required"),
+
+    idle_minutes_limit: z.number()
+        .min(1, "Idle limit must be at least 1 minute")
+        .max(60, "Limit cannot exceed 1 hours"),
+
+    week_start: z.string().min(1, "Please select a starting day of the week")
 });
