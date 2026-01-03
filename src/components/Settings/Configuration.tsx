@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { Switch } from "@/components/ui/switch"
 import { leaveSettingsSchema } from "@/zod/schema";
@@ -23,11 +24,20 @@ import {
     SelectTrigger,
     SelectValue
 } from "@/components/ui/select";
+import { useState } from "react";
+import { toast } from "sonner";
+import { updateCompanyInfo } from "@/actions/settings/action";
 
 const Configuration = ({ data }: { data: ICompany }) => {
+    const [loading, setLoading] = useState(false);
     const daysOfWeek = [
         "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
     ];
+    const [switches, setSwitches] = useState({
+        app_notify: data?.app_notify || false,
+        email_notify: data?.email_notify || false,
+        url_tracking_enabled: data?.url_tracking_enabled || false,
+    });
     const form = useForm<z.infer<typeof leaveSettingsSchema>>({
         resolver: zodResolver(leaveSettingsSchema),
         defaultValues: {
@@ -42,8 +52,31 @@ const Configuration = ({ data }: { data: ICompany }) => {
         },
     });
 
-    function onSubmit(values: z.infer<typeof leaveSettingsSchema>) {
-        console.log(values);
+
+    async function onSubmit(values: z.infer<typeof leaveSettingsSchema>) {
+        const finalData = {
+            ...values,
+            // name: data?.name,
+            // email: data?.email,
+            // phone: data?.phone,
+            ...switches
+        }
+        setLoading(true);
+        try {
+            const res = await updateCompanyInfo({ data: finalData, id: data?.id });
+            console.log("success:", res);
+
+            if (res?.success) {
+                toast.success(res?.message || "Updated company info successfully");
+            } else {
+                toast.error(res?.message || "Failed to update");
+            }
+        } catch (error: any) {
+            console.error("failed:", error);
+            toast.error(error.message || "Something went wrong!");
+        } finally {
+            setLoading(false);
+        }
     }
 
     return (
@@ -65,8 +98,14 @@ const Configuration = ({ data }: { data: ICompany }) => {
                     <div className="flex justify-between items-center text-sm text-headingTextColor dark:text-darkTextPrimary">
                         <span className="flex-1">Notifications Preferences</span>
                         <div className="flex items-center gap-8">
-                            <Switch defaultChecked={data?.app_notify} />
-                            <Switch defaultChecked={data?.email_notify} />
+                            <Switch
+                                checked={switches.app_notify}
+                                onCheckedChange={(val) => setSwitches(prev => ({ ...prev, app_notify: val }))}
+                            />
+                            <Switch
+                                checked={switches.email_notify}
+                                onCheckedChange={(val) => setSwitches(prev => ({ ...prev, email_notify: val }))}
+                            />
                         </div>
                     </div>
                 </div>
@@ -84,7 +123,10 @@ const Configuration = ({ data }: { data: ICompany }) => {
                     <div className="flex justify-between items-center text-sm text-headingTextColor dark:text-darkTextPrimary">
                         <span className="flex-1">URL Tracking Preferences</span>
                         <div className="flex items-center gap-8">
-                            <Switch defaultChecked={data?.url_tracking_enabled} />
+                            <Switch
+                                checked={switches.url_tracking_enabled}
+                                onCheckedChange={(val) => setSwitches(prev => ({ ...prev, url_tracking_enabled: val }))}
+                            />
                         </div>
                     </div>
                 </div>
@@ -294,7 +336,7 @@ const Configuration = ({ data }: { data: ICompany }) => {
                         </div>
 
                         <div className="flex items-center gap-3 w-full pt-3 border-t dark:border-darkBorder">
-                            <Button type="submit">Save Changes</Button>
+                            <Button type="submit" disabled={loading}>{loading ? "Loading..." : "Save Changes"}</Button>
                         </div>
                     </form>
                 </Form>

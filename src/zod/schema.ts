@@ -242,5 +242,5 @@ export const leaveSettingsSchema = z.object({
         .min(1, "Idle limit must be at least 1 minute")
         .max(60, "Limit cannot exceed 1 hours"),
 
-    week_start: z.string().min(1, "Please select a starting day of the week")
+    week_start: z.string().min(1, "Please select a starting day of the week"),
 });
