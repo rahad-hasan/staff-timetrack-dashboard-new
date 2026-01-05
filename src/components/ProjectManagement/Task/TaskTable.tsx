@@ -55,7 +55,6 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
         }
     }
 
-
     const columns: ColumnDef<ITask>[] = [
         {
             accessorKey: "name",

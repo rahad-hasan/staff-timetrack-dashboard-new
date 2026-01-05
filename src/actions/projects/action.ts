@@ -20,7 +20,7 @@ export const addProject = async (data: ICreateProjectPayload) => {
 };
 
 export const editProject = async ({ data, id }: {
-    data: ICreateProjectPayload,
+    data: Partial<ICreateProjectPayload>,
     id: number | undefined
 }) => {
     return await baseApi(`/projects/${id}`, {

@@ -119,6 +119,7 @@ export interface ICreateProjectPayload {
   client_id: number | string;
   manager_ids: number[] | string[];
   user_ids: number[];
+  status?: string;
   description: string;
   start_date: string;
   deadline: string;

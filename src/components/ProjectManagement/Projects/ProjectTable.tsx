@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -13,7 +14,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
-import { ArrowUpDown, ChevronDown } from "lucide-react";
+import { ArrowUpDown, Check, ChevronDown } from "lucide-react";
 // import lowFlag from '../../assets/dashboard/lowFlag.svg'
 // import mediumFlag from '../../assets/dashboard/mediumFlag.svg'
 // import noneFlag from '../../assets/dashboard/noneFlag.svg'
@@ -33,6 +34,8 @@ import ArchiveIcon from "@/components/Icons/FilterOptionIcon/ArchiveIcon";
 import DeleteIcon from "@/components/Icons/DeleteIcon";
 import MemberIcon from "@/components/Icons/FilterOptionIcon/MemberIcon";
 import EditProjectModal from "./EditProjectModal";
+import { toast } from "sonner";
+import { editProject } from "@/actions/projects/action";
 
 
 const ProjectTable = ({ data }: { data: IProject[] }) => {
@@ -41,12 +44,31 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
     const [selectedProject, setSelectedProject] = useState<IProject | null>(null)
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
+    const [loading, setLoading] = useState(false);
     const router = useRouter();
 
     // Function to handle row click and navigation
     const handleRowClick = (taskId: number) => {
         router.push(`/project-management/projects/${taskId}`);
     };
+
+    async function handleStatusUpdate(values: { status: string, id: number }) {
+        setLoading(true);
+        try {
+            const res = await editProject({ data: { status: values.status }, id: values.id });
+
+            if (res?.success) {
+                toast.success(res?.message || "Status updated successfully");
+            } else {
+                toast.error(res?.message || "Failed to update status");
+            }
+        } catch (error: any) {
+            console.error("failed:", error);
+            toast.error(error?.message || "Something went wrong!");
+        } finally {
+            setLoading(false);
+        }
+    }
 
     const columns: ColumnDef<IProject>[] = [
         {
@@ -191,7 +213,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                 )
             },
             cell: ({ row }) => {
-                
+
                 return <div className="">{row?.original?.summary?.duration}</div>;
             },
         },
@@ -216,6 +238,61 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                 return <div className="">{format(new Date(deadline), "EEE, MMM d, yyyy")}</div>;
             },
         },
+        // {
+        //     accessorKey: "status",
+        //     // header: "Status",
+        //     // header: () => <div className=" text-right">Status</div>,
+        //     header: ({ column }) => {
+        //         return (
+        //             <div className=" flex justify-end">
+        //                 <span
+        //                     className=" cursor-pointer flex items-center gap-1"
+        //                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        //                 >
+        //                     Status
+        //                     <ArrowUpDown className="ml-2 h-4 w-4" />
+        //                 </span>
+        //             </div>
+        //         )
+        //     },
+        //     cell: ({ row }) => {
+        //         const status = row.getValue("status") as string;
+
+        //         const statusClass =
+        //             status === "In Progress"
+        //                 ? "bg-blue-100 dark:bg-darkPrimaryBg text-blue-800 dark:text-darkTextPrimary"
+        //                 : "bg-gray-100 dark:bg-darkPrimaryBg text-gray-800 dark:text-darkTextPrimary";
+
+        //         const handleStatusChange = (newStatus: string) => {
+        //             console.log(newStatus);
+        //         };
+
+        //         return (
+        //             <div className="flex justify-end">
+        //                 <DropdownMenu>
+        //                     <DropdownMenuTrigger asChild>
+        //                         <Button
+        //                             variant="outline2"
+        //                             className={`px-2 py-1.5 rounded-full text-sm font-medium ${statusClass}`}
+        //                         >
+        //                             <span className={` w-2 h-2 rounded-full ${status === "In Progress" ? "bg-blue-300 dark:bg-gray-300 " : "bg-gray-300"}`}></span>
+        //                             {status}
+        //                             <ChevronDown />
+        //                         </Button>
+        //                     </DropdownMenuTrigger>
+        //                     <DropdownMenuContent align="end">
+        //                         <DropdownMenuItem className=" cursor-pointer" onClick={() => handleStatusChange("In Progress")}>
+        //                             In Progress
+        //                         </DropdownMenuItem>
+        //                         <DropdownMenuItem className=" cursor-pointer" onClick={() => handleStatusChange("Pending")}>
+        //                             Pending
+        //                         </DropdownMenuItem>
+        //                     </DropdownMenuContent>
+        //                 </DropdownMenu>
+        //             </div>
+        //         );
+        //     },
+        // },
         {
             accessorKey: "status",
             // header: "Status",
@@ -237,13 +314,16 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                 const status = row.getValue("status") as string;
 
                 const statusClass =
-                    status === "In Progress"
-                        ? "bg-blue-100 dark:bg-darkPrimaryBg text-blue-800 dark:text-darkTextPrimary"
-                        : "bg-gray-100 dark:bg-darkPrimaryBg text-gray-800 dark:text-darkTextPrimary";
-
-                const handleStatusChange = (newStatus: string) => {
-                    console.log(newStatus);
-                };
+                    status === "processing"
+                        ? "bg-[#fff5db] border border-[#efaf07] text-[#efaf07] hover:text-[#efaf07]"
+                        :
+                        status === "cancelled" ?
+                            "bg-[#fee6eb] border border-[#fcc2cf] text-[#f40139] hover:text-[#f40139]"
+                            :
+                            status === "pending" ?
+                                "bg-[#eff7fe] border border-[#cde7fb] text-[#5db0f1] hover:text-[#5db0f1]"
+                                :
+                                "bg-[#e9f8f0] border border-[#bcebd1] text-[#26bd6c] hover:text-[#26bd6c]"
 
                 return (
                     <div className="flex justify-end">
@@ -251,19 +331,56 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                             <DropdownMenuTrigger asChild>
                                 <Button
                                     variant="outline2"
-                                    className={`px-2 py-1.5 rounded-full text-sm font-medium ${statusClass}`}
+                                    className={`px-2 py-2 rounded-xl text-sm font-medium ${statusClass}`}
                                 >
-                                    <span className={` w-2 h-2 rounded-full ${status === "In Progress" ? "bg-blue-300 dark:bg-gray-300 " : "bg-gray-300"}`}></span>
+                                    <span className={` w-2 h-2 rounded-full ${status === "processing" ? "bg-[#efaf07] " : status === "cancelled" ? "bg-[#f40139]" : status === "pending" ? "bg-[#5db0f1]" : "bg-[#26bd6c]"}`}></span>
                                     {status}
                                     <ChevronDown />
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuItem className=" cursor-pointer" onClick={() => handleStatusChange("In Progress")}>
+                            <DropdownMenuContent align="end" className=" space-y-2 w-[200px] p-2 rounded-lg">
+                                <DropdownMenuItem
+                                    className="cursor-pointer rounded-lg bg-[#fff5db] border border-[#efaf07] text-[#efaf07] focus:text-[#efaf07] dark:bg-darkSecondaryBg dark:border-darkBorder py-2"
+                                    disabled={loading}
+                                    onClick={() => handleStatusUpdate({ status: "processing", id: row?.original?.id })}
+                                >
+                                    {
+                                        status === "processing" && <Check className=" bg-[#efaf07] text-white rounded-full p-0.5" />
+                                    }
                                     In Progress
                                 </DropdownMenuItem>
-                                <DropdownMenuItem className=" cursor-pointer" onClick={() => handleStatusChange("Pending")}>
+
+                                <DropdownMenuItem
+                                    className="cursor-pointer rounded-lg bg-[#fee6eb] border border-[#fcc2cf] text-[#f40139] focus:text-[#f40139] dark:bg-darkSecondaryBg dark:border-darkBorder py-2"
+                                    disabled={loading}
+                                    onClick={() => handleStatusUpdate({ status: "cancelled", id: row?.original?.id })}
+                                >
+                                    {
+                                        status === "cancelled" && <Check className=" bg-[#f40139] text-white rounded-full p-0.5" />
+                                    }
+                                    Cancel
+                                </DropdownMenuItem>
+
+                                <DropdownMenuItem
+                                    className="cursor-pointer rounded-lg bg-[#eff7fe] border border-[#cde7fb] text-[#5db0f1] focus:text-[#5db0f1] dark:bg-darkSecondaryBg dark:border-darkBorder py-2"
+                                    disabled={loading}
+                                    onClick={() => handleStatusUpdate({ status: "pending", id: row?.original?.id })}
+                                >
+                                    {
+                                        status === "pending" && <Check className=" bg-[#5db0f1] text-white rounded-full p-0.5" />
+                                    }
                                     Pending
+                                </DropdownMenuItem>
+
+                                <DropdownMenuItem
+                                    className="cursor-pointer rounded-lg bg-[#e9f8f0] border border-[#bcebd1] text-[#26bd6c] focus:text-[#26bd6c] dark:bg-darkSecondaryBg dark:border-darkBorder py-2"
+                                    disabled={loading}
+                                    onClick={() => handleStatusUpdate({ status: "complete", id: row?.original?.id })}
+                                >
+                                    {
+                                        status === "complete" && <Check className=" bg-[#26bd6c] text-white rounded-full p-0.5" />
+                                    }
+                                    Done
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
