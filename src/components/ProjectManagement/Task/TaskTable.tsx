@@ -19,7 +19,7 @@ import noneFlag from '../../../assets/dashboard/noneFlag.svg'
 // import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog } from "@/components/ui/dialog";
 import EditTaskModal from "./EditTaskModal";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import FilterButton from "@/components/Common/FilterButton";
@@ -35,6 +35,8 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
     const [loading, setLoading] = useState(false);
+    const [open, setOpen] = useState(false)
+    const [selectedTask, setSelectedTask] = useState<ITask | null>(null)
 
     async function handleStatusUpdate(values: { status: string, id: number }) {
         setLoading(true);
@@ -312,7 +314,7 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
         {
             accessorKey: "action",
             header: () => <div className="">Action</div>,
-            cell: () => {
+            cell: ({ row }) => {
                 return <div className="">
                     <Popover>
                         <PopoverTrigger asChild>
@@ -323,17 +325,18 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
                         <PopoverContent side="bottom" align="end" className=" w-[250px] p-2">
                             <div className="">
                                 <div className="space-y-2">
-                                    <Dialog>
-                                        <form>
-                                            <DialogTrigger asChild>
-                                                <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                                    <EditIcon size={18} />
-                                                    <p>Edit Client</p>
-                                                </div>
-                                            </DialogTrigger>
-                                            <EditTaskModal></EditTaskModal>
-                                        </form>
-                                    </Dialog>
+
+                                    <div
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            setSelectedTask(row?.original);
+                                            setOpen(true);
+                                        }}
+                                        className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
+                                        <EditIcon size={18} />
+                                        <p>Edit Client</p>
+                                    </div>
 
                                     <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
                                         <DeleteIcon size={18} />
@@ -399,6 +402,15 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
                     )}
                 </TableBody>
             </Table>
+            {/* Edit modal here */}
+            <Dialog open={open} onOpenChange={setOpen}>
+                {selectedTask && (
+                    <EditTaskModal
+                        onClose={() => setOpen(false)}
+                        selectedProject={selectedTask}
+                    />
+                )}
+            </Dialog>
         </div>
     );
 };
