@@ -16,3 +16,10 @@ export const getCoreMembers = async (query = {}) => {
         tag: "coreMember",
     });
 };
+
+export const getDashboardMembersStats = async (query = {}) => {
+    const queryString = buildQuery(query);
+    return await baseApi(`/admin/members/activity-report${queryString ? `?${queryString}` : ""}`, {
+        tag: "memberStats",
+    });
+};

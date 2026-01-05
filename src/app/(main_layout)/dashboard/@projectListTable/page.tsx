@@ -5,7 +5,7 @@ const DashboardProjectTableServer = async() => {
     const result = await getProjects({
         limit: 4,
     });
-    console.log(result);
+
     return (
         <div>
             <DashboardProjectTable data={result?.data}></DashboardProjectTable>

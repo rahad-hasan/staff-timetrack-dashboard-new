@@ -53,6 +53,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
     };
 
     async function handleStatusUpdate(values: { status: string, id: number }) {
+        console.log(values);
         setLoading(true);
         try {
             const res = await editProject({ data: { status: values.status }, id: values.id });
