@@ -1,56 +1,35 @@
 "use client"
-import { useMemo } from "react";
-import Image from "next/image";
+
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import SmallChart from "@/components/Dashboard/SmallChart/SmallChart";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Link from "next/link";
 import FilterButton from "@/components/Common/FilterButton";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { IMembersStatsDashboard } from "@/types/type";
 
 
-const DashboardMembersTable = () => {
-    type Member = {
-        name: string;
-        project: string;
-        progress: string;
-        task: string;
-        lastActive: string;
-        image: string;
-        productivity: string
-        today_work: string;
-        week_work: string;
-    };
-
-    const memberData = useMemo(
-        () => [
-            { name: "Kalki Noland", project: "Orbit Technology's project", progress: "20%", task: "No task assigned", lastActive: "1h ago", image: "https://avatar.iran.liara.run/public/18", productivity: "78%", week_work: "24:08:00", today_work: "7:08:00" },
-            { name: "Minakshi Devi", project: "Orbit Technology's project", progress: "75%", task: "No task assigned", lastActive: "1d ago", image: "https://avatar.iran.liara.run/public/25", productivity: "78%", week_work: "12:08:00", today_work: "4:00:00" },
-            { name: "Dani Wolvarin", project: "Orbit Technology's project", progress: "100%", task: "No task assigned", lastActive: "5h ago", image: "https://avatar.iran.liara.run/public/20", productivity: "35%", week_work: "08:00:00", today_work: "5:12:00" },
-            { name: "Alex Johnson", project: "Orbit Technology's project", progress: "50%", task: "No task assigned", lastActive: "3h ago", image: "https://avatar.iran.liara.run/public/22", productivity: "92%", week_work: "45:15:00", today_work: "8:05:00" },
-        ],
-        []
-    );
-
-    const columns: ColumnDef<Member>[] = [
+const DashboardMembersTable = ({ data }: { data: IMembersStatsDashboard[] }) => {
+    console.log('getting from members', data);
+    // const columns: ColumnDef<Member>[] = [
+    const columns: ColumnDef<IMembersStatsDashboard>[] = [
         {
             accessorKey: "name",
             // header: "Name",
             header: () => <div className="">Member info</div>,
             cell: ({ row }) => {
-                const name = row.getValue("name") as string
-                const image = row.original.image
-                const project = row.original.project
-                const task = row.original.task
+                const name = row?.getValue("name") as string
+                const image = row?.original?.image ? row?.original?.image : ""
+                const project = row?.original?.current_task?.project_name
+                const task = row?.original?.current_task?.task_name
                 return (
                     <div className="flex items-center gap-3 min-w-[220px]">
-                        <Image
-                            src={image}
-                            width={100}
-                            height={100}
-                            alt={name}
-                            className="rounded-full w-10"
-                        />
+
+                        <Avatar>
+                            <AvatarImage src={image} alt={name} />
+                            <AvatarFallback>{name?.charAt(0)}</AvatarFallback>
+                        </Avatar>
                         <div className="flex flex-col">
                             <span className="font-bold mb-1">{name}</span>
                             <span className=" mb-1 font-normal text-headingTextColor dark:text-darkTextPrimary">{project}</span>
@@ -64,10 +43,10 @@ const DashboardMembersTable = () => {
             accessorKey: "today_work",
             header: () => <div className="">Today</div>,
             cell: ({ row }) => {
-                const progress = row.original.progress
-                const today_work = row.original.today_work
+                const progress = row?.original?.today?.activity_percentage
+                const today_work = row?.original?.today?.work_duration?.formatted
 
-                const progressValue = parseInt(progress.replace("%", ""));
+                const progressValue = progress;
                 let bgColor = "bg-red-500";
                 if (progressValue >= 75) {
                     bgColor = "bg-[#5db0f1]";
@@ -75,10 +54,10 @@ const DashboardMembersTable = () => {
                     bgColor = "bg-yellow-500";
                 }
                 return (
-                    <div className="flex items-center gap-3 min-w-[80px]">
-                        <div className="flex flex-col  -mt-5">
-                            <span className={` ${bgColor} rounded-full text-center text-white px-1  text-sm mb-1`}>{progress}</span>
-                            <span className="">{today_work}</span>
+                    <div className="flex gap-3 min-w-[80px]">
+                        <div className="-mt-5">
+                            <span className={` ${bgColor} rounded-full text-center text-white px-2 py-0.5 text-sm mb-1`}>{progress}%</span>
+                            <p className="">{today_work}</p>
                         </div>
                     </div>
                 )
@@ -88,11 +67,11 @@ const DashboardMembersTable = () => {
             accessorKey: "week_work",
             header: () => <div className=" text-center">This Week</div>,
             cell: ({ row }) => {
-                const progress = row.original.progress
-                const week_work = row.original.week_work
-                const lastActive = row.original.lastActive
+                const progress = row?.original?.this_week?.activity_percentage
+                const week_work = row?.original?.this_week?.work_duration?.formatted
+                const lastActive = row?.original?.last_active
 
-                const progressValue = parseInt(progress.replace("%", ""));
+                const progressValue = progress;
                 let bgColor = "bg-red-500";
                 if (progressValue >= 75) {
                     bgColor = "bg-[#5db0f1]";
@@ -102,30 +81,29 @@ const DashboardMembersTable = () => {
                 return (
                     <div className=" flex justify-end gap-0">
                         <div className=" flex flex-col items-start">
-                            <span className={` ${bgColor} rounded-full text-center text-white px-2  text-sm mb-1`}>{progress}</span>
+                            <span className={` ${bgColor} rounded-full text-center text-white px-2  text-sm mb-1`}>{progress}%</span>
                             <div className="flex flex-col">
                                 <span className=" font-medium mb-1 text-headingTextColor dark:text-darkTextPrimary">{week_work}</span>
                                 <span className=" font-normal text-xs text-subTextColor dark:text-darkTextSecondary">Last Active {lastActive}</span>
                             </div>
                         </div>
                         <div className=" ">
-                            <SmallChart></SmallChart>
+                            <SmallChart data={row?.original?.weekly_chart}></SmallChart>
                         </div>
                     </div>
                 )
             }
         },
-
     ]
 
     const table = useReactTable({
-        data: memberData,
+        data: data,
         columns,
         getCoreRowModel: getCoreRowModel(),
     })
 
     return (
-        <div className="w-full border border-borderColor dark:border-darkBorder  dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">
+        <div className="w-full h-full border border-borderColor dark:border-darkBorder  dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">
             <div className=" flex justify-between items-center">
                 <h2 className=" text-base sm:text-lg text-headingTextColor dark:text-darkTextPrimary">MEMBERS</h2>
                 <div className=" flex items-center gap-3">

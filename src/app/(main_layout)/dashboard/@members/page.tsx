@@ -6,9 +6,10 @@ const DashboardMembersTableServer = async() => {
         limit: 4,
     });
     console.log(result?.data?.members);
+
     return (
         <div>
-            <DashboardMembersTable></DashboardMembersTable>
+            <DashboardMembersTable data={result?.data?.members}></DashboardMembersTable>
         </div>
     );
 };

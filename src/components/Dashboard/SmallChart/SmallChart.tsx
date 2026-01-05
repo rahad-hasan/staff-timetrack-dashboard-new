@@ -8,7 +8,12 @@ import {
     YAxis,
 } from "recharts";
 
-const SmallChart = () => {
+const SmallChart = ({ data }: { data?: Record<string, number> }) => {
+    const chartData = Object.entries(data || {}).map(([key, value]) => ({
+        day: `Day ${key}`,
+        value: value
+    }));
+    console.log(chartData);
     const trainerData = [
         { month: "Jan", trainer: 50 },
         { month: "Feb", trainer: 100 },
@@ -22,7 +27,7 @@ const SmallChart = () => {
     return (
         <ResponsiveContainer width={105} height={40}>
             <BarChart
-                data={trainerData}
+                data={chartData}
                 margin={{
                     top: 10,
                     right: 30,
@@ -30,12 +35,12 @@ const SmallChart = () => {
                     bottom: 5,
                 }}
             >
-                <XAxis tickLine={false} axisLine={false} dataKey="month" hide />
+                <XAxis tickLine={false} axisLine={false} dataKey="day" hide />
                 <YAxis tickLine={false} axisLine={false} hide />
                 <Bar
                     barSize={5}
                     // radius={[5, 5, 0, 0]}
-                    dataKey="trainer"
+                    dataKey="value"
                     fill={color}
                 />
             </BarChart>

@@ -26,6 +26,7 @@ export const editProject = async ({ data, id }: {
     return await baseApi(`/projects/${id}`, {
         method: "PATCH",
         body: data,
+        cache: "no-store",
         tag: "projects",
     });
 };

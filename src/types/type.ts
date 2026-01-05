@@ -357,3 +357,36 @@ export type ICompany = {
   updated_at: string;
   created_at: string;
 };
+
+// Members Stats in Dashboard
+export interface IDuration {
+  hours: number;
+  formatted: string;
+}
+
+export interface IActivityStats {
+  work_duration: IDuration;
+  idle_duration: IDuration;
+  active_duration: IDuration;
+  activity_percentage: number;
+}
+
+export interface ICurrentTask {
+  task_name: string;
+  project_name: string;
+}
+
+export type WeeklyChartData = Record<'0' | '1' | '2' | '3' | '4' | '5' | '6', number>;
+
+export interface IMembersStatsDashboard {
+  user_id: number;
+  name: string;
+  email: string;
+  image: string | null;
+  today: IActivityStats;
+  this_week: IActivityStats;
+  projects_assigned: number;
+  current_task: ICurrentTask | null;
+  last_active: string;
+  weekly_chart: WeeklyChartData;
+}

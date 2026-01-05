@@ -22,6 +22,8 @@ import { ITask } from "@/types/type";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { editTask } from "@/actions/task/action";
+import Link from "next/link";
+import FilterButton from "@/components/Common/FilterButton";
 
 const DashboardTaskTable = ({ data }: { data: ITask[] }) => {
     console.log("TaskTable", data);
@@ -357,8 +359,15 @@ const DashboardTaskTable = ({ data }: { data: ITask[] }) => {
 
     return (
         <div className="mt-5 border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">
-            <div className=" mb-5">
-                <h2 className=" text-base sm:text-lg">TASK LIST</h2>
+
+            <div className=" flex justify-between items-center mb-5">
+                <h2 className=" text-base sm:text-lg text-headingTextColor dark:text-darkTextPrimary">TASK LIST</h2>
+                <div className=" flex items-center gap-3">
+                    <FilterButton />
+                    <Link href={`/project-management/task`}>
+                        <Button className="py-[14px] px-[16px] sm:py-[18px] sm:px-[20px] rounded-[8px]" size={'sm'}>All Task</Button>
+                    </Link>
+                </div>
             </div>
             <Table>
                 <TableHeader>
