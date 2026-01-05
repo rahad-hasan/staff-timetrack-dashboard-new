@@ -19,6 +19,7 @@ import DeleteIcon from "../Icons/DeleteIcon";
 import { ITeamMembers } from "@/global/globalTypes";
 import { toast } from "sonner";
 import { deleteMember } from "@/actions/members/action";
+import ConfirmDialog from "../Common/ConfirmDialog";
 
 const TeamsMemberTable = ({ data }: any) => {
 
@@ -276,14 +277,23 @@ const TeamsMemberTable = ({ data }: any) => {
                                         <EditIcon size={20} />
                                         <p>Edit Time</p>
                                     </div>
-                                    <button
-                                        disabled={loading}
-                                        onClick={() => handleDelete(row?.row?.original)}
-                                        className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100  hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                        {<DeleteIcon size={18} />}
+                                    <ConfirmDialog
+                                        trigger={
+                                            <button
+                                                className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100  hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
+                                                {<DeleteIcon size={18} />}
 
-                                        <p>{"Delete Member"}</p>
-                                    </button>
+                                                <p>{"Delete Member"}</p>
+                                            </button>
+                                        }
+                                        title="Delete the member"
+                                        description="Are you sure you want to delete this member? This action cannot be undone."
+                                        confirmText="Confirm"
+                                        cancelText="Cancel"
+                                        // confirmClassName="bg-primary hover:bg-primary"
+                                        onConfirm={() => handleDelete(row?.row?.original)}
+                                    />
+
                                 </div>
                             </div>
                         </PopoverContent>

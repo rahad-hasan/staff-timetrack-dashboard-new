@@ -7,10 +7,10 @@ import { Suspense } from "react";
 export default async function Dashboard({ searchParams }: ISearchParamsProps) {
   return (
     <div>
-      {/* <HeroHeading searchParams={searchParams}></HeroHeading>
+      <HeroHeading searchParams={searchParams}></HeroHeading>
       <Suspense fallback={<DashboardHeroSkeleton />}>
         <HeroCartServer searchParams={searchParams} />
-      </Suspense> */}
+      </Suspense>
     </div>
   );
 }

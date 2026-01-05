@@ -29,7 +29,7 @@ const loading = () => {
     );
 
     return (
-        <div className="mt-5 border border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg p-3 rounded-[12px] animate-pulse">
+        <div className="mt-5 border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg animate-pulse p-4 2xl:p-5 rounded-[12px]">
 
             <div className="flex justify-between items-center mb-5">
                 <PlaceholderBlock className="h-6 w-36" />

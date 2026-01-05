@@ -19,7 +19,7 @@ export default function DashboardLayout({
     <div className="w-full space-y-5">
       {children}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        {/* {recentActivity} */}
+        {recentActivity}
         {insights}
       </div>
       {taskListTable}
