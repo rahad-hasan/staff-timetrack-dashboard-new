@@ -20,13 +20,13 @@ const DarkMoodToggle = () => {
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className=" border-borderColor dark:border-darkBorder" align="center">
-                <DropdownMenuItem className=" cursor-pointer" onClick={() => setTheme("light")}>
+                <DropdownMenuItem className="focus:bg-accent cursor-pointer" onClick={() => setTheme("light")}>
                     Light
                 </DropdownMenuItem>
-                <DropdownMenuItem className=" cursor-pointer" onClick={() => setTheme("dark")}>
+                <DropdownMenuItem className="focus:bg-accent cursor-pointer" onClick={() => setTheme("dark")}>
                     Dark
                 </DropdownMenuItem>
-                <DropdownMenuItem className=" cursor-pointer" onClick={() => setTheme("system")}>
+                <DropdownMenuItem className="focus:bg-accent cursor-pointer" onClick={() => setTheme("system")}>
                     System
                 </DropdownMenuItem>
             </DropdownMenuContent>

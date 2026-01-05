@@ -191,8 +191,8 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                 )
             },
             cell: ({ row }) => {
-                const timeWorked = row.getValue("timeWorked") as string;
-                return <div className="">{timeWorked}</div>;
+                
+                return <div className="">{row?.original?.summary?.duration}</div>;
             },
         },
         {

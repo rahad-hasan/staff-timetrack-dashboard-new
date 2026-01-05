@@ -7,7 +7,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import RejectLeaveRequestModal from "./RejectLeaveRequestModal";
-import LeaveHistory from "../LeaveDetails/LeaveDataDetailsModal";
+// import LeaveHistory from "../LeaveDetails/LeaveDataDetailsModal";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { ILeaveRequest } from "@/types/type";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -15,6 +15,7 @@ import { format } from "date-fns";
 import { toast } from "sonner";
 import { approveRejectLeave } from "@/actions/leaves/action";
 import Link from "next/link";
+import ConfirmDialog from "@/components/Common/ConfirmDialog";
 
 const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
     console.log('data from server', data);
@@ -231,10 +232,20 @@ const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
                 )
             },
             cell: ({ row }) => {
-                const isThisRowLoading = loadingId === row?.original?.id;
                 return (
                     <div className="flex items-center gap-3">
-                        <Button onClick={() => handleApprove(row?.original)} size={'sm'} disabled={isThisRowLoading} className=" text-sm px-2 rounded-lg">{isThisRowLoading ? "Loading..." : "Approve"}</Button>
+                        <ConfirmDialog
+                            trigger={
+                                <Button size={'sm'} className=" text-sm px-2 rounded-lg">Approve</Button>
+                            }
+                            title="Approve the request"
+                            description="Are you sure you want to approve the request? This action cannot be undone."
+                            confirmText="Confirm"
+                            cancelText="Cancel"
+                            confirmClassName="bg-primary hover:bg-primary"
+                            onConfirm={() => handleApprove(row?.original)}
+                        />
+
                         <Dialog>
                             <form>
                                 <DialogTrigger asChild>

@@ -189,6 +189,7 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
                                                     description="Are you sure you want to approve this entry? This action cannot be undone."
                                                     confirmText="Confirm"
                                                     cancelText="Cancel"
+                                                    confirmClassName="bg-primary hover:bg-primary"
                                                     onConfirm={() => handleApproveReject({ is_approved: true, id: row?.original?.id })}
                                                 />
                                                 <ConfirmDialog

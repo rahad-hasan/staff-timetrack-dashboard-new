@@ -7,6 +7,7 @@ const TaskServer = async ({ searchParams }: any) => {
     const result = await getTasks({
         search: params.search,
         project_id: params.project_id,
+        user_id: params.user_id
     });
 
     return (

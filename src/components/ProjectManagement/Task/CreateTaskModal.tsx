@@ -145,6 +145,7 @@ const CreateTaskModal = ({ onClose }: { onClose: () => void }) => {
             setProjectLoading(false);
         }
     }
+    
     return (
         <DialogContent
             onInteractOutside={(event) => event.preventDefault()}

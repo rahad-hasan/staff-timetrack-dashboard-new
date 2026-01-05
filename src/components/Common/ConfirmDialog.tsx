@@ -72,7 +72,7 @@ const ConfirmDialog = ({
         </AlertDialogHeader>
 
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={onCancel}>
+          <AlertDialogCancel className=" dark:border-primary" onClick={onCancel}>
             {cancelText}
           </AlertDialogCancel>
 
