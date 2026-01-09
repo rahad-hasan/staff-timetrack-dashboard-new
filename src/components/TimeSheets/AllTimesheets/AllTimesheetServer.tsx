@@ -1,5 +1,4 @@
 import { ISearchParamsProps } from "@/types/type";
-import WeeklyTimeSheets from "./WeeklyTimeSheets/WeeklyTimeSheets";
 import DailyTimeSheetsServer from "./DailyTimeSheets/DailyTimeSheetsServer";
 import { Suspense } from "react";
 import DailyTimeSheetsSkeleton from "@/skeleton/timesheets/allTimesheets/DailyTimeSheetsSkeleton";
@@ -9,6 +8,9 @@ import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import MonthPicker from "@/components/Common/MonthPicker";
 import MonthlyTimeSheetsServer from "./MonthlyTimeSheets/MonthlyTimeSheetsServer";
 import MonthlyTimeSheetsCalendarSkeleton from "@/skeleton/timesheets/allTimesheets/MonthlyTimeSheetsCalendarSkeleton";
+import WeeklyDatePicker from "@/components/Common/WeeklyDatePicker";
+import WeeklyTimeSheetsServer from "./WeeklyTimeSheets/WeeklyTimeSheetsServer";
+import WeeklyTimeSheetsSkeleton from "@/skeleton/timesheets/allTimesheets/WeeklyTimeSheetsSkeleton";
 
 const AllTimesheetServer = async ({ searchParams }: ISearchParamsProps) => {
     const params = await searchParams;
@@ -35,7 +37,23 @@ const AllTimesheetServer = async ({ searchParams }: ISearchParamsProps) => {
 
             {
                 activeTab === "weekly" &&
-                <WeeklyTimeSheets></WeeklyTimeSheets>
+                <>
+                    <div className=" mb-5 flex flex-col gap-4 xl:gap-0 xl:flex-row justify-between">
+                        <div className=" flex gap-3">
+                            <WeeklyDatePicker />
+                            <div className=" hidden md:block">
+                                {/* <Button className="dark:text-darkTextPrimary" variant={'filter'}>
+                                <SlidersHorizontal className=" dark:text-darkTextPrimary" /> Filters
+                                </Button> */}
+                                <SelectProjectDropDown></SelectProjectDropDown>
+                            </div>
+                        </div>
+                        <SelectUserDropDown></SelectUserDropDown>
+                    </div>
+                    <Suspense fallback={<WeeklyTimeSheetsSkeleton />}>
+                        <WeeklyTimeSheetsServer searchParams={searchParams}></WeeklyTimeSheetsServer>
+                    </Suspense>
+                </>
             }
 
             {

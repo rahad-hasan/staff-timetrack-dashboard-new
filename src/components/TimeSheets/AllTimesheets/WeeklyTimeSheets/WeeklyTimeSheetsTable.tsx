@@ -1,105 +1,104 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { format, parseISO } from "date-fns";
 
-const WeeklyTimeSheetsTable = () => {
-    type DayMeta = { key: string; date: string; name: string };
-    type Row = {
-        project: string;
-        task?: string;
-        times: Array<{ [key: string]: string }>;
-        weekTotal: string;
-    };
-    type TableFooter = {
-        project: string;
-        times: Array<{ [key: string]: string }>;
-        allWeekTotal: string;
-    };
+const WeeklyTimeSheetsTable = ({ data }: { data: any[] }) => {
 
-    const weekDays: DayMeta[] = [
-        { key: "mon", date: "18", name: "Monday" },
-        { key: "tue", date: "19", name: "Tuesday" },
-        { key: "wed", date: "20", name: "Wednesday" },
-        { key: "thu", date: "21", name: "Thursday" },
-        { key: "fri", date: "22", name: "Friday" },
-        { key: "sat", date: "23", name: "Saturday" },
-        { key: "sun", date: "24", name: "Sunday" },
-    ];
+    const firstProject = data?.[0];
+    const dateKeys = firstProject ? Object.keys(firstProject.per_day).sort() : [];
 
-    const rows: Row[] = [
-        {
-            project: "Orbit Technology’s project",
-            task: "No Task",
-            times: [{ time: "2:00:00" }, { time: "4:23:00" }, { time: "-" }, { time: "-" }, { time: "-" }, { time: "2:31:05" }, { time: "-" }],
-            weekTotal: "7:00:00"
-        },
-        {
-            project: "Orbit Technology’s project",
-            task: "Work on management",
-            times: [{ time: "1:00:00" }, { time: "-" }, { time: "-" }, { time: "4:00:00" }, { time: "-" }, { time: "2:31:05" }, { time: "3:00:00" }],
-            weekTotal: "9:00:00"
-        },
-        {
-            project: "Orbit Technology’s project",
-            task: "Marketing design",
-            times: [{ time: "-" }, { time: "3:33:00" }, { time: "-" }, { time: "-" }, { time: "-" }, { time: "2:31:05" }, { time: "-" }],
-            weekTotal: "5:00:00"
-        },
-    ];
+    // 2. Calculate Footer Totals (Vertical sum for each day)
+    const dailyTotals = dateKeys.map((dateKey) => {
+        let totalSeconds = 0;
+        data?.forEach((item) => {
+            const timeStr = item?.per_day[dateKey]?.formatted || "00:00:00";
+            const [hrs, mins, secs] = timeStr?.split(":")?.map(Number);
+            totalSeconds += hrs * 3600 + mins * 60 + secs;
+        });
 
-    const tableFooter: TableFooter = {
-        project: " All Project Total",
-        times: [{ time: "3:00:00" }, { time: "7:56:00" }, { time: "-" }, { time: "4:00:00" }, { time: "-" }, { time: "7:33:00" }, { time: "3:00:00" }],
-        allWeekTotal: "21:00:00",
+        // Convert back to HH:mm:ss
+        const h = Math.floor(totalSeconds / 3600);
+        const m = Math.floor((totalSeconds % 3600) / 60);
+        const s = totalSeconds % 60;
+        return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+    });
+
+    // 3. Calculate All-Week Total (Sum of all project totals)
+    const grandTotalSeconds = data?.reduce((acc, item) => {
+        const [hrs, mins, secs] = item?.total_duration_formatted.split(":").map(Number);
+        return acc + (hrs * 3600 + mins * 60 + secs);
+    }, 0);
+
+    const grandTotalFormatted = `${String(Math.floor(grandTotalSeconds / 3600)).padStart(2, "0")}:${String(
+        Math.floor((grandTotalSeconds % 3600) / 60)
+    ).padStart(2, "0")}:${String(grandTotalSeconds % 60).padStart(2, "0")}`;
+
+    if (!data || data.length === 0) {
+        return <div className="p-40 text-center border rounded-2xl">No data available for this week.</div>;
     }
 
     return (
         <div>
             <div className="overflow-x-auto rounded-2xl border border-borderColor dark:border-darkBorder ">
-                <table className="w-full">
-                    <thead className=" ">
-                        <tr className="text-slate-900 ">
-                            <th className=" z-10 px-4 py-5 text-left font-normal text-headingTextColor dark:text-darkTextPrimary">
+                <table className="w-full border-collapse">
+                    <thead>
+                        <tr className="text-slate-900 border-b dark:border-darkBorder">
+                            <th className="px-4 py-5 text-left font-medium text-headingTextColor dark:text-darkTextPrimary min-w-[200px]">
                                 Project name
                             </th>
-                            {weekDays.map((d) => (
-                                <th key={d.key} className=" z-10 px-4 py-5 text-center border-x dark:border-darkBorder text-headingTextColor dark:text-darkTextPrimary">
-                                    <h2 className=" text-2xl font-bold">{d.date}</h2>
-                                    <div className="mt-0.5 text-base font-medium text-subTextColor dark:text-darkTextSecondary">{d.name}</div>
-                                </th>
-                            ))}
-                            <th className=" z-10 px-4 py-5 text-center font-normal text-headingTextColor dark:text-darkTextPrimary">
+                            {dateKeys.map((dateStr) => {
+                                const dateObj = parseISO(dateStr);
+                                return (
+                                    <th key={dateStr} className="px-4 py-5 text-center border-x dark:border-darkBorder text-headingTextColor dark:text-darkTextPrimary">
+                                        <h2 className="text-2xl font-bold">{format(dateObj, "dd")}</h2>
+                                        <div className="mt-0.5 text-base font-medium text-subTextColor dark:text-darkTextSecondary">
+                                            {format(dateObj, "EEEE")}
+                                        </div>
+                                    </th>
+                                );
+                            })}
+                            <th className="px-4 py-5 text-center font-medium text-headingTextColor dark:text-darkTextPrimary">
                                 Week Total
                             </th>
                         </tr>
                     </thead>
-                    <tbody className=" ">
-                        {rows.map((project: Row, i: number) => (
-                            <tr key={i} className="text-slate-900 border-y dark:border-darkBorder">
-                                <td className=" z-10 px-4 py-5 text-left">
-                                    <h2 className=" font-medium text-headingTextColor dark:text-darkTextPrimary">{project?.project}</h2>
-                                    <p className=" text-sm font-normal dark:text-darkTextSecondary">{project?.task}</p>
+                    <tbody>
+                        {data?.map((item: any, index: number) => (
+                            <tr key={index} className="text-slate-900 border-b dark:border-darkBorder last:border-none">
+                                <td className="px-4 py-5 text-left">
+                                    <h2 className="font-medium text-headingTextColor dark:text-darkTextPrimary">
+                                        {item?.project?.name}
+                                    </h2>
+                                    <p className="text-sm font-normal text-subTextColor dark:text-darkTextSecondary">
+                                        {item?.task?.name || "No Task"}
+                                    </p>
                                 </td>
-                                {project?.times?.map((time, i) => (
-                                    <td key={i} className=" z-10 px-4 py-5 text-center border dark:border-darkBorder">
-                                        <h2 className=" text-lg text-headingTextColor dark:text-darkTextPrimary">{time.time}</h2>
+                                {dateKeys?.map((dateKey) => (
+                                    <td key={dateKey} className="px-4 py-5 text-center border-x dark:border-darkBorder">
+                                        <h2 className={`text-lg ${item?.per_day[dateKey]?.formatted === "00:00:00" ? "text-gray-300 dark:text-gray-600" : "text-headingTextColor dark:text-darkTextPrimary"}`}>
+                                            {item?.per_day[dateKey]?.formatted === "00:00:00" ? "-" : item?.per_day[dateKey]?.formatted}
+                                        </h2>
                                     </td>
                                 ))}
-                                <td className=" z-10 px-4 py-5 text-center">
-                                    <h2 className="text-lg text-headingTextColor dark:text-darkTextPrimary">{project?.weekTotal}</h2>
+                                <td className="px-4 py-5 text-center">
+                                    <h2 className="text-lg font-medium text-headingTextColor dark:text-darkTextPrimary">
+                                        {item?.total_duration_formatted}
+                                    </h2>
                                 </td>
                             </tr>
                         ))}
                     </tbody>
-                    <tfoot className="">
-                        <tr className="text-headingTextColor ">
-                            <td className=" z-10 px-4 py-5 text-left dark:border-darkBorder">
-                                <h2 className=" font-medium text-headingTextColor dark:text-darkTextPrimary">{tableFooter?.project}</h2>
+                    <tfoot className="bg-gray-50/50 dark:bg-darkSecondaryBg/20">
+                        <tr className="text-headingTextColor">
+                            <td className="px-4 py-5 text-left font-bold dark:text-darkTextPrimary">
+                                Total
                             </td>
-                            {tableFooter?.times?.map((time, i) => (
-                                <td key={i} className=" z-10 px-4 py-5 text-center border-x dark:border-darkBorder">
-                                    <h2 className=" text-lg text-headingTextColor dark:text-darkTextPrimary">{time.time}</h2>
+                            {dailyTotals?.map((total, i) => (
+                                <td key={i} className="px-4 py-5 text-center border-x dark:border-darkBorder font-bold dark:text-darkTextPrimary">
+                                    {total === "00:00:00" ? "" : total}
                                 </td>
                             ))}
-                            <td className=" z-10 px-4 py-5 text-center">
-                                <h2 className="text-lg text-[#5db0f1] ">{tableFooter?.allWeekTotal}</h2>
+                            <td className="px-4 py-5 text-center">
+                                <h2 className="text-lg font-bold text-primary">{grandTotalFormatted}</h2>
                             </td>
                         </tr>
                     </tfoot>

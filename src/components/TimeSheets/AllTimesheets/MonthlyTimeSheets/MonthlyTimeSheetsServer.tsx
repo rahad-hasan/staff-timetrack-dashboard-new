@@ -14,7 +14,7 @@ const MonthlyTimeSheetsServer = async ({ searchParams }: ISearchParamsProps) => 
             project_id: params.project_id,
         });
     }
-    console.log(result?.data?.totals);
+
     return (
         <div>
             <MonthlyTimeSheetsCalendar data={result?.data?.totals} />

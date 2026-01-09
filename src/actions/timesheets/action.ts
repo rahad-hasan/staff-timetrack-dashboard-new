@@ -69,5 +69,6 @@ export const getWeeklyAndMonthlyTimeEntry = async (query = {}): Promise<IRespons
     const queryString = buildQuery(query);
     return await baseApi(`/time-entries/weekly-time-sheet${queryString ? `?${queryString}` : ""}`, {
         tag: "DailyTimeEntry",
+        cache: "no-store"
     });
 };
