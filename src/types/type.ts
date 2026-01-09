@@ -213,6 +213,7 @@ export interface ILeaveRequest {
 export interface Project {
   id: number;
   name: string;
+  description?: string;
 }
 
 export interface IManualTimeEntry {
@@ -390,3 +391,40 @@ export interface IMembersStatsDashboard {
   last_active: string;
   weekly_chart: WeeklyChartData;
 }
+
+
+
+export interface Task {
+  id: number | null;
+  name: string | null;
+  description: string | null;
+}
+
+export interface TimeSpan {
+  start: string;
+  end: string;
+  start_local: string;
+  end_local: string;
+}
+
+export interface IDailyTimeEntryItem {
+  project: Project;
+  task: Task;
+  is_manual: boolean;
+  total_duration_hours: number;
+  total_duration_formatted: string;
+  activity_score_avg: number | null;
+  span: TimeSpan;
+}
+
+export interface IDailyTimeTrackerData {
+  user_id: number;
+  time_zone: string;
+  date: string;
+  totals: {
+    duration_hours: number;
+    duration_formatted: string;
+  };
+  items: IDailyTimeEntryItem[];
+}
+

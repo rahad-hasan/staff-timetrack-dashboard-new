@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
     Tooltip,
     TooltipContent,
@@ -7,8 +8,9 @@ import DailyTimeSheetsTable from "./DailyTimeSheetsTable";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
+import { IDailyTimeTrackerData } from "@/types/type";
 
-const DailyTimeSheets = () => {
+const DailyTimeSheets = ({ data }: { data: any }) => {
 
     const activePeriods = [
         { start: 5, end: 7, project: 'project', task: 'task', duration: '2:00:00' }, // Active from 5 AM to 7 AM
@@ -70,7 +72,7 @@ const DailyTimeSheets = () => {
             <div className=" mb-5">
                 <div className=" flex gap-2 mb-2">
                     <h1 className=" font-bold text-headingTextColor dark:text-darkTextPrimary">Today:</h1>
-                    <p className="text-headingTextColor dark:text-darkTextPrimary">6:00:00</p>
+                    <p className="text-headingTextColor dark:text-darkTextPrimary">{data?.totals?.duration_formatted}</p>
                 </div>
                 <div className="relative h-5 bg-[#dce3e3] dark:bg-darkPrimaryBg rounded-4xl outline outline-borderColor dark:outline-darkBorder">
                     {/* day time pass */}
@@ -151,7 +153,7 @@ const DailyTimeSheets = () => {
                 </div>
 
             </div>
-            <DailyTimeSheetsTable></DailyTimeSheetsTable>
+            <DailyTimeSheetsTable data={data?.items}></DailyTimeSheetsTable>
 
         </>
     );

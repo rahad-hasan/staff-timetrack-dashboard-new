@@ -3,6 +3,7 @@ import DayWeekMonthSelection from "@/components/Common/DayWeekMonthSelection";
 import AllTimesheetServer from "@/components/TimeSheets/AllTimesheets/AllTimesheetServer";
 import { ISearchParamsProps } from "@/types/type";
 import { Suspense } from "react";
+import MonthlyTimeSheetsCalendarSkeleton from "@/skeleton/timesheets/allTimesheets/MonthlyTimeSheetsCalendarSkeleton";
 
 
 const AllTimeSheets = ({ searchParams }: ISearchParamsProps) => {
@@ -15,7 +16,9 @@ const AllTimeSheets = ({ searchParams }: ISearchParamsProps) => {
                     <DayWeekMonthSelection ></DayWeekMonthSelection>
                 </Suspense>
             </div>
-            <AllTimesheetServer searchParams={searchParams} />
+            <Suspense fallback={<MonthlyTimeSheetsCalendarSkeleton />}>
+                <AllTimesheetServer searchParams={searchParams} />
+            </Suspense>
             {/* {
                 activeTab === "Monthly" &&
                 <MonthlyTimeSheetsCalendarSkeleton></MonthlyTimeSheetsCalendarSkeleton>

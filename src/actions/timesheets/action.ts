@@ -2,7 +2,7 @@
 
 import { buildQuery } from "@/utils/buildQuery";
 import { baseApi } from "../baseApi";
-import { IManualTimeEntry, IResponse } from "@/types/type";
+import { IDailyTimeTrackerData, IManualTimeEntry, IResponse } from "@/types/type";
 
 export const getManualTimeEntry = async (query = {}): Promise<IResponse<IManualTimeEntry[]>> => {
     const queryString = buildQuery(query);
@@ -54,5 +54,12 @@ export const approveRejectManualTimeEntry = async ({ data, id }: {
         method: "PATCH",
         body: data,
         tag: "manualTimeEntry",
+    });
+};
+
+export const getDailyTimeEntry = async (query = {}): Promise<IResponse<IDailyTimeTrackerData[]>> => {
+    const queryString = buildQuery(query);
+    return await baseApi(`/time-entries/daily-time-sheet${queryString ? `?${queryString}` : ""}`, {
+        tag: "DailyTimeEntry",
     });
 };

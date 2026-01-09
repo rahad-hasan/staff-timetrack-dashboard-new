@@ -1,71 +1,18 @@
 "use client"
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { ArrowUpDown, Check } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../../../ui/table";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import FilterButton from "@/components/Common/FilterButton";
 import CheckIcon from "@/components/Icons/CheckIcon";
+import { format, parseISO } from "date-fns";
+import { IDailyTimeEntryItem } from "@/types/type";
 
-const DailyTimeSheetsTable = () => {
+const DailyTimeSheetsTable = ({ data }: { data: IDailyTimeEntryItem[] }) => {
     const [sorting, setSorting] = useState<SortingState>([])
 
-    interface DailyData {
-        taskName: string,
-        project: string,
-        activity: number,
-        manager: string,
-        manual: boolean,
-        totalTime: string,
-    }
-
-    // table
-    const DailyDataList: DailyData[] = useMemo(
-        () => [
-            {
-                taskName: "Do the Logic for Orbit Home page project",
-                project: "Orbit Technology's Project",
-                activity: 40,
-                manager: "Juyed Ahmed",
-                manual: true,
-                totalTime: "12:03:00",
-                startTime: "8:00 am",
-                endTime: "10:00 pm"
-            },
-            {
-                taskName: "Marketing Tools",
-                project: "Orbit Technology's Project",
-                activity: 5,
-                manager: "Cameron Williamson",
-                manual: false,
-                totalTime: "12:03:00",
-                startTime: "8:00 am",
-                endTime: "10:00 pm"
-            },
-            {
-                taskName: "Design Idea",
-                project: "Orbit Technology's Project",
-                activity: 70,
-                manager: "Jenny Wilson",
-                manual: true,
-                totalTime: "11:03:00",
-                startTime: "8:00 am",
-                endTime: "10:00 pm"
-            },
-            {
-                taskName: "Do the Logic for Orbit Home page project wi...",
-                project: "Orbit Technology's Project",
-                activity: 35,
-                manager: "Esther Howard",
-                manual: false,
-                totalTime: "10:03:00",
-                startTime: "8:00 am",
-                endTime: "10:00 pm"
-            }
-        ],
-        []
-    );
-    const columns: ColumnDef<DailyData>[] = [
+    const columns: ColumnDef<IDailyTimeEntryItem>[] = [
         {
             accessorKey: "project",
             header: ({ column }) => {
@@ -82,12 +29,11 @@ const DailyTimeSheetsTable = () => {
                 )
             },
             cell: ({ row }) => {
-                const project = row.getValue("project") as string;
-                const taskName = row.original.taskName;
+
                 return (
                     <div className="flex flex-col">
-                        <span className="font-bold text-base text-headingTextColor dark:text-darkTextPrimary">{project}</span>
-                        <span className=" font-normal text-subTextColor dark:text-darkTextSecondary">{taskName}</span>
+                        <span className="font-bold text-base text-headingTextColor dark:text-darkTextPrimary">{row?.original?.project?.name}</span>
+                        <span className=" font-normal text-subTextColor dark:text-darkTextSecondary">{row?.original?.task?.name}</span>
                     </div>
                 )
             }
@@ -108,14 +54,14 @@ const DailyTimeSheetsTable = () => {
                 )
             },
             cell: ({ row }) => {
-                const activity = row.getValue("activity") as number;
+
                 return (
                     <div className="flex items-center gap-2">
                         {
-                            activity < 30 ?
-                                <span className=" bg-[#f40139] text-white font-normal px-1.5 py-0.5 rounded-full">{activity}%</span>
+                            row?.original?.activity_score_avg === null || row?.original?.activity_score_avg < 30 ?
+                                <span className=" bg-[#f40139] text-white font-normal px-2 py-0.5 rounded-full">{row?.original?.activity_score_avg === null ? 0 : row?.original?.activity_score_avg}%</span>
                                 :
-                                <span className=" bg-[#5db0f1] text-white font-normal px-1.5 py-0.5 rounded-full">{activity}%</span>
+                                <span className=" bg-[#5db0f1] text-white font-normal px-2 py-0.5 rounded-full">{row?.original?.activity_score_avg}%</span>
                         }
                     </div>
                 );
@@ -137,10 +83,10 @@ const DailyTimeSheetsTable = () => {
                 )
             },
             cell: ({ row }) => {
-                const manual = row.getValue("manual") as string;
+
                 return (
                     <div className="flex items-center gap-2 text-primary">
-                        <span>{manual ? <CheckIcon size={22}/> : ''}</span>
+                        <span>{row?.original?.is_manual ? <CheckIcon size={22} /> : ''}</span>
                     </div>
                 );
             },
@@ -162,15 +108,15 @@ const DailyTimeSheetsTable = () => {
                 )
             },
             cell: ({ row }) => {
-                const totalTime = row.getValue("totalTime") as string;
+
                 return (
                     <div className=" flex items-center justify-between">
                         <div className=" flex justify-between gap-4">
                             <div className="">
                                 <h1 className=" font-medium text-headingTextColor dark:text-darkTextPrimary">
-                                    {totalTime}
+                                    {row?.original?.total_duration_formatted}
                                 </h1>
-                                <p className=" text-sm font-thin text-subTextColor dark:text-darkTextSecondary">8:00 am - 10:00 pm</p>
+                                <p className=" text-sm font-thin text-subTextColor dark:text-darkTextSecondary">{format(parseISO(row?.original?.span?.start), 'h:mm a')} - {format(parseISO(row?.original?.span?.end), 'h:mm a')}</p>
                             </div>
                         </div>
                         <FilterButton />
@@ -181,7 +127,7 @@ const DailyTimeSheetsTable = () => {
     ];
 
     const table = useReactTable({
-        data: DailyDataList,
+        data: data,
         columns,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,
@@ -208,8 +154,8 @@ const DailyTimeSheetsTable = () => {
                     ))}
                 </TableHeader>
                 <TableBody>
-                    {table.getRowModel().rows?.length ? (
-                        table.getRowModel().rows.map(row => (
+                    {table?.getRowModel()?.rows?.length ? (
+                        table.getRowModel()?.rows?.map(row => (
                             <TableRow key={row.id}>
                                 {row.getVisibleCells().map(cell => (
                                     <TableCell key={cell.id}>
@@ -220,7 +166,7 @@ const DailyTimeSheetsTable = () => {
                         ))
                     ) : (
                         <TableRow>
-                            <EmptyTableRow columns={columns} text="No Project found."></EmptyTableRow>
+                            <EmptyTableRow columns={columns} text="No time entry found."></EmptyTableRow>
                         </TableRow>
                     )}
                 </TableBody>
