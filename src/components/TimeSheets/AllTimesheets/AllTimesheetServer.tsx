@@ -1,34 +1,34 @@
 import { ISearchParamsProps } from "@/types/type";
-import DailyTimeSheets from "./DailyTimeSheets/DailyTimeSheets";
 import MonthlyTimeSheets from "./MonthlyTimeSheets/MonthlyTimeSheets";
 import WeeklyTimeSheets from "./WeeklyTimeSheets/WeeklyTimeSheets";
-import { getDailyTimeEntry } from "@/actions/timesheets/action";
+import DailyTimeSheetsServer from "./DailyTimeSheets/DailyTimeSheetsServer";
+import { Suspense } from "react";
+import DailyTimeSheetsSkeleton from "@/skeleton/timesheets/allTimesheets/DailyTimeSheetsSkeleton";
+import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
+import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
+import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 
 const AllTimesheetServer = async ({ searchParams }: ISearchParamsProps) => {
     const params = await searchParams;
     type Tab = "daily" | "weekly" | "monthly";
     const activeTab = (params?.tab as Tab) ?? "daily";
 
-    let result = null;
-    if (params.date && params.user_id) {
-        result = await getDailyTimeEntry({
-            search: params.search,
-            date: params.date,
-            user_id: params.user_id,
-        });
-    }
-
-    const dailyData = result?.data ?? {
-        items: [],
-        totals: { duration_hours: 0, duration_formatted: "00:00:00" }
-    };
-    console.log(dailyData);
-    
     return (
         <div>
             {
                 activeTab === "daily" &&
-                <DailyTimeSheets data={dailyData}></DailyTimeSheets>
+                <>
+                    <div className=" mb-5 flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between h-full">
+                        <div className=" flex flex-col sm:flex-col-reverse xl:flex-row gap-4 md:gap-3">
+                            <SpecificDatePicker></SpecificDatePicker>
+                            <SelectProjectDropDown></SelectProjectDropDown>
+                        </div>
+                        <SelectUserDropDown></SelectUserDropDown>
+                    </div>
+                    <Suspense fallback={<DailyTimeSheetsSkeleton />}>
+                        <DailyTimeSheetsServer searchParams={searchParams} />
+                    </Suspense>
+                </>
             }
 
             {

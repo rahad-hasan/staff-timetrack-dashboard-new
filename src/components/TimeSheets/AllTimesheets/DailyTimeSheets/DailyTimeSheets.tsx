@@ -5,86 +5,78 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip"
 import DailyTimeSheetsTable from "./DailyTimeSheetsTable";
-import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
-import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
-import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
-import { IDailyTimeTrackerData } from "@/types/type";
 
-const DailyTimeSheets = ({ data }: { data: any }) => {
+const DailyTimeSheets = ({ data, timeLineData, selectedDate }: { data: any, timeLineData: any, selectedDate: string | number | string[] | undefined }) => {
 
-    const activePeriods = [
-        { start: 5, end: 7, project: 'project', task: 'task', duration: '2:00:00' }, // Active from 5 AM to 7 AM
-        { start: 10, end: 14, project: 'project', task: 'task', duration: '2:00:00' }, // Active from 1 PM to 4 PM
-        { start: 16, end: 18, project: 'project', task: 'task', duration: '2:00:00' }, // Active from 6 PM to 8 PM
-    ];
+    console.log('Time Line New Data', timeLineData);
+    const getDecimalHour = (dateString: string) => {
+        const date = new Date(dateString);
+        const hours = date.getHours();
+        const minutes = date.getMinutes();
+        return hours + (minutes / 60);
+    };
+
+    // Helper to format duration from decimal to HH:MM:SS
+    const formatDuration = (decimalHours: number) => {
+        const totalSeconds = Math.floor(decimalHours * 3600);
+        const h = Math.floor(totalSeconds / 3600);
+        const m = Math.floor((totalSeconds % 3600) / 60);
+        const s = totalSeconds % 60;
+        return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    };
+
+    // Transform backend data into activePeriods
+    const activePeriods = (timeLineData || []).map((entry: any) => ({
+        start: getDecimalHour(entry.start_time),
+        end: getDecimalHour(entry.end_time),
+        project: entry.project?.name || "No Project",
+        task: entry.task?.name || "No Task",
+        duration: formatDuration(entry.duration)
+    }));
+
+
+    const getDayProgressPercentage = () => {
+        const now = new Date();
+
+        // 1. Format "Today" to YYYY-MM-DD to match your URL param
+        const todayString = now.toISOString().split('T')[0];
+
+        // 2. If the selected date is NOT today, return 0 (or 100 for past days)
+        if (selectedDate !== todayString) {
+            // If it's a past date, we show 100% progress. If future, 0%.
+            return selectedDate! < todayString ? 100 : 0;
+        }
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+        const totalMinutesPassed = (hours * 60) + minutes;
+        const totalMinutesInDay = 24 * 60;
+        return (totalMinutesPassed / totalMinutesInDay) * 100;
+    };
+    const isToday = selectedDate === new Date().toISOString().split('T')[0];
+
+    const dayProgress = getDayProgressPercentage();
 
     return (
         <>
-            <div className=" mb-5 flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between h-full">
-                <div className=" flex flex-col sm:flex-col-reverse xl:flex-row gap-4 md:gap-3">
-                    <SpecificDatePicker></SpecificDatePicker>
-                    {/* <div className="hidden md:block">
-                        <Button className=" py-0 dark:text-darkTextPrimary" variant={'filter'}>
-                            <SlidersHorizontal className=" dark:text-darkTextPrimary" /> Filters
-                        </Button>
-                    </div> */}
-                    <SelectProjectDropDown></SelectProjectDropDown>
-                </div>
-                {/* <div className=" "> */}
-                {/* <Select onValueChange={setUser} value={user ?? undefined}>
-                        <SelectTrigger size={'lg'} className="w-full">
-                            {selectedUser ? (
-                                <div className="flex items-center gap-2">
-                                    <Avatar className="w-6 h-6">
-                                        <AvatarImage src={selectedUser.avatar} alt={selectedUser.name} />
-                                        <AvatarFallback>{selectedUser.name.charAt(0)}</AvatarFallback>
-                                    </Avatar>
-                                    <span>{selectedUser.name}</span>
-                                </div>
-                            ) : (
-                                <SelectValue placeholder="Select user" />
-                            )}
-                        </SelectTrigger>
-
-                        <SelectContent>
-                            <Input
-                                type="text"
-                                placeholder="Search user..."
-                                className="flex-1 border-none focus:ring-0 focus:outline-none"
-                                value={userSearch}
-                                onChange={(e) => setUserSearch(e.target.value)}
-                            />
-                            {filteredUsers.map(t => (
-                                <SelectItem className="px-3 flex items-center gap-2" key={t.name} value={t.name}>
-                                    <Avatar className="w-6 h-6">
-                                        <AvatarImage src={t.avatar} alt={t.name} />
-                                        <AvatarFallback>{t.name.charAt(0)}</AvatarFallback>
-                                    </Avatar>
-                                    <span className="ml-2">{t.name}</span>
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select> */}
-                <SelectUserDropDown></SelectUserDropDown>
-                {/* </div> */}
-            </div>
-
             <div className=" mb-5">
                 <div className=" flex gap-2 mb-2">
                     <h1 className=" font-bold text-headingTextColor dark:text-darkTextPrimary">Today:</h1>
                     <p className="text-headingTextColor dark:text-darkTextPrimary">{data?.totals?.duration_formatted}</p>
                 </div>
-                <div className="relative h-5 bg-[#dce3e3] dark:bg-darkPrimaryBg rounded-4xl outline outline-borderColor dark:outline-darkBorder">
-                    {/* day time pass */}
-                    <div
-                        className="absolute h-5 bg-[#f6f7f9] dark:bg-darkSecondaryBg rounded-l-4xl border-r-3 border-[#bdbfbe] dark:border-[#afafaf]"
-                        style={{
-                            left: `0%`,
-                            width: `80%`,
-                        }}
-                    ></div>
-                    {/* work start and end time */}
-                    {activePeriods.map((period, index) => {
+                <div className={`relative h-5 ${isToday ? "bg-[#dce3e3]" : "bg-[#f6f7f9]"}  dark:bg-darkPrimaryBg rounded-4xl outline outline-borderColor dark:outline-darkBorder`}>
+
+                    {
+                        isToday &&
+                        <div
+                            className="absolute h-5 bg-[#f6f7f9] dark:bg-darkSecondaryBg rounded-l-4xl border-r-3 border-[#bdbfbe] dark:border-[#afafaf]"
+                            style={{
+                                left: `0%`,
+                                width: `${dayProgress}%`,
+                            }}
+                        ></div>
+                    }
+
+                    {activePeriods?.map((period: any, index: number) => {
                         const startPercent = (period.start / 24) * 100;
                         const endPercent = (period.end / 24) * 100;
                         const width = endPercent - startPercent;
@@ -103,9 +95,9 @@ const DailyTimeSheets = ({ data }: { data: any }) => {
                                 </TooltipTrigger>
                                 <TooltipContent className=" bg-[#868686] dark:bg-darkSecondaryBg p-3">
                                     <div>
-                                        <h2 className=" text-[15px] mb-2 dark:text-darkTextPrimary">Project: Orbit Technology’s Project</h2>
-                                        <h2 className=" text-[15px] mb-2 dark:text-darkTextPrimary">Task: Front End Development</h2>
-                                        <h2 className=" text-[15px] dark:text-darkTextPrimary">Duration: 2:00:00</h2>
+                                        <h2 className=" text-[15px] mb-2 dark:text-darkTextPrimary">Project: {period?.project}</h2>
+                                        <h2 className=" text-[15px] mb-2 dark:text-darkTextPrimary">Task: {period?.task}</h2>
+                                        <h2 className=" text-[15px] dark:text-darkTextPrimary">Duration: {period?.duration}</h2>
                                     </div>
                                 </TooltipContent>
                             </Tooltip>

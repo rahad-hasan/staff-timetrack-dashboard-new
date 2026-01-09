@@ -24,7 +24,9 @@ const ScreenShorts = ({ searchParams }: ISearchParamsProps) => {
         <div>
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-5">
                 <HeadingComponent heading="Screenshot" subHeading="All the screenshot during the working hour by team member is here"></HeadingComponent>
-                <ScreenshotsToggle></ScreenshotsToggle>
+                <Suspense fallback={null}>
+                    <ScreenshotsToggle></ScreenshotsToggle>
+                </Suspense>
 
             </div>
             <div className="mb-5 flex flex-col gap-4 lg:gap-4 xl:flex-row justify-between">

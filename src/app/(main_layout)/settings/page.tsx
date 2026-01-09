@@ -5,6 +5,7 @@ import HeadingComponent from "@/components/Common/HeadingComponent";
 import SettingServer from "@/components/Settings/SettingServer";
 import SettingsTabs from "@/components/Settings/SettingsTabs";
 import { ISearchParamsProps } from "@/types/type";
+import { Suspense } from "react";
 
 const SettingsPage = async ({ searchParams }: ISearchParamsProps) => {
 
@@ -16,7 +17,9 @@ const SettingsPage = async ({ searchParams }: ISearchParamsProps) => {
                 </div>
                 <GlobalColorPicker></GlobalColorPicker>
             </div>
-            <SettingsTabs></SettingsTabs>
+            <Suspense fallback={null}>
+                <SettingsTabs></SettingsTabs>
+            </Suspense>
             <SettingServer searchParams={searchParams}></SettingServer>
         </div>
     );

@@ -268,7 +268,7 @@ const AllScreenShorts = () => {
             ))}
 
             {/* Wrap the modal with AnimatePresence for exit animation */}
-            <AnimatePresence>
+            {/* <AnimatePresence>
                 {modalOpen && (
                     <ScreenShortsModal
                         screenShorts={dummyScreenShorts}
@@ -276,7 +276,7 @@ const AllScreenShorts = () => {
                         setModalOpen={setModalOpen}
                     />
                 )}
-            </AnimatePresence>
+            </AnimatePresence> */}
         </>
     );
 };

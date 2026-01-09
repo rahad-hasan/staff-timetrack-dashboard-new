@@ -50,7 +50,7 @@ const DailyTimeSheetsSkeleton = () => {
                     })}
                 </div>
             </div>
-            <div className="w-full overflow-x-auto p-4 rounded-xl border border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg">
+            <div className="w-full overflow-x-auto border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg pb-4.5 rounded-[12px]">
                 {Array.from({ length: 8 }).map((_, i) => (
                     <div key={i} className="flex items-center w-full border-b border-gray-100 dark:border-darkBorder py-2">
                         <div className="bg-gray-200 dark:bg-gray-700 rounded-md animate-pulse h-6 min-w-[200px] md:w-4/12" />
