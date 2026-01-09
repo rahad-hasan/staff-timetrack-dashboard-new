@@ -49,13 +49,15 @@ const SelectProjectDropDown = () => {
         const res = await getProjects({ search: debouncedSearch });
 
         if (res?.success) {
-          setProjects(
-            res.data.map((p: any) => ({
-              value: String(p.id),
-              label: p.name,
-              avatar: p.image || "",
-            }))
-          );
+          const apiProjects = res.data.map((p: any) => ({
+            value: String(p.id),
+            label: p.name,
+            avatar: p.image || "",
+          }));
+          setProjects([
+            { value: "", label: "All Project", avatar: "" },
+            ...apiProjects
+          ]);
         }
       } catch (err) {
         console.error("Fetch projects error:", err);
