@@ -1,6 +1,5 @@
 "use client"
 import MonthPicker from "@/components/Common/MonthPicker";
-import { useState } from "react";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 
 const ReportMonthlyTimeSheet = () => {
@@ -49,13 +48,10 @@ const ReportMonthlyTimeSheet = () => {
 
     const weeks = chunkArray(calendarData, ROWS_PER_WEEK);
 
-    // month picker
-    const [selectedDate, setSelectedDate] = useState(new Date());
-
     return (
         <div className="">
             <div className="mb-5 flex flex-col gap-4 md:gap-0 md:flex-row justify-between">
-                <MonthPicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></MonthPicker>
+                <MonthPicker></MonthPicker>
                 <SelectUserDropDown></SelectUserDropDown>
             </div>
             <div className="overflow-x-auto rounded-2xl border border-borderColor dark:border-darkBorder mt-5">

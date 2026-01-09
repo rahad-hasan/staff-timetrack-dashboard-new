@@ -4,7 +4,7 @@ import HeadingComponent from "@/components/Common/HeadingComponent";
 import { ISearchParamsProps } from "@/types/type";
 import AttendanceServer from "@/components/Report/Attendance/AttendanceServer";
 import { Suspense } from "react";
-import AttendanceTableSkeleton from "@/skeleton/report/Attendance/AttendanceTableSkeleton";
+// import AttendanceTableSkeleton from "@/skeleton/report/Attendance/AttendanceTableSkeleton";
 
 const AttendancePage = async ({ searchParams }: ISearchParamsProps) => {
 
@@ -35,9 +35,9 @@ const AttendancePage = async ({ searchParams }: ISearchParamsProps) => {
                 </div> */}
                 </div>
             </Suspense>
-            <Suspense fallback={<AttendanceTableSkeleton />}>
+
                 <AttendanceServer searchParams={searchParams}></AttendanceServer>
-            </Suspense>
+ 
 
         </div>
     );

@@ -2,7 +2,7 @@
 import MonthPicker from "@/components/Common/MonthPicker";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Suspense, useState } from "react";
+import { Suspense } from "react";
 import CalenderTable from "@/components/Calender/CalenderTable";
 import {
     Dialog,
@@ -13,9 +13,6 @@ import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 
 const CalenderPage = () => {
-
-    // date picker
-    const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
     return (
         <div>
@@ -34,7 +31,7 @@ const CalenderPage = () => {
             </div>
             <Suspense fallback={null}>
                 <div className=" flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between w-full">
-                    <MonthPicker selectedDate={selectedDate} setSelectedDate={setSelectedDate}></MonthPicker>
+                    <MonthPicker></MonthPicker>
                     <SelectUserDropDown></SelectUserDropDown>
                 </div>
             </Suspense>

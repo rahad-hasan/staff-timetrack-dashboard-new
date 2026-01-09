@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 
 import { buildQuery } from "@/utils/buildQuery";
@@ -60,6 +61,13 @@ export const approveRejectManualTimeEntry = async ({ data, id }: {
 export const getDailyTimeEntry = async (query = {}): Promise<IResponse<IDailyTimeTrackerData[]>> => {
     const queryString = buildQuery(query);
     return await baseApi(`/time-entries/daily-time-sheet${queryString ? `?${queryString}` : ""}`, {
+        tag: "DailyTimeEntry",
+    });
+};
+
+export const getWeeklyAndMonthlyTimeEntry = async (query = {}): Promise<IResponse<any>> => {
+    const queryString = buildQuery(query);
+    return await baseApi(`/time-entries/weekly-time-sheet${queryString ? `?${queryString}` : ""}`, {
         tag: "DailyTimeEntry",
     });
 };

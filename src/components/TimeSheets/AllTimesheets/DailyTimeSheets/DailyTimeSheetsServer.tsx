@@ -7,9 +7,14 @@ import { getTimeEntry } from "@/actions/report/action";
 const DailyTimeSheetsServer = async ({ searchParams }: ISearchParamsProps) => {
     const params = await searchParams;
     let result = null;
+    let timeLineData = null;
     if (params.date && params.user_id) {
         result = await getDailyTimeEntry({
             search: params.search,
+            date: params.date,
+            user_id: params.user_id,
+        });
+        timeLineData = await getTimeEntry({
             date: params.date,
             user_id: params.user_id,
         });
@@ -19,11 +24,6 @@ const DailyTimeSheetsServer = async ({ searchParams }: ISearchParamsProps) => {
         items: [],
         totals: { duration_hours: 0, duration_formatted: "00:00:00" }
     };
-
-    const timeLineData = await getTimeEntry({
-        date: params.date,
-        user_id: params.user_id,
-    });
 
     return (
         <>

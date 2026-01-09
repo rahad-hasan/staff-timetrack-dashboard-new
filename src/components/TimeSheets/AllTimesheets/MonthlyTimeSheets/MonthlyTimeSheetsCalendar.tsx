@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import {
     Select,
@@ -7,67 +8,61 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import { getDay, parseISO } from "date-fns";
 import { useState } from "react";
 
-const MonthlyTimeSheetsCalendar = () => {
+const MonthlyTimeSheetsCalendar = ({ data }: any) => {
 
     const [viewType, setViewType] = useState("Hours");
+    // 1. Process the "per_day" data from backend
+    const perDayData = data?.per_day || {};
+    const dateKeys = Object.keys(perDayData).sort(); // Ensure dates are in order
 
-    const mockCalendarData = [
-        { day: 1, time: "8h 56m", activity: 90.05 },
-        { day: 2, time: "8h 23m", activity: 87.42 },
-        { day: 3, time: "8h 4m", activity: 85.13 },
-        { day: 4, time: "9h 11m", activity: 92.27 },
-        { day: 5, time: "8h 2m", activity: 84.67 },
-        { day: 6, time: "", activity: null },
-        { day: 7, time: "", activity: null },
-        { day: 8, time: "8h 28m", activity: 88.25 },
-        { day: 9, time: "10h 30m", activity: 94.53 },
-        { day: 10, time: "8h 19m", activity: 86.34 },
-        { day: 11, time: "8h 8m", activity: 85.71 },
-        { day: 12, time: "6h 54m", activity: 78.12 },
-        { day: 13, time: "", activity: null },
-        { day: 14, time: "0h 4m", activity: 12.41 },
-        { day: 15, time: "9h 23m", activity: 91.56 },
-        { day: 16, time: "8h 20m", activity: 86.45 },
-        { day: 17, time: "8h 37m", activity: 87.95 },
-        { day: 18, time: "8h 36m", activity: 87.74 },
-        { day: 19, time: "8h 15m", activity: 85.32 },
-        { day: 20, time: "0h 23m", activity: 18.42 },
-        { day: 21, time: "3h 51m", activity: 53.25 },
-        { day: 22, time: "8h 2m", activity: 84.66 },
-        { day: 23, time: "8h 23m", activity: 86.92 },
-        { day: 24, time: "3h 14m", activity: 47.33 },
-        { day: 25, time: "8h 16m", activity: 85.87 },
-        { day: 26, time: "6h 11m", activity: 76.25 },
-        { day: 27, time: "1h 9m", activity: 31.42 },
-        { day: 28, time: "", activity: null },
-        { day: 29, time: "", activity: null },
-        { day: 30, time: "3h 30m", activity: 50.71 },
-        { day: 31, time: "3h 14m", activity: 47.11 },
-    ];
+    const getPaddingCells = () => {
+        if (dateKeys.length === 0) return [];
+        const firstDate = parseISO(dateKeys[0]);
+        const dayOfWeek = getDay(firstDate); // 0 (Sun) to 6 (Sat)
 
+        // Adjust for Monday start: Mon=0, Tue=1 ... Sun=6
+        const paddingCount = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+        return Array(paddingCount).fill(null);
+    };
+
+    const paddingCells = getPaddingCells();
+    console.log('padding cells', paddingCells);
     const dayHeaders = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
 
-    const DateCell = ({ day, time, activity }: { day: number, time: string, activity: number | null }) => (
+    const DateCell = ({
+        dateString,
+        dayNumber,
+        formattedTime,
+        duration,
+        isPadding
+    }: {
+        dateString?: string,
+        dayNumber?: number,
+        formattedTime?: string,
+        duration?: number,
+        isPadding?: boolean
+    }) => (
         <div
             className={`p-3 h-28 md:h-24 flex flex-col justify-center items-center border border-gray-200 bg-bgPrimary dark:bg-darkPrimaryBg text-headingTextColor dark:text-darkTextPrimary dark:border-darkBorder`}
         >
-            <span className="font-medium text-lg mb-1">{day}</span>
+            <span className="font-medium text-lg mb-1">{dayNumber}</span>
             {
                 viewType === "Hours" ?
                     <div>
-                        {time && (
+                        {formattedTime && (
                             <div className="px-2 py-1 text-sm font-medium rounded-lg bg-primary/5 dark:bg-darkSecondaryBg text-primary shadow-sm">
-                                {time}
+                                {formattedTime}
                             </div>
                         )}
                     </div>
                     :
                     <div>
-                        {activity && (
+                        {duration && (
                             <div className="px-2 py-1 text-sm font-medium rounded-lg bg-primary/5 dark:bg-darkSecondaryBg text-primary shadow-sm">
-                                {activity}%
+                                {`${duration?.toFixed(2)}h`}
                             </div>
                         )}
                     </div>
@@ -87,7 +82,7 @@ const MonthlyTimeSheetsCalendar = () => {
                 <div className=" flex items-center gap-3 md:gap-5 ">
                     <div className=" flex items-center gap-0.5 md:gap-2">
                         <h2 className=" font-medium text-headingTextColor dark:text-darkTextPrimary">Total Hour:</h2>
-                        <h2 className="text-headingTextColor dark:text-darkTextPrimary">32:25:00</h2>
+                        <h2 className="text-headingTextColor dark:text-darkTextPrimary">{data?.duration_formatted}</h2>
                     </div>
                     <div className=" flex items-center gap-0.5 md:gap-2">
                         <h2 className=" font-medium text-headingTextColor dark:text-darkTextPrimary">Monthly Activity:</h2>
@@ -114,6 +109,7 @@ const MonthlyTimeSheetsCalendar = () => {
 
             <div className=" overflow-auto ">
                 <div className="grid grid-cols-7 gap-2 min-w-[750px]">
+                    {/* Headers */}
                     {dayHeaders.map((day, index) => {
                         let extraClass = "";
                         if (index === 0) extraClass = "rounded-tl-lg";
@@ -125,12 +121,30 @@ const MonthlyTimeSheetsCalendar = () => {
                             </div>
                         );
                     })}
+                    {/* Empty Padding Cells */}
+                    {paddingCells.map((_, index) => (
+                        <DateCell key={`pad-${index}`} isPadding={true} />
+                    ))}
 
-                    {mockCalendarData.map((data) => (
+                    {/* Actual Data Cells */}
+                    {dateKeys.map((dateStr) => {
+                        const dayData = perDayData[dateStr];
+                        const dateObj = parseISO(dateStr);
+                        return (
+                            <DateCell
+                                key={dateStr}
+                                dateString={dateStr}
+                                dayNumber={dateObj.getDate()}
+                                formattedTime={dayData.formatted}
+                                duration={dayData.duration}
+                            />
+                        );
+                    })}
+                    {/* {mockCalendarData.map((data) => (
                         <div key={data.day} >
                             <DateCell day={data.day} time={data.time} activity={data?.activity} />
                         </div>
-                    ))}
+                    ))} */}
                 </div>
             </div>
         </div>

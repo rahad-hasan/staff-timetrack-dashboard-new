@@ -10,7 +10,7 @@ import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { format } from "date-fns";
 
-const AttendanceTable = ({ attendanceListData = [] }: any) => {
+const AttendanceTable = ({ attendanceListData }: any) => {
     console.log('getting data for attendance', attendanceListData);
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
@@ -144,7 +144,7 @@ const AttendanceTable = ({ attendanceListData = [] }: any) => {
                 const checkIn = row.getValue("check_in") as string;
                 return (
                     <div className="flex flex-col">
-                        <span className="">{checkIn !== "-" ? format(new Date(checkIn), "hh:mm a"): "-"}</span>
+                        <span className="">{checkIn !== "-" ? format(new Date(checkIn), "hh:mm a") : "-"}</span>
                     </div>
                 )
             }
@@ -168,7 +168,7 @@ const AttendanceTable = ({ attendanceListData = [] }: any) => {
                 const checkOut = row?.getValue("check_out") as string;
                 return (
                     <div className="flex flex-col">
-                        <span className="">{checkOut !== "-" ? format(new Date(checkOut), "hh:mm a"): "-"}</span>
+                        <span className="">{checkOut !== "-" ? format(new Date(checkOut), "hh:mm a") : "-"}</span>
                     </div>
                 )
             }
@@ -177,7 +177,7 @@ const AttendanceTable = ({ attendanceListData = [] }: any) => {
 
 
     const table = useReactTable({
-        data: attendanceListData,
+        data: attendanceListData ?? [],
         columns,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,

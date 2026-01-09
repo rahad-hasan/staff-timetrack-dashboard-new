@@ -1,5 +1,4 @@
 import { ISearchParamsProps } from "@/types/type";
-import MonthlyTimeSheets from "./MonthlyTimeSheets/MonthlyTimeSheets";
 import WeeklyTimeSheets from "./WeeklyTimeSheets/WeeklyTimeSheets";
 import DailyTimeSheetsServer from "./DailyTimeSheets/DailyTimeSheetsServer";
 import { Suspense } from "react";
@@ -7,6 +6,9 @@ import DailyTimeSheetsSkeleton from "@/skeleton/timesheets/allTimesheets/DailyTi
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
+import MonthPicker from "@/components/Common/MonthPicker";
+import MonthlyTimeSheetsServer from "./MonthlyTimeSheets/MonthlyTimeSheetsServer";
+import MonthlyTimeSheetsCalendarSkeleton from "@/skeleton/timesheets/allTimesheets/MonthlyTimeSheetsCalendarSkeleton";
 
 const AllTimesheetServer = async ({ searchParams }: ISearchParamsProps) => {
     const params = await searchParams;
@@ -38,7 +40,20 @@ const AllTimesheetServer = async ({ searchParams }: ISearchParamsProps) => {
 
             {
                 activeTab === "monthly" &&
-                <MonthlyTimeSheets></MonthlyTimeSheets>
+                <>
+                    <div className=" mb-5 flex flex-col gap-4 md:gap-0 sm:flex-row justify-between">
+                        <div className="flex gap-3">
+                            <MonthPicker></MonthPicker>
+                            <div className=" hidden md:block h-full">
+                                <SelectProjectDropDown ></SelectProjectDropDown>
+                            </div>
+                        </div>
+                        <SelectUserDropDown ></SelectUserDropDown>
+                    </div>
+                    <Suspense fallback={<MonthlyTimeSheetsCalendarSkeleton />}>
+                        <MonthlyTimeSheetsServer searchParams={searchParams}></MonthlyTimeSheetsServer>
+                    </Suspense>
+                </>
             }
         </div>
     );
