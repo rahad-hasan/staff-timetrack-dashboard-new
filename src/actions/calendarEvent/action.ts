@@ -13,7 +13,6 @@ export const getEvents = async (query = {}): Promise<IResponse<any[]>> => {
     });
 };
 
-
 export const addEvent = async (data: any
     //     {
     //     type: string;

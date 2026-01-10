@@ -35,7 +35,7 @@ const CalenderTable = ({ startMonth, endMonth, eventData }: { startMonth: string
             currentDate.setDate(displayStart.getDate() + i);
             const dateString = formatToISODate(currentDate);
 
-            const dayEvents = eventData.filter(event =>
+            const dayEvents = eventData.filter((event:any) =>
                 formatToISODate(new Date(event.date)) === dateString
             );
 
@@ -91,7 +91,7 @@ const CalenderTable = ({ startMonth, endMonth, eventData }: { startMonth: string
                                             <div className="text-sm sm:text-base font-normal mb-1">{cell.date}</div>
 
                                             {/* Render mapped events with original styling */}
-                                            {cell.events.map((event, eventIdx) => (
+                                            {cell.events.map((event:any, eventIdx:any) => (
                                                 <Dialog key={event.id || eventIdx}>
                                                     <Tooltip>
                                                         <DialogTrigger asChild>
@@ -107,12 +107,13 @@ const CalenderTable = ({ startMonth, endMonth, eventData }: { startMonth: string
                                                             </TooltipTrigger>
                                                         </DialogTrigger>
 
-                                                        <EditEventModal event={event} />
+                                                        <EditEventModal />
+                                                        {/*<EditEventModal event={event} />  */}
 
                                                         <TooltipContent
-                                                            className=" shadow-xl rounded-lg px-5 py-4 max-w-xs"
+                                                            className=" shadow-xl rounded-lg px-5 py-4 max-w-xs dark:bg-darkPrimaryBg"
                                                         >
-                                                            <h2 className="text-sm font-medium text-white dark:text-darkTextPrimary mb-3 border-b dark:border-darkBorder pb-1">
+                                                            <h2 className="text-sm font-medium text-headingTextColor dark:text-darkTextPrimary mb-3 border-b dark:border-darkBorder pb-1">
                                                                 Event Participants
                                                             </h2>
                                                             <div className="flex items-center mb-4">
@@ -122,7 +123,7 @@ const CalenderTable = ({ startMonth, endMonth, eventData }: { startMonth: string
                                                                             src={assign?.user?.image}
                                                                             alt={assign?.user?.name}
                                                                         />
-                                                                        <AvatarFallback className=' text-darkTextSecondary'>{assign?.user?.name?.charAt(0)}</AvatarFallback>
+                                                                        <AvatarFallback className=' text-headingTextColor dark:text-darkTextPrimary'>{assign?.user?.name?.charAt(0)}</AvatarFallback>
                                                                     </Avatar>
                                                                 ))}
                                                                 {event.eventAssigns?.length > 3 && (
@@ -132,7 +133,7 @@ const CalenderTable = ({ startMonth, endMonth, eventData }: { startMonth: string
                                                                 )}
                                                             </div>
 
-                                                            <h3 className="text-sm font-medium text-white dark:text-darkTextPrimary border-b dark:border-darkBorder pb-1 mb-2">
+                                                            <h3 className="text-sm font-medium text-headingTextColor dark:text-darkTextPrimary border-b dark:border-darkBorder pb-1 mb-2">
                                                                 Assigned By
                                                             </h3>
                                                             <div className="flex items-center gap-2">
@@ -141,8 +142,9 @@ const CalenderTable = ({ startMonth, endMonth, eventData }: { startMonth: string
                                                                         src={event?.createdBy?.image}
                                                                         alt={event?.createdBy?.name}
                                                                     />
-                                                                    <AvatarFallback className=' text-darkTextSecondary'>{event?.createdBy?.name?.charAt(0)}</AvatarFallback>
+                                                                    <AvatarFallback className=' text-headingTextColor dark:text-darkTextPrimary'>{event?.createdBy?.name?.charAt(0)}</AvatarFallback>
                                                                 </Avatar>
+                                                                <h2 className=" text-sm text-headingTextColor dark:text-darkTextPrimary ">{event?.createdBy?.name}</h2>
                                                             </div>
                                                         </TooltipContent>
                                                     </Tooltip>

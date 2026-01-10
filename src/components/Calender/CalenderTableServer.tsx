@@ -20,7 +20,9 @@ const CalenderTableServer = async ({ searchParams }: ISearchParamsProps) => {
         <div>
             {
                 year && month &&
-                <CalenderTable startMonth={startMonth} endMonth={endMonth} eventData={result?.data}></CalenderTable>
+                <>
+                    <CalenderTable startMonth={startMonth} endMonth={endMonth} eventData={result?.data}></CalenderTable>
+                </>
             }
         </div>
     );
