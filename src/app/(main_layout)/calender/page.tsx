@@ -1,11 +1,11 @@
-"use client"
 import MonthPicker from "@/components/Common/MonthPicker";
 import { Suspense } from "react";
-import CalenderTable from "@/components/Calender/CalenderTable";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import CalenderHeading from "@/components/Calender/CalenderHeading";
+import CalenderTableServer from "@/components/Calender/CalenderTableServer";
+import { ISearchParamsProps } from "@/types/type";
 
-const CalenderPage = () => {
+const CalenderPage = async ({ searchParams }: ISearchParamsProps) => {
 
     return (
         <div>
@@ -16,7 +16,7 @@ const CalenderPage = () => {
                     <SelectUserDropDown></SelectUserDropDown>
                 </div>
             </Suspense>
-            <CalenderTable></CalenderTable>
+            <CalenderTableServer searchParams={searchParams}></CalenderTableServer>
         </div>
     );
 };

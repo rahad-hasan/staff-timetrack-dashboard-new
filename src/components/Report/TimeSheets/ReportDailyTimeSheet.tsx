@@ -165,7 +165,7 @@ const ReportDailyTimeSheet = ({ dailyTimeEntry }: any) => {
                     </div>
                 </TooltipTrigger>
 
-                <TooltipContent className="bg-white dark:bg-darkSecondaryBg border border-gray-200 dark:border-darkBorder shadow-2xl rounded-xl p-0 overflow-hidden min-w-[240px]">
+                <TooltipContent className=" p-0 overflow-hidden min-w-[240px]">
                     <div className="bg-gray-50 dark:bg-darkSecondaryBg px-4 py-3 border-b border-borderColor dark:border-darkBorder">
                         <div className="flex items-center gap-2">
                             <ClipboardList className="w-4 h-4 text-primary" />

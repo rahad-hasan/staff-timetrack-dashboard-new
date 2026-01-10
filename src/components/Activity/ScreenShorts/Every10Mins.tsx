@@ -291,7 +291,7 @@ const Every10Mins = ({ data }: any) => {
                                                             </div>
                                                         </div>
                                                     </TooltipTrigger>
-                                                    <TooltipContent className="p-3 w-56 bg-white dark:bg-darkSecondary shadow-xl border-borderColor dark:border-darkBorder">
+                                                    <TooltipContent className="p-3 w-56">
                                                         <div className="space-y-3">
                                                             <h4 className="text-xs font-semibold text-headingTextColor dark:text-darkTextPrimary uppercase tracking-wider">
                                                                 Activity Breakdown
@@ -301,7 +301,7 @@ const Every10Mins = ({ data }: any) => {
                                                                 <div>
                                                                     <div className="flex justify-between text-xs mb-1">
                                                                         <span className="text-subTextColor dark:text-darkTextSecondary">Avg. Performance</span>
-                                                                        <span className="font-medium text-headingTextColor">{block?.avg_score}%</span>
+                                                                        <span className="font-medium text-headingTextColor dark:text-darkTextPrimary">{block?.avg_score}%</span>
                                                                     </div>
                                                                     <div className="h-1.5 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
 

@@ -93,11 +93,11 @@ const DailyTimeSheets = ({ data, timeLineData, selectedDate }: { data: any, time
                                         }}
                                     ></div>
                                 </TooltipTrigger>
-                                <TooltipContent className=" bg-[#868686] dark:bg-darkSecondaryBg p-3">
+                                <TooltipContent className=" p-3">
                                     <div>
-                                        <h2 className=" text-[15px] mb-2 dark:text-darkTextPrimary">Project: {period?.project}</h2>
-                                        <h2 className=" text-[15px] mb-2 dark:text-darkTextPrimary">Task: {period?.task}</h2>
-                                        <h2 className=" text-[15px] dark:text-darkTextPrimary">Duration: {period?.duration}</h2>
+                                        <h2 className=" text-[15px] mb-2 text-headingTextColor dark:text-darkTextPrimary">Project: {period?.project}</h2>
+                                        <h2 className=" text-[15px] mb-2 text-headingTextColor dark:text-darkTextPrimary">Task: {period?.task}</h2>
+                                        <h2 className=" text-[15px] text-headingTextColor dark:text-darkTextPrimary">Duration: {period?.duration}</h2>
                                     </div>
                                 </TooltipContent>
                             </Tooltip>

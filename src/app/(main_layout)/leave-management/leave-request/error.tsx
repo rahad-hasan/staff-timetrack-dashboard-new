@@ -1,6 +1,6 @@
 "use client";
 
-export default function MembersError({
+export default function Error({
   error,
 }: {
   error: Error;
