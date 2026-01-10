@@ -13,10 +13,12 @@ const DailyTimeSheetsServer = async ({ searchParams }: ISearchParamsProps) => {
             search: params.search,
             date: params.date,
             user_id: params.user_id,
+            project_id: params.project_id,
         });
         timeLineData = await getTimeEntry({
             date: params.date,
             user_id: params.user_id,
+            project_id: params.project_id,
         });
     }
 
