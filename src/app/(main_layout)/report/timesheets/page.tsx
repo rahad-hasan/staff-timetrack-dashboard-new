@@ -2,7 +2,7 @@ import { getDateBaseTimeEntry, getTimeEntry } from "@/actions/report/action";
 import DayWeekMonthSelection from "@/components/Common/DayWeekMonthSelection";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import ReportDailyTimeSheet from "@/components/Report/TimeSheets/ReportDailyTimeSheet";
-import ReportMonthlyTimeSheet from "@/components/Report/TimeSheets/ReportMonthlyTimeSheet";
+import ReportMonthlyTimeSheetServer from "@/components/Report/TimeSheets/ReportMonthlyTimeSheetServer";
 import ReportWeeklyTimeSheet from "@/components/Report/TimeSheets/ReportWeeklyTimeSheet";
 import { ISearchParamsProps } from "@/types/type";
 
@@ -44,7 +44,7 @@ const ReportTimeSheets = async ({ searchParams }: ISearchParamsProps) => {
             }
             {
                 activeTab === "monthly" &&
-                <ReportMonthlyTimeSheet></ReportMonthlyTimeSheet>
+                <ReportMonthlyTimeSheetServer searchParams={searchParams}></ReportMonthlyTimeSheetServer>
             }
         </div>
     );

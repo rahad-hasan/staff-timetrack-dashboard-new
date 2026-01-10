@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 
 import { buildQuery } from "@/utils/buildQuery";
@@ -11,7 +12,7 @@ export const getTimeEntry = async (query = {}):Promise<IResponse<ITimeSheetEntry
     });
 };
 
-export const getDateBaseTimeEntry = async (query = {}):Promise<IResponse<ITimeSheetEntry[]>> => {
+export const getDateBaseTimeEntry = async (query = {}):Promise<IResponse<any>> => {
     const queryString = buildQuery(query);
     return await baseApi(`/activities/duration${queryString ? `?${queryString}` : ""}`, {
         tag: "timeEntry",
