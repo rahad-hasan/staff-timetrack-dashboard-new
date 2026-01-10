@@ -187,8 +187,11 @@ export const addNewEventSchema = z.object({
         message: "Date is required",
     }),
     project: z.string().optional(),
-    members: z.array(z.string().min(1, "Member name is required")).min(1, "At least one member is required"),
-    description: z.string().min(1, "Description is required"),
+    meetingLink: z.string().optional(),
+    members: z
+        .array(z.union([z.number(), z.string()]))
+        .min(1, "At least one member is required"),
+    description: z.string().min(5, "Event description must be at least 5 characters long"),
 })
 
 export const editEventSchema = z.object({

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import { Button } from "@/components/ui/button";
 import {
@@ -24,7 +25,7 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CalendarDays, ChevronDownIcon, } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
@@ -36,13 +37,15 @@ import {
     MultiSelectTrigger,
     MultiSelectValue,
 } from "@/components/ui/multi-select"
-import Image from "next/image";
+import { toast } from "sonner";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { getMembersDashboard } from "@/actions/members/action";
+import { addEvent } from "@/actions/calendarEvent/action";
 
-const AddEventModal = () => {
-    // const manager = ["Website Design", "Working on App Design", "New Landing Page", "Work on helsenist Project"];
-    // const [managerSearch, setManagerSearch] = useState("");
+const AddEventModal = ({ onClose }: { onClose: () => void }) => {
 
-    // const filteredManager = manager.filter(t => t.toLowerCase().includes(managerSearch.toLowerCase()));
+    const [members, setMembers] = useState<{ id: number; name: string; image?: string }[]>([]);
+    const [loading, setLoading] = useState(false);
 
     const [openStartDate, setOpenStartDate] = useState(false);
     const [dateStartDate, setStartDate] = useState<Date | undefined>(undefined);
@@ -53,19 +56,65 @@ const AddEventModal = () => {
             eventName: "",
             project: "",
             members: [],
+            meetingLink: "",
             description: "",
         },
     })
 
-    function onSubmit(values: z.infer<typeof addNewEventSchema>) {
-        console.log(values)
+    useEffect(() => {
+        const loadMembers = async () => {
+            setLoading(true);
+            try {
+                const res = await getMembersDashboard();
+                if (res?.success) {
+                    const apiMembers = res.data;
+                    setMembers([
+                        { id: "all", name: "All", image: "" },
+                        ...apiMembers
+                    ])
+                }
+
+            } catch (err) {
+                console.error("Failed to fetch clients", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadMembers();
+    }, []);
+
+    async function onSubmit(values: z.infer<typeof addNewEventSchema>) {
+        const finalData = {
+            name: values?.eventName,
+            note: values?.description,
+            date: new Date(values?.date).toISOString(),
+            force_create: false,
+            member_ids: values?.members.includes("all") ? "all" : values?.members,
+            ...(values?.meetingLink && { meeting_link: values.meetingLink })
+        }
+        console.log(finalData);
+
+        setLoading(true);
+        try {
+            const res = await addEvent(finalData);
+            console.log("success:", res);
+
+            if (res?.success) {
+                toast.success(res?.message || "Event added successfully");
+                form.reset();
+                setStartDate(undefined);
+                onClose();
+            } else {
+                toast.error(res?.message || "Failed to add event");
+            }
+        } catch (error: any) {
+            console.error("failed:", error);
+            toast.error(error.message || "Something went wrong!");
+        } finally {
+            setLoading(false);
+        }
     }
-    const memberData = [
-        { name: "All Member", image: "https://avatar.iran.liara.run/public/18" },
-        { name: "Minakshi Devi", image: "https://avatar.iran.liara.run/public/25" },
-        { name: "Dani Wolvarin", image: "https://avatar.iran.liara.run/public/20" },
-        { name: "Alex Johnson", image: "https://avatar.iran.liara.run/public/22" },
-    ]
 
     return (
         <DialogContent
@@ -166,7 +215,7 @@ const AddEventModal = () => {
                             </FormItem>
                         )}
                     /> */}
-                    <FormField
+                    {/* <FormField
                         control={form.control}
                         name="members"
                         render={({ field }) => (
@@ -181,7 +230,6 @@ const AddEventModal = () => {
                                             <MultiSelectValue placeholder="Select Team Members..." />
                                         </MultiSelectTrigger>
                                         <MultiSelectContent className="dark:bg-darkSecondaryBg">
-                                            {/* Items must be wrapped in a group for proper styling */}
                                             <MultiSelectGroup className="dark:bg-darkSecondaryBg">
                                                 {
                                                     memberData?.map((member, i) => (
@@ -200,8 +248,75 @@ const AddEventModal = () => {
                                 <FormMessage />
                             </FormItem>
                         )}
+                    /> */}
+
+                    <FormField
+                        control={form.control}
+                        name="members"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Members</FormLabel>
+                                <FormControl>
+                                    <MultiSelect
+                                        // values={selectedMemberIds}
+                                        values={field.value.map(String)}
+                                        onValuesChange={(vals) => {
+                                            let processedValues: (string | number)[];
+                                            const lastSelected = vals[vals.length - 1];
+
+                                            if (lastSelected === "all") {
+                                                processedValues = ["all"];
+                                            } else {
+                                                const filtered = vals.filter(v => v !== "all");
+                                                processedValues = filtered.map(v => Number(v));
+                                            }
+
+                                            field.onChange(processedValues);
+                                        }}
+                                    >
+                                        <MultiSelectTrigger className=" w-full hover:bg-white py-2 dark:bg-darkSecondaryBg hover:dark:bg-darkSecondaryBg">
+                                            <MultiSelectValue placeholder="Select members..." />
+                                        </MultiSelectTrigger>
+
+                                        <MultiSelectContent className="dark:bg-darkSecondaryBg">
+                                            <MultiSelectGroup className="dark:bg-darkSecondaryBg">
+                                                {members.map(member => (
+                                                    <MultiSelectItem
+                                                        key={member.id}
+                                                        value={String(member.id)}
+                                                        className=" px-0 cursor-pointer hover:dark:bg-darkPrimaryBg"
+                                                    >
+                                                        <Avatar>
+                                                            <AvatarImage src={member.image || ""} />
+                                                            <AvatarFallback>
+                                                                {member.name.charAt(0)}
+                                                            </AvatarFallback>
+                                                        </Avatar>
+                                                        <p>{member.name}</p>
+                                                    </MultiSelectItem>
+                                                ))}
+                                            </MultiSelectGroup>
+                                        </MultiSelectContent>
+                                    </MultiSelect>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
                     />
 
+                    <FormField
+                        control={form.control}
+                        name="meetingLink"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Meeting Link</FormLabel>
+                                <FormControl>
+                                    <Input type="text" className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Meeting Link (Optional)" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
                     <FormField
                         control={form.control}
                         name="description"
@@ -216,9 +331,7 @@ const AddEventModal = () => {
                         )}
                     />
 
-                    {/* <DialogClose asChild> */}
-                    <Button className=" w-full" type="submit">Create Event</Button>
-                    {/* </DialogClose> */}
+                    <Button className=" w-full" type="submit" disabled={loading}>{loading ? "Loading..." : "Create Event"}</Button>
                 </form>
             </Form>
         </DialogContent>
