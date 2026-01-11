@@ -1,19 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
+"use client"
 import {
     Tooltip,
     TooltipContent,
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { Dialog, DialogTrigger } from "../ui/dialog";
+import { Dialog } from "../ui/dialog";
 import EditEventModal from "./EditEventModal";
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { useState } from "react";
 
 // Helper to format date for matching
 const formatToISODate = (date: Date) => date?.toISOString().split('T')[0];
 
 const CalenderTable = ({ startMonth, endMonth, eventData }: { startMonth: string | number | string[] | undefined, endMonth: string | number | string[] | undefined, eventData: any }) => {
+    const [open, setOpen] = useState(false)
+    const [selectedEvent, setSelectedEvent] = useState<any>(null);
     const days = [
         { name: 'MON' }, { name: 'TUE' }, { name: 'WED' },
         { name: 'THU' }, { name: 'FRI' }, { name: 'SAT' }, { name: 'SUN' }
@@ -35,7 +38,7 @@ const CalenderTable = ({ startMonth, endMonth, eventData }: { startMonth: string
             currentDate.setDate(displayStart.getDate() + i);
             const dateString = formatToISODate(currentDate);
 
-            const dayEvents = eventData.filter((event:any) =>
+            const dayEvents = eventData.filter((event: any) =>
                 formatToISODate(new Date(event.date)) === dateString
             );
 
@@ -57,12 +60,27 @@ const CalenderTable = ({ startMonth, endMonth, eventData }: { startMonth: string
         weeks.push(calendarData.slice(i, i + 7));
     }
 
-    // 2. Your exact original Design Classes
     const pillBaseClasses = 'self-start ml-2 px-3 py-1 text-sm sm:text-[15px] rounded-md font-medium text-center truncate shadow-sm mt-1 cursor-pointer';
+    const handleEventClick = (event: any) => {
+        setSelectedEvent(event);
+        setOpen(true);
+    };
+
+    const handleCloseDialog = () => {
+        setOpen(false)
+    }
 
     return (
         <TooltipProvider>
             <div className="overflow-x-auto rounded-2xl border border-borderColor dark:border-darkBorder mt-5">
+                <Dialog open={open} onOpenChange={setOpen}>
+                    {selectedEvent && (
+                        <EditEventModal
+                            handleCloseDialog={handleCloseDialog}
+                            event={selectedEvent}
+                        />
+                    )}
+                </Dialog>
                 <table className="w-full border-collapse">
                     <thead className="bg-white dark:bg-darkSecondaryBg">
                         <tr>
@@ -91,64 +109,60 @@ const CalenderTable = ({ startMonth, endMonth, eventData }: { startMonth: string
                                             <div className="text-sm sm:text-base font-normal mb-1">{cell.date}</div>
 
                                             {/* Render mapped events with original styling */}
-                                            {cell.events.map((event:any, eventIdx:any) => (
-                                                <Dialog key={event.id || eventIdx}>
-                                                    <Tooltip>
-                                                        <DialogTrigger asChild>
-                                                            <TooltipTrigger asChild>
-                                                                <div
-                                                                    className={`${pillBaseClasses} 
+                                            {cell.events.map((event: any, eventIdx: any) => (
+                                                <Tooltip key={event.id || eventIdx}>
+                                                    <TooltipTrigger asChild>
+                                                        <div
+                                                            onClick={() => handleEventClick(event)}
+                                                            className={`${pillBaseClasses}
                                                                         ${eventIdx === 0
-                                                                            ? 'bg-yellow-100 text-yellow-800 border-l-4 border-yellow-500'
-                                                                            : 'bg-pink-100 text-pink-800 border-l-4 border-red-500'}`}
-                                                                >
-                                                                    {event.name}
-                                                                </div>
-                                                            </TooltipTrigger>
-                                                        </DialogTrigger>
-
-                                                        <EditEventModal />
-                                                        {/*<EditEventModal event={event} />  */}
-
-                                                        <TooltipContent
-                                                            className=" shadow-xl rounded-lg px-5 py-4 max-w-xs dark:bg-darkPrimaryBg"
+                                                                    ? 'bg-yellow-100 text-yellow-800 border-l-4 border-yellow-500'
+                                                                    : 'bg-pink-100 text-pink-800 border-l-4 border-red-500'}`}
                                                         >
-                                                            <h2 className="text-sm font-medium text-headingTextColor dark:text-darkTextPrimary mb-3 border-b dark:border-darkBorder pb-1">
-                                                                Event Participants
-                                                            </h2>
-                                                            <div className="flex items-center mb-4">
-                                                                {event.eventAssigns?.slice(0, 3).map((assign: any, idx: number) => (
-                                                                    <Avatar className='first:ml-0 -ml-3' key={idx}>
-                                                                        <AvatarImage
-                                                                            src={assign?.user?.image}
-                                                                            alt={assign?.user?.name}
-                                                                        />
-                                                                        <AvatarFallback className=' text-headingTextColor dark:text-darkTextPrimary'>{assign?.user?.name?.charAt(0)}</AvatarFallback>
-                                                                    </Avatar>
-                                                                ))}
-                                                                {event.eventAssigns?.length > 3 && (
-                                                                    <div className="w-10 h-10 -ml-3 text-headingTextColor rounded-full bg-[#ede7ff] flex items-center justify-center text-sm font-medium border border-white shadow-sm">
-                                                                        {event.eventAssigns.length - 3}+
-                                                                    </div>
-                                                                )}
-                                                            </div>
+                                                            {event.name}
+                                                        </div>
+                                                    </TooltipTrigger>
 
-                                                            <h3 className="text-sm font-medium text-headingTextColor dark:text-darkTextPrimary border-b dark:border-darkBorder pb-1 mb-2">
-                                                                Assigned By
-                                                            </h3>
-                                                            <div className="flex items-center gap-2">
-                                                                <Avatar className=''>
+
+                                                    <TooltipContent
+
+                                                        className=" shadow-xl rounded-lg px-5 py-4 max-w-xs dark:bg-darkPrimaryBg"
+                                                    >
+                                                        <h2 className="text-sm font-medium text-headingTextColor dark:text-darkTextPrimary mb-3 border-b dark:border-darkBorder pb-1">
+                                                            Event Participants
+                                                        </h2>
+                                                        <div className="flex items-center mb-4">
+                                                            {event.eventAssigns?.slice(0, 3).map((assign: any, idx: number) => (
+                                                                <Avatar className='first:ml-0 -ml-3' key={idx}>
                                                                     <AvatarImage
-                                                                        src={event?.createdBy?.image}
-                                                                        alt={event?.createdBy?.name}
+                                                                        src={assign?.user?.image}
+                                                                        alt={assign?.user?.name}
                                                                     />
-                                                                    <AvatarFallback className=' text-headingTextColor dark:text-darkTextPrimary'>{event?.createdBy?.name?.charAt(0)}</AvatarFallback>
+                                                                    <AvatarFallback className=' text-headingTextColor dark:text-darkTextPrimary'>{assign?.user?.name?.charAt(0)}</AvatarFallback>
                                                                 </Avatar>
-                                                                <h2 className=" text-sm text-headingTextColor dark:text-darkTextPrimary ">{event?.createdBy?.name}</h2>
-                                                            </div>
-                                                        </TooltipContent>
-                                                    </Tooltip>
-                                                </Dialog>
+                                                            ))}
+                                                            {event.eventAssigns?.length > 3 && (
+                                                                <div className="w-10 h-10 -ml-3 text-headingTextColor rounded-full bg-[#ede7ff] flex items-center justify-center text-sm font-medium border border-white shadow-sm">
+                                                                    {event.eventAssigns.length - 3}+
+                                                                </div>
+                                                            )}
+                                                        </div>
+
+                                                        <h3 className="text-sm font-medium text-headingTextColor dark:text-darkTextPrimary border-b dark:border-darkBorder pb-1 mb-2">
+                                                            Assigned By
+                                                        </h3>
+                                                        <div className="flex items-center gap-2">
+                                                            <Avatar className=''>
+                                                                <AvatarImage
+                                                                    src={event?.createdBy?.image}
+                                                                    alt={event?.createdBy?.name}
+                                                                />
+                                                                <AvatarFallback className=' text-headingTextColor dark:text-darkTextPrimary'>{event?.createdBy?.name?.charAt(0)}</AvatarFallback>
+                                                            </Avatar>
+                                                            <h2 className=" text-sm text-headingTextColor dark:text-darkTextPrimary ">{event?.createdBy?.name}</h2>
+                                                        </div>
+                                                    </TooltipContent>
+                                                </Tooltip>
                                             ))}
                                         </div>
                                     </td>

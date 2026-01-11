@@ -28,3 +28,11 @@ export const addEvent = async (data: any
     });
 };
 
+export const rescheduleEvent = async ({id,data}: {id:number, data:any}) => {
+    return await baseApi(`/events/${id}`, {
+        method: "PATCH",
+        body: data,
+        tag: "events",
+    });
+};
+

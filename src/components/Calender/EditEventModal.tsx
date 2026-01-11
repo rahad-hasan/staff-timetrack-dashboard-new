@@ -1,7 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import { Button } from "@/components/ui/button";
 import {
-    DialogClose,
     DialogContent,
     DialogHeader,
     DialogTitle,
@@ -23,38 +23,72 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CalendarDays, ChevronDownIcon, } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
+import { rescheduleEvent } from "@/actions/calendarEvent/action";
+import { toast } from "sonner";
 
-const EditEventModal = () => {
-
-
+const EditEventModal = ({ handleCloseDialog, event }: any) => {
+    const [loading, setLoading] = useState(false);
     const [openStartDate, setOpenStartDate] = useState(false);
-    const [dateStartDate, setStartDate] = useState<Date | undefined>(new Date());
+
+    function toDateOnlyFromUTC(date: string | Date) {
+        const d = new Date(date)
+        return new Date(
+            d.getUTCFullYear(),
+            d.getUTCMonth(),
+            d.getUTCDate()
+        )
+    }
 
     const form = useForm<z.infer<typeof editEventSchema>>({
         resolver: zodResolver(editEventSchema),
         defaultValues: {
-            date: null,
+            date: toDateOnlyFromUTC(event.date),
         }
     })
 
-    function onSubmit(values: z.infer<typeof editEventSchema>) {
-        console.log(values)
-    }
+    useEffect(() => {
+        if (event?.date) {
+            form.reset({ date: toDateOnlyFromUTC(event.date) });
+        }
+    }, [event, form]);
 
+    async function onSubmit(values: z.infer<typeof editEventSchema>) {
+        setLoading(true);
+        const finalData = {
+            new_date: new Date(values.date!).toISOString()
+        }
+        try {
+            const res = await rescheduleEvent({ data: finalData, id: event?.id });
+            if (res?.success) {
+                toast.success(res?.message || "Rescheduled successfully");
+                handleCloseDialog();
+            } else {
+                toast.error(res?.message || "Failed to reschedule");
+            }
+        } catch (error: any) {
+            toast.error(error?.message || "Something went wrong!");
+        } finally {
+            setLoading(false);
+        }
+    }
 
     return (
         <DialogContent
             onInteractOutside={(event) => event.preventDefault()}
-            className=" w-full sm:max-w-[525px] max-h-[95vh] overflow-y-auto">
+            
+            className="w-full sm:max-w-[525px] max-h-[95vh] overflow-y-auto"
+        >
             <DialogHeader>
-                <DialogTitle className=" mb-4 text-headingTextColor dark:text-darkTextPrimary">Reschedule Event</DialogTitle>
+                <DialogTitle className="mb-4 text-headingTextColor dark:text-darkTextPrimary">
+                    Reschedule Event: {event?.name}
+                </DialogTitle>
             </DialogHeader>
 
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 ">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                     <FormField
                         control={form.control}
                         name="date"
@@ -66,27 +100,25 @@ const EditEventModal = () => {
                                         <PopoverTrigger asChild>
                                             <Button
                                                 variant="outline2"
-                                                id="startDate"
-                                                className="py-1.5 justify-between font-normal dark:text-darkTextSecondary dark:bg-darkPrimaryBg dark:border-darkBorder"
+                                                className="w-full py-1.5 justify-between font-normal dark:text-darkTextSecondary dark:bg-darkPrimaryBg dark:border-darkBorder"
                                             >
-                                                <div className=" flex items-center gap-2">
-                                                    <CalendarDays />
-                                                    {dateStartDate ? dateStartDate.toLocaleDateString() : "Set a date"}
+                                                <div className="flex items-center gap-2">
+                                                    <CalendarDays className="h-4 w-4" />
+                                                    {/* WATCH the form value directly */}
+                                                    {field.value ? field.value.toLocaleDateString() : "Set a date"}
                                                 </div>
-
-                                                <ChevronDownIcon />
+                                                <ChevronDownIcon className="h-4 w-4" />
                                             </Button>
                                         </PopoverTrigger>
-                                        <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+                                        <PopoverContent className="w-auto p-0" align="start">
                                             <Calendar
                                                 mode="single"
-                                                selected={dateStartDate}
-                                                captionLayout="dropdown"
+                                                selected={field.value!}
                                                 onSelect={(date) => {
-                                                    setStartDate(date);
-                                                    field.onChange(date); // Update the form state
+                                                    field.onChange(date);
                                                     setOpenStartDate(false);
                                                 }}
+                                                initialFocus
                                             />
                                         </PopoverContent>
                                     </Popover>
@@ -96,9 +128,13 @@ const EditEventModal = () => {
                         )}
                     />
 
-                    <DialogClose asChild>
-                        <Button className=" w-full" type="submit">Reschedule Event</Button>
-                    </DialogClose>
+                    <Button
+                        className="w-full"
+                        type="submit"
+                        disabled={loading}
+                    >
+                        {loading ? "Updating..." : "Reschedule Event"}
+                    </Button>
                 </form>
             </Form>
         </DialogContent>
