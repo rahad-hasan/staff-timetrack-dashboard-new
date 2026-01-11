@@ -102,13 +102,13 @@ export interface IProject {
   company_id: number;
   name: string;
   client_id: number | null;
-  status: ProjectStatus;
+  status: string;
   description: string | null;
   start_date: string;
   deadline: string | null;
   is_idle_time: boolean;
   budget: number | null;
-  client: null;
+  client: Client | null;
   projectAssigns: ProjectAssign[];
   projectManagerAssigns: ProjectManagerAssign[];
   summary: ProjectSummary;

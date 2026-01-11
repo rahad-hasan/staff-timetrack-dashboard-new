@@ -3,19 +3,33 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ISingleProjectData } from "@/types/type";
 import { format, parseISO } from "date-fns";
-// import SingleProjectClientInfoSkeleton from "@/skeleton/projectManagement/project/SingleProjectClientInfoSkeleton";
-import { ChevronDown, ChevronLeft, Pencil } from "lucide-react";
+
+import { ChevronLeft, Pencil } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import SingleProjectMemberTable from "./SingleProjectMemberTable";
 import SingleProjectTask from "./SingleProjectTask";
+import { Dialog } from "@/components/ui/dialog";
+import EditProjectModal from "@/components/ProjectManagement/Projects/EditProjectModal";
 
 const SingleProject = ({ data }: { data: ISingleProjectData }) => {
     const [activeTab, setActiveTab] = useState<"Members" | "Tasks">("Members");
-
+    const [open, setOpen] = useState(false)
     const handleTabClick = (tab: "Members" | "Tasks") => {
         setActiveTab(tab);
     };
+    const statusClass =
+        data?.status === "processing"
+            ? "bg-[#fff5db] border-[#efaf07] text-[#efaf07] hover:bg-[#fff5db] dark:bg-transparent"
+            : data?.status === "cancelled"
+                ? "bg-[#fee6eb] border-[#f40139] text-[#f40139] hover:bg-[#fee6eb] dark:bg-transparent"
+                : data?.status === "pending"
+                    ? "bg-[#eff7fe] border-[#5db0f1] text-[#5db0f1] hover:bg-[#eff7fe] dark:bg-transparent"
+                    : "bg-[#e9f8f0] border-[#26bd6c] text-[#26bd6c] hover:bg-[#e9f8f0] dark:bg-transparent";
+    const dotClass =
+        data?.status === "processing" ? "bg-[#efaf07]" :
+            data?.status === "cancelled" ? "bg-[#f40139]" :
+                data?.status === "pending" ? "bg-[#5db0f1]" : "bg-[#26bd6c]";
 
     return (
         <div>
@@ -24,10 +38,13 @@ const SingleProject = ({ data }: { data: ISingleProjectData }) => {
                     <div className="hidden sm:flex items-center gap-1 cursor-pointer "><ChevronLeft className="" /> Projects</div>
                 </Link>
                 <div className=" flex gap-3">
-                    <Button className="text-sm md:text-base bg-[#eff7fe] hover:bg-[#eff7fe] dark:bg-darkPrimaryBg text-[#5db0f1] border border-[#5db0f1]">
-                        <span className="w-2 h-2 bg-[#5db0f1] rounded-full"></span> In Progress <ChevronDown />
+                    <Button
+                        className={`text-sm md:text-base border flex items-center gap-2 px-4 ${statusClass} capitalize`}
+                    >
+                        <span className={`w-2 h-2 rounded-full ${dotClass}`}></span>
+                        {data?.status}
                     </Button>
-                    <Button className=" text-sm md:text-base dark:text-darkTextPrimary" variant={'outline2'}><Pencil /> Edit Project</Button>
+                    <Button className=" text-sm md:text-base dark:text-darkTextPrimary" onClick={() => setOpen(true)} variant={'outline2'}><Pencil /> Edit Project</Button>
                 </div>
             </div>
 
@@ -148,6 +165,13 @@ const SingleProject = ({ data }: { data: ISingleProjectData }) => {
                     :
                     <SingleProjectTask data={data?.tasks}></SingleProjectTask>
             }
+            {/* Edit modal here */}
+            <Dialog open={open} onOpenChange={setOpen}>
+                <EditProjectModal
+                    onClose={() => setOpen(false)}
+                    selectedProject={data}
+                />
+            </Dialog>
         </div>
     );
 };

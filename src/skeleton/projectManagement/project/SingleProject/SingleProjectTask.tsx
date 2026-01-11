@@ -5,10 +5,39 @@ import { useState } from "react";
 import { ArrowUpDown } from "lucide-react";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { Task } from "@/types/type";
+import { Button } from "@/components/ui/button";
 
 const SingleProjectTask = ({ data }: { data: Task[] }) => {
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
+
+
+    const getStatusStyles = (status?: string) => {
+        switch (status?.toLowerCase()) {
+            case "processing":
+                return {
+                    button: "bg-[#fff5db] border-[#efaf07] text-[#efaf07] hover:bg-[#fff5db] dark:bg-transparent",
+                    dot: "bg-[#efaf07]"
+                };
+            case "cancelled":
+                return {
+                    button: "bg-[#fee6eb] border-[#f40139] text-[#f40139] hover:bg-[#fee6eb] dark:bg-transparent",
+                    dot: "bg-[#f40139]"
+                };
+            case "pending":
+                return {
+                    button: "bg-[#eff7fe] border-[#5db0f1] text-[#5db0f1] hover:bg-[#eff7fe] dark:bg-transparent",
+                    dot: "bg-[#5db0f1]"
+                };
+            default: // completed or others
+                return {
+                    button: "bg-[#e9f8f0] border-[#26bd6c] text-[#26bd6c] hover:bg-[#e9f8f0] dark:bg-transparent",
+                    dot: "bg-[#26bd6c]"
+                };
+        }
+    };
+
+
     const columns: ColumnDef<Task>[] = [
         {
             accessorKey: "name",
@@ -54,28 +83,34 @@ const SingleProjectTask = ({ data }: { data: Task[] }) => {
                 const description = row?.original?.description
                 return (
                     <div className="flex items-center gap-2 min-w-[180px]">
-                        <span>{description? description : "No description available"}</span>
+                        <span>{description ? description : "No description available"}</span>
                     </div>
                 )
             }
         },
         {
             accessorKey: "status",
-            header: ({ column }) => {
-                return (
-                    <div>
-                        <span
-                            className=" cursor-pointer flex items-center gap-1"
-                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        >
-                            Status
-                            <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </span>
-                    </div>
-                )
-            },
+            header: ({ column }) => (
+                <span
+                    className="cursor-pointer flex items-center gap-1"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    Status
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </span>
+            ),
             cell: ({ row }) => {
-                return <div className="">{row?.original?.status}</div>;
+                const status = row.original.status;
+                const styles = getStatusStyles(status);
+
+                return (
+                    <Button
+                        className={`text-sm border flex items-center gap-2 px-3 h-8 shadow-none ${styles.button} capitalize`}
+                    >
+                        <span className={`w-2 h-2 rounded-full ${styles.dot}`}></span>
+                        {status || "N/A"}
+                    </Button>
+                );
             },
         }
     ];

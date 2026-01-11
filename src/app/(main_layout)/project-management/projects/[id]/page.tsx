@@ -1,5 +1,5 @@
 import SingleProjectServer from '@/skeleton/projectManagement/project/SingleProject/SingleProjectServer';
-
+// import SingleProjectClientInfoSkeleton from "@/skeleton/projectManagement/project/SingleProjectClientInfoSkeleton";
 interface PageProps {
     params: Promise<{ id: string }>;
 }
