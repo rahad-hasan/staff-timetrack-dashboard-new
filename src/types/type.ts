@@ -398,6 +398,7 @@ export interface Task {
   id: number | null;
   name: string | null;
   description: string | null;
+  status?: string
 }
 
 export interface TimeSpan {
@@ -428,3 +429,48 @@ export interface IDailyTimeTrackerData {
   items: IDailyTimeEntryItem[];
 }
 
+// ===========================
+export interface Client {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  company_id: number;
+  is_active: boolean;
+  updated_at: string;
+  created_at: string;
+}
+
+export interface ProjectAssign {
+  user: User;
+  assignedBy: {
+    id: number;
+    name: string;
+  };
+  assigned_at: string;
+}
+
+export interface ProjectSummary {
+  spend: string;
+  is_over_budget: boolean;
+  duration: string;
+}
+
+export interface ISingleProjectData {
+  id: number;
+  company_id: number;
+  name: string;
+  client_id: number;
+  status: string
+  description: string;
+  start_date: string;
+  deadline: string;
+  is_idle_time: boolean;
+  budget: number;
+  client: Client;
+  projectManagerAssigns: { user: User }[];
+  tasks: Task[];
+  projectAssigns: ProjectAssign[];
+  summary: ProjectSummary;
+}

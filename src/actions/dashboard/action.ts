@@ -23,3 +23,10 @@ export const getDashboardMembersStats = async (query = {}) => {
         tag: "memberStats",
     });
 };
+
+export const getDashboardAppsUrls = async (query = {}) => {
+    const queryString = buildQuery(query);
+    return await baseApi(`/admin/recent-app-url${queryString ? `?${queryString}` : ""}`, {
+        tag: "recentAppUrl",
+    });
+};
