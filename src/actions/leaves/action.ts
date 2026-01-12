@@ -14,7 +14,7 @@ export const getLeave = async (query = {}): Promise<IResponse<ILeaveRequest[]>> 
 export const getLeaveDetails = async (query = {}): Promise<IResponse<ILeaveDetailsResponse>> => {
     const queryString = buildQuery(query);
     return await baseApi(`/leaves/details${queryString ? `?${queryString}` : ""}`, {
-        tag: "leavesDetails",
+        tag: "leaves",
     });
 };
 

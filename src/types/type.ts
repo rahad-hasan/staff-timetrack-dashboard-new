@@ -474,3 +474,25 @@ export interface ISingleProjectData {
   projectAssigns: ProjectAssign[];
   summary: ProjectSummary;
 }
+
+
+export interface AnomalyDetails {
+  type?: string;
+  reason?: string;
+  detected?: boolean;
+  severity?: "low" | "medium" | "high";
+}
+export interface IAllScreenshot {
+  id: number;
+  image: string;
+  corrupted: string;
+  time: string;
+  display_name: string;
+  score: number;
+  mouse_activity: number;
+  keyboard_activity: number;
+  duration: number;
+  anomaly: AnomalyDetails;
+  project: { name: string };
+  task: { name: string } | null;
+}

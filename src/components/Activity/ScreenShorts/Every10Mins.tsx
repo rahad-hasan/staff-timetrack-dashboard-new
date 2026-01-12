@@ -208,7 +208,7 @@ const Every10Mins = ({ data }: any) => {
             </div> */}
 
             {
-                processedHours.map((hourGroup, groupIdx) => (
+                processedHours?.map((hourGroup, groupIdx) => (
                     < div key={groupIdx} className="mt-3" >
                         <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 sm:justify-between sm:items-center">
                             <div className="flex items-center gap-2">
