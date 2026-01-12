@@ -247,3 +247,9 @@ export const leaveSettingsSchema = z.object({
 
     week_start: z.string().min(1, "Please select a starting day of the week"),
 });
+
+
+export const changePasswordSchema = z.object({
+    oldPassword: z.string().min(8, "Password must be at least 8 characters"),
+    newPassword: z.string().min(8, "Password must be at least 8 characters"),
+})

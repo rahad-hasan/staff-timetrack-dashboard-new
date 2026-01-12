@@ -52,6 +52,19 @@ export const uploadProfileImage = async ({ data }: {
   });
 };
 
+export const changePassword = async ({ data }: {
+  data: {
+    oldPassword: string,
+    newPassword: string,
+  }
+}) => {
+  return await baseApi(`/auth/change-password`, {
+    method: "PATCH",
+    body: data,
+    tag: "profile",
+  });
+};
+
 
 export async function clearSessionCookie() {
   const cookieStore = await cookies();
