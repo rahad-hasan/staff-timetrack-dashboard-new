@@ -60,6 +60,7 @@ const EditEventModal = ({ handleCloseDialog, event }: any) => {
         const finalData = {
             new_date: new Date(values.date!).toISOString()
         }
+        console.log(finalData);
         try {
             const res = await rescheduleEvent({ data: finalData, id: event?.id });
             if (res?.success) {

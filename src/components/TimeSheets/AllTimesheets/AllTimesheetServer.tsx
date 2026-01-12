@@ -69,7 +69,11 @@ const AllTimesheetServer = async ({ searchParams }: ISearchParamsProps) => {
                         <SelectUserDropDown ></SelectUserDropDown>
                     </div>
                     <Suspense fallback={<MonthlyTimeSheetsCalendarSkeleton />}>
-                        <MonthlyTimeSheetsServer searchParams={searchParams}></MonthlyTimeSheetsServer>
+                        {
+                            params.start_month && params.end_month && params.user_id ?
+                                <MonthlyTimeSheetsServer searchParams={searchParams}></MonthlyTimeSheetsServer>
+                                : <MonthlyTimeSheetsCalendarSkeleton />
+                        }
                     </Suspense>
                 </>
             }

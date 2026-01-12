@@ -1,13 +1,13 @@
 import { ISearchParamsProps } from "@/types/type";
 import MonthlyTimeSheetsCalendar from "./MonthlyTimeSheetsCalendar";
-import { getWeeklyAndMonthlyTimeEntry } from "@/actions/timesheets/action";
+import { getDateBaseTimeEntry } from "@/actions/report/action";
 
 const MonthlyTimeSheetsServer = async ({ searchParams }: ISearchParamsProps) => {
     const params = await searchParams;
 
     let result;
     if (params.start_month && params.end_month && params.user_id) {
-        result = await getWeeklyAndMonthlyTimeEntry({
+        result = await getDateBaseTimeEntry({
             from_date: params.start_month,
             to_date: params.end_month,
             user_id: params.user_id,
@@ -17,7 +17,7 @@ const MonthlyTimeSheetsServer = async ({ searchParams }: ISearchParamsProps) => 
 
     return (
         <div>
-            <MonthlyTimeSheetsCalendar data={result?.data?.totals} />
+            <MonthlyTimeSheetsCalendar data={result?.data} />
         </div>
     );
 };
