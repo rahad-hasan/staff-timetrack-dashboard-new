@@ -1,9 +1,13 @@
 import DayWeekMonthSelection from "@/components/Common/DayWeekMonthSelection";
 import HeadingComponent from "@/components/Common/HeadingComponent";
+import MonthPicker from "@/components/Common/MonthPicker";
+import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import DayWeekMonthSelectionServer from "@/components/Report/TimeSheets/DayWeekMonthSelectionServer";
 import ReportMonthlyTimeSheetServer from "@/components/Report/TimeSheets/ReportMonthlyTimeSheetServer";
 import ReportWeeklyTimeSheetServer from "@/components/Report/TimeSheets/ReportWeeklyTimeSheetServer";
+import ReportMonthlyTimesheetSkeleton from "@/skeleton/report/Timesheet/ReportMonthlyTimesheetSkeleton";
 import { ISearchParamsProps } from "@/types/type";
+import { Suspense } from "react";
 
 const ReportTimeSheets = async ({ searchParams }: ISearchParamsProps) => {
     console.log("ReportTimeSheets");
@@ -28,7 +32,21 @@ const ReportTimeSheets = async ({ searchParams }: ISearchParamsProps) => {
             }
             {
                 activeTab === "monthly" &&
-                <ReportMonthlyTimeSheetServer searchParams={searchParams}></ReportMonthlyTimeSheetServer>
+                <>
+                    <div className="mb-5 flex flex-col gap-4 md:gap-0 md:flex-row justify-between">
+                        <MonthPicker />
+                        <SelectUserDropDown />
+                    </div>
+                    <Suspense fallback={<ReportMonthlyTimesheetSkeleton />}>
+                        {
+                            params.start_month && params.end_month ?
+                                <ReportMonthlyTimeSheetServer searchParams={searchParams}></ReportMonthlyTimeSheetServer>
+                                :
+                                <ReportMonthlyTimesheetSkeleton></ReportMonthlyTimesheetSkeleton>
+
+                        }
+                    </Suspense>
+                </>
             }
         </div>
     );

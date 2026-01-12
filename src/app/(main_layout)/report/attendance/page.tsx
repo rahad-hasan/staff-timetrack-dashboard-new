@@ -4,9 +4,11 @@ import HeadingComponent from "@/components/Common/HeadingComponent";
 import { ISearchParamsProps } from "@/types/type";
 import AttendanceServer from "@/components/Report/Attendance/AttendanceServer";
 import { Suspense } from "react";
+import AttendanceTableSkeleton from "@/skeleton/report/Attendance/AttendanceTableSkeleton";
 // import AttendanceTableSkeleton from "@/skeleton/report/Attendance/AttendanceTableSkeleton";
 
 const AttendancePage = async ({ searchParams }: ISearchParamsProps) => {
+    const params = await searchParams;
 
     return (
         <div>
@@ -35,9 +37,15 @@ const AttendancePage = async ({ searchParams }: ISearchParamsProps) => {
                 </div> */}
                 </div>
             </Suspense>
+            <Suspense fallback={<AttendanceTableSkeleton />}>
+                {
+                    params.date ?
+                        <AttendanceServer searchParams={searchParams}></AttendanceServer>
+                        :
+                        <AttendanceTableSkeleton></AttendanceTableSkeleton>
 
-                <AttendanceServer searchParams={searchParams}></AttendanceServer>
- 
+                }
+            </Suspense>
 
         </div>
     );

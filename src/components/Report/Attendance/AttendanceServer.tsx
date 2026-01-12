@@ -1,8 +1,7 @@
 import AttendanceTable from "@/components/Report/Attendance/AttendanceTable";
 import { ISearchParamsProps } from "@/types/type";
 import { getAttendance } from "@/actions/report/action";
-import { Suspense } from "react";
-import AttendanceTableSkeleton from "@/skeleton/report/Attendance/AttendanceTableSkeleton";
+
 // import AttendanceTableSkeleton from "@/skeleton/report/Attendance/AttendanceTableSkeleton";0
 
 const AttendanceServer = async ({ searchParams }: ISearchParamsProps) => {
@@ -17,10 +16,7 @@ const AttendanceServer = async ({ searchParams }: ISearchParamsProps) => {
 
     return (
         <div>
-            <Suspense fallback={<AttendanceTableSkeleton />}>
-                <AttendanceTable attendanceListData={attendanceListData?.data}></AttendanceTable>
-            </Suspense>
-            {/* <AttendanceTableSkeleton></AttendanceTableSkeleton> */}
+            <AttendanceTable attendanceListData={attendanceListData?.data}></AttendanceTable>
         </div>
     );
 };

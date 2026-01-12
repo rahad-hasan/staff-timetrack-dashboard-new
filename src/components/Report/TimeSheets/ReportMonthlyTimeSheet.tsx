@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
-import MonthPicker from "@/components/Common/MonthPicker";
-import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 
 interface TimeData {
     date: string;
@@ -24,11 +22,11 @@ const ReportMonthlyTimeSheet = ({ data }: { data: TimeData[] }) => {
     };
 
     const generateCalendar = () => {
-        if (!data || data.length === 0) return [];
+        if (!data || data?.length === 0) return [];
 
         const calendarCells = [];
-        const firstDate = new Date(data[0].date);
-        const lastDate = new Date(data[data.length - 1].date);
+        const firstDate = new Date(data[0]?.date);
+        const lastDate = new Date(data[data?.length - 1]?.date);
 
         // 1. Calculate Padding for PREVIOUS month
         const startDay = firstDate.getDay();
@@ -47,7 +45,7 @@ const ReportMonthlyTimeSheet = ({ data }: { data: TimeData[] }) => {
         }
 
         // 2. Add Current Month Data
-        data.forEach((item) => {
+        data?.forEach((item) => {
             const dateObj = new Date(item.date);
             calendarCells.push({
                 date: dateObj.getDate(),
@@ -90,10 +88,7 @@ const ReportMonthlyTimeSheet = ({ data }: { data: TimeData[] }) => {
 
     return (
         <div className="">
-            <div className="mb-5 flex flex-col gap-4 md:gap-0 md:flex-row justify-between">
-                <MonthPicker />
-                <SelectUserDropDown />
-            </div>
+
             <div className="overflow-x-auto rounded-2xl border border-borderColor dark:border-darkBorder mt-5">
                 <table className="w-full border-collapse">
                     <thead className="bg-bgPrimary dark:bg-darkSecondaryBg">
