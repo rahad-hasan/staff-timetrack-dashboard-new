@@ -38,6 +38,7 @@ export default async function RootLayout({
                 monica-id="ofpnmcalabcbjgholdjcjblkibolbppb"
                 monica-version="7.9.7"
                 data-new-gr-c-s-check-loaded="14.1263.0"
+                aria-controls="radix-_R_babnqlb_"
             >
                 <Toaster position='bottom-right' />
                 <ThemeProvider

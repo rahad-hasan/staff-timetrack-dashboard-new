@@ -8,15 +8,13 @@ import Link from "next/link";
 import FilterButton from "@/components/Common/FilterButton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { IMembersStatsDashboard } from "@/types/type";
+import EmptyTableRow from "@/components/Common/EmptyTableRow";
 
-
-const DashboardMembersTable = ({ data }: { data: IMembersStatsDashboard[] }) => {
-    console.log('getting from members', data);
-    // const columns: ColumnDef<Member>[] = [
+const DashboardMembersTable = ({ data = [] }: { data: IMembersStatsDashboard[] }) => {
+    
     const columns: ColumnDef<IMembersStatsDashboard>[] = [
         {
             accessorKey: "name",
-            // header: "Name",
             header: () => <div className="">Member info</div>,
             cell: ({ row }) => {
                 const name = row?.getValue("name") as string
@@ -25,7 +23,6 @@ const DashboardMembersTable = ({ data }: { data: IMembersStatsDashboard[] }) => 
                 const task = row?.original?.current_task?.task_name
                 return (
                     <div className="flex items-center gap-3 min-w-[220px]">
-
                         <Avatar>
                             <AvatarImage src={image} alt={name} />
                             <AvatarFallback>{name?.charAt(0)}</AvatarFallback>
@@ -45,14 +42,10 @@ const DashboardMembersTable = ({ data }: { data: IMembersStatsDashboard[] }) => 
             cell: ({ row }) => {
                 const progress = row?.original?.today?.activity_percentage
                 const today_work = row?.original?.today?.work_duration?.formatted
-
-                const progressValue = progress;
                 let bgColor = "bg-red-500";
-                if (progressValue >= 75) {
-                    bgColor = "bg-[#5db0f1]";
-                } else if (progressValue >= 25) {
-                    bgColor = "bg-yellow-500";
-                }
+                if (progress >= 75) bgColor = "bg-[#5db0f1]";
+                else if (progress >= 25) bgColor = "bg-yellow-500";
+
                 return (
                     <div className="flex gap-3 min-w-[80px]">
                         <div className="-mt-5">
@@ -70,14 +63,10 @@ const DashboardMembersTable = ({ data }: { data: IMembersStatsDashboard[] }) => 
                 const progress = row?.original?.this_week?.activity_percentage
                 const week_work = row?.original?.this_week?.work_duration?.formatted
                 const lastActive = row?.original?.last_active
-
-                const progressValue = progress;
                 let bgColor = "bg-red-500";
-                if (progressValue >= 75) {
-                    bgColor = "bg-[#5db0f1]";
-                } else if (progressValue >= 25) {
-                    bgColor = "bg-yellow-500";
-                }
+                if (progress >= 75) bgColor = "bg-[#5db0f1]";
+                else if (progress >= 25) bgColor = "bg-yellow-500";
+
                 return (
                     <div className=" flex justify-end gap-0">
                         <div className=" flex flex-col items-start">
@@ -102,13 +91,18 @@ const DashboardMembersTable = ({ data }: { data: IMembersStatsDashboard[] }) => 
         getCoreRowModel: getCoreRowModel(),
     })
 
+    // LOGIC: Maintain a minimum of 3 rows to keep layout consistent
+    const MIN_ROWS = 4;
+    const actualRows = table.getRowModel().rows;
+    const emptyRowsCount = Math.max(0, MIN_ROWS - actualRows.length);
+
     return (
-        <div className="w-full h-full border border-borderColor dark:border-darkBorder  dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">
+        <div className="w-full h-full border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">
             <div className=" flex justify-between items-center">
-                <h2 className=" text-base sm:text-lg text-headingTextColor dark:text-darkTextPrimary">MEMBERS</h2>
+                <h2 className=" text-base sm:text-lg text-headingTextColor dark:text-darkTextPrimary uppercase">Members</h2>
                 <div className=" flex items-center gap-3">
                     <FilterButton />
-                    <Link href={`/teams`}>
+                    <Link href={`/members`}>
                         <Button className="py-[14px] px-[16px] sm:py-[18px] sm:px-[20px] rounded-[8px]" size={'sm'}>All Member</Button>
                     </Link>
                 </div>
@@ -118,40 +112,59 @@ const DashboardMembersTable = ({ data }: { data: IMembersStatsDashboard[] }) => 
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => {
-                                    return (
-                                        <TableHead key={header.id}>
-                                            {header.isPlaceholder
-                                                ? null
-                                                : flexRender(
-                                                    header.column.columnDef.header,
-                                                    header.getContext()
-                                                )}
-                                        </TableHead>
-                                    )
-                                })}
+                                {headerGroup.headers.map((header) => (
+                                    <TableHead key={header.id}>
+                                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                                    </TableHead>
+                                ))}
                             </TableRow>
                         ))}
                     </TableHeader>
                     <TableBody>
-                        {table.getRowModel().rows?.length ? (
-                            table.getRowModel().rows.map((row) => (
-                                <TableRow
-                                    key={row.id}
-                                    data-state={row.getIsSelected() && "selected"}
-                                >
-                                    {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                        </TableCell>
-                                    ))}
+                        {/* 1. Render Actual Data */}
+                        {actualRows.map((row) => (
+                            <TableRow key={row.id}>
+                                {row.getVisibleCells().map((cell) => (
+                                    <TableCell key={cell.id}>
+                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                    </TableCell>
+                                ))}
+                            </TableRow>
+                        ))}
+
+                        {/* 2. Render Static Skeletons if we have some data but less than MIN_ROWS */}
+                        {actualRows.length > 0 && emptyRowsCount > 0 &&
+                            Array.from({ length: emptyRowsCount }).map((_, idx) => (
+                                <TableRow key={`empty-${idx}`} className="hover:bg-transparent border-none">
+                                    <TableCell>
+                                        <div className="flex items-center gap-3">
+                                            <div className="size-10 rounded-full bg-gray-100 dark:bg-darkBorder" />
+                                            <div className="flex flex-col gap-2">
+                                                <div className="h-4 w-24 rounded bg-gray-100 dark:bg-darkBorder" />
+                                                <div className="h-3 w-32 rounded bg-gray-50 dark:bg-darkBorder/50" />
+                                            </div>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="h-8 w-12 rounded-full bg-gray-100 dark:bg-darkBorder mb-2" />
+                                        <div className="h-4 w-16 rounded bg-gray-100 dark:bg-darkBorder" />
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="flex justify-end gap-4">
+                                            <div className="flex flex-col items-start gap-2">
+                                                <div className="h-6 w-12 rounded-full bg-gray-100 dark:bg-darkBorder" />
+                                                <div className="h-4 w-28 rounded bg-gray-100 dark:bg-darkBorder" />
+                                            </div>
+                                            <div className="h-10 w-20 rounded bg-gray-100 dark:bg-darkBorder" />
+                                        </div>
+                                    </TableCell>
                                 </TableRow>
                             ))
-                        ) : (
+                        }
+
+                        {actualRows.length === 0 && (
                             <TableRow>
-                                <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    No results.
-                                </TableCell>
+                                <EmptyTableRow columns={columns} text="No members found." padding={2} />
                             </TableRow>
                         )}
                     </TableBody>

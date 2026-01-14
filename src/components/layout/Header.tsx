@@ -25,7 +25,6 @@ import { socket } from "@/socket/socket";
 
 const Header = () => {
     const [open, setOpen] = useState(false);
-    const [isConnected, setIsConnected] = useState(false);
     console.log('header rendered');
     const [notificationsList, setNotificationsList] = useState<any[]>([]);
     const unreadCount = notificationsList.filter(n => n.is_read === false).length;

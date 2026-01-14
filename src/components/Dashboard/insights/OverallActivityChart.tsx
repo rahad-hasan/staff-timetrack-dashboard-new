@@ -1,23 +1,26 @@
 "use client";
 
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
+import { IDashboardInsight } from "./Insights";
 
-const data = [
-    { name: "Production", value: 60 },
-    { name: "Offline", value: 10 },
-    { name: "Dull", value: 30 },
 
-];
 
 const COLORS = ["#5db0f1", "#f40139", "#ffcb49"];
 
-const OverallActivityChart = () => {
+const OverallActivityChart = ({ data }: { data: IDashboardInsight }) => {
+
+    const value = [
+        { name: "Production", value: data?.percentages?.productive },
+        { name: "Active", value: data?.percentages?.active },
+        { name: "Idle", value: data?.percentages?.idle },
+    ];
+
     return (
         <div className="w-full h-56">
             <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                     <Pie
-                        data={data}
+                        data={value}
                         dataKey="value"
                         nameKey="name"
                         innerRadius={57}
@@ -27,7 +30,7 @@ const OverallActivityChart = () => {
                         labelLine={false}
                         cornerRadius={5}
                     >
-                        {data.map((entry, index) => (
+                        {value.map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                     </Pie>

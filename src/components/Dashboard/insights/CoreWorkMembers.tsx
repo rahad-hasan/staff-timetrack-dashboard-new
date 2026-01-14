@@ -22,7 +22,6 @@ import {
   Command,
   CommandEmpty,
   CommandGroup,
-  // CommandInput,
   CommandItem,
   CommandList,
 } from "@/components/ui/command"
@@ -35,10 +34,9 @@ import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ICoreMember } from "@/types/type";
+import EmptyTableRow from "@/components/Common/EmptyTableRow";
 
-
-const CoreWorkMembers = ({ data }: { data: ICoreMember[] }) => {
-
+const CoreWorkMembers = ({ data= [] }: { data: ICoreMember[] }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -48,39 +46,9 @@ const CoreWorkMembers = ({ data }: { data: ICoreMember[] }) => {
     router.push(`?${params.toString()}`);
   };
 
-  // const [visibleRows, setVisibleRows] = useState<Member[]>(memberData);
-
-  // useEffect(() => {
-  //   const handleResize = () => {
-  //    if (window.innerWidth < 1640) {
-  //       // Display only the first 5 members when screen width is below 1800px but above 1700px
-  //       setVisibleRows(memberData.slice(0, 4));
-  //     }
-  //     else if (window.innerWidth < 1850) {
-  //       // Display only the first 5 members when screen width is below 1800px but above 1700px
-  //       setVisibleRows(memberData.slice(0, 5));
-  //     } else {
-  //       // Display all members when screen width is 1800px or above
-  //       setVisibleRows(memberData);
-  //     }
-  //   };
-
-  //   // Set initial state based on current window size
-  //   handleResize();
-
-  //   // Listen for window resize events
-  //   window.addEventListener("resize", handleResize);
-
-  //   // Cleanup listener on component unmount
-  //   return () => window.removeEventListener("resize", handleResize);
-  // }, [memberData]);
-  // ;
-
-
   const columns: ColumnDef<ICoreMember>[] = [
     {
       accessorKey: "name",
-      // header: "Name",
       header: () => <div className="">Name</div>,
       cell: ({ row }) => {
         const name = row.getValue("name") as string;
@@ -101,28 +69,20 @@ const CoreWorkMembers = ({ data }: { data: ICoreMember[] }) => {
     {
       accessorKey: "productivity",
       header: "Productivity",
-      cell: ({ row }) => {
-        return (
-          <div className="">
-            <p className="font-medium text-headingTextColor dark:text-darkTextPrimary">
-              {row?.original?.activity_percentage}%
-            </p>
-          </div>
-        );
-      },
+      cell: ({ row }) => (
+        <p className="font-medium text-headingTextColor dark:text-darkTextPrimary">
+          {row?.original?.activity}%
+        </p>
+      ),
     },
     {
       accessorKey: "total_work",
-      header: () => <div className=" text-right">Total Work</div>,
-      cell: ({ row }) => {
-        return (
-          <div className="">
-            <p className=" text-right text-headingTextColor dark:text-darkTextPrimary">
-              {row?.original?.work_duration?.formatted}
-            </p>
-          </div>
-        );
-      },
+      header: () => <div className="text-right">Total Work</div>,
+      cell: ({ row }) => (
+        <p className="text-right text-headingTextColor dark:text-darkTextPrimary">
+          {row?.original?.work_duration?.formatted}
+        </p>
+      ),
     },
   ];
 
@@ -131,56 +91,50 @@ const CoreWorkMembers = ({ data }: { data: ICoreMember[] }) => {
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
-  // for dropdown
-  const [open, setOpen] = useState(false)
-  const [value, setValue] = useState("highest")
+
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState("highest");
 
   const menuItems = [
     { value: "highest", label: "Top Activity" },
     { value: "lowest", label: "Low Activity" },
   ];
 
+  // LOGIC: Calculate how many empty rows are needed to reach 4
+  const MIN_ROWS = 3;
+  const actualRows = table?.getRowModel()?.rows;
+  const emptyRowsCount = Math.max(0, MIN_ROWS - actualRows.length);
+
   return (
-    <div className="w-full border border-borderColor dark:border-darkBorder  dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px] h-full">
-      <div className=" flex items-center justify-between">
-        <div className=" flex items-center gap-1.5 sm:gap-3 sm:w-1/2">
-          <h2 className=" text-base sm:text-lg uppercase text-headingTextColor dark:text-darkTextPrimary">
-            Core work members{" "}
+    <div className="w-full border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px] h-full">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-1.5 sm:gap-3 sm:w-1/2">
+          <h2 className="text-base sm:text-lg uppercase text-headingTextColor dark:text-darkTextPrimary">
+            Core work members
           </h2>
-          {/* <Info size={18} className=" cursor-pointer" /> */}
         </div>
 
         <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger className="" asChild>
+          <PopoverTrigger asChild>
             <Button
               variant="outline2"
-              role="combobox"
-              aria-expanded={open}
-              className="w-[170px] sm:w-[200px] h-9 flex justify-between items-center gap-2
-            dark:border-darkBorder dark:text-darkTextPrimary
-            dark:bg-darkPrimaryBg hover:dark:bg-darkPrimaryBg"
+              className="w-[170px] sm:w-[200px] h-9 flex justify-between items-center gap-2 dark:border-darkBorder dark:text-darkTextPrimary dark:bg-darkPrimaryBg hover:dark:bg-darkPrimaryBg"
             >
               <span className="truncate">
-                {value
-                  ? menuItems.find((item: any) => item.value === value)?.label
-                  : "Select item..."}
+                {value ? menuItems.find((item: any) => item.value === value)?.label : "Select item..."}
               </span>
-
               <DownArrow size={16} />
             </Button>
           </PopoverTrigger>
-
           <PopoverContent className="w-[170px] sm:w-[200px] px-0 py-1 dark:bg-darkSecondaryBg">
             <Command className="dark:bg-darkSecondaryBg">
               <CommandList>
                 <CommandEmpty>No item found.</CommandEmpty>
-
                 <CommandGroup>
                   {menuItems.map((item: any) => (
                     <CommandItem
                       key={item.value}
                       value={item.value}
-                      className="cursor-pointer hover:dark:bg-darkPrimaryBg flex items-center gap-2"
                       onSelect={(currentValue) => {
                         setValue(currentValue);
                         setType(currentValue);
@@ -188,13 +142,7 @@ const CoreWorkMembers = ({ data }: { data: ICoreMember[] }) => {
                       }}
                     >
                       <span className="flex-1">{item.label}</span>
-
-                      <Check
-                        className={cn(
-                          "ml-auto",
-                          value === item.value ? "opacity-100" : "opacity-0"
-                        )}
-                      />
+                      <Check className={cn("ml-auto", value === item.value ? "opacity-100" : "opacity-0")} />
                     </CommandItem>
                   ))}
                 </CommandGroup>
@@ -202,54 +150,56 @@ const CoreWorkMembers = ({ data }: { data: ICoreMember[] }) => {
             </Command>
           </PopoverContent>
         </Popover>
-
       </div>
 
-      <div className=" mt-5  pb-1">
+      <div className="mt-5 pb-1">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                    </TableHead>
-                  );
-                })}
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                  </TableHead>
+                ))}
               </TableRow>
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
+            {/* 1. Render Actual Data */}
+            {actualRows.map((row) => (
+              <TableRow key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+
+            {/* 2. Render Static Skeletons (No Pulse) to fill space */}
+            {emptyRowsCount > 0 && actualRows?.length !== 0 &&
+              Array.from({ length: emptyRowsCount }).map((_, idx) => (
+                <TableRow key={`empty-${idx}`} className="hover:bg-transparent">
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <div className="size-10 rounded-full bg-gray-100 dark:bg-darkBorder" />
+                      <div className="h-4 w-24 rounded bg-gray-100 dark:bg-darkBorder" />
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="h-4 w-12 rounded bg-gray-100 dark:bg-darkBorder" />
+                  </TableCell>
+                  <TableCell>
+                    <div className="h-4 w-16 ml-auto rounded bg-gray-100 dark:bg-darkBorder" />
+                  </TableCell>
                 </TableRow>
-              ))
-            ) : (
+              ))}
+
+            {/* 3. Render "No results" only if data is empty AND we weren't trying to fill up to 4 */}
+            {actualRows.length === 0 && (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
+                <EmptyTableRow columns={columns} text="No core members available." padding={2}></EmptyTableRow>
               </TableRow>
             )}
           </TableBody>

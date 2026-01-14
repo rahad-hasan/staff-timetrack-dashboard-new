@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
-import { INotificationItem, IResponse } from "@/types/type";
+// import { INotificationItem } from "@/types/type";
+import { IResponse } from "@/types/type";
 import { baseApi } from "../baseApi";
 import { buildQuery } from "@/utils/buildQuery";
 

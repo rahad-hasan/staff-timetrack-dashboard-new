@@ -299,7 +299,7 @@ export interface ICoreMember {
   work_duration: IDuration;
   idle_duration: IDuration;
   active_duration: IDuration;
-  activity_percentage: number;
+  activity: number;
   projects_count: number;
   tasks_count: number;
   rank: number;

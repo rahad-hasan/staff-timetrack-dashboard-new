@@ -30,3 +30,10 @@ export const getDashboardAppsUrls = async (query = {}) => {
         tag: "recentAppUrl",
     });
 };
+
+export const getDashboardInsights = async (query = {}) => {
+    const queryString = buildQuery(query);
+    return await baseApi(`/admin/insights${queryString ? `?${queryString}` : ""}`, {
+        tag: "insightsDashboard",
+    });
+};
