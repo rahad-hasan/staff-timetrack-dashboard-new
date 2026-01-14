@@ -15,7 +15,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 const TaskHeroSection = () => {
     const [open, setOpen] = useState(false)
-    type Tab = "List view" | "Kanban";
+    // type Tab = "List view" | "Kanban";
     const router = useRouter();
     const searchParams = useSearchParams();
     const pathname = usePathname();
@@ -25,14 +25,14 @@ const TaskHeroSection = () => {
         router.push(`?${params.toString()}`);
     };
 
-    const activeTab = (searchParams.get("tab") as Tab) ?? "List view";
+    // const activeTab = (searchParams.get("tab") as Tab) ?? "List view";
 
-    const setTab = (tab: Tab) => {
-        const params = new URLSearchParams(searchParams.toString());
-        params.set("tab", tab);
-        params.set("page", "1"); // reset pagination if needed
-        router.push(`?${params.toString()}`);
-    };
+    // const setTab = (tab: Tab) => {
+    //     const params = new URLSearchParams(searchParams.toString());
+    //     params.set("tab", tab);
+    //     params.set("page", "1"); // reset pagination if needed
+    //     router.push(`?${params.toString()}`);
+    // };
 
     useEffect(() => {
         // If there are any search params at all, clear them on mount
@@ -49,7 +49,7 @@ const TaskHeroSection = () => {
 
                 <div className=" flex items-center gap-3 sm:gap-5">
                     <div className="flex gap-3">
-                        <div className="inline-flex mt-3 sm:mt-0 h-10 bg-bgSecondary dark:bg-darkSecondaryBg rounded-lg">
+                        {/* <div className="inline-flex mt-3 sm:mt-0 h-10 bg-bgSecondary dark:bg-darkSecondaryBg rounded-lg">
                             {["List view", "Kanban"].map((tab) => (
                                 <button
                                     key={tab}
@@ -62,7 +62,7 @@ const TaskHeroSection = () => {
                                     {tab}
                                 </button>
                             ))}
-                        </div>
+                        </div> */}
                     </div>
 
                     <Dialog open={open} onOpenChange={setOpen}>

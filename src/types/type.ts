@@ -496,3 +496,21 @@ export interface IAllScreenshot {
   project: { name: string };
   task: { name: string } | null;
 }
+
+export interface INotificationItem {
+  id: number;
+  company_id: number;
+  user_id: number;
+  message: string;
+  is_read: boolean;
+  reason: string;
+  data: {
+    id: number;
+    date: string;
+    name: string;
+    note: string;
+  }
+  ;
+  created_at: string;
+  updated_at: string;
+}

@@ -28,14 +28,11 @@ export default function AppPagination({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // Ensure page is always a valid number
   const page = Number(currentPage) || 1;
   const totalPages = Math.ceil(total / limit);
 
-  // Don't render if there's only one page
   if (totalPages <= 1) return null;
 
-  // Helper to construct the URL with existing filters preserved
   const createPageURL = (pageNumber: number | string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("page", pageNumber.toString());
@@ -62,6 +59,18 @@ export default function AppPagination({
       end = totalPages;
     }
 
+    // FIX: If we are showing the "First Page (1)" manually, 
+    // make sure the loop doesn't include it.
+    if (page > 3 && start === 1) {
+      start = 2;
+    }
+
+    // FIX: If we are showing the "Last Page" manually,
+    // make sure the loop doesn't include it.
+    if (page < totalPages - 2 && end === totalPages) {
+      end = totalPages - 1;
+    }
+
     for (let i = start; i <= end; i++) {
       pages.push(i);
     }
@@ -71,7 +80,7 @@ export default function AppPagination({
   const pages = getPageNumbers();
 
   return (
-    <Pagination className="mt-6">
+    <Pagination className="mt-5">
       <PaginationContent className="flex flex-wrap justify-center gap-1 sm:gap-2">
         
         {/* Previous Button */}
@@ -111,7 +120,7 @@ export default function AppPagination({
           <PaginationItem key={p}>
             <PaginationLink
               href={createPageURL(p)}
-              isActive={page === p} // Core logical fix
+              isActive={page === p}
               onClick={(e) => handlePageChange(e, p)}
               className={cn(
                 "cursor-pointer w-9 h-9 sm:w-8 sm:h-8 ",

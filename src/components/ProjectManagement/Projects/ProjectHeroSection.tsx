@@ -13,7 +13,7 @@ import { useState } from "react";
 
 const ProjectHeroSection = () => {
     const [open, setOpen] = useState(false)
-    type Tab = "active" | "archived";
+    // type Tab = "active" | "archived";
     const router = useRouter();
     const searchParams = useSearchParams();
     const handleSearch = (query: string) => {
@@ -22,13 +22,13 @@ const ProjectHeroSection = () => {
         router.push(`?${params.toString()}`);
     };
 
-    const activeTab = (searchParams.get("tab") as Tab) ?? "active";
-    const setTab = (tab: Tab) => {
-        const params = new URLSearchParams(searchParams.toString());
-        params.set("tab", tab);
-        params.set("page", "1"); // reset pagination if needed
-        router.push(`?${params.toString()}`);
-    };
+    // const activeTab = (searchParams.get("tab") as Tab) ?? "active";
+    // const setTab = (tab: Tab) => {
+    //     const params = new URLSearchParams(searchParams.toString());
+    //     params.set("tab", tab);
+    //     params.set("page", "1"); // reset pagination if needed
+    //     router.push(`?${params.toString()}`);
+    // };
 
     return (
         <div>
@@ -48,7 +48,7 @@ const ProjectHeroSection = () => {
             </div>
             <div className=" flex gap-3 items-center justify-between mt-3 sm:mt-0">
                 <div className="flex gap-3">
-                    <div className="inline-flex mt-3 sm:mt-0 h-10 bg-bgSecondary dark:bg-darkSecondaryBg rounded-lg">
+                    {/* <div className="inline-flex mt-3 sm:mt-0 h-10 bg-bgSecondary dark:bg-darkSecondaryBg rounded-lg">
                         {["active", "archived"].map((tab) => (
                             <button
                                 key={tab}
@@ -61,7 +61,7 @@ const ProjectHeroSection = () => {
                                 {tab}
                             </button>
                         ))}
-                    </div>
+                    </div> */}
                 </div>
                 <SearchBar onSearch={handleSearch} />
             </div>

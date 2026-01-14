@@ -29,10 +29,10 @@ import { format } from "date-fns";
 import { IProject } from "@/types/type";
 import EyeIcon from "@/components/Icons/EyeIcon";
 import EditIcon from "@/components/Icons/FilterOptionIcon/EditIcon";
-import DuplicateIcon from "@/components/Icons/FilterOptionIcon/DuplicateIcon";
-import ArchiveIcon from "@/components/Icons/FilterOptionIcon/ArchiveIcon";
+// import DuplicateIcon from "@/components/Icons/FilterOptionIcon/DuplicateIcon";
+// import ArchiveIcon from "@/components/Icons/FilterOptionIcon/ArchiveIcon";
+// import MemberIcon from "@/components/Icons/FilterOptionIcon/MemberIcon";
 import DeleteIcon from "@/components/Icons/DeleteIcon";
-import MemberIcon from "@/components/Icons/FilterOptionIcon/MemberIcon";
 import EditProjectModal from "./EditProjectModal";
 import { toast } from "sonner";
 import { editProject } from "@/actions/projects/action";
@@ -420,7 +420,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                                         <p>Edit Project</p>
                                     </div>
 
-                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
+                                    {/* <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
                                         <MemberIcon size={18} />
                                         <p>Manage member</p>
                                     </div>
@@ -431,7 +431,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                                     <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
                                         <ArchiveIcon size={18} />
                                         <p>Archive Project</p>
-                                    </div>
+                                    </div> */}
                                     <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
                                         <DeleteIcon size={18} />
                                         <p>Delete Project</p>

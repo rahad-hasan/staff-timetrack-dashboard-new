@@ -5,6 +5,8 @@ import { ThemeProvider } from "@/components/Theme/theme-provider";
 import { SidebarRouteSync } from "@/utils/SidebarRouteSync";
 import SetGlobalColor from "@/components/Common/SetGlobalColor";
 import { Toaster } from "@/components/ui/sonner"
+import SocketProvider from "@/socket/SocketProvider";
+import { cookies } from "next/headers";
 
 const inter = Inter({
     subsets: ['latin'],
@@ -18,11 +20,15 @@ export const metadata: Metadata = {
     description: "Staff Time Tracker Dashboard",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+
+    const cookieStore = await cookies();
+    const token = cookieStore.get("accessToken");
+
     return (
         <html lang="en" suppressHydrationWarning className={inter.className}>
             <body
@@ -33,7 +39,7 @@ export default function RootLayout({
                 monica-version="7.9.7"
                 data-new-gr-c-s-check-loaded="14.1263.0"
             >
-                <Toaster position='bottom-right'/>
+                <Toaster position='bottom-right' />
                 <ThemeProvider
                     attribute="class"
                     defaultTheme="system"
@@ -42,7 +48,9 @@ export default function RootLayout({
                 >
                     <SetGlobalColor />
                     <SidebarRouteSync />
-                    {children}
+                    <SocketProvider token={token?.value}>
+                        {children}
+                    </SocketProvider>
                 </ThemeProvider>
             </body>
         </html >
