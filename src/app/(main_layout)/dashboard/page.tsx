@@ -4,10 +4,12 @@ import DashboardHeroSkeleton from "@/skeleton/DashboardHeroSkeleton";
 import { ISearchParamsProps } from "@/types/type";
 import { Suspense } from "react";
 
-export default async function Dashboard({ searchParams }: ISearchParamsProps) {
+export default function Dashboard({ searchParams }: ISearchParamsProps) {
   return (
     <div>
-      <HeroHeading searchParams={searchParams}></HeroHeading>
+      <Suspense>
+        <HeroHeading searchParams={searchParams}></HeroHeading>
+      </Suspense>
       <Suspense fallback={<DashboardHeroSkeleton />}>
         <HeroCartServer searchParams={searchParams} />
       </Suspense>
