@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
-import { ArrowUpDown, Check } from "lucide-react";
+import { ArrowUpDown, Check, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -18,6 +18,8 @@ import { useLogInUserStore } from "@/store/logInUserStore";
 import ConfirmDialog from "@/components/Common/ConfirmDialog";
 import { toast } from "sonner";
 import { approveRejectManualTimeEntry } from "@/actions/timesheets/action";
+import { convertDecimalHoursToHMS } from "@/utils";
+import { Button } from "@/components/ui/button";
 
 
 const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
@@ -48,6 +50,7 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
         }
     }
 
+
     const columns: ColumnDef<IManualTimeEntry>[] = [
         {
             accessorKey: "project",
@@ -76,7 +79,7 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
             }
         },
         {
-            accessorKey: "activity",
+            accessorKey: "status",
             header: ({ column }) => {
                 return (
                     <div>
@@ -84,22 +87,34 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
                             className=" cursor-pointer flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                         >
-                            Activity
+                            Status
                             <ArrowUpDown className="ml-2 h-4 w-4" />
                         </span>
                     </div>
                 )
             },
             cell: ({ row }) => {
-                const activity = row.getValue("activity") as number;
+                const status = row?.original?.status;
+                const statusClass =
+                    status === "processing"
+                        ? "bg-[#fff5db] border border-[#efaf07] text-[#efaf07] hover:text-[#efaf07]"
+                        :
+                        status === "cancelled" ?
+                            "bg-[#fee6eb] border border-[#fcc2cf] text-[#f40139] hover:text-[#f40139]"
+                            :
+                            status === "pending" ?
+                                "bg-[#eff7fe] border border-[#cde7fb] text-[#5db0f1] hover:text-[#5db0f1]"
+                                :
+                                "bg-[#e9f8f0] border border-[#bcebd1] text-[#26bd6c] hover:text-[#26bd6c]"
                 return (
                     <div className="flex items-center gap-2">
-                        {
-                            activity < 30 ?
-                                <span className=" bg-[#f40139] text-white font-medium px-2 rounded-full">{activity}Not %</span>
-                                :
-                                <span className=" bg-[#5db0f1] text-white font-medium px-2 rounded-full">{activity}Not %</span>
-                        }
+                        <Button
+                            variant="outline2"
+                            className={`px-3 py-1 rounded-xl text-sm font-medium cursor-default ${statusClass}`}
+                        >
+                            <span className={` w-2 h-2 rounded-full ${status === "processing" ? "bg-[#efaf07] " : status === "cancelled" ? "bg-[#f40139]" : status === "pending" ? "bg-[#5db0f1]" : "bg-[#26bd6c]"}`}></span>
+                            {status}
+                        </Button>
                     </div>
                 );
             }
@@ -145,12 +160,11 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
                 )
             },
             cell: ({ row }) => {
-                const totalTime = row.getValue("totalTime") as string;
                 return (
                     <div className=" flex justify-between items-center gap-4">
                         <div className="">
                             <h1 className=" font-medium text-headingTextColor dark:text-darkTextPrimary">
-                                {totalTime}2:00:00 No Data
+                                {convertDecimalHoursToHMS(row?.original?.duration)}
                             </h1>
                             <p className=" text-sm font-thin text-subTextColor dark:text-darkTextSecondary">{format(new Date(row?.original?.start_time), 'hh:mm a')} - {format(new Date(row?.original?.end_time), 'hh:mm a')}</p>
                         </div>
