@@ -3,7 +3,6 @@ import OverallActivityChart from "@/components/Dashboard/insights/OverallActivit
 import { Button } from "@/components/ui/button";
 import { Info } from "lucide-react";
 
-
 export interface IDashboardInsight {
     period: string;
     active_duration: string;
@@ -16,8 +15,7 @@ export interface IDashboardInsight {
     };
 }
 const Insights = async ({ data }: { data: IDashboardInsight }) => {
-    console.log('dsfgdsfddddddddddddddddddddddddddddd', data);
-    // await new Promise((resolve) => setTimeout(resolve, 6000));
+
     const classificationData = [
         { label: "Productive", percentage: data?.percentages?.productive, color: "bg-[#5db0f1]" },
         { label: "Active", percentage: data?.percentages?.active, color: "bg-[#dce3e3]" },
@@ -25,7 +23,7 @@ const Insights = async ({ data }: { data: IDashboardInsight }) => {
     ];
 
     return (
-        <div className="w-full border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">
+        <div className="w-full h-full border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">
             <div className=" flex justify-between items-center">
                 <h2 className=" text-base text-headingTextColor sm:text-lg dark:text-darkTextPrimary">
                     INSIGHTS

@@ -1,99 +1,58 @@
 "use client"
-import { useMemo } from "react";
-import Image from "next/image";
+
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import SmallChart from "@/components/Dashboard/SmallChart/SmallChart";
 import Link from "next/link";
 import FilterButton from "@/components/Common/FilterButton";
+import { IDashboardAppsAndUrls, IRowAppsUrls } from "@/types/type";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import EmptyTableRow from "@/components/Common/EmptyTableRow";
 
-const AppsAndUrl = () => {
+const AppsAndUrl = ({ data }: { data: IDashboardAppsAndUrls }) => {
 
-    type Member = {
-        name: string;
-        project: string;
-        progress: string;
-        soft: string;
-        lastActive: string;
-        image: string;
-        productivity: string
-        today_work: string;
-        week_work: string;
-    };
-
-    const memberData = useMemo(
-        () => [
-            { name: "Microsoft Teams", project: "Orbit Technology's project", progress: "20%", soft: "Web", lastActive: "1h ago", image: "https://avatar.iran.liara.run/public/18", productivity: "78%", week_work: "24:08:00", today_work: "7:08:00" },
-            { name: "VS Code", project: "Orbit Technology's project", progress: "75%", soft: "App", lastActive: "1d ago", image: "https://avatar.iran.liara.run/public/25", productivity: "78%", week_work: "12:08:00", today_work: "4:00:00" },
-            { name: "Microsoft Teams", project: "Orbit Technology's project", progress: "100%", soft: "Web", lastActive: "5h ago", image: "https://avatar.iran.liara.run/public/20", productivity: "35%", week_work: "08:00:00", today_work: "5:12:00" },
-            { name: "figma.com", project: "Orbit Technology's project", progress: "100%", soft: "App", lastActive: "5h ago", image: "https://avatar.iran.liara.run/public/20", productivity: "35%", week_work: "08:00:00", today_work: "5:12:00" },
-            { name: "VS Code", project: "Orbit Technology's project", progress: "50%", soft: "App", lastActive: "3h ago", image: "https://avatar.iran.liara.run/public/22", productivity: "92%", week_work: "45:15:00", today_work: "8:05:00" },
-        ],
-        []
-    );
-
-    const columns: ColumnDef<Member>[] = [
+    const columns: ColumnDef<IRowAppsUrls>[] = [
         {
-            accessorKey: "name",
-            // header: "Name",
+            accessorKey: "app_name",
             header: () => <div className="">App or Site</div>,
             cell: ({ row }) => {
-                const name = row.getValue("name") as string
-                const image = row.original.image
-                const soft = row.original.soft
+                const name = row?.getValue("app_name") as string
                 return (
-                    <div className="flex items-center gap-3  min-w-[160px]">
-                        <Image
-                            src={image}
-                            width={100}
-                            height={100}
-                            alt={name}
-                            className="rounded-full w-10"
-                        />
+                    <div className="flex items-center gap-3 min-w-[160px]">
+                        <Avatar>
+                            <AvatarImage src={""} />
+                            <AvatarFallback className="capitalize">
+                                {name?.charAt(0)}
+                            </AvatarFallback>
+                        </Avatar>
                         <div className="flex flex-col">
-                            <span className="font-bold mb-1">{name}</span>
-                            <span className=" text-sm font-normal">{soft}</span>
+                            <span className="font-bold mb-1 capitalize text-headingTextColor dark:text-darkTextPrimary">{name}</span>
+                            <span className="text-sm font-normal text-subTextColor dark:text-darkTextSecondary">App</span>
                         </div>
                     </div>
                 )
             }
         },
         {
-            accessorKey: "today_work",
+            accessorKey: "today_duration",
             header: () => <div className="">Today</div>,
             cell: ({ row }) => {
-                const today_work = row.original.today_work
+                const today_duration = row?.original?.today_duration
                 return (
                     <div className="flex items-center gap-3">
-                        <span className="">{today_work}</span>
+                        <span className="text-headingTextColor dark:text-darkTextPrimary">{today_duration}</span>
                     </div>
                 )
             }
         },
         {
-            accessorKey: "week_work",
-            header: () => <div className=" text-center">This Week</div>,
+            accessorKey: "total_duration",
+            header: () => <div className="text-center">This Week</div>,
             cell: ({ row }) => {
-                const progress = row.original.progress
-                const week_work = row.original.week_work
-
-                const progressValue = parseInt(progress.replace("%", ""));
-                let bgColor = "bg-red-500";
-                if (progressValue >= 75) {
-                    bgColor = "bg-[#5db0f1]";
-                } else if (progressValue >= 25) {
-                    bgColor = "bg-yellow-500";
-                }
+                const total_duration = row?.original?.total_duration
                 return (
-                    <div className=" flex justify-end items-center">
-                        <div className=" flex justify-center items-center">
-                            <span className="">{week_work}</span>
-                        </div>
-
-                        <div className=" -mt-4">
-                            <SmallChart></SmallChart>
-                        </div>
+                    <div className="flex justify-center items-center">
+                        <span className="text-headingTextColor dark:text-darkTextPrimary">{total_duration}</span>
                     </div>
                 )
             }
@@ -101,62 +60,80 @@ const AppsAndUrl = () => {
     ]
 
     const table = useReactTable({
-        data: memberData,
+        data: data?.row || [],
         columns,
         getCoreRowModel: getCoreRowModel(),
     })
 
+    const MIN_ROWS = 5;
+    const actualRows = table?.getRowModel()?.rows;
+    const emptyRowsCount = Math?.max(0, MIN_ROWS - actualRows?.length);
+
     return (
-        <div className=" w-full border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">
-            <div className=" flex justify-between items-center">
-                <h2 className=" text-base sm:text-lg text-headingTextColor dark:text-darkTextPrimary">APPS & URL</h2>
-                <div className=" flex items-center gap-3">
+        <div className="w-full h-full border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">
+            <div className="flex justify-between items-center">
+                <h2 className="text-base sm:text-lg text-headingTextColor dark:text-darkTextPrimary font-medium uppercase">APPS & URL</h2>
+                <div className="flex items-center gap-3">
                     <FilterButton />
                     <Link href={`/activity/app`}>
                         <Button className="py-[14px] px-[16px] sm:py-[18px] sm:px-[20px] rounded-[8px]" size={'sm'}>View Report</Button>
                     </Link>
                 </div>
             </div>
-            <div className=" mt-5">
+
+            <div className="mt-5">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => {
-                                    return (
-                                        <TableHead key={header.id}>
-                                            {header.isPlaceholder
-                                                ? null
-                                                : flexRender(
-                                                    header.column.columnDef.header,
-                                                    header.getContext()
-                                                )}
-                                        </TableHead>
-                                    )
-                                })}
+                                {headerGroup.headers.map((header) => (
+                                    <TableHead key={header.id}>
+                                        {header.isPlaceholder
+                                            ? null
+                                            : flexRender(header.column.columnDef.header, header.getContext())}
+                                    </TableHead>
+                                ))}
                             </TableRow>
                         ))}
                     </TableHeader>
                     <TableBody>
-                        {table.getRowModel().rows?.length ? (
-                            table.getRowModel().rows.map((row) => (
-                                <TableRow
-                                    key={row.id}
-                                    data-state={row.getIsSelected() && "selected"}
-                                >
-                                    {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
-                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                        </TableCell>
-                                    ))}
+
+                        {actualRows?.map((row) => (
+                            <TableRow key={row.id}>
+                                {row.getVisibleCells().map((cell) => (
+                                    <TableCell key={cell.id}>
+                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                    </TableCell>
+                                ))}
+                            </TableRow>
+                        ))}
+
+                        {actualRows?.length > 0 && emptyRowsCount > 0 &&
+                            Array.from({ length: emptyRowsCount }).map((_, idx) => (
+                                <TableRow key={`empty-${idx}`} className="hover:bg-transparent border-none">
+                                    <TableCell>
+                                        <div className="flex items-center gap-3">
+                                            <div className="size-10 rounded-full bg-gray-100 dark:bg-darkBorder/50" />
+                                            <div className="flex flex-col gap-2">
+                                                <div className="h-4 w-20 rounded bg-gray-100 dark:bg-darkBorder/50" />
+                                                <div className="h-3 w-12 rounded bg-gray-50 dark:bg-darkBorder/30" />
+                                            </div>
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="h-4 w-16 rounded bg-gray-100 dark:bg-darkBorder/50" />
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="flex justify-center">
+                                            <div className="h-4 w-16 rounded bg-gray-100 dark:bg-darkBorder/50" />
+                                        </div>
+                                    </TableCell>
                                 </TableRow>
                             ))
-                        ) : (
-                            <TableRow>
-                                <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    No results.
-                                </TableCell>
-                            </TableRow>
+                        }
+
+                        {actualRows?.length === 0 && (
+                            <EmptyTableRow columns={columns} text="No application data found." padding={10} />
                         )}
                     </TableBody>
                 </Table>

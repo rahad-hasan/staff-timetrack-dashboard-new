@@ -31,8 +31,8 @@ const NotificationItem = ({ notification }: { notification: INotificationItem })
 
     return (
         <div
-            className={`flex items-start gap-4 py-3 px-4 mb-2 rounded-lg
-            bg-bgSecondary dark:bg-darkSecondaryBg
+            className={`flex items-start gap-4 py-4 px-4 mb-3 rounded-lg
+            bg-bgSecondary/20 dark:bg-darkSecondaryBg
             border-l-4 shadow transition-colors
             ${!notification?.is_read ? "border-primary" : "border-transparent"}
         `}>
@@ -49,7 +49,7 @@ const NotificationItem = ({ notification }: { notification: INotificationItem })
 
                 {notification?.data?.name && (
                     <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-200">
-                        {notification?.data?.name}
+                        {notification?.data?.name} {notification?.data?.deadline && <span> Deadline: {format(notification?.data?.deadline, "MMM d, yyyy")}</span>}
                     </p>
                 )}
 

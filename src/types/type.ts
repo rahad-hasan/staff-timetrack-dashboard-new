@@ -508,9 +508,23 @@ export interface INotificationItem {
     id: number;
     date: string;
     name: string;
+    deadline?: string;
     note: string;
   }
   ;
   created_at: string;
   updated_at: string;
+}
+
+export interface IRowAppsUrls {
+  app_name: string;
+  today_duration: string;
+  total_duration: string;
+}
+
+export interface IDashboardAppsAndUrls {
+  title: string;
+  from: string;
+  to: string;
+  row: IRowAppsUrls[];
 }

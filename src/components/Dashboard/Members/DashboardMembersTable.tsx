@@ -91,7 +91,7 @@ const DashboardMembersTable = ({ data = [] }: { data: IMembersStatsDashboard[] }
         getCoreRowModel: getCoreRowModel(),
     })
 
-    // LOGIC: Maintain a minimum of 3 rows to keep layout consistent
+
     const MIN_ROWS = 4;
     const actualRows = table.getRowModel().rows;
     const emptyRowsCount = Math.max(0, MIN_ROWS - actualRows.length);
@@ -146,7 +146,7 @@ const DashboardMembersTable = ({ data = [] }: { data: IMembersStatsDashboard[] }
                                         </div>
                                     </TableCell>
                                     <TableCell>
-                                        <div className="h-8 w-12 rounded-full bg-gray-100 dark:bg-darkBorder mb-2" />
+                                        <div className="h-6 w-12 rounded-full bg-gray-100 dark:bg-darkBorder mb-2" />
                                         <div className="h-4 w-16 rounded bg-gray-100 dark:bg-darkBorder" />
                                     </TableCell>
                                     <TableCell>
@@ -164,7 +164,7 @@ const DashboardMembersTable = ({ data = [] }: { data: IMembersStatsDashboard[] }
 
                         {actualRows.length === 0 && (
                             <TableRow>
-                                <EmptyTableRow columns={columns} text="No members found." padding={2} />
+                                <EmptyTableRow columns={columns} text="No members found." padding={10} />
                             </TableRow>
                         )}
                     </TableBody>
