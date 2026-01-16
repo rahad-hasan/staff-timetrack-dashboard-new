@@ -1,5 +1,4 @@
-import React from 'react';
-import { EllipsisVertical } from "lucide-react";
+
 
 const loading = () => {
     const NUMBER_OF_ROWS = 4;
@@ -14,17 +13,10 @@ const loading = () => {
             {[...Array(3)].map((_, index) => (
                 <div
                     key={index}
-                    className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-600 border border-white"
+                    className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 border border-white dark:border-darkBorder"
                     style={index > 0 ? { marginLeft: '-12px' } : {}}
                 ></div>
             ))}
-
-            <div
-                className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 border border-white flex items-center justify-center text-xs text-transparent font-medium"
-                style={{ marginLeft: '-12px' }}
-            >
-                10+
-            </div>
         </div>
     );
 
@@ -35,7 +27,6 @@ const loading = () => {
                 <PlaceholderBlock className="h-6 w-36" />
                 <div className="flex items-center gap-3">
                     <div className="h-8 w-8 rounded-md bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-400">
-                        <EllipsisVertical className="h-5 w-5" />
                     </div>
                     <PlaceholderBlock className="h-8 w-24" />
                 </div>

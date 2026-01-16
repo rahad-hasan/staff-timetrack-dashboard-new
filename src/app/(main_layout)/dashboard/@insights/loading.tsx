@@ -1,6 +1,6 @@
 const loading = () => {
   return (
-    <div className="border border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg p-3 rounded-[12px] w-full animate-pulse">
+    <div className="border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px] w-full animate-pulse">
       <div className="flex justify-between items-center">
         <div className="h-5 w-24 rounded bg-gray-200 dark:bg-gray-700"></div>
         <div className="flex items-center gap-3">
@@ -20,11 +20,11 @@ const loading = () => {
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-5 border-b-2 border-gray-200 dark:border-gray-700 pb-5">
+      <div className="flex flex-col sm:flex-row gap-5 ">
         <div className="mt-5  sm:w-1/2">
           <div className="flex justify-between">
             <div className="mb-4">
-              <div className="h-7 w-12 rounded bg-gray-200 dark:bg-gray-600 mb-1"></div>
+              <div className="h-7 w-12 rounded bg-gray-200 dark:bg-gray-700 mb-1"></div>
               <div className="h-4 w-20 rounded bg-gray-200 dark:bg-gray-700"></div>
             </div>
 
@@ -40,7 +40,7 @@ const loading = () => {
             </div>
           </div>
 
-          <div className="flex w-full h-8 rounded-md overflow-hidden mt-16">
+          <div className="flex w-full h-8 rounded-md overflow-hidden mt-20">
             <div className={`w-[9%] h-full bg-gray-200 dark:bg-gray-700`}></div>
             <div
               className={`w-[79%] h-full bg-gray-200 dark:bg-gray-700`}
@@ -67,7 +67,7 @@ const loading = () => {
         </div>
       </div>
 
-
+      {/* 
       <div className="mt-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -93,8 +93,8 @@ const loading = () => {
             </div>
           ))}
         </div>
-      </div>
-      
+      </div> */}
+
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import SideBar from "@/components/layout/SideBar";
 import Header from "@/components/layout/Header";
-import TrackerChatBot from "@/components/Chats/TrackerChatBot";
+// import TrackerChatBot from "@/components/Chats/TrackerChatBot";
 
 export default function RootLayout({
   children,
@@ -22,7 +22,7 @@ export default function RootLayout({
         </div>
       </div>
 
-      <TrackerChatBot></TrackerChatBot>
+      {/* <TrackerChatBot></TrackerChatBot> */}
 
     </div>
   );
