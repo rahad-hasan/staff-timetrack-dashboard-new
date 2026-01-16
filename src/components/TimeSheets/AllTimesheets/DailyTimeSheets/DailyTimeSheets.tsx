@@ -5,6 +5,7 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip"
 import DailyTimeSheetsTable from "./DailyTimeSheetsTable";
+import { format, parseISO } from "date-fns";
 
 const DailyTimeSheets = ({ data, timeLineData, selectedDate }: { data: any, timeLineData: any, selectedDate: string | number | string[] | undefined }) => {
 
@@ -29,10 +30,14 @@ const DailyTimeSheets = ({ data, timeLineData, selectedDate }: { data: any, time
     const activePeriods = (timeLineData || []).map((entry: any) => ({
         start: getDecimalHour(entry.start_time),
         end: getDecimalHour(entry.end_time),
+        startTime: entry.start_time,
+        endTime: entry.end_time,
         project: entry.project?.name || "No Project",
         task: entry.task?.name || "No Task",
         duration: formatDuration(entry.duration)
     }));
+
+    console.log("sdlfj;dsafj sdfjd;salfj dsajf;dlsajf;jdsf;akj",activePeriods);
 
 
     const getDayProgressPercentage = () => {
@@ -97,7 +102,9 @@ const DailyTimeSheets = ({ data, timeLineData, selectedDate }: { data: any, time
                                     <div>
                                         <h2 className=" text-[15px] mb-2 text-headingTextColor dark:text-darkTextPrimary">Project: {period?.project}</h2>
                                         <h2 className=" text-[15px] mb-2 text-headingTextColor dark:text-darkTextPrimary">Task: {period?.task}</h2>
-                                        <h2 className=" text-[15px] text-headingTextColor dark:text-darkTextPrimary">Duration: {period?.duration}</h2>
+                                        <h2 className=" text-[15px] mb-2 text-headingTextColor dark:text-darkTextPrimary">Duration: {period?.duration}</h2>
+                                        <h2 className=" text-[15px] mb-2 text-headingTextColor dark:text-darkTextPrimary">Start Time: {format(parseISO(period?.startTime), "hh:mm aa")}</h2>
+                                        <h2 className=" text-[15px] text-headingTextColor dark:text-darkTextPrimary">End Time: {format(parseISO(period?.endTime), "hh:mm aa")}</h2>
                                     </div>
                                 </TooltipContent>
                             </Tooltip>
