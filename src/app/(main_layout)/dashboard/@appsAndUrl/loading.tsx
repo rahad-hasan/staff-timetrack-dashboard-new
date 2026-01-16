@@ -5,7 +5,7 @@ const loading = () => {
     const skeletonRows = Array.from({ length: NUMBER_OF_SKELETON_ROWS });
 
     return (
-        <div className="border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-3 rounded-[12px] w-full h-full animate-pulse">
+        <div className="border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px] w-full h-full animate-pulse">
             <div className="flex justify-between items-center">
                 <div className="h-6 w-32 bg-gray-200 dark:bg-gray-700 rounded"></div>
                 <div className="flex items-center gap-3">

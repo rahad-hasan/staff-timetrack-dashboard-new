@@ -56,8 +56,8 @@ export async function baseApi<T = any>(
         isFormData = false,
         tag,
         headers: customHeaders,
-        cache = "force-cache",
-        // cache = "no-cache",
+        // cache = "force-cache",
+        cache = "no-cache",
         revalidate,
     } = options;
 

@@ -5,11 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Link from "next/link";
 import FilterButton from "@/components/Common/FilterButton";
-import { IDashboardAppsAndUrls, IRowAppsUrls } from "@/types/type";
+import { IRowAppsUrls } from "@/types/type";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 
-const AppsAndUrl = ({ data }: { data: IDashboardAppsAndUrls }) => {
+const AppsAndUrl = ({ data }: { data: IRowAppsUrls[] }) => {
 
     const columns: ColumnDef<IRowAppsUrls>[] = [
         {
@@ -60,13 +60,13 @@ const AppsAndUrl = ({ data }: { data: IDashboardAppsAndUrls }) => {
     ]
 
     const table = useReactTable({
-        data: data?.row || [],
+        data: data,
         columns,
         getCoreRowModel: getCoreRowModel(),
     })
 
     const MIN_ROWS = 5;
-    const actualRows = table?.getRowModel()?.rows;
+    const actualRows = table.getRowModel().rows;
     const emptyRowsCount = Math?.max(0, MIN_ROWS - actualRows?.length);
 
     return (
