@@ -62,7 +62,7 @@ const SingleProject = ({ data }: { data: ISingleProjectData }) => {
                                 <th className="text-left py-0.5 whitespace-nowrap text-headingTextColor dark:text-darkTextPrimary">Phone</th>
                                 <th className="text-left py-0.5 whitespace-nowrap text-headingTextColor dark:text-darkTextPrimary">Starting Date</th>
                                 <th className="text-left py-0.5 whitespace-nowrap text-headingTextColor dark:text-darkTextPrimary">Deadline</th>
-                                <th className="text-left py-0.5 whitespace-nowrap text-headingTextColor dark:text-darkTextPrimary">Project Bill</th>
+                                <th className="text-left py-0.5 whitespace-nowrap text-headingTextColor dark:text-darkTextPrimary">Project Budget</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -72,7 +72,7 @@ const SingleProject = ({ data }: { data: ISingleProjectData }) => {
                                 <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary"><td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary">{data?.start_date ? format(parseISO(data.start_date), "dd/MM/yyyy") : "N/A"}</td>
                                 </td>
                                 <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary">{data?.deadline ? format(parseISO(data?.deadline), "dd/MM/yyyy") : "N/A"}</td>
-                                <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary">Hourly: ${data?.budget}</td>
+                                <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary">${data?.budget}</td>
                             </tr>
                         </tbody>
                     </table>

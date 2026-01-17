@@ -61,8 +61,9 @@ const AddBudgetAndHoursStep = ({ setStep, onClose }: GeneralInfoStepProps) => {
             description: data?.description,
             start_date: new Date(data?.startDate).toISOString(),
             deadline: new Date(data?.deadline).toISOString(),
-            budget: data?.rate
+            budget: values?.rate
         }
+        console.log(finalData);
         setLoading(true);
         try {
             const res = await addProject(finalData);

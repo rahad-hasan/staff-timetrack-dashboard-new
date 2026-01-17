@@ -49,6 +49,8 @@ const EditBudgetAndHoursStep = ({ setStep, onClose, selectedProject }: GeneralIn
         },
     });
 
+    console.log('data sdfsfsd', selectedProject);
+
     const { updateData, resetData } = useProjectFormStore();
 
     async function onSubmit(values: z.infer<typeof addBudgetAndHoursSchema>) {
@@ -63,7 +65,7 @@ const EditBudgetAndHoursStep = ({ setStep, onClose, selectedProject }: GeneralIn
             description: data?.description,
             start_date: new Date(data?.startDate).toISOString(),
             deadline: new Date(data?.deadline).toISOString(),
-            budget: data?.rate
+            budget: values?.rate
         }
         setLoading(true);
         try {

@@ -36,6 +36,7 @@ import DeleteIcon from "@/components/Icons/DeleteIcon";
 import EditProjectModal from "./EditProjectModal";
 import { toast } from "sonner";
 import { editProject } from "@/actions/projects/action";
+import { useProjectFormStore } from "@/store/ProjectFormStore";
 
 
 const ProjectTable = ({ data }: { data: IProject[] }) => {
@@ -46,6 +47,15 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
     const [rowSelection, setRowSelection] = useState({})
     const [loading, setLoading] = useState(false);
     const router = useRouter();
+    
+    const resetData = useProjectFormStore(state => state.resetData);
+    // handle edit modal close and clean zustand store
+    const handleOpenChange = (isOpen: boolean) => {
+        if (!isOpen) {
+            resetData();
+        }
+        setOpen(isOpen);
+    };
 
     // Function to handle row click and navigation
     const handleRowClick = (taskId: number) => {
@@ -499,7 +509,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                 </TableBody>
             </Table>
             {/* Edit modal here */}
-            <Dialog open={open} onOpenChange={setOpen}>
+            <Dialog open={open} onOpenChange={handleOpenChange}>
                 {selectedProject && (
                     <EditProjectModal
                         onClose={() => setOpen(false)}
