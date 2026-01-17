@@ -60,24 +60,24 @@ const Profile = () => {
     async function onSubmit(values: z.infer<typeof userBasicInfoSchema>) {
         console.log(values);
 
-        if (image) {
-            setLoading(true);
-            try {
-                const res = await uploadProfileImage({ data: { image } });
-                console.log("success:", res);
+        // if (image) {
+        //     setLoading(true);
+        //     try {
+        //         const res = await uploadProfileImage({ data: { image } });
+        //         console.log("success:", res);
 
-                if (res?.success) {
-                    toast.success(res?.message || "Image uploaded successfully");
-                } else {
-                    toast.error(res?.message || "Failed to upload image");
-                }
-            } catch (error: any) {
-                console.error("failed:", error);
-                toast.error(error?.message || "Something went wrong!");
-            } finally {
-                setLoading(false);
-            }
-        }
+        //         if (res?.success) {
+        //             toast.success(res?.message || "Image uploaded successfully");
+        //         } else {
+        //             toast.error(res?.message || "Failed to upload image");
+        //         }
+        //     } catch (error: any) {
+        //         console.error("failed:", error);
+        //         toast.error(error?.message || "Something went wrong!");
+        //     } finally {
+        //         setLoading(false);
+        //     }
+        // }
     }
 
     return (

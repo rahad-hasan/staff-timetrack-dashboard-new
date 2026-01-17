@@ -1,14 +1,14 @@
 "use client"
 // import { Circle } from "lucide-react";
-import screenshort1 from "../../../assets/dashboard/screenshort1.png";
-import screenshort2 from "../../../assets/dashboard/screenshort2.png";
-import screenshort3 from "../../../assets/dashboard/screenshort3.png";
-import Image, { StaticImageData } from "next/image";
+// import screenshort1 from "../../../assets/dashboard/screenshort1.png";
+// import screenshort2 from "../../../assets/dashboard/screenshort2.png";
+// import screenshort3 from "../../../assets/dashboard/screenshort3.png";
+import Image from "next/image";
 import { useState } from "react";
 import { AnimatePresence } from 'framer-motion';
-import ScreenShortsModal from "./ScreenShortsModal";
 import { IAllScreenshot } from "@/types/type";
 import { format, parseISO } from "date-fns";
+import AllScreenShortsModal from "./AllScreenShortsModal";
 
 const AllScreenShorts = ({ data }: { data: IAllScreenshot[] | undefined }) => {
     console.log(data);
@@ -16,27 +16,6 @@ const AllScreenShorts = ({ data }: { data: IAllScreenshot[] | undefined }) => {
     const [selectedImage, setSelectedImage] = useState<IAllScreenshot>();
     const [modalOpen, setModalOpen] = useState<boolean>(false);
 
-
-    const dummyScreenShorts = [
-        {
-            screenShort: selectedImage
-        },
-        {
-            screenShort: screenshort1
-        },
-        {
-            screenShort: screenshort2
-        },
-        {
-            screenShort: screenshort3
-        },
-        {
-            screenShort: screenshort2
-        },
-        {
-            screenShort: screenshort3
-        },
-    ]
 
     return (
         <>
@@ -93,12 +72,12 @@ const AllScreenShorts = ({ data }: { data: IAllScreenshot[] | undefined }) => {
             ))} */}
 
             {/* Wrap the modal with AnimatePresence for exit animation */}
-            {/* <AnimatePresence>
+            <AnimatePresence>
                 {
-                    modalOpen &&
-                    <ScreenShortsModal screenShorts={selectedImage} modalOpen={modalOpen} setModalOpen={setModalOpen}></ScreenShortsModal>
+                    modalOpen && selectedImage &&
+                    <AllScreenShortsModal screenShorts={data} modalOpen={modalOpen} setModalOpen={setModalOpen} selectedImage={selectedImage}></AllScreenShortsModal>
                 }
-            </AnimatePresence> */}
+            </AnimatePresence>
         </>
     );
 };

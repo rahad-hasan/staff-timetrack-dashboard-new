@@ -12,34 +12,31 @@ import {
 } from "@/components/ui/carousel";
 import { motion } from "framer-motion";
 import { format, parseISO } from "date-fns";
-
-interface ScreenshotDetail {
-    project_name: string;
-    task_name: string | null;
-    user_id: number;
-    company_id: number;
-    score: number;
-    mouse_activity: number;
-    keyboard_activity: number;
-    duration: number;
-    corrupted: string;
-    anomaly: any;
-    image: string;
-    display_name: string;
-    time: string;
-}
+import { IAllScreenshot } from "@/types/type";
 
 const getSrc = (item: any) => {
     if (typeof item === "string") return item;
     return item;
 };
 
-const ScreenShortsModal = ({ screenShorts, modalOpen, setModalOpen }: { screenShorts: ScreenshotDetail[], modalOpen: any, setModalOpen: any }) => {
+const AllScreenShortsModal = ({ screenShorts, modalOpen, setModalOpen, selectedImage }: { screenShorts: IAllScreenshot[] , modalOpen: any, setModalOpen: any, selectedImage: IAllScreenshot }) => {
     console.log('images', screenShorts);
-    const [activeIndex, setActiveIndex] = useState(0);
+    // 1. Calculate the initial index based on the clicked image
+    const initialIndex = screenShorts.findIndex(img => img.id === selectedImage?.id);
+    const startIdx = initialIndex !== -1 ? initialIndex : 0;
+
+    const [activeIndex, setActiveIndex] = useState(startIdx);
     const [zoom, setZoom] = useState(1);
     const [api, setApi] = useState<CarouselApi>();
     const modalRef = useRef<HTMLDivElement>(null);
+
+    // 2. Update activeIndex when selectedImage changes (for reopening modal)
+    useEffect(() => {
+        if (modalOpen) {
+            setActiveIndex(startIdx);
+            api?.scrollTo(startIdx, true); // Jump to selected image immediately
+        }
+    }, [modalOpen, startIdx, api]);
 
     // Synchronize Carousel state with activeIndex
     useEffect(() => {
@@ -58,7 +55,7 @@ const ScreenShortsModal = ({ screenShorts, modalOpen, setModalOpen }: { screenSh
         };
     }, [api]);
 
-    // Calculate which thumbnails to show (sliding window of 4)
+    // Sliding window for thumbnails
     let start = activeIndex - 1;
     if (start < 0) start = 0;
     if (start > screenShorts.length - 4) start = Math.max(0, screenShorts.length - 4);
@@ -76,7 +73,6 @@ const ScreenShortsModal = ({ screenShorts, modalOpen, setModalOpen }: { screenSh
     const handleDownload = () => {
         const currentItem = screenShorts[activeIndex];
         const src = typeof currentItem?.image === "string" ? currentItem.image : (currentItem?.image as any)?.src;
-
         if (!src) return;
 
         const link = document.createElement("a");
@@ -86,7 +82,6 @@ const ScreenShortsModal = ({ screenShorts, modalOpen, setModalOpen }: { screenSh
     };
 
     if (!modalOpen) return null;
-
     return (
         <motion.div
             ref={modalRef}
@@ -116,7 +111,7 @@ const ScreenShortsModal = ({ screenShorts, modalOpen, setModalOpen }: { screenSh
                     }}
                 >
                     <CarouselContent className=" h-full">
-                        {screenShorts?.map((item: ScreenshotDetail, index: number) => (
+                        {screenShorts?.map((item: IAllScreenshot, index: number) => (
                             <CarouselItem key={index} className="flex items-start justify-center relative">
                                 <Image
                                     src={getSrc(item?.image)}
@@ -183,10 +178,10 @@ const ScreenShortsModal = ({ screenShorts, modalOpen, setModalOpen }: { screenSh
                         <div className="flex justify-between items-start mb-3">
                             <div className="max-w-[160px]">
                                 <h3 className="font-bold text-base ">
-                                    {screenShorts[activeIndex]?.project_name}
+                                    {screenShorts[activeIndex]?.project?.name}
                                 </h3>
                                 <p className="text-xs text-primary font-medium mt-0.5 ">
-                                    {screenShorts[activeIndex]?.task_name || "No Task Assigned"}
+                                    {screenShorts[activeIndex]?.task?.name || "No Task Assigned"}
                                 </p>
                             </div>
                             <span className="text-[13px] bg-white/10 px-2 py-0.5 rounded border border-white/5">
@@ -236,4 +231,4 @@ const ScreenShortsModal = ({ screenShorts, modalOpen, setModalOpen }: { screenSh
     );
 };
 
-export default ScreenShortsModal;
+export default AllScreenShortsModal;

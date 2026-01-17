@@ -22,6 +22,7 @@ const Every10MinsServer = async ({ searchParams }: ISearchParamsProps) => {
             user_id: params.user_id,
         });
     }
+    
     return (
         <div>
             <div className="mb-5 grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-4 gap-5">
@@ -172,7 +173,12 @@ const Every10MinsServer = async ({ searchParams }: ISearchParamsProps) => {
                 })} */}
             </div>
             <Suspense fallback={<Every10MinsSkeleton />}>
-                <Every10Mins data={result?.data?.interval_rows} />
+                {
+                    params.date && params.user_id ?
+                        <Every10Mins data={result?.data?.interval_rows} />
+                        :
+                        <Every10MinsSkeleton />
+                }
             </Suspense>
         </div>
     );

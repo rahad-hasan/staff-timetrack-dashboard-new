@@ -10,16 +10,6 @@ const AllScreenShortsSkeleton = () => {
         <>
             {timeBlocks.map((blockIndex) => (
                 <div key={blockIndex} className={`${blockIndex > 0 ? 'mt-5' : ''}`}>
-                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 sm:justify-between sm:items-center">
-                        <div className="flex items-center gap-2">
-                            <Circle size={20} className="text-gray-300 dark:text-gray-700" />
-                            <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-                        </div>
-
-                        <h2 className="text-lg text-subTextColor dark:text-darkTextSecondary flex items-center gap-1.5">
-                            Total time worked: <span className="font-medium h-4 w-16 inline-block bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></span>
-                        </h2>
-                    </div>
 
                     <div className="mt-3 grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
                         {skeletonItems.map((index) => (
