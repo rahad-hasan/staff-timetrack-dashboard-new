@@ -136,7 +136,10 @@ const CreateTaskModal = ({ handleCloseDialog }: { handleCloseDialog: () => void 
 
             if (res?.success) {
                 form.reset();
-                handleCloseDialog();
+                // fix flickering issue
+                setTimeout(() => {
+                    handleCloseDialog();
+                }, 0);
                 toast.success(res?.message || "Task added successfully");
             } else {
                 toast.error(res?.message || "Failed to add task");

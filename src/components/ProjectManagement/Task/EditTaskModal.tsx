@@ -149,7 +149,9 @@ const CreateTaskModal = ({ handleCloseDialog, selectedProject }: { handleCloseDi
 
             if (res?.success) {
                 form.reset();
-                handleCloseDialog();
+                setTimeout(() => {
+                    handleCloseDialog();
+                }, 0);
                 toast.success(res?.message || "Task updated successfully");
             } else {
                 toast.error(res?.message || "Failed to update task");
