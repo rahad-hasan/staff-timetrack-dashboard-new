@@ -41,6 +41,7 @@ import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { getMembersDashboard } from "@/actions/members/action";
 import { addEvent } from "@/actions/calendarEvent/action";
+import ClockIcon from "../Icons/ClockIcon";
 
 const AddEventModal = ({ onClose }: { onClose: () => void }) => {
 
@@ -55,6 +56,7 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
         defaultValues: {
             eventName: "",
             project: "",
+            time: "01:00:00",
             members: [],
             meetingLink: "",
             description: "",
@@ -85,10 +87,20 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
     }, []);
 
     async function onSubmit(values: z.infer<typeof addNewEventSchema>) {
+
+        const combinedDateTime = new Date(values.date);
+
+        const [hours, minutes, seconds] = values.time.split(":").map(Number);
+
+        combinedDateTime.setHours(hours || 0);
+        combinedDateTime.setMinutes(minutes || 0);
+        combinedDateTime.setSeconds(seconds || 0);
+
+
         const finalData = {
             name: values?.eventName,
             note: values?.description,
-            date: new Date(values?.date).toISOString(),
+            date: combinedDateTime.toISOString(),
             force_create: false,
             member_ids: values?.members.includes("all") ? "all" : values?.members,
             ...(values?.meetingLink && { meeting_link: values.meetingLink })
@@ -104,7 +116,9 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
                 toast.success(res?.message || "Event added successfully");
                 form.reset();
                 setStartDate(undefined);
-                onClose();
+                setTimeout(() => {
+                    onClose();
+                }, 0);
             } else {
                 toast.error(res?.message || "Failed to add event");
             }
@@ -174,6 +188,30 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
                                             />
                                         </PopoverContent>
                                     </Popover>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="time"
+                        render={({ field }) => (
+                            <FormItem className=" w-full">
+                                <FormControl className="">
+                                    <div className='relative '>
+                                        <div className='text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 peer-disabled:opacity-50'>
+                                            <ClockIcon size={16} className=" text-headingTextColor dark:text-darkTextPrimary" />
+                                            <span className='sr-only'>Time From</span>
+                                        </div>
+                                        <Input
+                                            type='time'
+                                            id='time-picker'
+                                            step='1'
+                                            {...field}
+                                            className='peer bg-background dark:bg-darkPrimaryBg dark:border-darkBorder appearance-none pl-9 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none'
+                                        />
+                                    </div>
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -311,7 +349,7 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
                             <FormItem>
                                 <FormLabel>Meeting Link</FormLabel>
                                 <FormControl>
-                                    <Input type="text" className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Meeting Link (Optional)" {...field} />
+                                    <Input type="url" className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Meeting Link (Optional)" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>

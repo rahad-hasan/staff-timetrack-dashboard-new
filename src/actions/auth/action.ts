@@ -69,4 +69,5 @@ export const changePassword = async ({ data }: {
 export async function clearSessionCookie() {
   const cookieStore = await cookies();
   cookieStore.delete("accessToken");
+  cookieStore.delete("refreshToken");
 }

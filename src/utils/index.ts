@@ -1,3 +1,12 @@
+import { useLogInUserStore } from "@/store/logInUserStore";
+import { toZonedTime, fromZonedTime, formatInTimeZone } from "date-fns-tz";
+
+const getUserTimeZone = () => {
+  const logInUserData = useLogInUserStore.getState().logInUserData;
+  return logInUserData?.timezone || "Asia/Dhaka";
+};
+
+
 export const convertDecimalHoursToHMS = (decimalHours: number | null | undefined) => {
   // If duration is negative then return
   if (decimalHours === null || decimalHours === undefined || decimalHours <= 0) {
@@ -16,4 +25,12 @@ export const convertDecimalHoursToHMS = (decimalHours: number | null | undefined
     2,
     '0'
   )}:${String(seconds).padStart(2, '0')}`;
+};
+
+
+export const formatTZDate = (
+  date: Date | string,
+  timeZone = getUserTimeZone()
+) => {
+  return formatInTimeZone(new Date(date), timeZone, "yyyy-MM-dd");
 };

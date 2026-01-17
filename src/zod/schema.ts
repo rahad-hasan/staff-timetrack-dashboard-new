@@ -187,6 +187,7 @@ export const addNewEventSchema = z.object({
     date: z.date().refine(date => !isNaN(date.getTime()), {
         message: "Date is required",
     }),
+    time: z.string().min(1, "Time is required"),
     project: z.string().optional(),
     meetingLink: z.string().optional(),
     members: z
@@ -202,6 +203,7 @@ export const editEventSchema = z.object({
         .refine((date) => date !== null, {
             message: "Date is required",
         }),
+    time: z.string().min(1, "Time is required"),
 });
 
 export const leaveRequestSchema = z.object({

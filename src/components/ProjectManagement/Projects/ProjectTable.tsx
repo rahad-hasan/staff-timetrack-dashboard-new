@@ -47,7 +47,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
     const [rowSelection, setRowSelection] = useState({})
     const [loading, setLoading] = useState(false);
     const router = useRouter();
-    
+
     const resetData = useProjectFormStore(state => state.resetData);
     // handle edit modal close and clean zustand store
     const handleOpenChange = (isOpen: boolean) => {
@@ -88,7 +88,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                 return (
                     <div>
                         <span
-                            className=" cursor-pointer flex items-center gap-1"
+                            className=" flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                         >
                             Project Name
@@ -114,7 +114,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                 return (
                     <div className="  min-w-[180px]">
                         <span
-                            className=" cursor-pointer flex items-center gap-1"
+                            className=" flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                         >
                             Manager
@@ -164,7 +164,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                 return (
                     <div className="  min-w-[150px]">
                         <span
-                            className=" cursor-pointer flex items-center gap-1"
+                            className=" flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                         >
                             Assignee
@@ -214,7 +214,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                 return (
                     <div>
                         <span
-                            className=" cursor-pointer flex items-center gap-1"
+                            className=" flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                         >
                             Time Worked
@@ -235,7 +235,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                 return (
                     <div>
                         <span
-                            className=" cursor-pointer flex items-center gap-1"
+                            className=" flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                         >
                             Deadline
@@ -257,7 +257,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
         //         return (
         //             <div className=" flex justify-end">
         //                 <span
-        //                     className=" cursor-pointer flex items-center gap-1"
+        //                     className=" flex items-center gap-1"
         //                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         //                 >
         //                     Status
@@ -312,7 +312,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                 return (
                     <div className=" flex justify-end">
                         <span
-                            className=" cursor-pointer flex items-center gap-1"
+                            className="  flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                         >
                             Status
@@ -492,7 +492,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                     {table.getRowModel().rows?.length ? (
                         table.getRowModel().rows.map(row => (
                             // <Link key={row.id} href={`/project-management/projects/${row.original._id}`} className=" w-full">
-                            <TableRow className=" cursor-pointer" key={row.id} >
+                            <TableRow className="" key={row.id} >
                                 {row.getVisibleCells().map(cell => (
                                     <TableCell key={cell.id}>
                                         {flexRender(cell.column.columnDef.cell, cell.getContext())}

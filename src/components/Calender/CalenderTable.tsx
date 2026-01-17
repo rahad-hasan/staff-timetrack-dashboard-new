@@ -10,11 +10,14 @@ import { Dialog } from "../ui/dialog";
 import EditEventModal from "./EditEventModal";
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { useState } from "react";
+import { formatTZDate } from "@/utils";
 
 // Helper to format date for matching
-const formatToISODate = (date: Date) => date?.toISOString().split('T')[0];
+// const formatToISODate = (date: Date) => date?.toISOString().split('T')[0];
 
 const CalenderTable = ({ startMonth, endMonth, eventData }: { startMonth: string | number | string[] | undefined, endMonth: string | number | string[] | undefined, eventData: any }) => {
+    
+    
     const [open, setOpen] = useState(false)
     const [selectedEvent, setSelectedEvent] = useState<any>(null);
     const days = [
@@ -36,10 +39,10 @@ const CalenderTable = ({ startMonth, endMonth, eventData }: { startMonth: string
         for (let i = 0; i < 42; i++) {
             const currentDate = new Date(displayStart);
             currentDate.setDate(displayStart.getDate() + i);
-            const dateString = formatToISODate(currentDate);
+            const dateString = formatTZDate(currentDate);
 
             const dayEvents = eventData.filter((event: any) =>
-                formatToISODate(new Date(event.date)) === dateString
+                formatTZDate(new Date(event.date)) === dateString
             );
 
             calendarGrid.push({
@@ -95,7 +98,7 @@ const CalenderTable = ({ startMonth, endMonth, eventData }: { startMonth: string
                         </tr>
                     </thead>
                     <tbody className="bg-white dark:bg-darkSecondaryBg">
-                        {weeks.map((week, weekIndex) => (
+                        {weeks?.map((week, weekIndex) => (
                             <tr key={weekIndex} className="h-26">
                                 {week.map((cell, cellIndex) => (
                                     <td

@@ -69,7 +69,7 @@ const SignIn = () => {
                     role: res?.data?.role,
                     phone: res?.data?.phone,
                     pay_rate_hourly: res?.data?.pay_rate_hourly,
-                    timezone: res?.data?.timezone,
+                    timezone: res?.data?.time_zone,
                     company_id: res?.data?.company_id,
                 })
                 router.push("/dashboard");

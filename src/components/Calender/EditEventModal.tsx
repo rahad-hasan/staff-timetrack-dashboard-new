@@ -28,44 +28,70 @@ import { CalendarDays, ChevronDownIcon, } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { rescheduleEvent } from "@/actions/calendarEvent/action";
 import { toast } from "sonner";
+import { toZonedTime } from "date-fns-tz";
+import { useLogInUserStore } from "@/store/logInUserStore";
+import ClockIcon from "../Icons/ClockIcon";
+import { Input } from "../ui/input";
+
+const formatToTimeString = (date: Date) => {
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    return `${hours}:${minutes}:${seconds}`;
+};
 
 const EditEventModal = ({ handleCloseDialog, event }: any) => {
+
     const [loading, setLoading] = useState(false);
     const [openStartDate, setOpenStartDate] = useState(false);
-
-    function toDateOnlyFromUTC(date: string | Date) {
-        const d = new Date(date)
-        return new Date(
-            d.getUTCFullYear(),
-            d.getUTCMonth(),
-            d.getUTCDate()
-        )
+    const logInUserData = useLogInUserStore(state => state.logInUserData);
+    const zonedDate = event?.date && utcToUserDate(event.date);
+    // console.log('getting from zustand', logInUserData?.timezone);
+    function utcToUserDate(date: string | Date) {
+        return toZonedTime(new Date(date), logInUserData?.timezone);
     }
 
     const form = useForm<z.infer<typeof editEventSchema>>({
         resolver: zodResolver(editEventSchema),
         defaultValues: {
-            date: toDateOnlyFromUTC(event.date),
-        }
-    })
+            date: zonedDate,
+            time: formatToTimeString(zonedDate)
+        },
+    });
 
     useEffect(() => {
         if (event?.date) {
-            form.reset({ date: toDateOnlyFromUTC(event.date) });
+            form.reset({
+                date: zonedDate,
+                time: formatToTimeString(zonedDate)
+            });
         }
     }, [event, form]);
 
     async function onSubmit(values: z.infer<typeof editEventSchema>) {
+        const combinedDateTime = new Date(values.date!);
+
+        const [hours, minutes, seconds] = values.time.split(":").map(Number);
+
+        combinedDateTime.setHours(hours || 0);
+        combinedDateTime.setMinutes(minutes || 0);
+        combinedDateTime.setSeconds(seconds || 0);
+
         setLoading(true);
         const finalData = {
-            new_date: new Date(values.date!).toISOString()
+            new_date: combinedDateTime.toISOString()
         }
         console.log(finalData);
         try {
             const res = await rescheduleEvent({ data: finalData, id: event?.id });
             if (res?.success) {
                 toast.success(res?.message || "Rescheduled successfully");
-                handleCloseDialog();
+
+                // fix flickering issue
+                setTimeout(() => {
+                    handleCloseDialog();
+                }, 0);
+
             } else {
                 toast.error(res?.message || "Failed to reschedule");
             }
@@ -79,7 +105,7 @@ const EditEventModal = ({ handleCloseDialog, event }: any) => {
     return (
         <DialogContent
             onInteractOutside={(event) => event.preventDefault()}
-            
+
             className="w-full sm:max-w-[525px] max-h-[95vh] overflow-y-auto"
         >
             <DialogHeader>
@@ -128,7 +154,30 @@ const EditEventModal = ({ handleCloseDialog, event }: any) => {
                             </FormItem>
                         )}
                     />
-
+                    <FormField
+                        control={form.control}
+                        name="time"
+                        render={({ field }) => (
+                            <FormItem className=" w-full">
+                                <FormControl className="">
+                                    <div className='relative '>
+                                        <div className='text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 peer-disabled:opacity-50'>
+                                            <ClockIcon size={16} className=" text-headingTextColor dark:text-darkTextPrimary" />
+                                            <span className='sr-only'>Time From</span>
+                                        </div>
+                                        <Input
+                                            type='time'
+                                            id='time-picker'
+                                            step='1'
+                                            {...field}
+                                            className='peer bg-background dark:bg-darkPrimaryBg dark:border-darkBorder appearance-none pl-9 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none'
+                                        />
+                                    </div>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
                     <Button
                         className="w-full"
                         type="submit"
