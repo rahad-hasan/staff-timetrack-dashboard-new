@@ -41,7 +41,9 @@ const TaskHeroSection = () => {
         }
     }, []);
 
-
+    const handleCloseDialog = () => {
+        setOpen(false)
+    }
     return (
         <div>
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-5">
@@ -73,7 +75,7 @@ const TaskHeroSection = () => {
                                 <span className="hidden sm:block">Create Task</span>
                             </Button>
                         </DialogTrigger>
-                        <CreateTaskModal onClose={() => setOpen(false)}></CreateTaskModal>
+                        <CreateTaskModal handleCloseDialog={handleCloseDialog}></CreateTaskModal>
                     </Dialog>
 
                 </div>

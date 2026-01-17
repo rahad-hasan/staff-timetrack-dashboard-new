@@ -128,6 +128,7 @@ export const newTaskCreationSchema = z.object({
     deadline: z.date().nullable().refine((date) => date !== null && !isNaN(date.getTime()), {
         message: "Deadline is required",
     }),
+    priority: z.string().min(1, "Priority is required"),
     details: z.string().min(1, "Task details is required"),
 })
 

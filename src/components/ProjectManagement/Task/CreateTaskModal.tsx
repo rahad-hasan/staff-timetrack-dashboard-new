@@ -46,7 +46,7 @@ type ProjectOption = {
     label: string;
     avatar?: string;
 };
-const CreateTaskModal = ({ onClose }: { onClose: () => void }) => {
+const CreateTaskModal = ({ handleCloseDialog }: { handleCloseDialog: () => void }) => {
     const [loading, setLoading] = useState(false);
     const [projectLoading, setProjectLoading] = useState(false);
     const [members, setMembers] = useState<{ id: number; name: string; image?: string }[]>([]);
@@ -64,6 +64,7 @@ const CreateTaskModal = ({ onClose }: { onClose: () => void }) => {
             project: "",
             taskName: "",
             deadline: null,
+            priority: "",
             details: "",
         },
     });
@@ -124,8 +125,10 @@ const CreateTaskModal = ({ onClose }: { onClose: () => void }) => {
             project_id: Number(values.project),
             assignee: Number(values.assignee),
             deadline: values.deadline ? new Date(values.deadline).toISOString() : null,
+            priority: values.priority,
             description: values.details,
         }
+        console.log("finalData", finalData);
         setProjectLoading(true);
         try {
             const res = await addTask(finalData);
@@ -133,7 +136,7 @@ const CreateTaskModal = ({ onClose }: { onClose: () => void }) => {
 
             if (res?.success) {
                 form.reset();
-                onClose();
+                handleCloseDialog();
                 toast.success(res?.message || "Task added successfully");
             } else {
                 toast.error(res?.message || "Failed to add task");
@@ -145,7 +148,7 @@ const CreateTaskModal = ({ onClose }: { onClose: () => void }) => {
             setProjectLoading(false);
         }
     }
-    
+
     return (
         <DialogContent
             onInteractOutside={(event) => event.preventDefault()}
@@ -315,6 +318,47 @@ const CreateTaskModal = ({ onClose }: { onClose: () => void }) => {
                                         </PopoverContent>
                                     </Popover>
                                 </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="priority"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Priority</FormLabel>
+                                <Select
+                                    onValueChange={field.onChange}
+                                    defaultValue={field.value}
+                                >
+                                    <FormControl>
+                                        <SelectTrigger className="w-full dark:bg-darkSecondaryBg">
+                                            <SelectValue placeholder="Select priority" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent className="dark:bg-darkSecondaryBg">
+                                        <SelectItem value="low" className="cursor-pointer">
+                                            <div className="flex items-center gap-2">
+                                                <span className="h-2 w-2 rounded-full bg-blue-500" />
+                                                Low
+                                            </div>
+                                        </SelectItem>
+                                        <SelectItem value="medium" className="cursor-pointer">
+                                            <div className="flex items-center gap-2">
+                                                <span className="h-2 w-2 rounded-full bg-yellow-500" />
+                                                Medium
+                                            </div>
+                                        </SelectItem>
+                                        <SelectItem value="high" className="cursor-pointer">
+                                            <div className="flex items-center gap-2">
+                                                <span className="h-2 w-2 rounded-full bg-red-500" />
+                                                High
+                                            </div>
+                                        </SelectItem>
+                                    </SelectContent>
+                                </Select>
                                 <FormMessage />
                             </FormItem>
                         )}

@@ -47,7 +47,7 @@ type ProjectOption = {
     label: string;
     avatar?: string;
 };
-const CreateTaskModal = ({ onClose, selectedProject }: { onClose: () => void; selectedProject: ITask }) => {
+const CreateTaskModal = ({ handleCloseDialog, selectedProject }: { handleCloseDialog: () => void; selectedProject: ITask }) => {
     const [loading, setLoading] = useState(false);
     const [taskLoading, setTaskLoading] = useState(false);
     const [members, setMembers] = useState<{ id: number; name: string; image?: string }[]>([]);
@@ -65,6 +65,7 @@ const CreateTaskModal = ({ onClose, selectedProject }: { onClose: () => void; se
             project: String(selectedProject?.project_id) ?? "",
             taskName: selectedProject?.name ?? "",
             deadline: selectedProject?.deadline ? new Date(selectedProject?.deadline) : null,
+            priority: selectedProject?.priority ?? "",
             details: selectedProject?.description ?? "",
         },
     });
@@ -76,6 +77,7 @@ const CreateTaskModal = ({ onClose, selectedProject }: { onClose: () => void; se
                 project: String(selectedProject?.project_id) ?? "",
                 taskName: selectedProject?.name ?? "",
                 deadline: selectedProject?.deadline ? new Date(selectedProject?.deadline) : null,
+                priority: selectedProject?.priority ?? "",
                 details: selectedProject?.description ?? "",
             });
         }
@@ -137,6 +139,7 @@ const CreateTaskModal = ({ onClose, selectedProject }: { onClose: () => void; se
             project_id: Number(values.project),
             assignee: Number(values.assignee),
             deadline: values.deadline ? new Date(values.deadline).toISOString() : null,
+            priority: values.priority,
             description: values.details,
         }
         setTaskLoading(true);
@@ -146,7 +149,7 @@ const CreateTaskModal = ({ onClose, selectedProject }: { onClose: () => void; se
 
             if (res?.success) {
                 form.reset();
-                onClose();
+                handleCloseDialog();
                 toast.success(res?.message || "Task updated successfully");
             } else {
                 toast.error(res?.message || "Failed to update task");
@@ -327,6 +330,47 @@ const CreateTaskModal = ({ onClose, selectedProject }: { onClose: () => void; se
                                         </PopoverContent>
                                     </Popover>
                                 </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="priority"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Priority</FormLabel>
+                                <Select
+                                    onValueChange={field.onChange}
+                                    defaultValue={field.value}
+                                >
+                                    <FormControl>
+                                        <SelectTrigger className="w-full dark:bg-darkSecondaryBg">
+                                            <SelectValue placeholder="Select priority" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent className="dark:bg-darkSecondaryBg">
+                                        <SelectItem value="low" className="cursor-pointer">
+                                            <div className="flex items-center gap-2">
+                                                <span className="h-2 w-2 rounded-full bg-blue-500" />
+                                                Low
+                                            </div>
+                                        </SelectItem>
+                                        <SelectItem value="medium" className="cursor-pointer">
+                                            <div className="flex items-center gap-2">
+                                                <span className="h-2 w-2 rounded-full bg-yellow-500" />
+                                                Medium
+                                            </div>
+                                        </SelectItem>
+                                        <SelectItem value="high" className="cursor-pointer">
+                                            <div className="flex items-center gap-2">
+                                                <span className="h-2 w-2 rounded-full bg-red-500" />
+                                                High
+                                            </div>
+                                        </SelectItem>
+                                    </SelectContent>
+                                </Select>
                                 <FormMessage />
                             </FormItem>
                         )}

@@ -15,7 +15,7 @@ import {
 import { ArrowUpDown, Check, ChevronDown } from "lucide-react";
 import lowFlag from '../../../assets/dashboard/lowFlag.svg'
 import mediumFlag from '../../../assets/dashboard/mediumFlag.svg'
-import noneFlag from '../../../assets/dashboard/noneFlag.svg'
+import highFlag from '../../../assets/dashboard/highFlag.svg'
 // import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -56,7 +56,9 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
             setLoading(false);
         }
     }
-
+    const handleCloseDialog = () => {
+        setOpen(false)
+    }
     const columns: ColumnDef<ITask>[] = [
         {
             accessorKey: "name",
@@ -152,7 +154,7 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
             },
             cell: ({ row }) => {
                 const priority = row.getValue("priority") as string;
-                const flagImage = priority === "Low" ? lowFlag : priority === "Medium" ? mediumFlag : noneFlag;
+                const flagImage = priority === "low" ? lowFlag : priority === "medium" ? mediumFlag : highFlag;
                 return (
                     <div className="flex items-center gap-2">
                         <Image src={flagImage} width={100} height={100} alt="flag" className="w-4" />
@@ -406,7 +408,7 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
             <Dialog open={open} onOpenChange={setOpen}>
                 {selectedTask && (
                     <EditTaskModal
-                        onClose={() => setOpen(false)}
+                        handleCloseDialog={handleCloseDialog}
                         selectedProject={selectedTask}
                     />
                 )}
