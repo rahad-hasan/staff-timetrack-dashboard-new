@@ -92,7 +92,7 @@ const Header = () => {
 
                 <ProfileDropDown></ProfileDropDown>
                 <Sheet>
-                    <SheetTrigger asChild><Menu className=" cursor-pointer" size={unreadCount} /></SheetTrigger>
+                    <SheetTrigger asChild><Menu className=" cursor-pointer " size={20} /></SheetTrigger>
                     <MobileSidebar></MobileSidebar>
                 </Sheet>
             </div>

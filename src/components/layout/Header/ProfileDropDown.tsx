@@ -12,13 +12,14 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@/components/ui/avatar"
+} from "@/components/ui/avatar";
+import { useLogInUserStore } from "@/store/logInUserStore";
 
 const ProfileDropDown = () => {
   const [open, setOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const DropDownIcon = open ? ChevronUp : ChevronDown;
-
+  const logInUserData = useLogInUserStore(state => state.logInUserData);
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     handleResize();
@@ -31,10 +32,16 @@ const ProfileDropDown = () => {
       <PopoverTrigger asChild>
         <Button variant="outline2" className="h-10.5 dark:text-darkTextPrimary dark:hover:bg-darkSecondaryBg">
           <Avatar className="w-7.5 h-7.5">
-            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-            <AvatarFallback>CN</AvatarFallback>
+            <AvatarImage src={logInUserData?.image ? logInUserData?.image : ""} alt="@shadcn" />
+            <AvatarFallback>
+              {logInUserData?.name
+                .split(" ")
+                .map((n: string) => n[0])
+                .join("")
+                .slice(0, 2)}
+            </AvatarFallback>
           </Avatar>
-          <span className="hidden md:block text-headingTextColor dark:text-darkTextPrimary">Dannielis</span> Vettori
+          <span className="hidden md:block text-headingTextColor dark:text-darkTextPrimary">{logInUserData?.name}</span>
           <DropDownIcon size={20} />
         </Button>
       </PopoverTrigger>

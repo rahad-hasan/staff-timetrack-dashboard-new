@@ -122,10 +122,10 @@ export async function baseApi<T = any>(
     // console.log("--- 🏁 API REQUEST ---");
     // console.log(`📡 URL:    [${method}] ${fullUrl}`);
     // console.log(`🔑 Token:  ${requestHeaders["Authorization"] || "No Token Found"}`);
-    if (body) {
-        console.log(`📦 Payload:`, isFormData ? "FormData (Binary)" : JSON.stringify(body, null, 2));
-    }
-    console.log("--------😀😀😀😀response😀😀😀😀----------", res);
+    // if (body) {
+    //     console.log(`📦 Payload:`, isFormData ? "FormData (Binary)" : JSON.stringify(body, null, 2));
+    // }
+    // console.log("--------😀😀😀😀response😀😀😀😀----------", res);
     /* 🚀 END DEBUG BLOCK */
 
     if (method !== "GET" && !res.ok) {
