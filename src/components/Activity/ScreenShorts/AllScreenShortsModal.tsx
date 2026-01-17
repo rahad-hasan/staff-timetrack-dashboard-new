@@ -19,7 +19,7 @@ const getSrc = (item: any) => {
     return item;
 };
 
-const AllScreenShortsModal = ({ screenShorts, modalOpen, setModalOpen, selectedImage }: { screenShorts: IAllScreenshot[] , modalOpen: any, setModalOpen: any, selectedImage: IAllScreenshot }) => {
+const AllScreenShortsModal = ({ screenShorts, modalOpen, setModalOpen, selectedImage }: { screenShorts: IAllScreenshot[], modalOpen: any, setModalOpen: any, selectedImage: IAllScreenshot }) => {
     console.log('images', screenShorts);
     // 1. Calculate the initial index based on the clicked image
     const initialIndex = screenShorts.findIndex(img => img.id === selectedImage?.id);
@@ -143,7 +143,7 @@ const AllScreenShortsModal = ({ screenShorts, modalOpen, setModalOpen, selectedI
                                 layout
                                 key={`thumb-${realIndex}`}
                                 onClick={() => api?.scrollTo(realIndex)}
-                                className={`cursor-pointer rounded-md overflow-hidden border-2 transition-all duration-200 
+                                className={`cursor-pointer relative rounded-md overflow-hidden border-2 transition-all duration-200 
                                     ${realIndex === activeIndex ? "border-primary scale-110 z-10" : "border-transparent opacity-50 hover:opacity-100"}`}
                             >
                                 <Image
@@ -222,7 +222,7 @@ const AllScreenShortsModal = ({ screenShorts, modalOpen, setModalOpen, selectedI
                         </div>
 
                         <div className="mt-3 pt-3 border-t border-white/20 flex items-center justify-between opacity-50">
-                            <span className="text-[10px] border-white/70">Screen: {screenShorts[activeIndex]?.display_name}</span>
+                            <span className="text-[10px] border-white/70">Screen: {screenShorts[activeIndex]?.display_name === "display_one" ? "Display One" : "Display Two"}</span>
                         </div>
                     </div>
                 </div>

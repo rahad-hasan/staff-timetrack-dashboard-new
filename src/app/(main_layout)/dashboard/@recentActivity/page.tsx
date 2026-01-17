@@ -104,7 +104,6 @@ const CoreWorkMember = async ({ searchParams }: ISearchParamsProps) => {
   const result = await getCoreMembers({
     type: statsType,
   });
-  console.log(result);
   return (
     <div>
       <CoreWorkMembers data={result?.data?.members}></CoreWorkMembers>
