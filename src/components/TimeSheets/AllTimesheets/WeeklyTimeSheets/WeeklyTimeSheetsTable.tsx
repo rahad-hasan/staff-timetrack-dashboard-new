@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { format, parseISO } from "date-fns";
+import Image from "next/image";
+import EmptyTableLogo from "@/assets/empty_table.svg";
 
 const WeeklyTimeSheetsTable = ({ data }: { data: any[] }) => {
 
@@ -33,7 +35,16 @@ const WeeklyTimeSheetsTable = ({ data }: { data: any[] }) => {
     ).padStart(2, "0")}:${String(grandTotalSeconds % 60).padStart(2, "0")}`;
 
     if (!data || data.length === 0) {
-        return <div className="p-40 text-center border rounded-2xl">No data available for this week.</div>;
+        return (<div className="">
+
+            <div className="h-24 text-center">
+                <div className={` flex flex-col gap-2.5 items-center justify-center py-16 `}>
+                    <Image src={EmptyTableLogo} alt="table empty" width={120} height={120} />
+                    <p className=" sm:text-lg">No data available for this week.</p>
+                </div>
+            </div>
+        </div>)
+            ;
     }
 
     return (
