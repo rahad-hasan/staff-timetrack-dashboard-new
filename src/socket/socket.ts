@@ -1,6 +1,6 @@
 import { io } from "socket.io-client";
 
-const URL = "http://localhost:5000";
+const URL = "https://server.stafftimetrack.com";
 
 export const socket = io(URL, {
   autoConnect: false,

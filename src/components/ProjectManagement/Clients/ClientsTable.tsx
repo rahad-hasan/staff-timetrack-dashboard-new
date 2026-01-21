@@ -7,12 +7,12 @@ import { useState } from "react";
 import { ArrowUpDown } from "lucide-react";
 import { IClients } from "@/global/globalTypes";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import Link from "next/link";
+// import Link from "next/link";
 import { Dialog } from "@/components/ui/dialog";
 import EditClientModal from "./EditClientModal";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import FilterButton from "@/components/Common/FilterButton";
-import EyeIcon from "@/components/Icons/EyeIcon";
+// import EyeIcon from "@/components/Icons/EyeIcon";
 import EditIcon from "@/components/Icons/FilterOptionIcon/EditIcon";
 import DeleteIcon from "@/components/Icons/DeleteIcon";
 
@@ -133,12 +133,12 @@ const ClientsTable = ({ data }: any) => {
                         <PopoverContent side="bottom" align="end" className=" w-[250px] p-2">
                             <div className="">
                                 <div className="space-y-2">
-                                    <Link href={`/project-management/clients/777`}>
+                                    {/* <Link href={`/project-management/clients/777`}>
                                         <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
                                             <EyeIcon size={18} />
                                             <p>View Client</p>
                                         </div>
-                                    </Link>
+                                    </Link> */}
 
                                     <div
                                         onClick={(e) => {

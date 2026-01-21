@@ -1,7 +1,7 @@
 "use client"
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import { useEffect, useState } from "react";
-import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
+// import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
@@ -45,7 +45,7 @@ const ClientHereSection = () => {
                     </Dialog>
                 </div>
             </div>
-            <SelectProjectDropDown></SelectProjectDropDown>
+            {/* <SelectProjectDropDown></SelectProjectDropDown> */}
         </div>
     );
 };

@@ -12,7 +12,7 @@ const LeaveRequestServer = async ({ searchParams }: ISearchParamsProps) => {
     });
     return (
         <>
-            <LeaveRequestTable data={result?.data}/>
+            <LeaveRequestTable data={result?.data} />
             <AppPagination
                 total={result?.meta?.total ?? 1}
                 currentPage={params.page as number}

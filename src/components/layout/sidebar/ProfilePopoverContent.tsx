@@ -18,12 +18,12 @@ import Link from "next/link";
 
 const ProfilePopoverContent = ({ side, align }: { side: "top" | "right" | "bottom" | "left", align: "center" | "end" | "start" }) => {
     const router = useRouter();
-    const { resetData } = useLogInUserStore();
+    // const { resetData } = useLogInUserStore();
     const logInUserData = useLogInUserStore(state => state.logInUserData);
     const handleLogOut = async () => {
         try {
             await clearSessionCookie();
-            resetData();
+            // resetData();
             router.push('/auth/login');
             router.refresh();
         } catch (error) {

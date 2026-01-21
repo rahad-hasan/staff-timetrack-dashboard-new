@@ -16,9 +16,41 @@ import { toast } from "sonner";
 import { approveRejectLeave } from "@/actions/leaves/action";
 import Link from "next/link";
 import ConfirmDialog from "@/components/Common/ConfirmDialog";
+import { useLogInUserStore } from "@/store/logInUserStore";
+import { ArrowUpDown } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
     console.log('data from server', data);
+
+    const logInUserData = useLogInUserStore(state => state.logInUserData);
+    console.log('login user info', logInUserData);
+
+    const getStatusStyles = (status?: string) => {
+        switch (status?.toLowerCase()) {
+            case "processing":
+                return {
+                    button: "bg-[#fff5db] border-[#efaf07] text-[#efaf07] hover:bg-[#fff5db] dark:bg-transparent",
+                    dot: "bg-[#efaf07]"
+                };
+            case "cancelled":
+                return {
+                    button: "bg-[#fee6eb] border-[#f40139] text-[#f40139] hover:bg-[#fee6eb] dark:bg-transparent",
+                    dot: "bg-[#f40139]"
+                };
+            case "pending":
+                return {
+                    button: "bg-[#eff7fe] border-[#5db0f1] text-[#5db0f1] hover:bg-[#eff7fe] dark:bg-transparent",
+                    dot: "bg-[#5db0f1]"
+                };
+            default: // completed or others
+                return {
+                    button: "bg-[#e9f8f0] border-[#26bd6c] text-[#26bd6c] hover:bg-[#e9f8f0] dark:bg-transparent",
+                    dot: "bg-[#26bd6c]"
+                };
+        }
+    };
+
     const [loadingId, setLoadingId] = useState<number | null>(null);
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
@@ -183,78 +215,139 @@ const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
             },
             cell: ({ row }) => {
                 const reason = row.getValue("reason") as string;
+
+                const truncatedReason = reason?.length > 10
+                    ? reason.substring(0, 10) + "..."
+                    : reason;
+
                 return (
                     <div className="flex flex-col">
-                        <span className="">{reason}</span>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <span className="">
+                                    {truncatedReason}
+                                </span>
+                            </TooltipTrigger>
+                            {
+                                reason.length > 10 &&
+                                <TooltipContent className="p-3 w-56 text-headingTextColor dark:text-darkTextPrimary">
+                                    <div>
+                                        <p className="text-sm">{reason}</p>
+                                    </div>
+                                </TooltipContent>
+                            }
+
+                        </Tooltip>
                     </div>
-                )
+                );
             }
         },
+        // {
+        //     accessorKey: "availableLeave",
+        //     header: () => {
+        //         return (
+        //             <div>
+        //                 <p>
+        //                     Available Leave
+        //                 </p>
+        //             </div>
+        //         )
+        //     },
+        //     cell: ({ row }) => {
+        //         const availableLeave = row.getValue("availableLeave") as number;
+        //         const widthPercentage = Math.min((availableLeave / 32) * 100, 100);
+        //         const barColor =
+        //             availableLeave < 10
+        //                 ? "bg-green-500"
+        //                 : availableLeave < 20
+        //                     ? "bg-yellow-500"
+        //                     : "bg-red-500";
+        //         return (
+        //             <div className=" flex items-center ">
+        //                 <p className=" w-7">{availableLeave}</p>
+        //                 <div className={`bg-gray-100 dark:bg-gray-500 flex h-4.5 w-16 rounded-full relative`}>
+        //                     <p className={`${barColor} flex h-4.5 rounded-full absolute top-0 left-0`} style={{ width: `${widthPercentage}%` }}></p>
+        //                 </div>
+        //             </div>
+        //         )
+        //     }
+        // },
+
         {
-            accessorKey: "availableLeave",
-            header: () => {
-                return (
-                    <div>
-                        <p>
-                            Available Leave
-                        </p>
-                    </div>
-                )
-            },
+            accessorKey: "status",
+            header: ({ column }) => (
+                <span
+                    className="cursor-pointer flex items-center gap-1"
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    Status
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </span>
+            ),
             cell: ({ row }) => {
-                const availableLeave = row.getValue("availableLeave") as number;
-                const widthPercentage = Math.min((availableLeave / 32) * 100, 100);
-                const barColor =
-                    availableLeave < 10
-                        ? "bg-green-500"
-                        : availableLeave < 20
-                            ? "bg-yellow-500"
-                            : "bg-red-500";
+                const status = row.original.hr_approved ? "processing" : row.original.admin_approved ? "approved" : "pending";
+                const styles = getStatusStyles(status);
+
                 return (
-                    <div className=" flex items-center ">
-                        <p className=" w-7">{availableLeave}</p>
-                        <div className={`bg-gray-100 dark:bg-gray-500 flex h-4.5 w-16 rounded-full relative`}>
-                            <p className={`${barColor} flex h-4.5 rounded-full absolute top-0 left-0`} style={{ width: `${widthPercentage}%` }}></p>
-                        </div>
-                    </div>
-                )
-            }
+                    <Button
+                        className={`text-sm border flex items-center gap-2 px-3 h-8 shadow-none ${styles.button} cursor-default capitalize`}
+                    >
+                        <span className={`w-2 h-2 rounded-full ${styles.dot}`}></span>
+                        {status || "N/A"}
+                    </Button>
+                );
+            },
         },
         {
             accessorKey: "action",
             header: () => {
                 return (
-                    <div>
-                        <p>
-                            Action
-                        </p>
-                    </div>
+                    <>
+                        {
+                            (logInUserData?.role === 'admin' ||
+                                logInUserData?.role === 'manager' ||
+                                logInUserData?.role === 'hr') &&
+                            <div>
+                                <p>
+                                    Action
+                                </p>
+                            </div>
+                        }
+                    </>
                 )
+
             },
             cell: ({ row }) => {
                 return (
-                    <div className="flex items-center gap-3">
-                        <ConfirmDialog
-                            trigger={
-                                <Button size={'sm'} className=" text-sm px-2 rounded-lg">Approve</Button>
-                            }
-                            title="Approve the request"
-                            description="Are you sure you want to approve the request? This action cannot be undone."
-                            confirmText="Confirm"
-                            cancelText="Cancel"
-                            confirmClassName="bg-primary hover:bg-primary"
-                            onConfirm={() => handleApprove(row?.original)}
-                        />
+                    <>
+                        {
+                            (logInUserData?.role === 'admin' ||
+                                logInUserData?.role === 'manager' ||
+                                logInUserData?.role === 'hr') &&
+                            <div className="flex items-center gap-3" >
+                                <ConfirmDialog
+                                    trigger={
+                                        <Button size={'sm'} className=" text-sm px-2 rounded-lg">Approve</Button>
+                                    }
+                                    title="Approve the request"
+                                    description="Are you sure you want to approve the request? This action cannot be undone."
+                                    confirmText="Confirm"
+                                    cancelText="Cancel"
+                                    confirmClassName="bg-primary hover:bg-primary"
+                                    onConfirm={() => handleApprove(row?.original)}
+                                />
 
-                        <Dialog>
-                            <form>
-                                <DialogTrigger asChild>
-                                    <Button size={'sm'} className=" text-sm bg-red-500 hover:bg-red-500 dark:text-white px-2 rounded-lg">Reject</Button>
-                                </DialogTrigger>
-                                <RejectLeaveRequestModal data={row?.original}></RejectLeaveRequestModal>
-                            </form>
-                        </Dialog>
-                    </div>
+                                <Dialog>
+                                    <form>
+                                        <DialogTrigger asChild>
+                                            <Button size={'sm'} className=" text-sm bg-red-500 hover:bg-red-500 dark:text-white px-2 rounded-lg">Reject</Button>
+                                        </DialogTrigger>
+                                        <RejectLeaveRequestModal data={row?.original}></RejectLeaveRequestModal>
+                                    </form>
+                                </Dialog>
+                            </div>
+                        }
+                    </>
                 )
             }
         },

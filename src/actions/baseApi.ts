@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 import { revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 
-const BASE_URL = "http://localhost:5000/api/v1";
+const BASE_URL = "https://server.stafftimetrack.com/api/v1";
 
 type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 

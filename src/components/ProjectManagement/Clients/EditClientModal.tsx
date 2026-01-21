@@ -60,7 +60,9 @@ const EditClientModal = ({ onClose, selectedClient }: EditClientModalProps) => {
             console.log("success:", res);
 
             if (res?.success) {
-                onClose();
+                setTimeout(() => {
+                    onClose();
+                }, 100);
                 form.reset();
                 toast.success(res?.message || "Client edited successfully");
             } else {

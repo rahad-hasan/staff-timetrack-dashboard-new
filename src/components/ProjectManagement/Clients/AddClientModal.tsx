@@ -43,7 +43,9 @@ const AddClientModal = ({ onClose }: { onClose: () => void }) => {
             console.log("success:", res);
 
             if (res?.success) {
-                onClose();
+                setTimeout(() => {
+                    onClose();
+                }, 100);
                 form.reset();
                 toast.success(res?.message || "Client added successfully");
             } else {

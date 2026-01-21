@@ -22,6 +22,7 @@ import { IProject } from "@/types/type";
 import { toast } from "sonner";
 import { editProject } from "@/actions/projects/action";
 import Link from "next/link";
+import EmptyTableRow from "@/components/Common/EmptyTableRow";
 
 const DashboardProjectTable = ({ data }: { data: IProject[] }) => {
 
@@ -477,9 +478,7 @@ const DashboardProjectTable = ({ data }: { data: IProject[] }) => {
                         ))
                     ) : (
                         <TableRow>
-                            <TableCell colSpan={columns.length} className="h-24 text-center">
-                                No tasks found.
-                            </TableCell>
+                            <EmptyTableRow columns={columns} text="No project found."></EmptyTableRow>
                         </TableRow>
                     )}
                 </TableBody>
