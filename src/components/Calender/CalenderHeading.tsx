@@ -15,7 +15,7 @@ const CalenderHeading = () => {
     const logInUserData = useLogInUserStore(state => state.logInUserData);
     return (
         <div className="flex items-center justify-between gap-3 mb-5">
-            <HeadingComponent heading="Calender" subHeading="All the teams task and events are displayed here"></HeadingComponent>
+            <HeadingComponent heading="Calendar" subHeading="All the teams task and events are displayed here"></HeadingComponent>
             {
                 (logInUserData?.role === 'admin' ||
                     logInUserData?.role === 'manager' ||

@@ -40,7 +40,6 @@ const Profile = () => {
                 const base64String = reader.result as string;
                 setPreview(base64String);
                 setImage(base64String);
-                console.log("Selected Image Base64:", base64String);
             };
             // reader.onloadend = () => setPreview(reader.result as any)
             reader.readAsDataURL(file)
@@ -60,24 +59,24 @@ const Profile = () => {
     async function onSubmit(values: z.infer<typeof userBasicInfoSchema>) {
         console.log(values);
 
-        // if (image) {
-        //     setLoading(true);
-        //     try {
-        //         const res = await uploadProfileImage({ data: { image } });
-        //         console.log("success:", res);
+        if (image) {
+            setLoading(true);
+            try {
+                const res = await uploadProfileImage({ data: { image } });
+                console.log("success:", res);
 
-        //         if (res?.success) {
-        //             toast.success(res?.message || "Image uploaded successfully");
-        //         } else {
-        //             toast.error(res?.message || "Failed to upload image");
-        //         }
-        //     } catch (error: any) {
-        //         console.error("failed:", error);
-        //         toast.error(error?.message || "Something went wrong!");
-        //     } finally {
-        //         setLoading(false);
-        //     }
-        // }
+                if (res?.success) {
+                    toast.success(res?.message || "Image uploaded successfully");
+                } else {
+                    toast.error(res?.message || "Failed to upload image");
+                }
+            } catch (error: any) {
+                console.error("failed:", error);
+                toast.error(error?.message || "Something went wrong!");
+            } finally {
+                setLoading(false);
+            }
+        }
     }
 
     return (
@@ -157,6 +156,7 @@ const Profile = () => {
                                             <Input
                                                 type="text"
                                                 placeholder="Job Title"
+                                                disabled={true}
                                                 className="pl-9 dark:bg-darkPrimaryBg dark:border-darkBorder"
                                                 {...field}
                                             />
@@ -221,7 +221,7 @@ const Profile = () => {
                         <span
                             className=" border bg-[#f5f6f6] px-4 py-1.5 rounded-lg dark:bg-gray-700 text-headingTextColor dark:text-darkTextPrimary dark:border-darkBorder"
                         >
-                            Owner in tracker.org
+                            {logInUserData.role} in tracker.org
                         </span>
                     </div>
 

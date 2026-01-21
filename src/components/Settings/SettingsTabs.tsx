@@ -1,12 +1,19 @@
 "use client"
 import NotificationIcon from "@/components/Icons/NotificationIcon";
 import ProfilePlusIcon from "@/components/Icons/ProfilePlusIcon";
+import { useLogInUserStore } from "@/store/logInUserStore";
 // import SubscriptionManagementIcon from "@/components/Icons/SubscriptionManagementIcon"
 import { Lock } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 const SettingsTabs = () => {
+    const logInUserData = useLogInUserStore(state => state.logInUserData);
     type Tab = "Profile" | "Configuration" | "Change Password"
+    
+    const roleBasedTabs = (logInUserData?.role === 'admin' ||
+        logInUserData?.role === 'manager' ||
+        logInUserData?.role === 'hr') ? ["Profile", "Configuration", "Change Password"] : ["Profile", "Change Password"]
+
     const searchParams = useSearchParams();
     const router = useRouter();
     const activeTab = (searchParams.get("tab") as Tab) ?? "Profile";
@@ -18,7 +25,7 @@ const SettingsTabs = () => {
 
     return (
         <div className="flex gap-1 md:gap-3 mt-3 sm:mt-0 rounded-lg">
-            {["Profile", "Configuration", "Change Password"].map((tab) => (
+            {roleBasedTabs.map((tab) => (
                 // {["Profile", "Configuration", "User Role", "Tracking", "Subscription Management"].map((tab) => (
                 <button
                     key={tab}
