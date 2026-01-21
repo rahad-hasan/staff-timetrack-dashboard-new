@@ -6,11 +6,12 @@ import {
 } from "@/components/ui/sheet";
 import Image from "next/image";
 // import logo from '../../assets/logo.svg';
-import { othersSidebarItems, sidebarItems } from "@/utils/SidebarItems";
+import { othersSidebarItems, sidebarItems, sidebarItemsEmployee } from "@/utils/SidebarItems";
 import { useSidebarStore } from "@/store/sidebarStore";
 import MobileSidebarItem from "./sidebar/MobileSidebarItem";
 import MobileSubItem from "./sidebar/MobileSubItem";
 import timerLogo from '../../assets/timerLogo.svg';
+import { useLogInUserStore } from "@/store/logInUserStore";
 
 const MobileSidebar = () => {
     const {
@@ -19,6 +20,11 @@ const MobileSidebar = () => {
         setOpenMenu,
         setActiveSubItem,
     } = useSidebarStore();
+    const logInUserData = useLogInUserStore(state => state.logInUserData);
+
+    const roleBasedSidebarItems = (logInUserData?.role === 'admin' ||
+        logInUserData?.role === 'manager' ||
+        logInUserData?.role === 'hr') ? sidebarItems : sidebarItemsEmployee;
 
     return (
         <SheetContent className=" dark:bg-darkPrimaryBg">
@@ -48,7 +54,7 @@ const MobileSidebar = () => {
                 <div className="overflow-y-auto max-h-[calc(100vh-100px)] ml-1 pb-">
                     <div className=" mt-2">
                         <span className="text-xs uppercase text-gray-400 mb-3">Main menu</span>
-                        {sidebarItems.map((item) => (
+                        {roleBasedSidebarItems.map((item) => (
                             <div key={item.key}>
                                 <MobileSidebarItem
                                     icon={item.icon}

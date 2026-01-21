@@ -1,19 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
-import { ArrowUpDown, Check, ChevronDown } from "lucide-react";
+import { ArrowUpDown, Check } from "lucide-react";
 import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import FilterButton from "@/components/Common/FilterButton";
-import EditIcon from "@/components/Icons/FilterOptionIcon/EditIcon";
+// import EditIcon from "@/components/Icons/FilterOptionIcon/EditIcon";
 import ApproveIcon from "@/components/Icons/FilterOptionIcon/ApproveIcon";
 import DenyIcon from "@/components/Icons/FilterOptionIcon/DenyIcon";
 import { IManualTimeEntry } from "@/types/type";
 import { format } from "date-fns";
-import EditManualTimeModal from "./EditManualTimeModal";
-import { Dialog } from "@/components/ui/dialog";
+// import EditManualTimeModal from "./EditManualTimeModal";
+// import { Dialog } from "@/components/ui/dialog";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import ConfirmDialog from "@/components/Common/ConfirmDialog";
 import { toast } from "sonner";
@@ -24,8 +24,8 @@ import { Button } from "@/components/ui/button";
 
 const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
     const [sorting, setSorting] = useState<SortingState>([])
-    const [open, setOpen] = useState(false)
-    const [selectedItem, setSelectedItem] = useState<IManualTimeEntry | null>(null)
+    // const [open, setOpen] = useState(false)
+    // const [selectedItem, setSelectedItem] = useState<IManualTimeEntry | null>(null)
     const logInUserData = useLogInUserStore(state => state.logInUserData);
 
     // handle approve or reject manual request
@@ -168,16 +168,21 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
                             </h1>
                             <p className=" text-sm font-thin text-subTextColor dark:text-darkTextSecondary">{format(new Date(row?.original?.start_time), 'hh:mm a')} - {format(new Date(row?.original?.end_time), 'hh:mm a')}</p>
                         </div>
-                        <Popover>
-                            <PopoverTrigger asChild>
-                                <div>
-                                    <FilterButton></FilterButton>
-                                </div>
-                            </PopoverTrigger>
-                            <PopoverContent side="bottom" align="end" className=" w-[260px] p-2">
-                                <div className="">
-                                    <div className="space-y-2">
-                                        <div
+                        <>
+                            {
+                                (logInUserData?.role === 'admin' ||
+                                    logInUserData?.role === 'manager' ||
+                                    logInUserData?.role === 'hr') &&
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <div>
+                                            <FilterButton></FilterButton>
+                                        </div>
+                                    </PopoverTrigger>
+                                    <PopoverContent side="bottom" align="end" className=" w-[260px] p-2">
+                                        <div className="">
+                                            <div className="space-y-2">
+                                                {/* <div
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 setSelectedItem(row?.original);
@@ -186,12 +191,8 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
                                             className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
                                             <EditIcon size={20} />
                                             <p>Edit Time</p>
-                                        </div>
+                                        </div> */}
 
-                                        {
-                                            // logInUserData?.role !== "employee" && logInUserData?.role !== "project_manager"  &&
-                                            logInUserData?.role !== "employee" &&
-                                            <>
                                                 <ConfirmDialog
                                                     trigger={
                                                         <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
@@ -219,13 +220,14 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
                                                     cancelText="Cancel"
                                                     onConfirm={() => handleApproveReject({ is_approved: false, id: row?.original?.id })}
                                                 />
-                                            </>
-                                        }
 
-                                    </div>
-                                </div>
-                            </PopoverContent>
-                        </Popover>
+
+                                            </div>
+                                        </div>
+                                    </PopoverContent>
+                                </Popover>
+                            }
+                        </>
                     </div>
                 );
             },
@@ -278,14 +280,14 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
                 </TableBody>
             </Table>
             {/* edit modal here */}
-            <Dialog open={open} onOpenChange={setOpen}>
+            {/* <Dialog open={open} onOpenChange={setOpen}>
                 {selectedItem && (
                     <EditManualTimeModal
                         onClose={() => setOpen(false)}
                         selectedItem={selectedItem}
                     />
                 )}
-            </Dialog>
+            </Dialog> */}
         </div>
     );
 };

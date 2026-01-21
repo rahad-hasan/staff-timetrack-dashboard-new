@@ -305,7 +305,6 @@ const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
                     <>
                         {
                             (logInUserData?.role === 'admin' ||
-                                logInUserData?.role === 'manager' ||
                                 logInUserData?.role === 'hr') &&
                             <div>
                                 <p>
@@ -322,7 +321,6 @@ const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
                     <>
                         {
                             (logInUserData?.role === 'admin' ||
-                                logInUserData?.role === 'manager' ||
                                 logInUserData?.role === 'hr') &&
                             <div className="flex items-center gap-3" >
                                 <ConfirmDialog

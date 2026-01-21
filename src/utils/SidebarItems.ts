@@ -80,7 +80,58 @@ export const sidebarItems = [
         collapsible: false,
         subItems: [],
     },
+];
 
+
+export const sidebarItemsEmployee = [
+    {
+        icon: LayoutDashboard,
+        label: 'Dashboard',
+        key: '/dashboard',
+        collapsible: false,
+        subItems: [],
+    },
+    {
+        icon: Clock4,
+        label: 'Timesheets',
+        key: 'timesheets',
+        collapsible: true,
+        subItems: [
+            { label: 'All timesheets', key: '/timesheets/all-timesheets' },
+            { label: 'Manual requests', key: '/timesheets/manual-requests' },
+        ],
+    },
+    {
+        icon: SquareActivity,
+        label: 'Activity',
+        key: 'Activity',
+        collapsible: true,
+        subItems: [
+            { label: 'Screenshot', key: '/activity/screenshorts' },
+            { label: 'App', key: '/activity/app' },
+            { label: 'URLs', key: '/activity/urls' },
+        ],
+    },
+    {
+        icon: BriefcaseBusiness,
+        label: 'Projects',
+        key: 'project-management',
+        collapsible: true,
+        subItems: [
+            { label: 'Projects', key: '/project-management/projects' },
+            { label: 'Task', key: '/project-management/task' },
+        ],
+    },
+    {
+        icon: BarChart,
+        label: 'Report',
+        key: 'report',
+        collapsible: true,
+        subItems: [
+            { label: 'Timesheet', key: '/report/timesheets' },
+            { label: 'Attendance', key: '/report/attendance' },
+        ],
+    }
 ];
 
 export const othersSidebarItems = [

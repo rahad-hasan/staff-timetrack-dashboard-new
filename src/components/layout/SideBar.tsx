@@ -3,7 +3,7 @@ import Image from 'next/image';
 // import logo from '../../assets/logo.svg'
 // import fit from '../../assets/fit.svg'
 // import { useEffect, useState } from 'react';
-import { othersSidebarItems, sidebarItems } from '@/utils/SidebarItems';
+import { othersSidebarItems, sidebarItems, sidebarItemsEmployee } from '@/utils/SidebarItems';
 import { useSidebarStore } from '@/store/sidebarStore';
 // import { usePathname } from 'next/navigation';
 import SidebarItem from './sidebar/SidebarItem';
@@ -13,6 +13,7 @@ import timerLogo from '../../assets/timerLogo.svg'
 import CollapsedIcon from '../Icons/CollapsedIcon';
 import clsx from 'clsx';
 import React from 'react';
+import { useLogInUserStore } from '@/store/logInUserStore';
 
 const SideBar = () => {
     // const pathname = usePathname();
@@ -27,8 +28,13 @@ const SideBar = () => {
         toggleCollapse,
     } = useSidebarStore();
 
+    const logInUserData = useLogInUserStore(state => state.logInUserData);
     // console.log('isCollapsed', isCollapsed);
     // console.log('openMenu', openMenu);
+
+    const roleBasedSidebarItems = (logInUserData?.role === 'admin' ||
+        logInUserData?.role === 'manager' ||
+        logInUserData?.role === 'hr') ? sidebarItems : sidebarItemsEmployee;
 
     return (
         <div className='sticky top-0 z-[50]'>
@@ -76,7 +82,7 @@ const SideBar = () => {
                         {!isCollapsed && (
                             <h2 className="text-xs uppercase text-subTextColor dark:text-darkTextSecondary mb-3">Main menu</h2>
                         )}
-                        {sidebarItems.map((item) => (
+                        {roleBasedSidebarItems.map((item) => (
                             <div key={item.key}>
                                 <SidebarItem
                                     icon={item.icon}
@@ -108,7 +114,7 @@ const SideBar = () => {
                         ))}
                     </div>
 
-                    <div className={clsx(isCollapsed ? "px-5" : "px-4"," pt-3 border-t-2 border-borderColor dark:border-darkBorder")}>
+                    <div className={clsx(isCollapsed ? "px-5" : "px-4", " pt-3 border-t-2 border-borderColor dark:border-darkBorder")}>
                         {!isCollapsed && (
                             <h2 className="text-xs uppercase text-subTextColor dark:text-darkTextSecondary mb-2">Others</h2>
                         )}

@@ -8,20 +8,25 @@ import {
 import AddEventModal from "@/components/Calender/AddEventModal";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import { useState } from "react";
+import { useLogInUserStore } from "@/store/logInUserStore";
 
 const CalenderHeading = () => {
     const [open, setOpen] = useState(false)
+    const logInUserData = useLogInUserStore(state => state.logInUserData);
     return (
         <div className="flex items-center justify-between gap-3 mb-5">
             <HeadingComponent heading="Calender" subHeading="All the teams task and events are displayed here"></HeadingComponent>
-
-            <Dialog open={open} onOpenChange={setOpen}>
-                <DialogTrigger asChild>
-                    <Button onClick={() => setOpen(true)} className=""><Plus className="size-5" /> <span className=" hidden sm:block">Add an event</span></Button>
-                </DialogTrigger>
-                <AddEventModal onClose={() => setOpen(false)}></AddEventModal>
-            </Dialog>
-
+            {
+                (logInUserData?.role === 'admin' ||
+                    logInUserData?.role === 'manager' ||
+                    logInUserData?.role === 'hr') &&
+                <Dialog open={open} onOpenChange={setOpen}>
+                    <DialogTrigger asChild>
+                        <Button onClick={() => setOpen(true)} className=""><Plus className="size-5" /> <span className=" hidden sm:block">Add an event</span></Button>
+                    </DialogTrigger>
+                    <AddEventModal onClose={() => setOpen(false)}></AddEventModal>
+                </Dialog>
+            }
         </div>
     );
 };

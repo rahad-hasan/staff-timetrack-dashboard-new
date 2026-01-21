@@ -16,8 +16,7 @@ import { formatTZDate } from "@/utils";
 // const formatToISODate = (date: Date) => date?.toISOString().split('T')[0];
 
 const CalenderTable = ({ startMonth, endMonth, eventData }: { startMonth: string | number | string[] | undefined, endMonth: string | number | string[] | undefined, eventData: any }) => {
-    
-    
+
     const [open, setOpen] = useState(false)
     const [selectedEvent, setSelectedEvent] = useState<any>(null);
     const days = [
