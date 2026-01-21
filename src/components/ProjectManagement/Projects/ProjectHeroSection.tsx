@@ -10,8 +10,10 @@ import AddProjectModal from "@/components/ProjectManagement/Projects/AddProjectM
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { useLogInUserStore } from "@/store/logInUserStore";
 
 const ProjectHeroSection = () => {
+    const logInUserData = useLogInUserStore(state => state.logInUserData);
     const [open, setOpen] = useState(false)
     // type Tab = "active" | "archived";
     const router = useRouter();
@@ -34,17 +36,22 @@ const ProjectHeroSection = () => {
         <div>
             <div className="flex items-center justify-between gap-3 mb-2 md:mb-5">
                 <HeadingComponent heading="Projects" subHeading="All the projects during the working hour by team member is here"></HeadingComponent>
+                {
+                    (logInUserData?.role === 'admin' ||
+                        logInUserData?.role === 'manager' ||
+                        logInUserData?.role === 'hr') &&
+                    <div className="">
+                        <Dialog open={open} onOpenChange={setOpen}>
+                            <form>
+                                <DialogTrigger asChild>
+                                    <Button className=""><Plus className="size-5" /> <span className=" hidden sm:block">Add Project</span></Button>
+                                </DialogTrigger>
+                                <AddProjectModal onClose={() => setOpen(false)}></AddProjectModal>
+                            </form>
+                        </Dialog>
+                    </div>
+                }
 
-                <div className="">
-                    <Dialog open={open} onOpenChange={setOpen}>
-                        <form>
-                            <DialogTrigger asChild>
-                                <Button className=""><Plus className="size-5" /> <span className=" hidden sm:block">Add Project</span></Button>
-                            </DialogTrigger>
-                            <AddProjectModal onClose={() => setOpen(false)}></AddProjectModal>
-                        </form>
-                    </Dialog>
-                </div>
             </div>
             <div className=" flex gap-3 items-center justify-between mt-3 sm:mt-0">
                 <div className="flex gap-3">

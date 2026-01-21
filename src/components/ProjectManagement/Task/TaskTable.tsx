@@ -29,6 +29,7 @@ import EditIcon from "@/components/Icons/FilterOptionIcon/EditIcon";
 import DeleteIcon from "@/components/Icons/DeleteIcon";
 import { toast } from "sonner";
 import { editTask } from "@/actions/task/action";
+import { useLogInUserStore } from "@/store/logInUserStore";
 
 const TaskTable = ({ data }: { data: ITask[] }) => {
     console.log("TaskTable", data);
@@ -37,6 +38,7 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false)
     const [selectedTask, setSelectedTask] = useState<ITask | null>(null)
+    const logInUserData = useLogInUserStore(state => state.logInUserData);
 
     async function handleStatusUpdate(values: { status: string, id: number }) {
         setLoading(true);
@@ -315,40 +317,57 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
         },
         {
             accessorKey: "action",
-            header: () => <div className="">Action</div>,
+            header: () =>
+                <>
+                    {
+                        (logInUserData?.role === 'admin' ||
+                            logInUserData?.role === 'manager' ||
+                            logInUserData?.role === 'hr') &&
+                        <div className="">Action</div>
+                    }
+                </>,
             cell: ({ row }) => {
-                return <div className="">
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <div>
-                                <FilterButton></FilterButton>
-                            </div>
-                        </PopoverTrigger>
-                        <PopoverContent side="bottom" align="end" className=" w-[250px] p-2">
+                return (
+                    <>
+                        {
+                            (logInUserData?.role === 'admin' ||
+                                logInUserData?.role === 'manager' ||
+                                logInUserData?.role === 'hr') &&
                             <div className="">
-                                <div className="space-y-2">
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <div>
+                                            <FilterButton></FilterButton>
+                                        </div>
+                                    </PopoverTrigger>
+                                    <PopoverContent side="bottom" align="end" className=" w-[250px] p-2">
+                                        <div className="">
+                                            <div className="space-y-2">
 
-                                    <div
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            e.stopPropagation();
-                                            setSelectedTask(row?.original);
-                                            setOpen(true);
-                                        }}
-                                        className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                        <EditIcon size={18} />
-                                        <p>Edit Client</p>
-                                    </div>
+                                                <div
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        e.stopPropagation();
+                                                        setSelectedTask(row?.original);
+                                                        setOpen(true);
+                                                    }}
+                                                    className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
+                                                    <EditIcon size={18} />
+                                                    <p>Edit Client</p>
+                                                </div>
 
-                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
+                                                {/* <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
                                         <DeleteIcon size={18} />
                                         <p>Delete Client</p>
-                                    </div>
-                                </div>
+                                    </div> */}
+                                            </div>
+                                        </div>
+                                    </PopoverContent>
+                                </Popover>
                             </div>
-                        </PopoverContent>
-                    </Popover>
-                </div>;
+                        }
+                    </>
+                );
             },
         },
     ];

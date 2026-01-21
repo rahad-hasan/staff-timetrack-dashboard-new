@@ -32,11 +32,12 @@ import EditIcon from "@/components/Icons/FilterOptionIcon/EditIcon";
 // import DuplicateIcon from "@/components/Icons/FilterOptionIcon/DuplicateIcon";
 // import ArchiveIcon from "@/components/Icons/FilterOptionIcon/ArchiveIcon";
 // import MemberIcon from "@/components/Icons/FilterOptionIcon/MemberIcon";
-import DeleteIcon from "@/components/Icons/DeleteIcon";
+// import DeleteIcon from "@/components/Icons/DeleteIcon";
 import EditProjectModal from "./EditProjectModal";
 import { toast } from "sonner";
 import { editProject } from "@/actions/projects/action";
 import { useProjectFormStore } from "@/store/ProjectFormStore";
+import { useLogInUserStore } from "@/store/logInUserStore";
 
 
 const ProjectTable = ({ data }: { data: IProject[] }) => {
@@ -47,7 +48,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
     const [rowSelection, setRowSelection] = useState({})
     const [loading, setLoading] = useState(false);
     const router = useRouter();
-
+    const logInUserData = useLogInUserStore(state => state.logInUserData);
     const resetData = useProjectFormStore(state => state.resetData);
     // handle edit modal close and clean zustand store
     const handleOpenChange = (isOpen: boolean) => {
@@ -418,17 +419,22 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                                         <EyeIcon size={18} />
                                         <p>View Project</p>
                                     </div>
+                                    {
+                                        (logInUserData?.role === 'admin' ||
+                                            logInUserData?.role === 'manager' ||
+                                            logInUserData?.role === 'hr') &&
+                                        <div
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setSelectedProject(row?.original);
+                                                setOpen(true);
+                                            }}
+                                            className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
+                                            <EditIcon size={18} />
+                                            <p>Edit Project</p>
+                                        </div>
+                                    }
 
-                                    <div
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            setSelectedProject(row?.original);
-                                            setOpen(true);
-                                        }}
-                                        className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                        <EditIcon size={18} />
-                                        <p>Edit Project</p>
-                                    </div>
 
                                     {/* <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
                                         <MemberIcon size={18} />
@@ -442,10 +448,10 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                                         <ArchiveIcon size={18} />
                                         <p>Archive Project</p>
                                     </div> */}
-                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
+                                    {/* <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
                                         <DeleteIcon size={18} />
                                         <p>Delete Project</p>
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
                         </PopoverContent>

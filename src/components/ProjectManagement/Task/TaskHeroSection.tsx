@@ -12,6 +12,7 @@ import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useLogInUserStore } from "@/store/logInUserStore";
 
 const TaskHeroSection = () => {
     const [open, setOpen] = useState(false)
@@ -19,6 +20,7 @@ const TaskHeroSection = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const pathname = usePathname();
+    const logInUserData = useLogInUserStore(state => state.logInUserData);
     const handleSearch = (query: string) => {
         const params = new URLSearchParams(searchParams.toString());
         params.set("search", query);
@@ -66,18 +68,21 @@ const TaskHeroSection = () => {
                             ))}
                         </div> */}
                     </div>
-
-                    <Dialog open={open} onOpenChange={setOpen}>
-                        {/* <Button onClick={() => setOpen(true)} className=""><Plus className="size-5" /> <span className=" hidden sm:block">Create Task</span></Button> */}
-                        <DialogTrigger asChild>
-                            <Button>
-                                <Plus className="size-5" />
-                                <span className="hidden sm:block">Create Task</span>
-                            </Button>
-                        </DialogTrigger>
-                        <CreateTaskModal handleCloseDialog={handleCloseDialog}></CreateTaskModal>
-                    </Dialog>
-
+                    {
+                        (logInUserData?.role === 'admin' ||
+                            logInUserData?.role === 'manager' ||
+                            logInUserData?.role === 'hr') &&
+                        <Dialog open={open} onOpenChange={setOpen}>
+                            {/* <Button onClick={() => setOpen(true)} className=""><Plus className="size-5" /> <span className=" hidden sm:block">Create Task</span></Button> */}
+                            <DialogTrigger asChild>
+                                <Button>
+                                    <Plus className="size-5" />
+                                    <span className="hidden sm:block">Create Task</span>
+                                </Button>
+                            </DialogTrigger>
+                            <CreateTaskModal handleCloseDialog={handleCloseDialog}></CreateTaskModal>
+                        </Dialog>
+                    }
                 </div>
             </div>
             <div className=" flex flex-col gap-4 md:gap-0 md:flex-row justify-between">
