@@ -34,3 +34,9 @@ export const formatTZDate = (
 ) => {
   return formatInTimeZone(new Date(date), timeZone, "yyyy-MM-dd");
 };
+export const formatTZTime = (
+  date: Date | string,
+  timeZone = getUserTimeZone()
+) => {
+  return formatInTimeZone(new Date(date), timeZone, "hh:mm a");
+};
