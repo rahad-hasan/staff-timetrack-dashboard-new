@@ -5,7 +5,7 @@ import { baseApi } from "../baseApi";
 
 export const getDashboardStats = async (query = {}) => {
     const queryString = buildQuery(query);
-    return await baseApi(`/admin/stats${queryString ? `?${queryString}` : ""}`, {
+    return await baseApi(`/dashboard/stats${queryString ? `?${queryString}` : ""}`, {
         tag: "dashboardStats",
     });
 };
@@ -33,7 +33,7 @@ export const getDashboardAppsUrls = async (query = {}) => {
 
 export const getDashboardInsights = async (query = {}) => {
     const queryString = buildQuery(query);
-    return await baseApi(`/admin/insights${queryString ? `?${queryString}` : ""}`, {
+    return await baseApi(`/dashboard/insights${queryString ? `?${queryString}` : ""}`, {
         tag: "insightsDashboard",
     });
 };

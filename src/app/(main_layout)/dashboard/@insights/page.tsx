@@ -4,8 +4,9 @@ import { ISearchParamsProps } from '@/types/type';
 
 const InsightsServer = async ({ searchParams }: ISearchParamsProps) => {
   const params = await searchParams;
+  const statsType = params.tab === 'daily' ? 'daily' : (params.tab || 'daily');
   const result = await getDashboardInsights({
-    type: params.tab,
+    type: statsType,
   });
 
   return (

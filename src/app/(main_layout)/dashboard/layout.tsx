@@ -1,6 +1,6 @@
-import { Suspense } from "react";
+import { cookies } from "next/headers";
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
   recentActivity,
   insights,
@@ -17,6 +17,9 @@ export default function DashboardLayout({
   projectListTable: React.ReactNode;
   taskListTable: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const role = cookieStore.get("staffTimeDashboardRole")?.value;
+
   return (
     <div className="w-full space-y-5">
       {children}
@@ -25,10 +28,17 @@ export default function DashboardLayout({
         {insights}
       </div>
       {taskListTable}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        {members}
-        {appsAndUrl}
-      </div>
+
+      {
+        (role === 'admin' ||
+          role === 'manager' ||
+          role === 'hr') &&
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          {members}
+          {appsAndUrl}
+        </div>
+      }
+
       {projectListTable}
     </div>
   );

@@ -3,16 +3,14 @@
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import { IDashboardInsight } from "./Insights";
 
-
-
 const COLORS = ["#5db0f1", "#f40139", "#ffcb49"];
 
 const OverallActivityChart = ({ data }: { data: IDashboardInsight }) => {
 
     const value = [
-        { name: "Production", value: data?.percentages?.productive },
-        { name: "Active", value: data?.percentages?.active },
-        { name: "Idle", value: data?.percentages?.idle },
+        { name: "Productive", value: data?.data?.productive },
+        { name: "Active", value: data?.data?.active },
+        { name: "Idle", value: data?.data?.idle },
     ];
 
     return (

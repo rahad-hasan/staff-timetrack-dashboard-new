@@ -4,7 +4,7 @@ import { getDashboardStats } from '@/actions/dashboard/action';
 
 const HeroCartServer = async ({ searchParams }: ISearchParamsProps) => {
     const params = await searchParams;
-    const statsType = params.tab === 'daily' ? 'today' : (params.tab || 'today');
+    const statsType = params.tab === 'daily' ? 'daily' : (params.tab || 'daily');
     const result = await getDashboardStats({
         type: statsType,
     });

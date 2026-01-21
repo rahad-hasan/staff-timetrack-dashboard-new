@@ -5,21 +5,18 @@ import { Info } from "lucide-react";
 
 export interface IDashboardInsight {
     period: string;
-    active_duration: string;
-    productive: number;
-    idle_duration: string;
-    percentages: {
+    data: {
         active: number;
         idle: number;
         productive: number;
     };
 }
 const Insights = async ({ data }: { data: IDashboardInsight }) => {
-
+    console.log("what type of data I am getting fromh here.....",data);
     const classificationData = [
-        { label: "Productive", percentage: data?.percentages?.productive, color: "bg-[#5db0f1]" },
-        { label: "Active", percentage: data?.percentages?.active, color: "bg-[#dce3e3]" },
-        { label: "Idle", percentage: data?.percentages?.idle, color: "bg-[#ffcb49]" },
+        { label: "Productive", percentage: data?.data?.productive, color: "bg-[#5db0f1]" },
+        { label: "Active", percentage: data?.data?.active, color: "bg-[#dce3e3]" },
+        { label: "Idle", percentage: data?.data?.idle, color: "bg-[#ffcb49]" },
     ];
 
     return (
@@ -58,7 +55,7 @@ const Insights = async ({ data }: { data: IDashboardInsight }) => {
                     <div className=" flex justify-between">
                         <div className=" mb-4">
                             <p className="text-3xl font-bold text-headingTextColor mr-2 dark:text-darkTextPrimary">
-                                {data?.percentages?.productive}%
+                                {data?.data?.productive}%
                             </p>
                             <p className="text-lg font-medium text-headingTextColor dark:text-darkTextSecondary">
                                 Productive

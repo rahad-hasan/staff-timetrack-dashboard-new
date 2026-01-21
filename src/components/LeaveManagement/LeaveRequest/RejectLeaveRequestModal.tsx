@@ -48,9 +48,9 @@ const RejectLeaveRequestModal = ({ data }: { data: ILeaveRequest }) => {
             });
 
             if (res?.success) {
-                toast.success(res?.message || "Request reject successfully");
+                toast.success(res?.message || "Request rejected successfully");
             } else {
-                toast.error(res?.message || "Failed to reject request");
+                toast.error(res?.message || "Failed to rejected request");
             }
         } catch (error: any) {
             toast.error(error.message || "Something went wrong!");
