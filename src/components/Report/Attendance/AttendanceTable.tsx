@@ -101,7 +101,7 @@ const AttendanceTable = ({ attendanceListData }: any) => {
             }
         },
         {
-            accessorKey: "appVersion",
+            accessorKey: "app_version",
             header: ({ column }) => {
                 return (
                     <div>
@@ -116,7 +116,7 @@ const AttendanceTable = ({ attendanceListData }: any) => {
                 )
             },
             cell: ({ row }) => {
-                const appVersion = row.getValue("appVersion") as string;
+                const appVersion = row.getValue("app_version") as string;
                 return (
                     <div className="flex flex-col">
                         <span className="">{appVersion}</span>

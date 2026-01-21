@@ -13,7 +13,7 @@ import EmptyTableRow from "../Common/EmptyTableRow";
 import FilterButton from "../Common/FilterButton";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { format } from "date-fns";
-import DownloadIcon from "../Icons/DownloadIcon";
+// import DownloadIcon from "../Icons/DownloadIcon";
 import EditIcon from "../Icons/FilterOptionIcon/EditIcon";
 import DeleteIcon from "../Icons/DeleteIcon";
 import { ITeamMembers } from "@/global/globalTypes";
@@ -257,11 +257,11 @@ const TeamsMemberTable = ({ data }: any) => {
                         <PopoverContent side="bottom" align="end" className=" w-[250px] p-2">
                             <div className="">
                                 <div className="space-y-2">
-                                    <div
+                                    {/* <div
                                         className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100  hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
                                         <DownloadIcon size={18} />
                                         <p>Export Report</p>
-                                    </div>
+                                    </div> */}
                                     <div
                                         onClick={(e) => {
                                             e.stopPropagation();

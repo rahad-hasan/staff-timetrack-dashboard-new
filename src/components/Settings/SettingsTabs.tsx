@@ -10,9 +10,7 @@ const SettingsTabs = () => {
     const logInUserData = useLogInUserStore(state => state.logInUserData);
     type Tab = "Profile" | "Configuration" | "Change Password"
     
-    const roleBasedTabs = (logInUserData?.role === 'admin' ||
-        logInUserData?.role === 'manager' ||
-        logInUserData?.role === 'hr') ? ["Profile", "Configuration", "Change Password"] : ["Profile", "Change Password"]
+    const roleBasedTabs = (logInUserData?.role === 'admin') ? ["Profile", "Configuration", "Change Password"] : ["Profile", "Change Password"]
 
     const searchParams = useSearchParams();
     const router = useRouter();

@@ -38,8 +38,7 @@ const ProjectHeroSection = () => {
                 <HeadingComponent heading="Projects" subHeading="All the projects during the working hour by team member is here"></HeadingComponent>
                 {
                     (logInUserData?.role === 'admin' ||
-                        logInUserData?.role === 'manager' ||
-                        logInUserData?.role === 'hr') &&
+                        logInUserData?.role === 'manager') &&
                     <div className="">
                         <Dialog open={open} onOpenChange={setOpen}>
                             <form>

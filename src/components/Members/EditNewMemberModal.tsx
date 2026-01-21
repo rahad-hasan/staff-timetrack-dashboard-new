@@ -70,8 +70,10 @@ const EditNewMemberModal = ({ onClose, selectedUser }: EditNewMemberModalProps) 
             const res = await editMember({ data: values, id: selectedUser?.id });
 
             if (res?.success) {
-                onClose();
                 form.reset();
+                setTimeout(() => {
+                    onClose();
+                }, 0);
                 toast.success(res?.message || "Member edited successfully");
             } else {
                 toast.error(res?.message || "Failed to edit member");

@@ -340,8 +340,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                     <div className="flex justify-end">
                         {
                             (logInUserData?.role === 'admin' ||
-                                logInUserData?.role === 'manager' ||
-                                logInUserData?.role === 'hr') ?
+                                logInUserData?.role === 'manager') ?
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
                                         <Button
@@ -433,8 +432,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                                     </div>
                                     {
                                         (logInUserData?.role === 'admin' ||
-                                            logInUserData?.role === 'manager' ||
-                                            logInUserData?.role === 'hr') &&
+                                            logInUserData?.role === 'manager') &&
                                         <div
                                             onClick={(e) => {
                                                 e.stopPropagation();
