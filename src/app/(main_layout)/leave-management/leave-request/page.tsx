@@ -1,4 +1,5 @@
 import HeadingComponent from "@/components/Common/HeadingComponent";
+import LeaveRequestHeading from "@/components/LeaveManagement/LeaveRequest/LeaveRequestHeading";
 import LeaveRequestServer from "@/components/LeaveManagement/LeaveRequest/LeaveRequestServer";
 import LeaveRequestTableSkeleton from "@/skeleton/leaveManagement/LeaveRequestTableSkeleton";
 import { ISearchParamsProps } from "@/types/type";
@@ -10,6 +11,7 @@ const LeaveRequest = async ({ searchParams }: ISearchParamsProps) => {
         <div>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5">
                 <HeadingComponent heading="Leave Management" subHeading="All the teams member leave details are displayed here"></HeadingComponent>
+                <LeaveRequestHeading></LeaveRequestHeading>
             </div>
             <Suspense fallback={<LeaveRequestTableSkeleton />}>
                 <LeaveRequestServer searchParams={searchParams} />
