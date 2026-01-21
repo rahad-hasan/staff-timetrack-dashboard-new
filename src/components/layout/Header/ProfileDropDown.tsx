@@ -35,10 +35,13 @@ const ProfileDropDown = () => {
             <AvatarImage src={logInUserData?.image ? logInUserData?.image : ""} alt="@shadcn" />
             <AvatarFallback>
               {logInUserData?.name
-                .split(" ")
-                .map((n: string) => n[0])
-                .join("")
-                .slice(0, 2)}
+                ? logInUserData.name
+                  .split(" ")
+                  .map((n: string) => n[0])
+                  .join("")
+                  .toUpperCase()
+                  .slice(0, 2)
+                : ""}
             </AvatarFallback>
           </Avatar>
           <span className="hidden md:block text-headingTextColor dark:text-darkTextPrimary">{logInUserData?.name}</span>

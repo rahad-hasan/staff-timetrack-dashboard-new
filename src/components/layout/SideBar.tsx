@@ -8,7 +8,7 @@ import { useSidebarStore } from '@/store/sidebarStore';
 // import { usePathname } from 'next/navigation';
 import SidebarItem from './sidebar/SidebarItem';
 import SubItem from './sidebar/SubItem';
-import TrialCart from './sidebar/TrialCart';
+// import TrialCart from './sidebar/TrialCart';
 import timerLogo from '../../assets/timerLogo.svg'
 import CollapsedIcon from '../Icons/CollapsedIcon';
 import clsx from 'clsx';
@@ -150,7 +150,7 @@ const SideBar = () => {
                         ))}
                     </div>
 
-                    {!isCollapsed && <TrialCart />}
+                    {/* {!isCollapsed && <TrialCart />} */}
                 </div>
             </div>
         </div>
