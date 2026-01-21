@@ -36,7 +36,7 @@ const ProfilePopoverContent = ({ side, align }: { side: "top" | "right" | "botto
                 <Avatar className="w-14 h-14">
                     <AvatarImage src={logInUserData?.image ? logInUserData?.image : ""} alt="@shadcn" />
                     <AvatarFallback>
-                        {logInUserData?.name
+                        {logInUserData?.name && logInUserData?.name
                             .split(" ")
                             .map((n: string) => n[0])
                             .join("")

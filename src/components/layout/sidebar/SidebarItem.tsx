@@ -99,12 +99,12 @@ const SidebarItem = ({
     <div
       onClick={onClick}
       className={clsx(
-        "flex items-center justify-between w-full text-base px-3 text-headingTextColor dark:text-darkTextPrimary dark:hover:text-primary hover:text-primary transition-all duration-200 ease-in-out",
+        "flex items-center justify-between w-full text-base px-3 text-headingTextColor dark:text-darkTextPrimary transition-all duration-200 ease-in-out",
         isCollapsed ? "justify-center " : "",
         "py-2 cursor-pointer",
-        activeMenu && !collapsible && "bg-[#E9F8F0] dark:bg-darkPrimaryBg text-headingTextColor dark:text-darkTextPrimary shadow rounded-lg",
+        activeMenu && !collapsible && "bg-[#ffffff] border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg text-headingTextColor dark:text-darkTextPrimary  rounded-lg",
         activeMenu && collapsible && "text-primary dark:text-primary",
-        isCollapsed && subMenuActive && "bg-[#E9F8F0] dark:bg-darkPrimaryBg shadow rounded-lg"
+        isCollapsed && subMenuActive && "bg-[#ffffff] border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg  rounded-lg"
       )}
     >
       <div className={clsx("flex items-center gap-2")}>

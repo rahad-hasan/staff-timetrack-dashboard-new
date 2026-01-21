@@ -78,7 +78,7 @@ const SideBar = () => {
                         </button>
                     </div>
 
-                    <div className={clsx(isCollapsed ? "px-5" : "px-4", " px-4 mt-6 mb-3")}>
+                    <div className={clsx(isCollapsed ? "px-5" : "px-4", " mt-6 mb-3")}>
                         {!isCollapsed && (
                             <h2 className="text-xs uppercase text-subTextColor dark:text-darkTextSecondary mb-3">Main menu</h2>
                         )}
@@ -114,7 +114,7 @@ const SideBar = () => {
                         ))}
                     </div>
 
-                    <div className={clsx(isCollapsed ? "px-5" : "px-4", " pt-3 border-t-2 border-borderColor dark:border-darkBorder")}>
+                    <div className={clsx(isCollapsed ? "mx-5" : "mx-4", " pt-3 border-t border-borderColor dark:border-darkBorder")}>
                         {!isCollapsed && (
                             <h2 className="text-xs uppercase text-subTextColor dark:text-darkTextSecondary mb-2">Others</h2>
                         )}
