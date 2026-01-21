@@ -187,7 +187,10 @@ const AddManualTimeModal = ({ onClose }: { onClose: () => void }) => {
                     form.reset();
                     setDate(undefined);
                     toast.success(res?.message || "Manual Time added successfully");
-                    onClose();
+                    setTimeout(() => {
+                        onClose();
+                    }, 0);
+
                 } else {
                     toast.error(res?.message || "Failed to add manual time");
                 }

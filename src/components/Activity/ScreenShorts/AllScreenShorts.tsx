@@ -9,6 +9,7 @@ import { AnimatePresence } from 'framer-motion';
 import { IAllScreenshot } from "@/types/type";
 import { format, parseISO } from "date-fns";
 import AllScreenShortsModal from "./AllScreenShortsModal";
+import EmptyTableLogo from "@/assets/empty_table.svg";
 
 const AllScreenShorts = ({ data }: { data: IAllScreenshot[] | undefined }) => {
     console.log(data);
@@ -68,6 +69,16 @@ const AllScreenShorts = ({ data }: { data: IAllScreenshot[] | undefined }) => {
                     </div>
                 ))}
             </div>
+
+            {
+                data?.length === 0 &&
+                <div className="h-24 text-center">
+                    <div className={` flex flex-col gap-2.5 items-center justify-center py-16 `}>
+                        <Image src={EmptyTableLogo} alt="table empty" width={120} height={120} />
+                        <p className=" sm:text-lg">No Screenshots Available</p>
+                    </div>
+                </div>
+            }
             {/* </div>
             ))} */}
 

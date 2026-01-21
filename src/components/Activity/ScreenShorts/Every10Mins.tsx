@@ -14,6 +14,7 @@ import {
     TooltipContent,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
+import EmptyTableLogo from "@/assets/empty_table.svg";
 // import emptyActivity from "../../../assets/empty_activity.png";
 
 const Every10Mins = ({ data }: any) => {
@@ -351,8 +352,19 @@ const Every10Mins = ({ data }: any) => {
 
                             ))}
                         </div >
+
                     </div >
                 ))}
+
+            {
+                processedHours?.length === 0 &&
+                <div className="h-24 text-center">
+                    <div className={` flex flex-col gap-2.5 items-center justify-center py-16 `}>
+                        <Image src={EmptyTableLogo} alt="table empty" width={120} height={120} />
+                        <p className=" sm:text-lg">No Screenshots Available</p>
+                    </div>
+                </div>
+            }
 
             <AnimatePresence>
                 {

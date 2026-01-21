@@ -83,7 +83,6 @@ const UserLeaveHistoryTable = ({ data }: { data: ILeaveRequest[] }) => {
                 return (
                     <div>
                         <p>
-
                             leave Type
                         </p>
                     </div>
