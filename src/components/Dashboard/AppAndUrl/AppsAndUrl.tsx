@@ -26,7 +26,7 @@ const AppsAndUrl = ({ data }: { data: IRowAppsUrls[] }) => {
                             </AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col">
-                            <span className="font-bold mb-1 capitalize text-headingTextColor dark:text-darkTextPrimary">{name}</span>
+                            <span className="font-bold mb-1 capitalize text-headingTextColor dark:text-darkTextPrimary">{name?.length > 40 ? `${name.substring(0, 50)}...` : name}</span>
                             <span className="text-sm font-normal text-subTextColor dark:text-darkTextSecondary">App</span>
                         </div>
                     </div>
@@ -113,19 +113,19 @@ const AppsAndUrl = ({ data }: { data: IRowAppsUrls[] }) => {
                                 <TableRow key={`empty-${idx}`} className="hover:bg-transparent border-none">
                                     <TableCell>
                                         <div className="flex items-center gap-3">
-                                            <div className="size-10 rounded-full bg-gray-100 dark:bg-darkBorder/50" />
+                                            <div className="size-10 rounded-full bg-slate-200 dark:bg-darkBorder/50" />
                                             <div className="flex flex-col gap-2">
-                                                <div className="h-4 w-20 rounded bg-gray-100 dark:bg-darkBorder/50" />
-                                                <div className="h-3 w-12 rounded bg-gray-50 dark:bg-darkBorder/30" />
+                                                <div className="h-4 w-20 rounded bg-slate-200 dark:bg-darkBorder/50" />
+                                                <div className="h-3 w-12 rounded bg-slate-200 dark:bg-darkBorder/30" />
                                             </div>
                                         </div>
                                     </TableCell>
                                     <TableCell>
-                                        <div className="h-4 w-16 rounded bg-gray-100 dark:bg-darkBorder/50" />
+                                        <div className="h-4 w-16 rounded bg-slate-200 dark:bg-darkBorder/50" />
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex justify-center">
-                                            <div className="h-4 w-16 rounded bg-gray-100 dark:bg-darkBorder/50" />
+                                            <div className="h-4 w-16 rounded bg-slate-200 dark:bg-darkBorder/50" />
                                         </div>
                                     </TableCell>
                                 </TableRow>

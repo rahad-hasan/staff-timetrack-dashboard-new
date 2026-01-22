@@ -138,24 +138,24 @@ const DashboardMembersTable = ({ data = [] }: { data: IMembersStatsDashboard[] }
                                 <TableRow key={`empty-${idx}`} className="hover:bg-transparent border-none">
                                     <TableCell>
                                         <div className="flex items-center gap-3">
-                                            <div className="size-10 rounded-full bg-gray-100 dark:bg-darkBorder" />
+                                            <div className="size-10 rounded-full bg-slate-200 dark:bg-darkBorder" />
                                             <div className="flex flex-col gap-2">
-                                                <div className="h-4 w-24 rounded bg-gray-100 dark:bg-darkBorder" />
-                                                <div className="h-3 w-32 rounded bg-gray-50 dark:bg-darkBorder/50" />
+                                                <div className="h-4 w-24 rounded bg-slate-200 dark:bg-darkBorder" />
+                                                <div className="h-3 w-32 rounded bg-slate-200 dark:bg-darkBorder/50" />
                                             </div>
                                         </div>
                                     </TableCell>
                                     <TableCell>
-                                        <div className="h-6 w-12 rounded-full bg-gray-100 dark:bg-darkBorder mb-2" />
-                                        <div className="h-4 w-16 rounded bg-gray-100 dark:bg-darkBorder" />
+                                        <div className="h-6 w-12 rounded-full bg-slate-200 dark:bg-darkBorder mb-2" />
+                                        <div className="h-4 w-16 rounded bg-slate-200 dark:bg-darkBorder" />
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex justify-end gap-4">
                                             <div className="flex flex-col items-start gap-2">
-                                                <div className="h-6 w-12 rounded-full bg-gray-100 dark:bg-darkBorder" />
-                                                <div className="h-4 w-28 rounded bg-gray-100 dark:bg-darkBorder" />
+                                                <div className="h-6 w-12 rounded-full bg-slate-200 dark:bg-darkBorder" />
+                                                <div className="h-4 w-28 rounded bg-slate-200 dark:bg-darkBorder" />
                                             </div>
-                                            <div className="h-10 w-20 rounded bg-gray-100 dark:bg-darkBorder" />
+                                            <div className="h-10 w-20 rounded bg-slate-200 dark:bg-darkBorder" />
                                         </div>
                                     </TableCell>
                                 </TableRow>

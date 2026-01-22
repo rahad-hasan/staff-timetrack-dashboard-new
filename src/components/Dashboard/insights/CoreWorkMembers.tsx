@@ -36,7 +36,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { ICoreMember } from "@/types/type";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 
-const CoreWorkMembers = ({ data= [] }: { data: ICoreMember[] }) => {
+const CoreWorkMembers = ({ data = [] }: { data: ICoreMember[] }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -183,15 +183,15 @@ const CoreWorkMembers = ({ data= [] }: { data: ICoreMember[] }) => {
                 <TableRow key={`empty-${idx}`} className="hover:bg-transparent">
                   <TableCell>
                     <div className="flex items-center gap-3">
-                      <div className="size-10 rounded-full bg-gray-100 dark:bg-darkBorder" />
-                      <div className="h-4 w-24 rounded bg-gray-100 dark:bg-darkBorder" />
+                      <div className="size-10 rounded-full bg-slate-200 dark:bg-darkBorder" />
+                      <div className="h-4 w-24 rounded bg-slate-200 dark:bg-darkBorder" />
                     </div>
                   </TableCell>
                   <TableCell>
-                    <div className="h-4 w-12 rounded bg-gray-100 dark:bg-darkBorder" />
+                    <div className="h-4 w-12 rounded bg-slate-200 dark:bg-darkBorder" />
                   </TableCell>
                   <TableCell>
-                    <div className="h-4 w-16 ml-auto rounded bg-gray-100 dark:bg-darkBorder" />
+                    <div className="h-4 w-16 ml-auto rounded bg-slate-200 dark:bg-darkBorder" />
                   </TableCell>
                 </TableRow>
               ))}

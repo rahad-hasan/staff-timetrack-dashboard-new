@@ -195,11 +195,17 @@ const Every10Mins = ({ data }: any) => {
                                 block.type === "empty" ?
                                     <div
                                         key={blockIndex}
-                                        className=" min-h-64 flex items-center justify-center border border-dashed border-borderColor dark:border-darkBorder rounded-lg bg-gray-50/50 dark:bg-darkSecondaryBg"
+                                        className=" "
                                     >
-                                        {/* <Image src={emptyActivity} alt="No Activity" className="w-full rounded-lg" height={200} width={200} /> */}
-                                        <span className="text-gray-400 text-sm dark:text-darkTextSecondary">No activity</span>
+
+                                        <div
+                                            className=" min-h-10 flex items-center justify-center border border-dashed border-borderColor dark:border-darkBorder rounded-lg bg-gray-50/50 dark:bg-darkSecondaryBg"
+                                        >
+                                            {/* <Image src={emptyActivity} alt="No Activity" className="w-full rounded-lg" height={200} width={200} /> */}
+                                            <span className="text-gray-400 text-sm dark:text-darkTextSecondary">No activity</span>
+                                        </div>
                                     </div>
+
                                     :
                                     <div
                                         key={blockIndex}

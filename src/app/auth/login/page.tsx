@@ -185,7 +185,7 @@ const SignIn = () => {
                                 <Button disabled={loading} className=" w-full" type="submit">{loading ? "Loading..." : "Sign in"}</Button>
                                 {/* <Button className=" w-full" type="submit">{"Sign in"}</Button> */}
                                 {/* </Link> */}
-                                <h3 className=" text-center mt-2">Don’t have a account? <span className=" text-primary cursor-pointer">Sign Up</span></h3>
+                                {/* <h3 className=" text-center mt-2">Don’t have a account? <span className=" text-primary cursor-pointer">Sign Up</span></h3> */}
                             </form>
                         </Form>
                     </div>
