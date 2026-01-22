@@ -13,15 +13,15 @@ const SmallChart = ({ data }: { data?: Record<string, number> }) => {
         day: `Day ${key}`,
         value: value
     }));
-    console.log(chartData);
-    const trainerData = [
-        { month: "Jan", trainer: 50 },
-        { month: "Feb", trainer: 100 },
-        { month: "Mar", trainer: 40 },
-        { month: "Apr", trainer: 95 },
-        { month: "May", trainer: 120 },
-        { month: "Jun", trainer: 50 },
-    ];
+
+    // const trainerData = [
+    //     { month: "Jan", trainer: 50 },
+    //     { month: "Feb", trainer: 100 },
+    //     { month: "Mar", trainer: 40 },
+    //     { month: "Apr", trainer: 95 },
+    //     { month: "May", trainer: 120 },
+    //     { month: "Jun", trainer: 50 },
+    // ];
     const { color } = useColorStore();
 
     return (

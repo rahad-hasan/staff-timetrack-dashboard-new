@@ -12,7 +12,6 @@ import AllScreenShortsModal from "./AllScreenShortsModal";
 import EmptyTableLogo from "@/assets/empty_table.svg";
 
 const AllScreenShorts = ({ data }: { data: IAllScreenshot[] | undefined }) => {
-    console.log(data);
 
     const [selectedImage, setSelectedImage] = useState<IAllScreenshot>();
     const [modalOpen, setModalOpen] = useState<boolean>(false);

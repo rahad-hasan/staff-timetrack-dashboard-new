@@ -2,7 +2,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 
 const DayWeekMonthSelection = () => {
-    console.log('This is dayWeek Picker');
+
     type Tab = "daily" | "weekly" | "monthly";
     const searchParams = useSearchParams();
     const router = useRouter();

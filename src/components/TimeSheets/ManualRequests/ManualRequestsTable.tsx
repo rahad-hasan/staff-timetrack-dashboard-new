@@ -37,7 +37,6 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
                 },
                 id: id
             });
-            console.log("success:", res);
 
             if (res?.success) {
                 toast.success(res?.message || `Manual request ${is_approved ? "approved" : "rejected"} successfully`);

@@ -117,7 +117,6 @@ const Configuration = ({ data }: { data: ICompany }) => {
         setLoading(true);
         try {
             const res = await updateCompanyInfo({ data: finalData, id: data?.id });
-            console.log("success:", res);
 
             if (res?.success) {
                 toast.success(res?.message || "Updated company info successfully");

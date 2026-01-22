@@ -21,10 +21,8 @@ import { ArrowUpDown } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
-    console.log('data from server', data);
 
     const logInUserData = useLogInUserStore(state => state.logInUserData);
-    console.log('login user info', logInUserData);
 
     const getStatusStyles = (status?: string) => {
         switch (status?.toLowerCase()) {

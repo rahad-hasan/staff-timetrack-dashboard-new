@@ -26,7 +26,7 @@ import Link from "next/link";
 import FilterButton from "@/components/Common/FilterButton";
 
 const DashboardTaskTable = ({ data }: { data: ITask[] }) => {
-    console.log("TaskTable", data);
+
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
     const [loading, setLoading] = useState(false);
@@ -34,7 +34,6 @@ const DashboardTaskTable = ({ data }: { data: ITask[] }) => {
         setLoading(true);
         try {
             const res = await editTask({ data: { status: values.status }, id: values.id });
-            console.log("success:", res);
 
             if (res?.success) {
                 toast.success(res?.message || "Status updated successfully");

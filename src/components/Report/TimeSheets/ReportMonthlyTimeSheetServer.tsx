@@ -12,8 +12,7 @@ const ReportMonthlyTimeSheetServer = async ({ searchParams }: ISearchParamsProps
             from_date: params.start_month,
             to_date: params.end_month
         })
-    }
-    console.log('testing rendering every render', result);
+    };
 
     return (
         <div>

@@ -105,12 +105,10 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
             member_ids: values?.members.includes("all") ? "all" : values?.members,
             ...(values?.meetingLink && { meeting_link: values.meetingLink })
         }
-        console.log(finalData);
 
         setLoading(true);
         try {
             const res = await addEvent(finalData);
-            console.log("success:", res);
 
             if (res?.success) {
                 toast.success(res?.message || "Event added successfully");

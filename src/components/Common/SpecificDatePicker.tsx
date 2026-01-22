@@ -7,11 +7,11 @@ import CalendarIcon from "../Icons/CalendarIcon";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
 const SpecificDatePicker = () => {
-    console.log('date Picker rendered');
+
     const router = useRouter();
     const searchParams = useSearchParams();
     const pathname = usePathname();
-    console.log('get pathname from', pathname);
+
     // Initialize state from URL if available, otherwise today
     const [selectedDate, setSelectedDate] = useState<Date>(() => {
         const dateParam = searchParams.get("date");

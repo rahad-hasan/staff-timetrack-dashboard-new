@@ -8,7 +8,7 @@ const HeroCartServer = async ({ searchParams }: ISearchParamsProps) => {
     const result = await getDashboardStats({
         type: statsType,
     });
-    console.log(result);
+
     return (
         <>
             <HeroCart data={result?.data?.metrics}></HeroCart>

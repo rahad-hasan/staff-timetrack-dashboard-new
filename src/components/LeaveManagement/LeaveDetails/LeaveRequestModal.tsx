@@ -96,7 +96,6 @@ const LeaveRequestModal = ({ onClose }: { onClose: () => void }) => {
         setLoading(true);
         try {
             const res = await addLeave(finalData);
-            console.log("success:", res);
 
             if (res?.success) {
                 onClose();

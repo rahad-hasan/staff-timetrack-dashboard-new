@@ -10,10 +10,9 @@ import { ArrowUpDown } from "lucide-react";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 
 const ArchivedProjectTable = () => {
-    console.log("ArchivedProjectTable");
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
-    console.log(rowSelection);
+
     interface Project {
         projectName: string;
         date: string;

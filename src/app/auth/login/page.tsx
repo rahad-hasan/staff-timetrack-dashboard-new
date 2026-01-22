@@ -55,7 +55,6 @@ const SignIn = () => {
         setLoading(true);
         try {
             const res: any = await logIn(values);
-            console.log("Login success:", res);
 
             if (res?.success) {
                 // Cookies.set("accessToken", res?.data?.accessToken);

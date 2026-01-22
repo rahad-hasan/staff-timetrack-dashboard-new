@@ -8,7 +8,7 @@ import { differenceInMinutes, format } from 'date-fns';
 import { CheckCircle2, ClipboardList, Clock, MousePointer2, RefreshCcw } from "lucide-react";
 
 const ReportDailyTimeSheet = ({ dailyTimeEntry }: any) => {
-    console.log("ReportDailyTimeSheet", dailyTimeEntry);
+
     const taskEntries = dailyTimeEntry?.data ?? []
 
     // const taskEntries = [
@@ -43,8 +43,6 @@ const ReportDailyTimeSheet = ({ dailyTimeEntry }: any) => {
             const currentTaskStart = timeToMinutes(format(new Date(task.start_time), 'HH:mm'));
             const currentTaskEnd = timeToMinutes(format(new Date(task.end_time), 'HH:mm'));
 
-            console.log('currentTaskStart', currentTaskStart);
-            console.log('currentTaskEnd', currentTaskEnd);
             let assignedTrackIndex = -1;
 
             for (let i = 0; i < tracks.length; i++) {

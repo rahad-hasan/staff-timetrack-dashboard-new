@@ -49,13 +49,10 @@ const EditBudgetAndHoursStep = ({ setStep, onClose, selectedProject }: GeneralIn
         },
     });
 
-    console.log('data sdfsfsd', selectedProject);
-
     const { updateData, resetData } = useProjectFormStore();
 
     async function onSubmit(values: z.infer<typeof addBudgetAndHoursSchema>) {
         updateData(values);
-        console.log('getting from zustand', data);
         const finalData =
         {
             name: data?.projectName,
@@ -70,7 +67,6 @@ const EditBudgetAndHoursStep = ({ setStep, onClose, selectedProject }: GeneralIn
         setLoading(true);
         try {
             const res = await editProject({ data: finalData, id: selectedProject?.id });
-            console.log("success:", res);
 
             if (res?.success) {
                 onClose();

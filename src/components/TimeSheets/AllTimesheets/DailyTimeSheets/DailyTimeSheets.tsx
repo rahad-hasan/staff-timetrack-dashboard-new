@@ -9,7 +9,6 @@ import { format, parseISO } from "date-fns";
 
 const DailyTimeSheets = ({ data, timeLineData, selectedDate }: { data: any, timeLineData: any, selectedDate: string | number | string[] | undefined }) => {
 
-    console.log('Time Line New Data', timeLineData);
     const getDecimalHour = (dateString: string) => {
         const date = new Date(dateString);
         const hours = date.getHours();
@@ -36,9 +35,6 @@ const DailyTimeSheets = ({ data, timeLineData, selectedDate }: { data: any, time
         task: entry.task?.name || "No Task",
         duration: formatDuration(entry.duration)
     }));
-
-    console.log("sdlfj;dsafj sdfjd;salfj dsajf;dlsajf;jdsf;akj",activePeriods);
-
 
     const getDayProgressPercentage = () => {
         const now = new Date();

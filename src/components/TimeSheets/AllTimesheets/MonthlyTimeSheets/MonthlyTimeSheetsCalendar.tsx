@@ -13,7 +13,6 @@ import { useState } from "react";
 
 const MonthlyTimeSheetsCalendar = ({ data }: any) => {
 
-    console.log(data);
 
     const [viewType, setViewType] = useState("Hours");
     

@@ -25,18 +25,17 @@ import { socket } from "@/socket/socket";
 
 const Header = () => {
     const [open, setOpen] = useState(false);
-    console.log('header rendered');
     const [notificationsList, setNotificationsList] = useState<any[]>([]);
     const unreadCount = notificationsList.filter(n => n.is_read === false).length;
-    console.log(unreadCount);
+
 
     useEffect(() => {
         // 2. Listen for real-time notifications
         const handleIncomingData = (data: any) => {
-            console.log("Socket Data Received:", data);
+
             // Assuming your backend returns an array or an object with a data property
             const newList = Array.isArray(data) ? data : data?.data || [];
-            console.log("got it", newList);
+
             setNotificationsList(newList);
         };
         socket.on("notifications", handleIncomingData);

@@ -18,7 +18,7 @@ import EmptyTableLogo from "@/assets/empty_table.svg";
 // import emptyActivity from "../../../assets/empty_activity.png";
 
 const Every10Mins = ({ data }: any) => {
-    console.log('Every10Mins');
+
     const [selectedImage, setSelectedImage] = useState<any>();
     const [modalOpen, setModalOpen] = useState<boolean>(false);
 

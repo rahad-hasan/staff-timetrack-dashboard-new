@@ -118,15 +118,14 @@ const AddManualTimeModal = ({ onClose }: { onClose: () => void }) => {
     const [totalTime, setTotalTime] = useState<string>("1:00:00");
     const timeFrom = form.watch("timeFrom");
     const timeTo = form.watch("timeTo");
-    console.log('time From', timeFrom);
+
 
 
     useEffect(() => {
         if (timeFrom && timeTo) {
             const startTimeDecimal = timeToDecimal(timeFrom);
             const endTimeDecimal = timeToDecimal(timeTo);
-            console.log(startTimeDecimal);
-            console.log(endTimeDecimal);
+
             if (endTimeDecimal > startTimeDecimal) {
                 setActivePeriods([
                     { start: startTimeDecimal, end: endTimeDecimal },
@@ -168,8 +167,6 @@ const AddManualTimeModal = ({ onClose }: { onClose: () => void }) => {
                 timeTo: timeToISO.toISOString(),
             };
 
-            console.log("Final Data:", formattedData);
-
             const finalData = {
                 project_id: formattedData?.project,
                 task_id: formattedData?.task,
@@ -181,7 +178,6 @@ const AddManualTimeModal = ({ onClose }: { onClose: () => void }) => {
             setLoading(true);
             try {
                 const res = await addManualTimeEntry(finalData);
-                console.log("success:", res);
 
                 if (res?.success) {
                     form.reset();

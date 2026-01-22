@@ -7,9 +7,8 @@ import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 
 const UnusualActivity = () => {
-    console.log('Performance');
+
     const [activeTab, setActiveTab] = useState<"Highly Unusual" | "Unusual" | "Slightly Unusual">("Highly Unusual");
-    console.log("Dashboard Rendered", activeTab);
 
     const handleTabClick = (tab: "Highly Unusual" | "Unusual" | "Slightly Unusual") => {
         setActiveTab(tab);

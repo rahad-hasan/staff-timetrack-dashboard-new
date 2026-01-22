@@ -10,7 +10,6 @@ export async function getRefreshToken() {
 
 export async function refreshAccessTokenFromServer() {
     const token = await getRefreshToken();
-    console.log('refresh called 😑😑😑😑😑');
     const res = await fetch(`${BASE_URL}/auth/refresh-token`, {
         method: "POST",
         headers: {

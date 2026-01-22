@@ -29,9 +29,7 @@ const Notification = ({ unreadCount, notificationsList }: any) => {
             const containerTop = container.scrollTop;
             const containerBottom = containerTop + container.clientHeight;
 
-            console.log("container.............", container.children);
             const children = Array.from(container.children) as HTMLElement[];
-            console.log('dsfdsf', children);
 
             const visibleIds = notificationsList
                 .filter((_: any, index: number) => {

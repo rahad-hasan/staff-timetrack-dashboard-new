@@ -38,7 +38,7 @@ interface EditNewMemberModalProps {
 }
 const EditNewMemberModal = ({ onClose, selectedUser }: EditNewMemberModalProps) => {
     const [loading, setLoading] = useState(false);
-    console.log('user details', selectedUser);
+
     const manager = ["admin", "manager", "hr", "project_manager", "employee"];
     const [managerSearch, setManagerSearch] = useState("");
 
@@ -65,11 +65,9 @@ const EditNewMemberModal = ({ onClose, selectedUser }: EditNewMemberModalProps) 
     }, [selectedUser, form]);
 
     async function onSubmit(values: z.infer<typeof editMemberSchema>) {
-        console.log(values);
         setLoading(true);
         try {
             const res = await editMember({ data: values, id: selectedUser?.id });
-            console.log("success:", res);
 
             if (res?.success) {
                 onClose();

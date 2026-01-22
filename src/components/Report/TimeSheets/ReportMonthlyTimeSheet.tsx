@@ -30,8 +30,7 @@ const ReportMonthlyTimeSheet = ({ data }: { data: TimeData[] }) => {
 
         // 1. Calculate Padding for PREVIOUS month
         const startDay = firstDate.getDay();
-        console.log('firstDate', firstDate);
-        console.log('startDay', startDay);
+
         const adjustedStartDay = startDay === 0 ? 6 : startDay - 1;
 
         for (let i = adjustedStartDay; i > 0; i--) {
@@ -72,8 +71,6 @@ const ReportMonthlyTimeSheet = ({ data }: { data: TimeData[] }) => {
 
     const calendarData = generateCalendar();
 
-    console.log("calendar Data", calendarData);
-
     const chunkArray = (array: any[], chunkSize: number) => {
         const chunks = [];
         for (let i = 0; i < array.length; i += chunkSize) {
@@ -83,8 +80,6 @@ const ReportMonthlyTimeSheet = ({ data }: { data: TimeData[] }) => {
     };
 
     const weeks = chunkArray(calendarData, 7);
-
-    console.log("weeks", weeks);
 
     return (
         <div className="">

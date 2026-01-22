@@ -128,11 +128,9 @@ const CreateTaskModal = ({ handleCloseDialog }: { handleCloseDialog: () => void 
             priority: values.priority,
             description: values.details,
         }
-        console.log("finalData", finalData);
         setProjectLoading(true);
         try {
             const res = await addTask(finalData);
-            console.log("success:", res);
 
             if (res?.success) {
                 form.reset();

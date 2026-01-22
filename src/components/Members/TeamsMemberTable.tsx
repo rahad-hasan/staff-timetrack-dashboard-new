@@ -29,15 +29,11 @@ const TeamsMemberTable = ({ data }: any) => {
 
     const [open, setOpen] = useState(false)
     const [selectedUser, setSelectedUser] = useState<ITeamMembers | null>(null)
-    console.log('selected user', selectedUser);
-
 
     async function handleDelete(info: ITeamMembers) {
-        console.log('info', info);
         setLoading(true);
         try {
             const res = await deleteMember({ data: { is_deleted: info?.is_deleted ? false : true }, id: info?.id });
-            console.log("success:", res);
 
             if (res?.success) {
                 toast.success(res?.message || "Member deleted successfully");

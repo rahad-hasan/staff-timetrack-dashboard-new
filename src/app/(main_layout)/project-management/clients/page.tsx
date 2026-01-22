@@ -8,7 +8,6 @@ import ClientHereSection from "@/components/ProjectManagement/Clients/ClientHere
 
 const ClientsPage = async ({ searchParams }: any) => {
     const query = await searchParams;
-    console.log('query for find the type', query);
 
     return (
         <div>

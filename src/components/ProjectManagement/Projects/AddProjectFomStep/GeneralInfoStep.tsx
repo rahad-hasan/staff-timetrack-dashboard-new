@@ -44,7 +44,6 @@ const GeneralInfoStep = ({ setStep }: GeneralInfoStepProps) => {
 
     const [clients, setClients] = useState<{ id: number; name: string }[]>([]);
     const [members, setMembers] = useState<{ id: number; name: string; image?: string }[]>([]);
-    console.log('members', members);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -116,7 +115,6 @@ const GeneralInfoStep = ({ setStep }: GeneralInfoStepProps) => {
     const { updateData } = useProjectFormStore();
     function onSubmit(values: z.infer<typeof generalInfoSchema>) {
         updateData(values)
-        console.log(values)
         setStep(2);
     }
 

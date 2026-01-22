@@ -42,7 +42,7 @@ interface TimePeriod {
 }
 
 const EditManualTimeModal = ({ onClose, selectedItem }: { onClose: () => void, selectedItem: IManualTimeEntry }) => {
-    console.log('selectedItem', selectedItem);
+
     const [loading, setLoading] = useState(false);
     const [projectLoading, setProjectLoading] = useState(false);
     const [taskLoading, setTaskLoading] = useState(false);
@@ -132,15 +132,13 @@ const EditManualTimeModal = ({ onClose, selectedItem }: { onClose: () => void, s
     const [totalTime, setTotalTime] = useState<string>("1:00:00");
     const timeFrom = form.watch("timeFrom");
     const timeTo = form.watch("timeTo");
-    console.log('time From', timeFrom);
 
 
     useEffect(() => {
         if (timeFrom && timeTo) {
             const startTimeDecimal = timeToDecimal(timeFrom);
             const endTimeDecimal = timeToDecimal(timeTo);
-            console.log(startTimeDecimal);
-            console.log(endTimeDecimal);
+
             if (endTimeDecimal > startTimeDecimal) {
                 setActivePeriods([
                     { start: startTimeDecimal, end: endTimeDecimal },
@@ -182,8 +180,6 @@ const EditManualTimeModal = ({ onClose, selectedItem }: { onClose: () => void, s
                 timeTo: timeToISO.toISOString(),
             };
 
-            console.log("Final Data:", formattedData);
-
             const finalData = {
                 project_id: formattedData?.project,
                 task_id: formattedData?.task,
@@ -195,7 +191,6 @@ const EditManualTimeModal = ({ onClose, selectedItem }: { onClose: () => void, s
             setLoading(true);
             try {
                 const res = await editManualTimeEntry({ data: finalData, id: selectedItem?.id });
-                console.log("success:", res);
                 if (res?.success) {
                     form.reset();
                     setDate(undefined);

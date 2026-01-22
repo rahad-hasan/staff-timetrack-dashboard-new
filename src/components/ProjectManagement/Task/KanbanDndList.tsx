@@ -5,7 +5,7 @@ import DragBoard from "./TaskDragDrop/DragBoard";
 // import { ITask } from "@/global/globalTypes";
 
 const KanbanDndList = () => {
-    console.log("KanbanDndList");
+
     const [taskList, setTaskList] = useState<any>([
         {
             id: "s2as1fdazdsd14",

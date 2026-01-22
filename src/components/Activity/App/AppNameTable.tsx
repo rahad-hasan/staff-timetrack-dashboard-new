@@ -14,11 +14,9 @@ import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { IApps } from "@/types/type";
 
 const AppNameTable = ({ data }: { data: IApps[] }) => {
-    console.log('get data from', data);
+
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
-    console.log(rowSelection);
-
 
     const columns: ColumnDef<IApps>[] = [
 

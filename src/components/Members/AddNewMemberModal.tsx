@@ -53,11 +53,10 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
         setShowPassword((prev) => !prev);
     };
     async function onSubmit(values: z.infer<typeof addNewMemberSchema>) {
-        console.log(values);
+
         setLoading(true);
         try {
             const res = await addMember(values);
-            console.log("success:", res);
 
             if (res?.success) {
                 onClose();

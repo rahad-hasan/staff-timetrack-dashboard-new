@@ -7,7 +7,7 @@ import ManualRequestsHeroSection from "@/components/TimeSheets/ManualRequests/Ma
 import { Suspense } from "react";
 
 const ManualRequests = async ({ searchParams }: ISearchParamsProps) => {
-    console.log('This page rendered.....yes true rendered.....');
+
     return (
         <div>
             <div className="flex items-center justify-between gap-3 md:gap-0 mb-5">

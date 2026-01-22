@@ -10,7 +10,6 @@ import { ISearchParamsProps } from "@/types/type";
 import { Suspense } from "react";
 
 const ReportTimeSheets = async ({ searchParams }: ISearchParamsProps) => {
-    console.log("ReportTimeSheets");
     const params = await searchParams;
     type Tab = "daily" | "weekly" | "monthly";
     const activeTab = (params?.tab as Tab) ?? "daily";

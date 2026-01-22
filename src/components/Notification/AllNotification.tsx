@@ -15,7 +15,6 @@ const NotificationItem = ({ notification }: { notification: INotificationItem })
         setLoading(true);
         try {
             const res = await readNotifications({ data: { ids: [id] } });
-            console.log("success:", res);
 
             if (res?.success) {
                 toast.success(res?.message || "Member edited successfully");

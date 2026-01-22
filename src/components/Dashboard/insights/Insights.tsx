@@ -12,7 +12,7 @@ export interface IDashboardInsight {
     };
 }
 const Insights = async ({ data }: { data: IDashboardInsight }) => {
-    console.log("what type of data I am getting fromh here.....",data);
+
     const classificationData = [
         { label: "Productive", percentage: data?.data?.productive, color: "bg-[#5db0f1]" },
         { label: "Active", percentage: data?.data?.active, color: "bg-[#dce3e3]" },

@@ -6,8 +6,6 @@ import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 
 
 const ReportWeeklyTimeSheet = ({ dateBasedTimeEntry }: any) => {
-    console.log("ReportWeeklyTimeSheet", dateBasedTimeEntry?.data);
-
 
     // table data
     type DayMeta = { name: string };

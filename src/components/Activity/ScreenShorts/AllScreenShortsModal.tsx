@@ -20,7 +20,7 @@ const getSrc = (item: any) => {
 };
 
 const AllScreenShortsModal = ({ screenShorts, modalOpen, setModalOpen, selectedImage }: { screenShorts: IAllScreenshot[], modalOpen: any, setModalOpen: any, selectedImage: IAllScreenshot }) => {
-    console.log('images', screenShorts);
+
     // 1. Calculate the initial index based on the clicked image
     const initialIndex = screenShorts.findIndex(img => img.id === selectedImage?.id);
     const startIdx = initialIndex !== -1 ? initialIndex : 0;

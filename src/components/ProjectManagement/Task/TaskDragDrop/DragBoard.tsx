@@ -37,7 +37,6 @@ const DragBoard = ({ task, setTasks }: { task: any; setTasks: Dispatch<SetStateA
         // here i will call api for updated value
         if (dTask && dTask.status !== newStatus) {
             // updateTodo({ id: taskId, data: { status: newStatus } });
-            console.log('update');
         }
     };
 

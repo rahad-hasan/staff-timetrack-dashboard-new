@@ -51,7 +51,7 @@ const AddBudgetAndHoursStep = ({ setStep, onClose }: GeneralInfoStepProps) => {
 
     async function onSubmit(values: z.infer<typeof addBudgetAndHoursSchema>) {
         updateData(values);
-        console.log('getting from zustand', data);
+
         const finalData =
         {
             name: data?.projectName,
@@ -63,11 +63,10 @@ const AddBudgetAndHoursStep = ({ setStep, onClose }: GeneralInfoStepProps) => {
             deadline: new Date(data?.deadline).toISOString(),
             budget: values?.rate
         }
-        console.log(finalData);
+
         setLoading(true);
         try {
             const res = await addProject(finalData);
-            console.log("success:", res);
 
             if (res?.success) {
                 onClose();

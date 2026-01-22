@@ -8,7 +8,6 @@ const ManualRequestTableServer = async ({ searchParams }: ISearchParamsProps) =>
     const params = await searchParams;
     // if(params?.user_id && params?.page){
     const user = await getDecodedUser();
-    console.log(user);
     // }
     const result = await getManualTimeEntry({
         user_id: params?.user_id ? params?.user_id : user?.id,

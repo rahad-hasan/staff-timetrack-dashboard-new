@@ -23,14 +23,13 @@ import { IClients } from "@/global/globalTypes";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 // import { useClientsStore } from "@/api/features/clients/clientsCSRStore";
-import { useRouter } from "next/navigation";
 import { editClient } from "@/actions/clients/action";
 interface EditClientModalProps {
     onClose: () => void
     selectedClient: IClients | null
 }
 const EditClientModal = ({ onClose, selectedClient }: EditClientModalProps) => {
-    console.log('from modal', selectedClient);
+
     const [loading, setLoading] = useState(false);
     const form = useForm<z.infer<typeof newClientSchema>>({
         resolver: zodResolver(newClientSchema) as Resolver<z.infer<typeof newClientSchema>>,
@@ -53,11 +52,9 @@ const EditClientModal = ({ onClose, selectedClient }: EditClientModalProps) => {
     }, [selectedClient, form]);
 
     async function onSubmit(values: z.infer<typeof newClientSchema>) {
-        console.log(values);
         setLoading(true);
         try {
             const res = await editClient({ data: values, id: selectedClient?.id });
-            console.log("success:", res);
 
             if (res?.success) {
                 setTimeout(() => {

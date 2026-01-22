@@ -35,7 +35,7 @@ const getSrc = (item: any) => {
 };
 
 const ScreenShortsModal = ({ screenShorts, modalOpen, setModalOpen }: { screenShorts: ScreenshotDetail[], modalOpen: any, setModalOpen: any }) => {
-    console.log('images', screenShorts);
+
     const [activeIndex, setActiveIndex] = useState(0);
     const [zoom, setZoom] = useState(1);
     const [api, setApi] = useState<CarouselApi>();

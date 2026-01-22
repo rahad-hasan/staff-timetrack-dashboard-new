@@ -24,7 +24,6 @@ const EditTasksStep = ({ handleStepSubmit }: GeneralInfoStepProps) => {
     });
 
     function onSubmit(values: z.infer<typeof addTasksSchema>) {
-        console.log(values);
         handleStepSubmit(values);
     }
     return (

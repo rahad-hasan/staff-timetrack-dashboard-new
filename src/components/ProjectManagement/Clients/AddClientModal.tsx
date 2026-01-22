@@ -36,11 +36,9 @@ const AddClientModal = ({ onClose }: { onClose: () => void }) => {
     })
 
     async function onSubmit(values: z.infer<typeof newClientSchema>) {
-        console.log(values);
         setLoading(true);
         try {
             const res = await addClient(values);
-            console.log("success:", res);
 
             if (res?.success) {
                 setTimeout(() => {

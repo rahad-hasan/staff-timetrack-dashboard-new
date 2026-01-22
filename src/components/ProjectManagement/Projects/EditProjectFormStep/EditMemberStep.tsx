@@ -31,8 +31,7 @@ interface GeneralInfoStepProps {
 }
 
 const EditMemberStep = ({ setStep, selectedProject }: GeneralInfoStepProps) => {
-    const data = useProjectFormStore(state => state.data);
-    console.log('from zustand', data);
+    const data = useProjectFormStore(state => state.data);;
     const form = useForm<z.infer<typeof addMemberSchema>>({
         resolver: zodResolver(addMemberSchema),
         defaultValues: {
@@ -43,7 +42,6 @@ const EditMemberStep = ({ setStep, selectedProject }: GeneralInfoStepProps) => {
     const { updateData } = useProjectFormStore();
     function onSubmit(values: z.infer<typeof addMemberSchema>) {
         updateData(values);
-        console.log(values);
         setStep(3);
     }
 

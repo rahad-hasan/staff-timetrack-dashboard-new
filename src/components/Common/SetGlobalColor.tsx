@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 const SetGlobalColor = () => {
     const { color } = useColorStore();
-    console.log(color);
+
     useEffect(() => {
         document.documentElement.style.setProperty("--primary", color);
     }, [color]);

@@ -64,7 +64,6 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
     };
 
     async function handleStatusUpdate(values: { status: string, id: number }) {
-        console.log(values);
         setLoading(true);
         try {
             const res = await editProject({ data: { status: values.status }, id: values.id });
@@ -418,7 +417,6 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
             accessorKey: "action",
             header: () => <div className="">Action</div>,
             cell: ({ row }) => {
-                console.log(row);
                 return <div className="">
                     <Popover>
                         <PopoverTrigger asChild>

@@ -63,7 +63,6 @@ const Profile = () => {
             setLoading(true);
             try {
                 const res = await uploadProfileImage({ data: { image } });
-                console.log("success:", res);
 
                 if (res?.success) {
                     toast.success(res?.message || "Image uploaded successfully");

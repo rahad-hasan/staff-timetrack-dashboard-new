@@ -17,8 +17,6 @@ import ScreenshotsToggle from "@/components/Activity/ScreenShorts/ScreenshotsTog
 import ScreenShotsServer from "@/components/Activity/ScreenShorts/ScreenShotsServer";
 
 const ScreenShorts = ({ searchParams }: ISearchParamsProps) => {
-    console.log('screenShorts');
-
 
     return (
         <div>

@@ -9,7 +9,7 @@ const SettingServer = async ({ searchParams }: ISearchParamsProps) => {
     const params = await searchParams
     const activeTab = params.tab ?? "Profile";
     const result = await getCompanyInfo();
-    console.log('result', result);
+
     return (
         <div>
             {

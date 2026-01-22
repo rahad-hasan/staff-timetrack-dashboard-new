@@ -26,7 +26,7 @@ import { toast } from "sonner";
 import { approveRejectLeave } from "@/actions/leaves/action";
 
 const RejectLeaveRequestModal = ({ data }: { data: ILeaveRequest }) => {
-    console.log(data);
+
     const userId = data?.id
     const [loading, setLoading] = useState(false);
     const form = useForm<z.infer<typeof leaveRejectRequestSchema>>({

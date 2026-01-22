@@ -12,7 +12,7 @@ interface IPageProps {
 
 const UserLeaveHistoryPage = async ({ params, searchParams }: IPageProps) => {
     const { id } = await params
-    console.log(id);
+
     return (
         <div>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5">

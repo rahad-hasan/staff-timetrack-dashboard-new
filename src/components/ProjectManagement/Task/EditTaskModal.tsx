@@ -145,7 +145,6 @@ const CreateTaskModal = ({ handleCloseDialog, selectedProject }: { handleCloseDi
         setTaskLoading(true);
         try {
             const res = await editTask({ data: finalData, id: selectedProject?.id });
-            console.log("success:", res);
 
             if (res?.success) {
                 form.reset();

@@ -83,7 +83,6 @@ export async function baseApi<T = any>(
                 },
             }),
         });
-    console.log('api call🙂🙂🙂🙂');
     let res;
     try {
         res = await doFetch();

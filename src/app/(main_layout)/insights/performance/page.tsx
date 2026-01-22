@@ -10,8 +10,6 @@ import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 
 const Performance = () => {
-    console.log('Performance');
-
 
     return (
         <div>
