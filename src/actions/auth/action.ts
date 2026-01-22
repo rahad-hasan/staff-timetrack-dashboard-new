@@ -42,6 +42,13 @@ export const logIn = async (data: any) => {
       sameSite: "lax",
       path: "/",
     });
+
+    cookieStore.set("userId", res.data.id, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: "lax",
+      path: "/",
+    });
   }
 
   return res;
@@ -78,4 +85,5 @@ export async function clearSessionCookie() {
   cookieStore.delete("accessToken");
   cookieStore.delete("refreshToken");
   cookieStore.delete("staffTimeDashboardRole");
+  cookieStore.delete("userId");
 }
