@@ -1,6 +1,7 @@
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import LeaveRequestHeading from "@/components/LeaveManagement/LeaveRequest/LeaveRequestHeading";
 import LeaveRequestServer from "@/components/LeaveManagement/LeaveRequest/LeaveRequestServer";
+
 import LeaveRequestTableSkeleton from "@/skeleton/leaveManagement/LeaveRequestTableSkeleton";
 import { ISearchParamsProps } from "@/types/type";
 import { Suspense } from "react";

@@ -6,7 +6,8 @@ import AppPagination from "@/components/Common/AppPagination";
 const LeaveRequestServer = async ({ searchParams }: ISearchParamsProps) => {
     const params = await searchParams;
     const result = await getLeave({
-        approved: false,
+        approved: params.approved ? params.approved : false,
+        rejected: params.rejected ? params.rejected : false,
         search: params.search,
         page: params.page,
     });
