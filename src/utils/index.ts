@@ -34,9 +34,44 @@ export const formatTZDate = (
 ) => {
   return formatInTimeZone(new Date(date), timeZone, "yyyy-MM-dd");
 };
+
 export const formatTZTime = (
   date: Date | string,
   timeZone = getUserTimeZone()
 ) => {
   return formatInTimeZone(new Date(date), timeZone, "hh:mm a");
+};
+
+export const formatTZTimeHM = (
+  date: Date | string,
+  timeZone = getUserTimeZone()
+) => {
+  return formatInTimeZone(new Date(date), timeZone, "HH:mm");
+};
+
+export const getTZDecimalHour = (
+  date: Date | string,
+  timeZone = getUserTimeZone()
+) => {
+  const d = new Date(date);
+  // Using 'H' for 24-hour format and 'm' for minutes
+  const hours = parseInt(formatInTimeZone(d, timeZone, "H"));
+  const minutes = parseInt(formatInTimeZone(d, timeZone, "m"));
+
+  return hours + minutes / 60;
+};
+
+export const formatTZDayMonthYear = (
+  date: string | Date | number,
+  timeZone = getUserTimeZone()
+): string => {
+  const d = new Date(date);
+  return formatInTimeZone(d, timeZone, "EEE, MMM d, yyyy");
+};
+
+export const formatTZDateDMY = (
+  date: Date | string,
+  timeZone = getUserTimeZone()
+) => {
+  return formatInTimeZone(new Date(date), timeZone, "dd/MM/yyyy");
 };

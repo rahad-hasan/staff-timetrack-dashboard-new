@@ -5,16 +5,9 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip"
 import DailyTimeSheetsTable from "./DailyTimeSheetsTable";
-import { format, parseISO } from "date-fns";
+import { formatTZDate, formatTZTime, getTZDecimalHour } from "@/utils";
 
 const DailyTimeSheets = ({ data, timeLineData, selectedDate }: { data: any, timeLineData: any, selectedDate: string | number | string[] | undefined }) => {
-
-    const getDecimalHour = (dateString: string) => {
-        const date = new Date(dateString);
-        const hours = date.getHours();
-        const minutes = date.getMinutes();
-        return hours + (minutes / 60);
-    };
 
     // Helper to format duration from decimal to HH:MM:SS
     const formatDuration = (decimalHours: number) => {
@@ -27,8 +20,8 @@ const DailyTimeSheets = ({ data, timeLineData, selectedDate }: { data: any, time
 
     // Transform backend data into activePeriods
     const activePeriods = (timeLineData || []).map((entry: any) => ({
-        start: getDecimalHour(entry.start_time),
-        end: getDecimalHour(entry.end_time),
+        start: getTZDecimalHour(entry.start_time),
+        end: getTZDecimalHour(entry.end_time),
         startTime: entry.start_time,
         endTime: entry.end_time,
         project: entry.project?.name || "No Project",
@@ -36,25 +29,21 @@ const DailyTimeSheets = ({ data, timeLineData, selectedDate }: { data: any, time
         duration: formatDuration(entry.duration)
     }));
 
+    // 2. Logic for Day Progress Line
     const getDayProgressPercentage = () => {
         const now = new Date();
+        const todayString = formatTZDate(now); // Match selectedDate format using TZ
 
-        // 1. Format "Today" to YYYY-MM-DD to match your URL param
-        const todayString = now.toISOString().split('T')[0];
-
-        // 2. If the selected date is NOT today, return 0 (or 100 for past days)
         if (selectedDate !== todayString) {
-            // If it's a past date, we show 100% progress. If future, 0%.
             return selectedDate! < todayString ? 100 : 0;
         }
-        const hours = now.getHours();
-        const minutes = now.getMinutes();
-        const totalMinutesPassed = (hours * 60) + minutes;
-        const totalMinutesInDay = 24 * 60;
-        return (totalMinutesPassed / totalMinutesInDay) * 100;
-    };
-    const isToday = selectedDate === new Date().toISOString().split('T')[0];
 
+        // Get the current decimal hour in the user's timezone
+        const decimalHourNow = getTZDecimalHour(now);
+        return (decimalHourNow / 24) * 100;
+    };
+
+    const isToday = selectedDate === formatTZDate(new Date());
     const dayProgress = getDayProgressPercentage();
 
     return (
@@ -99,12 +88,11 @@ const DailyTimeSheets = ({ data, timeLineData, selectedDate }: { data: any, time
                                         <h2 className=" text-[15px] mb-2 text-headingTextColor dark:text-darkTextPrimary">Project: {period?.project}</h2>
                                         <h2 className=" text-[15px] mb-2 text-headingTextColor dark:text-darkTextPrimary">Task: {period?.task}</h2>
                                         <h2 className=" text-[15px] mb-2 text-headingTextColor dark:text-darkTextPrimary">Duration: {period?.duration}</h2>
-                                        <h2 className=" text-[15px] mb-2 text-headingTextColor dark:text-darkTextPrimary">Start Time: {format(parseISO(period?.startTime), "hh:mm aa")}</h2>
-                                        <h2 className=" text-[15px] text-headingTextColor dark:text-darkTextPrimary">End Time: {format(parseISO(period?.endTime), "hh:mm aa")}</h2>
+                                        <h2 className=" text-[15px] mb-2 text-headingTextColor dark:text-darkTextPrimary">Start Time: {formatTZTime(period?.startTime)}</h2>
+                                        <h2 className=" text-[15px] text-headingTextColor dark:text-darkTextPrimary">End Time: {formatTZTime(period?.endTime)}</h2>
                                     </div>
                                 </TooltipContent>
                             </Tooltip>
-
                         );
                     })}
                 </div>

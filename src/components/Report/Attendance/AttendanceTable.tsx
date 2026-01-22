@@ -9,6 +9,7 @@ import { IAttendance } from "@/global/globalTypes";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { format } from "date-fns";
+import { formatTZTime } from "@/utils";
 
 const AttendanceTable = ({ attendanceListData }: any) => {
     const [sorting, setSorting] = useState<SortingState>([])
@@ -143,7 +144,7 @@ const AttendanceTable = ({ attendanceListData }: any) => {
                 const checkIn = row.getValue("check_in") as string;
                 return (
                     <div className="flex flex-col">
-                        <span className="">{checkIn !== "-" ? format(new Date(checkIn), "hh:mm a") : "-"}</span>
+                        <span className="">{checkIn !== "-" ? formatTZTime(checkIn) : "-"}</span>
                     </div>
                 )
             }
@@ -167,7 +168,7 @@ const AttendanceTable = ({ attendanceListData }: any) => {
                 const checkOut = row?.getValue("check_out") as string;
                 return (
                     <div className="flex flex-col">
-                        <span className="">{checkOut !== "-" ? format(new Date(checkOut), "hh:mm a") : "-"}</span>
+                        <span className="">{checkOut !== "-" ? formatTZTime(checkOut) : "-"}</span>
                     </div>
                 )
             }

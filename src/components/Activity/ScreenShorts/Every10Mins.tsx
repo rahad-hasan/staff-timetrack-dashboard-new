@@ -15,43 +15,13 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 import EmptyTableLogo from "@/assets/empty_table.svg";
+import { formatTZTime } from "@/utils";
 // import emptyActivity from "../../../assets/empty_activity.png";
 
 const Every10Mins = ({ data }: any) => {
 
     const [selectedImage, setSelectedImage] = useState<any>();
     const [modalOpen, setModalOpen] = useState<boolean>(false);
-
-    // assume I have many screenShorts
-    // const dummyScreenShorts = [
-    //     {
-    //         screenShort: selectedImage
-    //     },
-    //     {
-    //         screenShort: screenshort1
-    //     },
-    //     {
-    //         screenShort: screenshort2
-    //     },
-    //     {
-    //         screenShort: screenshort3
-    //     },
-    //     {
-    //         screenShort: screenshort3
-    //     },
-    //     {
-    //         screenShort: screenshort2
-    //     },
-    //     {
-    //         screenShort: screenshort3
-    //     },
-    //     {
-    //         screenShort: screenshort2
-    //     },
-    //     {
-    //         screenShort: screenshort3
-    //     },
-    // ]
 
     const formatDuration = (totalSeconds: number) => {
         const hours = Math.floor(totalSeconds / 3600);
@@ -107,7 +77,7 @@ const Every10Mins = ({ data }: any) => {
             }
 
             return {
-                hourLabel: `${format(hourStart, "h:mm a")} - ${format(hourEnd, "h:mm a")}`,
+                hourLabel: `${formatTZTime(hourStart)} - ${formatTZTime(hourEnd)}`,
                 totalWorked: totalWorkedSeconds,
                 slots,
             };

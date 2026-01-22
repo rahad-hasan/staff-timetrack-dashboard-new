@@ -14,7 +14,7 @@ import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import FilterButton from "@/components/Common/FilterButton";
 // import EyeIcon from "@/components/Icons/EyeIcon";
 import EditIcon from "@/components/Icons/FilterOptionIcon/EditIcon";
-import DeleteIcon from "@/components/Icons/DeleteIcon";
+// import DeleteIcon from "@/components/Icons/DeleteIcon";
 
 const ClientsTable = ({ data }: any) => {
     const [sorting, setSorting] = useState<SortingState>([])
@@ -152,10 +152,10 @@ const ClientsTable = ({ data }: any) => {
                                     </div>
 
 
-                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
+                                    {/* <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
                                         <DeleteIcon size={18} />
                                         <p>Delete Client</p>
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
                         </PopoverContent>

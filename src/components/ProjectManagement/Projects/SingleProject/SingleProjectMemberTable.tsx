@@ -7,7 +7,7 @@ import { ArrowUpDown } from "lucide-react";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { ProjectAssign } from "@/types/type";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { format, parseISO } from "date-fns";
+import { formatTZDateDMY, formatTZTime } from "@/utils";
 
 const SingleProjectMemberTable = ({ data }: { data: ProjectAssign[] }) => {
     const [sorting, setSorting] = useState<SortingState>([])
@@ -87,7 +87,7 @@ const SingleProjectMemberTable = ({ data }: { data: ProjectAssign[] }) => {
                 )
             },
             cell: ({ row }) => {
-                return <div className="">{row?.original?.assigned_at ? format(parseISO(row?.original?.assigned_at), "dd/MM/yyyy") : "N/A"}</div>;
+                return <div className="">{row?.original?.assigned_at ? formatTZDateDMY(row?.original?.assigned_at) : "N/A"}</div>;
             },
         },
         {
@@ -106,7 +106,7 @@ const SingleProjectMemberTable = ({ data }: { data: ProjectAssign[] }) => {
                 )
             },
             cell: ({ row }) => {
-                return <div className="">{format(parseISO(row?.original?.assigned_at), "hh:mm aa")}</div>;
+                return <div className="">{formatTZTime(row?.original?.assigned_at)}</div>;
             },
         },
     ];

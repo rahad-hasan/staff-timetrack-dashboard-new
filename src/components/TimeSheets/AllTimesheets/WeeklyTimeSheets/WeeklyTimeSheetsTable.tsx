@@ -43,8 +43,7 @@ const WeeklyTimeSheetsTable = ({ data }: { data: any[] }) => {
                     <p className=" sm:text-lg">No data available for this week.</p>
                 </div>
             </div>
-        </div>)
-            ;
+        </div>);
     }
 
     return (

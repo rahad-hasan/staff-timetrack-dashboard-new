@@ -11,7 +11,6 @@ import RejectLeaveRequestModal from "./RejectLeaveRequestModal";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { ILeaveRequest } from "@/types/type";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { format } from "date-fns";
 import { toast } from "sonner";
 import { approveRejectLeave } from "@/actions/leaves/action";
 import Link from "next/link";
@@ -19,6 +18,7 @@ import ConfirmDialog from "@/components/Common/ConfirmDialog";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import { ArrowUpDown } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { formatTZDayMonthYear } from "@/utils";
 
 const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
 
@@ -154,7 +154,7 @@ const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
                 const start_date = row.getValue("start_date") as string;
                 return (
                     <div className="flex flex-col">
-                        <span className="">{format(new Date(start_date), "EEE, MMM d, yyyy")}</span>
+                        <span className="">{formatTZDayMonthYear(start_date)}</span>
                     </div>
                 )
             }
@@ -175,7 +175,7 @@ const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
                 const end_date = row.getValue("end_date") as string;
                 return (
                     <div className="flex flex-col">
-                        <span className="">{format(new Date(end_date), "EEE, MMM d, yyyy")}</span>
+                        <span className="">{formatTZDayMonthYear(end_date)}</span>
                     </div>
                 )
             }

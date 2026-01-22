@@ -12,7 +12,6 @@ import EditNewMemberModal from "./EditNewMemberModal";
 import EmptyTableRow from "../Common/EmptyTableRow";
 import FilterButton from "../Common/FilterButton";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { format } from "date-fns";
 // import DownloadIcon from "../Icons/DownloadIcon";
 import EditIcon from "../Icons/FilterOptionIcon/EditIcon";
 import DeleteIcon from "../Icons/DeleteIcon";
@@ -20,6 +19,7 @@ import { ITeamMembers } from "@/global/globalTypes";
 import { toast } from "sonner";
 import { deleteMember } from "@/actions/members/action";
 import ConfirmDialog from "../Common/ConfirmDialog";
+import { formatTZDayMonthYear } from "@/utils";
 
 const TeamsMemberTable = ({ data }: any) => {
 
@@ -209,7 +209,7 @@ const TeamsMemberTable = ({ data }: any) => {
                 const created_at = row.getValue("created_at") as string;
                 return (
                     <div className="flex flex-col">
-                        <span className="">{format(new Date(created_at), "EEE, MMM d, yyyy")}</span>
+                        <span className="">{formatTZDayMonthYear(created_at)}</span>
                     </div>
                 )
             }

@@ -2,8 +2,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ISingleProjectData } from "@/types/type";
-import { format, parseISO } from "date-fns";
-
 import { ChevronLeft, Pencil } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -11,6 +9,7 @@ import SingleProjectMemberTable from "./SingleProjectMemberTable";
 import SingleProjectTask from "./SingleProjectTask";
 import { Dialog } from "@/components/ui/dialog";
 import EditProjectModal from "@/components/ProjectManagement/Projects/EditProjectModal";
+import { formatTZDateDMY } from "@/utils";
 
 const SingleProject = ({ data }: { data: ISingleProjectData }) => {
     const [activeTab, setActiveTab] = useState<"Members" | "Tasks">("Members");
@@ -69,9 +68,9 @@ const SingleProject = ({ data }: { data: ISingleProjectData }) => {
                             <tr className="">
                                 <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary">{data?.client?.name}</td>
                                 <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary">{data?.client?.phone}</td>
-                                <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary"><td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary">{data?.start_date ? format(parseISO(data.start_date), "dd/MM/yyyy") : "N/A"}</td>
+                                <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary"><td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary">{data?.start_date ? formatTZDateDMY(data.start_date) : "N/A"}</td>
                                 </td>
-                                <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary">{data?.deadline ? format(parseISO(data?.deadline), "dd/MM/yyyy") : "N/A"}</td>
+                                <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary">{data?.deadline ? formatTZDateDMY(data?.deadline) : "N/A"}</td>
                                 <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary">${data?.budget}</td>
                             </tr>
                         </tbody>

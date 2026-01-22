@@ -4,12 +4,13 @@ import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useState } from "react";
 import { ArrowUpDown } from "lucide-react";
-import teamsLogo from '../../../assets/activity/teams-logo.png'
-import Image from "next/image";
+// import teamsLogo from '../../../assets/activity/teams-logo.png'
+// import Image from "next/image";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { IUrls } from "@/types/type";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-const UrlsTable = ({data}: {data:IUrls[]}) => {
+const UrlsTable = ({ data }: { data: IUrls[] }) => {
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
 
@@ -35,9 +36,14 @@ const UrlsTable = ({data}: {data:IUrls[]}) => {
                 // const image = row.original.image;
                 return (
                     <div className="flex items-center gap-2">
-                        <Image src={teamsLogo} alt="app_logo" width={200} height={200} className=" w-10 border border-borderColor dark:border-darkBorder rounded-full p-1.5" />
+                        <Avatar className="w-9 h-9 shrink-0">
+                            <AvatarImage src={""} />
+                            <AvatarFallback>
+                                {url.charAt(0)}{url.charAt(1)}
+                            </AvatarFallback>
+                        </Avatar>
                         <div className="">
-                            <p className="text-base font-bold text-headingTextColor dark:text-darkTextPrimary">{url}</p>
+                            <p className=" text-sm lg:text-base font-bold text-headingTextColor dark:text-darkTextPrimary">{url}</p>
                             <span className=" font-normal text-subTextColor dark:text-darkTextSecondary">Site</span>
                         </div>
                     </div>
@@ -114,7 +120,7 @@ const UrlsTable = ({data}: {data:IUrls[]}) => {
                 return (
                     <div className=" flex flex-col">
                         <span className=" font-medium text-headingTextColor dark:text-darkTextPrimary">{row?.original?.duration}</span>
-                        <span className=" text-sm font-thin text-subTextColor dark:text-darkTextSecondary">nai - nai</span>
+                        {/* <span className=" text-sm font-thin text-subTextColor dark:text-darkTextSecondary">nai - nai</span> */}
                     </div>
                 );
             },

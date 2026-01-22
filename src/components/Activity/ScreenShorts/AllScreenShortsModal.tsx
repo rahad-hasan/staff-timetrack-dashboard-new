@@ -11,8 +11,8 @@ import {
     CarouselPrevious,
 } from "@/components/ui/carousel";
 import { motion } from "framer-motion";
-import { format, parseISO } from "date-fns";
 import { IAllScreenshot } from "@/types/type";
+import { formatTZTime } from "@/utils";
 
 const getSrc = (item: any) => {
     if (typeof item === "string") return item;
@@ -185,7 +185,7 @@ const AllScreenShortsModal = ({ screenShorts, modalOpen, setModalOpen, selectedI
                                 </p>
                             </div>
                             <span className="text-[13px] bg-white/10 px-2 py-0.5 rounded border border-white/5">
-                                {screenShorts[activeIndex]?.time ? format(parseISO(screenShorts[activeIndex]?.time), "hh:mm aa") : "--:--"}
+                                {screenShorts[activeIndex]?.time ? formatTZTime(screenShorts[activeIndex]?.time) : "--:--"}
                             </span>
                         </div>
 

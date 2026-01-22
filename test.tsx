@@ -4,7 +4,7 @@ import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useMemo } from "react";
-import { differenceInMinutes, format } from 'date-fns';
+import { differenceInMinutes } from 'date-fns';
 import { CheckCircle2, ClipboardList, Clock, MousePointer2, RefreshCcw } from "lucide-react";
 import { formatTZTime, formatTZTimeHM } from "@/utils";
 
@@ -41,7 +41,7 @@ const ReportDailyTimeSheet = ({ dailyTimeEntry }: any) => {
         const tracks: any = []; // tracks means columns
 
         const tasksWithTrack = sortedTasks.map(task => {
-               const currentTaskStart = timeToMinutes(formatTZTimeHM(task.start_time))
+            const currentTaskStart = timeToMinutes(formatTZTimeHM(task.start_time))
             const currentTaskEnd = timeToMinutes(formatTZTimeHM(task.end_time))
 
             let assignedTrackIndex = -1;

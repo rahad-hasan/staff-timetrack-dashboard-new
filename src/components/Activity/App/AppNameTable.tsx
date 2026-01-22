@@ -3,18 +3,20 @@ import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useState } from "react";
 import { ArrowUpDown } from "lucide-react";
-import teamsLogo from '../../../assets/activity/teams-logo.png'
-import Image from "next/image";
-import {
-    Dialog,
-    DialogTrigger,
-} from "@/components/ui/dialog"
-import BlockAppModal from "./BlockAppModal";
+// import teamsLogo from '../../../assets/activity/teams-logo.png'
+// import Image from "next/image";
+// import {
+//     Dialog,
+//     DialogTrigger,
+// } from "@/components/ui/dialog"
+// import BlockAppModal from "./BlockAppModal";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { IApps } from "@/types/type";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+// import { useLogInUserStore } from "@/store/logInUserStore";
 
 const AppNameTable = ({ data }: { data: IApps[] }) => {
-
+    // const logInUserData = useLogInUserStore(state => state.logInUserData);
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
 
@@ -40,11 +42,54 @@ const AppNameTable = ({ data }: { data: IApps[] }) => {
                 // const image = row.original.image;
                 return (
                     <div className="flex items-center gap-2">
-                        <Image src={teamsLogo} alt="app_logo" width={200} height={200} className=" w-10 border-[1.5px] border-borderColor dark:border-darkBorder rounded-full p-1.5" />
+                        <Avatar className="w-9 h-9 shrink-0">
+                            <AvatarImage src={""} />
+                            <AvatarFallback>
+                                {appName.charAt(0)}
+                            </AvatarFallback>
+                        </Avatar>
                         <div className="">
                             <p className=" text-base font-bold text-headingTextColor dark:text-darkTextPrimary capitalize">{appName}</p>
                             <span className="font-normal text-subTextColor dark:text-darkTextSecondary">App</span>
                         </div>
+                    </div>
+                )
+            }
+        },
+        {
+            accessorKey: "name",
+            header: ({ column }) => {
+                return (
+                    <div>
+                        <span
+                            className=" cursor-pointer flex items-center gap-1"
+                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                        >
+                            User name
+                            <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </span>
+                    </div>
+                )
+            },
+            cell: ({ row }) => {
+                const name = row.original.user.name;
+                const img = row.original.user.image;
+                return (
+                    <div className="flex items-center gap-2 min-w-[200px]">
+                        <Avatar className=" w-9 h-9">
+                            <AvatarImage src={img || undefined} alt={name} />
+                            <AvatarFallback>
+                                {name
+                                    ?.trim()
+                                    .split(" ")
+                                    .map(word => word[0])
+                                    .join("")
+                                    .slice(0, 2)
+                                    .toUpperCase()}
+                            </AvatarFallback>
+                        </Avatar>
+
+                        <span className="">{name}</span>
                     </div>
                 )
             }
@@ -103,7 +148,7 @@ const AppNameTable = ({ data }: { data: IApps[] }) => {
             // header: () => <div className="">Time Worked</div>,
             header: ({ column }) => {
                 return (
-                    <div className="  min-w-[250px]">
+                    <div className="  min-w-[250px] flex justify-center">
                         <span
                             className=" cursor-pointer flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
@@ -117,39 +162,49 @@ const AppNameTable = ({ data }: { data: IApps[] }) => {
             cell: ({ row }) => {
                 // const time = row.original.time as string;
                 // const isBlock = row.original.isBlock as boolean;
-                const isBlock = false
+                // const isBlock = false
                 return (
-                    <div className=" flex items-center justify-between">
-                        <div className=" flex flex-col">
+                    <div className=" flex justify-center">
+                        <div className=" flex flex-col ">
                             <span className=" font-medium text-headingTextColor dark:text-darkTextPrimary">{row?.original?.duration}</span>
-                            <span className="text-sm font-thin text-subTextColor dark:text-darkTextSecondary">nai-nai</span>
+                            {/* <span className="text-sm font-thin text-subTextColor dark:text-darkTextSecondary">nai-nai</span> */}
                         </div>
-                        <div className="flex justify-end">
+                        
 
-                            {
-                                isBlock ?
-                                    <button
-                                        className={` w-[95px] py-2 flex items-center justify-center gap-2 font-semibold transition-all cursor-pointer rounded-lg m-0.5 bg-[#fee6eb]  text-red-500  border-none"
+                        {/* {
+                            (logInUserData?.role === 'admin' ||
+                                logInUserData?.role === 'manager' ||
+                                logInUserData?.role === 'hr'
+                            )
+                            &&
+                            <div className="flex justify-end">
+
+                                {
+                                    isBlock ?
+                                        <button
+                                            className={` w-[95px] py-2 flex items-center justify-center gap-2 font-semibold transition-all cursor-pointer rounded-lg m-0.5 bg-[#fee6eb]  text-red-500  border-none"
                                 `}
-                                    >
-                                        Unblock
-                                    </button>
-                                    :
-                                    <Dialog>
-                                        <form>
-                                            <DialogTrigger asChild>
-                                                <button
-                                                    className={` w-[95px] py-2 flex items-center justify-center gap-2 font-semibold transition-all cursor-pointer rounded-lg m-0.5 text-gray-600 hover:text-textGray dark:text-darkTextSecondary dark:border-darkBorder border border-borderColor"
+                                        >
+                                            Unblock
+                                        </button>
+                                        :
+                                        <Dialog>
+                                            <form>
+                                                <DialogTrigger asChild>
+                                                    <button
+                                                        className={` w-[95px] py-2 flex items-center justify-center gap-2 font-semibold transition-all cursor-pointer rounded-lg m-0.5 text-gray-600 hover:text-textGray dark:text-darkTextSecondary dark:border-darkBorder border border-borderColor"
                                                 `}
-                                                >
-                                                    Block App
-                                                </button>
-                                            </DialogTrigger>
-                                            <BlockAppModal></BlockAppModal>
-                                        </form>
-                                    </Dialog>
-                            }
-                        </div>
+                                                    >
+                                                        Block App
+                                                    </button>
+                                                </DialogTrigger>
+                                                <BlockAppModal></BlockAppModal>
+                                            </form>
+                                        </Dialog>
+                                }
+                            </div>
+                        } */}
+
                     </div>
                 );
             },

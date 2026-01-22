@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/carousel";
 import { motion } from "framer-motion";
 import { format, parseISO } from "date-fns";
+import { formatTZTime } from "@/utils";
 
 interface ScreenshotDetail {
     project_name: string;
@@ -190,7 +191,7 @@ const ScreenShortsModal = ({ screenShorts, modalOpen, setModalOpen }: { screenSh
                                 </p>
                             </div>
                             <span className="text-[13px] bg-white/10 px-2 py-0.5 rounded border border-white/5">
-                                {screenShorts[activeIndex]?.time ? format(parseISO(screenShorts[activeIndex]?.time), "hh:mm aa") : "--:--"}
+                                {screenShorts[activeIndex]?.time ? formatTZTime(screenShorts[activeIndex]?.time) : "--:--"}
                             </span>
                         </div>
 

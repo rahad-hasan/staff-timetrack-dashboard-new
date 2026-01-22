@@ -7,9 +7,9 @@ import Image from "next/image";
 import { useState } from "react";
 import { AnimatePresence } from 'framer-motion';
 import { IAllScreenshot } from "@/types/type";
-import { format, parseISO } from "date-fns";
 import AllScreenShortsModal from "./AllScreenShortsModal";
 import EmptyTableLogo from "@/assets/empty_table.svg";
+import { formatTZTime } from "@/utils";
 
 const AllScreenShorts = ({ data }: { data: IAllScreenshot[] | undefined }) => {
 
@@ -55,7 +55,7 @@ const AllScreenShorts = ({ data }: { data: IAllScreenshot[] | undefined }) => {
                         <div className="mt-3">
                             <div className="flex justify-between items-center">
                                 <p className="md:text-base text-subTextColor dark:text-darkTextSecondary">
-                                    {format(parseISO(screenShort?.time), "hh:mm aa")}
+                                    {formatTZTime(screenShort?.time)}
                                 </p>
                             </div>
                             <h2 className=" text-sm sm:text-base font-bold text-headingTextColor dark:text-darkTextPrimary">

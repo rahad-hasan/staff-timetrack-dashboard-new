@@ -38,6 +38,7 @@ import { toast } from "sonner";
 import { editProject } from "@/actions/projects/action";
 import { useProjectFormStore } from "@/store/ProjectFormStore";
 import { useLogInUserStore } from "@/store/logInUserStore";
+import { formatTZDayMonthYear } from "@/utils";
 
 
 const ProjectTable = ({ data }: { data: IProject[] }) => {
@@ -103,7 +104,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                 return (
                     <div className="flex flex-col">
                         <span className="font-bold text-base text-headingTextColor dark:text-darkTextPrimary">{task}</span>
-                        <span className=" font-normal text-subTextColor dark:text-darkTextSecondary">{format(new Date(start_date), "EEE, MMM d, yyyy")}</span>
+                        <span className=" font-normal text-subTextColor dark:text-darkTextSecondary">{formatTZDayMonthYear(start_date)}</span>
                     </div>
                 )
             }
@@ -246,7 +247,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
             },
             cell: ({ row }) => {
                 const deadline = row.getValue("deadline") as string;
-                return <div className="">{format(new Date(deadline), "EEE, MMM d, yyyy")}</div>;
+                return <div className="">{formatTZDayMonthYear(deadline)}</div>;
             },
         },
         // {

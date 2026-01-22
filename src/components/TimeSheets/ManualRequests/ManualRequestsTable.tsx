@@ -11,14 +11,13 @@ import FilterButton from "@/components/Common/FilterButton";
 import ApproveIcon from "@/components/Icons/FilterOptionIcon/ApproveIcon";
 import DenyIcon from "@/components/Icons/FilterOptionIcon/DenyIcon";
 import { IManualTimeEntry } from "@/types/type";
-import { format } from "date-fns";
 // import EditManualTimeModal from "./EditManualTimeModal";
 // import { Dialog } from "@/components/ui/dialog";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import ConfirmDialog from "@/components/Common/ConfirmDialog";
 import { toast } from "sonner";
 import { approveRejectManualTimeEntry } from "@/actions/timesheets/action";
-import { convertDecimalHoursToHMS } from "@/utils";
+import { convertDecimalHoursToHMS, formatTZTime } from "@/utils";
 import { Button } from "@/components/ui/button";
 
 
@@ -165,7 +164,7 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
                             <h1 className=" font-medium text-headingTextColor dark:text-darkTextPrimary">
                                 {convertDecimalHoursToHMS(row?.original?.duration)}
                             </h1>
-                            <p className=" text-sm font-thin text-subTextColor dark:text-darkTextSecondary">{format(new Date(row?.original?.start_time), 'hh:mm a')} - {format(new Date(row?.original?.end_time), 'hh:mm a')}</p>
+                            <p className=" text-sm font-thin text-subTextColor dark:text-darkTextSecondary">{formatTZTime(row?.original?.start_time)} - {formatTZTime(row?.original?.end_time)}</p>
                         </div>
                         <>
                             {
