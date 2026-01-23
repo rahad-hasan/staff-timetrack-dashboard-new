@@ -78,7 +78,7 @@ const AppNameTable = ({ data }: { data: IApps[] }) => {
                     <div className="flex items-center gap-2 min-w-[200px]">
                         <Avatar className=" w-9 h-9">
                             <AvatarImage src={img || undefined} alt={name} />
-                            <AvatarFallback>
+                            <AvatarFallback className="">
                                 {name
                                     ?.trim()
                                     .split(" ")

@@ -17,6 +17,7 @@ export interface IAttendance {
     date: string;
     status: "Active" | "Inactive";
     appVersion: string;
+    is_online: boolean;
     checkIn: string;
     checkOut: string;
 }
