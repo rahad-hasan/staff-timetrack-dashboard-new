@@ -10,7 +10,6 @@ const MonthlyTimeSheetsServer = async ({ searchParams }: ISearchParamsProps) => 
     const now = new Date();
     const monthStart = format(startOfMonth(now), "yyyy-MM-dd");
     const monthEnd = format(endOfMonth(now), "yyyy-MM-dd");
-    console.log(monthStart, monthEnd);
 
     const result = await getDateBaseTimeEntry({
         from_date: params.start_month ?? monthStart,

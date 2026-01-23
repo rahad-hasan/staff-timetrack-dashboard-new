@@ -8,7 +8,6 @@ import AttendanceTableSkeleton from "@/skeleton/report/Attendance/AttendanceTabl
 // import AttendanceTableSkeleton from "@/skeleton/report/Attendance/AttendanceTableSkeleton";
 
 const AttendancePage = async ({ searchParams }: ISearchParamsProps) => {
-    const params = await searchParams;
 
     return (
         <div>
@@ -39,10 +38,8 @@ const AttendancePage = async ({ searchParams }: ISearchParamsProps) => {
             </Suspense>
             <Suspense fallback={<AttendanceTableSkeleton />}>
                 {
-                    params.date ?
-                        <AttendanceServer searchParams={searchParams}></AttendanceServer>
-                        :
-                        <AttendanceTableSkeleton></AttendanceTableSkeleton>
+
+                    <AttendanceServer searchParams={searchParams}></AttendanceServer>
 
                 }
             </Suspense>
