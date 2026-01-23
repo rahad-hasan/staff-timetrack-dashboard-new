@@ -209,7 +209,7 @@ const Every10Mins = ({ data }: any) => {
                                     :
                                     <div
                                         key={blockIndex}
-                                        className="p-2 relative flex-nowrap rounded-lg border border-borderColor dark:border-darkBorder"
+                                        className="p-2 relative flex-nowrap rounded-lg border border-borderColor dark:border-darkBorder dark:bg-darkSecondaryBg"
                                     >
                                         <Image
                                             src={block?.details?.[0]?.image}
@@ -222,7 +222,10 @@ const Every10Mins = ({ data }: any) => {
                                             className="rounded-lg w-full h-34 object-cover transition-transform duration-300 hover:scale-[1.01] cursor-pointer"
                                             alt="screenshot"
                                         />
-                                        <span className=" absolute top-1 right-1 text-xs px-2 py-0.5 rounded-2xl bg-[#ff4646cc] text-white">{block?.details?.[0]?.anomaly?.type ? block?.details?.[0]?.anomaly?.type : ""}</span>
+                                        {
+                                            block?.details?.[0]?.anomaly?.type &&
+                                            <span className=" absolute top-1 right-1 text-xs px-2 py-0.5 rounded-2xl bg-[#ff4646cc] text-white">{block?.details?.[0]?.anomaly?.type}</span>
+                                        }
                                         <div className="mt-3">
                                             <div className="flex justify-between items-center mb-2">
                                                 <p className=" text-sm sm:text-lg font-normal text-subTextColor dark:text-darkTextPrimary">

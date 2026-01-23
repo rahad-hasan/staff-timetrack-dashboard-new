@@ -38,7 +38,7 @@ const AllScreenShorts = ({ data }: { data: IAllScreenshot[] | undefined }) => {
                 {data?.map((screenShort) => (
                     <div
                         key={screenShort?.id}
-                        className="p-2 relative flex-nowrap rounded-lg border border-borderColor dark:border-darkBorder"
+                        className="p-2 relative flex-nowrap rounded-lg border border-borderColor dark:border-darkBorder dark:bg-darkSecondaryBg"
                     >
                         <Image
                             src={screenShort?.image}
@@ -51,7 +51,11 @@ const AllScreenShorts = ({ data }: { data: IAllScreenshot[] | undefined }) => {
                             className="rounded-lg w-full transition-transform duration-300 hover:scale-[1.01] cursor-pointer"
                             alt="screenshot"
                         />
-                        <span className=" absolute top-1 right-1 text-xs px-2 py-0.5 rounded-2xl bg-[#ff4646cc] text-white">{screenShort?.anomaly?.type ? screenShort?.anomaly?.type : ""}</span>
+                        {
+                            screenShort?.anomaly?.type &&
+                            <span className=" absolute top-1 right-1 text-xs px-2 py-0.5 rounded-2xl bg-[#ff4646cc] text-white">{screenShort?.anomaly?.type}</span>
+                        }
+
                         <div className="mt-3">
                             <div className="flex justify-between items-center">
                                 <p className="md:text-base text-subTextColor dark:text-darkTextSecondary">
