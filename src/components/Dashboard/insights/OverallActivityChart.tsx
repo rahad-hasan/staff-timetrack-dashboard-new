@@ -3,7 +3,7 @@
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import { IDashboardInsight } from "./Insights";
 
-const COLORS = ["#5db0f1", "#f40139", "#ffcb49"];
+const COLORS = ["#5db0f1", "#dce3e3", "#ffcb49"];
 
 const OverallActivityChart = ({ data }: { data: IDashboardInsight }) => {
 
