@@ -10,19 +10,22 @@ import SecondChart from "@/components/Icons/HeadingChartIcon/SecondChart";
 import TeamMemberIcon from "@/components/Icons/TeamMemberIcon";
 import WorkedTimeIcon from "@/components/Icons/WorkedTimeIcon";
 import { TrendingDown, TrendingUp } from "lucide-react";
+import { cookies } from "next/headers";
+import { format } from "date-fns";
 // import AllScreenShortsSkeleton from "@/skeleton/activity/screenShorts/AllScreenShortsSkeleton";
 
 
 const Every10MinsServer = async ({ searchParams }: ISearchParamsProps) => {
+    const cookieStore = await cookies();
+    const userId = cookieStore.get("userId")?.value;
     const params = await searchParams;
-    let result;
-    if (params.date && params.user_id) {
-        result = await getScreenshots10Min({
-            date: params.date,
-            user_id: params.user_id,
-        });
-    }
-    
+    const currentDate = format(new Date(), "yyyy-MM-dd");
+
+    const result = await getScreenshots10Min({
+        date: params.date ?? currentDate,
+        user_id: params.user_id ?? userId,
+    });
+
     return (
         <div>
             <div className="mb-5 grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-4 gap-5">
@@ -174,10 +177,7 @@ const Every10MinsServer = async ({ searchParams }: ISearchParamsProps) => {
             </div>
             <Suspense fallback={<Every10MinsSkeleton />}>
                 {
-                    params.date && params.user_id ?
-                        <Every10Mins data={result?.data?.interval_rows} />
-                        :
-                        <Every10MinsSkeleton />
+                    <Every10Mins data={result?.data?.interval_rows} />
                 }
             </Suspense>
         </div>
