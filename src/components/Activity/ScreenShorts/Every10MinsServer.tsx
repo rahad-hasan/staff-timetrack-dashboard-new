@@ -3,12 +3,8 @@ import Every10MinsSkeleton from "@/skeleton/activity/screenShorts/Every10MinsSke
 import { ISearchParamsProps } from "@/types/type";
 import { Suspense } from "react";
 import Every10Mins from "./Every10Mins";
-import AvgActivityIcon from "@/components/Icons/AvgActivityIcon";
-import FocusTimeProjectIcon from "@/components/Icons/FocusTimeProjectIcon";
 import FirstChart from "@/components/Icons/HeadingChartIcon/FirstChart";
 import SecondChart from "@/components/Icons/HeadingChartIcon/SecondChart";
-import TeamMemberIcon from "@/components/Icons/TeamMemberIcon";
-import WorkedTimeIcon from "@/components/Icons/WorkedTimeIcon";
 import { TrendingDown, TrendingUp } from "lucide-react";
 import { cookies } from "next/headers";
 import { format } from "date-fns";

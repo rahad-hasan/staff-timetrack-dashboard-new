@@ -3,11 +3,19 @@ import WeeklyActivityColoredIcon from '../ColoredIcon/HeroSectionIcon/WeeklyActi
 import TotalProjectColoredIcon from '../ColoredIcon/HeroSectionIcon/TotalProjectColoredIcon';
 import TeamMemberColoredIcon from '../ColoredIcon/HeroSectionIcon/TeamMemberColoredIcon';
 import WeeklyWorkColoredIcon from '../ColoredIcon/HeroSectionIcon/WeeklyWorkColoredIcon';
-import { IDashboardStats } from '@/types/type';
+import { IDashboardStats, ISearchParamsProps } from '@/types/type';
 import FirstChart from "../Icons/HeadingChartIcon/FirstChart";
 import SecondChart from "../Icons/HeadingChartIcon/SecondChart";
+import { getDashboardStats } from "@/actions/dashboard/action";
 
-const HeroCart = ({ data }: { data: IDashboardStats }) => {
+const HeroCart = async ({ searchParams }: ISearchParamsProps) => {
+    const params = await searchParams;
+    const statsType = params.tab === 'daily' ? 'daily' : (params.tab || 'daily');
+    const result = await getDashboardStats({
+        type: statsType,
+    });
+
+    const data = result?.data?.metrics
 
     // 1. Create a Mapping for your static assets
     const metricConfig = {
@@ -36,7 +44,7 @@ const HeroCart = ({ data }: { data: IDashboardStats }) => {
             change: apiData?.change,
             isUp: apiData?.is_improved,
             icon: config?.icon,
-            note: "last week",
+            note: params.tab === 'daily' ? 'Yesterday' : params.tab === 'weekly' ? "Last Weekly" : params.tab === 'monthly' ? "Last Month" : "",
         };
     });
 

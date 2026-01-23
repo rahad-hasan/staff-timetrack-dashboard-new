@@ -17,3 +17,17 @@ export const getAllScreenshots = async (query = {}): Promise<IResponse<IAllScree
         tag: "allScreenshots",
     });
 };
+
+export const deleteScreenshot = async ({ data }: {
+    data: {
+        user_id: number;
+        from_time: string;
+        to_time: string
+    },
+}) => {
+    return await baseApi(`/screenshots`, {
+        method: "DELETE",
+        body: data,
+        tag: "screenshots",
+    });
+};

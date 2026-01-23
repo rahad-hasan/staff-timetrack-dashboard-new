@@ -4,11 +4,10 @@ import { Circle, Keyboard, MousePointer2 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import ScreenShortsModal from "./ScreenShortsModal";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
-import ScreenShortsDeleteReason from "./ScreenShortsDeleteReason";
+// import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+// import ScreenShortsDeleteReason from "./ScreenShortsDeleteReason";
 import { AnimatePresence } from "framer-motion";
 import DeleteIcon from "@/components/Icons/DeleteIcon";
-import { format, parseISO } from "date-fns";
 import {
     Tooltip,
     TooltipContent,
@@ -16,16 +15,21 @@ import {
 } from "@/components/ui/tooltip";
 import EmptyTableLogo from "@/assets/empty_table.svg";
 import { formatTZTime } from "@/utils";
+import ConfirmDialog from "@/components/Common/ConfirmDialog";
+import { deleteScreenshot } from "@/actions/screenshots/action";
+import { toast } from "sonner";
+import { useLogInUserStore } from "@/store/logInUserStore";
 // import emptyActivity from "../../../assets/empty_activity.png";
 
 const Every10Mins = ({ data }: any) => {
+    const logInUserData = useLogInUserStore(state => state.logInUserData);
     const [selectedImage, setSelectedImage] = useState<any>();
     const [modalOpen, setModalOpen] = useState<boolean>(false);
 
     const formatDuration = (totalSeconds: number) => {
         const hours = Math.floor(totalSeconds / 3600);
         const minutes = Math.floor((totalSeconds % 3600) / 60);
-        const seconds = Math.floor(totalSeconds % 60);
+        // const seconds = Math.floor(totalSeconds % 60);
         if (hours > 0) {
             return `${hours}h ${minutes}m`;
         }
@@ -85,6 +89,29 @@ const Every10Mins = ({ data }: any) => {
             };
         });
     };
+
+    const handleDeleteScreenShot = async (data: any) => {
+        const finalData = {
+            user_id: data?.details[0]?.user_id,
+            from_time: data?.from_time,
+            to_time: data?.to_time,
+        }
+        console.log('got data', finalData);
+        try {
+            const res = await deleteScreenshot({
+                data: finalData
+            });
+
+            if (res?.success) {
+                toast.success(res?.message || `Deleted screenshots successfully`);
+            } else {
+                toast.error(res?.message || `Failed to delete screenshots`);
+            }
+        } catch (error: any) {
+            toast.error(error.message || "Something went wrong!");
+        }
+    }
+
     const processedHours = groupDataByHour(data || []);
 
     return (
@@ -249,7 +276,7 @@ const Every10Mins = ({ data }: any) => {
                                                     {formatTZTime(block?.from_time)} -{" "}
                                                     {formatTZTime(block?.to_time)}
                                                 </p>
-                                                <Dialog>
+                                                {/* <Dialog>
                                                     <form>
                                                         <DialogTrigger asChild>
                                                             <div className="text-rose-600 dark:text-rose-500 cursor-pointer">
@@ -258,7 +285,25 @@ const Every10Mins = ({ data }: any) => {
                                                         </DialogTrigger>
                                                         <ScreenShortsDeleteReason></ScreenShortsDeleteReason>
                                                     </form>
-                                                </Dialog>
+                                                </Dialog> */}
+                                                {
+                                                    (logInUserData?.role === 'admin' ||
+                                                        logInUserData?.role === 'manager' ||
+                                                        logInUserData?.role === 'hr'
+                                                    ) &&
+                                                    <ConfirmDialog
+                                                        trigger={
+                                                            <div className="text-rose-600 dark:text-rose-500 cursor-pointer">
+                                                                <DeleteIcon size={16} />
+                                                            </div>
+                                                        }
+                                                        title="Delete the screenshot entry"
+                                                        description="Are you sure you want to delete? This action cannot be undone."
+                                                        confirmText="Confirm"
+                                                        cancelText="Cancel"
+                                                        onConfirm={() => handleDeleteScreenShot(block)}
+                                                    />
+                                                }
                                             </div>
 
                                             <div className="h-1.5 bg-[#dce3e3] dark:bg-darkPrimaryBg rounded-full">
