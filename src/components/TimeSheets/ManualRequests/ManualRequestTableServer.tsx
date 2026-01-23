@@ -10,7 +10,7 @@ const ManualRequestTableServer = async ({ searchParams }: ISearchParamsProps) =>
     const user = await getDecodedUser();
     // }
     const result = await getManualTimeEntry({
-        user_id: params?.user_id ? params?.user_id : user?.id,
+        user_id: params?.user_id ?? user?.id,
         search: params.search,
         page: params.page,
     });
