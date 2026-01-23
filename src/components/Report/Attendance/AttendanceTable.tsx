@@ -12,6 +12,7 @@ import { format } from "date-fns";
 import { formatTZTime } from "@/utils";
 
 const AttendanceTable = ({ attendanceListData }: any) => {
+    console.log('attendanceListData', attendanceListData);
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
 
@@ -88,11 +89,11 @@ const AttendanceTable = ({ attendanceListData }: any) => {
                 )
             },
             cell: ({ row }) => {
-                const status = row.getValue("status") as string;
+                const status = row?.original?.is_online;
                 return (
                     <div className="">
                         {
-                            status === "Active" ?
+                            status ?
                                 <button className=" bg-[#e9f8f0] text-primary border border-primary rounded-lg px-2 py-1">Active</button>
                                 :
                                 <button className=" bg-[#fee6eb] text-red-500 border border-red-500 rounded-lg px-2 py-1">Inactive</button>

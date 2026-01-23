@@ -39,11 +39,12 @@ const UrlsTable = ({ data }: { data: IUrls[] }) => {
                         <Avatar className="w-9 h-9 shrink-0">
                             <AvatarImage src={""} />
                             <AvatarFallback>
-                                {url.charAt(0)}{url.charAt(1)}
+                                {/* {url.charAt(0)}{url.charAt(1)} */}
+                                Ur
                             </AvatarFallback>
                         </Avatar>
                         <div className="">
-                            <p className=" text-sm lg:text-base font-bold text-headingTextColor dark:text-darkTextPrimary">{url}</p>
+                            <p className=" text-sm font-bold text-headingTextColor dark:text-darkTextPrimary">{url}</p>
                             <span className=" font-normal text-subTextColor dark:text-darkTextSecondary">Site</span>
                         </div>
                     </div>

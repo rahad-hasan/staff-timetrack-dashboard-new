@@ -3,15 +3,15 @@ import Every10MinsSkeleton from "@/skeleton/activity/screenShorts/Every10MinsSke
 import { ISearchParamsProps } from "@/types/type";
 import { Suspense } from "react";
 import Every10Mins from "./Every10Mins";
-import AvgActivityIcon from "@/components/Icons/AvgActivityIcon";
-import FocusTimeProjectIcon from "@/components/Icons/FocusTimeProjectIcon";
 import FirstChart from "@/components/Icons/HeadingChartIcon/FirstChart";
 import SecondChart from "@/components/Icons/HeadingChartIcon/SecondChart";
-import TeamMemberIcon from "@/components/Icons/TeamMemberIcon";
-import WorkedTimeIcon from "@/components/Icons/WorkedTimeIcon";
 import { TrendingDown, TrendingUp } from "lucide-react";
 import { cookies } from "next/headers";
 import { format } from "date-fns";
+import WeeklyActivityColoredIcon from "@/components/ColoredIcon/HeroSectionIcon/WeeklyActivityColoredIcon";
+import WeeklyWorkColoredIcon from "@/components/ColoredIcon/HeroSectionIcon/WeeklyWorkColoredIcon";
+import TotalProjectColoredIcon from "@/components/ColoredIcon/HeroSectionIcon/TotalProjectColoredIcon";
+import TeamMemberColoredIcon from "@/components/ColoredIcon/HeroSectionIcon/TeamMemberColoredIcon";
 // import AllScreenShortsSkeleton from "@/skeleton/activity/screenShorts/AllScreenShortsSkeleton";
 
 
@@ -32,9 +32,7 @@ const Every10MinsServer = async ({ searchParams }: ISearchParamsProps) => {
                 <div className="border border-borderColor rounded-2xl w-full dark:border-darkBorder transition-all hover:shadow duration-200 relative h-38">
                     <div className="flex items-center justify-between px-4 py-5 bg-bgPrimary dark:bg-darkPrimaryBg rounded-t-2xl">
                         <div className=' flex items-center gap-3'>
-                            <div className=' border border-borderColor dark:border-darkBorder p-2 text-subTextColor dark:text-darkTextSecondary rounded-lg'>
-                                <AvgActivityIcon size={22} />
-                            </div>
+                            <WeeklyActivityColoredIcon size={36} />
                             <div>
                                 <h2 className="text-2xl font-medium text-headingTextColor dark:text-darkTextPrimary">{result?.data?.score}%</h2>
                                 <h3 className=" uppercase text-subTextColor dark:text-darkTextSecondary">AVG ACTIVITY</h3>
@@ -54,9 +52,7 @@ const Every10MinsServer = async ({ searchParams }: ISearchParamsProps) => {
                 <div className="border border-borderColor rounded-2xl w-full dark:border-darkBorder transition-all hover:shadow duration-200 relative h-38">
                     <div className="flex items-center justify-between px-4 py-5 bg-bgPrimary dark:bg-darkPrimaryBg rounded-t-2xl">
                         <div className=' flex items-center gap-3'>
-                            <div className=' border border-borderColor dark:border-darkBorder p-2 text-subTextColor dark:text-darkTextSecondary rounded-lg'>
-                                <FocusTimeProjectIcon size={22} />
-                            </div>
+                            <WeeklyWorkColoredIcon size={36} />
                             <div>
                                 <h2 className="text-2xl font-medium text-headingTextColor dark:text-darkTextPrimary">{result?.data?.work_time}</h2>
                                 <h3 className=" uppercase text-subTextColor dark:text-darkTextSecondary">WORKED TIME</h3>
@@ -76,9 +72,7 @@ const Every10MinsServer = async ({ searchParams }: ISearchParamsProps) => {
                 <div className="border border-borderColor rounded-2xl w-full dark:border-darkBorder transition-all hover:shadow duration-200 relative h-38">
                     <div className="flex items-center justify-between px-4 py-5 bg-bgPrimary dark:bg-darkPrimaryBg rounded-t-2xl">
                         <div className=' flex items-center gap-3'>
-                            <div className=' border border-borderColor dark:border-darkBorder p-2 text-subTextColor dark:text-darkTextSecondary rounded-lg'>
-                                <TeamMemberIcon size={22} />
-                            </div>
+                            <TotalProjectColoredIcon size={36} />
                             <div>
                                 <h2 className="text-2xl font-medium text-headingTextColor dark:text-darkTextPrimary">{result?.data?.mouse_activity}%</h2>
                                 <h3 className=" uppercase text-subTextColor dark:text-darkTextSecondary">MOUSE ACTIVITY</h3>
@@ -98,9 +92,7 @@ const Every10MinsServer = async ({ searchParams }: ISearchParamsProps) => {
                 <div className="border border-borderColor rounded-2xl w-full dark:border-darkBorder transition-all hover:shadow duration-200 relative h-38">
                     <div className="flex items-center justify-between px-4 py-5 bg-bgPrimary dark:bg-darkPrimaryBg rounded-t-2xl">
                         <div className=' flex items-center gap-3'>
-                            <div className=' border border-borderColor dark:border-darkBorder p-2 text-subTextColor dark:text-darkTextSecondary rounded-lg'>
-                                <WorkedTimeIcon size={22} />
-                            </div>
+                            <TeamMemberColoredIcon size={36} />
                             <div>
                                 <h2 className="text-2xl font-medium text-headingTextColor dark:text-darkTextPrimary">{result?.data?.keyboard_activity}%</h2>
                                 <h3 className=" uppercase text-subTextColor dark:text-darkTextSecondary">KEYBOARD ACTIVITY</h3>

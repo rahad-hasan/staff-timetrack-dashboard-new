@@ -1,4 +1,4 @@
-import HeroCartServer from "@/components/Dashboard/HeroCartServer";
+import HeroCart from "@/components/Dashboard/HeroCart";
 import HeroHeading from "@/components/Dashboard/HeroHeading";
 import DashboardHeroSkeleton from "@/skeleton/DashboardHeroSkeleton";
 import { ISearchParamsProps } from "@/types/type";
@@ -11,7 +11,7 @@ export default function Dashboard({ searchParams }: ISearchParamsProps) {
         <HeroHeading searchParams={searchParams}></HeroHeading>
       </Suspense>
       <Suspense fallback={<DashboardHeroSkeleton />}>
-        <HeroCartServer searchParams={searchParams} />
+        <HeroCart searchParams={searchParams} />
       </Suspense>
     </div>
   );

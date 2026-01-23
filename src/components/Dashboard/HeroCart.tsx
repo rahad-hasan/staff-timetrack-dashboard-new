@@ -1,46 +1,35 @@
-"use client";
-
 import { TrendingDown, TrendingUp } from "lucide-react";
-import Image from 'next/image';
-import teamMemberChart from '../../assets/dashboard/teamMemberChart.svg'
-import totalProjectChart from '../../assets/dashboard/totalProjectChart.svg'
-import weeklyActivityChart from '../../assets/dashboard/weeklyActivityChart.svg'
-import weeklyWorkChart from '../../assets/dashboard/weeklyWorkChart.svg'
-import darkProjectChart from '../../assets/dashboard/darkProjectChart.svg'
-import darkTeamChart from '../../assets/dashboard/darkTeamChart.svg'
-import darkWeeklyChart from '../../assets/dashboard/darkWeeklyChart.svg'
-import darkWeeklyWorkChart from '../../assets/dashboard/darkWeeklyWorkChart.svg'
-import { useTheme } from 'next-themes';
 import WeeklyActivityColoredIcon from '../ColoredIcon/HeroSectionIcon/WeeklyActivityColoredIcon';
 import TotalProjectColoredIcon from '../ColoredIcon/HeroSectionIcon/TotalProjectColoredIcon';
 import TeamMemberColoredIcon from '../ColoredIcon/HeroSectionIcon/TeamMemberColoredIcon';
 import WeeklyWorkColoredIcon from '../ColoredIcon/HeroSectionIcon/WeeklyWorkColoredIcon';
-import { IDashboardStats } from '@/types/type';
+import { IDashboardStats, ISearchParamsProps } from '@/types/type';
+import FirstChart from "../Icons/HeadingChartIcon/FirstChart";
+import SecondChart from "../Icons/HeadingChartIcon/SecondChart";
+import { getDashboardStats } from "@/actions/dashboard/action";
 
-const HeroCart = ({ data }: { data: IDashboardStats }) => {
-    const { theme } = useTheme();
+const HeroCart = async ({ searchParams }: ISearchParamsProps) => {
+    const params = await searchParams;
+    const statsType = params.tab === 'daily' ? 'daily' : (params.tab || 'daily');
+    const result = await getDashboardStats({
+        type: statsType,
+    });
+
+    const data = result?.data?.metrics
 
     // 1. Create a Mapping for your static assets
     const metricConfig = {
         activity: {
             icon: <WeeklyActivityColoredIcon size={36} />,
-            lightChart: weeklyActivityChart,
-            darkChart: darkWeeklyChart,
         },
         work: {
             icon: <WeeklyWorkColoredIcon size={36} />,
-            lightChart: weeklyWorkChart,
-            darkChart: darkWeeklyWorkChart,
         },
         projects: {
             icon: <TotalProjectColoredIcon size={36} />,
-            lightChart: totalProjectChart,
-            darkChart: darkProjectChart,
         },
         members: {
             icon: <TeamMemberColoredIcon size={36} />,
-            lightChart: teamMemberChart,
-            darkChart: darkTeamChart,
         }
     };
 
@@ -55,14 +44,13 @@ const HeroCart = ({ data }: { data: IDashboardStats }) => {
             change: apiData?.change,
             isUp: apiData?.is_improved,
             icon: config?.icon,
-            chart: theme === 'dark' ? config.darkChart : config.lightChart,
-            note: "last week",
+            note: params.tab === 'daily' ? 'Yesterday' : params.tab === 'weekly' ? "Last Weekly" : params.tab === 'monthly' ? "Last Month" : "",
         };
     });
 
     return (
         <div className="mb-5 grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-4 gap-5">
-            {metrics.map(({ id, icon, chart, value, title, change, isUp, note }) => {
+            {metrics.map(({ id, icon, value, title, change, isUp, note }, index) => {
                 const TrendIcon = isUp ? TrendingUp : TrendingDown;
                 const trendColor = isUp ? "text-[#12cd69]" : "text-[#f40139]";
 
@@ -81,7 +69,16 @@ const HeroCart = ({ data }: { data: IDashboardStats }) => {
                             </div>
 
                             <div>
-                                <Image src={chart} className='w-18 2xl:w-20' width={150} height={150} alt='chart' />
+                                {
+                                    index % 2 === 0 ?
+                                        <div className="text-green-600">
+                                            <FirstChart></FirstChart>
+                                        </div>
+                                        :
+                                        <div className="text-red-600">
+                                            <SecondChart></SecondChart>
+                                        </div>
+                                }
                             </div>
                         </div>
 

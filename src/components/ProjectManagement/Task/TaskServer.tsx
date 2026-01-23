@@ -2,16 +2,15 @@
 import { getTasks } from "@/actions/task/action";
 import TaskToggle from "./TaskToggle";
 import AppPagination from "@/components/Common/AppPagination";
-import { cookies } from "next/headers";
+import { getDecodedUser } from "@/utils/decodedLogInUser";
 
 const TaskServer = async ({ searchParams }: any) => {
-    const cookieStore = await cookies();
-    const userId = cookieStore.get("userId")?.value;
+    const user = await getDecodedUser();
     const params = await searchParams;
     const result = await getTasks({
         search: params.search,
         project_id: params.project_id,
-        user_id: params.user_id ?? userId,
+        user_id: params.user_id ?? user?.id,
         page: params.page,
     });
 

@@ -29,9 +29,9 @@ const SubItem = ({
         variants={itemVariants}
         onClick={onClick}
         className={clsx(
-          "text-base py-1.5 rounded-lg cursor-pointer flex gap-4 items-center text-headingTextColor dark:text-darkTextPrimary ",
+          "text-base py-1.5 mx-0.5 rounded-lg cursor-pointer flex gap-4 items-center text-headingTextColor dark:text-darkTextPrimary ",
           active
-            ? "bg-[#ffffff] pl-4 border border-borderColor dark:border-darkBorder dark:text-darkTextPrimary dark:bg-darkPrimaryBg  font-medium"
+            ? "bg-[#ffffff] pl-4 outline outline-borderColor dark:outline-darkBorder dark:text-darkTextPrimary dark:bg-darkPrimaryBg  font-medium"
             : " pl-13 text-subTextColor hover:text-primary",
           isCollapsed && " !pl-3"
         )}

@@ -3,9 +3,15 @@ import DayWeekMonthSelection from "@/components/Common/DayWeekMonthSelection";
 import AllTimesheetServer from "@/components/TimeSheets/AllTimesheets/AllTimesheetServer";
 import { ISearchParamsProps } from "@/types/type";
 import { Suspense } from "react";
+import { Metadata } from "next";
 
+export const metadata: Metadata = {
+    title: "Staff Time Tracker Timesheets",
+    description: "Staff Time Tracker Timesheets",
+};
 
 const AllTimeSheets = ({ searchParams }: ISearchParamsProps) => {
+
 
     return (
         <div>

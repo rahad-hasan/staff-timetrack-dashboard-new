@@ -7,7 +7,6 @@ import { ISearchParamsProps } from "@/types/type";
 import CalenderSkeleton from "@/skeleton/calender/CalenderSkeleton";
 
 const CalenderPage = async ({ searchParams }: ISearchParamsProps) => {
-    const params = await searchParams;
     return (
         <div>
             <CalenderHeading></CalenderHeading>
@@ -19,11 +18,7 @@ const CalenderPage = async ({ searchParams }: ISearchParamsProps) => {
             </Suspense>
             <Suspense fallback={<CalenderSkeleton />}>
                 {
-                    params.start_month && params.end_month ?
-                        <CalenderTableServer searchParams={searchParams} />
-                        :
-                        <CalenderSkeleton />
-
+                    <CalenderTableServer searchParams={searchParams} />
                 }
             </Suspense>
         </div>

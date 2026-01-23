@@ -5,6 +5,12 @@ import ManualRequestTableServer from "@/components/TimeSheets/ManualRequests/Man
 import { ISearchParamsProps } from "@/types/type";
 import ManualRequestsHeroSection from "@/components/TimeSheets/ManualRequests/ManualRequestsHeroSection";
 import { Suspense } from "react";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Staff Time Tracker Manual Requests",
+    description: "Staff Time Tracker Manual Requests",
+};
 
 const ManualRequests = async ({ searchParams }: ISearchParamsProps) => {
 

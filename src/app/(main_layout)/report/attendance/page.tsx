@@ -5,10 +5,10 @@ import { ISearchParamsProps } from "@/types/type";
 import AttendanceServer from "@/components/Report/Attendance/AttendanceServer";
 import { Suspense } from "react";
 import AttendanceTableSkeleton from "@/skeleton/report/Attendance/AttendanceTableSkeleton";
+import AttendanceHeroSearch from "@/components/Report/Attendance/AttendanceHeroSearch";
 // import AttendanceTableSkeleton from "@/skeleton/report/Attendance/AttendanceTableSkeleton";
 
 const AttendancePage = async ({ searchParams }: ISearchParamsProps) => {
-    const params = await searchParams;
 
     return (
         <div>
@@ -21,13 +21,14 @@ const AttendancePage = async ({ searchParams }: ISearchParamsProps) => {
                     <div className="flex flex-col md:flex-row gap-4 md:gap-3 w-full">
                         <SpecificDatePicker></SpecificDatePicker>
                         <div className=" flex items-center justify-between">
-                            <div className="w-1/2">
+                            {/* <div className="w-1/2">
                                 <SelectUserDropDown defaultSelect={false} ></SelectUserDropDown>
-                            </div>
+                            </div> */}
                             {/* <div className=" flex md:hidden items-center gap-2">
                             <Checkbox className=" cursor-pointer border-primary" />
                             <p>No check in data</p>
                         </div> */}
+                            <AttendanceHeroSearch></AttendanceHeroSearch>
                         </div>
                     </div>
 
@@ -39,10 +40,8 @@ const AttendancePage = async ({ searchParams }: ISearchParamsProps) => {
             </Suspense>
             <Suspense fallback={<AttendanceTableSkeleton />}>
                 {
-                    params.date ?
-                        <AttendanceServer searchParams={searchParams}></AttendanceServer>
-                        :
-                        <AttendanceTableSkeleton></AttendanceTableSkeleton>
+
+                    <AttendanceServer searchParams={searchParams}></AttendanceServer>
 
                 }
             </Suspense>

@@ -414,7 +414,7 @@ const Configuration = ({ data }: { data: ICompany }) => {
                                                         <SelectValue placeholder="Select start day" />
                                                     </SelectTrigger>
                                                 </FormControl>
-                                                <SelectContent>
+                                                <SelectContent  className=" dark:border-darkBorder">
                                                     {daysOfWeek.map((day) => (
                                                         <SelectItem key={day} value={day}>{day}</SelectItem>
                                                     ))}
