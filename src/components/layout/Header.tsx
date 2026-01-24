@@ -4,12 +4,12 @@ import { Button } from "../ui/button";
 // import downloadIcon from '../../assets/header/download.svg'
 // import startTimerIcon from '../../assets/header/start_timer_icon.svg'
 // import Image from "next/image";
-import {
-    Popover,
-    PopoverTrigger,
-} from "@/components/ui/popover"
-import { CirclePlay, Download, Menu, } from "lucide-react";
-import StartTimer from "./Header/StartTimer";
+// import {
+//     Popover,
+//     PopoverTrigger,
+// } from "@/components/ui/popover"
+import { Download, Menu, } from "lucide-react";
+// import StartTimer from "./Header/StartTimer";
 import {
     Sheet,
     SheetTrigger,
@@ -24,7 +24,7 @@ import { socket } from "@/socket/socket";
 // import bellIcon from '../../assets/header/bell.svg'
 
 const Header = () => {
-    const [open, setOpen] = useState(false);
+    // const [open, setOpen] = useState(false);
     const [notificationsList, setNotificationsList] = useState<any[]>([]);
     const unreadCount = notificationsList.filter(n => n.is_read === false).length;
 
@@ -52,16 +52,15 @@ const Header = () => {
 
 
     return (
-        <div className=" border-b border-borderColor dark:border-darkBorder py-3 md:py-3.5 2xl:py-5 px-3 md:px-5 flex items-center justify-between rounded-t-lg dark:bg-darkPrimaryBg">
-            <div>
+        <div className=" border-b border-borderColor dark:border-darkBorder py-3 md:py-3.5 2xl:py-5 px-3 md:px-5 flex items-center justify-end rounded-t-lg dark:bg-darkPrimaryBg">
+            {/* <div>
                 <Popover open={open} onOpenChange={setOpen} modal>
                     <PopoverTrigger asChild>
-                        {/* <Button className=" px-2 sm:px-3 dark:border-darkBorder" variant={'filter'}><Image src={startTimerIcon} width={0} height={0} className=" w-7 lg:w-5" alt="download" /><span className=" hidden lg:block dark:text-darkTextPrimary">Start Timer</span></Button> */}
                         <Button className=" dark:border-darkBorder dark:hover:bg-darkSecondaryBg" variant={'filter'}><CirclePlay className="text-primary size-5.5 sm:size-5.5" /><span className=" hidden lg:block dark:text-darkTextPrimary">Start Timer</span></Button>
                     </PopoverTrigger>
                     <StartTimer onClose={() => setOpen(false)}></StartTimer>
                 </Popover>
-            </div>
+            </div> */}
 
             <div className=" hidden md:flex items-center gap-4">
                 <div>
