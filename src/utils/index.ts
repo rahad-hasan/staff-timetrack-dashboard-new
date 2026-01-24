@@ -69,6 +69,14 @@ export const formatTZDayMonthYear = (
   return formatInTimeZone(d, timeZone, "EEE, MMM d, yyyy");
 };
 
+export const formatTZDayMonthHourMin = (
+  date: string | Date | number,
+  timeZone = getUserTimeZone()
+): string => {
+  const d = new Date(date);
+  return formatInTimeZone(d, timeZone, "EEE, MMM d, hh:mm a");
+};
+
 export const formatTZDateDMY = (
   date: Date | string,
   timeZone = getUserTimeZone()

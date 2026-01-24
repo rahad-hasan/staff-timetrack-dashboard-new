@@ -47,7 +47,7 @@ const ScreenShorts = ({ searchParams }: ISearchParamsProps) => {
                                     <NotepadText className=" text-sm md:text-base dark:text-darkTextPrimary" /> All Notes
                                 </Button>
                             </DialogTrigger>
-                            <AllNotesModal></AllNotesModal>
+                            <AllNotesModal searchParams={searchParams}></AllNotesModal>
                         </form>
                     </Dialog>
                     <Suspense fallback={null}>
