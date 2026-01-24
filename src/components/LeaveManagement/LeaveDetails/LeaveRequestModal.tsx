@@ -174,7 +174,7 @@ const LeaveRequestModal = ({ onClose }: { onClose: () => void }) => {
                                                     className="py-1.5 justify-between font-normal dark:bg-darkPrimaryBg dark:text-darkTextPrimary"
                                                 >
                                                     {startDate
-                                                        ? startDate.toLocaleDateString()
+                                                        ? format(startDate, "dd-MM-yyyy")
                                                         : "Select Start Date"}
                                                     <ChevronDownIcon />
                                                 </Button>
@@ -212,7 +212,7 @@ const LeaveRequestModal = ({ onClose }: { onClose: () => void }) => {
                                                     className="py-1.5 justify-between font-normal dark:text-darkTextPrimary dark:bg-darkPrimaryBg "
                                                 >
                                                     {endDate
-                                                        ? endDate.toLocaleDateString()
+                                                        ? format(endDate, "dd-MM-yyyy")
                                                         : "Select End Date"}
                                                     <ChevronDownIcon />
                                                 </Button>
