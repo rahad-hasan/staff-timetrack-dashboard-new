@@ -137,8 +137,8 @@ export const sidebarItemsEmployee = [
 export const othersSidebarItems = [
     {
         icon: CalendarDays,
-        label: 'Calendar',
-        key: '/calender',
+        label: 'Event',
+        key: '/event',
         collapsible: false,
         subItems: [],
     },

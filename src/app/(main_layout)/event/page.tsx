@@ -1,10 +1,10 @@
 import MonthPicker from "@/components/Common/MonthPicker";
 import { Suspense } from "react";
 // import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
-import CalenderHeading from "@/components/Calender/CalenderHeading";
-import CalenderTableServer from "@/components/Calender/CalenderTableServer";
+import CalenderHeading from "@/components/Event/CalenderHeading";
+import CalenderTableServer from "@/components/Event/CalenderTableServer";
 import { ISearchParamsProps } from "@/types/type";
-import CalenderSkeleton from "@/skeleton/calender/CalenderSkeleton";
+import CalenderSkeleton from "@/skeleton/event/CalenderSkeleton";
 
 const CalenderPage = async ({ searchParams }: ISearchParamsProps) => {
     return (

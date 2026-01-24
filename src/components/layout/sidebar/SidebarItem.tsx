@@ -31,7 +31,7 @@ const iconMapping = {
   Projects: ProjectManagementIcon,
   Report: ReportIcon,
   Members: TeamsIcon,
-  Calendar: CalendarIcon,
+  Event: CalendarIcon,
   Leaves: LeaveManagementIcon,
   Settings: SettingsIcon,
 };
@@ -44,7 +44,7 @@ const coloredIconMapping = {
   Projects: ProjectManagementColoredIcon,
   Report: ReportColoredIcon,
   Members: TeamsColoredIcon,
-  Calendar: CalendarColoredIcon,
+  Event: CalendarColoredIcon,
   Leaves: LeaveManagementColoredIcon,
   Settings: SettingsColoredIcon,
 }
