@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
@@ -8,7 +9,31 @@ import FilterButton from "@/components/Common/FilterButton";
 import { IRowAppsUrls } from "@/types/type";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
+import chrome_logo from '../../../assets/apps_logo/chrome_logo.png';
+import figma_logo from '../../../assets/apps_logo/figma_logo.png';
+import photoshop_logo from '../../../assets/apps_logo/photoshop_logo.png';
+import premiere_pro_logo from '../../../assets/apps_logo/premiere_pro_logo.png';
+import teams_logo from '../../../assets/apps_logo/teams_logo.png';
+import time_tracker_logo from '../../../assets/apps_logo/time_tracker_logo.png';
+import vs_code_logo from '../../../assets/apps_logo/vs_code_logo.png';
+import zoom_logo from '../../../assets/apps_logo/zoom_logo.png';
+import microsoft_office_word from '../../../assets/apps_logo/microsoft_office_word.png';
+import postman_logo from '../../../assets/apps_logo/postman_logo.png';
+import Image from "next/image";
 
+const APP_LOGOS: Record<string, any> = {
+    chrome: chrome_logo,
+    figma: figma_logo,
+    photoshop: photoshop_logo,
+    premiere: premiere_pro_logo,
+    teams: teams_logo,
+    tracker: time_tracker_logo,
+    vscode: vs_code_logo,
+    code: vs_code_logo,
+    zoom: zoom_logo,
+    office: microsoft_office_word,
+    postman: postman_logo,
+};
 const AppsAndUrl = ({ data }: { data: IRowAppsUrls[] }) => {
 
     const columns: ColumnDef<IRowAppsUrls>[] = [
@@ -17,14 +42,31 @@ const AppsAndUrl = ({ data }: { data: IRowAppsUrls[] }) => {
             header: () => <div className="">App or Site</div>,
             cell: ({ row }) => {
                 const name = row?.getValue("app_name") as string
+
+                const lowerAppName = name.toLowerCase();
+                const matchedKey = Object.keys(APP_LOGOS).find(key => lowerAppName.includes(key));
+                const logoSrc = matchedKey ? APP_LOGOS[matchedKey] : null;
+
                 return (
                     <div className="flex items-center gap-3 min-w-[160px]">
-                        <Avatar>
-                            <AvatarImage src={""} />
-                            <AvatarFallback className="capitalize">
-                                {name?.charAt(0)}
-                            </AvatarFallback>
-                        </Avatar>
+                        {logoSrc ? (
+                            <div className="w-9 h-9 flex items-center justify-center shrink-0">
+                                <Image
+                                    src={logoSrc}
+                                    alt={name}
+                                    width={36}
+                                    height={36}
+                                    className="object-contain"
+                                />
+                            </div>
+                        ) : (
+                            <Avatar className="w-9 h-9 shrink-0">
+                                <AvatarImage src={""} />
+                                <AvatarFallback>
+                                    {name.charAt(0)}
+                                </AvatarFallback>
+                            </Avatar>
+                        )}
                         <div className="flex flex-col">
                             <span className="font-bold mb-1 capitalize text-headingTextColor dark:text-darkTextPrimary">{name?.length > 40 ? `${name.substring(0, 50)}...` : name}</span>
                             <span className="text-sm font-normal text-subTextColor dark:text-darkTextSecondary">App</span>
