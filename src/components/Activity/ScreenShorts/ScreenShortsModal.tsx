@@ -11,7 +11,6 @@ import {
     CarouselPrevious,
 } from "@/components/ui/carousel";
 import { motion } from "framer-motion";
-import { format, parseISO } from "date-fns";
 import { formatTZTime } from "@/utils";
 
 interface ScreenshotDetail {

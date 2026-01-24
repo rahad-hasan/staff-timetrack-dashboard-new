@@ -105,7 +105,7 @@ const SingleProjectTask = ({ data }: { data: Task[] }) => {
 
                 return (
                     <Button
-                        className={`text-sm border flex items-center gap-2 px-3 h-8 shadow-none ${styles.button} capitalize`}
+                        className={`text-sm border flex items-center gap-2 px-3 h-8 shadow-none cursor-default ${styles.button} capitalize`}
                     >
                         <span className={`w-2 h-2 rounded-full ${styles.dot}`}></span>
                         {status || "N/A"}
