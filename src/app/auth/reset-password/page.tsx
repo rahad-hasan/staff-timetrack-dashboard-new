@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import { Button } from "@/components/ui/button";
@@ -9,14 +10,20 @@ import { useForm } from "react-hook-form";
 import Image from "next/image";
 import logo from '../../../assets/logo.svg'
 import createNewPasswordIcon from '../../../assets/auth/createNewPasswordIcon.svg'
-import Link from "next/link";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { createNewPasswordSchema } from "@/zod/schema";
+import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "sonner";
+import { resetPassword } from "@/actions/auth/action";
+import { useLogInUserStore } from "@/store/logInUserStore";
 
-const CreateNewPassword = () => {
+const ResetPassword = () => {
     const [showPassword, setShowPassword] = useState(false);
-
+    const [loading, setLoading] = useState(false);
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const reset_token = searchParams.get('reset_token');
     const form = useForm<z.infer<typeof createNewPasswordSchema>>({
         resolver: zodResolver(createNewPasswordSchema),
         defaultValues: {
@@ -24,9 +31,44 @@ const CreateNewPassword = () => {
             confirmPassword: "",
         },
     })
+    const { setLogInUserData } = useLogInUserStore();
 
-    function onSubmit(values: z.infer<typeof createNewPasswordSchema>) {
-        console.log(values)
+    async function onSubmit(values: z.infer<typeof createNewPasswordSchema>) {
+        console.log({
+            reset_token: reset_token!,
+            password: values?.confirmPassword,
+        });
+        setLoading(true);
+        try {
+            const res = await resetPassword({
+                data: {
+                    reset_token: reset_token!,
+                    password: values?.confirmPassword,
+                }
+            });
+            if (res?.success) {
+                setLogInUserData({
+                    id: res?.data?.id,
+                    name: res?.data?.name,
+                    email: res?.data?.email,
+                    image: res?.data?.image,
+                    role: res?.data?.role,
+                    phone: res?.data?.phone,
+                    pay_rate_hourly: res?.data?.pay_rate_hourly,
+                    timezone: res?.data?.time_zone,
+                    company_id: res?.data?.company_id,
+                })
+                router.push("/dashboard");
+                toast.success(res?.message || "OTP sent to your email");
+                // router.push(`/auth/login`);
+            } else {
+                toast.error(res?.message || "Invalid credentials");
+            }
+        } catch (error: any) {
+            toast.error(error.message || "Server is not active");
+        } finally {
+            setLoading(false);
+        }
     }
 
     const togglePasswordVisibility = () => {
@@ -36,7 +78,6 @@ const CreateNewPassword = () => {
     return (
         <div className=" w-full">
             <div className=" w-full flex items-center justify-center">
-
                 <div
                     className={`flex items-center gap-1.5 px-8 py-5 `}
                 >
@@ -53,7 +94,7 @@ const CreateNewPassword = () => {
             <div className=" h-[80vh] flex items-center justify-center">
 
                 <Form {...form}>
-                    <form style={{ boxShadow: "0px 10px 180px rgba(18, 205, 105, 0.3)" }} onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 bg-white dark:bg-darkPrimaryBg py-8 px-6 md:px-10 rounded-lg border border-borderColor dark:border-darkBorder">
+                    <form style={{ boxShadow: "0px 10px 180px rgba(18, 205, 105, 0.3)" }} onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 bg-white dark:bg-darkPrimaryBg py-10 px-6 md:px-10 rounded-lg border border-borderColor dark:border-darkBorder">
                         <div className=" flex flex-col items-center mb-5">
                             <Image src={createNewPasswordIcon} width={200} height={200} alt="icon" className=" w-16" />
                             <h2 className=" text-2xl font-medium mt-4 mb-2">Create your password</h2>
@@ -111,9 +152,7 @@ const CreateNewPassword = () => {
                                 </FormItem>
                             )}
                         />
-                        <Link href={`/`}>
-                            <Button className=" w-full" type="submit">Set New password</Button>
-                        </Link>
+                        <Button className=" w-full" disabled={loading} type="submit">{loading ? "Loading..." : "Set New password"}</Button>
                     </form>
                 </Form>
             </div>
@@ -121,4 +160,4 @@ const CreateNewPassword = () => {
     );
 };
 
-export default CreateNewPassword;
+export default ResetPassword;

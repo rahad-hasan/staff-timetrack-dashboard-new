@@ -18,10 +18,18 @@ export const forgetPasswordSchema = z.object({
 })
 
 export const createNewPasswordSchema = z.object({
-    password: z.string().min(8, "Password must be at least 8 characters"),
-    confirmPassword: z.string().min(8, "Please confirm your password"),
+    password: z.string().min(8, "Password must be at least 8 characters")
+        .regex(
+            /[!@#$%^&*(),.?":{}|<>]/,
+            "Password must contain at least one special character"
+        ),
+    confirmPassword: z.string().min(8, "Password must be at least 8 characters")
+        .regex(
+            /[!@#$%^&*(),.?":{}|<>]/,
+            "Password must contain at least one special character"
+        ),
 }).refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
+    message: "Confirm passwords do not match",
     path: ["confirmPassword"],
 })
 
