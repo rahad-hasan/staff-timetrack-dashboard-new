@@ -5,8 +5,13 @@ import HeadingComponent from "@/components/Common/HeadingComponent";
 import SettingServer from "@/components/Settings/SettingServer";
 import SettingsTabs from "@/components/Settings/SettingsTabs";
 import { ISearchParamsProps } from "@/types/type";
+import { Metadata } from "next";
 import { Suspense } from "react";
 
+export const metadata: Metadata = {
+    title: "Staff Time Tracker Settings",
+    description: "Staff Time Tracker Settings",
+};
 const SettingsPage = async ({ searchParams }: ISearchParamsProps) => {
 
     return (

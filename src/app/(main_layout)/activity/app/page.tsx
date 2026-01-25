@@ -7,8 +7,13 @@ import AppTableServer from "@/components/Activity/App/AppTableServer";
 import { ISearchParamsProps } from "@/types/type";
 import { Suspense } from "react";
 import AppNameTableSkeleton from "@/skeleton/activity/app/AppNameTableSkeleton";
+import { Metadata } from "next";
 // import AppNameTableSkeleton from "@/skeleton/activity/app/AppNameTableSkeleton";
 
+export const metadata: Metadata = {
+    title: "Staff Time Tracker Apps",
+    description: "Staff Time Tracker Apps",
+};
 const App = ({ searchParams }: ISearchParamsProps) => {
 
     return (

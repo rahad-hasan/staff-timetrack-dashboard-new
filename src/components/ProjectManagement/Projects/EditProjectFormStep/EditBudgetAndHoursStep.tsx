@@ -75,11 +75,23 @@ const EditBudgetAndHoursStep = ({ setStep, onClose, selectedProject }: GeneralIn
                 setStep(1);
                 toast.success(res?.message || "Project added successfully");
             } else {
-                toast.error(res?.message || "Failed to add project");
+                toast.error(res?.message || "Failed to add project", {
+                    style: {
+                        backgroundColor: '#ef4444',
+                        color: 'white',
+                        border: 'none'
+                    },
+                });
             }
         } catch (error: any) {
             console.error("failed:", error);
-            toast.error(error.message || "Something went wrong!");
+            toast.error(error.message || "Something went wrong!", {
+                style: {
+                    backgroundColor: '#ef4444',
+                    color: 'white',
+                    border: 'none'
+                },
+            });
         } finally {
             setLoading(false);
         }

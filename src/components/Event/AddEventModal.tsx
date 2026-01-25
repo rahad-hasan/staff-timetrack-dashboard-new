@@ -42,6 +42,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { getMembersDashboard } from "@/actions/members/action";
 import { addEvent } from "@/actions/calendarEvent/action";
 import ClockIcon from "../Icons/ClockIcon";
+import { Checkbox } from "../ui/checkbox";
 
 const AddEventModal = ({ onClose }: { onClose: () => void }) => {
 
@@ -50,6 +51,7 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
 
     const [openStartDate, setOpenStartDate] = useState(false);
     const [dateStartDate, setStartDate] = useState<Date | undefined>(undefined);
+    const [isForceCreate, setIsForceCreate] = useState(false);
 
     const form = useForm<z.infer<typeof addNewEventSchema>>({
         resolver: zodResolver(addNewEventSchema),
@@ -101,7 +103,7 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
             name: values?.eventName,
             note: values?.description,
             date: combinedDateTime.toISOString(),
-            force_create: false,
+            force_create: isForceCreate ? true : false,
             member_ids: values?.members.includes("all") ? "all" : values?.members,
             ...(values?.meetingLink && { meeting_link: values.meetingLink })
         }
@@ -118,11 +120,23 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
                     onClose();
                 }, 0);
             } else {
-                toast.error(res?.message || "Failed to add event");
+                toast.error(res?.message || "Failed to add event", {
+                    style: {
+                        backgroundColor: '#ef4444',
+                        color: 'white',
+                        border: 'none'
+                    },
+                });
             }
         } catch (error: any) {
             console.error("failed:", error);
-            toast.error(error.message || "Something went wrong!");
+            toast.error(error.message || "Something went wrong!", {
+                style: {
+                    backgroundColor: '#ef4444',
+                    color: 'white',
+                    border: 'none'
+                },
+            });
         } finally {
             setLoading(false);
         }
@@ -191,6 +205,18 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
                             </FormItem>
                         )}
                     />
+                    <div className="flex gap-2 items-center">
+                        <Checkbox
+                            id="force_create"
+                            className="cursor-pointer border-primary"
+                            checked={isForceCreate}
+                            onCheckedChange={(checked) => setIsForceCreate(!!checked)}
+                        />
+                        <label htmlFor="force_create" className="cursor-pointer text-sm font-medium">
+                            Force Create
+                        </label>
+                    </div>
+
                     <FormField
                         control={form.control}
                         name="time"

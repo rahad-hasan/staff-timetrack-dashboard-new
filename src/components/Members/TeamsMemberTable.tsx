@@ -38,11 +38,23 @@ const TeamsMemberTable = ({ data }: any) => {
             if (res?.success) {
                 toast.success(res?.message || "Member deleted successfully");
             } else {
-                toast.error(res?.message || "Failed to delete member");
+                toast.error(res?.message || "Failed to delete member", {
+                    style: {
+                        backgroundColor: '#ef4444',
+                        color: 'white',
+                        border: 'none'
+                    },
+                });
             }
         } catch (error: any) {
             console.error("failed:", error);
-            toast.error(error?.message || "Something went wrong!");
+            toast.error(error?.message || "Something went wrong!", {
+                style: {
+                    backgroundColor: '#ef4444',
+                    color: 'white',
+                    border: 'none'
+                },
+            });
         } finally {
             setLoading(false);
         }

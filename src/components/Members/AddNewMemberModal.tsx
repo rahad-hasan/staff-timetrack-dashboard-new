@@ -65,11 +65,23 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
                 }, 0);
                 toast.success(res?.message || "Member added successfully");
             } else {
-                toast.error(res?.message || "Failed to add member");
+                toast.error(res?.message || "Failed to add member", {
+                    style: {
+                        backgroundColor: '#ef4444',
+                        color: 'white',
+                        border: 'none'
+                    },
+                });
             }
         } catch (error: any) {
             console.error("failed:", error);
-            toast.error(error.message || "Something went wrong!");
+            toast.error(error.message || "Something went wrong!", {
+                style: {
+                    backgroundColor: '#ef4444',
+                    color: 'white',
+                    border: 'none'
+                },
+            });
         } finally {
             setLoading(false);
         }

@@ -105,10 +105,22 @@ const Every10Mins = ({ data }: any) => {
             if (res?.success) {
                 toast.success(res?.message || `Deleted screenshots successfully`);
             } else {
-                toast.error(res?.message || `Failed to delete screenshots`);
+                toast.error(res?.message || `Failed to delete screenshots`, {
+                    style: {
+                        backgroundColor: '#ef4444',
+                        color: 'white',
+                        border: 'none'
+                    },
+                });
             }
         } catch (error: any) {
-            toast.error(error.message || "Something went wrong!");
+            toast.error(error.message || "Something went wrong!", {
+                style: {
+                    backgroundColor: '#ef4444',
+                    color: 'white',
+                    border: 'none'
+                },
+            });
         }
     }
 
@@ -398,9 +410,9 @@ const Every10Mins = ({ data }: any) => {
             ))}
 
             {processedHours?.length === 0 && (
-                <div className="h-24 text-center">
+                <div className=" 2xl:h-24 text-center">
                     <div
-                        className={` flex flex-col gap-2.5 items-center justify-center py-16 `}
+                        className={` flex flex-col gap-2.5 items-center justify-center py-8 2xl:py-16 `}
                     >
                         <Image
                             src={EmptyTableLogo}

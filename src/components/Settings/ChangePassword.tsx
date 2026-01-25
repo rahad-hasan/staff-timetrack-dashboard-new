@@ -32,15 +32,27 @@ const ChangePassword = () => {
         setLoading(true);
         try {
             const res = await changePassword({ data: values });
-            
+
             if (res?.success) {
                 toast.success(res?.message || "Changed password successfully");
                 form.reset();
             } else {
-                toast.error(res?.message || "Failed to change password");
+                toast.error(res?.message || "Failed to change password", {
+                    style: {
+                        backgroundColor: '#ef4444',
+                        color: 'white',
+                        border: 'none'
+                    },
+                });
             }
         } catch (error: any) {
-            toast.error(error.message || "Something went wrong!");
+            toast.error(error.message || "Something went wrong!", {
+                style: {
+                    backgroundColor: '#ef4444',
+                    color: 'white',
+                    border: 'none'
+                },
+            });
         } finally {
             setLoading(false);
         }

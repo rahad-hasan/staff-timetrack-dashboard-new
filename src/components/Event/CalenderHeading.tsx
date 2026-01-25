@@ -5,7 +5,7 @@ import {
     Dialog,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import AddEventModal from "@/components/Calender/AddEventModal";
+import AddEventModal from "@/components/Event/AddEventModal";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import { useState } from "react";
 import { useLogInUserStore } from "@/store/logInUserStore";
@@ -15,7 +15,7 @@ const CalenderHeading = () => {
     const logInUserData = useLogInUserStore(state => state.logInUserData);
     return (
         <div className="flex items-center justify-between gap-3 mb-5">
-            <HeadingComponent heading="Calendar" subHeading="All the teams task and events are displayed here"></HeadingComponent>
+            <HeadingComponent heading="Event" subHeading="All the teams task and events are displayed here"></HeadingComponent>
             {
                 (logInUserData?.role === 'admin' ||
                     logInUserData?.role === 'manager' ||

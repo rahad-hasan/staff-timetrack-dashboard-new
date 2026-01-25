@@ -67,11 +67,23 @@ const Profile = () => {
                 if (res?.success) {
                     toast.success(res?.message || "Image uploaded successfully");
                 } else {
-                    toast.error(res?.message || "Failed to upload image");
+                    toast.error(res?.message || "Failed to upload image", {
+                        style: {
+                            backgroundColor: '#ef4444',
+                            color: 'white',
+                            border: 'none'
+                        },
+                    });
                 }
             } catch (error: any) {
                 console.error("failed:", error);
-                toast.error(error?.message || "Something went wrong!");
+                toast.error(error?.message || "Something went wrong!", {
+                    style: {
+                        backgroundColor: '#ef4444',
+                        color: 'white',
+                        border: 'none'
+                    },
+                });
             } finally {
                 setLoading(false);
             }

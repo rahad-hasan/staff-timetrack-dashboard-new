@@ -54,10 +54,22 @@ const Notification = ({ unreadCount, notificationsList }: any) => {
             if (res?.success) {
                 toast.success(res?.message || "Notifications marked as read");
             } else {
-                toast.error(res?.message || "Failed to update notifications");
+                toast.error(res?.message || "Failed to update notifications", {
+                    style: {
+                        backgroundColor: '#ef4444',
+                        color: 'white',
+                        border: 'none'
+                    },
+                });
             }
         } catch (error: any) {
-            toast.error(error?.message || "Something went wrong!");
+            toast.error(error?.message || "Something went wrong!", {
+                style: {
+                    backgroundColor: '#ef4444',
+                    color: 'white',
+                    border: 'none'
+                },
+            });
         } finally {
             setLoading(false);
         }
@@ -129,8 +141,15 @@ const Notification = ({ unreadCount, notificationsList }: any) => {
                         </div>
                     </div>
                 ) : (
-                    <div className="px-4 pb-5">
-                        <p className="text-sm">No Unread Notification Available</p>
+                    <div className="px-4 pb-2">
+                        <div className="mb-2">
+                            <p className="text-sm">No Unread Notification Available</p>
+                        </div>
+                        <Link href={`/notification`}>
+                            <button onClick={() => setOpen(false)} className="text-primary font-medium py-1 rounded cursor-pointer">
+                                View All
+                            </button>
+                        </Link>
                     </div>
                 )}
             </PopoverContent>

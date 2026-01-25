@@ -3,15 +3,15 @@ import Link from "next/link";
 import clsx from "clsx";
 import { motion, AnimatePresence } from "framer-motion";
 import DashboardIcon from "@/components/Icons/DashboardIcon";
-import TimeSheetsIcon from "@/components/Icons/TimeSheetsIcon";
-import ActivityIcon from "@/components/Icons/ActivityIcon";
-import InsightsIcon from "@/components/Icons/InsightsIcon";
-import ReportIcon from "@/components/Icons/ReportIcon";
-import SettingsIcon from "@/components/Icons/SettingsIcon";
-import ProjectManagementIcon from "@/components/Icons/ProjectManagementIcon";
-import TeamsIcon from "@/components/Icons/TeamsIcon";
-import LeaveManagementIcon from "@/components/Icons/LeaveManagementIcon";
-import CalendarIcon from "@/components/Icons/CalendarIcon";
+// import TimeSheetsIcon from "@/components/Icons/TimeSheetsIcon";
+// import ActivityIcon from "@/components/Icons/ActivityIcon";
+// import InsightsIcon from "@/components/Icons/InsightsIcon";
+// import ReportIcon from "@/components/Icons/ReportIcon";
+// import SettingsIcon from "@/components/Icons/SettingsIcon";
+// import ProjectManagementIcon from "@/components/Icons/ProjectManagementIcon";
+// import TeamsIcon from "@/components/Icons/TeamsIcon";
+// import LeaveManagementIcon from "@/components/Icons/LeaveManagementIcon";
+// import CalendarIcon from "@/components/Icons/CalendarIcon";
 import DashboardColoredIcon from "@/components/ColoredIcon/SidebarIcon/DashboardColoredIcon";
 import TimeSheetsColoredIcon from "@/components/ColoredIcon/SidebarIcon/TimeSheetsColoredIcon";
 import ActivityColoredIcon from "@/components/ColoredIcon/SidebarIcon/ActivityColoredIcon";
@@ -23,18 +23,18 @@ import CalendarColoredIcon from "@/components/ColoredIcon/SidebarIcon/CalendarCo
 import LeaveManagementColoredIcon from "@/components/ColoredIcon/SidebarIcon/LeaveManagementColoredIcon";
 import SettingsColoredIcon from "@/components/ColoredIcon/SidebarIcon/SettingsColoredIcon";
 
-const iconMapping = {
-  Dashboard: DashboardIcon,
-  Timesheets: TimeSheetsIcon,
-  Activity: ActivityIcon,
-  Insights: InsightsIcon,
-  Projects: ProjectManagementIcon,
-  Report: ReportIcon,
-  Members: TeamsIcon,
-  Calendar: CalendarIcon,
-  Leaves: LeaveManagementIcon,
-  Settings: SettingsIcon,
-};
+// const iconMapping = {
+//   Dashboard: DashboardIcon,
+//   Timesheets: TimeSheetsIcon,
+//   Activity: ActivityIcon,
+//   Insights: InsightsIcon,
+//   Projects: ProjectManagementIcon,
+//   Report: ReportIcon,
+//   Members: TeamsIcon,
+//   Event: CalendarIcon,
+//   Leaves: LeaveManagementIcon,
+//   Settings: SettingsIcon,
+// };
 
 const coloredIconMapping = {
   Dashboard: DashboardColoredIcon,
@@ -44,7 +44,7 @@ const coloredIconMapping = {
   Projects: ProjectManagementColoredIcon,
   Report: ReportColoredIcon,
   Members: TeamsColoredIcon,
-  Calendar: CalendarColoredIcon,
+  Event: CalendarColoredIcon,
   Leaves: LeaveManagementColoredIcon,
   Settings: SettingsColoredIcon,
 }

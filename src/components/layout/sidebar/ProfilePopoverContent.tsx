@@ -15,15 +15,16 @@ import { useRouter } from "next/navigation";
 import { clearSessionCookie } from "@/actions/auth/action";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import Link from "next/link";
+import { useSidebarStore } from "@/store/sidebarStore";
 
 const ProfilePopoverContent = ({ side, align }: { side: "top" | "right" | "bottom" | "left", align: "center" | "end" | "start" }) => {
     const router = useRouter();
-    // const { resetData } = useLogInUserStore();
+    const { resetSidebar } = useSidebarStore();
     const logInUserData = useLogInUserStore(state => state.logInUserData);
     const handleLogOut = async () => {
         try {
             await clearSessionCookie();
-            // resetData();
+            resetSidebar();
             router.push('/auth/login');
             router.refresh();
         } catch (error) {

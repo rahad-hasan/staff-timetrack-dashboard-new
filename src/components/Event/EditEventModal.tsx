@@ -93,10 +93,22 @@ const EditEventModal = ({ handleCloseDialog, event }: any) => {
                 }, 0);
 
             } else {
-                toast.error(res?.message || "Failed to reschedule");
+                toast.error(res?.message || "Failed to reschedule", {
+                    style: {
+                        backgroundColor: '#ef4444',
+                        color: 'white',
+                        border: 'none'
+                    },
+                });
             }
         } catch (error: any) {
-            toast.error(error?.message || "Something went wrong!");
+            toast.error(error?.message || "Something went wrong!", {
+                style: {
+                    backgroundColor: '#ef4444',
+                    color: 'white',
+                    border: 'none'
+                },
+            });
         } finally {
             setLoading(false);
         }

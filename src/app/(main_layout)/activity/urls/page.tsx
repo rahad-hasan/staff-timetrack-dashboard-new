@@ -7,7 +7,12 @@ import UrlsTableServer from "@/components/Activity/Urls/UrlsTableServer";
 import UrlsTableSkeleton from "@/skeleton/activity/url/UrlsTableSkeleton";
 import { Suspense } from "react";
 import { ISearchParamsProps } from "@/types/type";
+import { Metadata } from "next";
 
+export const metadata: Metadata = {
+    title: "Staff Time Tracker Urls",
+    description: "Staff Time Tracker Urls",
+};
 const Urls = ({ searchParams }: ISearchParamsProps) => {
 
     return (

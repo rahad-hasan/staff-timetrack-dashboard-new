@@ -58,7 +58,7 @@ export async function baseApi<T = any>(
         headers: customHeaders,
         cache = "force-cache",
         // cache = "no-cache",
-        revalidate = 30,
+        revalidate = 60,
     } = options;
 
     const fullUrl = url.startsWith("http")

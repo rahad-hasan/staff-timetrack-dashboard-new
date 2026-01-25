@@ -79,7 +79,6 @@ export const changePassword = async ({ data }: {
   });
 };
 
-
 export async function clearSessionCookie() {
   const cookieStore = await cookies();
   cookieStore.delete("accessToken");
@@ -87,3 +86,92 @@ export async function clearSessionCookie() {
   cookieStore.delete("staffTimeDashboardRole");
   cookieStore.delete("userId");
 }
+
+export const forgetPassword = async ({ data }: {
+  data: {
+    email: string,
+  }
+}) => {
+  return await baseApi(`/auth/forget-password`, {
+    method: "POST",
+    body: data,
+    cache: "no-cache",
+  });
+};
+
+export const verifyOtp = async ({ data }: {
+  data: {
+    email: string,
+    code: string,
+  }
+}) => {
+  return await baseApi(`/auth/verify-otp`, {
+    method: "POST",
+    body: data,
+    cache: "no-cache",
+  });
+};
+
+export const resetOtp = async ({ data }: {
+  data: {
+    email: string,
+  }
+}) => {
+  return await baseApi(`/auth/resend-otp`, {
+    method: "POST",
+    body: data,
+    cache: "no-cache",
+  });
+};
+
+export const resetPassword = async ({ data }: {
+  data: {
+    reset_token: string,
+    password: string,
+  }
+}) => {
+  // return await baseApi(`/auth/reset-password`, {
+  //   method: "POST",
+  //   body: data,
+  // });
+  const res = await baseApi("/auth/reset-password", {
+    method: "POST",
+    body: data,
+    cache: "no-cache",
+  });
+
+  if (res?.success) {
+    const isProd = process.env.NODE_ENV === "production";
+    const cookieStore = await cookies();
+
+    cookieStore.set("accessToken", res.data.accessToken, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: "lax",
+      path: "/",
+    });
+
+    cookieStore.set("refreshToken", res.data.refreshToken, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: "lax",
+      path: "/",
+    });
+
+    cookieStore.set("staffTimeDashboardRole", res.data.role, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: "lax",
+      path: "/",
+    });
+
+    cookieStore.set("userId", res.data.id, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: "lax",
+      path: "/",
+    });
+  }
+
+  return res;
+};

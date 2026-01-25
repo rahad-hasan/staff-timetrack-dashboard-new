@@ -1,5 +1,5 @@
 import { useLogInUserStore } from "@/store/logInUserStore";
-import { toZonedTime, fromZonedTime, formatInTimeZone } from "date-fns-tz";
+import { formatInTimeZone } from "date-fns-tz";
 
 const getUserTimeZone = () => {
   const logInUserData = useLogInUserStore.getState().logInUserData;
@@ -67,6 +67,14 @@ export const formatTZDayMonthYear = (
 ): string => {
   const d = new Date(date);
   return formatInTimeZone(d, timeZone, "EEE, MMM d, yyyy");
+};
+
+export const formatTZDayMonthHourMin = (
+  date: string | Date | number,
+  timeZone = getUserTimeZone()
+): string => {
+  const d = new Date(date);
+  return formatInTimeZone(d, timeZone, "EEE, MMM d, hh:mm a");
 };
 
 export const formatTZDateDMY = (

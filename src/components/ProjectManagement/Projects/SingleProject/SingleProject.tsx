@@ -38,7 +38,7 @@ const SingleProject = ({ data }: { data: ISingleProjectData }) => {
                 </Link>
                 <div className=" flex gap-3">
                     <Button
-                        className={`text-sm md:text-base border flex items-center gap-2 px-4 ${statusClass} capitalize`}
+                        className={`text-sm md:text-base border flex items-center gap-2 px-4 cursor-default ${statusClass} capitalize`}
                     >
                         <span className={`w-2 h-2 rounded-full ${dotClass}`}></span>
                         {data?.status}
@@ -68,7 +68,6 @@ const SingleProject = ({ data }: { data: ISingleProjectData }) => {
                             <tr className="">
                                 <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary">{data?.client?.name}</td>
                                 <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary">{data?.client?.phone}</td>
-                                <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary"> </td>
                                 <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary">{data?.start_date ? formatTZDateDMY(data.start_date) : "N/A"}</td>
                                
                                 <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary">{data?.deadline ? formatTZDateDMY(data?.deadline) : "N/A"}</td>

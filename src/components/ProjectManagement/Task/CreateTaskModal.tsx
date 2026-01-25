@@ -140,11 +140,23 @@ const CreateTaskModal = ({ handleCloseDialog }: { handleCloseDialog: () => void 
                 }, 0);
                 toast.success(res?.message || "Task added successfully");
             } else {
-                toast.error(res?.message || "Failed to add task");
+                toast.error(res?.message || "Failed to add task", {
+                    style: {
+                        backgroundColor: '#ef4444',
+                        color: 'white',
+                        border: 'none'
+                    },
+                });
             }
         } catch (error: any) {
             console.error("failed:", error);
-            toast.error(error.message || "Something went wrong!");
+            toast.error(error.message || "Something went wrong!", {
+                style: {
+                    backgroundColor: '#ef4444',
+                    color: 'white',
+                    border: 'none'
+                },
+            });
         } finally {
             setProjectLoading(false);
         }

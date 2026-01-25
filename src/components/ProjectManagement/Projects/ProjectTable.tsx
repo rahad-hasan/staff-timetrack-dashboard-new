@@ -71,11 +71,23 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
             if (res?.success) {
                 toast.success(res?.message || "Status updated successfully");
             } else {
-                toast.error(res?.message || "Failed to update status");
+                toast.error(res?.message || "Failed to update status", {
+                    style: {
+                        backgroundColor: '#ef4444',
+                        color: 'white',
+                        border: 'none'
+                    },
+                });
             }
         } catch (error: any) {
             console.error("failed:", error);
-            toast.error(error?.message || "Something went wrong!");
+            toast.error(error?.message || "Something went wrong!", {
+                style: {
+                    backgroundColor: '#ef4444',
+                    color: 'white',
+                    border: 'none'
+                },
+            });
         } finally {
             setLoading(false);
         }

@@ -26,12 +26,16 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner"
 import { logIn } from "@/actions/auth/action";
 import { useLogInUserStore } from "@/store/logInUserStore";
+import { useSidebarStore } from "@/store/sidebarStore";
 
 const SignIn = () => {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [currentSlide, setCurrentSlide] = useState(0);
     const router = useRouter();
+    const {
+        setOpenMenu
+    } = useSidebarStore();
 
     const form = useForm<z.infer<typeof loginSchema>>({
         resolver: zodResolver(loginSchema),
@@ -71,13 +75,25 @@ const SignIn = () => {
                     timezone: res?.data?.time_zone,
                     company_id: res?.data?.company_id,
                 })
+                setOpenMenu('/dashboard');
                 router.push("/dashboard");
             } else {
-                toast.error(res?.message || "Invalid credentials");
+                toast.error(res?.message || "Invalid credentials", {
+                    style: {
+                        backgroundColor: '#ef4444',
+                        color: 'white',
+                        border: 'none'
+                    },
+                });
             }
         } catch (error: any) {
-            console.error("Login failed:", error);
-            toast.error(error.message || "Server is not active");
+            toast.error(error.message || "Server is not active", {
+                style: {
+                    backgroundColor: '#ef4444',
+                    color: 'white',
+                    border: 'none'
+                },
+            });
         } finally {
             setLoading(false);
         }
@@ -143,7 +159,7 @@ const SignIn = () => {
                                         <FormItem className="">
                                             <FormLabel>Email</FormLabel>
                                             <FormControl>
-                                                <Input type="email" className="w-[300px] sm:w-[400px] dark:border-darkBorder" placeholder="Email" {...field} />
+                                                <Input type="email" className="w-[300px] sm:w-[400px] md:h-12 dark:border-darkBorder" placeholder="Email" {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -165,7 +181,7 @@ const SignIn = () => {
                                                 <div className="relative">
                                                     <Input
                                                         type={showPassword ? "text" : "password"}
-                                                        className="w-[300px] sm:w-[400px] dark:border-darkBorder"
+                                                        className="w-[300px] sm:w-[400px] md:h-12 dark:border-darkBorder"
                                                         placeholder="Password"
                                                         {...field}
                                                     />

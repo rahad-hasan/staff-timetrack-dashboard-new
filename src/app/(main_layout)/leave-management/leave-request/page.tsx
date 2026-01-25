@@ -4,8 +4,13 @@ import LeaveRequestServer from "@/components/LeaveManagement/LeaveRequest/LeaveR
 
 import LeaveRequestTableSkeleton from "@/skeleton/leaveManagement/LeaveRequestTableSkeleton";
 import { ISearchParamsProps } from "@/types/type";
+import { Metadata } from "next";
 import { Suspense } from "react";
 
+export const metadata: Metadata = {
+    title: "Staff Time Tracker Leave Request",
+    description: "Staff Time Tracker Leave Request",
+};
 const LeaveRequest = async ({ searchParams }: ISearchParamsProps) => {
 
     return (

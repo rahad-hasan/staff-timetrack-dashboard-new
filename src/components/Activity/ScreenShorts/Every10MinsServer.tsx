@@ -27,7 +27,7 @@ const Every10MinsServer = async ({ searchParams }: ISearchParamsProps) => {
     });
 
     return (
-        <div>
+        <div className="min-h-[80vh] xl:h-auto">
             <div className="mb-5 grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-4 gap-5">
                 <div className="border border-borderColor rounded-2xl w-full dark:border-darkBorder transition-all hover:shadow duration-200 relative h-38">
                     <div className="flex items-center justify-between px-4 py-5 bg-bgPrimary dark:bg-darkPrimaryBg rounded-t-2xl">

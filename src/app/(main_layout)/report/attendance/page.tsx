@@ -1,13 +1,17 @@
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
-import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import { ISearchParamsProps } from "@/types/type";
 import AttendanceServer from "@/components/Report/Attendance/AttendanceServer";
 import { Suspense } from "react";
 import AttendanceTableSkeleton from "@/skeleton/report/Attendance/AttendanceTableSkeleton";
 import AttendanceHeroSearch from "@/components/Report/Attendance/AttendanceHeroSearch";
+import { Metadata } from "next";
 // import AttendanceTableSkeleton from "@/skeleton/report/Attendance/AttendanceTableSkeleton";
 
+export const metadata: Metadata = {
+    title: "Staff Time Tracker Attendance",
+    description: "Staff Time Tracker Attendance",
+};
 const AttendancePage = async ({ searchParams }: ISearchParamsProps) => {
 
     return (

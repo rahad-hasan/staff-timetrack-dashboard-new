@@ -397,7 +397,7 @@ export interface IMembersStatsDashboard {
 export interface Task {
   id: number | null;
   name: string | null;
-  description: string | null;
+  description?: string | null;
   status?: string
 }
 
@@ -527,4 +527,14 @@ export interface IDashboardAppsAndUrls {
   from: string;
   to: string;
   row: IRowAppsUrls[];
+}
+
+
+export interface INotes {
+  notes: string;
+  start_time: string;
+  end_time: string;
+  project: Project;
+  task: Task;
+  user: User;
 }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -13,7 +14,33 @@ import { ArrowUpDown } from "lucide-react";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { IApps } from "@/types/type";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-// import { useLogInUserStore } from "@/store/logInUserStore";
+import Image from "next/image";
+import chrome_logo from '../../../assets/apps_logo/chrome_logo.png';
+import figma_logo from '../../../assets/apps_logo/figma_logo.png';
+import photoshop_logo from '../../../assets/apps_logo/photoshop_logo.png';
+import premiere_pro_logo from '../../../assets/apps_logo/premiere_pro_logo.png';
+import teams_logo from '../../../assets/apps_logo/teams_logo.png';
+import time_tracker_logo from '../../../assets/apps_logo/time_tracker_logo.png';
+import vs_code_logo from '../../../assets/apps_logo/vs_code_logo.png';
+import zoom_logo from '../../../assets/apps_logo/zoom_logo.png';
+import microsoft_office_word from '../../../assets/apps_logo/microsoft_office_word.png';
+import postman_logo from '../../../assets/apps_logo/postman_logo.png';
+import terminal_logo from '../../../assets/apps_logo/terminal_logo.png';
+
+const APP_LOGOS: Record<string, any> = {
+    chrome: chrome_logo,
+    figma: figma_logo,
+    photoshop: photoshop_logo,
+    premiere: premiere_pro_logo,
+    teams: teams_logo,
+    tracker: time_tracker_logo,
+    vscode: vs_code_logo,
+    code: vs_code_logo,
+    zoom: zoom_logo,
+    office: microsoft_office_word,
+    postman: postman_logo,
+    terminal: terminal_logo,
+};
 
 const AppNameTable = ({ data }: { data: IApps[] }) => {
     // const logInUserData = useLogInUserStore(state => state.logInUserData);
@@ -40,14 +67,32 @@ const AppNameTable = ({ data }: { data: IApps[] }) => {
             cell: ({ row }) => {
                 const appName = row.getValue("app_name") as string;
                 // const image = row.original.image;
+                const lowerAppName = appName.toLowerCase();
+
+                // 2. Logic to find the matching logo
+                const matchedKey = Object.keys(APP_LOGOS).find(key => lowerAppName.includes(key));
+                const logoSrc = matchedKey ? APP_LOGOS[matchedKey] : null;
                 return (
                     <div className="flex items-center gap-2">
-                        <Avatar className="w-9 h-9 shrink-0">
-                            <AvatarImage src={""} />
-                            <AvatarFallback>
-                                {appName.charAt(0)}
-                            </AvatarFallback>
-                        </Avatar>
+                        {logoSrc ? (
+                            <div className="w-9 h-9 flex items-center justify-center shrink-0">
+                                <Image
+                                    src={logoSrc}
+                                    alt={appName}
+                                    width={36}
+                                    height={36}
+                                    className="object-contain"
+                                />
+                            </div>
+                        ) : (
+                            <Avatar className="w-9 h-9 shrink-0">
+                                <AvatarImage src={""} />
+                                <AvatarFallback>
+                                    {appName.charAt(0)}
+                                </AvatarFallback>
+                            </Avatar>
+                        )}
+
                         <div className="">
                             <p className=" text-base font-bold text-headingTextColor dark:text-darkTextPrimary capitalize">{appName}</p>
                             <span className="font-normal text-subTextColor dark:text-darkTextSecondary">App</span>
@@ -169,7 +214,7 @@ const AppNameTable = ({ data }: { data: IApps[] }) => {
                             <span className=" font-medium text-headingTextColor dark:text-darkTextPrimary">{row?.original?.duration}</span>
                             {/* <span className="text-sm font-thin text-subTextColor dark:text-darkTextSecondary">nai-nai</span> */}
                         </div>
-                        
+
 
                         {/* {
                             (logInUserData?.role === 'admin' ||
