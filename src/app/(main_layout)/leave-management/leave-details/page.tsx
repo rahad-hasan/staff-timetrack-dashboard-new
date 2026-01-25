@@ -4,7 +4,12 @@ import LeaveDetailsServer from "@/components/LeaveManagement/LeaveDetails/LeaveD
 import { ISearchParamsProps } from "@/types/type";
 import LeaveDetailsSkeleton from "@/skeleton/leaveManagement/leaveDetailsSkeleton";
 import { Suspense } from "react";
+import { Metadata } from "next";
 
+export const metadata: Metadata = {
+    title: "Staff Time Tracker Leave Details",
+    description: "Staff Time Tracker Leave Details",
+};
 const LeaveDetails = ({ searchParams }: ISearchParamsProps) => {
 
     return (

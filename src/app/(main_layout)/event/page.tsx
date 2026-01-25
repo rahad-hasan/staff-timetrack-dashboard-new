@@ -5,7 +5,12 @@ import CalenderHeading from "@/components/Event/CalenderHeading";
 import CalenderTableServer from "@/components/Event/CalenderTableServer";
 import { ISearchParamsProps } from "@/types/type";
 import CalenderSkeleton from "@/skeleton/event/CalenderSkeleton";
+import { Metadata } from "next";
 
+export const metadata: Metadata = {
+    title: "Staff Time Tracker Event",
+    description: "Staff Time Tracker Event",
+};
 const CalenderPage = async ({ searchParams }: ISearchParamsProps) => {
     return (
         <div>

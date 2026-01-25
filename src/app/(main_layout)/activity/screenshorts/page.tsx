@@ -13,9 +13,13 @@ import HeadingComponent from "@/components/Common/HeadingComponent";
 import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
 import { ISearchParamsProps } from "@/types/type";
 import ScreenshotsToggle from "@/components/Activity/ScreenShorts/ScreenshotsToggle";
-
 import ScreenShotsServer from "@/components/Activity/ScreenShorts/ScreenShotsServer";
+import { Metadata } from "next";
 
+export const metadata: Metadata = {
+    title: "Staff Time Tracker Screenshot",
+    description: "Staff Time Tracker Screenshot",
+};
 const ScreenShorts = ({ searchParams }: ISearchParamsProps) => {
 
     return (

@@ -7,8 +7,13 @@ import ReportMonthlyTimeSheetServer from "@/components/Report/TimeSheets/ReportM
 import ReportWeeklyTimeSheetServer from "@/components/Report/TimeSheets/ReportWeeklyTimeSheetServer";
 import ReportMonthlyTimesheetSkeleton from "@/skeleton/report/Timesheet/ReportMonthlyTimesheetSkeleton";
 import { ISearchParamsProps } from "@/types/type";
+import { Metadata } from "next";
 import { Suspense } from "react";
 
+export const metadata: Metadata = {
+    title: "Staff Time Tracker Report Timesheets",
+    description: "Staff Time Tracker Report Timesheets",
+};
 const ReportTimeSheets = async ({ searchParams }: ISearchParamsProps) => {
     const params = await searchParams;
     type Tab = "daily" | "weekly" | "monthly";

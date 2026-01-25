@@ -6,9 +6,14 @@ import MemberHeroSection from "@/components/Members/MemberHeroSection";
 import { Suspense } from "react";
 import TeamsMemberTableSkeleton from "@/skeleton/teams/TeamsMemberTableSkeleton";
 import MemberTableServer from "@/components/Members/MemberTableServer";
+import { Metadata } from "next";
 // import TeamsMemberTableSkeleton from "@/skeleton/teams/TeamsMemberTableSkeleton";
 // import TeamsTableSkeleton from "@/skeleton/teams/TeamsTableSkeleton";
 
+export const metadata: Metadata = {
+    title: "Staff Time Tracker Members",
+    description: "Staff Time Tracker Members",
+};
 const MemberPage = async ({ searchParams }: any) => {
     // const [activeTab, setActiveTab] = useState<"Teams" | "Members">("Teams");
 
@@ -45,7 +50,7 @@ const MemberPage = async ({ searchParams }: any) => {
             </Suspense>
 
             {/* <TeamsMemberTableSkeleton></TeamsMemberTableSkeleton> */}
-                
+
         </div >
     );
 };
