@@ -1,5 +1,5 @@
 import { useLogInUserStore } from "@/store/logInUserStore";
-import { toZonedTime, fromZonedTime, formatInTimeZone } from "date-fns-tz";
+import { formatInTimeZone } from "date-fns-tz";
 
 const getUserTimeZone = () => {
   const logInUserData = useLogInUserStore.getState().logInUserData;

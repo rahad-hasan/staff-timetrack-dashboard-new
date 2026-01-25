@@ -8,6 +8,7 @@ import { Toaster } from "@/components/ui/sonner"
 import SocketProvider from "@/socket/SocketProvider";
 import { cookies } from "next/headers";
 import NextTopLoader from 'nextjs-toploader';
+import ClearNavbarStorageOnWindowClose from "@/utils/ClearNavbarStorageOnWindowClose";
 
 // const inter = Inter({
 //     subsets: ['latin'],
@@ -57,6 +58,8 @@ export default async function RootLayout({
                 >
                     <SetGlobalColor />
                     <SidebarRouteSync />
+                    <ClearNavbarStorageOnWindowClose />
+                    {/* <ReplaceActiveNavAfterRemount /> */}
                     <SocketProvider token={token?.value}>
                         <NextTopLoader
                             color="#2bb0f3"

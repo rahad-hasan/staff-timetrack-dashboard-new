@@ -17,7 +17,8 @@ interface SidebarState {
 export const useSidebarStore = create<SidebarState>()(
     devtools(
         persist(
-            (set, get) => ({
+            // (set, get) => ({
+            (set) => ({
                 // these are initial state
                 openMenu: null,
                 activeMenu: null,
@@ -64,7 +65,7 @@ export const useSidebarStore = create<SidebarState>()(
                     });
                 },
                 resetSidebar: () =>
-                    set({ openMenu: null, activeSubItem: "", isCollapsed: false }),
+                    set({ openMenu: null, activeMenu: null, activeSubItem: "", isCollapsed: false }),
             }),
 
             {
