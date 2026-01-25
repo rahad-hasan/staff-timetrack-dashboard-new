@@ -54,10 +54,22 @@ const Notification = ({ unreadCount, notificationsList }: any) => {
             if (res?.success) {
                 toast.success(res?.message || "Notifications marked as read");
             } else {
-                toast.error(res?.message || "Failed to update notifications");
+                toast.error(res?.message || "Failed to update notifications", {
+                    style: {
+                        backgroundColor: '#ef4444',
+                        color: 'white',
+                        border: 'none'
+                    },
+                });
             }
         } catch (error: any) {
-            toast.error(error?.message || "Something went wrong!");
+            toast.error(error?.message || "Something went wrong!", {
+                style: {
+                    backgroundColor: '#ef4444',
+                    color: 'white',
+                    border: 'none'
+                },
+            });
         } finally {
             setLoading(false);
         }

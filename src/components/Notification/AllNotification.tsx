@@ -19,10 +19,22 @@ const NotificationItem = ({ notification }: { notification: INotificationItem })
             if (res?.success) {
                 toast.success(res?.message || "Member edited successfully");
             } else {
-                toast.error(res?.message || "Failed to edit member");
+                toast.error(res?.message || "Failed to edit member", {
+                    style: {
+                        backgroundColor: '#ef4444',
+                        color: 'white',
+                        border: 'none'
+                    },
+                });
             }
         } catch (error: any) {
-            toast.error(error?.message || "Something went wrong!");
+            toast.error(error?.message || "Something went wrong!", {
+                style: {
+                    backgroundColor: '#ef4444',
+                    color: 'white',
+                    border: 'none'
+                },
+            });
         } finally {
             setLoading(false);
         }

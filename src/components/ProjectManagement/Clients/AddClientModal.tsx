@@ -47,11 +47,23 @@ const AddClientModal = ({ onClose }: { onClose: () => void }) => {
                 form.reset();
                 toast.success(res?.message || "Client added successfully");
             } else {
-                toast.error(res?.message || "Failed to add client");
+                toast.error(res?.message || "Failed to add client", {
+                    style: {
+                        backgroundColor: '#ef4444',
+                        color: 'white',
+                        border: 'none'
+                    },
+                });
             }
         } catch (error: any) {
             console.error("failed:", error);
-            toast.error(error.message || "Something went wrong!");
+            toast.error(error.message || "Something went wrong!", {
+                style: {
+                    backgroundColor: '#ef4444',
+                    color: 'white',
+                    border: 'none'
+                },
+            });
         } finally {
             setLoading(false);
         }

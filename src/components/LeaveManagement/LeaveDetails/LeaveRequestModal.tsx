@@ -102,11 +102,23 @@ const LeaveRequestModal = ({ onClose }: { onClose: () => void }) => {
                 form.reset();
                 toast.success(res?.message || "Leave request successfully");
             } else {
-                toast.error(res?.message || "Failed to request leave");
+                toast.error(res?.message || "Failed to request leave", {
+                    style: {
+                        backgroundColor: '#ef4444',
+                        color: 'white',
+                        border: 'none'
+                    },
+                });
             }
         } catch (error: any) {
             console.error("failed:", error);
-            toast.error(error?.message || "Something went wrong!");
+            toast.error(error?.message || "Something went wrong!", {
+                style: {
+                    backgroundColor: '#ef4444',
+                    color: 'white',
+                    border: 'none'
+                },
+            });
         } finally {
             setLoading(false);
         }

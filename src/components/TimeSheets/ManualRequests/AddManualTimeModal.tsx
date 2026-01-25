@@ -188,11 +188,23 @@ const AddManualTimeModal = ({ onClose }: { onClose: () => void }) => {
                     }, 0);
 
                 } else {
-                    toast.error(res?.message || "Failed to add manual time");
+                    toast.error(res?.message || "Failed to add manual time", {
+                        style: {
+                            backgroundColor: '#ef4444',
+                            color: 'white',
+                            border: 'none'
+                        },
+                    });
                 }
             } catch (error: any) {
                 console.error("failed:", error);
-                toast.error(error.message || "Something went wrong!");
+                toast.error(error.message || "Something went wrong!", {
+                    style: {
+                        backgroundColor: '#ef4444',
+                        color: 'white',
+                        border: 'none'
+                    },
+                });
             } finally {
                 setLoading(false);
             }

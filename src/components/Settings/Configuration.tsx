@@ -121,11 +121,23 @@ const Configuration = ({ data }: { data: ICompany }) => {
             if (res?.success) {
                 toast.success(res?.message || "Updated company info successfully");
             } else {
-                toast.error(res?.message || "Failed to update");
+                toast.error(res?.message || "Failed to update", {
+                    style: {
+                        backgroundColor: '#ef4444',
+                        color: 'white',
+                        border: 'none'
+                    },
+                });
             }
         } catch (error: any) {
             console.error("failed:", error);
-            toast.error(error.message || "Something went wrong!");
+            toast.error(error.message || "Something went wrong!", {
+                style: {
+                    backgroundColor: '#ef4444',
+                    color: 'white',
+                    border: 'none'
+                },
+            });
         } finally {
             setLoading(false);
         }
@@ -414,7 +426,7 @@ const Configuration = ({ data }: { data: ICompany }) => {
                                                         <SelectValue placeholder="Select start day" />
                                                     </SelectTrigger>
                                                 </FormControl>
-                                                <SelectContent  className=" dark:border-darkBorder">
+                                                <SelectContent className=" dark:border-darkBorder">
                                                     {daysOfWeek.map((day) => (
                                                         <SelectItem key={day} value={day}>{day}</SelectItem>
                                                     ))}

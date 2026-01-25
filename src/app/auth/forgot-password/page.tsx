@@ -33,10 +33,22 @@ const ForgotPassword = () => {
                 toast.success(res?.message || "OTP sent to your email");
                 router.push(`/auth/${res?.data?.redirect}?email=${values.email}`);
             } else {
-                toast.error(res?.message || "Invalid credentials");
+                toast.error(res?.message || "Invalid credentials", {
+                    style: {
+                        backgroundColor: '#ef4444',
+                        color: 'white',
+                        border: 'none'
+                    },
+                });
             }
         } catch (error: any) {
-            toast.error(error.message || "Server is not active");
+            toast.error(error.message || "Server is not active", {
+                style: {
+                    backgroundColor: '#ef4444',
+                    color: 'white',
+                    border: 'none'
+                },
+            });
         } finally {
             setLoading(false);
         }

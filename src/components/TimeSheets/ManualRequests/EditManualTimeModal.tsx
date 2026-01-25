@@ -197,11 +197,23 @@ const EditManualTimeModal = ({ onClose, selectedItem }: { onClose: () => void, s
                     toast.success(res?.message || "Manual Time edited successfully");
                     onClose();
                 } else {
-                    toast.error(res?.message || "Failed to edit manual time");
+                    toast.error(res?.message || "Failed to edit manual time", {
+                        style: {
+                            backgroundColor: '#ef4444',
+                            color: 'white',
+                            border: 'none'
+                        },
+                    });
                 }
             } catch (error: any) {
                 console.error("failed:", error);
-                toast.error(error.message || "Something went wrong!");
+                toast.error(error.message || "Something went wrong!", {
+                    style: {
+                        backgroundColor: '#ef4444',
+                        color: 'white',
+                        border: 'none'
+                    },
+                });
             } finally {
                 setLoading(false);
             }

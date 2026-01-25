@@ -50,10 +50,22 @@ const RejectLeaveRequestModal = ({ data }: { data: ILeaveRequest }) => {
             if (res?.success) {
                 toast.success(res?.message || "Request rejected successfully");
             } else {
-                toast.error(res?.message || "Failed to rejected request");
+                toast.error(res?.message || "Failed to rejected request", {
+                    style: {
+                        backgroundColor: '#ef4444',
+                        color: 'white',
+                        border: 'none'
+                    },
+                });
             }
         } catch (error: any) {
-            toast.error(error.message || "Something went wrong!");
+            toast.error(error.message || "Something went wrong!", {
+                style: {
+                    backgroundColor: '#ef4444',
+                    color: 'white',
+                    border: 'none'
+                },
+            });
         } finally {
             setLoading(false);
         }

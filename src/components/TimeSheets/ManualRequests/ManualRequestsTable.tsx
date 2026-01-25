@@ -40,11 +40,23 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
             if (res?.success) {
                 toast.success(res?.message || `Manual request ${is_approved ? "approved" : "rejected"} successfully`);
             } else {
-                toast.error(res?.message || `Failed to ${is_approved ? "approved" : "rejected"} manual request`);
+                toast.error(res?.message || `Failed to ${is_approved ? "approved" : "rejected"} manual request`, {
+                    style: {
+                        backgroundColor: '#ef4444',
+                        color: 'white',
+                        border: 'none'
+                    },
+                });
             }
         } catch (error: any) {
             console.error("failed:", error);
-            toast.error(error.message || "Something went wrong!");
+            toast.error(error.message || "Something went wrong!", {
+                style: {
+                    backgroundColor: '#ef4444',
+                    color: 'white',
+                    border: 'none'
+                },
+            });
         }
     }
 

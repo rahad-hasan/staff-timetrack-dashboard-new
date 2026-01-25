@@ -105,10 +105,22 @@ const Every10Mins = ({ data }: any) => {
             if (res?.success) {
                 toast.success(res?.message || `Deleted screenshots successfully`);
             } else {
-                toast.error(res?.message || `Failed to delete screenshots`);
+                toast.error(res?.message || `Failed to delete screenshots`, {
+                    style: {
+                        backgroundColor: '#ef4444',
+                        color: 'white',
+                        border: 'none'
+                    },
+                });
             }
         } catch (error: any) {
-            toast.error(error.message || "Something went wrong!");
+            toast.error(error.message || "Something went wrong!", {
+                style: {
+                    backgroundColor: '#ef4444',
+                    color: 'white',
+                    border: 'none'
+                },
+            });
         }
     }
 

@@ -63,11 +63,23 @@ const EditClientModal = ({ onClose, selectedClient }: EditClientModalProps) => {
                 form.reset();
                 toast.success(res?.message || "Client edited successfully");
             } else {
-                toast.error(res?.message || "Failed to edit client");
+                toast.error(res?.message || "Failed to edit client", {
+                    style: {
+                        backgroundColor: '#ef4444',
+                        color: 'white',
+                        border: 'none'
+                    },
+                });
             }
         } catch (error: any) {
             console.error("failed:", error);
-            toast.error(error?.message || "Something went wrong!");
+            toast.error(error?.message || "Something went wrong!", {
+                style: {
+                    backgroundColor: '#ef4444',
+                    color: 'white',
+                    border: 'none'
+                },
+            });
         } finally {
             setLoading(false);
         }

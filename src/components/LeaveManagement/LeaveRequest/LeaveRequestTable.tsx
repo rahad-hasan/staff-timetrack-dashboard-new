@@ -67,10 +67,22 @@ const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
             if (res?.success) {
                 toast.success(res?.message || "Request approved successfully");
             } else {
-                toast.error(res?.message || "Failed to approve request");
+                toast.error(res?.message || "Failed to approve request", {
+                    style: {
+                        backgroundColor: '#ef4444',
+                        color: 'white',
+                        border: 'none'
+                    },
+                });
             }
         } catch (error: any) {
-            toast.error(error.message || "Something went wrong!");
+            toast.error(error.message || "Something went wrong!", {
+                style: {
+                    backgroundColor: '#ef4444',
+                    color: 'white',
+                    border: 'none'
+                },
+            });
         } finally {
             setLoadingId(null);
         }
