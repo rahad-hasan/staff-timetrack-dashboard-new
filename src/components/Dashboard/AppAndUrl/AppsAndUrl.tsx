@@ -19,6 +19,7 @@ import vs_code_logo from '../../../assets/apps_logo/vs_code_logo.png';
 import zoom_logo from '../../../assets/apps_logo/zoom_logo.png';
 import microsoft_office_word from '../../../assets/apps_logo/microsoft_office_word.png';
 import postman_logo from '../../../assets/apps_logo/postman_logo.png';
+import terminal_logo from '../../../assets/apps_logo/terminal_logo.png';
 import Image from "next/image";
 
 const APP_LOGOS: Record<string, any> = {
@@ -33,6 +34,7 @@ const APP_LOGOS: Record<string, any> = {
     zoom: zoom_logo,
     office: microsoft_office_word,
     postman: postman_logo,
+    terminal: terminal_logo,
 };
 const AppsAndUrl = ({ data }: { data: IRowAppsUrls[] }) => {
 

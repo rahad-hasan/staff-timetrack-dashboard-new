@@ -36,8 +36,8 @@ export const useSidebarStore = create<SidebarState>()(
 
                 toggleCollapse: () =>
                     set((state) => ({ isCollapsed: !state.isCollapsed })),
-                
-                syncSidebarWithPath: (pathname:string) => {
+
+                syncSidebarWithPath: (pathname: string) => {
                     const allMenus = [...sidebarItems, ...othersSidebarItems];
 
                     let matchedMenu: string | null = null;

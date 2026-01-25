@@ -143,7 +143,7 @@ const SignIn = () => {
                                         <FormItem className="">
                                             <FormLabel>Email</FormLabel>
                                             <FormControl>
-                                                <Input type="email" className="w-[300px] sm:w-[400px] dark:border-darkBorder" placeholder="Email" {...field} />
+                                                <Input type="email" className="w-[300px] sm:w-[400px] md:h-12 dark:border-darkBorder" placeholder="Email" {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -165,7 +165,7 @@ const SignIn = () => {
                                                 <div className="relative">
                                                     <Input
                                                         type={showPassword ? "text" : "password"}
-                                                        className="w-[300px] sm:w-[400px] dark:border-darkBorder"
+                                                        className="w-[300px] sm:w-[400px] md:h-12 dark:border-darkBorder"
                                                         placeholder="Password"
                                                         {...field}
                                                     />

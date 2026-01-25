@@ -110,7 +110,7 @@ const ResetPassword = () => {
                                         <div className="relative">
                                             <Input
                                                 type={showPassword ? "text" : "password"}
-                                                className="w-[300px] sm:w-[400px] dark:border-darkBorder"
+                                                className="w-[300px] sm:w-[400px] md:h-12 dark:border-darkBorder"
                                                 placeholder="new password"
                                                 {...field}
                                             />
@@ -136,7 +136,7 @@ const ResetPassword = () => {
                                         <div className="relative">
                                             <Input
                                                 type={showPassword ? "text" : "password"}
-                                                className="w-[300px] sm:w-[400px] dark:border-darkBorder"
+                                                className="w-[300px] sm:w-[400px] md:h-12 dark:border-darkBorder"
                                                 placeholder="confirm password"
                                                 {...field}
                                             />

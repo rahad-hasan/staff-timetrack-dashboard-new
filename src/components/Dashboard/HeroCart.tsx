@@ -67,13 +67,13 @@ const HeroCart = async ({ searchParams }: ISearchParamsProps) => {
                                     <h3 className="uppercase text-subTextColor dark:text-darkTextSecondary">{title}</h3>
                                 </div>
                             </div>
-
                             <div>
                                 {
-                                    index % 2 === 0 ?
+                                    isUp ?
                                         <div className="text-green-600">
                                             <FirstChart></FirstChart>
                                         </div>
+
                                         :
                                         <div className="text-red-600">
                                             <SecondChart></SecondChart>

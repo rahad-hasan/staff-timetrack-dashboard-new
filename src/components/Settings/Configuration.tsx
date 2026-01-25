@@ -346,7 +346,7 @@ const Configuration = ({ data }: { data: ICompany }) => {
                                             </PopoverTrigger>
                                             <PopoverContent className="w-[--radix-popover-trigger-width] p-0 dark:bg-darkSecondaryBg dark:border-darkBorder ">
                                                 <Command className="dark:bg-darkSecondaryBg">
-                                                    <CommandInput placeholder="Search time zone..." className="h-9 " />
+                                                    <CommandInput placeholder="Search time zone..." className="" />
                                                     <CommandList className="overflow-y-scroll no-scrollbar scroll-smooth">
                                                         <CommandEmpty>No time zone found.</CommandEmpty>
                                                         <CommandGroup>
