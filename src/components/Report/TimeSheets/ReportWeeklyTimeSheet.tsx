@@ -50,7 +50,7 @@ const ReportWeeklyTimeSheet = ({ dateBasedTimeEntry }: any) => {
                                     key={i}
                                     className={`z-10 px-4 py-5 text-center border-b border-gray-200 dark:border-darkBorder ${i < days.length - 1 ? 'border-r' : ''}`}
                                 >
-                                    <div className="text-xl font-bold text-headingTextColor dark:text-darkTextPrimary">{d.name}</div>
+                                    <div className=" text-base lg:text-xl font-bold text-headingTextColor dark:text-darkTextPrimary">{d.name}</div>
                                 </th>
                             ))}
                         </tr>
@@ -62,7 +62,7 @@ const ReportWeeklyTimeSheet = ({ dateBasedTimeEntry }: any) => {
                                     key={i}
                                     className={`z-10 px-4 py-5 text-center ${i < rows.times.length - 1 ? 'border-r border-gray-200 dark:border-darkBorder' : ''}`}
                                 >
-                                    <h2 className="text-lg text-primary font-medium">
+                                    <h2 className="text-base lg:text-lg text-primary font-medium">
                                         {time.duration.split(':').slice(0, 2).map((v, i) => parseInt(v) + (i === 0 ? 'h' : 'm')).join(' ')}
                                     </h2>
                                 </td>

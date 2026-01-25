@@ -52,7 +52,7 @@ const TaskHeroSection = () => {
                 <HeadingComponent heading="Tasks" subHeading="All the tasks during the working hour by team member is here"></HeadingComponent>
 
                 <div className=" flex items-center gap-3 sm:gap-5">
-                    <div className="flex gap-3">
+                    {/* <div className="flex gap-3"> */}
                         {/* <div className="inline-flex mt-3 sm:mt-0 h-10 bg-bgSecondary dark:bg-darkSecondaryBg rounded-lg">
                             {["List view", "Kanban"].map((tab) => (
                                 <button
@@ -67,7 +67,7 @@ const TaskHeroSection = () => {
                                 </button>
                             ))}
                         </div> */}
-                    </div>
+                    {/* </div> */}
                     {
                         (logInUserData?.role === 'admin' ||
                             logInUserData?.role === 'manager' ||
