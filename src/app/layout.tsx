@@ -7,6 +7,7 @@ import SetGlobalColor from "@/components/Common/SetGlobalColor";
 import { Toaster } from "@/components/ui/sonner"
 import SocketProvider from "@/socket/SocketProvider";
 import { cookies } from "next/headers";
+import NextTopLoader from 'nextjs-toploader';
 
 // const inter = Inter({
 //     subsets: ['latin'],
@@ -57,6 +58,11 @@ export default async function RootLayout({
                     <SetGlobalColor />
                     <SidebarRouteSync />
                     <SocketProvider token={token?.value}>
+                        <NextTopLoader
+                            color="#2bb0f3"
+                            height={2}
+                            showSpinner={false}
+                        />
                         {children}
                     </SocketProvider>
                 </ThemeProvider>
