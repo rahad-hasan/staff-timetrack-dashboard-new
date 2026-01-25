@@ -29,8 +29,8 @@ const SelectUserDropDown = ({ defaultSelect = true }: { defaultSelect?: boolean 
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
-    // 1. Initialize value from URL or null
-    const [value, setValue] = useState<string | null>(searchParams.get("user_id"));
+    const value = searchParams.get("user_id");
+
     const [open, setOpen] = useState(false);
     const [users, setUsers] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
@@ -62,38 +62,32 @@ const SelectUserDropDown = ({ defaultSelect = true }: { defaultSelect?: boolean 
     // 3. Logic to handle Default Selection on Mount or Store Update
     useEffect(() => {
         if (!defaultSelect) return;
-
-        const urlId = searchParams.get("user_id");
-        if (urlId || !logInUserData?.id) return;
+        if (searchParams.get("user_id")) return;
+        if (!logInUserData?.id) return;
 
         const params = new URLSearchParams(searchParams.toString());
-        const userIdString = String(logInUserData.id);
-
-        setValue(userIdString);
-        params.set("user_id", userIdString);
+        params.set("user_id", String(logInUserData.id));
 
         router.replace(`${pathname}?${params.toString()}`, { scroll: false });
     }, [defaultSelect, logInUserData?.id]);
 
-
-    const selectedUser = useMemo(() =>
-        users.find((u) => u.id === value),
-        [users, value]);
+    const selectedUser = useMemo(
+        () => users.find((u) => u.id === value),
+        [users, value]
+    );
 
     const handleSelect = (currentId: string) => {
         const params = new URLSearchParams(searchParams.toString());
 
         if (currentId === value) {
-            setValue(null);
             params.delete("user_id");
         } else {
-            setValue(currentId);
             params.set("user_id", currentId);
         }
 
         router.push(`${pathname}?${params.toString()}`, { scroll: false });
         setOpen(false);
-    }
+    };
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
