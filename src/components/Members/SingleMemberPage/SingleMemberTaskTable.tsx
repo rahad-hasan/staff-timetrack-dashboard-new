@@ -1,25 +1,29 @@
 "use client"
-
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useState } from "react";
 import { ArrowUpDown } from "lucide-react";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { Button } from "@/components/ui/button";
+import { formatTZDayMonthYear } from "@/utils";
 
-type IProjectMember = {
+type ITaskMember = {
     id: number,
     name: string,
+    deadline: string,
     status: string,
-    budget: number,
+    assignedBy: {
+        id: number,
+        name: string,
+        role: string
+    },
     duration: string
 }
 
-const SingleMemberProjectTable = ({ data }: { data: IProjectMember[] }) => {
+const SingleMemberTaskTable = ({ data }: { data: ITaskMember[] }) => {
 
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
-
 
     const getStatusStyles = (status?: string) => {
         switch (status?.toLowerCase()) {
@@ -46,7 +50,7 @@ const SingleMemberProjectTable = ({ data }: { data: IProjectMember[] }) => {
         }
     };
 
-    const columns: ColumnDef<IProjectMember>[] = [
+    const columns: ColumnDef<ITaskMember>[] = [
         {
             accessorKey: "name",
             header: ({ column }) => {
@@ -56,7 +60,7 @@ const SingleMemberProjectTable = ({ data }: { data: IProjectMember[] }) => {
                             className=" cursor-pointer flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                         >
-                            Project Name
+                            Task Name
                             <ArrowUpDown className="ml-2 h-4 w-4" />
                         </span>
                     </div>
@@ -73,7 +77,7 @@ const SingleMemberProjectTable = ({ data }: { data: IProjectMember[] }) => {
             }
         },
         {
-            accessorKey: "budget",
+            accessorKey: "assignedBy",
             header: ({ column }) => {
                 return (
                     <div>
@@ -81,17 +85,18 @@ const SingleMemberProjectTable = ({ data }: { data: IProjectMember[] }) => {
                             className=" cursor-pointer flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                         >
-                            Budget
+                            Assigned By
                             <ArrowUpDown className="ml-2 h-4 w-4" />
                         </span>
                     </div>
                 )
             },
             cell: ({ row }) => {
-                const budget = row?.original?.budget
+                const name = row?.original?.assignedBy?.name
+
                 return (
                     <div className="flex items-center gap-2 min-w-[180px]">
-                        <p>${budget}</p>
+                        <p>{name}</p>
                     </div>
                 )
             }
@@ -112,10 +117,37 @@ const SingleMemberProjectTable = ({ data }: { data: IProjectMember[] }) => {
                 )
             },
             cell: ({ row }) => {
-                return <div className="">
-                    <p>{row?.original?.duration}</p>
-                </div>;
+                const duration = row?.original?.duration
+                return (
+                    <div className="flex items-center gap-2 min-w-[180px]">
+                        <span>{duration}</span>
+                    </div>
+                )
+            }
+        },
+        {
+            accessorKey: "deadline",
+            header: ({ column }) => {
+                return (
+                    <div>
+                        <span
+                            className=" cursor-pointer flex items-center gap-1"
+                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                        >
+                            Deadline
+                            <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </span>
+                    </div>
+                )
             },
+            cell: ({ row }) => {
+                const deadline = row?.original?.deadline
+                return (
+                    <div className="flex items-center gap-2 min-w-[180px]">
+                        <span>{formatTZDayMonthYear(deadline)}</span>
+                    </div>
+                )
+            }
         },
         {
             accessorKey: "status",
@@ -144,7 +176,6 @@ const SingleMemberProjectTable = ({ data }: { data: IProjectMember[] }) => {
         }
     ];
 
-
     const table = useReactTable({
         data: data,
         columns,
@@ -161,7 +192,7 @@ const SingleMemberProjectTable = ({ data }: { data: IProjectMember[] }) => {
     return (
         <div className="mt-5 border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">
             <div className=" mb-5">
-                <h2 className=" text-base sm:text-lg">PROJECT MEMBER LIST</h2>
+                <h2 className=" text-base sm:text-lg">PROJECT TASK LIST</h2>
             </div>
             <Table>
                 <TableHeader>
@@ -190,7 +221,7 @@ const SingleMemberProjectTable = ({ data }: { data: IProjectMember[] }) => {
                         ))
                     ) : (
                         <TableRow>
-                            <EmptyTableRow columns={columns} text="No project found."></EmptyTableRow>
+                            <EmptyTableRow columns={columns} text="No task found."></EmptyTableRow>
                         </TableRow>
                     )}
                 </TableBody>
@@ -199,4 +230,4 @@ const SingleMemberProjectTable = ({ data }: { data: IProjectMember[] }) => {
     );
 };
 
-export default SingleMemberProjectTable;
+export default SingleMemberTaskTable;

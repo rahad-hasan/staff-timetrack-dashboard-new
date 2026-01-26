@@ -252,7 +252,7 @@ const Every10Mins = ({ data }: any) => {
               ) : (
                 <div key={blockIndex}>
                   <div className="text-center space-y-1 mb-2">
-                    <h2 className="bg-[#F3F4F6] dark:bg-darkSecondaryBg py-1 rounded-full text-sm text-headingTextColor dark:text-darkTextPrimary mb-2">
+                    <h2 className="bg-[#F3F4F6] dark:bg-darkSecondaryBg py-1 rounded-full text-sm text-headingTextColor dark:text-darkTextPrimary">
                       {block?.details?.[0]?.project_name}
                     </h2>
                     <p className="text-xs text-slate-500 dark:text-darkTextSecondary/60">
@@ -347,7 +347,7 @@ const Every10Mins = ({ data }: any) => {
                           </TooltipTrigger>
                           <TooltipContent className="p-3 w-56">
                             <div className="space-y-3">
-                              <h4 className="text-xs font-semibold text-headingTextColor dark:text-darkTextPrimary/40 uppercase tracking-wider">
+                              <h4 className="text-xs font-semibold text-subTextColor dark:text-darkTextPrimary/40 uppercase tracking-wider">
                                 Activity Breakdown
                               </h4>
  

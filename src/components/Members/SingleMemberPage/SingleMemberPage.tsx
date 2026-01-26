@@ -18,6 +18,8 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import SingleMemberProjectTable from "./SingleMemberProjectTable";
+import SingleMemberTaskTable from "./SingleMemberTaskTable";
 
 
 // Define a schema locally for the member data
@@ -34,6 +36,7 @@ const SingleMemberPage = ({ data }: { data: any }) => {
     const handleTabClick = (tab: "Projects" | "Tasks") => {
         setActiveTab(tab);
     };
+
     // State for the Boolean switches
     const [switches, setSwitches] = useState({
         is_active: data?.is_active ?? true,
@@ -72,16 +75,16 @@ const SingleMemberPage = ({ data }: { data: any }) => {
 
     return (
         <div>
-            <div className="flex items-center gap-2">
-                <Avatar>
+            <div className="flex items-center gap-4 bg-gradient-to-r from-primary  to-[#7a06ffe1] p-2 rounded-full shadow-lg">
+                <Avatar className="w-16 h-16 ">
                     <AvatarImage
                         src={data?.image}
                         alt={data?.name}
-                        className=""
+                        className="object-cover rounded-full"
                     />
-                    <AvatarFallback>{data?.name?.charAt(0)}</AvatarFallback>
+                    <AvatarFallback className="text-xl font-bold">{data?.name?.charAt(0)}</AvatarFallback>
                 </Avatar>
-                <p>{data?.name}</p>
+                <p className="text-2xl font-semibold text-white">{data?.name}</p>
             </div>
 
             <div className="xl:w-[80%] rounded-lg border border-borderColor p-3 md:p-4 mt-4 bg-white dark:bg-darkSecondaryBg dark:border-darkBorder">
@@ -252,6 +255,38 @@ const SingleMemberPage = ({ data }: { data: any }) => {
                     </Form>
                 </div>
             </div>
+
+            <div className=" flex flex-col sm:flex-row items-start gap-3 sm:items-center sm:justify-between mt-10">
+                <div className="flex gap-3">
+                    <div className="grid grid-cols-3 lg:flex mt-3 w-[250px] lg:w-auto sm:mt-0 bg-bgSecondary dark:bg-darkSecondaryBg rounded-lg box-border ">
+                        {["Projects", "Tasks"].map((tab) => (
+                            <button
+                                key={tab}
+                                onClick={() => handleTabClick(tab as "Projects" | "Tasks")}
+                                className={`px-3.5 h-10 text-sm font-medium transition-all cursor-pointer rounded-lg min-w-[70px] text-center
+                                ${activeTab === tab
+                                        ? "bg-bgPrimary dark:bg-darkPrimaryBg dark:text-darkTextPrimary text-headingTextColor outline-1 outline-borderColor dark:outline-darkBorder"
+                                        : " text-headingTextColor dark:text-darkTextPrimary hover:text-gray-800"
+                                    }`}
+                            >
+                                {tab}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+                {/* {
+                    activeTab === "Members" ?
+                        <Button className=" text-sm md:text-base"><PlusIcon size={20} /> Add Member</Button>
+                        :
+                        <Button className=" text-sm md:text-base"><PlusIcon size={20} /> Add Task</Button>
+                } */}
+            </div>
+            {
+                activeTab === "Projects" ?
+                    <SingleMemberProjectTable data={data?.projects}></SingleMemberProjectTable>
+                    :
+                    <SingleMemberTaskTable data={data?.tasks}></SingleMemberTaskTable>
+            }
         </div>
     );
 };
