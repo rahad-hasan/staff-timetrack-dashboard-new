@@ -14,7 +14,7 @@ import {
 import { ArrowUpDown, Check, ChevronDown } from "lucide-react";
 import lowFlag from '../../../assets/dashboard/lowFlag.svg'
 import mediumFlag from '../../../assets/dashboard/mediumFlag.svg'
-import noneFlag from '../../../assets/dashboard/noneFlag.svg'
+import highFlag from '../../../assets/dashboard/highFlag.svg'
 // import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
@@ -155,7 +155,7 @@ const DashboardTaskTable = ({ data }: { data: ITask[] }) => {
             },
             cell: ({ row }) => {
                 const priority = row.getValue("priority") as string;
-                const flagImage = priority === "Low" ? lowFlag : priority === "Medium" ? mediumFlag : noneFlag;
+                const flagImage = priority === "low" ? lowFlag : priority === "medium" ? mediumFlag : highFlag;
                 return (
                     <div className="flex items-center gap-2">
                         <Image src={flagImage} width={100} height={100} alt="flag" className="w-4" />
@@ -353,7 +353,6 @@ const DashboardTaskTable = ({ data }: { data: ITask[] }) => {
         //     },
         // },
     ];
-
 
     const table = useReactTable({
         data: data,

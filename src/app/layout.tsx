@@ -24,6 +24,13 @@ const roboto = Roboto({
     display: 'swap'
 });
 
+// const nunito = Nunito({
+//     subsets: ['latin'],
+//     weight: ['300', '400', '500', '700', '800', '900'],
+//     variable: '--font-nunito',
+//     display: 'swap'
+// });
+
 export const metadata: Metadata = {
     title: "Staff Time Tracker Dashboard",
     description: "Staff Time Tracker Dashboard",

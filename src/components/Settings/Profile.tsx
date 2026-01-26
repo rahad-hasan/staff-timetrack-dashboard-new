@@ -76,7 +76,7 @@ const Profile = () => {
                     });
                 }
             } catch (error: any) {
-                console.error("failed:", error);
+                // console.error("failed:", error);
                 toast.error(error?.message || "Something went wrong!", {
                     style: {
                         backgroundColor: '#ef4444',
@@ -194,6 +194,7 @@ const Profile = () => {
                                             <Input
                                                 type="email"
                                                 placeholder="Email Address"
+                                                disabled={true}
                                                 className="pl-9 dark:bg-darkPrimaryBg dark:border-darkBorder"
                                                 {...field}
                                             />
