@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 const UserLeaveHistoryTable = ({ data }: { data: ILeaveRequest[] }) => {
+
     const userName = data?.length ? data?.[0]?.user?.name : null
 
     const [sorting, setSorting] = useState<SortingState>([])
@@ -24,7 +25,7 @@ const UserLeaveHistoryTable = ({ data }: { data: ILeaveRequest[] }) => {
                     button: "bg-[#fff5db] border-[#efaf07] text-[#efaf07] hover:bg-[#fff5db] dark:bg-transparent",
                     dot: "bg-[#efaf07]"
                 };
-            case "cancelled":
+            case "rejected":
                 return {
                     button: "bg-[#fee6eb] border-[#f40139] text-[#f40139] hover:bg-[#fee6eb] dark:bg-transparent",
                     dot: "bg-[#f40139]"
@@ -211,7 +212,7 @@ const UserLeaveHistoryTable = ({ data }: { data: ILeaveRequest[] }) => {
                 </span>
             ),
             cell: ({ row }) => {
-                const status = row.original.hr_approved ? "processing" : row.original.admin_approved ? "approved" : "pending";
+                const status = row.original.hr_approved && row.original.admin_approved ? "approved" : row.original.hr_approved ? "processing" : row.original.is_rejected ? "rejected" : "pending";
                 const styles = getStatusStyles(status);
 
                 return (
