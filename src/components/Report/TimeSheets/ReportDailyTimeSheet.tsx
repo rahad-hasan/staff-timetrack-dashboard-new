@@ -4,7 +4,7 @@ import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useMemo } from "react";
-import { differenceInMinutes, format } from 'date-fns';
+import { differenceInMinutes } from 'date-fns';
 import { CheckCircle2, ClipboardList, Clock, MousePointer2, RefreshCcw } from "lucide-react";
 import { formatTZTime, formatTZTimeHM } from "@/utils";
 
@@ -41,7 +41,7 @@ const ReportDailyTimeSheet = ({ dailyTimeEntry }: any) => {
         const tracks: any = []; // tracks means columns
 
         const tasksWithTrack = sortedTasks.map(task => {
-               const currentTaskStart = timeToMinutes(formatTZTimeHM(task.start_time))
+            const currentTaskStart = timeToMinutes(formatTZTimeHM(task.start_time))
             const currentTaskEnd = timeToMinutes(formatTZTimeHM(task.end_time))
 
             let assignedTrackIndex = -1;
@@ -148,7 +148,7 @@ const ReportDailyTimeSheet = ({ dailyTimeEntry }: any) => {
             <Tooltip>
                 <TooltipTrigger asChild>
                     <div
-                        className={`flex flex-col ${baseClasses} ${colorClasses}`}
+                        className={` ${baseClasses} ${colorClasses}`}
                         style={{
                             top: `${topPosition}%`,
                             height: `${heightPercentage}%`,
@@ -157,10 +157,13 @@ const ReportDailyTimeSheet = ({ dailyTimeEntry }: any) => {
                             minHeight: '2rem'
                         }}
                     >
-                        <div className="">{project?.name}</div>
-                        <div className="font-normal text-base opacity-80 mt-1">
-                            {formattedStartTime} - {formattedEndTime}
+                        <div className="flex items-center">
+                            <div className="">{project?.name}</div>
+                            <div className="font-normal text-xs opacity-80 ml-1">
+                                ( {formattedStartTime} - {formattedEndTime} )
+                            </div>
                         </div>
+
                     </div>
                 </TooltipTrigger>
 
