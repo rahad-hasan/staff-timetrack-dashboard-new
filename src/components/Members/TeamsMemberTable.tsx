@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { deleteMember } from "@/actions/members/action";
 import ConfirmDialog from "../Common/ConfirmDialog";
 import { formatTZDayMonthYear } from "@/utils";
+import Link from "next/link";
 
 const TeamsMemberTable = ({ data }: any) => {
 
@@ -47,7 +48,6 @@ const TeamsMemberTable = ({ data }: any) => {
                 });
             }
         } catch (error: any) {
-            console.error("failed:", error);
             toast.error(error?.message || "Something went wrong!", {
                 style: {
                     backgroundColor: '#ef4444',
@@ -94,7 +94,7 @@ const TeamsMemberTable = ({ data }: any) => {
                             </AvatarFallback>
                         </Avatar>
 
-                        <span className="">{name}</span>
+                        <Link href={`/members/${row?.original?.id}`}><span className="">{name}</span></Link>
                     </div>
                 )
             }

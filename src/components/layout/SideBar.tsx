@@ -9,7 +9,8 @@ import { useSidebarStore } from '@/store/sidebarStore';
 import SidebarItem from './sidebar/SidebarItem';
 import SubItem from './sidebar/SubItem';
 // import TrialCart from './sidebar/TrialCart';
-import timerLogo from '../../assets/timerLogo.svg'
+// import timerLogo from '../../assets/timerLogo.svg'
+import timerLogo from '../../assets/NewLogo.png'
 import CollapsedIcon from '../Icons/CollapsedIcon';
 import clsx from 'clsx';
 import React from 'react';
@@ -48,20 +49,20 @@ const SideBar = () => {
                             className={`flex items-center ${isCollapsed ? "flex-col gap-0" : "gap-1.5"
                                 }`}
                         >
-                            {/* <Image
-                                src={logo}
-                                alt="Logo"
-                                width={0}
-                                height={0}
-                                className={`w-12 h-12`}
-                            /> */}
                             <Image
                                 src={timerLogo}
                                 alt="Logo"
                                 width={0}
                                 height={0}
-                                className={` ${isCollapsed ? "h-auto my-2 w-auto" : "h-10 w-10"}  bg-primary rounded-xl p-2 shadow-lg`}
+                                className={` ${isCollapsed ? "h-auto my-2 w-auto px-1" : "w-12"}  rounded-xl py-1`}
                             />
+                            {/* <Image
+                                src={timerLogo}
+                                alt="Logo"
+                                width={0}
+                                height={0}
+                                className={` ${isCollapsed ? "h-auto my-2 w-auto" : "h-10 w-10"}  bg-primary rounded-xl p-2 shadow-lg`}
+                            /> */}
                             {!isCollapsed && <h2 className="text-2xl font-bold text-headingTextColor dark:text-darkTextPrimary">Tracker</h2>}
                         </div>
 

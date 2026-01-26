@@ -4,9 +4,15 @@ import { buildQuery } from "@/utils/buildQuery";
 import { baseApi } from "../baseApi";
 import { IMember, IResponse } from "@/types/type";
 
-export const getMembers = async (query = {}):Promise<IResponse<IMember[]>> => {
+export const getMembers = async (query = {}): Promise<IResponse<IMember[]>> => {
     const queryString = buildQuery(query);
     return await baseApi(`/auth/employees${queryString ? `?${queryString}` : ""}`, {
+        tag: "members",
+    });
+};
+
+export const getSingleDetailsMember = async (id: string): Promise<IResponse<IMember[]>> => {
+    return await baseApi(`/auth/employees/${id}`, {
         tag: "members",
     });
 };
