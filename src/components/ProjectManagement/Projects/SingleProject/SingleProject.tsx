@@ -10,8 +10,10 @@ import SingleProjectTask from "./SingleProjectTask";
 import { Dialog } from "@/components/ui/dialog";
 import EditProjectModal from "@/components/ProjectManagement/Projects/EditProjectModal";
 import { formatTZDateDMY } from "@/utils";
+import { useLogInUserStore } from "@/store/logInUserStore";
 
 const SingleProject = ({ data }: { data: ISingleProjectData }) => {
+    const logInUserData = useLogInUserStore(state => state.logInUserData);
     const [activeTab, setActiveTab] = useState<"Members" | "Tasks">("Members");
     const [open, setOpen] = useState(false)
     const handleTabClick = (tab: "Members" | "Tasks") => {
@@ -43,7 +45,12 @@ const SingleProject = ({ data }: { data: ISingleProjectData }) => {
                         <span className={`w-2 h-2 rounded-full ${dotClass}`}></span>
                         {data?.status}
                     </Button>
-                    <Button className=" text-sm md:text-base dark:text-darkTextPrimary" onClick={() => setOpen(true)} variant={'outline2'}><Pencil /> Edit Project</Button>
+                    {
+                        (logInUserData?.role === 'admin' ||
+                            logInUserData?.role === 'manager' ||
+                            logInUserData?.role === 'hr') &&
+                        <Button className=" text-sm md:text-base dark:text-darkTextPrimary" onClick={() => setOpen(true)} variant={'outline2'}><Pencil /> Edit Project</Button>
+                    }
                 </div>
             </div>
 
@@ -69,7 +76,7 @@ const SingleProject = ({ data }: { data: ISingleProjectData }) => {
                                 <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary">{data?.client?.name}</td>
                                 <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary">{data?.client?.phone}</td>
                                 <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary">{data?.start_date ? formatTZDateDMY(data.start_date) : "N/A"}</td>
-                               
+
                                 <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary">{data?.deadline ? formatTZDateDMY(data?.deadline) : "N/A"}</td>
                                 <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary">${data?.budget}</td>
                             </tr>
