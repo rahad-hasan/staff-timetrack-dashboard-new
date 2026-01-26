@@ -45,17 +45,20 @@ const EditEventModal = ({ handleCloseDialog, event }: any) => {
     const [loading, setLoading] = useState(false);
     const [openStartDate, setOpenStartDate] = useState(false);
     const logInUserData = useLogInUserStore(state => state.logInUserData);
-    const zonedDate = event?.date && utcToUserDate(event.date);
     // console.log('getting from zustand', logInUserData?.timezone);
     function utcToUserDate(date: string | Date) {
         return toZonedTime(new Date(date), logInUserData?.timezone);
     }
+    const zonedDate = event?.start_time && utcToUserDate(event.start_time);
+    const zonedStartTime = event?.start_time && utcToUserDate(event.start_time);
+    const zonedEndTime = event?.end_time && utcToUserDate(event.end_time);
 
     const form = useForm<z.infer<typeof editEventSchema>>({
         resolver: zodResolver(editEventSchema),
         defaultValues: {
             date: zonedDate,
-            time: formatToTimeString(zonedDate)
+            start_time: formatToTimeString(zonedStartTime),
+            end_time: formatToTimeString(zonedEndTime)
         },
     });
 
@@ -63,23 +66,30 @@ const EditEventModal = ({ handleCloseDialog, event }: any) => {
         if (event?.date) {
             form.reset({
                 date: zonedDate,
-                time: formatToTimeString(zonedDate)
+                start_time: formatToTimeString(zonedDate),
+                end_time: formatToTimeString(zonedDate)
             });
         }
     }, [event, form]);
 
     async function onSubmit(values: z.infer<typeof editEventSchema>) {
-        const combinedDateTime = new Date(values.date!);
 
-        const [hours, minutes, seconds] = values.time.split(":").map(Number);
+        const combinedStartTime = new Date(values.date!);
+        const [startHours, startMinutes, startSeconds] = values.start_time.split(":").map(Number);
+        combinedStartTime.setHours(startHours || 0);
+        combinedStartTime.setMinutes(startMinutes || 0);
+        combinedStartTime.setSeconds(startSeconds || 0);
 
-        combinedDateTime.setHours(hours || 0);
-        combinedDateTime.setMinutes(minutes || 0);
-        combinedDateTime.setSeconds(seconds || 0);
+        const combinedEndTime = new Date(values.date!);
+        const [endHours, endMinutes, endSeconds] = values.end_time.split(":").map(Number);
+        combinedEndTime.setHours(endHours || 0);
+        combinedEndTime.setMinutes(endMinutes || 0);
+        combinedEndTime.setSeconds(endSeconds || 0);
 
         setLoading(true);
         const finalData = {
-            new_date: combinedDateTime.toISOString()
+            start_time: combinedStartTime.toISOString(),
+            end_time: combinedEndTime.toISOString(),
         }
 
         try {
@@ -166,30 +176,56 @@ const EditEventModal = ({ handleCloseDialog, event }: any) => {
                             </FormItem>
                         )}
                     />
-                    <FormField
-                        control={form.control}
-                        name="time"
-                        render={({ field }) => (
-                            <FormItem className=" w-full">
-                                <FormControl className="">
-                                    <div className='relative '>
-                                        <div className='text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 peer-disabled:opacity-50'>
-                                            <ClockIcon size={16} className=" text-headingTextColor dark:text-darkTextPrimary" />
-                                            <span className='sr-only'>Time From</span>
+                    <div className=" flex items-center gap-3">
+                        <FormField
+                            control={form.control}
+                            name="start_time"
+                            render={({ field }) => (
+                                <FormItem className=" w-full">
+                                    <FormLabel>Start Time</FormLabel>
+                                    <FormControl className="">
+                                        <div className='relative '>
+                                            <div className='text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 peer-disabled:opacity-50'>
+                                                <ClockIcon size={16} className=" text-headingTextColor dark:text-darkTextPrimary" />
+                                            </div>
+                                            <Input
+                                                type='time'
+                                                id='time-picker'
+                                                step='1'
+                                                {...field}
+                                                className='peer bg-background dark:bg-darkPrimaryBg dark:border-darkBorder appearance-none pl-9 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none'
+                                            />
                                         </div>
-                                        <Input
-                                            type='time'
-                                            id='time-picker'
-                                            step='1'
-                                            {...field}
-                                            className='peer bg-background dark:bg-darkPrimaryBg dark:border-darkBorder appearance-none pl-9 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none'
-                                        />
-                                    </div>
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="end_time"
+                            render={({ field }) => (
+                                <FormItem className=" w-full">
+                                    <FormLabel>End Time</FormLabel>
+                                    <FormControl className="">
+                                        <div className='relative '>
+                                            <div className='text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 peer-disabled:opacity-50'>
+                                                <ClockIcon size={16} className=" text-headingTextColor dark:text-darkTextPrimary" />
+                                            </div>
+                                            <Input
+                                                type='time'
+                                                id='time-picker'
+                                                step='1'
+                                                {...field}
+                                                className='peer bg-background dark:bg-darkPrimaryBg dark:border-darkBorder appearance-none pl-9 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none'
+                                            />
+                                        </div>
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
                     <Button
                         className="w-full"
                         type="submit"

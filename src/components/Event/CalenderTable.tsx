@@ -42,7 +42,7 @@ const CalenderTable = ({ startMonth, endMonth, eventData }: { startMonth: string
             const dateString = formatTZDate(currentDate);
 
             const dayEvents = eventData.filter((event: any) =>
-                formatTZDate(new Date(event.date)) === dateString
+                formatTZDate(new Date(event.start_time)) === dateString
             );
 
             calendarGrid.push({
@@ -175,7 +175,7 @@ const CalenderTable = ({ startMonth, endMonth, eventData }: { startMonth: string
                                                             Date & Time
                                                         </h3>
                                                         <div className="flex items-center gap-2">
-                                                            <h2 className=" text-sm text-headingTextColor dark:text-darkTextPrimary ">{formatTZDate(event?.date)}, {formatTZTime(event?.date)}</h2>
+                                                            <h2 className=" text-sm text-headingTextColor dark:text-darkTextPrimary ">{formatTZDate(event?.start_time)}, {formatTZTime(event?.start_time)}</h2>
                                                         </div>
                                                     </TooltipContent>
                                                 </Tooltip>

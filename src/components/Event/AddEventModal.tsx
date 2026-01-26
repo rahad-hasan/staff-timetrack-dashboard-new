@@ -58,7 +58,8 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
         defaultValues: {
             eventName: "",
             project: "",
-            time: "01:00:00",
+            start_time: "01:00:00",
+            end_time: "01:30:00",
             members: [],
             meetingLink: "",
             description: "",
@@ -90,19 +91,24 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
 
     async function onSubmit(values: z.infer<typeof addNewEventSchema>) {
 
-        const combinedDateTime = new Date(values.date);
+        const combinedStartTime = new Date(values.date);
+        const [startHours, startMinutes, startSeconds] = values.start_time.split(":").map(Number);
+        combinedStartTime.setHours(startHours || 0);
+        combinedStartTime.setMinutes(startMinutes || 0);
+        combinedStartTime.setSeconds(startSeconds || 0);
 
-        const [hours, minutes, seconds] = values.time.split(":").map(Number);
-
-        combinedDateTime.setHours(hours || 0);
-        combinedDateTime.setMinutes(minutes || 0);
-        combinedDateTime.setSeconds(seconds || 0);
+        const combinedEndTime = new Date(values.date);
+        const [endHours, endMinutes, endSeconds] = values.end_time.split(":").map(Number);
+        combinedEndTime.setHours(endHours || 0);
+        combinedEndTime.setMinutes(endMinutes || 0);
+        combinedEndTime.setSeconds(endSeconds || 0);
 
 
         const finalData = {
             name: values?.eventName,
             note: values?.description,
-            date: combinedDateTime.toISOString(),
+            start_time: combinedStartTime.toISOString(),
+            end_time: combinedEndTime.toISOString(),
             force_create: isForceCreate ? true : false,
             member_ids: values?.members.includes("all") ? "all" : values?.members,
             ...(values?.meetingLink && { meeting_link: values.meetingLink })
@@ -217,30 +223,58 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
                         </label>
                     </div>
 
-                    <FormField
-                        control={form.control}
-                        name="time"
-                        render={({ field }) => (
-                            <FormItem className=" w-full">
-                                <FormControl className="">
-                                    <div className='relative '>
-                                        <div className='text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 peer-disabled:opacity-50'>
-                                            <ClockIcon size={16} className=" text-headingTextColor dark:text-darkTextPrimary" />
-                                            <span className='sr-only'>Time From</span>
+                    <div className=" flex items-center gap-3">
+                        <FormField
+                            control={form.control}
+                            name="start_time"
+                            render={({ field }) => (
+                                <FormItem className=" w-full">
+                                    <FormLabel>Start Time</FormLabel>
+                                    <FormControl className="">
+                                        <div className='relative '>
+                                            <div className='text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 peer-disabled:opacity-50'>
+                                                <ClockIcon size={16} className=" text-headingTextColor dark:text-darkTextPrimary" />
+                                            </div>
+                                            <Input
+                                                type='time'
+                                                id='time-picker'
+                                                step='1'
+                                                {...field}
+                                                className='peer bg-background dark:bg-darkPrimaryBg dark:border-darkBorder appearance-none pl-9 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none'
+                                            />
                                         </div>
-                                        <Input
-                                            type='time'
-                                            id='time-picker'
-                                            step='1'
-                                            {...field}
-                                            className='peer bg-background dark:bg-darkPrimaryBg dark:border-darkBorder appearance-none pl-9 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none'
-                                        />
-                                    </div>
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="end_time"
+                            render={({ field }) => (
+                                <FormItem className=" w-full">
+                                    <FormLabel>End Time</FormLabel>
+                                    <FormControl className="">
+                                        <div className='relative '>
+                                            <div className='text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 peer-disabled:opacity-50'>
+                                                <ClockIcon size={16} className=" text-headingTextColor dark:text-darkTextPrimary" />
+                                            </div>
+                                            <Input
+                                                type='time'
+                                                id='time-picker'
+                                                step='1'
+                                                {...field}
+                                                className='peer bg-background dark:bg-darkPrimaryBg dark:border-darkBorder appearance-none pl-9 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none'
+                                            />
+                                        </div>
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+
+
                     {/* <FormField
                         control={form.control}
                         name="project"

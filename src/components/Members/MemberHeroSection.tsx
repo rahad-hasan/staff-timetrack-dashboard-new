@@ -29,6 +29,7 @@ const MemberHeroSection = () => {
     //     params.set("page", String(page));
     //     router.push(`?${params.toString()}`);
     // };
+    
     return (
         <div>
             <div className="flex items-center justify-between gap-3 mb-5">
