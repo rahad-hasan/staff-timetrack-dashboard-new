@@ -114,7 +114,7 @@ const AppsAndUrl = ({ data }: { data: IRowAppsUrls[] }) => {
     const emptyRowsCount = Math?.max(0, MIN_ROWS - actualRows?.length);
 
     return (
-        <div className="w-full h-full border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">
+        <div className="w-full h-full border border-borderColor/60 dark:border-darkBorder/50 dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">
             <div className="flex justify-between items-center">
                 <h2 className="text-base sm:text-lg text-headingTextColor dark:text-darkTextPrimary font-medium uppercase">APPS & URL</h2>
                 <div className="flex items-center gap-3">

@@ -20,12 +20,12 @@ import { deleteScreenshot } from "@/actions/screenshots/action";
 import { toast } from "sonner";
 import { useLogInUserStore } from "@/store/logInUserStore";
 // import emptyActivity from "../../../assets/empty_activity.png";
- 
+
 const Every10Mins = ({ data }: any) => {
   const logInUserData = useLogInUserStore((state) => state.logInUserData);
   const [selectedImage, setSelectedImage] = useState<any>();
   const [modalOpen, setModalOpen] = useState<boolean>(false);
- 
+
   const formatDuration = (totalSeconds: number) => {
     const hours = Math.floor(totalSeconds / 3600);
     const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -37,10 +37,10 @@ const Every10Mins = ({ data }: any) => {
       return `${minutes}m`;
     }
   };
- 
+
   const groupDataByHour = (intervals: any[]) => {
     const hours: Record<string, any[]> = {};
- 
+
     // 1. Group intervals by their hour start (e.g., "2025-12-30T11:00:00")
     intervals?.forEach((interval) => {
       const date = new Date(interval?.from_time);
@@ -49,27 +49,27 @@ const Every10Mins = ({ data }: any) => {
       if (!hours[hourKey]) hours[hourKey] = [];
       hours[hourKey].push(interval);
     });
- 
+
     return Object.entries(hours)?.map(([hourKey, blockIntervals]) => {
       const hourStart = new Date(hourKey);
       const hourEnd = new Date(hourStart);
       hourEnd.setHours(hourEnd.getHours() + 1);
- 
+
       // 2. Generate all six 10-minute slots for this hour
       const slots = [];
       let totalWorkedSeconds = 0;
- 
+
       for (let i = 0; i < 60; i += 10) {
         const slotStart = new Date(hourStart);
         slotStart?.setMinutes(i);
         const slotEnd = new Date(slotStart);
         slotEnd?.setMinutes(i + 10);
- 
+
         // Find if an interval matches this specific 10m slot
         const match = blockIntervals.find(
           (int) => new Date(int.from_time).getTime() === slotStart.getTime(),
         );
- 
+
         if (match) {
           totalWorkedSeconds += match.total_duration;
           slots.push({ type: "data", ...match });
@@ -81,7 +81,7 @@ const Every10Mins = ({ data }: any) => {
           });
         }
       }
- 
+
       return {
         hourLabel: `${formatTZTime(hourStart)} - ${formatTZTime(hourEnd)}`,
         totalWorked: totalWorkedSeconds,
@@ -89,7 +89,7 @@ const Every10Mins = ({ data }: any) => {
       };
     });
   };
- 
+
   const handleDeleteScreenShot = async (data: any) => {
     const finalData = {
       user_id: data?.details[0]?.user_id,
@@ -101,7 +101,7 @@ const Every10Mins = ({ data }: any) => {
       const res = await deleteScreenshot({
         data: finalData,
       });
- 
+
       if (res?.success) {
         toast.success(res?.message || `Deleted screenshots successfully`);
       } else {
@@ -123,9 +123,9 @@ const Every10Mins = ({ data }: any) => {
       });
     }
   };
- 
+
   const processedHours = groupDataByHour(data || []);
- 
+
   return (
     <>
       {/* <div className="">
@@ -218,27 +218,27 @@ const Every10Mins = ({ data }: any) => {
                     </div>
                 ))}
             </div> */}
- 
+
       {processedHours?.map((hourGroup, groupIdx) => (
-        <div key={groupIdx} className="mt-3">
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 sm:justify-between sm:items-center">
-            <div className="flex items-center gap-2">
+        <div key={groupIdx}>
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 sm:justify-between sm:items-center h-3">
+            <div className="flex items-center gap-2 -ml-[6px]">
               <Circle
-                size={20}
-                className="text-gray-200 dark:text-darkTextPrimary"
+                size={12}
+                className="text-gray-200 dark:text-darkTextPrimary/50"
               />
-              <p className="text-subTextColor dark:text-darkTextSecondary">
+              <p className="text-subTextColor dark:text-darkTextSecondary text-sm">
                 {hourGroup?.hourLabel}
               </p>
             </div>
-            <h2 className="text-base text-subTextColor dark:text-darkTextSecondary">
-              Total time worked:{" "}
+            <h2 className="text-sm text-subTextColor dark:text-darkTextSecondary">
+              Worked Duration:{" "}
               <span className="font-medium">
                 {formatDuration(hourGroup?.totalWorked)}
               </span>
             </h2>
           </div>
-          <div className="mt-3 grid grid-cols-2 xl:grid-cols-4 2xl:grid-cols-6 3xl:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 xl:grid-cols-4 2xl:grid-cols-6 3xl:grid-cols-6 gap-4 pl-4 py-5 border-l dark:border-darkBorder">
             {hourGroup?.slots?.map((block: any, blockIndex: any) =>
               block.type === "empty" ? (
                 <div key={blockIndex} className=" ">
@@ -250,7 +250,7 @@ const Every10Mins = ({ data }: any) => {
                   </div>
                 </div>
               ) : (
-                <div key={blockIndex}>
+                <div key={blockIndex} className="mb-5">
                   <div className="text-center space-y-1 mb-2">
                     <h2 className="bg-[#F3F4F6] dark:bg-darkSecondaryBg py-1 rounded-full text-sm text-headingTextColor dark:text-darkTextPrimary">
                       {block?.details?.[0]?.project_name}
@@ -281,7 +281,7 @@ const Every10Mins = ({ data }: any) => {
                     <span className="absolute left-1/2 -translate-x-1/2 -translate-y-[65%] text-xs px-3 py-1 font-semibold rounded-xl shadow bg-white text-headingTextColor/70 dark:bg-darkPrimaryBg dark:text-darkTextPrimary/60">
                       {block?.details?.length} Screens
                     </span>
- 
+
                     <div className="p-3 space-y-3  border-x border-b border-borderColor dark:border-darkBorder rounded-b-lg">
                       <div className="flex justify-between items-center">
                         <p className="text-sm font-normal text-subTextColor dark:text-slate-200">
@@ -315,7 +315,7 @@ const Every10Mins = ({ data }: any) => {
                           />
                         )}
                       </div>
- 
+
                       <div className="h-1.5 bg-[#dce3e3] dark:bg-darkPrimaryBg rounded-full">
                         <Tooltip>
                           <TooltipTrigger asChild>
@@ -347,10 +347,10 @@ const Every10Mins = ({ data }: any) => {
                           </TooltipTrigger>
                           <TooltipContent className="p-3 w-56">
                             <div className="space-y-3">
-                              <h4 className="text-xs font-semibold text-subTextColor dark:text-darkTextPrimary/40 uppercase tracking-wider">
+                              <h4 className="text-xs font-semibold text-subTextColor/60 dark:text-darkTextPrimary/40 uppercase tracking-wider">
                                 Activity Breakdown
                               </h4>
- 
+
                               <div className="space-y-1">
                                 <div>
                                   <div className="flex justify-between text-xs mb-1">
@@ -398,7 +398,7 @@ const Every10Mins = ({ data }: any) => {
                           </TooltipContent>
                         </Tooltip>
                       </div>
- 
+
                       <p className="text-xs text-subTextColor dark:text-darkTextSecondary text-center">
                         {block?.avg_score}% of{" "}
                         {formatDuration(block?.total_duration)} minutes
@@ -411,7 +411,7 @@ const Every10Mins = ({ data }: any) => {
           </div>
         </div>
       ))}
- 
+
       {processedHours?.length === 0 && (
         <div className=" 2xl:h-24 text-center">
           <div
@@ -427,7 +427,7 @@ const Every10Mins = ({ data }: any) => {
           </div>
         </div>
       )}
- 
+
       <AnimatePresence>
         {modalOpen && (
           <ScreenShortsModal
@@ -440,5 +440,5 @@ const Every10Mins = ({ data }: any) => {
     </>
   );
 };
- 
+
 export default Every10Mins;

@@ -453,7 +453,7 @@ const DashboardProjectTable = ({ data }: { data: IProject[] }) => {
 
 
     return (
-        <div className="mt-5 border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">
+        <div className="mt-5 border border-borderColor/60 dark:border-darkBorder/50 dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">
             <div className=" flex justify-between items-center mb-5">
                 <h2 className=" text-base sm:text-lg text-headingTextColor dark:text-darkTextPrimary uppercase">Project list</h2>
                 <div className=" flex items-center gap-3">

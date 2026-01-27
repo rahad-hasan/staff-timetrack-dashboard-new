@@ -12,104 +12,57 @@ import WeeklyActivityColoredIcon from "@/components/ColoredIcon/HeroSectionIcon/
 import WeeklyWorkColoredIcon from "@/components/ColoredIcon/HeroSectionIcon/WeeklyWorkColoredIcon";
 import TotalProjectColoredIcon from "@/components/ColoredIcon/HeroSectionIcon/TotalProjectColoredIcon";
 import TeamMemberColoredIcon from "@/components/ColoredIcon/HeroSectionIcon/TeamMemberColoredIcon";
+import ScreenshotActivityCard from "./ScreenshotActivityCard";
 // import AllScreenShortsSkeleton from "@/skeleton/activity/screenShorts/AllScreenShortsSkeleton";
 
-
 const Every10MinsServer = async ({ searchParams }: ISearchParamsProps) => {
-    const cookieStore = await cookies();
-    const userId = cookieStore.get("userId")?.value;
-    const params = await searchParams;
-    const currentDate = format(new Date(), "yyyy-MM-dd");
+  const cookieStore = await cookies();
+  const userId = cookieStore.get("userId")?.value;
+  const params = await searchParams;
+  const currentDate = format(new Date(), "yyyy-MM-dd");
 
-    const result = await getScreenshots10Min({
-        date: params.date ?? currentDate,
-        user_id: params.user_id ?? userId,
-    });
+  const result = await getScreenshots10Min({
+    date: params.date ?? currentDate,
+    user_id: params.user_id ?? userId,
+  });
 
-    return (
-        <div className="min-h-[80vh] xl:h-auto">
-            <div className="mb-5 grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-4 gap-5">
-                <div className="border border-borderColor rounded-2xl w-full dark:border-darkBorder transition-all hover:shadow duration-200 relative h-38">
-                    <div className="flex items-center justify-between px-4 py-5 bg-bgPrimary dark:bg-darkPrimaryBg rounded-t-2xl">
-                        <div className=' flex items-center gap-3'>
-                            <WeeklyActivityColoredIcon size={36} />
-                            <div>
-                                <h2 className="text-2xl font-medium text-headingTextColor dark:text-darkTextPrimary">{result?.data?.score}%</h2>
-                                <h3 className=" uppercase text-subTextColor dark:text-darkTextSecondary">AVG ACTIVITY</h3>
-                            </div>
-                        </div>
-                        <div className="text-green-600">
-                            <FirstChart></FirstChart>
-                        </div>
-                    </div>
-                    <div className="bg-bgSecondary dark:bg-darkSecondaryBg rounded-b-2xl border-t px-4 py-3 flex items-center gap-2 absolute left-0 right-0 bottom-0">
-                        <TrendingUp size={20} className={"text-[#12cd69]"} />
-                        <p className={"text-[#12cd69]"}>+1.5%</p>
-                        <p className={`text-md text-muted-foreground dark:text-darkTextSecondary`}>last Monday</p>
-                    </div>
-                </div>
+  return (
+    <div className="min-h-[80vh] xl:h-auto">
+      <div className="mb-5 grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-4 gap-5">
+        <ScreenshotActivityCard
+          icon={WeeklyActivityColoredIcon}
+          value={result?.data?.score + "%"}
+          level="AVG ACTIVITY"
+          chart={FirstChart}
+          is_improved={true}
+          improved_value={"+1.5%"}
+        />
+        <ScreenshotActivityCard
+          icon={WeeklyWorkColoredIcon}
+          value={result?.data?.work_time}
+          level="WORKED TIME"
+          chart={SecondChart}
+          is_improved={true}
+          improved_value={"+30m"}
+        />
+        <ScreenshotActivityCard
+          icon={TotalProjectColoredIcon}
+          value={result?.data?.mouse_activity + "%"}
+          level="MOUSE ACTIVITY"
+          chart={FirstChart}
+          is_improved={false}
+          improved_value={"-2.5%"}
+        />
+        <ScreenshotActivityCard
+          icon={TeamMemberColoredIcon}
+          value={result?.data?.keyboard_activity + "%"}
+          level="KEYBOARD ACTIVITY"
+          chart={SecondChart}
+          is_improved={true}
+          improved_value={"+3.5%"}
+        />
 
-                <div className="border border-borderColor rounded-2xl w-full dark:border-darkBorder transition-all hover:shadow duration-200 relative h-38">
-                    <div className="flex items-center justify-between px-4 py-5 bg-bgPrimary dark:bg-darkPrimaryBg rounded-t-2xl">
-                        <div className=' flex items-center gap-3'>
-                            <WeeklyWorkColoredIcon size={36} />
-                            <div>
-                                <h2 className="text-2xl font-medium text-headingTextColor dark:text-darkTextPrimary">{result?.data?.work_time}</h2>
-                                <h3 className=" uppercase text-subTextColor dark:text-darkTextSecondary">WORKED TIME</h3>
-                            </div>
-                        </div>
-                        <div className="text-red-600">
-                            <SecondChart></SecondChart>
-                        </div>
-                    </div>
-                    <div className="bg-bgSecondary dark:bg-darkSecondaryBg rounded-b-2xl border-t px-4 py-3 flex items-center gap-2 absolute left-0 right-0 bottom-0">
-                        <TrendingUp size={20} className={"text-[#12cd69]"} />
-                        <p className={"text-[#12cd69]"}>+30m</p>
-                        <p className={`text-md text-muted-foreground dark:text-darkTextSecondary`}>last Monday</p>
-                    </div>
-                </div>
-
-                <div className="border border-borderColor rounded-2xl w-full dark:border-darkBorder transition-all hover:shadow duration-200 relative h-38">
-                    <div className="flex items-center justify-between px-4 py-5 bg-bgPrimary dark:bg-darkPrimaryBg rounded-t-2xl">
-                        <div className=' flex items-center gap-3'>
-                            <TotalProjectColoredIcon size={36} />
-                            <div>
-                                <h2 className="text-2xl font-medium text-headingTextColor dark:text-darkTextPrimary">{result?.data?.mouse_activity}%</h2>
-                                <h3 className=" uppercase text-subTextColor dark:text-darkTextSecondary">MOUSE ACTIVITY</h3>
-                            </div>
-                        </div>
-                        <div className="text-red-500">
-                            <SecondChart></SecondChart>
-                        </div>
-                    </div>
-                    <div className="bg-bgSecondary dark:bg-darkSecondaryBg rounded-b-2xl border-t px-4 py-3 flex items-center gap-2 absolute left-0 right-0 bottom-0">
-                        <TrendingDown size={20} className={"text-red-500"} />
-                        <p className={"text-red-500"}>-15m</p>
-                        <p className={`text-md text-muted-foreground dark:text-darkTextSecondary`}>last Monday</p>
-                    </div>
-                </div>
-
-                <div className="border border-borderColor rounded-2xl w-full dark:border-darkBorder transition-all hover:shadow duration-200 relative h-38">
-                    <div className="flex items-center justify-between px-4 py-5 bg-bgPrimary dark:bg-darkPrimaryBg rounded-t-2xl">
-                        <div className=' flex items-center gap-3'>
-                            <TeamMemberColoredIcon size={36} />
-                            <div>
-                                <h2 className="text-2xl font-medium text-headingTextColor dark:text-darkTextPrimary">{result?.data?.keyboard_activity}%</h2>
-                                <h3 className=" uppercase text-subTextColor dark:text-darkTextSecondary">KEYBOARD ACTIVITY</h3>
-                            </div>
-                        </div>
-                        <div className="text-green-600">
-                            <FirstChart></FirstChart>
-                        </div>
-                    </div>
-                    <div className="bg-bgSecondary dark:bg-darkSecondaryBg rounded-b-2xl border-t px-4 py-3 flex items-center gap-2 absolute left-0 right-0 bottom-0">
-                        <TrendingUp size={20} className={"text-[#12cd69]"} />
-                        <p className={"text-[#12cd69]"}>+30m</p>
-                        <p className={`text-md text-muted-foreground dark:text-darkTextSecondary`}>last Monday</p>
-                    </div>
-                </div>
-
-                {/* {metrics.map(({ id, value, title, change, direction, note }) => {
+        {/* {metrics.map(({ id, value, title, change, direction, note }) => {
                     const isUp = direction === "up";
                     const TrendIcon = isUp ? TrendingUp : TrendingDown;
                     const trendColor = isUp ? "text-[#12cd69]" : "text-[#f40139]";
@@ -166,14 +119,12 @@ const Every10MinsServer = async ({ searchParams }: ISearchParamsProps) => {
                         </div>
                     );
                 })} */}
-            </div>
-            <Suspense fallback={<Every10MinsSkeleton />}>
-                {
-                    <Every10Mins data={result?.data?.interval_rows} />
-                }
-            </Suspense>
-        </div>
-    );
+      </div>
+      <Suspense fallback={<Every10MinsSkeleton />}>
+        {<Every10Mins data={result?.data?.interval_rows} />}
+      </Suspense>
+    </div>
+  );
 };
 
 export default Every10MinsServer;

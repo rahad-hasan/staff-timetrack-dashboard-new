@@ -106,7 +106,7 @@ const CoreWorkMembers = ({ data = [] }: { data: ICoreMember[] }) => {
   const emptyRowsCount = Math.max(0, MIN_ROWS - actualRows.length);
 
   return (
-    <div className="w-full border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px] h-full">
+    <div className="w-full border border-borderColor/60 dark:border-darkBorder/50 dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px] h-full">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5 sm:gap-3 sm:w-1/2">
           <h2 className="text-base sm:text-lg uppercase text-headingTextColor dark:text-darkTextPrimary">

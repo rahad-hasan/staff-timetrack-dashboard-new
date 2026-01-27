@@ -1,4 +1,16 @@
-const FirstChart = ({ width = 82, height = 56, color = "#F40139" }) => {
+import React from "react";
+
+interface FirstChartProps {
+  width?: number;
+  height?: number;
+  color?: string; // This color prop will control the gradient and other colors
+}
+
+const FirstChart = ({
+  width = 82,
+  height = 56,
+  color = "#F40139",
+}: FirstChartProps) => {
   return (
     <svg
       width={width}
@@ -25,8 +37,10 @@ const FirstChart = ({ width = 82, height = 56, color = "#F40139" }) => {
           y2="45.5534"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0.310269" stopColor="currentColor" stopOpacity=".1000" />
-          <stop offset="1" stopColor="currentColor" stopOpacity="0.0011" />
+          <stop offset="0.310269" stopColor={color} stopOpacity=".1000" />{" "}
+          {/* Use the passed color */}
+          <stop offset="1" stopColor={color} stopOpacity="0.0011" />{" "}
+          {/* Use the passed color */}
         </linearGradient>
       </defs>
     </svg>
