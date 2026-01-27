@@ -83,3 +83,11 @@ export const formatTZDateDMY = (
 ) => {
   return formatInTimeZone(new Date(date), timeZone, "dd/MM/yyyy");
 };
+
+export const formatTZFullDate = (
+  date: string | Date | number,
+  timeZone = getUserTimeZone()
+): string => {
+  const d = new Date(date);
+  return formatInTimeZone(d, timeZone, "EEEE, MMMM d, yyyy");
+};

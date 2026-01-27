@@ -1,11 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import { Button } from "@/components/ui/button";
-import {
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog"
 import { editEventSchema } from "@/zod/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -125,17 +120,6 @@ const EditEventModal = ({ handleCloseDialog, event }: any) => {
     }
 
     return (
-        <DialogContent
-            onInteractOutside={(event) => event.preventDefault()}
-
-            className="w-full sm:max-w-[525px] max-h-[95vh] overflow-y-auto"
-        >
-            <DialogHeader>
-                <DialogTitle className="mb-4 text-headingTextColor dark:text-darkTextPrimary">
-                    Reschedule Event: {event?.name}
-                </DialogTitle>
-            </DialogHeader>
-
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                     <FormField
@@ -235,7 +219,7 @@ const EditEventModal = ({ handleCloseDialog, event }: any) => {
                     </Button>
                 </form>
             </Form>
-        </DialogContent>
+
     );
 };
 

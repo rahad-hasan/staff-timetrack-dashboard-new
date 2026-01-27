@@ -198,7 +198,13 @@ export const addNewEventSchema = z.object({
     start_time: z.string().min(1, "Start time is required"),
     end_time: z.string().min(1, "End time is required"),
     project: z.string().optional(),
-    meetingLink: z.string().optional(),
+    meetingLink: z
+        .string()
+        .url({ message: 'Meeting link must be a valid HTTP/HTTPS URL' })
+        .refine((value) => /^https?:\/\/[a-z0-9.-]*(meet|teams)[a-z0-9.-]*\/\S+/i.test(value), {
+            message: 'Meeting link must be a valid Meet or Teams URL',
+        })
+        .optional(),
     members: z
         .array(z.union([z.number(), z.string()]))
         .min(1, "At least one member is required"),

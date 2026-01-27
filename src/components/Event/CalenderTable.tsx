@@ -7,17 +7,15 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { Dialog } from "../ui/dialog";
-import EditEventModal from "./EditEventModal";
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { useState } from "react";
 import { formatTZDate, formatTZTime } from "@/utils";
-import { useLogInUserStore } from "@/store/logInUserStore";
+import EventDetailsModal from "./EventDetailsModal";
 
 // Helper to format date for matching
 // const formatToISODate = (date: Date) => date?.toISOString().split('T')[0];
 
 const CalenderTable = ({ startMonth, endMonth, eventData }: { startMonth: string | number | string[] | undefined, endMonth: string | number | string[] | undefined, eventData: any }) => {
-    const logInUserData = useLogInUserStore(state => state.logInUserData);
     const [open, setOpen] = useState(false)
     const [selectedEvent, setSelectedEvent] = useState<any>(null);
     const days = [
@@ -76,19 +74,14 @@ const CalenderTable = ({ startMonth, endMonth, eventData }: { startMonth: string
     return (
         <TooltipProvider>
             <div className="overflow-x-auto rounded-2xl border border-borderColor dark:border-darkBorder mt-5">
-                {
-                    (logInUserData?.role === 'admin' ||
-                        logInUserData?.role === 'manager' ||
-                        logInUserData?.role === 'hr') &&
-                    <Dialog open={open} onOpenChange={setOpen}>
-                        {selectedEvent && (
-                            <EditEventModal
-                                handleCloseDialog={handleCloseDialog}
-                                event={selectedEvent}
-                            />
-                        )}
-                    </Dialog>
-                }
+                <Dialog open={open} onOpenChange={setOpen}>
+                    {selectedEvent && (
+                        <EventDetailsModal
+                            handleCloseDialog={handleCloseDialog}
+                            event={selectedEvent}
+                        />
+                    )}
+                </Dialog>
 
                 <table className="w-full border-collapse">
                     <thead className="bg-white dark:bg-darkSecondaryBg">
