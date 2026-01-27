@@ -8,7 +8,6 @@ import { ArrowUpDown } from "lucide-react";
 import { IAttendance } from "@/global/globalTypes";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { format } from "date-fns";
 import { formatTZTime } from "@/utils";
 
 const AttendanceTable = ({ attendanceListData }: any) => {
@@ -94,7 +93,7 @@ const AttendanceTable = ({ attendanceListData }: any) => {
                     <div className="">
                         {
                             status ?
-                                <button className=" bg-[#e9f8f0] text-primary border border-primary rounded-lg px-2 py-1">Active</button>
+                                <button className=" bg-[#e9f8f0] text-primary rounded-lg px-2 py-1">Active</button>
                                 :
                                 <button className=" bg-[#fee6eb] text-red-500 border border-red-500 rounded-lg px-2 py-1">Inactive</button>
                         }

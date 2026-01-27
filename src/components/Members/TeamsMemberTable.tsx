@@ -21,6 +21,7 @@ import { deleteMember } from "@/actions/members/action";
 import ConfirmDialog from "../Common/ConfirmDialog";
 import { formatTZDayMonthYear } from "@/utils";
 import Link from "next/link";
+import CheckIcon from "../Icons/CheckIcon";
 
 const TeamsMemberTable = ({ data }: any) => {
 
@@ -120,9 +121,9 @@ const TeamsMemberTable = ({ data }: any) => {
                     <div className="">
                         {
                             is_active ?
-                                <button className=" bg-[#e9f8f0] text-primary border border-primary rounded-lg px-2 py-1">Active</button>
+                                <button className="text-primary py-1">Active</button>
                                 :
-                                <button className=" bg-[#fee6eb] text-red-500 border border-red-500 rounded-lg px-2 py-1">Inactive</button>
+                                <button className="text-red-500 rounded-lg px-2 py-1">Inactive</button>
                         }
                     </div>
                 )
@@ -244,13 +245,8 @@ const TeamsMemberTable = ({ data }: any) => {
             cell: ({ row }) => {
                 const is_tracking = row.getValue("is_tracking") as string;
                 return (
-                    <div className="">
-                        {
-                            is_tracking ?
-                                <button className=" bg-[#e9f8f0] text-primary border border-primary rounded-lg px-2 py-1">Active</button>
-                                :
-                                <button className=" bg-[#fee6eb] text-red-500 border border-red-500 rounded-lg px-2 py-1">Inactive</button>
-                        }
+                    <div className="flex items-center gap-2 text-primary">
+                        <span>{is_tracking ? <CheckIcon size={22} /> : ''}</span>
                     </div>
                 )
             }
