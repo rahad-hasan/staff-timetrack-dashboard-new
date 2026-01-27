@@ -266,3 +266,22 @@ export const changePasswordSchema = z.object({
     oldPassword: z.string().min(8, "Password must be at least 8 characters"),
     newPassword: z.string().min(8, "Password must be at least 8 characters"),
 })
+
+export const singleMemberSchema = z.object({
+    name: z.string().min(2, "Name is required"),
+    email: z.string().email("Invalid email"),
+    phone: z
+        .string()
+        .refine(
+            (val) => {
+                const parsed = parsePhoneNumberFromString(val);
+                return parsed?.isValid();
+            },
+            {
+                message: 'Phone number must be a valid international format',
+            }
+        ),
+    pay_rate_hourly: z.number().min(0),
+    role: z.string().min(2, "role is required"),
+})
+

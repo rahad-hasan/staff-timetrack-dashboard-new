@@ -82,9 +82,6 @@ const Configuration = ({ data }: { data: ICompany }) => {
         { label: "(GMT+09:30) Central Australia (Darwin)", value: "Australia/Darwin" },
         { label: "(GMT+10:00) Eastern Australia (Sydney)", value: "Australia/Sydney" },
         { label: "(GMT+12:00) New Zealand (Auckland)", value: "Pacific/Auckland" },
-
-        // Universal
-        { label: "UTC / Greenwich Mean Time", value: "UTC" },
     ];
     const [switches, setSwitches] = useState({
         app_notify: data?.app_notify || false,

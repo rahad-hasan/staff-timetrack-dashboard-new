@@ -20,15 +20,10 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import SingleMemberProjectTable from "./SingleMemberProjectTable";
 import SingleMemberTaskTable from "./SingleMemberTaskTable";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { singleMemberSchema } from "@/zod/schema";
+import { editSingleDetailsMember } from "@/actions/members/action";
 
-
-// Define a schema locally for the member data
-const memberSchema = z.object({
-    name: z.string().min(2, "Name is required"),
-    email: z.string().email("Invalid email"),
-    phone: z.string().optional().nullable(),
-    pay_rate_hourly: z.number().min(0),
-});
 
 const SingleMemberPage = ({ data }: { data: any }) => {
     const [loading, setLoading] = useState(false);
@@ -37,7 +32,6 @@ const SingleMemberPage = ({ data }: { data: any }) => {
         setActiveTab(tab);
     };
 
-    // State for the Boolean switches
     const [switches, setSwitches] = useState({
         is_active: data?.is_active ?? true,
         is_tracking: data?.is_tracking ?? true,
@@ -46,37 +40,68 @@ const SingleMemberPage = ({ data }: { data: any }) => {
         multi_factor_auth: data?.multi_factor_auth ?? false,
     });
 
-    const form = useForm<z.infer<typeof memberSchema>>({
-        resolver: zodResolver(memberSchema),
+    const form = useForm<z.infer<typeof singleMemberSchema>>({
+        resolver: zodResolver(singleMemberSchema),
         defaultValues: {
             name: data?.name || "",
             email: data?.email || "",
             phone: data?.phone || "",
             pay_rate_hourly: data?.pay_rate_hourly || 0,
+            role: data?.role || "",
         },
     });
 
-    const onSubmit = async (values: z.infer<typeof memberSchema>) => {
+    // const onSubmit = async (values: z.infer<typeof singleMemberSchema>) => {
+    //     setLoading(true);
+    //     const finalData = {
+    //         ...values,
+    //         ...switches,
+    //         id: data.id,
+    //     };
+
+    //     console.log("Final Member Data for Update:", finalData);
+
+    //     setTimeout(() => {
+    //         toast.success("Check console for updated data object!");
+    //         setLoading(false);
+    //     }, 1000);
+    // };
+
+    async function onSubmit(values: z.infer<typeof singleMemberSchema>) {
+        console.log({ ...values, ...switches });
         setLoading(true);
-        const finalData = {
-            ...values,
-            ...switches,
-            id: data.id,
-        };
+        try {
+            const res = await editSingleDetailsMember({ data: { ...values, ...switches }, id: data?.id });
 
-        // Showing the data in console and toast as requested
-        console.log("Final Member Data for Update:", finalData);
-
-        setTimeout(() => {
-            toast.success("Check console for updated data object!");
+            if (res?.success) {
+                toast.success(res?.message || "Member edited successfully");
+            } else {
+                toast.error(res?.message || "Failed to edit member", {
+                    style: {
+                        backgroundColor: '#ef4444',
+                        color: 'white',
+                        border: 'none'
+                    },
+                });
+            }
+        } catch (error: any) {
+            // console.error("failed:", error);
+            toast.error(error?.message || "Something went wrong!", {
+                style: {
+                    backgroundColor: '#ef4444',
+                    color: 'white',
+                    border: 'none'
+                },
+            });
+        } finally {
             setLoading(false);
-        }, 1000);
-    };
+        }
+    }
 
     return (
         <div>
             <div className="flex items-center gap-4 bg-gradient-to-r from-primary  to-[#7a06ffe1] p-2 rounded-full shadow-lg">
-                <Avatar className="w-16 h-16 ">
+                <Avatar className="w-12 md:w-16 h-12 md:h-16 ">
                     <AvatarImage
                         src={data?.image}
                         alt={data?.name}
@@ -84,24 +109,35 @@ const SingleMemberPage = ({ data }: { data: any }) => {
                     />
                     <AvatarFallback className="text-xl font-bold">{data?.name?.charAt(0)}</AvatarFallback>
                 </Avatar>
-                <p className="text-2xl font-semibold text-white">{data?.name}</p>
+                <p className=" text-xl md:text-2xl font-semibold text-white">{data?.name}</p>
             </div>
 
             <div className="xl:w-[80%] rounded-lg border border-borderColor p-3 md:p-4 mt-4 bg-white dark:bg-darkSecondaryBg dark:border-darkBorder">
 
-                {/* Status & Tracking Switches Section */}
-                <div className="rounded-md border border-borderColor dark:border-darkBorder p-3 md:p-4 mb-4">
-                    <div className="flex justify-between items-center text-sm font-medium text-gray-500 mb-2">
-                        <span className="text-subTextColor dark:text-darkTextPrimary">Account & Permissions</span>
-                        <span className="text-headingTextColor dark:text-darkTextPrimary text-xs font-bold uppercase">Status</span>
+                <div className="rounded-xl border border-borderColor dark:border-darkBorder p-5 mb-6 bg-white dark:bg-darkSecondaryBg ">
+                    <div className="flex justify-between items-end pb-4 mb-6 border-b border-borderColor dark:border-darkBorder">
+                        <div className="space-y-1">
+                            <h3 className="text-lg font-semibold text-headingTextColor dark:text-darkTextPrimary">Account & Permissions</h3>
+                            <p className="text-sm text-subTextColor dark:text-darkTextSecondary">Manage system access and monitoring preferences</p>
+                        </div>
+                        <div className="flex flex-col items-end">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-subTextColor opacity-70 dark:text-darkTextSecondary mb-1">Account Status</span>
+                            <span className={`px-2 py-1 rounded-md text-[11px] font-bold uppercase ${switches.is_active ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}`}>
+                                {switches.is_active ? "Active" : "Inactive"}
+                            </span>
+                        </div>
                     </div>
 
-                    <div className="space-y-4">
-                        {/* Item 1: Active Status */}
-                        <div className="flex justify-between items-center text-sm text-headingTextColor dark:text-darkTextPrimary">
-                            <div className="flex flex-col">
-                                <span className="font-medium">Active Account</span>
-                                <span className="text-xs text-subTextColor dark:text-darkTextSecondary">Allow member to log in and access the system</span>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className={`flex items-center justify-between p-4 rounded-lg border transition-all ${switches.is_active ? 'border-primary/20 bg-primary/[0.02]' : 'border-borderColor dark:border-darkBorder'}`}>
+                            <div className="flex gap-3 items-center">
+                                <div className="p-2 rounded-full bg-gray-100 dark:bg-darkPrimaryBg">
+                                    <svg className="w-5 h-5 text-subTextColor dark:text-darkTextSecondary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-sm font-semibold">Active Account</span>
+                                    <span className="text-xs text-subTextColor dark:text-darkTextSecondary ">Login & system access</span>
+                                </div>
                             </div>
                             <Switch
                                 checked={switches.is_active}
@@ -109,11 +145,15 @@ const SingleMemberPage = ({ data }: { data: any }) => {
                             />
                         </div>
 
-                        {/* Item 2: Tracking Status */}
-                        <div className="flex justify-between items-center text-sm text-headingTextColor dark:text-darkTextPrimary">
-                            <div className="flex flex-col">
-                                <span className="font-medium">Time Tracking</span>
-                                <span className="text-xs text-subTextColor dark:text-darkTextSecondary">Enable desktop app activity recording</span>
+                        <div className={`flex items-center justify-between p-4 rounded-lg border transition-all ${switches.is_tracking ? 'border-primary/20 bg-primary/[0.02]' : 'border-borderColor dark:border-darkBorder'}`}>
+                            <div className="flex gap-3 items-center">
+                                <div className="p-2 rounded-full bg-gray-100 dark:bg-darkPrimaryBg">
+                                    <svg className="w-5 h-5 text-subTextColor dark:text-darkTextSecondary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-sm font-semibold">Time Tracking</span>
+                                    <span className="text-xs text-subTextColor dark:text-darkTextSecondary ">Desktop app recording</span>
+                                </div>
                             </div>
                             <Switch
                                 checked={switches.is_tracking}
@@ -121,11 +161,15 @@ const SingleMemberPage = ({ data }: { data: any }) => {
                             />
                         </div>
 
-                        {/* Item 3: URL Tracking */}
-                        <div className="flex justify-between items-center text-sm text-headingTextColor dark:text-darkTextPrimary">
-                            <div className="flex flex-col">
-                                <span className="font-medium">URL & App Tracking</span>
-                                <span className="text-xs text-subTextColor dark:text-darkTextSecondary">Record specific website and application usage</span>
+                        <div className={`flex items-center justify-between p-4 rounded-lg border transition-all ${switches.url_tracking ? 'border-primary/20 bg-primary/[0.02]' : 'border-borderColor dark:border-darkBorder'}`}>
+                            <div className="flex gap-3 items-center">
+                                <div className="p-2 rounded-full bg-gray-100 dark:bg-darkPrimaryBg">
+                                    <svg className="w-5 h-5 text-subTextColor dark:text-darkTextSecondary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-sm font-semibold">URL & Apps</span>
+                                    <span className="text-xs text-subTextColor dark:text-darkTextSecondary ">Website usage tracking</span>
+                                </div>
                             </div>
                             <Switch
                                 checked={switches.url_tracking}
@@ -133,47 +177,36 @@ const SingleMemberPage = ({ data }: { data: any }) => {
                             />
                         </div>
 
-                        {/* Item 4: webcam Tracking */}
-                        <div className="flex justify-between items-center text-sm text-headingTextColor dark:text-darkTextPrimary">
-                            <div className="flex flex-col">
-                                <span className="font-medium">Camera Tracking</span>
-                                <span className="text-xs text-subTextColor dark:text-darkTextSecondary">
-                                    Take periodic webcam snapshots during work sessions
-                                </span>
+                        <div className={`flex items-center justify-between p-4 rounded-lg border transition-all ${switches.cam_tracking ? 'border-primary/20 bg-primary/[0.02]' : 'border-borderColor dark:border-darkBorder'}`}>
+                            <div className="flex gap-3 items-center">
+                                <div className="p-2 rounded-full bg-gray-100 dark:bg-darkPrimaryBg">
+                                    <svg className="w-5 h-5 text-subTextColor dark:text-darkTextSecondary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-sm font-semibold">Webcam Screenshots</span>
+                                    <span className="text-xs text-subTextColor dark:text-darkTextSecondary ">Periodic work snapshots</span>
+                                </div>
                             </div>
                             <Switch
                                 checked={switches.cam_tracking}
                                 onCheckedChange={(val) => setSwitches(prev => ({ ...prev, cam_tracking: val }))}
                             />
                         </div>
-                        {/* Item 5: MFA */}
-                        {/* <div className="flex justify-between items-center text-sm text-headingTextColor dark:text-darkTextPrimary">
-                        <div className="flex flex-col">
-                            <span className="font-medium">Multi-Factor Authentication</span>
-                            <span className="text-xs text-subTextColor dark:text-darkTextSecondary">Require an extra security step during login</span>
-                        </div>
-                        <Switch
-                            checked={switches.multi_factor_auth}
-                            onCheckedChange={(val) => setSwitches(prev => ({ ...prev, multi_factor_auth: val }))}
-                        />
-                    </div> */}
+
                     </div>
                 </div>
 
-                {/* Member Information Form */}
                 <div className="rounded-md border border-borderColor dark:border-darkBorder p-3 md:p-4 mb-4">
                     <span className="text-subTextColor dark:text-darkTextPrimary text-sm font-medium">Member Details</span>
 
                     <Form {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-                                {/* Name */}
+                            <div className="grid sm:grid-cols-2 gap-4 sm:gap-3 items-start">
                                 <FormField
                                     control={form.control}
                                     name="name"
                                     render={({ field }) => (
-                                        <FormItem>
+                                        <FormItem className="w-full">
                                             <FormLabel>Full Name</FormLabel>
                                             <FormControl>
                                                 <Input {...field} className="dark:bg-darkPrimaryBg dark:border-darkBorder" />
@@ -183,12 +216,11 @@ const SingleMemberPage = ({ data }: { data: any }) => {
                                     )}
                                 />
 
-                                {/* Email */}
                                 <FormField
                                     control={form.control}
                                     name="email"
                                     render={({ field }) => (
-                                        <FormItem>
+                                        <FormItem className="w-full">
                                             <FormLabel>Email Address</FormLabel>
                                             <FormControl>
                                                 <Input {...field} readOnly className="opacity-70 dark:bg-darkPrimaryBg dark:border-darkBorder" />
@@ -197,38 +229,40 @@ const SingleMemberPage = ({ data }: { data: any }) => {
                                         </FormItem>
                                     )}
                                 />
+                            </div>
 
-                                {/* Pay Rate */}
+                            <div className="grid sm:grid-cols-2 gap-4 sm:gap-3 items-center">
                                 <FormField
                                     control={form.control}
                                     name="pay_rate_hourly"
                                     render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Hourly Pay Rate ($)</FormLabel>
+                                        <FormItem className="w-full">
+                                            <FormLabel className="text-sm">Hourly Pay Rate ($)</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     type="number"
                                                     {...field}
                                                     onChange={(e) => field.onChange(e.target.valueAsNumber)}
-                                                    className="dark:bg-darkPrimaryBg dark:border-darkBorder"
+                                                    className="dark:bg-darkPrimaryBg dark:border-darkBorder py-2 px-3"
                                                 />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
                                     )}
                                 />
+
                                 <FormField
                                     control={form.control}
                                     name="phone"
                                     render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Phone Number</FormLabel>
+                                        <FormItem className="w-full">
+                                            <FormLabel className="text-sm">Phone Number</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     {...field}
                                                     value={field.value || ""}
-                                                    placeholder="+1 (555) 000-0000"
-                                                    className="dark:bg-darkPrimaryBg dark:border-darkBorder"
+                                                    placeholder="Phone Number"
+                                                    className="dark:bg-darkPrimaryBg dark:border-darkBorder "
                                                 />
                                             </FormControl>
                                             <FormMessage />
@@ -237,7 +271,31 @@ const SingleMemberPage = ({ data }: { data: any }) => {
                                 />
                             </div>
 
-                            {/* MFA Switch Row */}
+                            <FormField
+                                control={form.control}
+                                name="role"
+                                render={({ field }) => (
+                                    <FormItem className=" w-full">
+                                        <FormLabel>User Role</FormLabel>
+                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <FormControl className=" w-full">
+                                                <SelectTrigger className="dark:bg-darkPrimaryBg dark:border-darkBorder">
+                                                    <SelectValue placeholder="Select a role" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                <SelectItem value="admin">Admin</SelectItem>
+                                                <SelectItem value="manager">Manager</SelectItem>
+                                                <SelectItem value="hr">HR</SelectItem>
+                                                <SelectItem value="project_manager">Project Manager</SelectItem>
+                                                <SelectItem value="employee">Employee</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
                             <div className="flex items-center justify-between p-2 border rounded-md dark:border-darkBorder">
                                 <span className="text-sm font-medium">Enable Multi-Factor Authentication</span>
                                 <Switch
@@ -256,9 +314,9 @@ const SingleMemberPage = ({ data }: { data: any }) => {
                 </div>
             </div>
 
-            <div className=" flex flex-col sm:flex-row items-start gap-3 sm:items-center sm:justify-between mt-10">
+            <div className=" flex flex-col sm:flex-row items-start gap-3 sm:items-center sm:justify-between mt-5">
                 <div className="flex gap-3">
-                    <div className="grid grid-cols-3 lg:flex mt-3 w-[250px] lg:w-auto sm:mt-0 bg-bgSecondary dark:bg-darkSecondaryBg rounded-lg box-border ">
+                    <div className="grid grid-cols-2 gap-1 lg:flex mt-3 sm:mt-0 bg-bgSecondary dark:bg-darkSecondaryBg rounded-lg box-border ">
                         {["Projects", "Tasks"].map((tab) => (
                             <button
                                 key={tab}
@@ -274,13 +332,8 @@ const SingleMemberPage = ({ data }: { data: any }) => {
                         ))}
                     </div>
                 </div>
-                {/* {
-                    activeTab === "Members" ?
-                        <Button className=" text-sm md:text-base"><PlusIcon size={20} /> Add Member</Button>
-                        :
-                        <Button className=" text-sm md:text-base"><PlusIcon size={20} /> Add Task</Button>
-                } */}
             </div>
+
             {
                 activeTab === "Projects" ?
                     <SingleMemberProjectTable data={data?.projects}></SingleMemberProjectTable>

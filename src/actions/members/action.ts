@@ -17,6 +17,27 @@ export const getSingleDetailsMember = async (id: string): Promise<IResponse<IMem
     });
 };
 
+export const editSingleDetailsMember = async ({ data, id }: {
+    data: {
+        name: string;
+        email: string;
+        phone: string;
+        role: string
+        pay_rate_hourly: number;
+        is_active: boolean;
+        is_tracking: boolean;
+        url_tracking: boolean;
+        cam_tracking: boolean;
+        multi_factor_auth: boolean;
+    },
+    id: number | undefined;
+}) => {
+    return await baseApi(`/auth/employees/${id}`, {
+        method: "PATCH",
+        body: data,
+        tag: "members",
+    });
+};
 export const getMembersDashboard = async () => {
     return await baseApi(`/dashboard/members`);
 };
@@ -49,6 +70,7 @@ export const editMember = async ({ data, id }: {
         tag: "members",
     });
 };
+
 
 export const deleteMember = async ({ data, id }: {
     data: {
