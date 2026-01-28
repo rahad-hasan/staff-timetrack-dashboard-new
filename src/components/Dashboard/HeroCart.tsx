@@ -68,7 +68,7 @@ const HeroCart = async ({ searchParams }: ISearchParamsProps) => {
             key={id}
             className="rounded-2xl w-full transition-all hover:shadow duration-200 relative h-38 shadow-sm dark:shadow-slate-100"
           >
-            <div className="border-x-2 border-t-2 border-borderColor/40  dark:border-darkBorder/25 flex items-center justify-between px-4 py-[1.4rem] bg-bgPrimary dark:bg-darkPrimaryBg rounded-t-2xl">
+            <div className="border-x-2 border-t-2 border-borderColor/60  dark:border-darkBorder/25 flex items-center justify-between px-4 py-[1.4rem] bg-bgPrimary dark:bg-darkPrimaryBg rounded-t-2xl">
               <div className="flex items-center gap-3">
                 <div>{icon}</div>
                 <div>

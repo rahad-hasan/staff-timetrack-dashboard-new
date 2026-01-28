@@ -11,72 +11,82 @@ import MonthlyTimeSheetsCalendarSkeleton from "@/skeleton/timesheets/allTimeshee
 import WeeklyDatePicker from "@/components/Common/WeeklyDatePicker";
 import WeeklyTimeSheetsServer from "./WeeklyTimeSheets/WeeklyTimeSheetsServer";
 import WeeklyTimeSheetsSkeleton from "@/skeleton/timesheets/allTimesheets/WeeklyTimeSheetsSkeleton";
+import { getMembersDashboard } from "@/actions/members/action";
 
 const AllTimesheetServer = async ({ searchParams }: ISearchParamsProps) => {
-    const params = await searchParams;
-    type Tab = "daily" | "weekly" | "monthly";
-    const activeTab = (params?.tab as Tab) ?? "daily";
+  const params = await searchParams;
+  type Tab = "daily" | "weekly" | "monthly";
+  const activeTab = (params?.tab as Tab) ?? "daily";
 
-    return (
-        <div>
-            {
-                activeTab === "daily" &&
-                <>
-                    <div className=" mb-5 flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between h-full">
-                        <div className=" flex flex-col sm:flex-col-reverse xl:flex-row gap-4 md:gap-3">
-                            <SpecificDatePicker></SpecificDatePicker>
-                            <SelectProjectDropDown></SelectProjectDropDown>
-                        </div>
-                        <SelectUserDropDown></SelectUserDropDown>
-                    </div>
-                    <Suspense fallback={<DailyTimeSheetsSkeleton />}>
-                        <DailyTimeSheetsServer searchParams={searchParams} />
-                    </Suspense>
-                </>
-            }
+  const res = await getMembersDashboard();
 
-            {
-                activeTab === "weekly" &&
-                <>
-                    <div className=" mb-5 flex flex-col gap-4 xl:gap-0 xl:flex-row justify-between">
-                        <div className=" flex gap-3">
-                            <WeeklyDatePicker />
-                            <div className=" hidden md:block">
-                                {/* <Button className="dark:text-darkTextPrimary" variant={'filter'}>
+  const users = res.data.map((u) => ({
+    id: String(u.id),
+    label: u.name,
+    avatar: u.image || "",
+  }));
+
+  return (
+    <div>
+      {activeTab === "daily" && (
+        <>
+          <div className=" mb-5 flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between h-full">
+            <div className=" flex flex-col sm:flex-col-reverse xl:flex-row gap-4 md:gap-3">
+              <SpecificDatePicker></SpecificDatePicker>
+              <SelectProjectDropDown></SelectProjectDropDown>
+            </div>
+            <SelectUserDropDown users={users} />
+          </div>
+          <Suspense fallback={<DailyTimeSheetsSkeleton />}>
+            <DailyTimeSheetsServer searchParams={searchParams} />
+          </Suspense>
+        </>
+      )}
+
+      {activeTab === "weekly" && (
+        <>
+          <div className=" mb-5 flex flex-col gap-4 xl:gap-0 xl:flex-row justify-between">
+            <div className=" flex gap-3">
+              <WeeklyDatePicker />
+              <div className=" hidden md:block">
+                {/* <Button className="dark:text-darkTextPrimary" variant={'filter'}>
                                 <SlidersHorizontal className=" dark:text-darkTextPrimary" /> Filters
                                 </Button> */}
-                                <SelectProjectDropDown></SelectProjectDropDown>
-                            </div>
-                        </div>
-                        <SelectUserDropDown></SelectUserDropDown>
-                    </div>
-                    <Suspense fallback={<WeeklyTimeSheetsSkeleton />}>
-                        <WeeklyTimeSheetsServer searchParams={searchParams}></WeeklyTimeSheetsServer>
-                    </Suspense>
-                </>
-            }
+                <SelectProjectDropDown></SelectProjectDropDown>
+              </div>
+            </div>
+            <SelectUserDropDown users={users} />
+          </div>
+          <Suspense fallback={<WeeklyTimeSheetsSkeleton />}>
+            <WeeklyTimeSheetsServer
+              searchParams={searchParams}
+            ></WeeklyTimeSheetsServer>
+          </Suspense>
+        </>
+      )}
 
+      {activeTab === "monthly" && (
+        <>
+          <div className=" mb-5 flex flex-col gap-4 md:gap-0 sm:flex-row justify-between">
+            <div className="flex gap-3">
+              <MonthPicker></MonthPicker>
+              <div className=" hidden md:block h-full">
+                <SelectProjectDropDown></SelectProjectDropDown>
+              </div>
+            </div>
+            <SelectUserDropDown users={users} />
+          </div>
+          <Suspense fallback={<MonthlyTimeSheetsCalendarSkeleton />}>
             {
-                activeTab === "monthly" &&
-                <>
-                    <div className=" mb-5 flex flex-col gap-4 md:gap-0 sm:flex-row justify-between">
-                        <div className="flex gap-3">
-                            <MonthPicker></MonthPicker>
-                            <div className=" hidden md:block h-full">
-                                <SelectProjectDropDown ></SelectProjectDropDown>
-                            </div>
-                        </div>
-                        <SelectUserDropDown ></SelectUserDropDown>
-                    </div>
-                    <Suspense fallback={<MonthlyTimeSheetsCalendarSkeleton />}>
-                        {
-                            <MonthlyTimeSheetsServer searchParams={searchParams}></MonthlyTimeSheetsServer>
-                        }
-                    </Suspense>
-                </>
+              <MonthlyTimeSheetsServer
+                searchParams={searchParams}
+              ></MonthlyTimeSheetsServer>
             }
-        </div>
-    );
+          </Suspense>
+        </>
+      )}
+    </div>
+  );
 };
 
 export default AllTimesheetServer;
