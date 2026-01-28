@@ -69,6 +69,7 @@ const SingleProject = ({ data }: { data: ISingleProjectData }) => {
                                 <th className="text-left py-0.5 whitespace-nowrap text-headingTextColor dark:text-darkTextPrimary">Starting Date</th>
                                 <th className="text-left py-0.5 whitespace-nowrap text-headingTextColor dark:text-darkTextPrimary">Deadline</th>
                                 <th className="text-left py-0.5 whitespace-nowrap text-headingTextColor dark:text-darkTextPrimary">Project Budget</th>
+                                <th className="text-left py-0.5 whitespace-nowrap text-headingTextColor dark:text-darkTextPrimary">Total Spent</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -79,6 +80,7 @@ const SingleProject = ({ data }: { data: ISingleProjectData }) => {
 
                                 <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary">{data?.deadline ? formatTZDateDMY(data?.deadline) : "N/A"}</td>
                                 <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary">${data?.budget}</td>
+                                <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary">${data?.summary?.spend}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -124,7 +126,7 @@ const SingleProject = ({ data }: { data: ISingleProjectData }) => {
                                     </Avatar>
                                     <h2>{manager?.user?.name}</h2>
                                 </div>
-                                <div className=" h-[40px] 2xl:h-[45px] flex items-center justify-start px-4 text-headingTextColor dark:text-darkTextPrimary">Project Manage</div>
+                                <div className=" h-[40px] 2xl:h-[45px] flex items-center justify-start px-4 text-headingTextColor dark:text-darkTextPrimary">Project Manager</div>
                             </div>
                         )
                     }
@@ -142,7 +144,7 @@ const SingleProject = ({ data }: { data: ISingleProjectData }) => {
 
             <div className=" flex flex-col sm:flex-row items-start gap-3 sm:items-center sm:justify-between mt-10">
                 <div className="flex gap-3">
-                    <div className="grid grid-cols-3 lg:flex mt-3 w-[250px] lg:w-auto sm:mt-0 bg-bgSecondary dark:bg-darkSecondaryBg rounded-lg box-border ">
+                    <div className="grid grid-cols-2 lg:flex mt-3 w-auto sm:mt-0 bg-bgSecondary dark:bg-darkSecondaryBg rounded-lg box-border ">
                         {["Members", "Tasks"].map((tab) => (
                             <button
                                 key={tab}
