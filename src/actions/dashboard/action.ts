@@ -44,3 +44,10 @@ export const getDashboardAppsAndUrls = async (query = {}) => {
         tag: "appUrlDashboard",
     });
 };
+
+export const getTodayWorkTime = async () => {
+    return await baseApi(`/dashboard/work-time`, {
+        tag: "todayWorkTime",
+        cache: "no-cache"
+    });
+};

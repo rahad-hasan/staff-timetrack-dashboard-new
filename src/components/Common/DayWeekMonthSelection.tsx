@@ -18,12 +18,10 @@ const DayWeekMonthSelection = () => {
             {["daily", "weekly", "monthly"].map((tab) => (
                 <button
                     key={tab}
-
                     onClick={() => {
                         setTab(tab as "daily" | "weekly" | "monthly")
                         loader.start()
-                    }
-                    }
+                    }}
                     className={`px-3.5 h-10 text-sm font-medium transition-all cursor-pointer rounded-lg min-w-[70px] text-center capitalize
                         ${activeTab === tab
                             ? "bg-bgPrimary dark:bg-darkPrimaryBg dark:text-darkTextPrimary text-headingTextColor outline-1 outline-borderColor dark:outline-darkBorder"
