@@ -5,7 +5,6 @@ const MemberDetailsServer = async ({ params }: { params: Promise<{ id: string }>
     const { id } = await params;
 
     const result = await getSingleDetailsMember(id);
-    console.log(result);
 
     return (
         <div>

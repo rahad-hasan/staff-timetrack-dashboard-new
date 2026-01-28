@@ -159,7 +159,7 @@ const AllScreenShortsModal = ({ screenShorts, modalOpen, setModalOpen, selectedI
                 </div>
             </div>
             <div className=" w-full flex justify-center items-center">
-                <div className="lg:absolute lg:bottom-0 lg:left-6 min-w-[280px] bg-black/80 backdrop-blur-2xl border border-white/20 rounded-xl text-white shadow-[0_20px_50px_rgba(0,0,0,0.5)] pointer-events-none p-0 overflow-hidden">
+                <div className="lg:absolute lg:bottom-4 lg:left-6 min-w-[280px] bg-black/80 backdrop-blur-2xl border border-white/20 rounded-xl text-white shadow-[0_20px_50px_rgba(0,0,0,0.5)] pointer-events-none p-0 overflow-hidden">
                     {screenShorts[activeIndex]?.corrupted && screenShorts[activeIndex]?.corrupted !== "NONE" && (
                         <div className={`flex items-center gap-2 px-4 py-2 border-b border-white/10 ${screenShorts[activeIndex]?.anomaly?.severity === 'high' ? 'bg-red-500/20 text-red-400' : 'bg-yellow-500/20 text-yellow-400'}`}>
                             <ShieldAlert size={16} className="animate-pulse" />

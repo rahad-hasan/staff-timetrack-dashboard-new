@@ -36,7 +36,7 @@ const ProfilePopoverContent = ({ side, align }: { side: "top" | "right" | "botto
             <div className="flex items-center gap-2 mb-4 px-3 ">
                 <Avatar className="w-14 h-14">
                     <AvatarImage src={logInUserData?.image ? logInUserData?.image : ""} alt="@shadcn" />
-                    <AvatarFallback>
+                    <AvatarFallback className=" dark:bg-darkPrimaryBg/70">
                         {logInUserData?.name && logInUserData?.name
                             .split(" ")
                             .map((n: string) => n[0])
@@ -54,7 +54,7 @@ const ProfilePopoverContent = ({ side, align }: { side: "top" | "right" | "botto
             </div>
             <div className="flex flex-col gap-2 mb-2 px-3 pt-2 border-t border-borderColor dark:border-darkBorder">
                 <Link className="flex items-center gap-2 text-sm font-medium text-headingTextColor dark:text-darkTextPrimary hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-2 py-2 rounded-md cursor-pointer" href={`/settings`}>
-                        <MyProfileIcon size={18} /> My account
+                    <MyProfileIcon size={18} /> My account
                 </Link>
                 <button className="flex items-center gap-2 text-sm font-medium text-headingTextColor dark:text-darkTextPrimary hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-2 py-2 rounded-md cursor-pointer">
                     <InviteMemberIcon size={18} /> Invite member to team

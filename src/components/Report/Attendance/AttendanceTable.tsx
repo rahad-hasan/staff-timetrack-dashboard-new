@@ -93,9 +93,9 @@ const AttendanceTable = ({ attendanceListData }: any) => {
                     <div className="">
                         {
                             status ?
-                                <button className=" bg-[#e9f8f0] text-primary rounded-lg px-2 py-1">Active</button>
+                                <button className="text-primary rounded-lg py-1">Active</button>
                                 :
-                                <button className=" bg-[#fee6eb] text-red-500 border border-red-500 rounded-lg px-2 py-1">Inactive</button>
+                                <button className=" text-red-500  rounded-lg py-1">Inactive</button>
                         }
                     </div>
                 )

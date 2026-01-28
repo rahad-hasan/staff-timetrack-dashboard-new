@@ -242,6 +242,17 @@ export const userBasicInfoSchema = z.object({
     title: z.string().min(1, "Title is required"),
     email: z.string().email("Invalid email address"),
     password: z.string().min(8, "Password must be at least 8 characters").optional(),
+    phone: z
+        .string()
+        .refine(
+            (val) => {
+                const parsed = parsePhoneNumberFromString(val);
+                return parsed?.isValid();
+            },
+            {
+                message: 'Phone number must be a valid international format',
+            }
+        )
 })
 
 export const screenDeleteReasonSchema = z.object({

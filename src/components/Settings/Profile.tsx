@@ -17,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import Image from "next/image";
-import { Upload } from "lucide-react";
+import { Phone, Upload } from "lucide-react";
 import profileAvatar from '../../assets/profile_image_avatar.webp';
 import { Label } from "@/components/ui/label";
 import UserIcon from "../Icons/UserIcon";
@@ -52,6 +52,7 @@ const Profile = () => {
             name: logInUserData?.name ? logInUserData?.name : "",
             title: logInUserData?.role ? logInUserData?.role : "",
             email: logInUserData?.email ? logInUserData?.email : "",
+            phone: logInUserData?.phone ? logInUserData?.phone : "",
             // password: "",
         },
     });
@@ -204,28 +205,35 @@ const Profile = () => {
                                 </FormItem>
                             )}
                         />
-                        <div className="hidden sm:block w-full"></div>
-                        {/* <FormField
+                        <FormField
                             control={form.control}
-                            name="password"
+                            name="phone"
                             render={({ field }) => (
                                 <FormItem className="w-full">
-                                    <FormLabel>Password</FormLabel>
+                                    <FormLabel>Phone Number</FormLabel>
                                     <FormControl>
                                         <div className="relative">
-                                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 h-4 w-4" />
+                                            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 h-4 w-4" >
+                                                <Phone size={16} />
+                                            </div>
                                             <Input
-                                                type="password"
-                                                placeholder="Password"
-                                                className="pl-9"
+                                                type="text"
+                                                placeholder="Enter Phone Number"
+                                                className="pl-9 dark:bg-darkPrimaryBg dark:border-darkBorder"
                                                 {...field}
+                                                onChange={(e) => {
+                                                    // This Regex allows ONLY the '+' sign and numbers 0-9
+                                                    // It replaces any other character (like 'a', 'b', '!', etc.) with an empty string
+                                                    const sanitizedValue = e.target.value.replace(/[^\d+]/g, "");
+                                                    field.onChange(sanitizedValue);
+                                                }}
                                             />
                                         </div>
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
-                        /> */}
+                        />
                     </div>
 
                     <div className="border-b pb-8 mt-2">
