@@ -1,3 +1,4 @@
+import { getMembersDashboard } from "@/actions/members/action";
 import DayWeekMonthSelection from "@/components/Common/DayWeekMonthSelection";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import MonthPicker from "@/components/Common/MonthPicker";
@@ -11,49 +12,61 @@ import { Metadata } from "next";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
-    title: "Staff Time Tracker Report Timesheets",
-    description: "Staff Time Tracker Report Timesheets",
+  title: "Staff Time Tracker Report Timesheets",
+  description: "Staff Time Tracker Report Timesheets",
 };
 const ReportTimeSheets = async ({ searchParams }: ISearchParamsProps) => {
-    const params = await searchParams;
-    type Tab = "daily" | "weekly" | "monthly";
-    const activeTab = (params?.tab as Tab) ?? "daily";
+  const params = await searchParams;
+  type Tab = "daily" | "weekly" | "monthly";
+  const activeTab = (params?.tab as Tab) ?? "daily";
 
-    return (
-        <div>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5">
-                <HeadingComponent heading="All Timesheets" subHeading="All the timesheet by team member who completed is displayed here"></HeadingComponent>
+  const res = await getMembersDashboard();
 
-                <DayWeekMonthSelection></DayWeekMonthSelection>
-            </div>
-            {
-                activeTab === "daily" &&
-                <DayWeekMonthSelectionServer searchParams={searchParams}></DayWeekMonthSelectionServer>
-            }
-            {
-                activeTab === "weekly" &&
-                <ReportWeeklyTimeSheetServer searchParams={searchParams}></ReportWeeklyTimeSheetServer>
-            }
-            {
-                activeTab === "monthly" &&
-                <>
-                    <div className="mb-5 flex flex-col gap-4 md:gap-0 md:flex-row justify-between">
-                        <MonthPicker />
-                        <SelectUserDropDown />
-                    </div>
-                    <Suspense fallback={<ReportMonthlyTimesheetSkeleton />}>
-                        {
-                            params.start_month && params.end_month ?
-                                <ReportMonthlyTimeSheetServer searchParams={searchParams}></ReportMonthlyTimeSheetServer>
-                                :
-                                <ReportMonthlyTimesheetSkeleton></ReportMonthlyTimesheetSkeleton>
+  const users = res.data.map((u) => ({
+    id: String(u.id),
+    label: u.name,
+    avatar: u.image || "",
+  }));
 
-                        }
-                    </Suspense>
-                </>
-            }
-        </div>
-    );
+  return (
+    <div>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5">
+        <HeadingComponent
+          heading="All Timesheets"
+          subHeading="All the timesheet by team member who completed is displayed here"
+        ></HeadingComponent>
+
+        <DayWeekMonthSelection></DayWeekMonthSelection>
+      </div>
+      {activeTab === "daily" && (
+        <DayWeekMonthSelectionServer
+          searchParams={searchParams}
+        ></DayWeekMonthSelectionServer>
+      )}
+      {activeTab === "weekly" && (
+        <ReportWeeklyTimeSheetServer
+          searchParams={searchParams}
+        ></ReportWeeklyTimeSheetServer>
+      )}
+      {activeTab === "monthly" && (
+        <>
+          <div className="mb-5 flex flex-col gap-4 md:gap-0 md:flex-row justify-between">
+            <MonthPicker />
+            <SelectUserDropDown users={users} />
+          </div>
+          <Suspense fallback={<ReportMonthlyTimesheetSkeleton />}>
+            {params.start_month && params.end_month ? (
+              <ReportMonthlyTimeSheetServer
+                searchParams={searchParams}
+              ></ReportMonthlyTimeSheetServer>
+            ) : (
+              <ReportMonthlyTimesheetSkeleton></ReportMonthlyTimesheetSkeleton>
+            )}
+          </Suspense>
+        </>
+      )}
+    </div>
+  );
 };
 
 export default ReportTimeSheets;

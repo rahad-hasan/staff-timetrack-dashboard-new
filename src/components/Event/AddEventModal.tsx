@@ -1,42 +1,42 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client"
+"use client";
 import { Button } from "@/components/ui/button";
 import {
-    // DialogClose,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog"
+  // DialogClose,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { addNewEventSchema } from "@/zod/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover"
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
-import { CalendarDays, ChevronDownIcon, } from "lucide-react";
+import { CalendarDays, ChevronDownIcon } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import {
-    MultiSelect,
-    MultiSelectContent,
-    MultiSelectGroup,
-    MultiSelectItem,
-    MultiSelectTrigger,
-    MultiSelectValue,
-} from "@/components/ui/multi-select"
+  MultiSelect,
+  MultiSelectContent,
+  MultiSelectGroup,
+  MultiSelectItem,
+  MultiSelectTrigger,
+  MultiSelectValue,
+} from "@/components/ui/multi-select";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { getMembersDashboard } from "@/actions/members/action";
@@ -45,237 +45,257 @@ import ClockIcon from "../Icons/ClockIcon";
 import { Checkbox } from "../ui/checkbox";
 
 const AddEventModal = ({ onClose }: { onClose: () => void }) => {
+  const [members, setMembers] = useState<
+    { id: number | string; name: string; image?: string }[]
+  >([]);
+  const [loading, setLoading] = useState(false);
 
-    const [members, setMembers] = useState<{ id: number; name: string; image?: string }[]>([]);
-    const [loading, setLoading] = useState(false);
+  const [openStartDate, setOpenStartDate] = useState(false);
+  const [dateStartDate, setStartDate] = useState<Date | undefined>(undefined);
+  const [isForceCreate, setIsForceCreate] = useState(false);
 
-    const [openStartDate, setOpenStartDate] = useState(false);
-    const [dateStartDate, setStartDate] = useState<Date | undefined>(undefined);
-    const [isForceCreate, setIsForceCreate] = useState(false);
+  const form = useForm<z.infer<typeof addNewEventSchema>>({
+    resolver: zodResolver(addNewEventSchema),
+    defaultValues: {
+      eventName: "",
+      project: "",
+      start_time: "01:00:00",
+      end_time: "01:30:00",
+      members: [],
+      meetingLink: "",
+      description: "",
+    },
+  });
 
-    const form = useForm<z.infer<typeof addNewEventSchema>>({
-        resolver: zodResolver(addNewEventSchema),
-        defaultValues: {
-            eventName: "",
-            project: "",
-            start_time: "01:00:00",
-            end_time: "01:30:00",
-            members: [],
-            meetingLink: "",
-            description: "",
+  useEffect(() => {
+    const loadMembers = async () => {
+      setLoading(true);
+      try {
+        const res = await getMembersDashboard();
+        if (res?.success) {
+          const apiMembers = res.data;
+          setMembers([{ id: "all", name: "All", image: "" }, ...apiMembers]);
+        }
+      } catch (err) {
+        console.error("Failed to fetch clients", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadMembers();
+  }, []);
+
+  async function onSubmit(values: z.infer<typeof addNewEventSchema>) {
+    const combinedStartTime = new Date(values.date);
+    const [startHours, startMinutes, startSeconds] = values.start_time
+      .split(":")
+      .map(Number);
+    combinedStartTime.setHours(startHours || 0);
+    combinedStartTime.setMinutes(startMinutes || 0);
+    combinedStartTime.setSeconds(startSeconds || 0);
+
+    const combinedEndTime = new Date(values.date);
+    const [endHours, endMinutes, endSeconds] = values.end_time
+      .split(":")
+      .map(Number);
+    combinedEndTime.setHours(endHours || 0);
+    combinedEndTime.setMinutes(endMinutes || 0);
+    combinedEndTime.setSeconds(endSeconds || 0);
+
+    const finalData = {
+      name: values?.eventName,
+      note: values?.description,
+      start_time: combinedStartTime.toISOString(),
+      end_time: combinedEndTime.toISOString(),
+      force_create: isForceCreate ? true : false,
+      member_ids: values?.members.includes("all") ? "all" : values?.members,
+      ...(values?.meetingLink && { meeting_link: values.meetingLink }),
+    };
+
+    setLoading(true);
+    try {
+      const res = await addEvent(finalData);
+
+      if (res?.success) {
+        toast.success(res?.message || "Event added successfully");
+        form.reset();
+        setStartDate(undefined);
+        setTimeout(() => {
+          onClose();
+        }, 0);
+      } else {
+        toast.error(res?.message || "Failed to add event", {
+          style: {
+            backgroundColor: "#ef4444",
+            color: "white",
+            border: "none",
+          },
+        });
+      }
+    } catch (error: any) {
+      console.error("failed:", error);
+      toast.error(error.message || "Something went wrong!", {
+        style: {
+          backgroundColor: "#ef4444",
+          color: "white",
+          border: "none",
         },
-    })
-
-    useEffect(() => {
-        const loadMembers = async () => {
-            setLoading(true);
-            try {
-                const res = await getMembersDashboard();
-                if (res?.success) {
-                    const apiMembers = res.data;
-                    setMembers([
-                        { id: "all", name: "All", image: "" },
-                        ...apiMembers
-                    ])
-                }
-
-            } catch (err) {
-                console.error("Failed to fetch clients", err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        loadMembers();
-    }, []);
-
-    async function onSubmit(values: z.infer<typeof addNewEventSchema>) {
-
-        const combinedStartTime = new Date(values.date);
-        const [startHours, startMinutes, startSeconds] = values.start_time.split(":").map(Number);
-        combinedStartTime.setHours(startHours || 0);
-        combinedStartTime.setMinutes(startMinutes || 0);
-        combinedStartTime.setSeconds(startSeconds || 0);
-
-        const combinedEndTime = new Date(values.date);
-        const [endHours, endMinutes, endSeconds] = values.end_time.split(":").map(Number);
-        combinedEndTime.setHours(endHours || 0);
-        combinedEndTime.setMinutes(endMinutes || 0);
-        combinedEndTime.setSeconds(endSeconds || 0);
-
-
-        const finalData = {
-            name: values?.eventName,
-            note: values?.description,
-            start_time: combinedStartTime.toISOString(),
-            end_time: combinedEndTime.toISOString(),
-            force_create: isForceCreate ? true : false,
-            member_ids: values?.members.includes("all") ? "all" : values?.members,
-            ...(values?.meetingLink && { meeting_link: values.meetingLink })
-        }
-
-        setLoading(true);
-        try {
-            const res = await addEvent(finalData);
-
-            if (res?.success) {
-                toast.success(res?.message || "Event added successfully");
-                form.reset();
-                setStartDate(undefined);
-                setTimeout(() => {
-                    onClose();
-                }, 0);
-            } else {
-                toast.error(res?.message || "Failed to add event", {
-                    style: {
-                        backgroundColor: '#ef4444',
-                        color: 'white',
-                        border: 'none'
-                    },
-                });
-            }
-        } catch (error: any) {
-            console.error("failed:", error);
-            toast.error(error.message || "Something went wrong!", {
-                style: {
-                    backgroundColor: '#ef4444',
-                    color: 'white',
-                    border: 'none'
-                },
-            });
-        } finally {
-            setLoading(false);
-        }
+      });
+    } finally {
+      setLoading(false);
     }
+  }
 
-    return (
-        <DialogContent
-            onInteractOutside={(event) => event.preventDefault()}
-            className=" w-full sm:max-w-[525px] max-h-[95vh] overflow-y-auto">
-            <DialogHeader>
-                <DialogTitle className=" mb-4 text-headingTextColor dark:text-darkTextPrimary">Add Event</DialogTitle>
-            </DialogHeader>
+  return (
+    <DialogContent
+      onInteractOutside={(event) => event.preventDefault()}
+      className=" w-full sm:max-w-[525px] max-h-[95vh] overflow-y-auto"
+    >
+      <DialogHeader>
+        <DialogTitle className=" mb-4 text-headingTextColor dark:text-darkTextPrimary">
+          Add Event
+        </DialogTitle>
+      </DialogHeader>
 
-            <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 ">
-                    <FormField
-                        control={form.control}
-                        name="eventName"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Event name</FormLabel>
-                                <FormControl>
-                                    <Input type="text" className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Event name" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="date"
-                        render={({ field }) => (
-                            <FormItem className="w-full">
-                                <FormLabel>Event Date</FormLabel>
-                                <FormControl>
-                                    <Popover open={openStartDate} onOpenChange={setOpenStartDate}>
-                                        <PopoverTrigger asChild>
-                                            <Button
-                                                variant="outline2"
-                                                id="startDate"
-                                                className="py-1.5 justify-between font-normal dark:text-darkTextSecondary dark:bg-darkPrimaryBg dark:border-darkBorder"
-                                            >
-                                                <div className=" flex items-center gap-2">
-                                                    <CalendarDays />
-                                                    {dateStartDate ? dateStartDate.toLocaleDateString() : "Set a date"}
-                                                </div>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 ">
+          <FormField
+            control={form.control}
+            name="eventName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Event name</FormLabel>
+                <FormControl>
+                  <Input
+                    type="text"
+                    className="dark:bg-darkPrimaryBg dark:border-darkBorder"
+                    placeholder="Event name"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="date"
+            render={({ field }) => (
+              <FormItem className="w-full">
+                <FormLabel>Event Date</FormLabel>
+                <FormControl>
+                  <Popover open={openStartDate} onOpenChange={setOpenStartDate}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline2"
+                        id="startDate"
+                        className="py-1.5 justify-between font-normal dark:text-darkTextSecondary dark:bg-darkPrimaryBg dark:border-darkBorder"
+                      >
+                        <div className=" flex items-center gap-2">
+                          <CalendarDays />
+                          {dateStartDate
+                            ? dateStartDate.toLocaleDateString()
+                            : "Set a date"}
+                        </div>
 
-                                                <ChevronDownIcon />
-                                            </Button>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-auto overflow-hidden p-0" align="start">
-                                            <Calendar
-                                                mode="single"
-                                                selected={dateStartDate}
-                                                captionLayout="dropdown"
-                                                onSelect={(date) => {
-                                                    setStartDate(date);
-                                                    field.onChange(date); // Update the form state
-                                                    setOpenStartDate(false);
-                                                }}
-                                            />
-                                        </PopoverContent>
-                                    </Popover>
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <div className="flex gap-2 items-center">
-                        <Checkbox
-                            id="force_create"
-                            className="cursor-pointer border-primary"
-                            checked={isForceCreate}
-                            onCheckedChange={(checked) => setIsForceCreate(!!checked)}
+                        <ChevronDownIcon />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      className="w-auto overflow-hidden p-0"
+                      align="start"
+                    >
+                      <Calendar
+                        mode="single"
+                        selected={dateStartDate}
+                        captionLayout="dropdown"
+                        onSelect={(date) => {
+                          setStartDate(date);
+                          field.onChange(date); // Update the form state
+                          setOpenStartDate(false);
+                        }}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <div className="flex gap-2 items-center">
+            <Checkbox
+              id="force_create"
+              className="cursor-pointer border-primary"
+              checked={isForceCreate}
+              onCheckedChange={(checked) => setIsForceCreate(!!checked)}
+            />
+            <label
+              htmlFor="force_create"
+              className="cursor-pointer text-sm font-medium"
+            >
+              Force Create
+            </label>
+          </div>
+
+          <div className=" flex items-center gap-3">
+            <FormField
+              control={form.control}
+              name="start_time"
+              render={({ field }) => (
+                <FormItem className=" w-full">
+                  <FormLabel>Start Time</FormLabel>
+                  <FormControl className="">
+                    <div className="relative ">
+                      <div className="text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 peer-disabled:opacity-50">
+                        <ClockIcon
+                          size={16}
+                          className=" text-headingTextColor dark:text-darkTextPrimary"
                         />
-                        <label htmlFor="force_create" className="cursor-pointer text-sm font-medium">
-                            Force Create
-                        </label>
+                      </div>
+                      <Input
+                        type="time"
+                        id="time-picker"
+                        step="1"
+                        {...field}
+                        className="peer bg-background dark:bg-darkPrimaryBg dark:border-darkBorder appearance-none pl-9 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+                      />
                     </div>
-
-                    <div className=" flex items-center gap-3">
-                        <FormField
-                            control={form.control}
-                            name="start_time"
-                            render={({ field }) => (
-                                <FormItem className=" w-full">
-                                    <FormLabel>Start Time</FormLabel>
-                                    <FormControl className="">
-                                        <div className='relative '>
-                                            <div className='text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 peer-disabled:opacity-50'>
-                                                <ClockIcon size={16} className=" text-headingTextColor dark:text-darkTextPrimary" />
-                                            </div>
-                                            <Input
-                                                type='time'
-                                                id='time-picker'
-                                                step='1'
-                                                {...field}
-                                                className='peer bg-background dark:bg-darkPrimaryBg dark:border-darkBorder appearance-none pl-9 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none'
-                                            />
-                                        </div>
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="end_time"
+              render={({ field }) => (
+                <FormItem className=" w-full">
+                  <FormLabel>End Time</FormLabel>
+                  <FormControl className="">
+                    <div className="relative ">
+                      <div className="text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 peer-disabled:opacity-50">
+                        <ClockIcon
+                          size={16}
+                          className=" text-headingTextColor dark:text-darkTextPrimary"
                         />
-                        <FormField
-                            control={form.control}
-                            name="end_time"
-                            render={({ field }) => (
-                                <FormItem className=" w-full">
-                                    <FormLabel>End Time</FormLabel>
-                                    <FormControl className="">
-                                        <div className='relative '>
-                                            <div className='text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 peer-disabled:opacity-50'>
-                                                <ClockIcon size={16} className=" text-headingTextColor dark:text-darkTextPrimary" />
-                                            </div>
-                                            <Input
-                                                type='time'
-                                                id='time-picker'
-                                                step='1'
-                                                {...field}
-                                                className='peer bg-background dark:bg-darkPrimaryBg dark:border-darkBorder appearance-none pl-9 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none'
-                                            />
-                                        </div>
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                      </div>
+                      <Input
+                        type="time"
+                        id="time-picker"
+                        step="1"
+                        {...field}
+                        className="peer bg-background dark:bg-darkPrimaryBg dark:border-darkBorder appearance-none pl-9 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+                      />
                     </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
 
-
-                    {/* <FormField
+          {/* <FormField
                         control={form.control}
                         name="project"
                         render={({ field }) => (
@@ -311,7 +331,7 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
                             </FormItem>
                         )}
                     /> */}
-                    {/* <FormField
+          {/* <FormField
                         control={form.control}
                         name="members"
                         render={({ field }) => (
@@ -346,92 +366,103 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
                         )}
                     /> */}
 
-                    <FormField
-                        control={form.control}
-                        name="members"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Members</FormLabel>
-                                <FormControl>
-                                    <MultiSelect
-                                        // values={selectedMemberIds}
-                                        values={field.value.map(String)}
-                                        onValuesChange={(vals) => {
-                                            let processedValues: (string | number)[];
-                                            const lastSelected = vals[vals.length - 1];
+          <FormField
+            control={form.control}
+            name="members"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Members</FormLabel>
+                <FormControl>
+                  <MultiSelect
+                    // values={selectedMemberIds}
+                    values={field.value.map(String)}
+                    onValuesChange={(vals) => {
+                      let processedValues: (string | number)[];
+                      const lastSelected = vals[vals.length - 1];
 
-                                            if (lastSelected === "all") {
-                                                processedValues = ["all"];
-                                            } else {
-                                                const filtered = vals.filter(v => v !== "all");
-                                                processedValues = filtered.map(v => Number(v));
-                                            }
+                      if (lastSelected === "all") {
+                        processedValues = ["all"];
+                      } else {
+                        const filtered = vals.filter((v) => v !== "all");
+                        processedValues = filtered.map((v) => Number(v));
+                      }
 
-                                            field.onChange(processedValues);
-                                        }}
-                                    >
-                                        <MultiSelectTrigger className=" w-full hover:bg-white py-2 dark:bg-darkSecondaryBg hover:dark:bg-darkSecondaryBg">
-                                            <MultiSelectValue placeholder="Select members..." />
-                                        </MultiSelectTrigger>
+                      field.onChange(processedValues);
+                    }}
+                  >
+                    <MultiSelectTrigger className=" w-full hover:bg-white py-2 dark:bg-darkSecondaryBg hover:dark:bg-darkSecondaryBg">
+                      <MultiSelectValue placeholder="Select members..." />
+                    </MultiSelectTrigger>
 
-                                        <MultiSelectContent className="dark:bg-darkSecondaryBg">
-                                            <MultiSelectGroup className="dark:bg-darkSecondaryBg">
-                                                {members.map(member => (
-                                                    <MultiSelectItem
-                                                        key={member.id}
-                                                        value={String(member.id)}
-                                                        className=" px-0 cursor-pointer hover:dark:bg-darkPrimaryBg"
-                                                    >
-                                                        <Avatar>
-                                                            <AvatarImage src={member.image || ""} />
-                                                            <AvatarFallback>
-                                                                {member.name.charAt(0)}
-                                                            </AvatarFallback>
-                                                        </Avatar>
-                                                        <p>{member.name}</p>
-                                                    </MultiSelectItem>
-                                                ))}
-                                            </MultiSelectGroup>
-                                        </MultiSelectContent>
-                                    </MultiSelect>
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
+                    <MultiSelectContent className="dark:bg-darkSecondaryBg">
+                      <MultiSelectGroup className="dark:bg-darkSecondaryBg">
+                        {members.map((member) => (
+                          <MultiSelectItem
+                            key={member.id}
+                            value={String(member.id)}
+                            className=" px-0 cursor-pointer hover:dark:bg-darkPrimaryBg"
+                          >
+                            <Avatar>
+                              <AvatarImage src={member.image || ""} />
+                              <AvatarFallback>
+                                {member.name.charAt(0)}
+                              </AvatarFallback>
+                            </Avatar>
+                            <p>{member.name}</p>
+                          </MultiSelectItem>
+                        ))}
+                      </MultiSelectGroup>
+                    </MultiSelectContent>
+                  </MultiSelect>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-                    <FormField
-                        control={form.control}
-                        name="meetingLink"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Meeting Link</FormLabel>
-                                <FormControl>
-                                    <Input type="url" className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Meeting Link (Optional)" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="description"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Description</FormLabel>
-                                <FormControl>
-                                    <Textarea className="dark:border-darkBorder" placeholder="Enter description" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
+          <FormField
+            control={form.control}
+            name="meetingLink"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Meeting Link</FormLabel>
+                <FormControl>
+                  <Input
+                    type="url"
+                    className="dark:bg-darkPrimaryBg dark:border-darkBorder"
+                    placeholder="Meeting Link (Optional)"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Description</FormLabel>
+                <FormControl>
+                  <Textarea
+                    className="dark:border-darkBorder"
+                    placeholder="Enter description"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-                    <Button className=" w-full" type="submit" disabled={loading}>{loading ? "Loading..." : "Create Event"}</Button>
-                </form>
-            </Form>
-        </DialogContent>
-    );
+          <Button className=" w-full" type="submit" disabled={loading}>
+            {loading ? "Loading..." : "Create Event"}
+          </Button>
+        </form>
+      </Form>
+    </DialogContent>
+  );
 };
 
 export default AddEventModal;
