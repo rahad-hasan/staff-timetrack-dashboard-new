@@ -100,16 +100,55 @@ const SingleMemberPage = ({ data }: { data: any }) => {
 
     return (
         <div>
-            <div className="flex items-center gap-4 bg-gradient-to-r from-primary  to-[#7a06ffe1] p-2 rounded-full shadow-lg">
-                <Avatar className="w-12 md:w-16 h-12 md:h-16 ">
-                    <AvatarImage
-                        src={data?.image}
-                        alt={data?.name}
-                        className="object-cover rounded-full"
-                    />
-                    <AvatarFallback className="text-xl font-bold">{data?.name?.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <p className=" text-xl md:text-2xl font-semibold text-white">{data?.name}</p>
+            <div className="flex flex-col xl:flex-row gap-4 mb-6">
+                <div className="flex-1 flex items-center gap-5 bg-white dark:bg-darkSecondaryBg p-4 rounded-2xl shadow-md border-t border-[#0505050c]">
+                    <div className="relative">
+                        <Avatar className="w-16 h-16 md:w-20 md:h-20 bg-white dark:bg-darkSecondaryBg">
+                            <AvatarImage
+                                src={data?.image}
+                                alt={data?.name}
+                                className="object-cover rounded-full"
+                            />
+                            <AvatarFallback className="text-2xl font-bold bg-primary/10 dark:bg-primary/10 text-primary">
+                                {data?.name?.charAt(0)}
+                            </AvatarFallback>
+                        </Avatar>
+                    </div>
+
+                    <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                            <h1 className=" text-xl md:text-2xl xl:text-3xl font-bold text-headingTextColor dark:text-darkTextPrimary tracking-tight">
+                                {data?.name}
+                            </h1>
+                            <span className="px-2 py-0.5 rounded text-[12px] font-bold uppercase bg-primary/10 text-primary border border-primary/20">
+                                {data?.role}
+                            </span>
+                        </div>
+                        <p className="text-sm text-subTextColor dark:text-darkTextSecondary flex items-center gap-1">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                            {data?.email}
+                        </p>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 ">
+                    <div className="bg-gradient-to-br from-primary to-[#7a06ffe1] p-4 rounded-2xl text-white sm:min-w-[260px] shadow-md flex flex-col justify-center">
+                        <span className="text-[12px] font-bold uppercase opacity-80">Member Since</span>
+                        <p className="text-lg font-bold mt-1">
+                            {data?.created_at ? new Date(data.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A'}
+                        </p>
+                    </div>
+
+                    <div className="bg-white dark:bg-darkSecondaryBg p-4 rounded-2xl shadow-md border-t border-[#0505050c] sm:min-w-[260px] flex flex-col justify-center">
+                        <span className="text-[12px] font-bold uppercase text-subTextColor dark:text-darkTextSecondary">Time Zone</span>
+                        <div className="flex items-center gap-2 mt-1">
+                            <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
+                            <p className="text-sm font-bold text-headingTextColor dark:text-darkTextPrimary truncate">
+                                {data?.time_zone || "UTC"}
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div className="xl:w-[80%] rounded-lg border border-borderColor p-3 md:p-4 mt-4 bg-white dark:bg-darkSecondaryBg dark:border-darkBorder">
