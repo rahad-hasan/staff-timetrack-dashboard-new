@@ -23,7 +23,7 @@ const LeaveRequestHeading = () => {
     const isApproved = searchParams.get("approved") === "true";
 
     return (
-        <div className="flex items-center gap-5">
+        <div className="flex items-center justify-between gap-5">
             <div className="flex items-center gap-5">
                 <div className="flex gap-1 items-center">
                     <Checkbox

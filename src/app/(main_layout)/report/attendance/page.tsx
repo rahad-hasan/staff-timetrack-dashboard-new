@@ -22,7 +22,7 @@ const AttendancePage = async ({ searchParams }: ISearchParamsProps) => {
             </div>
             <Suspense fallback={null}>
                 <div className=" flex items-center justify-between w-full">
-                    <div className="flex flex-col md:flex-row gap-4 md:gap-3 w-full">
+                    <div className="flex flex-col items-end md:flex-row gap-4 md:gap-3 w-full">
                         <SpecificDatePicker></SpecificDatePicker>
                         <div className=" flex items-center justify-between">
                             {/* <div className="w-1/2">

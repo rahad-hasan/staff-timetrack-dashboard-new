@@ -5,7 +5,6 @@ import { Suspense } from "react";
 import Every10Mins from "./Every10Mins";
 import FirstChart from "@/components/Icons/HeadingChartIcon/FirstChart";
 import SecondChart from "@/components/Icons/HeadingChartIcon/SecondChart";
-import { TrendingDown, TrendingUp } from "lucide-react";
 import { cookies } from "next/headers";
 import { format } from "date-fns";
 import WeeklyActivityColoredIcon from "@/components/ColoredIcon/HeroSectionIcon/WeeklyActivityColoredIcon";
@@ -123,6 +122,7 @@ const Every10MinsServer = async ({ searchParams }: ISearchParamsProps) => {
       <Suspense fallback={<Every10MinsSkeleton />}>
         {<Every10Mins data={result?.data?.interval_rows} />}
       </Suspense>
+
     </div>
   );
 };

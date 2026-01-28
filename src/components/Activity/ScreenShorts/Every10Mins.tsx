@@ -221,7 +221,7 @@ const Every10Mins = ({ data }: any) => {
 
       {processedHours?.map((hourGroup, groupIdx) => (
         <div key={groupIdx}>
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 sm:justify-between sm:items-center h-3">
+          <div className="flex gap-2 sm:gap-3 justify-between items-center h-3">
             <div className="flex items-center gap-2 -ml-[6px]">
               <Circle
                 size={12}
@@ -278,13 +278,13 @@ const Every10Mins = ({ data }: any) => {
                         {block?.details?.[0]?.anomaly?.type}
                       </span>
                     )}
-                    <span className="absolute left-1/2 -translate-x-1/2 -translate-y-[65%] text-xs px-3 py-1 font-semibold rounded-xl shadow bg-white text-headingTextColor/70 dark:bg-darkPrimaryBg dark:text-darkTextPrimary/60">
+                    <span className="absolute left-1/2 -translate-x-1/2 -translate-y-[65%] text-[10px] sm:text-xs px-3 py-1 font-semibold rounded-xl shadow bg-white text-headingTextColor/70 dark:bg-darkPrimaryBg dark:text-darkTextPrimary/60">
                       {block?.details?.length} Screens
                     </span>
 
                     <div className="p-3 space-y-3  border-x border-b border-borderColor dark:border-darkBorder rounded-b-lg">
                       <div className="flex justify-between items-center">
-                        <p className="text-sm font-normal text-subTextColor dark:text-slate-200">
+                        <p className="text-xs sm:text-sm font-normal text-subTextColor dark:text-slate-200">
                           {formatTZTime(block?.from_time)} -{" "}
                           {formatTZTime(block?.to_time)}
                         </p>

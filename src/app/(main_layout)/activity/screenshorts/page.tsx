@@ -46,7 +46,8 @@ const ScreenShorts = async ({ searchParams }: ISearchParamsProps) => {
             {/* 
                     <Button className=" hidden xl:flex dark:text-darkTextPrimary" variant={'filter'}>
                         <SlidersHorizontal className="dark:text-darkTextPrimary" /> Filters
-                    </Button> */}
+                    </Button> 
+            */}
             <SelectProjectDropDown></SelectProjectDropDown>
           </div>
         </Suspense>

@@ -15,7 +15,7 @@ const LeaveRequest = async ({ searchParams }: ISearchParamsProps) => {
 
     return (
         <div>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5">
+            <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between mb-5">
                 <HeadingComponent heading="Leave Management" subHeading="All the teams member leave details are displayed here"></HeadingComponent>
                 <LeaveRequestHeading></LeaveRequestHeading>
             </div>

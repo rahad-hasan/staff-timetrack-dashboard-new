@@ -82,7 +82,7 @@ const MobileSidebar = () => {
                         ))}
                     </div>
 
-                    <div className="pt-3 border-t-2 border-borderColor mt-4 pb-8">
+                    <div className="pt-3 border-t-2 border-borderColor dark:border-darkBorder mt-4 pb-8">
                         <span className="text-xs uppercase text-gray-400 mb-4">Others</span>
                         {othersSidebarItems.map((item) => (
                             <div key={item.key}>
