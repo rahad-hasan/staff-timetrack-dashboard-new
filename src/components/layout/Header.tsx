@@ -60,7 +60,7 @@ const Header = ({ data }: { data: { duration: string } }) => {
                     </PopoverTrigger>
                     <StartTimer onClose={() => setOpen(false)}></StartTimer>
                 </Popover> */}
-                <Button className=" dark:border-darkBorder dark:hover:bg-darkSecondaryBg cursor-default" variant={'filter'}><CirclePlay className="text-primary size-5.5 sm:size-5.5" /><span className=" hidden lg:block dark:text-darkTextPrimary">{data?.duration}</span></Button>
+                <Button className=" dark:border-darkBorder dark:hover:bg-darkSecondaryBg cursor-default" variant={'filter'}><CirclePlay className="text-primary size-5.5 sm:size-5.5" /><span className="  dark:text-darkTextPrimary">{data?.duration}</span></Button>
             </div>
 
             <div className=" hidden md:flex items-center gap-4">

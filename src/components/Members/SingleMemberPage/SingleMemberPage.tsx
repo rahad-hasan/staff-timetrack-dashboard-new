@@ -109,7 +109,7 @@ const SingleMemberPage = ({ data }: { data: any }) => {
                                 alt={data?.name}
                                 className="object-cover rounded-full"
                             />
-                            <AvatarFallback className="text-2xl font-bold bg-primary/10 dark:bg-primary/10 text-primary">
+                            <AvatarFallback className="text-2xl font-bold dark:bg-primary/10 text-subTextColor dark:text-darkTextPrimary">
                                 {data?.name?.charAt(0)}
                             </AvatarFallback>
                         </Avatar>
