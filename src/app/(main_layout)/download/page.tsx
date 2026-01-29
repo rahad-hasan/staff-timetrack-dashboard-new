@@ -6,6 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Download as DownloadIcon } from 'lucide-react';
 
 const DownloadPage = () => {
+    const LINUX_DOWNLOAD_URL = "/apps/linux/StaffTimeTracker-Setup-4.0.0.exe";
+    const MACOS_DOWNLOAD_URL = "/apps/macos/StaffTimeTracker-Setup-4.0.0.exe";
+    const WINDOWS_DOWNLOAD_URL = "/apps/windows/StaffTimeTracker-Setup-4.0.0.exe";
+
     return (
         <div className='container mx-auto py-4 sm:py-8 lg:py-12'>
             <div className='mb-8'>
@@ -30,9 +34,11 @@ const DownloadPage = () => {
                         alt='Windows OS icon'
                     />
                     <div className='text-lg font-medium'>Windows</div>
-                    <Button size={'sm'} variant={'download'} className='text-sm'>
-                        <DownloadIcon className='w-4 h-4 mr-1' /> Download
-                    </Button>
+                    <a href={LINUX_DOWNLOAD_URL} download="StaffTimeTracker-App.exe" target="_self" rel="noopener">
+                        <Button size={'sm'} variant={'download'} className='text-sm'>
+                            <DownloadIcon className='w-4 h-4 mr-1' /> Download
+                        </Button>
+                    </a>
                 </div>
 
                 <div className='flex flex-col items-center gap-3'>
@@ -44,9 +50,11 @@ const DownloadPage = () => {
                         className=' -mb-4'
                     />
                     <div className='text-lg font-medium'>Linux</div>
-                    <Button size={'sm'} variant={'download'} className='text-sm'>
-                        <DownloadIcon className='w-4 h-4 mr-1' /> Download
-                    </Button>
+                    <a href={WINDOWS_DOWNLOAD_URL} download="StaffTimeTracker-App.exe" target="_self" rel="noopener">
+                        <Button size={'sm'} variant={'download'} className='text-sm'>
+                            <DownloadIcon className='w-4 h-4 mr-1' /> Download
+                        </Button>
+                    </a>
                 </div>
 
                 <div className='flex flex-col items-center gap-3'>
@@ -58,9 +66,11 @@ const DownloadPage = () => {
                         className="dark:invert"
                     />
                     <div className='text-lg font-medium'>macOS</div>
-                    <Button size={'sm'} variant={'download'} className='text-sm'>
-                        <DownloadIcon className='w-4 h-4 mr-1' /> Download
-                    </Button>
+                    <a href={MACOS_DOWNLOAD_URL} download="StaffTimeTracker-App.exe" target="_self" rel="noopener">
+                        <Button size={'sm'} variant={'download'} className='text-sm'>
+                            <DownloadIcon className='w-4 h-4 mr-1' /> Download
+                        </Button>
+                    </a>
                 </div>
             </div>
         </div>

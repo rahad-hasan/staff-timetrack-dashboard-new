@@ -131,7 +131,7 @@ const SingleMemberPage = ({ data }: { data: any }) => {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 ">
-                    <div className="bg-gradient-to-br from-primary to-[#7a06ffe1] p-4 rounded-2xl text-white sm:min-w-[260px] shadow-md flex flex-col justify-center">
+                    <div className="bg-gradient-to-br from-primary to-[#01a07de1] p-4 rounded-2xl text-white sm:min-w-[260px] shadow-md flex flex-col justify-center">
                         <span className="text-[12px] font-bold uppercase opacity-80">Member Since</span>
                         <p className="text-lg font-bold mt-1">
                             {data?.created_at ? new Date(data.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A'}
@@ -269,7 +269,7 @@ const SingleMemberPage = ({ data }: { data: any }) => {
                                 />
                             </div>
 
-                            <div className="grid sm:grid-cols-2 gap-4 sm:gap-3 items-center">
+                            <div className="grid sm:grid-cols-2 gap-4 sm:gap-3 items-start">
                                 <FormField
                                     control={form.control}
                                     name="pay_rate_hourly"
