@@ -7,8 +7,6 @@ const COLORS = ["#5db0f1", "#dce3e3", "#ffcb49"];
 
 const OverallActivityChart = ({ data }: { data: IDashboardInsight }) => {
 
-    console.log('data is working..', data);
-
     const value = [
         { name: "Productive", value: data?.data?.productive },
         { name: "Active", value: data?.data?.active },

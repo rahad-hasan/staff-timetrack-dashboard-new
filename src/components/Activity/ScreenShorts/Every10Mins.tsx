@@ -93,7 +93,6 @@ const Every10Mins = ({ data }: any) => {
       from_time: data?.from_time,
       to_time: data?.to_time,
     };
-    console.log("got data", finalData);
     try {
       const res = await deleteScreenshot({
         data: finalData,

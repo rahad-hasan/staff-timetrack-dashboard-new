@@ -34,10 +34,6 @@ const ResetPassword = () => {
     const { setLogInUserData } = useLogInUserStore();
 
     async function onSubmit(values: z.infer<typeof createNewPasswordSchema>) {
-        console.log({
-            reset_token: reset_token!,
-            password: values?.confirmPassword,
-        });
         setLoading(true);
         try {
             const res = await resetPassword({

@@ -46,8 +46,7 @@ const SideBar = () => {
                             } transition-all duration-300`}
                     >
                         <div
-                            className={`flex items-center ${isCollapsed ? "flex-col gap-0" : "gap-1.5"
-                                }`}
+                            className={`flex items-center ${isCollapsed ? "flex-col gap-0" : "gap-1.5"}`}
                         >
                             <Image
                                 src={timerLogo}
