@@ -135,7 +135,7 @@ const Profile = () => {
                             control={form.control}
                             name="name"
                             render={({ field }) => (
-                                <FormItem className="w-full">
+                                <FormItem className="w-full ">
                                     <FormLabel>Full Name</FormLabel>
                                     <FormControl>
                                         <div className="relative">
@@ -158,7 +158,7 @@ const Profile = () => {
                             control={form.control}
                             name="title"
                             render={({ field }) => (
-                                <FormItem className="w-full">
+                                <FormItem className="w-full ">
                                     <FormLabel>Job Title</FormLabel>
                                     <FormControl>
                                         <div className="relative">
@@ -185,7 +185,7 @@ const Profile = () => {
                             control={form.control}
                             name="email"
                             render={({ field }) => (
-                                <FormItem className="w-full">
+                                <FormItem className="w-full ">
                                     <FormLabel>Email Address</FormLabel>
                                     <FormControl>
                                         <div className="relative">
@@ -209,7 +209,7 @@ const Profile = () => {
                             control={form.control}
                             name="phone"
                             render={({ field }) => (
-                                <FormItem className="w-full">
+                                <FormItem className="w-full ">
                                     <FormLabel>Phone Number</FormLabel>
                                     <FormControl>
                                         <div className="relative">

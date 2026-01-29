@@ -3,6 +3,8 @@ import DayWeekMonthSelection from "@/components/Common/DayWeekMonthSelection";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import MonthPicker from "@/components/Common/MonthPicker";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
+import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
+import WeeklyDatePicker from "@/components/Common/WeeklyDatePicker";
 import DayWeekMonthSelectionServer from "@/components/Report/TimeSheets/DayWeekMonthSelectionServer";
 import ReportMonthlyTimeSheetServer from "@/components/Report/TimeSheets/ReportMonthlyTimeSheetServer";
 import ReportWeeklyTimeSheetServer from "@/components/Report/TimeSheets/ReportWeeklyTimeSheetServer";
@@ -35,19 +37,40 @@ const ReportTimeSheets = async ({ searchParams }: ISearchParamsProps) => {
           heading="All Timesheets"
           subHeading="All the timesheet by team member who completed is displayed here"
         ></HeadingComponent>
-
         <DayWeekMonthSelection></DayWeekMonthSelection>
       </div>
+
       {activeTab === "daily" && (
-        <DayWeekMonthSelectionServer
-          searchParams={searchParams}
-        ></DayWeekMonthSelectionServer>
+        <>
+          <div className="mb-5 flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between">
+            <SpecificDatePicker></SpecificDatePicker>
+            <SelectUserDropDown users={users}></SelectUserDropDown>
+          </div>
+
+          <DayWeekMonthSelectionServer
+            searchParams={searchParams}
+          ></DayWeekMonthSelectionServer>
+        </>
       )}
+
       {activeTab === "weekly" && (
-        <ReportWeeklyTimeSheetServer
-          searchParams={searchParams}
-        ></ReportWeeklyTimeSheetServer>
+        <>
+          <div className="mb-5 flex flex-col gap-4 lg:gap-0 lg:flex-row justify-between">
+            <div className=" flex gap-3">
+              <WeeklyDatePicker />
+              {/* <Button className=" hidden sm:flex text-headingTextColor dark:text-darkTextPrimary" variant={'filter'}>
+                        <SlidersHorizontal className="text-headingTextColor dark:text-darkTextPrimary" /> Filters
+                    </Button> */}
+            </div>
+            <SelectUserDropDown users={users}></SelectUserDropDown>
+          </div>
+          <ReportWeeklyTimeSheetServer
+            searchParams={searchParams}
+          ></ReportWeeklyTimeSheetServer>
+
+        </>
       )}
+
       {activeTab === "monthly" && (
         <>
           <div className="mb-5 flex flex-col gap-4 md:gap-0 md:flex-row justify-between">

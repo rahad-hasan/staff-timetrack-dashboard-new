@@ -162,11 +162,9 @@ const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
             },
             cell: ({ row }) => {
                 const taken = row?.original?.available || 0;
-                const allowed = row?.original?.total_allowed || 1;
-                const percentage = Math.min((taken / allowed) * 100, 100);
                 const withColor =
-                    percentage > 80 ? 'bg-green-500' :
-                        percentage > 50 ? 'bg-yellow-500' :
+                    taken > 80 ? 'bg-green-500' :
+                        taken > 50 ? 'bg-yellow-500' :
                             'bg-red-500';
 
                 return (
@@ -174,11 +172,11 @@ const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
                         <div className="bg-[#ececec] dark:bg-gray-700 flex h-4 w-24 rounded-full relative overflow-hidden">
                             <div
                                 className={`${withColor} h-full rounded-full transition-all duration-300`}
-                                style={{ width: `${percentage}%` }}
+                                style={{ width: `${taken}%` }}
                             />
                         </div>
                         <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
-                            {Math.round(percentage)}%
+                            {taken}%
                         </span>
                     </div>
                 );

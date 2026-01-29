@@ -1,13 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
-import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, } from "react";
 import { differenceInMinutes } from "date-fns";
 import {
   CheckCircle2,
@@ -17,28 +15,10 @@ import {
   RefreshCcw,
 } from "lucide-react";
 import { formatTZTime, formatTZTimeHM } from "@/utils";
-import { getMembersDashboard } from "@/actions/members/action";
 
 const ReportDailyTimeSheet = ({ dailyTimeEntry }: any) => {
   const taskEntries = dailyTimeEntry?.data ?? [];
 
-  const [users, setUsers] = useState<any>([]);
-
-  useEffect(() => {
-    const getMembers = async () => {
-      const res = await getMembersDashboard();
-
-      const users = res.data.map((u) => ({
-        id: String(u.id),
-        label: u.name,
-        avatar: u.image || "",
-      }));
-
-      setUsers(users);
-    };
-
-    getMembers();
-  }, []);
 
   // Time sheet timeline calculations
   const TOTAL_MINUTES_IN_DAY = 24 * 60; // 1440
@@ -271,10 +251,6 @@ const ReportDailyTimeSheet = ({ dailyTimeEntry }: any) => {
 
   return (
     <div className="">
-      <div className="mb-5 flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between">
-        <SpecificDatePicker></SpecificDatePicker>
-        <SelectUserDropDown users={users}></SelectUserDropDown>
-      </div>
 
       <div className="  overflow-x-auto">
         <div className="flex  pb-2">

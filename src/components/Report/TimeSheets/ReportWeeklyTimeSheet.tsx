@@ -1,29 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import WeeklyDatePicker from "@/components/Common/WeeklyDatePicker";
-import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
-import { useEffect, useState } from "react";
-import { getMembersDashboard } from "@/actions/members/action";
-
 const ReportWeeklyTimeSheet = ({ dateBasedTimeEntry }: any) => {
-  const [users, setUsers] = useState<any>([]);
 
-  useEffect(() => {
-    const getMembers = async () => {
-      const res = await getMembersDashboard();
-
-      const users = res.data.map((u) => ({
-        id: String(u.id),
-        label: u.name,
-        avatar: u.image || "",
-      }));
-
-      setUsers(users);
-    };
-
-    getMembers();
-  }, []);
 
   // table data
   type DayMeta = { name: string };
@@ -49,15 +28,7 @@ const ReportWeeklyTimeSheet = ({ dateBasedTimeEntry }: any) => {
 
   return (
     <div>
-      <div className="mb-5 flex flex-col gap-4 lg:gap-0 lg:flex-row justify-between">
-        <div className=" flex gap-3">
-          <WeeklyDatePicker />
-          {/* <Button className=" hidden sm:flex text-headingTextColor dark:text-darkTextPrimary" variant={'filter'}>
-                        <SlidersHorizontal className="text-headingTextColor dark:text-darkTextPrimary" /> Filters
-                    </Button> */}
-        </div>
-        <SelectUserDropDown users={users}></SelectUserDropDown>
-      </div>
+
       <div className="overflow-x-auto w-full border rounded-lg dark:border-darkBorder">
         <table className="w-full border-collapse">
           <thead className="">
