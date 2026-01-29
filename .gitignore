@@ -10,9 +10,15 @@
 !.yarn/releases
 !.yarn/versions
 
-/src/assets/apps/linux/*
-/src/assets/apps/macos/*
-/src/assets/apps/windows/*
+*.exe
+
+# Ignore all .deb files
+*.deb
+ 
+# Ignore all macOS package files (.dmg, .pkg, etc.)
+*.dmg
+*.pkg
+
 # testing
 /coverage
 
