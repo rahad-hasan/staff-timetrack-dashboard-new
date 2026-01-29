@@ -1,14 +1,14 @@
 import React from "react";
 
 interface SecondChartProps {
-  width?: number;
-  height?: number;
+width?: string | number; 
+  height?: string | number;
   color?: string; // This color prop will control the gradient and other colors
 }
 
 const SecondChart = ({
-  width = 82,
-  height = 56,
+  width = "100%",
+  height = "100%",
   color = "#F40139",
 }: SecondChartProps) => {
   return (

@@ -2,15 +2,14 @@ import { ISearchParamsProps } from "@/types/type";
 import ManualRequestsTable from "./ManualRequestsTable";
 import { getManualTimeEntry } from "@/actions/timesheets/action";
 import AppPagination from "@/components/Common/AppPagination";
-import { getDecodedUser } from "@/utils/decodedLogInUser";
 
 const ManualRequestTableServer = async ({ searchParams }: ISearchParamsProps) => {
     const params = await searchParams;
     // if(params?.user_id && params?.page){
-    const user = await getDecodedUser();
+
     // }
     const result = await getManualTimeEntry({
-        user_id: params?.user_id ?? user?.id,
+        user_id: params?.user_id,
         search: params.search,
         page: params.page,
     });

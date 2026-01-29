@@ -58,7 +58,7 @@ const HeroCart = async ({ searchParams }: ISearchParamsProps) => {
   );
 
   return (
-    <div className="mb-5 grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-4 gap-5">
+    <div className="mb-5 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
       {metrics.map(({ id, icon, value, title, change, isUp, note }, index) => {
         const TrendIcon = isUp ? TrendingUp : TrendingDown;
         const trendColor = isUp ? "text-[#12cd69]" : "text-[#f40139]";
@@ -72,7 +72,7 @@ const HeroCart = async ({ searchParams }: ISearchParamsProps) => {
               <div className="flex items-center gap-3">
                 <div>{icon}</div>
                 <div>
-                  <h2 className="text-2xl font-medium text-headingTextColor dark:text-darkTextPrimary">
+                  <h2 className=" 2xl:text-2xl font-medium text-headingTextColor dark:text-darkTextPrimary">
                     {value}
                   </h2>
                   <h3 className="uppercase text-subTextColor dark:text-darkTextSecondary">
@@ -80,7 +80,7 @@ const HeroCart = async ({ searchParams }: ISearchParamsProps) => {
                   </h3>
                 </div>
               </div>
-              <div>
+              <div className="w-20 h-12  2xl:w-24 2xl:h-14">
                 {isUp ? (
                   <div className="text-green-600">
                     <FirstChart
@@ -109,7 +109,7 @@ const HeroCart = async ({ searchParams }: ISearchParamsProps) => {
           </div>
         );
       })}
-    </div>
+    </div >
   );
 };
 
