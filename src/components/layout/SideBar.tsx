@@ -54,7 +54,7 @@ const SideBar = () => {
                                 alt="Logo"
                                 width={0}
                                 height={0}
-                                className={` ${isCollapsed ? "h-auto my-2 w-auto px-1" : "w-12"}  rounded-xl py-1`}
+                                className={` ${isCollapsed ? "h-auto my-2 w-10 px-1" : "max-w-12"}  rounded-xl py-1`}
                             />
                             {/* <Image
                                 src={timerLogo}
