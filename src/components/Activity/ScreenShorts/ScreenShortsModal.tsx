@@ -227,7 +227,8 @@ const ScreenShortsModal = ({ screenShorts, modalOpen, setModalOpen }: { screenSh
                         </div>
 
                         <div className="mt-3 pt-3 border-t border-white/20 flex items-center justify-between opacity-50">
-                            <span className="text-[10px] border-white/70">Screen: {screenShorts[activeIndex]?.display_name === "display1" ? "Display One" : "Display Two"}</span>
+                            {/* <span className="text-[10px] border-white/70">Screen: {screenShorts[activeIndex]?.display_name === "display1" ? "Display One" : "Display Two"}</span> */}
+                            <span className="text-[10px] border-white/70">Screen: Display 0{screenShorts[activeIndex]?.display_name.slice(7)}</span>
                         </div>
                     </div>
                 </div>

@@ -5,9 +5,10 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import CalendarIcon from "../Icons/CalendarIcon";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { useTopLoader } from "nextjs-toploader";
 
 const SpecificDatePicker = () => {
-
+    const loader = useTopLoader();
     const router = useRouter();
     const searchParams = useSearchParams();
     const pathname = usePathname();
@@ -50,6 +51,7 @@ const SpecificDatePicker = () => {
         setSelectedDate((prevDate) => {
             const newDate = new Date(prevDate);
             newDate.setDate(newDate.getDate() + days);
+            loader.start()
             return newDate;
         });
     }, []);

@@ -5,8 +5,10 @@ import { useCallback, useEffect, useState } from "react";
 import CalendarIcon from "../Icons/CalendarIcon";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { format, startOfMonth, endOfMonth } from "date-fns";
+import { useTopLoader } from "nextjs-toploader";
 
 const MonthPicker = () => {
+    const loader = useTopLoader();
     const [selectedDate, setSelectedDate] = useState(new Date());
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -43,6 +45,7 @@ const MonthPicker = () => {
             const newDate = new Date(prevDate);
             newDate.setDate(1);
             newDate.setMonth(newDate.getMonth() + months);
+            loader.start();
             return newDate;
         });
     }, [setSelectedDate]);

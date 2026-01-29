@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Command,
-  CommandEmpty,
+  // CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
@@ -20,8 +20,9 @@ import React, { useEffect, useState, useMemo } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import DownArrow from "../Icons/DownArrow";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { getMembersDashboard } from "@/actions/members/action";
+// import { getMembersDashboard } from "@/actions/members/action";
 import { useLogInUserStore } from "@/store/logInUserStore";
+import { useTopLoader } from "nextjs-toploader";
 
 interface ISelectUserDropDown {
   defaultSelect?: boolean;
@@ -37,7 +38,7 @@ const SelectUserDropDown = ({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const value = searchParams.get("user_id");
-
+  const loader = useTopLoader();
   const [open, setOpen] = useState(false);
   const [searchInput, setSearchInput] = useState("");
 
@@ -89,7 +90,7 @@ const SelectUserDropDown = ({
     } else {
       params.set("user_id", currentId);
     }
-
+    loader.start()
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
     setOpen(false);
   };
@@ -108,8 +109,9 @@ const SelectUserDropDown = ({
             {selectedUser && (
               <Avatar className="w-6 h-6">
                 <AvatarImage
-                  src={selectedUser.avatar}
+                  src={selectedUser.avatar ?? ""}
                   alt={selectedUser.label}
+                  className=" bg-darkTextPrimary"
                 />
 
                 <AvatarFallback className="">

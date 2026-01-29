@@ -52,7 +52,7 @@ const AllScreenShorts = ({ data }: { data: IAllScreenshot[] | undefined }) => {
                 }}
                 width={300}
                 height={300}
-                className="rounded-t-lg w-full transition-transform duration-300 hover:scale-[1.01] cursor-pointer"
+                className="rounded-t-lg w-full max-h-[150px] transition-transform duration-300 hover:scale-[1.01] cursor-pointer"
                 alt="screenshot"
               />
               {screenShort?.anomaly?.type && (

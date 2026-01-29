@@ -270,7 +270,7 @@ const Every10Mins = ({ data }: any) => {
                       }}
                       width={300}
                       height={300}
-                      className="w-full object-cover transition-transform duration-300 hover:scale-[1.01] cursor-pointer"
+                      className="w-full max-h-[150px] object-cover transition-transform duration-300 hover:scale-[1.01] cursor-pointer"
                       alt="screenshot"
                     />
                     {block?.details?.[0]?.anomaly?.type && (
@@ -301,46 +301,44 @@ const Every10Mins = ({ data }: any) => {
                         {(logInUserData?.role === "admin" ||
                           logInUserData?.role === "manager" ||
                           logInUserData?.role === "hr") && (
-                          <ConfirmDialog
-                            trigger={
-                              <div className="text-rose-600 dark:text-rose-500 cursor-pointer">
-                                <DeleteIcon size={16} />
-                              </div>
-                            }
-                            title="Delete the screenshot entry"
-                            description="Are you sure you want to delete? This action cannot be undone."
-                            confirmText="Confirm"
-                            cancelText="Cancel"
-                            onConfirm={() => handleDeleteScreenShot(block)}
-                          />
-                        )}
+                            <ConfirmDialog
+                              trigger={
+                                <div className="text-rose-600 dark:text-rose-500 cursor-pointer">
+                                  <DeleteIcon size={16} />
+                                </div>
+                              }
+                              title="Delete the screenshot entry"
+                              description="Are you sure you want to delete? This action cannot be undone."
+                              confirmText="Confirm"
+                              cancelText="Cancel"
+                              onConfirm={() => handleDeleteScreenShot(block)}
+                            />
+                          )}
                       </div>
 
                       <div className="h-1.5 bg-[#dce3e3] dark:bg-darkPrimaryBg rounded-full">
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <div
-                              className={`h-1.5 ${
-                                block?.avg_score < 30
-                                  ? "bg-red-500"
-                                  : block?.avg_score < 60
-                                    ? "bg-yellow-400"
-                                    : "bg-primary"
-                              }
-                                                                rounded-full relative`}
+                              className={`h-1.5 ${block?.avg_score < 30
+                                ? "bg-red-500"
+                                : block?.avg_score < 60
+                                  ? "bg-yellow-400"
+                                  : "bg-primary"
+                                }
+                                rounded-full relative`}
                               style={{
                                 width: `${block?.avg_score < 10 ? block?.avg_score + 5 : block?.avg_score}%`,
                               }}
                             >
                               <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[17px] h-[17px] bg-gradient-to-b from-[#ffffff] dark:from-[#dadada] to-[#dfe5fd] dark:to-darkSecondaryBg border-2 border-white dark:border-slate-500  rounded-full flex items-center justify-center">
                                 <div
-                                  className={`w-[5px] h-[5px] shadow ${
-                                    block?.avg_score < 30
-                                      ? "bg-red-500"
-                                      : block?.avg_score < 60
-                                        ? "bg-yellow-400"
-                                        : "bg-primary"
-                                  } rounded-full`}
+                                  className={`w-[5px] h-[5px] shadow ${block?.avg_score < 30
+                                    ? "bg-red-500"
+                                    : block?.avg_score < 60
+                                      ? "bg-yellow-400"
+                                      : "bg-primary"
+                                    } rounded-full`}
                                 ></div>
                               </div>
                             </div>
@@ -363,14 +361,13 @@ const Every10Mins = ({ data }: any) => {
                                   </div>
                                   <div className="h-1.5 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                                     <div
-                                      className={`h-1.5 ${
-                                        block?.avg_score < 30
-                                          ? "bg-red-500"
-                                          : block?.avg_score < 60
-                                            ? "bg-yellow-400"
-                                            : "bg-primary"
-                                      }
-                                                                    rounded-full relative`}
+                                      className={`h-1.5 ${block?.avg_score < 30
+                                        ? "bg-red-500"
+                                        : block?.avg_score < 60
+                                          ? "bg-yellow-400"
+                                          : "bg-primary"
+                                        }
+                                        rounded-full relative`}
                                       style={{ width: `${block.avg_score}%` }}
                                     />
                                   </div>
@@ -401,7 +398,8 @@ const Every10Mins = ({ data }: any) => {
 
                       <p className="text-xs text-subTextColor dark:text-darkTextSecondary text-center">
                         {block?.avg_score}% of{" "}
-                        {formatDuration(block?.total_duration)} minutes
+                        {/* {formatDuration(block?.total_duration)} minutes */}
+                        {formatDuration(Math.min(600, block?.total_duration || 0))} minutes
                       </p>
                     </div>
                   </div>

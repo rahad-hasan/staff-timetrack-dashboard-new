@@ -23,6 +23,7 @@ import DownArrow from "@/components/Icons/DownArrow";
 import { getProjects } from "@/actions/projects/action";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useDebounce } from "@/hooks/use-debounce";
+import { useTopLoader } from "nextjs-toploader";
 
 type ProjectOption = {
   value: string;
@@ -31,6 +32,7 @@ type ProjectOption = {
 };
 
 const SelectProjectDropDown = () => {
+  const loader = useTopLoader();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -82,7 +84,7 @@ const SelectProjectDropDown = () => {
     } else {
       params.set("project_id", projectId);
     }
-
+    loader.start()
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
     setOpen(false);
   };
