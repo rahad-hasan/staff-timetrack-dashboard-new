@@ -66,21 +66,21 @@ const HeroCart = async ({ searchParams }: ISearchParamsProps) => {
         return (
           <div
             key={id}
-            className="rounded-2xl w-full transition-all hover:shadow duration-200 relative h-38 shadow-sm dark:shadow-slate-100"
+            className="rounded-2xl w-full transition-all hover:shadow duration-200 relative h-34 2xl:h-38 shadow-sm dark:shadow-slate-100"
           >
-            <div className="border-x-2 border-t-2 border-borderColor/60  dark:border-darkBorder/25 flex items-center justify-between px-4 py-[1.4rem] bg-bgPrimary dark:bg-darkPrimaryBg rounded-t-2xl">
+            <div className="border-x-1 border-t-1 border-borderColor/60  dark:border-darkBorder/25 flex items-center justify-between px-3 2xl:px-4 py-[1.4rem] bg-bgPrimary dark:bg-darkPrimaryBg rounded-t-2xl">
               <div className="flex items-center gap-3">
                 <div>{icon}</div>
                 <div>
-                  <h2 className=" 2xl:text-2xl font-medium text-headingTextColor dark:text-darkTextPrimary">
+                  <h2 className=" text-xl 2xl:text-2xl font-medium text-headingTextColor dark:text-darkTextPrimary">
                     {value}
                   </h2>
-                  <h3 className="uppercase text-subTextColor dark:text-darkTextSecondary">
+                  <h3 className="uppercase text-sm 2xl:text-[15px] text-subTextColor dark:text-darkTextSecondary">
                     {title}
                   </h3>
                 </div>
               </div>
-              <div className="w-20 h-12  2xl:w-24 2xl:h-14">
+              <div className="w-16 h-9  2xl:w-22 2xl:h-12">
                 {isUp ? (
                   <div className="text-green-600">
                     <FirstChart
@@ -97,8 +97,10 @@ const HeroCart = async ({ searchParams }: ISearchParamsProps) => {
               </div>
             </div>
 
-            <div className="bg-bgSecondary dark:bg-darkSecondaryBg rounded-b-2xl border-t px-4 py-3 flex items-center gap-2 absolute left-0 right-0 bottom-0">
-              <TrendIcon size={20} className={trendColor} />
+            <div className="bg-bgSecondary dark:bg-darkSecondaryBg rounded-b-2xl border-t px-3 2xl:px-4 py-2.5 2xl:py-3 flex items-center gap-2 absolute left-0 right-0 bottom-0">
+              <div className="w-5">
+                <TrendIcon size={20} className={trendColor} />
+              </div>
               <p className={`${trendColor} font-medium`}>{change}</p>
               <p
                 className={`text-md text-muted-foreground dark:text-darkTextSecondary`}

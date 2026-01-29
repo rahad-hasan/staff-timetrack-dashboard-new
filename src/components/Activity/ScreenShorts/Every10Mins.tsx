@@ -27,12 +27,9 @@ const Every10Mins = ({ data }: any) => {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
 
   const formatDuration = (totalSeconds: number) => {
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    // const seconds = Math.floor(totalSeconds % 60);
-    if (hours > 0) {
-      return `${hours}h ${minutes}m`;
-    }
+
+    const minutes = Math.ceil((totalSeconds % 3600) / 60);
+
     if (minutes > 0) {
       return `${minutes}m`;
     }
