@@ -12,6 +12,7 @@ const ManualRequestTableServer = async ({ searchParams }: ISearchParamsProps) =>
         user_id: params?.user_id,
         search: params.search,
         page: params.page,
+        project_id: params.project_id
     });
 
     return (
