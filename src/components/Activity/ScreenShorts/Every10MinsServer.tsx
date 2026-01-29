@@ -23,6 +23,7 @@ const Every10MinsServer = async ({ searchParams }: ISearchParamsProps) => {
   const result = await getScreenshots10Min({
     date: params.date ?? currentDate,
     user_id: params.user_id ?? userId,
+    project_id: params?.project_id
   });
 
   return (

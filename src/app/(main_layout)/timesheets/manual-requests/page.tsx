@@ -39,7 +39,7 @@ const ManualRequests = async ({ searchParams }: ISearchParamsProps) => {
                     </Button>
                 </div> */}
           <SelectProjectDropDown></SelectProjectDropDown>
-          <SelectUserDropDown users={users} />
+          <SelectUserDropDown users={users} defaultSelect={false} />
         </div>
       </Suspense>
 

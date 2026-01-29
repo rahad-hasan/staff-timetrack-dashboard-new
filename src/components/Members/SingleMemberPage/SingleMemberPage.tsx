@@ -68,7 +68,6 @@ const SingleMemberPage = ({ data }: { data: any }) => {
     // };
 
     async function onSubmit(values: z.infer<typeof singleMemberSchema>) {
-        console.log({ ...values, ...switches });
         setLoading(true);
         try {
             const res = await editSingleDetailsMember({ data: { ...values, ...switches }, id: data?.id });
