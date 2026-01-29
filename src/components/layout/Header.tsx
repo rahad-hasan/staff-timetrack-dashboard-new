@@ -30,19 +30,12 @@ const Header = ({ data }: { data: { duration: string } }) => {
 
 
     useEffect(() => {
-        // 2. Listen for real-time notifications
         const handleIncomingData = (data: any) => {
-
-            // Assuming your backend returns an array or an object with a data property
             const newList = Array.isArray(data) ? data : data?.data || [];
 
             setNotificationsList(newList);
         };
         socket.on("notifications", handleIncomingData);
-        // 3. Initial fetch if socket is already connected
-        // if (socket.connected) {
-        //     socket.emit("notifications", { page: 1, limit: 10 });
-        // }
         return () => {
             socket.off("notifications", handleIncomingData);
         };

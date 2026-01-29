@@ -41,6 +41,7 @@ const MonthPicker = () => {
     const handleNavigate = useCallback((months: number) => {
         setSelectedDate(prevDate => {
             const newDate = new Date(prevDate);
+            newDate.setDate(1);
             newDate.setMonth(newDate.getMonth() + months);
             return newDate;
         });
