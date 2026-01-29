@@ -161,13 +161,13 @@ const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
                 )
             },
             cell: ({ row }) => {
-                const taken = row?.original?.total_taken || 0;
+                const taken = row?.original?.available || 0;
                 const allowed = row?.original?.total_allowed || 1;
                 const percentage = Math.min((taken / allowed) * 100, 100);
                 const withColor =
-                    percentage > 80 ? 'bg-red-500' :
+                    percentage > 80 ? 'bg-green-500' :
                         percentage > 50 ? 'bg-yellow-500' :
-                            'bg-green-500';
+                            'bg-red-500';
 
                 return (
                     <div className="flex items-center gap-2">

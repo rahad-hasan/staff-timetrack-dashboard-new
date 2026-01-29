@@ -20,7 +20,7 @@ const getSrc = (item: any) => {
 };
 
 const AllScreenShortsModal = ({ screenShorts, modalOpen, setModalOpen, selectedImage }: { screenShorts: IAllScreenshot[], modalOpen: any, setModalOpen: any, selectedImage: IAllScreenshot }) => {
-
+    console.log(screenShorts);
     // 1. Calculate the initial index based on the clicked image
     const initialIndex = screenShorts.findIndex(img => img.id === selectedImage?.id);
     const startIdx = initialIndex !== -1 ? initialIndex : 0;
@@ -222,7 +222,7 @@ const AllScreenShortsModal = ({ screenShorts, modalOpen, setModalOpen, selectedI
                         </div>
 
                         <div className="mt-3 pt-3 border-t border-white/20 flex items-center justify-between opacity-50">
-                            <span className="text-[10px] border-white/70">Screen: {screenShorts[activeIndex]?.display_name === "display_one" ? "Display One" : "Display Two"}</span>
+                            <span className="text-[10px] border-white/70">Screen: {screenShorts[activeIndex]?.display_name === "display1" ? "Display One" : "Display Two"}</span>
                         </div>
                     </div>
                 </div>
