@@ -251,27 +251,27 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                 );
             }
         },
-        {
-            accessorKey: "timeWorked",
-            // header: () => <div className="">Time Worked</div>,
-            header: ({ column }) => {
-                return (
-                    <div>
-                        <span
-                            className=" flex items-center gap-1"
-                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        >
-                            Time Worked
-                            <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </span>
-                    </div>
-                )
-            },
-            cell: ({ row }) => {
+        // {
+        //     accessorKey: "timeWorked",
+        //     // header: () => <div className="">Time Worked</div>,
+        //     header: ({ column }) => {
+        //         return (
+        //             <div>
+        //                 <span
+        //                     className=" flex items-center gap-1"
+        //                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        //                 >
+        //                     Time Worked
+        //                     <ArrowUpDown className="ml-2 h-4 w-4" />
+        //                 </span>
+        //             </div>
+        //         )
+        //     },
+        //     cell: ({ row }) => {
 
-                return <div className="">{row?.original?.summary?.duration}</div>;
-            },
-        },
+        //         return <div className="">{row?.original?.summary?.duration}</div>;
+        //     },
+        // },
         {
             accessorKey: "deadline",
             // header: () => <div className="">Time Worked</div>,
@@ -545,7 +545,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
             <div className=" mb-5">
                 <h2 className=" text-base sm:text-lg">Projects</h2>
             </div>
-            <Table>
+            <Table >
                 <TableHeader>
                     {table.getHeaderGroups().map(headerGroup => (
                         <TableRow key={headerGroup.id}>
