@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Download as DownloadIcon } from "lucide-react";
 
 const DownloadPage = () => {
-  const LINUX_DOWNLOAD_URL = "/apps/linux/staff-time-tracker_0.0.1.deb";
-  const MACOS_DOWNLOAD_URL = "/apps/macos/staff-time-tracker_0.0.1.exe";
-  const WINDOWS_DOWNLOAD_URL = "/apps/windows/staff-time-tracker_0.0.1.dmg";
+//   const LINUX_DOWNLOAD_URL = "/apps/linux/staff-time-tracker_0.0.1.deb";
+//   const MACOS_DOWNLOAD_URL = "/apps/macos/staff-time-tracker_0.0.1.exe";
+//   const WINDOWS_DOWNLOAD_URL = "/apps/windows/staff-time-tracker_0.0.1.dmg";
 
   return (
     <div className="container mx-auto py-4 sm:py-8 lg:py-12">
@@ -29,10 +29,10 @@ const DownloadPage = () => {
           <Image src={windows} width={120} height={120} alt="Windows OS icon" />
           <div className="text-lg font-medium">Windows</div>
           <a
-            href={LINUX_DOWNLOAD_URL}
-            download="staff-time-tracker_0.0.1.exe"
-            target="_self"
-            rel="noopener"
+            href={`https://drive.google.com/file/d/1UvYMW2sBhjSnQFh7NSAIts15auDRdG6Y/view?usp=drive_link`}
+            // download="staff-time-tracker_0.0.1.exe"
+            target="_blank"
+            // rel="noopener"
           >
             <Button size={"sm"} variant={"download"} className="text-sm">
               <DownloadIcon className="w-4 h-4 mr-1" /> Download
@@ -50,10 +50,10 @@ const DownloadPage = () => {
           />
           <div className="text-lg font-medium">Linux</div>
           <a
-            href={WINDOWS_DOWNLOAD_URL}
-            download="staff-time-tracker_0.0.1.deb"
-            target="_self"
-            rel="noopener"
+            href={`https://drive.google.com/file/d/1susgrXFh4guU-Fkf6M1WaSfN7IbezunM/view?usp=drive_link`}
+            // download="staff-time-tracker_0.0.1.deb"
+            target="_blank"
+            // rel="noopener"
           >
             <Button size={"sm"} variant={"download"} className="text-sm">
               <DownloadIcon className="w-4 h-4 mr-1" /> Download
@@ -71,10 +71,10 @@ const DownloadPage = () => {
           />
           <div className="text-lg font-medium">macOS</div>
           <a
-            href={MACOS_DOWNLOAD_URL}
-            download="staff-time-tracker_0.0.1.exe"
-            target="_self"
-            rel="noopener"
+            href={`#`}
+            // download="staff-time-tracker_0.0.1.exe"
+            // target="_blank"
+            // rel="noopener"
           >
             <Button size={"sm"} variant={"download"} className="text-sm">
               <DownloadIcon className="w-4 h-4 mr-1" /> Download

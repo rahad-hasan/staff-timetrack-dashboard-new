@@ -156,7 +156,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
             accessorKey: "manager",
             header: ({ column }) => {
                 return (
-                    <div className="  min-w-[180px]">
+                    <div className="  min-w-[100px]">
                         <span
                             className=" flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
@@ -206,7 +206,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
             accessorKey: "assignee",
             header: ({ column }) => {
                 return (
-                    <div className="  min-w-[150px]">
+                    <div className="  min-w-[120px]">
                         <span
                             className=" flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}

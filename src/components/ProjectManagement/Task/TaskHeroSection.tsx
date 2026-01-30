@@ -110,7 +110,7 @@ const TaskHeroSection = () => {
           <SelectProjectDropDown></SelectProjectDropDown>
           <div className=" flex items-center gap-3 w-full">
             <div className=" w-full">
-              <SelectUserDropDown users={users} />
+              <SelectUserDropDown users={users} defaultSelect={false} />
             </div>
             <div className=" block sm:hidden">
               <SearchBar onSearch={handleSearch}></SearchBar>

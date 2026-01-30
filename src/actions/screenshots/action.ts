@@ -8,6 +8,7 @@ export const getScreenshots10Min = async (query = {}) => {
     const queryString = buildQuery(query);
     return await baseApi(`/activities${queryString ? `?${queryString}` : ""}`, {
         tag: "screenshots",
+        revalidate: 15
     });
 };
 
@@ -15,6 +16,7 @@ export const getAllScreenshots = async (query = {}): Promise<IResponse<IAllScree
     const queryString = buildQuery(query);
     return await baseApi(`/activities/all-screenshots${queryString ? `?${queryString}` : ""}`, {
         tag: "allScreenshots",
+        revalidate: 30
     });
 };
 
