@@ -28,8 +28,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import EditIcon from "@/components/Icons/FilterOptionIcon/EditIcon";
 // import DeleteIcon from "@/components/Icons/DeleteIcon";
 import { toast } from "sonner";
-import { editTask } from "@/actions/task/action";
+import { deleteTask, editTask } from "@/actions/task/action";
 import { useLogInUserStore } from "@/store/logInUserStore";
+import DeleteIcon from "@/components/Icons/DeleteIcon";
+import ConfirmDialog from "@/components/Common/ConfirmDialog";
 
 const TaskTable = ({ data }: { data: ITask[] }) => {
 
@@ -69,6 +71,37 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
             setLoading(false);
         }
     }
+
+    async function handleDelete(info: ITask) {
+        setLoading(true);
+        try {
+            const res = await deleteTask(info?.id);
+
+            if (res?.success) {
+                toast.success(res?.message || "Task deleted successfully");
+            } else {
+                toast.error(res?.message || "Failed to delete task", {
+                    style: {
+                        backgroundColor: '#ef4444',
+                        color: 'white',
+                        border: 'none'
+                    },
+                });
+            }
+        } catch (error: any) {
+            toast.error(error?.message || "Something went wrong!", {
+                style: {
+                    backgroundColor: '#ef4444',
+                    color: 'white',
+                    border: 'none'
+                },
+            });
+        } finally {
+            setLoading(false);
+        }
+    }
+
+
     const handleCloseDialog = () => {
         setOpen(false)
     }
@@ -381,10 +414,20 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
                                                     <p>Edit Client</p>
                                                 </div>
 
-                                                {/* <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                        <DeleteIcon size={18} />
-                                        <p>Delete Client</p>
-                                    </div> */}
+                                                <ConfirmDialog
+                                                    trigger={
+                                                        <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
+                                                            <DeleteIcon size={18} />
+                                                            <p>Delete Task</p>
+                                                        </div>
+                                                    }
+                                                    title="Delete the task"
+                                                    description="Are you sure you want to delete this task? This action cannot be undone."
+                                                    confirmText="Confirm"
+                                                    cancelText="Cancel"
+                                                    // confirmClassName="bg-primary hover:bg-primary"
+                                                    onConfirm={() => handleDelete(row?.original)}
+                                                />
                                             </div>
                                         </div>
                                     </PopoverContent>

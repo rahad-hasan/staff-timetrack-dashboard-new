@@ -33,11 +33,11 @@ const SingleMemberPage = ({ data }: { data: any }) => {
     };
 
     const [switches, setSwitches] = useState({
-        is_active: data?.is_active ?? true,
-        is_tracking: data?.is_tracking ?? true,
-        url_tracking: data?.url_tracking ?? true,
-        cam_tracking: data?.cam_tracking ?? false,
-        multi_factor_auth: data?.multi_factor_auth ?? false,
+        is_active: data?.is_active,
+        is_tracking: data?.is_tracking,
+        url_tracking: data?.url_tracking,
+        cam_tracking: data?.cam_tracking,
+        multi_factor_auth: data?.multi_factor_auth,
     });
 
     const form = useForm<z.infer<typeof singleMemberSchema>>({
@@ -69,8 +69,21 @@ const SingleMemberPage = ({ data }: { data: any }) => {
 
     async function onSubmit(values: z.infer<typeof singleMemberSchema>) {
         setLoading(true);
+        const payload = {
+            name: values.name,
+            email: values.email,
+            phone: values.phone ?? "",
+            role: values.role,
+            pay_rate_hourly: values.pay_rate_hourly,
+            is_active: Boolean(switches.is_active),
+            is_tracking: Boolean(switches.is_tracking),
+            url_tracking: Boolean(switches.url_tracking),
+            cam_tracking: Boolean(switches.cam_tracking),
+            multi_factor_auth: Boolean(switches.multi_factor_auth),
+        };
+        console.log(payload);
         try {
-            const res = await editSingleDetailsMember({ data: { ...values, ...switches }, id: data?.id });
+            const res = await editSingleDetailsMember({ data: payload, id: data?.id });
 
             if (res?.success) {
                 toast.success(res?.message || "Member edited successfully");

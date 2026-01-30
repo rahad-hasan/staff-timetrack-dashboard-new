@@ -37,15 +37,9 @@ export const editProject = async ({ data, id }: {
     });
 };
 
-export const deleteProject = async ({ data, id }: {
-    data: {
-        is_deleted: boolean,
-    },
-    id: number | undefined
-}) => {
+export const deleteProject = async (id: number | undefined) => {
     return await baseApi(`/projects/${id}`, {
-        method: "PATCH",
-        body: data,
+        method: "DELETE",
         tag: "projects",
     });
 };

@@ -32,15 +32,9 @@ export const editTask = async ({ data, id }: {
     });
 };
 
-export const deleteTask = async ({ data, id }: {
-    data: {
-        is_deleted: boolean,
-    },
-    id: number | undefined
-}) => {
+export const deleteTask = async (id: number | undefined) => {
     return await baseApi(`/tasks/${id}`, {
-        method: "PATCH",
-        body: data,
+        method: "DELETE",
         tag: "tasks",
     });
 };

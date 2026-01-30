@@ -289,8 +289,14 @@ export const singleMemberSchema = z.object({
     email: z.string().email("Invalid email"),
     phone: z
         .string()
+        .optional()
+        .or(z.literal("")) // 👈 This allows the empty string from your input to pass
         .refine(
             (val) => {
+                // If there's no value, it's valid (optional)
+                if (!val || val.length === 0) return true;
+
+                // If there IS a value, check if it's a valid international number
                 const parsed = parsePhoneNumberFromString(val);
                 return parsed?.isValid();
             },

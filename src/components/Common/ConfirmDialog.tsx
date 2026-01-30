@@ -40,17 +40,19 @@ const ConfirmDialog = ({
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  console.log('confirm modal loading...', isLoading);
+
   const handleConfirm = async (e: React.MouseEvent<HTMLButtonElement>) => {
     // 1. Prevent Radix from auto-closing the dialog
     e.preventDefault();
     setIsLoading(true);
     try {
       await onConfirm();
-      setOpen(false);
     } catch (error) {
       console.error("Error confirming:", error);
     } finally {
       setIsLoading(false);
+      setOpen(false);
     }
   };
 

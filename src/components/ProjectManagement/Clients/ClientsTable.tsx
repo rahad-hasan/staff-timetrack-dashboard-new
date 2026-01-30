@@ -14,14 +14,47 @@ import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import FilterButton from "@/components/Common/FilterButton";
 // import EyeIcon from "@/components/Icons/EyeIcon";
 import EditIcon from "@/components/Icons/FilterOptionIcon/EditIcon";
+import { toast } from "sonner";
+import DeleteIcon from "@/components/Icons/DeleteIcon";
+import ConfirmDialog from "@/components/Common/ConfirmDialog";
+import { deleteClient } from "@/actions/clients/action";
 // import DeleteIcon from "@/components/Icons/DeleteIcon";
 
 const ClientsTable = ({ data }: any) => {
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
+    const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false)
     const [selectedClient, setSelectedClient] = useState<IClients | null>(null)
 
+    async function handleDelete(info: any) {
+        setLoading(true);
+        try {
+            const res = await deleteClient(info?.id);
+
+            if (res?.success) {
+                toast.success(res?.message || "Client deleted successfully");
+            } else {
+                toast.error(res?.message || "Failed to delete client", {
+                    style: {
+                        backgroundColor: '#ef4444',
+                        color: 'white',
+                        border: 'none'
+                    },
+                });
+            }
+        } catch (error: any) {
+            toast.error(error?.message || "Something went wrong!", {
+                style: {
+                    backgroundColor: '#ef4444',
+                    color: 'white',
+                    border: 'none'
+                },
+            });
+        } finally {
+            setLoading(false);
+        }
+    }
     const columns: ColumnDef<IClients>[] = [
         {
             accessorKey: "name",
@@ -151,11 +184,20 @@ const ClientsTable = ({ data }: any) => {
                                         <p>Edit Client</p>
                                     </div>
 
-
-                                    {/* <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                        <DeleteIcon size={18} />
-                                        <p>Delete Client</p>
-                                    </div> */}
+                                    <ConfirmDialog
+                                        trigger={
+                                            <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
+                                                <DeleteIcon size={18} />
+                                                <p>Delete Client</p>
+                                            </div>
+                                        }
+                                        title="Delete the client"
+                                        description="Are you sure you want to delete this client? This action cannot be undone."
+                                        confirmText="Confirm"
+                                        cancelText="Cancel"
+                                        // confirmClassName="bg-primary hover:bg-primary"
+                                        onConfirm={() => handleDelete(row?.row?.original)}
+                                    />
                                 </div>
                             </div>
                         </PopoverContent>

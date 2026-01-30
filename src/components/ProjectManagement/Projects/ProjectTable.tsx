@@ -34,10 +34,12 @@ import EditIcon from "@/components/Icons/FilterOptionIcon/EditIcon";
 // import DeleteIcon from "@/components/Icons/DeleteIcon";
 import EditProjectModal from "./EditProjectModal";
 import { toast } from "sonner";
-import { editProject } from "@/actions/projects/action";
+import { deleteProject, editProject } from "@/actions/projects/action";
 import { useProjectFormStore } from "@/store/ProjectFormStore";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import { formatTZDayMonthYear } from "@/utils";
+import DeleteIcon from "@/components/Icons/DeleteIcon";
+import ConfirmDialog from "@/components/Common/ConfirmDialog";
 
 
 const ProjectTable = ({ data }: { data: IProject[] }) => {
@@ -47,6 +49,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
     const [loading, setLoading] = useState(false);
+    const [deleteLoading, setDeleteLoading] = useState(false);
     const router = useRouter();
     const logInUserData = useLogInUserStore(state => state.logInUserData);
     const resetData = useProjectFormStore(state => state.resetData);
@@ -90,6 +93,35 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
             });
         } finally {
             setLoading(false);
+        }
+    }
+
+    async function handleDelete(values: IProject) {
+        setDeleteLoading(true);
+        try {
+            const res = await deleteProject(values.id);
+
+            if (res?.success) {
+                toast.success(res?.message || "Project deleted successfully");
+            } else {
+                toast.error(res?.message || "Failed to delete project", {
+                    style: {
+                        backgroundColor: '#ef4444',
+                        color: 'white',
+                        border: 'none'
+                    },
+                });
+            }
+        } catch (error: any) {
+            toast.error(error?.message || "Something went wrong!", {
+                style: {
+                    backgroundColor: '#ef4444',
+                    color: 'white',
+                    border: 'none'
+                },
+            });
+        } finally {
+            setDeleteLoading(false);
         }
     }
 
@@ -470,10 +502,21 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                                         <ArchiveIcon size={18} />
                                         <p>Archive Project</p>
                                     </div> */}
-                                    {/* <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                        <DeleteIcon size={18} />
-                                        <p>Delete Project</p>
-                                    </div> */}
+                                    <ConfirmDialog
+                                        trigger={
+                                            <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
+                                                <DeleteIcon size={18} />
+                                                <p>Delete Project</p>
+                                            </div>
+                                        }
+                                        title="Delete the project"
+                                        description="Are you sure you want to delete this project? This action cannot be undone."
+                                        confirmText="Confirm"
+                                        cancelText="Cancel"
+                                        // confirmClassName="bg-primary hover:bg-primary"
+                                        onConfirm={() => handleDelete(row?.original)}
+                                    />
+
                                 </div>
                             </div>
                         </PopoverContent>

@@ -39,15 +39,9 @@ export const editClient = async ({ data, id }: {
     });
 };
 
-export const deleteClient = async ({ data, id }: {
-    data: {
-        is_deleted: boolean,
-    },
-    id: number | undefined
-}) => {
+export const deleteClient = async (id: number | undefined) => {
     return await baseApi(`/clients/${id}`, {
-        method: "PATCH",
-        body: data,
+        method: "DELETE",
         tag: "clients",
     });
 };

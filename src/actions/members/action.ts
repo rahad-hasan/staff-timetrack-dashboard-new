@@ -86,18 +86,9 @@ export const editMember = async ({
   });
 };
 
-export const deleteMember = async ({
-  data,
-  id,
-}: {
-  data: {
-    is_deleted: boolean;
-  };
-  id: number | undefined;
-}) => {
+export const deleteMember = async (id: number | undefined) => {
   return await baseApi(`/auth/employees/${id}`, {
-    method: "PATCH",
-    body: data,
+    method: "DELETE",
     tag: "members",
   });
 };
