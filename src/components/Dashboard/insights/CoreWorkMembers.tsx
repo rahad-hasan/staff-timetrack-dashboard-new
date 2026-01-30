@@ -35,14 +35,16 @@ import { Check } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ICoreMember } from "@/types/type";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
+import { useTopLoader } from "nextjs-toploader";
 
 const CoreWorkMembers = ({ data = [] }: { data: ICoreMember[] }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
-
+  const loader = useTopLoader();
   const setType = (type: string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("type", type);
+    loader.start()
     router.push(`?${params.toString()}`);
   };
 
