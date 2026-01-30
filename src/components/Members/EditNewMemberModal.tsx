@@ -50,7 +50,7 @@ const EditNewMemberModal = ({ onClose, selectedUser }: EditNewMemberModalProps) 
             name: selectedUser?.name,
             // email: selectedUser?.email,
             role: selectedUser?.role,
-            password: "",
+            // password: "",
         },
     })
     useEffect(() => {
@@ -59,15 +59,19 @@ const EditNewMemberModal = ({ onClose, selectedUser }: EditNewMemberModalProps) 
                 name: selectedUser.name ?? "",
                 // email: selectedUser.email ?? "",
                 role: selectedUser.role ?? "",
-                password: "",
+                // password: "",
             });
         }
     }, [selectedUser, form]);
 
     async function onSubmit(values: z.infer<typeof editMemberSchema>) {
         setLoading(true);
+        const finalData = {
+            name: values?.name,
+            role: values?.role,
+        }
         try {
-            const res = await editMember({ data: values, id: selectedUser?.id });
+            const res = await editMember({ data: finalData, id: selectedUser?.id });
 
             if (res?.success) {
                 form.reset();
@@ -85,7 +89,7 @@ const EditNewMemberModal = ({ onClose, selectedUser }: EditNewMemberModalProps) 
                 });
             }
         } catch (error: any) {
-            console.error("failed:", error);
+
             toast.error(error?.message || "Something went wrong!", {
                 style: {
                     backgroundColor: '#ef4444',
@@ -168,7 +172,7 @@ const EditNewMemberModal = ({ onClose, selectedUser }: EditNewMemberModalProps) 
                             </FormItem>
                         )}
                     />
-                    <FormField
+                    {/* <FormField
                         control={form.control}
                         name="password"
                         render={({ field }) => (
@@ -180,7 +184,7 @@ const EditNewMemberModal = ({ onClose, selectedUser }: EditNewMemberModalProps) 
                                 <FormMessage />
                             </FormItem>
                         )}
-                    />
+                    /> */}
                     {/* <DialogClose asChild> */}
                     <Button className=" w-full" disabled={loading} type="submit">{loading ? "Loading..." : "Submit"}</Button>
                     {/* </DialogClose> */}

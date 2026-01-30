@@ -28,6 +28,7 @@ export const addLeave = async (data: {
         method: "POST",
         body: data,
         tag: "leaves",
+        cache: "no-cache",
     });
 };
 
@@ -42,6 +43,7 @@ export const approveRejectLeave = async ({ data }: {
         method: "PATCH",
         body: data,
         tag: "leaves",
+        cache: "no-cache",
     });
 };
 

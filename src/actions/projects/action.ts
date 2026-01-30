@@ -22,6 +22,7 @@ export const addProject = async (data: ICreateProjectPayload) => {
         method: "POST",
         body: data,
         tag: "projects",
+        cache: "no-cache",
     });
 };
 
@@ -32,7 +33,7 @@ export const editProject = async ({ data, id }: {
     return await baseApi(`/projects/${id}`, {
         method: "PATCH",
         body: data,
-        cache: "no-store",
+        cache: "no-cache",
         tag: "projects",
     });
 };

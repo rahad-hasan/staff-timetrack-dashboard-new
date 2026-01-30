@@ -17,6 +17,7 @@ export const addTask = async (data: any) => {
         method: "POST",
         body: data,
         tag: "tasks",
+        cache: "no-cache",
     });
 };
 

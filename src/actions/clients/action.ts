@@ -20,6 +20,7 @@ export const addClient = async (data: {
         method: "POST",
         body: data,
         tag: "clients",
+        cache: "no-cache",
     });
 };
 
@@ -36,6 +37,7 @@ export const editClient = async ({ data, id }: {
         method: "PATCH",
         body: data,
         tag: "clients",
+        cache: "no-cache",
     });
 };
 

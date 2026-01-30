@@ -44,6 +44,7 @@ export const editSingleDetailsMember = async ({
     method: "PATCH",
     body: data,
     tag: "members",
+    cache: "no-cache",
   });
 };
 
@@ -73,9 +74,9 @@ export const editMember = async ({
 }: {
   data: {
     name: string;
-    // email: string,
+    // email: string;
     role: string;
-    password: string;
+    password?: string;
   };
   id: number | undefined;
 }) => {
@@ -83,6 +84,7 @@ export const editMember = async ({
     method: "PATCH",
     body: data,
     tag: "members",
+    cache: "no-cache",
   });
 };
 

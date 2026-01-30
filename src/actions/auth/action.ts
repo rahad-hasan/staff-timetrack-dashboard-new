@@ -63,6 +63,7 @@ export const uploadProfileImage = async ({ data }: {
     method: "PATCH",
     body: data,
     tag: "profile",
+    cache: "no-cache"
   });
 };
 
@@ -76,6 +77,7 @@ export const changePassword = async ({ data }: {
     method: "PATCH",
     body: data,
     tag: "profile",
+    cache: "no-cache"
   });
 };
 

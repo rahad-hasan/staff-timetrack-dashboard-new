@@ -25,6 +25,7 @@ export const addManualTimeEntry = async (
         method: "POST",
         body: data,
         tag: "manualTimeEntry",
+        cache: "no-cache",
     });
 };
 
@@ -42,6 +43,7 @@ export const editManualTimeEntry = async ({ data, id }: {
         method: "PATCH",
         body: data,
         tag: "manualTimeEntry",
+        cache: "no-cache",
     });
 };
 
@@ -55,6 +57,7 @@ export const approveRejectManualTimeEntry = async ({ data, id }: {
         method: "PATCH",
         body: data,
         tag: "manualTimeEntry",
+        cache: "no-cache",
     });
 };
 

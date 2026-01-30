@@ -187,7 +187,7 @@ export const editMemberSchema = z.object({
         .regex(/[a-z]/, "At least one lowercase letter")
         .regex(/[A-Z]/, "At least one uppercase letter")
         .regex(/\d/, "At least one number")
-        .regex(/[!@#$%^&*(),.?":{}|<>]/, "At least one special character"),
+        .regex(/[!@#$%^&*(),.?":{}|<>]/, "At least one special character").optional(),
 })
 
 export const addNewEventSchema = z.object({
