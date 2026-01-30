@@ -100,7 +100,7 @@ import { ISearchParamsProps } from "@/types/type";
 
 const CoreWorkMember = async ({ searchParams }: ISearchParamsProps) => {
   const params = await searchParams;
-  const statsType = params.type ? params.type : "lowest";
+  const statsType = params.type ? params.type : "highest";
   const result = await getCoreMembers({
     type: statsType,
   });
