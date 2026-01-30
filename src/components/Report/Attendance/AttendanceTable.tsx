@@ -11,7 +11,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatTZTime } from "@/utils";
 
 const AttendanceTable = ({ attendanceListData }: any) => {
-    console.log('attendanceListData', attendanceListData);
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
 
