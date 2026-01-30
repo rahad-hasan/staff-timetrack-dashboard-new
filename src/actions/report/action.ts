@@ -23,6 +23,6 @@ export const getAttendance = async (query = {}): Promise<IResponse<ITimeSheetEnt
     const queryString = buildQuery(query);
     return await baseApi(`/check-in-out${queryString ? `?${queryString}` : ""}`, {
         tag: "attendance",
-        cache: "no-store",
+        cache: "no-cache",
     });
 };

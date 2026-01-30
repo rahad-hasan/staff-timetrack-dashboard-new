@@ -10,9 +10,21 @@ import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatTZTime } from "@/utils";
 
+// const AttendanceTable = ({ attendanceListData, searchTerm }: any) => {
 const AttendanceTable = ({ attendanceListData }: any) => {
+    // console.log('getting search params', searchTerm);
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
+
+    // const filteredData = useMemo(() => {
+    //     if (!searchTerm) return attendanceListData;
+
+    //     return attendanceListData.filter((row: IAttendance) => {
+    //         return (
+    //             row.name.toLowerCase().includes(searchTerm.toLowerCase())
+    //         );
+    //     });
+    // }, [attendanceListData, searchTerm]);
 
     const columns: ColumnDef<IAttendance>[] = [
         {
