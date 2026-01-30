@@ -2,13 +2,14 @@
 "use client"
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import logo from '../../../assets/logo.svg'
+// import logo from '../../../assets/logo.svg'
 import roundedEmail from '../../../assets/auth/roundedEmail.svg'
 import OtpInput from "react-otp-input";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useRouter, useSearchParams } from "next/navigation";
 import { resetOtp, verifyOtp } from "@/actions/auth/action";
+import timerLogo from '../../../assets/NewLogo.png'
 
 const VerificationCode = () => {
     const [loading, setLoading] = useState(false);
@@ -103,7 +104,7 @@ const VerificationCode = () => {
     return (
         <div className=" w-full">
             <div className=" w-full flex items-center justify-center">
-
+                {/* 
                 <div
                     className={`flex items-center gap-1.5 px-8 py-5 `}
                 >
@@ -113,6 +114,16 @@ const VerificationCode = () => {
                         width={0}
                         height={0}
                         className={`w-12 h-12`}
+                    />
+                    <h2 className="text-2xl font-bold">Tracker</h2>
+                </div> */}
+                <div className={`flex items-center gap-1.5 px-8 py-5 `}>
+                    <Image
+                        src={timerLogo}
+                        alt="Logo"
+                        width={0}
+                        height={0}
+                        className={`w-12`}
                     />
                     <h2 className="text-2xl font-bold">Tracker</h2>
                 </div>

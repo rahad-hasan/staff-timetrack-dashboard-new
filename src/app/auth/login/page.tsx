@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import loginIcon from "../../../assets/auth/loginIcon.svg";
 import Image from "next/image";
-import logo from "../../../assets/logo.svg";
+// import logo from "../../../assets/logo.svg";
 import signInImage from "../../../assets/auth/signImage.webp";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
@@ -28,6 +28,7 @@ import { toast } from "sonner";
 import { logIn } from "@/actions/auth/action";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import { useSidebarStore } from "@/store/sidebarStore";
+import timerLogo from '../../../assets/NewLogo.png'
 
 const SignIn = () => {
   const [loading, setLoading] = useState(false);
@@ -135,13 +136,23 @@ const SignIn = () => {
   return (
     <div className=" h-auto lg:h-screen w-full flex flex-col lg:flex-row bg-gradient-to-b from-[#12cd6918] from-5% to-[#f6f7f9] dark:to-darkSecondaryBg to-20%">
       <div className=" lg:w-1/2 h-screen lg:h-full">
-        <div className={`flex items-center gap-1.5 px-8 py-5 `}>
+        {/* <div className={`flex items-center gap-1.5 px-8 py-5 `}>
           <Image
             src={logo}
             alt="Logo"
             width={0}
             height={0}
             className={`w-12 h-12`}
+          />
+          <h2 className="text-2xl font-bold">Tracker</h2>
+        </div> */}
+        <div className={`flex items-center gap-1.5 px-8 py-5 `}>
+          <Image
+            src={timerLogo}
+            alt="Logo"
+            width={0}
+            height={0}
+            className={`w-12`}
           />
           <h2 className="text-2xl font-bold">Tracker</h2>
         </div>
@@ -253,9 +264,8 @@ const SignIn = () => {
                   <button
                     key={index}
                     onClick={() => setCurrentSlide(index)}
-                    className={`h-2 w-2 rounded-full transition-all duration-300 cursor-pointer ${
-                      index === currentSlide ? "bg-white w-6" : "bg-white/40"
-                    }`}
+                    className={`h-2 w-2 rounded-full transition-all duration-300 cursor-pointer ${index === currentSlide ? "bg-white w-6" : "bg-white/40"
+                      }`}
                     aria-label={`Go to slide ${index + 1}`}
                   />
                 ))}

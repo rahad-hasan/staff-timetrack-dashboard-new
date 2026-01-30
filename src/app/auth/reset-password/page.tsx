@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
-import logo from '../../../assets/logo.svg'
+// import logo from '../../../assets/logo.svg'
 import createNewPasswordIcon from '../../../assets/auth/createNewPasswordIcon.svg'
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
@@ -17,6 +17,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { resetPassword } from "@/actions/auth/action";
 import { useLogInUserStore } from "@/store/logInUserStore";
+import timerLogo from '../../../assets/NewLogo.png'
 
 const ResetPassword = () => {
     const [showPassword, setShowPassword] = useState(false);
@@ -86,7 +87,7 @@ const ResetPassword = () => {
     return (
         <div className=" w-full">
             <div className=" w-full flex items-center justify-center">
-                <div
+                {/* <div
                     className={`flex items-center gap-1.5 px-8 py-5 `}
                 >
                     <Image
@@ -95,6 +96,16 @@ const ResetPassword = () => {
                         width={0}
                         height={0}
                         className={`w-12 h-12`}
+                    />
+                    <h2 className="text-2xl font-bold">Tracker</h2>
+                </div> */}
+                <div className={`flex items-center gap-1.5 px-8 py-5 `}>
+                    <Image
+                        src={timerLogo}
+                        alt="Logo"
+                        width={0}
+                        height={0}
+                        className={`w-12`}
                     />
                     <h2 className="text-2xl font-bold">Tracker</h2>
                 </div>
