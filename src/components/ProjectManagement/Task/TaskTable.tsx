@@ -20,7 +20,6 @@ import highFlag from '../../../assets/dashboard/highFlag.svg'
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog } from "@/components/ui/dialog";
-import EditTaskModal from "./EditTaskModal";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import FilterButton from "@/components/Common/FilterButton";
 import { ITask } from "@/types/type";
@@ -32,6 +31,7 @@ import { deleteTask, editTask } from "@/actions/task/action";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import DeleteIcon from "@/components/Icons/DeleteIcon";
 import ConfirmDialog from "@/components/Common/ConfirmDialog";
+import EditTaskModal from "./EditTaskModal";
 
 const TaskTable = ({ data }: { data: ITask[] }) => {
 

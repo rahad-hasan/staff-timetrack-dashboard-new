@@ -47,7 +47,7 @@ type ProjectOption = {
     label: string;
     avatar?: string;
 };
-const CreateTaskModal = ({ handleCloseDialog, selectedProject }: { handleCloseDialog: () => void; selectedProject: ITask }) => {
+const EditTaskModal = ({ handleCloseDialog, selectedProject }: { handleCloseDialog: () => void; selectedProject: ITask }) => {
     const [loading, setLoading] = useState(false);
     const [taskLoading, setTaskLoading] = useState(false);
     const [members, setMembers] = useState<{ id: number; name: string; image?: string }[]>([]);
@@ -409,4 +409,4 @@ const CreateTaskModal = ({ handleCloseDialog, selectedProject }: { handleCloseDi
     );
 };
 
-export default CreateTaskModal;
+export default EditTaskModal;

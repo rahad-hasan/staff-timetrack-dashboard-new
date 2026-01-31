@@ -23,7 +23,7 @@ export default async function DashboardLayout({
   const role = cookieStore.get("staffTimeDashboardRole")?.value;
 
   return (
-    <div className="w-full space-y-0">
+    <div className="w-full">
       {children}
       {topCart}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
