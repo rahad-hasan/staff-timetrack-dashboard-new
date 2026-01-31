@@ -52,12 +52,12 @@ const MonthlyTimeSheetsCalendar = ({ data }: any) => {
             {/* Render nothing for padding cells to keep your original layout empty */}
             {!isPadding && (
                 <>
-                    <span className="font-medium text-lg mb-1">{dayNumber}</span>
+                    <span className="font-medium text-base mb-1 text-headingTextColor/70 dark:text-darkTextSecondary/90">{dayNumber}</span>
                     {
                         viewType === "Hours" ?
                             <div>
                                 {formattedTime && (
-                                    <div className="px-2 py-1 text-sm font-medium rounded-lg bg-primary/5 dark:bg-darkSecondaryBg text-primary shadow-sm">
+                                    <div className="px-2 py-1 text-lg font-medium text-primary ">
                                         {formattedTime}
                                     </div>
                                 )}
@@ -65,7 +65,7 @@ const MonthlyTimeSheetsCalendar = ({ data }: any) => {
                             :
                             <div>
                                 {/* Using 'activity' from new data format */}
-                                <div className="px-2 py-1 text-sm font-medium rounded-lg bg-primary/5 dark:bg-darkSecondaryBg text-primary shadow-sm">
+                                <div className="px-5 py-1 text-lg font-medium bg-gray-50 rounded-lg dark:bg-gray-900/25 text-primary">
                                     {`${activity || 0}%`}
                                 </div>
                             </div>
