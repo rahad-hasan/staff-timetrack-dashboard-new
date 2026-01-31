@@ -63,7 +63,7 @@ const HeroCart = async ({ searchParams }: ISearchParamsProps) => {
             <HeroHeading searchParams={searchParams}></HeroHeading>
 
             <div className="mb-5 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
-                {metrics.map(({ id, icon, value, title, change, isUp, note }, index) => {
+                {metrics.map(({ id, icon, value, title, change, isUp, note }) => {
                     const TrendIcon = isUp ? TrendingUp : TrendingDown;
                     const trendColor = isUp ? "text-[#12cd69]" : "text-[#f40139]";
 

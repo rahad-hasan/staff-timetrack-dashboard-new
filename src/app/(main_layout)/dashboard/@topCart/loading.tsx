@@ -6,36 +6,50 @@ const DashboardHeroSkeleton = () => {
   const skeletonPulse = "animate-pulse";
 
   return (
-    <div className={`mb-5 grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-4 gap-5 ${skeletonPulse}`}>
-      {[...Array(4)].map((_, i) => (
-        <div
-          key={i}
-          className="border border-borderColor dark:border-darkBorder rounded-2xl w-full h-38 relative"
-        >
-          <div className="flex items-center justify-between px-4 py-5 bg-bgPrimary dark:bg-darkPrimaryBg rounded-t-2xl">
-            <div className='flex items-center gap-3'>
-              <div className={`w-9 h-9 border border-borderColor dark:border-darkBorder rounded-lg ${skeletonBg}`}>
-                <div className="h-full w-full p-1.5 rounded-lg"></div>
-              </div>
-              <div>
-                <div className={`h-6 w-16 rounded ${skeletonBg} mb-1`}></div>
-                <div className={`h-4 w-24 rounded ${skeletonBg}`}></div>
-              </div>
-            </div>
-
-            <div>
-              <div className={`w-18 2xl:w-20 h-10 rounded ${skeletonBg}`}></div>
-            </div>
-          </div>
-
-          <div className="bg-bgSecondary dark:bg-darkSecondaryBg rounded-b-2xl border-t border-borderColor dark:border-darkBorder px-4 py-3 flex items-center gap-2 absolute bottom-0 left-0 right-0">
-            {/* <div className={`h-5 w-5 rounded-full ${skeletonBg}`}></div> */}
-            <TrendingUp className=" text-[#b9b9b9] dark:text-darkBorder" size={20} />
-            <div className={`h-4 w-8 rounded ${skeletonBg}`}></div>
-            <div className={`h-4 w-16 rounded ${skeletonBg}`}></div>
-          </div>
+    <div>
+      <div className={`flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5 ${skeletonPulse}`}>
+        <div className="space-y-2">
+          <div className={`h-8 md:h-9 w-32 md:w-48 rounded-md ${skeletonBg}`} />
+          <div className={`h-4 md:h-5 w-40 md:w-56 rounded-md ${skeletonBg}`} />
         </div>
-      ))}
+        <div className={`grid grid-cols-3 mt-3 w-[250px] lg:w-[280px] sm:mt-0 h-10 rounded-lg ${skeletonBg} opacity-50`}>
+          <div className="h-full w-full border-r border-white/20 dark:border-gray-600" />
+          <div className="h-full w-full border-r border-white/20 dark:border-gray-600" />
+          <div className="h-full w-full" />
+        </div>
+      </div>
+
+      <div className={`mb-5 grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-4 gap-5 ${skeletonPulse}`}>
+        {[...Array(4)].map((_, i) => (
+          <div
+            key={i}
+            className="border border-borderColor dark:border-darkBorder rounded-2xl w-full h-38 relative"
+          >
+            <div className="flex items-center justify-between px-4 py-5 bg-bgPrimary dark:bg-darkPrimaryBg rounded-t-2xl">
+              <div className='flex items-center gap-3'>
+                <div className={`w-9 h-9 border border-borderColor dark:border-darkBorder rounded-lg ${skeletonBg}`}>
+                  <div className="h-full w-full p-1.5 rounded-lg"></div>
+                </div>
+                <div>
+                  <div className={`h-6 w-16 rounded ${skeletonBg} mb-1`}></div>
+                  <div className={`h-4 w-24 rounded ${skeletonBg}`}></div>
+                </div>
+              </div>
+
+              <div>
+                <div className={`w-18 2xl:w-20 h-10 rounded ${skeletonBg}`}></div>
+              </div>
+            </div>
+
+            <div className="bg-bgSecondary dark:bg-darkSecondaryBg rounded-b-2xl border-t border-borderColor dark:border-darkBorder px-4 py-3 flex items-center gap-2 absolute bottom-0 left-0 right-0">
+              {/* <div className={`h-5 w-5 rounded-full ${skeletonBg}`}></div> */}
+              <TrendingUp className=" text-[#b9b9b9] dark:text-darkBorder" size={20} />
+              <div className={`h-4 w-8 rounded ${skeletonBg}`}></div>
+              <div className={`h-4 w-16 rounded ${skeletonBg}`}></div>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

@@ -1,18 +1,29 @@
-import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import { ISearchParamsProps } from "@/types/type";
 import AttendanceServer from "@/components/Report/Attendance/AttendanceServer";
 import { Suspense } from "react";
-import AttendanceTableSkeleton from "@/skeleton/report/Attendance/AttendanceTableSkeleton";
-import AttendanceHeroSearch from "@/components/Report/Attendance/AttendanceHeroSearch";
 import { Metadata } from "next";
-// import AttendanceTableSkeleton from "@/skeleton/report/Attendance/AttendanceTableSkeleton";
+import { format } from "date-fns";
+import { getAttendance } from "@/actions/report/action";
+import AttendanceTableSkeleton from "@/skeleton/report/Attendance/AttendanceTableSkeleton";
 
 export const metadata: Metadata = {
     title: "Staff Time Tracker Attendance",
     description: "Staff Time Tracker Attendance",
 };
 const AttendancePage = async ({ searchParams }: ISearchParamsProps) => {
+    const params = await searchParams;
+    // const user = await getDecodedUser();
+    const currentDate = format(new Date(), "yyyy-MM-dd");
+    // const cookieStore = await cookies();
+    // const role = cookieStore.get("staffTimeDashboardRole")?.value;
+    // const allowedRoles = ['admin', 'manager', 'hr'];
+    // const isAdmin = role && allowedRoles.includes(role);
+    // const targetUserId = isAdmin ? params.user_id : user?.id;
+
+    const attendanceListData = await getAttendance({
+        date: params.date ?? currentDate,
+    });
 
     return (
         <div>
@@ -20,32 +31,10 @@ const AttendancePage = async ({ searchParams }: ISearchParamsProps) => {
                 <HeadingComponent heading="Attendance" subHeading="All the Attendance during the working hour by team member is here"></HeadingComponent>
 
             </div>
-            <Suspense fallback={null}>
-                <div className=" flex items-center justify-between w-full">
-                    <div className="flex flex-col items-end md:flex-row gap-4 md:gap-3 w-full">
-                        <SpecificDatePicker></SpecificDatePicker>
-                        <div className=" flex items-center justify-between">
-                            {/* <div className="w-1/2">
-                                <SelectUserDropDown defaultSelect={false} ></SelectUserDropDown>
-                            </div> */}
-                            {/* <div className=" flex md:hidden items-center gap-2">
-                            <Checkbox className=" cursor-pointer border-primary" />
-                            <p>No check in data</p>
-                        </div> */}
-                            <AttendanceHeroSearch></AttendanceHeroSearch>
-                        </div>
-                    </div>
-
-                    {/* <div className=" w-[180px] hidden md:flex items-center justify-end gap-2">
-                    <Checkbox className=" cursor-pointer border-primary" />
-                    <p className=" text-base">No check in data</p>
-                </div> */}
-                </div>
-            </Suspense>
             <Suspense fallback={<AttendanceTableSkeleton />}>
                 {
 
-                    <AttendanceServer searchParams={searchParams}></AttendanceServer>
+                    <AttendanceServer attendanceListData={attendanceListData?.data}></AttendanceServer>
 
                 }
             </Suspense>
