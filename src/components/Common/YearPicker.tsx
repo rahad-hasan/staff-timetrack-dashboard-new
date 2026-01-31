@@ -28,7 +28,7 @@ export function YearPicker({
 
     return (
         <Select value={value} onValueChange={onYearChange}>
-            <SelectTrigger className="w-[120px] font-medium">
+            <SelectTrigger className="w-[220px] font-medium">
                 <SelectValue placeholder="Year" />
             </SelectTrigger>
             <SelectContent className="max-h-[200px]">

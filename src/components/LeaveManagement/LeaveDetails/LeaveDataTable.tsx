@@ -2,7 +2,7 @@
 
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { ArrowUpDown } from "lucide-react";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { IUserLeaveData } from "@/types/type";
@@ -10,12 +10,26 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import LeaveDataDetailsModal from "./LeaveDataDetailsModal";
 import SearchBar from "@/components/Common/SearchBar";
+import { YearPicker } from "@/components/Common/YearPicker";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
     const [searchTerm, setSearchTerm] = useState("");
+    const router = useRouter();
+    const searchParams = useSearchParams();
 
+    const selectedYear = searchParams.get("year") || new Date().getFullYear().toString();
+
+    // 4. UseCallback for URL changes to prevent child re-renders
+    const handleYearChange = useCallback((year: string) => {
+        const params = new URLSearchParams(searchParams.toString());
+        if (year) params.set("year", year);
+        else params.delete("year");
+        router.push(`?${params.toString()}`, { scroll: false });
+    }, [router, searchParams]);
+    
     const filteredData = useMemo(() => {
         if (!searchTerm) return data;
 
@@ -211,7 +225,13 @@ const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
 
     return (
         <>
-            <div className=' mt-5 flex justify-end'>
+            <div className=' mt-5 flex justify-between items-center'>
+                <YearPicker
+                    value={selectedYear}
+                    onYearChange={handleYearChange}
+                    startYear={new Date().getFullYear() - 4}
+                    endYear={new Date().getFullYear() + 1}>
+                </YearPicker>
                 <SearchBar onSearch={setSearchTerm} />
             </div>
             <div className="mt-5 border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">

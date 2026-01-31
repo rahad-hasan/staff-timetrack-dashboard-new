@@ -1,6 +1,5 @@
 "use client";
 
-import { YearPicker } from "@/components/Common/YearPicker";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
     DialogContent,
@@ -8,7 +7,6 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { IUserLeaveData } from "@/types/type";
-import { useState } from "react";
 
 type TLeaveCategory = {
     allowed: number;
@@ -17,9 +15,6 @@ type TLeaveCategory = {
 };
 
 const LeaveDataDetailsModal = ({ data }: { data: IUserLeaveData }) => {
-
-    const [selectedYear, setSelectedYear] = useState<string>("")
-    const currentYear = new Date().getFullYear();
     const LeaveCard = ({
         title,
         stats,
@@ -105,12 +100,7 @@ const LeaveDataDetailsModal = ({ data }: { data: IUserLeaveData }) => {
             <div className="px-6 pb-6">
                 <div className="mb-4 flex items-center justify-between">
                     <h3 className="text-base font-bold text-gray-400">Leave Breakdown</h3>
-                    {/* <span className="text-xs font-semibold px-2 py-1 rounded bg-blue-50 dark:bg-primary/10 text-primary dark:text-primary">Year {data?.year}</span> */}
-                    <YearPicker
-                        value={selectedYear}
-                        onYearChange={(year) => setSelectedYear(year)}
-                        startYear={currentYear - 4}
-                        endYear={currentYear + 4}></YearPicker>
+                    <span className="text-xs font-semibold px-2 py-1 rounded bg-blue-50 dark:bg-primary/10 text-primary dark:text-primary">Year {data?.year}</span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

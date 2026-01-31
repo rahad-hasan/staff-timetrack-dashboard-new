@@ -8,6 +8,7 @@ const LeaveDetailsServer = async ({ searchParams }: ISearchParamsProps) => {
     const params = await searchParams;
     const result = await getLeaveDetails({
         search: params.search,
+        year: params.year,
         page: params.page,
     });
 
