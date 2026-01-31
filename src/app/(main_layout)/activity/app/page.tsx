@@ -2,13 +2,13 @@ import { Settings } from "lucide-react";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import HeadingComponent from "@/components/Common/HeadingComponent";
-import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
 import AppTableServer from "@/components/Activity/App/AppTableServer";
 import { ISearchParamsProps } from "@/types/type";
 import { Suspense } from "react";
 import AppNameTableSkeleton from "@/skeleton/activity/app/AppNameTableSkeleton";
 import { Metadata } from "next";
 import { getMembersDashboard } from "@/actions/members/action";
+import SelectProjectWrapper from "@/components/Common/SelectProjectWrapper";
 // import AppNameTableSkeleton from "@/skeleton/activity/app/AppNameTableSkeleton";
 
 export const metadata: Metadata = {
@@ -34,11 +34,11 @@ const App = async ({ searchParams }: ISearchParamsProps) => {
 
         <div className=" flex items-center gap-1.5 sm:gap-3">
           {/* <button
-                        className={`px-3 sm:px-4 py-2 sm:py-2 flex items-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 text-gray-600 hover:text-textGray dark:bg-darkPrimaryBg dark:text-darkTextSecondary border border-borderColor"
-                                `}
-                    >
-                        <Download size={20} /> <span className=" hidden sm:block">Export</span>
-                    </button> */}
+                  className={`px-3 sm:px-4 py-2 sm:py-2 flex items-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 text-gray-600 hover:text-textGray dark:bg-darkPrimaryBg dark:text-darkTextSecondary border border-borderColor"
+                    `}>
+                    <Download size={20} /> <span className=" hidden sm:block">Export</span>
+                    </button> 
+                */}
           <button
             className={`px-2.5 py-2 flex items-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 text-gray-600 dark:border-darkBorder hover:text-textGray border border-borderColor "
                                 `}
@@ -54,9 +54,10 @@ const App = async ({ searchParams }: ISearchParamsProps) => {
             <SpecificDatePicker></SpecificDatePicker>
             {/* Filter */}
             {/* <Button className=" hidden md:flex dark:text-darkTextPrimary" variant={'filter'}>
-                        <SlidersHorizontal className="dark:text-darkTextPrimary" /> Filters
-                    </Button> */}
-            <SelectProjectDropDown></SelectProjectDropDown>
+                    <SlidersHorizontal className="dark:text-darkTextPrimary" /> Filters
+                </Button>
+                */}
+            <SelectProjectWrapper></SelectProjectWrapper>
           </div>
 
           <div className=" flex items-center gap-3">

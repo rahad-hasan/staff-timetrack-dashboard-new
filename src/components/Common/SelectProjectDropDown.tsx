@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -20,9 +20,8 @@ import {
 } from "@/components/ui/popover";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import DownArrow from "@/components/Icons/DownArrow";
-import { getProjects } from "@/actions/projects/action";
+
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useDebounce } from "@/hooks/use-debounce";
 import { useTopLoader } from "nextjs-toploader";
 
 type ProjectOption = {
@@ -31,48 +30,16 @@ type ProjectOption = {
   avatar?: string;
 };
 
-const SelectProjectDropDown = () => {
+const SelectProjectDropDown = ({ loading, projects, searchInput, setSearchInput }: any) => {
   const loader = useTopLoader();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const selectedProjectId = searchParams.get("project_id");
   const [open, setOpen] = useState(false);
-  const [searchInput, setSearchInput] = useState("");
-  const [projects, setProjects] = useState<ProjectOption[]>([]);
-  const [loading, setLoading] = useState(false);
-
-  const debouncedSearch = useDebounce(searchInput, 500);
-
-  useEffect(() => {
-    const fetchProjects = async () => {
-      setLoading(true);
-      try {
-        const res = await getProjects({ search: debouncedSearch });
-
-        if (res?.success) {
-          const apiProjects = res.data.map((p: any) => ({
-            value: String(p.id),
-            label: p.name,
-            avatar: p.image || "",
-          }));
-          setProjects([
-            { value: "", label: "All Project", avatar: "" },
-            ...apiProjects
-          ]);
-        }
-      } catch (err) {
-        console.error("Fetch projects error:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProjects();
-  }, [debouncedSearch]);
 
   const selectedProject = useMemo(
-    () => projects.find((p) => p.value === selectedProjectId),
+    () => projects.find((p: ProjectOption) => p.value === selectedProjectId),
     [projects, selectedProjectId]
   );
 
@@ -130,7 +97,7 @@ const SelectProjectDropDown = () => {
             </CommandEmpty>
 
             <CommandGroup>
-              {projects.map((project) => (
+              {projects.map((project: ProjectOption) => (
                 <CommandItem
                   key={project.value}
                   value={project.label}
