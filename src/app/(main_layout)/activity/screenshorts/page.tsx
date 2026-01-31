@@ -6,13 +6,13 @@ import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import AllNotesModal from "@/components/Activity/ScreenShorts/AllNotes";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import HeadingComponent from "@/components/Common/HeadingComponent";
-import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
 import { ISearchParamsProps } from "@/types/type";
 import ScreenshotsToggle from "@/components/Activity/ScreenShorts/ScreenshotsToggle";
 import ScreenShotsServer from "@/components/Activity/ScreenShorts/ScreenShotsServer";
 import { Metadata } from "next";
 import { getMembersDashboard } from "@/actions/members/action";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
+import SelectProjectWrapper from "@/components/Common/SelectProjectWrapper";
 
 export const metadata: Metadata = {
   title: "Staff Time Tracker Screenshot",
@@ -48,7 +48,7 @@ const ScreenShorts = async ({ searchParams }: ISearchParamsProps) => {
                         <SlidersHorizontal className="dark:text-darkTextPrimary" /> Filters
                     </Button> 
             */}
-            <SelectProjectDropDown></SelectProjectDropDown>
+            <SelectProjectWrapper></SelectProjectWrapper>
           </div>
         </Suspense>
         <div className=" flex items-center gap-3">

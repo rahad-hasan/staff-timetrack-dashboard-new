@@ -1,12 +1,12 @@
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import HeadingComponent from "@/components/Common/HeadingComponent";
-import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
 import ManualRequestTableServer from "@/components/TimeSheets/ManualRequests/ManualRequestTableServer";
 import { ISearchParamsProps } from "@/types/type";
 import ManualRequestsHeroSection from "@/components/TimeSheets/ManualRequests/ManualRequestsHeroSection";
 import { Suspense } from "react";
 import { Metadata } from "next";
 import { getMembersDashboard } from "@/actions/members/action";
+import SelectProjectWrapper from "@/components/Common/SelectProjectWrapper";
 
 export const metadata: Metadata = {
   title: "Staff Time Tracker Manual Requests",
@@ -38,7 +38,7 @@ const ManualRequests = async ({ searchParams }: ISearchParamsProps) => {
                         <SlidersHorizontal className="" /> <span className=" hidden sm:block dark:text-darkTextPrimary">Filters</span>
                     </Button>
                 </div> */}
-          <SelectProjectDropDown></SelectProjectDropDown>
+          <SelectProjectWrapper></SelectProjectWrapper>
           <SelectUserDropDown users={users} defaultSelect={false} />
         </div>
       </Suspense>

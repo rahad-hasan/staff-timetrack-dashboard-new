@@ -7,11 +7,11 @@ import SearchBar from "@/components/Common/SearchBar";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import CreateTaskModal from "@/components/ProjectManagement/Task/CreateTaskModal";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
-import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import { getMembersDashboard } from "@/actions/members/action";
+import SelectProjectWrapper from "@/components/Common/SelectProjectWrapper";
 
 const TaskHeroSection = () => {
   const [open, setOpen] = useState(false);
@@ -107,7 +107,7 @@ const TaskHeroSection = () => {
       </div>
       <div className=" flex flex-col gap-4 md:gap-0 md:flex-row justify-between">
         <div className=" flex flex-col sm:flex-row items-center gap-3 sm:gap-4">
-          <SelectProjectDropDown></SelectProjectDropDown>
+          <SelectProjectWrapper></SelectProjectWrapper>
           <div className=" flex items-center gap-3 w-full">
             <div className=" w-full">
               <SelectUserDropDown users={users} defaultSelect={false} />
