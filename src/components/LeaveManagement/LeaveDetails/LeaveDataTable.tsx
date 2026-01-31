@@ -2,17 +2,29 @@
 
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ArrowUpDown } from "lucide-react";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { IUserLeaveData } from "@/types/type";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import LeaveDataDetailsModal from "./LeaveDataDetailsModal";
+import SearchBar from "@/components/Common/SearchBar";
 
 const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
+    const [searchTerm, setSearchTerm] = useState("");
+
+    const filteredData = useMemo(() => {
+        if (!searchTerm) return data;
+
+        return data?.filter((row: IUserLeaveData) => {
+            return (
+                row?.user?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        });
+    }, [data, searchTerm]);
 
     const columns: ColumnDef<IUserLeaveData>[] = [
         {
@@ -184,9 +196,8 @@ const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
         }
     ];
 
-
     const table = useReactTable({
-        data: data,
+        data: filteredData,
         columns,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,
@@ -199,43 +210,48 @@ const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
     });
 
     return (
-        <div className="mt-5 border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">
-            <div className=" mb-5">
-                <h2 className=" text-base sm:text-lg dark:text-darkTextPrimary">Leave Data</h2>
+        <>
+            <div className=' mt-5 flex justify-end'>
+                <SearchBar onSearch={setSearchTerm} />
             </div>
-            <Table>
-                <TableHeader>
-                    {table.getHeaderGroups().map(headerGroup => (
-                        <TableRow key={headerGroup.id}>
-                            {headerGroup.headers.map(header => (
-                                <TableHead key={header.id}>
-                                    {header.isPlaceholder
-                                        ? null
-                                        : flexRender(header.column.columnDef.header, header.getContext())}
-                                </TableHead>
-                            ))}
-                        </TableRow>
-                    ))}
-                </TableHeader>
-                <TableBody>
-                    {table.getRowModel().rows?.length ? (
-                        table.getRowModel().rows.map(row => (
-                            <TableRow key={row.id}>
-                                {row.getVisibleCells().map(cell => (
-                                    <TableCell key={cell.id}>
-                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                    </TableCell>
+            <div className="mt-5 border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">
+                <div className=" mb-5">
+                    <h2 className=" text-base sm:text-lg dark:text-darkTextPrimary">Leave Data</h2>
+                </div>
+                <Table>
+                    <TableHeader>
+                        {table.getHeaderGroups().map(headerGroup => (
+                            <TableRow key={headerGroup.id}>
+                                {headerGroup.headers.map(header => (
+                                    <TableHead key={header.id}>
+                                        {header.isPlaceholder
+                                            ? null
+                                            : flexRender(header.column.columnDef.header, header.getContext())}
+                                    </TableHead>
                                 ))}
                             </TableRow>
-                        ))
-                    ) : (
-                        <TableRow>
-                            <EmptyTableRow columns={columns} text="No leave data found."></EmptyTableRow>
-                        </TableRow>
-                    )}
-                </TableBody>
-            </Table>
-        </div>
+                        ))}
+                    </TableHeader>
+                    <TableBody>
+                        {table.getRowModel().rows?.length ? (
+                            table.getRowModel().rows.map(row => (
+                                <TableRow key={row.id}>
+                                    {row.getVisibleCells().map(cell => (
+                                        <TableCell key={cell.id}>
+                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                        </TableCell>
+                                    ))}
+                                </TableRow>
+                            ))
+                        ) : (
+                            <TableRow>
+                                <EmptyTableRow columns={columns} text="No leave data found."></EmptyTableRow>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
+            </div>
+        </>
     );
 };
 

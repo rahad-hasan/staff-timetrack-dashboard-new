@@ -4,6 +4,7 @@ import { getLeaveDetails } from '@/actions/leaves/action';
 import AppPagination from '@/components/Common/AppPagination';
 
 const LeaveDetailsServer = async ({ searchParams }: ISearchParamsProps) => {
+
     const params = await searchParams;
     const result = await getLeaveDetails({
         search: params.search,
