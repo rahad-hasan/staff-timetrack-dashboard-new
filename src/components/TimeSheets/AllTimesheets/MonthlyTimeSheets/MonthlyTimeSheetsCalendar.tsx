@@ -50,7 +50,7 @@ const MonthlyTimeSheetsCalendar = ({ data }: any) => {
       {/* Render nothing for padding cells to keep your original layout empty */}
       {!isPadding && (
         <>
-          <span className="font-thin text-lg mb-1 text-headingTextColor/40 dark:text-darkTextSecondary/60">
+          <span className="font-thin text-lg mb-1 text-headingTextColor/60 dark:text-darkTextSecondary/70">
             {dayNumber}
           </span>
           {viewType === "Hours" ? (
