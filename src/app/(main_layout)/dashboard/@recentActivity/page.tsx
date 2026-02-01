@@ -103,6 +103,7 @@ const CoreWorkMember = async ({ searchParams }: ISearchParamsProps) => {
   const statsType = params.type ? params.type : "highest";
   const result = await getCoreMembers({
     type: statsType,
+    limit: 3,
   });
   return (
     <div>
