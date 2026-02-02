@@ -12,6 +12,7 @@ export interface IClients {
 }
 
 export interface IAttendance {
+    id: number;
     image: string;
     name: string;
     date: string;

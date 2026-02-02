@@ -9,10 +9,11 @@ import { IAttendance } from "@/global/globalTypes";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatTZTime } from "@/utils";
+import Link from "next/link";
 
 // const AttendanceTable = ({ attendanceListData, searchTerm }: any) => {
 const AttendanceTable = ({ attendanceListData, searchTerm }: any) => {
-    // console.log('getting search params', searchTerm);
+
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
 
@@ -54,7 +55,9 @@ const AttendanceTable = ({ attendanceListData, searchTerm }: any) => {
                             />
                             <AvatarFallback>{name?.charAt(0)}</AvatarFallback>
                         </Avatar>
-                        <span className="capitalize">{name}</span>
+                        <Link href={`/members/${row?.original?.id}`}>
+                            <span className="capitalize">{name}</span>
+                        </Link>
                     </div>
                 )
             }
