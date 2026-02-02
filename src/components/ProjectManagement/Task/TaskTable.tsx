@@ -416,7 +416,7 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
                                                     }}
                                                     className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
                                                     <EditIcon size={18} />
-                                                    <p>Edit Client</p>
+                                                    <p>Edit Task</p>
                                                 </div>
 
                                                 <ConfirmDialog
