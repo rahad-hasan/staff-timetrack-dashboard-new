@@ -59,15 +59,15 @@ const ScreenShorts = async ({ searchParams }: ISearchParamsProps) => {
                   className="dark:text-darkTextPrimary h-10"
                   variant={"outline2"}
                 >
-                  <NotepadText className=" text-sm md:text-base dark:text-darkTextPrimary" />{" "}
-                  All Notes
+                  <NotepadText className="text-sm md:text-base dark:text-darkTextPrimary" />
+                  Notes
                 </Button>
               </DialogTrigger>
               <AllNotesModal searchParams={searchParams}></AllNotesModal>
             </form>
           </Dialog>
           <Suspense fallback={null}>
-            <div className=" w-full">
+            <div className="w-full">
               <SelectUserDropDown users={users} />
             </div>
           </Suspense>

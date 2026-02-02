@@ -30,7 +30,12 @@ type ProjectOption = {
   avatar?: string;
 };
 
-const SelectProjectDropDown = ({ loading, projects, searchInput, setSearchInput }: any) => {
+const SelectProjectDropDown = ({
+  loading,
+  projects,
+  searchInput,
+  setSearchInput,
+}: any) => {
   const loader = useTopLoader();
   const router = useRouter();
   const pathname = usePathname();
@@ -40,7 +45,7 @@ const SelectProjectDropDown = ({ loading, projects, searchInput, setSearchInput 
 
   const selectedProject = useMemo(
     () => projects.find((p: ProjectOption) => p.value === selectedProjectId),
-    [projects, selectedProjectId]
+    [projects, selectedProjectId],
   );
 
   const handleSelect = (projectId: string) => {
@@ -51,7 +56,7 @@ const SelectProjectDropDown = ({ loading, projects, searchInput, setSearchInput 
     } else {
       params.set("project_id", projectId);
     }
-    loader.start()
+    loader.start();
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
     setOpen(false);
   };
@@ -106,9 +111,7 @@ const SelectProjectDropDown = ({ loading, projects, searchInput, setSearchInput 
                 >
                   <Avatar className="w-6 h-6 mr-2 shrink-0">
                     <AvatarImage src={project.avatar} />
-                    <AvatarFallback>
-                      {project.label.charAt(0)}
-                    </AvatarFallback>
+                    <AvatarFallback>{project.label.charAt(0)}</AvatarFallback>
                   </Avatar>
 
                   <span className="truncate">{project.label}</span>
@@ -118,7 +121,7 @@ const SelectProjectDropDown = ({ loading, projects, searchInput, setSearchInput 
                       "ml-auto h-4 w-4 shrink-0",
                       selectedProjectId === project.value
                         ? "opacity-100"
-                        : "opacity-0"
+                        : "opacity-0",
                     )}
                   />
                 </CommandItem>

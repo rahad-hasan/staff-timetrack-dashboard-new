@@ -56,7 +56,9 @@ const MonthlyTimeSheetsCalendar = ({ data }: any) => {
           {viewType === "Hours" ? (
             <div>
               {formattedTime && (
-                <div className="px-2 py-1 text-sm font-medium text-primary">
+                <div
+                  className={`px-2 py-1 text-sm font-medium ${formattedTime.split(":")?.reduce((acc, cur) => acc + Number(cur), 0) > 0 ? "text-primary" : "text-primary/30"}`}
+                >
                   {formattedTime}
                 </div>
               )}

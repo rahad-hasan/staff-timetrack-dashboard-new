@@ -95,7 +95,7 @@ const TeamsMemberTable = ({ data }: any) => {
                             </AvatarFallback>
                         </Avatar>
 
-                        <Link href={`/members/${row?.original?.id}`}><span className="capitalize">{name}</span></Link>
+                        <Link href={`/members/${row?.original?.id}`}><span className="capitalize hover:underline-offset-2 hover:underline">{name}</span></Link>
                     </div>
                 )
             }
@@ -262,7 +262,7 @@ const TeamsMemberTable = ({ data }: any) => {
                                 <FilterButton></FilterButton>
                             </div>
                         </PopoverTrigger>
-                        <PopoverContent side="bottom" align="end" className=" w-[250px] p-2">
+                        <PopoverContent side="bottom" align="end" className="w-fit p-2">
                             <div className="">
                                 <div className="space-y-2">
                                     {/* <div
@@ -279,7 +279,7 @@ const TeamsMemberTable = ({ data }: any) => {
                                         className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100  hover:dark:bg-darkPrimaryBg px-3 cursor-pointer"
                                     >
                                         <EditIcon size={20} />
-                                        <p>Edit Time</p>
+                                        <p>Edit</p>
                                     </div>
                                     <ConfirmDialog
                                         trigger={
@@ -287,7 +287,7 @@ const TeamsMemberTable = ({ data }: any) => {
                                                 className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100  hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
                                                 {<DeleteIcon size={18} />}
 
-                                                <p>{"Delete Member"}</p>
+                                                <p>Delete</p>
                                             </button>
                                         }
                                         title="Delete the member"
