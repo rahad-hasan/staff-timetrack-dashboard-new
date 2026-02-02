@@ -266,7 +266,7 @@ const Every10Mins = ({ data }: any) => {
                       }}
                       width={300}
                       height={300}
-                      className="w-full max-h-[150px] object-cover transition-transform duration-300 hover:scale-[1.01] cursor-pointer"
+                      className="w-full max-h-[140px] object-cover transition-transform duration-300 hover:scale-[1.01] cursor-pointer"
                       alt="screenshot"
                     />
                     {block?.details?.[0]?.anomaly?.type && (
