@@ -40,6 +40,7 @@ import { useLogInUserStore } from "@/store/logInUserStore";
 import { formatTZDayMonthYear } from "@/utils";
 import DeleteIcon from "@/components/Icons/DeleteIcon";
 import ConfirmDialog from "@/components/Common/ConfirmDialog";
+import Link from "next/link";
 
 
 const ProjectTable = ({ data }: { data: IProject[] }) => {
@@ -146,7 +147,9 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                 const start_date = row.original.start_date;
                 return (
                     <div className="flex flex-col">
-                        <span className="font-bold text-base text-headingTextColor dark:text-darkTextPrimary capitalize">{project}</span>
+                        <Link href={`/project-management/projects/${row?.original?.id}`}>
+                            <span className="font-bold text-base text-headingTextColor dark:text-darkTextPrimary capitalize">{project}</span>
+                        </Link>
                         <span className=" font-normal text-subTextColor dark:text-darkTextSecondary">{formatTZDayMonthYear(start_date)}</span>
                     </div>
                 )
