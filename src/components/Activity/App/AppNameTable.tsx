@@ -26,6 +26,8 @@ import zoom_logo from '../../../assets/apps_logo/zoom_logo.png';
 import microsoft_office_word from '../../../assets/apps_logo/microsoft_office_word.png';
 import postman_logo from '../../../assets/apps_logo/postman_logo.png';
 import terminal_logo from '../../../assets/apps_logo/terminal_logo.png';
+import microsoft_powerPoint from '../../../assets/apps_logo/microsoft_powerPoint.png';
+import edge from '../../../assets/apps_logo/microsoft_edge.png';
 
 const APP_LOGOS: Record<string, any> = {
     chrome: chrome_logo,
@@ -37,9 +39,11 @@ const APP_LOGOS: Record<string, any> = {
     vscode: vs_code_logo,
     code: vs_code_logo,
     zoom: zoom_logo,
-    office: microsoft_office_word,
+    word: microsoft_office_word,
     postman: postman_logo,
     terminal: terminal_logo,
+    powerpoint: microsoft_powerPoint,
+    edge: edge,
 };
 
 const AppNameTable = ({ data }: { data: IApps[] }) => {
