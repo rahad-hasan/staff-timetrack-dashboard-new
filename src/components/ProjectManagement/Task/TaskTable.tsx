@@ -380,7 +380,10 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
                     {
                         (logInUserData?.role === 'admin' ||
                             logInUserData?.role === 'manager' ||
-                            logInUserData?.role === 'hr') &&
+                            logInUserData?.role === 'hr' ||
+                            logInUserData?.role === 'project_manager'
+
+                        ) &&
                         <div className="">Action</div>
                     }
                 </>,
@@ -390,7 +393,9 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
                         {
                             (logInUserData?.role === 'admin' ||
                                 logInUserData?.role === 'manager' ||
-                                logInUserData?.role === 'hr') &&
+                                logInUserData?.role === 'hr' ||
+                                logInUserData?.role === 'project_manager'
+                            ) &&
                             <div className="">
                                 <Popover>
                                     <PopoverTrigger asChild>

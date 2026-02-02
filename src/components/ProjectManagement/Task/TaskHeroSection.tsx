@@ -89,20 +89,22 @@ const TaskHeroSection = () => {
           {/* </div> */}
           {(logInUserData?.role === "admin" ||
             logInUserData?.role === "manager" ||
-            logInUserData?.role === "hr") && (
-            <Dialog open={open} onOpenChange={setOpen}>
-              {/* <Button onClick={() => setOpen(true)} className=""><Plus className="size-5" /> <span className=" hidden sm:block">Create Task</span></Button> */}
-              <DialogTrigger asChild>
-                <Button>
-                  <Plus className="size-5" />
-                  <span className="hidden sm:block">Create Task</span>
-                </Button>
-              </DialogTrigger>
-              <CreateTaskModal
-                handleCloseDialog={handleCloseDialog}
-              ></CreateTaskModal>
-            </Dialog>
-          )}
+            logInUserData?.role === "hr" ||
+            logInUserData?.role === "project_manager"
+          ) && (
+              <Dialog open={open} onOpenChange={setOpen}>
+                {/* <Button onClick={() => setOpen(true)} className=""><Plus className="size-5" /> <span className=" hidden sm:block">Create Task</span></Button> */}
+                <DialogTrigger asChild>
+                  <Button>
+                    <Plus className="size-5" />
+                    <span className="hidden sm:block">Create Task</span>
+                  </Button>
+                </DialogTrigger>
+                <CreateTaskModal
+                  handleCloseDialog={handleCloseDialog}
+                ></CreateTaskModal>
+              </Dialog>
+            )}
         </div>
       </div>
       <div className=" flex flex-col gap-4 md:gap-0 md:flex-row justify-between">
