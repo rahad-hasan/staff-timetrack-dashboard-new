@@ -274,7 +274,7 @@ const SingleMemberPage = ({ data }: { data: any }) => {
                                         <FormItem className="w-full">
                                             <FormLabel>Email Address</FormLabel>
                                             <FormControl>
-                                                <Input {...field} readOnly className="opacity-70 dark:bg-darkPrimaryBg dark:border-darkBorder" />
+                                                <Input {...field} className="opacity-70 dark:bg-darkPrimaryBg dark:border-darkBorder" />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
