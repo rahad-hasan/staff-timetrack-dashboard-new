@@ -32,15 +32,18 @@ import { useLogInUserStore } from "@/store/logInUserStore";
 import DeleteIcon from "@/components/Icons/DeleteIcon";
 import ConfirmDialog from "@/components/Common/ConfirmDialog";
 import EditTaskModal from "./EditTaskModal";
+import SingleTaskModal from "./SingleTaskModal";
 
 const TaskTable = ({ data }: { data: ITask[] }) => {
-
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false)
     const [selectedTask, setSelectedTask] = useState<ITask | null>(null)
     const logInUserData = useLogInUserStore(state => state.logInUserData);
+    // for single task modal
+    const [viewTaskOpen, setViewTaskOpen] = useState(false);
+    const [viewTaskId, setViewTaskId] = useState<number | null>(null);
 
     async function handleStatusUpdate(values: { status: string, id: number }) {
         setLoading(true);
@@ -59,7 +62,6 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
                 });
             }
         } catch (error: any) {
-            console.error("failed:", error);
             toast.error(error?.message || "Something went wrong!", {
                 style: {
                     backgroundColor: '#ef4444',
@@ -101,10 +103,10 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
         }
     }
 
-
     const handleCloseDialog = () => {
         setOpen(false)
     }
+
     const columns: ColumnDef<ITask>[] = [
         {
             accessorKey: "name",
@@ -126,7 +128,12 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
                 const project = row?.original?.project?.name;
                 return (
                     <div className="flex flex-col">
-                        <span className="font-bold text-base text-headingTextColor dark:text-darkTextPrimary">{name}</span>
+                        <span className="font-bold text-base text-headingTextColor dark:text-darkTextPrimary cursor-pointer capitalize"
+                            onClick={() => {
+                                setViewTaskId(row.original.id);
+                                setViewTaskOpen(true);
+                            }}
+                        >{name}</span>
                         <span className=" font-normal text-subTextColor dark:text-darkTextSecondary">{project}</span>
                     </div>
                 )
@@ -156,7 +163,7 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
                             <AvatarImage src={image} alt={assignee} />
                             <AvatarFallback>{assignee?.charAt(0)}</AvatarFallback>
                         </Avatar>
-                        <span>{assignee}</span>
+                        <span className="capitalize">{assignee}</span>
                     </div>
                 );
             }
@@ -301,7 +308,9 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
                         {
                             (logInUserData?.role === 'admin' ||
                                 logInUserData?.role === 'manager' ||
-                                logInUserData?.role === 'hr') ?
+                                logInUserData?.role === 'hr' ||
+                                logInUserData?.role === 'project_manager'
+                            ) ?
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
                                         <Button
@@ -505,6 +514,13 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
                     />
                 )}
             </Dialog>
+            {/* Single task modal here */}
+            <Dialog open={viewTaskOpen} onOpenChange={setViewTaskOpen}>
+                {viewTaskId && (
+                    <SingleTaskModal taskId={viewTaskId} />
+                )}
+            </Dialog>
+
         </div>
     );
 };

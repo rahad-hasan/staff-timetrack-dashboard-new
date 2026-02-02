@@ -148,6 +148,23 @@ export interface ITask {
   user: IUser;
 }
 
+export interface ISingleTask {
+  id: number;
+  name: string;
+  deadline: string | null;
+  description: string | null;
+  status: string;
+  project_id: number;
+  project_name: string;
+  user_id: number;
+  user_name: string;
+  assigned_user_id: number;
+  assigned_user_name: string;
+  email: string;
+  image: string | null;
+  duration: string;
+}
+
 export type ISearchParams = Promise<{ [key: string]: string | string[] | number | undefined }>;
 
 export interface ISearchParamsProps {

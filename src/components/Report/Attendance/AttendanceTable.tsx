@@ -54,7 +54,7 @@ const AttendanceTable = ({ attendanceListData, searchTerm }: any) => {
                             />
                             <AvatarFallback>{name?.charAt(0)}</AvatarFallback>
                         </Avatar>
-                        <span className="">{name}</span>
+                        <span className="capitalize">{name}</span>
                     </div>
                 )
             }

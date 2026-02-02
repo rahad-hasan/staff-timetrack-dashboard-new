@@ -142,11 +142,11 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                 )
             },
             cell: ({ row }) => {
-                const task = row.getValue("name") as string;
+                const project = row.getValue("name") as string;
                 const start_date = row.original.start_date;
                 return (
                     <div className="flex flex-col">
-                        <span className="font-bold text-base text-headingTextColor dark:text-darkTextPrimary">{task}</span>
+                        <span className="font-bold text-base text-headingTextColor dark:text-darkTextPrimary capitalize">{project}</span>
                         <span className=" font-normal text-subTextColor dark:text-darkTextSecondary">{formatTZDayMonthYear(start_date)}</span>
                     </div>
                 )

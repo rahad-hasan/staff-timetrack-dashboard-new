@@ -95,7 +95,7 @@ const TeamsMemberTable = ({ data }: any) => {
                             </AvatarFallback>
                         </Avatar>
 
-                        <Link href={`/members/${row?.original?.id}`}><span className="">{name}</span></Link>
+                        <Link href={`/members/${row?.original?.id}`}><span className="capitalize">{name}</span></Link>
                     </div>
                 )
             }

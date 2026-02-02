@@ -3,11 +3,17 @@
 
 import { buildQuery } from "@/utils/buildQuery";
 import { baseApi } from "../baseApi";
-import { IResponse, ITask } from "@/types/type";
+import { IResponse, ISingleTask, ITask } from "@/types/type";
 
 export const getTasks = async (query = {}): Promise<IResponse<ITask[]>> => {
     const queryString = buildQuery(query);
     return await baseApi(`/tasks${queryString ? `?${queryString}` : ""}`, {
+        tag: "tasks",
+    });
+};
+
+export const getSingleTask = async (id: number): Promise<IResponse<ISingleTask>> => {
+    return await baseApi(`/tasks/${id}`, {
         tag: "tasks",
     });
 };
