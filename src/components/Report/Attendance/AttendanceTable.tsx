@@ -87,7 +87,7 @@ const AttendanceTable = ({ attendanceListData, searchTerm }: any) => {
         //     }
         // },
         {
-            accessorKey: "status",
+            accessorKey: "is_online",
             header: ({ column }) => {
                 return (
                     <div>
