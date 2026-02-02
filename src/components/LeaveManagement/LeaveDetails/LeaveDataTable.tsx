@@ -12,6 +12,7 @@ import LeaveDataDetailsModal from "./LeaveDataDetailsModal";
 import SearchBar from "@/components/Common/SearchBar";
 import { YearPicker } from "@/components/Common/YearPicker";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useTopLoader } from "nextjs-toploader";
 
 const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
     const [sorting, setSorting] = useState<SortingState>([])
@@ -19,7 +20,8 @@ const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
     const [searchTerm, setSearchTerm] = useState("");
     const router = useRouter();
     const searchParams = useSearchParams();
-
+    const loader = useTopLoader();
+    
     const selectedYear = searchParams.get("year") || new Date().getFullYear().toString();
 
     // 4. UseCallback for URL changes to prevent child re-renders
@@ -27,9 +29,10 @@ const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
         const params = new URLSearchParams(searchParams.toString());
         if (year) params.set("year", year);
         else params.delete("year");
+        loader.start()
         router.push(`?${params.toString()}`, { scroll: false });
     }, [router, searchParams]);
-    
+
     const filteredData = useMemo(() => {
         if (!searchTerm) return data;
 
@@ -229,7 +232,7 @@ const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
                 <YearPicker
                     value={selectedYear}
                     onYearChange={handleYearChange}
-                    startYear={new Date().getFullYear() - 4}
+                    startYear={new Date().getFullYear() - 1}
                     endYear={new Date().getFullYear() + 1}>
                 </YearPicker>
                 <SearchBar onSearch={setSearchTerm} />
