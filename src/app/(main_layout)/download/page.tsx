@@ -71,9 +71,9 @@ const DownloadPage = () => {
           />
           <div className="text-lg font-medium">macOS</div>
           <a
-            href={`#`}
+            href={`https://drive.google.com/file/d/1susgrXFh4guU-Fkf6M1WaSfN7IbezunM/view?usp=share_link`}
             // download="staff-time-tracker_0.0.1.exe"
-            // target="_blank"
+            target="_blank"
             // rel="noopener"
           >
             <Button size={"sm"} variant={"download"} className="text-sm">

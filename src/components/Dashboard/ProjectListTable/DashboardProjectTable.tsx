@@ -190,7 +190,7 @@ const DashboardProjectTable = ({ data }: { data: IProject[] }) => {
             }
         },
         {
-            accessorKey: "timeWorked",
+            accessorKey: "budget",
             // header: () => <div className="">Time Worked</div>,
             header: ({ column }) => {
                 return (
@@ -199,7 +199,7 @@ const DashboardProjectTable = ({ data }: { data: IProject[] }) => {
                             className=" cursor-pointer flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                         >
-                            Time Worked
+                            Budget
                             <ArrowUpDown className="ml-2 h-4 w-4" />
                         </span>
                     </div>
@@ -207,7 +207,7 @@ const DashboardProjectTable = ({ data }: { data: IProject[] }) => {
             },
             cell: ({ row }) => {
 
-                return <div className="">{row?.original?.summary?.duration}</div>;
+                return <div className="">${row?.original?.budget}</div>;
             },
         },
         {
