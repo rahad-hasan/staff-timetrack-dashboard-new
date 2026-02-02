@@ -140,7 +140,7 @@ const EditTaskModal = ({ handleCloseDialog, selectedProject }: { handleCloseDial
             assignee: Number(values.assignee),
             deadline: values.deadline ? new Date(values.deadline).toISOString() : null,
             priority: values.priority,
-            description: values.details,
+            ...(values.details && { description: values.details }),
         }
         setTaskLoading(true);
         try {

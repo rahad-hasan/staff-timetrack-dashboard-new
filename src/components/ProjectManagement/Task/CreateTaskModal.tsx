@@ -126,7 +126,7 @@ const CreateTaskModal = ({ handleCloseDialog }: { handleCloseDialog: () => void 
             assignee: Number(values.assignee),
             deadline: values.deadline ? new Date(values.deadline).toISOString() : null,
             priority: values.priority,
-            description: values.details,
+            ...(values.details && { description: values.details }),
         }
         setProjectLoading(true);
         try {

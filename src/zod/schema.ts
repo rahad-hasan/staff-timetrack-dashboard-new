@@ -41,7 +41,7 @@ export const addManualTimeSchema = z.object({
     }),
     task: z.any().refine((val) => val !== undefined && val !== null && val !== "", {
         message: "Task is required",
-    }),
+    }).optional(),
     date: z.date().nullable().refine((date) => date !== null && !isNaN(date.getTime()), {
         message: "Date is required",
     }),
@@ -137,7 +137,7 @@ export const newTaskCreationSchema = z.object({
         message: "Deadline is required",
     }),
     priority: z.string().min(1, "Priority is required"),
-    details: z.string().min(1, "Task details is required"),
+    details: z.string().optional(),
 })
 
 export const newClientSchema = z.object({

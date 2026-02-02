@@ -169,7 +169,7 @@ const AddManualTimeModal = ({ onClose }: { onClose: () => void }) => {
 
             const finalData = {
                 project_id: formattedData?.project,
-                task_id: formattedData?.task,
+                ...(formattedData?.task && { task_id: formattedData.task }),
                 start_time: formattedData?.timeFrom,
                 end_time: formattedData?.timeTo,
                 note: formattedData?.message
