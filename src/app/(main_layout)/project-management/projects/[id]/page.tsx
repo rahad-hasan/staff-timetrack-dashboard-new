@@ -1,20 +1,30 @@
-import SingleProjectServer from '@/components/ProjectManagement/Projects/SingleProject/SingleProjectServer';
-import SingleProjectSkeleton from '@/skeleton/projectManagement/project/SingleProjectSkeleton';
-import { Suspense } from 'react';
-// import SingleProjectClientInfoSkeleton from "@/skeleton/projectManagement/project/SingleProjectClientInfoSkeleton";
+import { getSingleProject } from "@/actions/projects/action";
+import { getTasks } from "@/actions/task/action";
+import SingleProject from "@/components/ProjectManagement/Projects/SingleProject/SingleProject";
+import { ISearchParams } from "@/types/type";
 interface PageProps {
     params: Promise<{ id: string }>;
+    searchParams: ISearchParams
 }
-const ProjectSinglePage = async ({ params }: PageProps) => {
+const SingleProjectServer = async ({ params, searchParams }: PageProps) => {
     const { id } = await params;
+    const resolvedSearchParams = await searchParams;
+
+    const result = await getSingleProject({
+        id: id,
+    });
+
+    const projectBasedTask = await getTasks({
+        project_id: id,
+        limit: 10,
+        page: resolvedSearchParams.page,
+    });
 
     return (
         <div>
-            <Suspense fallback={ <SingleProjectSkeleton/>}>
-                <SingleProjectServer id={id}></SingleProjectServer>
-            </Suspense>
+            <SingleProject data={result?.data} task={projectBasedTask} page={resolvedSearchParams.page}></SingleProject>
         </div>
     );
 };
 
-export default ProjectSinglePage;
+export default SingleProjectServer;

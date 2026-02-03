@@ -129,7 +129,7 @@ const SingleMemberPage = ({ data }: { data: any }) => {
 
                     <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                            <h1 className=" text-xl md:text-2xl xl:text-3xl font-bold text-headingTextColor dark:text-darkTextPrimary tracking-tight">
+                            <h1 className=" text-xl md:text-2xl 2xl:text-3xl font-bold text-headingTextColor dark:text-darkTextPrimary tracking-tight">
                                 {data?.name}
                             </h1>
                             <span className="px-2 py-0.5 rounded text-[12px] font-bold uppercase bg-primary/10 text-primary border border-primary/20">

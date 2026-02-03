@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -11,8 +12,10 @@ import { Dialog } from "@/components/ui/dialog";
 import EditProjectModal from "@/components/ProjectManagement/Projects/EditProjectModal";
 import { formatTZDateDMY } from "@/utils";
 import { useLogInUserStore } from "@/store/logInUserStore";
+import AppPagination from "@/components/Common/AppPagination";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-const SingleProject = ({ data }: { data: ISingleProjectData }) => {
+const SingleProject = ({ data, task, page }: { data: ISingleProjectData, task: any, page: string | number | string[] | undefined }) => {
     const logInUserData = useLogInUserStore(state => state.logInUserData);
     const [activeTab, setActiveTab] = useState<"Members" | "Tasks">("Members");
     const [open, setOpen] = useState(false)
@@ -160,18 +163,40 @@ const SingleProject = ({ data }: { data: ISingleProjectData }) => {
                         ))}
                     </div>
                 </div>
-                {/* {
+
+                {
                     activeTab === "Members" ?
-                        <Button className=" text-sm md:text-base"><PlusIcon size={20} /> Add Member</Button>
+                        <></>
                         :
-                        <Button className=" text-sm md:text-base"><PlusIcon size={20} /> Add Task</Button>
-                } */}
+                        <Select>
+                            <SelectTrigger className="w-full max-w-48">
+                                <SelectValue placeholder="Select a status" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectGroup>
+                                    <SelectLabel>status</SelectLabel>
+                                    <SelectItem value="apple">Apple</SelectItem>
+                                    <SelectItem value="banana">Banana</SelectItem>
+                                    <SelectItem value="blueberry">Blueberry</SelectItem>
+                                    <SelectItem value="grapes">Grapes</SelectItem>
+                                    <SelectItem value="pineapple">Pineapple</SelectItem>
+                                </SelectGroup>
+                            </SelectContent>
+                        </Select>
+                }
             </div>
             {
                 activeTab === "Members" ?
                     <SingleProjectMemberTable data={data?.projectAssigns}></SingleProjectMemberTable>
                     :
-                    <SingleProjectTask data={data?.tasks}></SingleProjectTask>
+                    <>
+                        <SingleProjectTask data={task?.data}></SingleProjectTask>
+                        <AppPagination
+                            total={task?.meta?.total}
+                            currentPage={Number(page)}
+                            limit={task?.meta?.limit ?? 10}
+                        />
+                    </>
             }
             {/* Edit modal here */}
             <Dialog open={open} onOpenChange={setOpen}>
