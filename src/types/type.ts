@@ -415,6 +415,8 @@ export interface Task {
   id: number | null;
   name: string | null;
   description?: string | null;
+  duration?: string;
+  user: User;
   status?: string
 }
 

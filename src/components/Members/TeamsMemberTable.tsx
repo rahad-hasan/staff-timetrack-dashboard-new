@@ -83,7 +83,7 @@ const TeamsMemberTable = ({ data }: any) => {
                 return (
                     <div className="flex items-center gap-2 min-w-[200px]">
                         <Avatar>
-                            <AvatarImage src={img || undefined} alt={name} />
+                            <AvatarImage src={img ?? ""} alt={name} />
                             <AvatarFallback>
                                 {name
                                     ?.trim()
@@ -177,32 +177,6 @@ const TeamsMemberTable = ({ data }: any) => {
                 )
             }
         },
-        // {
-        //     accessorKey: "weeklyLimit",
-        //     header: ({ column }) => {
-        //         return (
-        //             <div>
-        //                 <span
-        //                     className=" cursor-pointer flex items-center gap-1"
-        //                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        //                 >
-        //                     Limit
-        //                     <ArrowUpDown className="ml-2 h-4 w-4" />
-        //                 </span>
-        //             </div>
-        //         )
-        //     },
-        //     cell: ({ row }) => {
-        //         const weeklyLimit = row.getValue("weeklyLimit") as string;
-        //         const dailyLimit = row.original.dailyLimit
-        //         return (
-        //             <div className="flex flex-col">
-        //                 <span className=" font-thin">{weeklyLimit}</span>
-        //                 <span className=" font-thin">{dailyLimit}</span>
-        //             </div>
-        //         )
-        //     }
-        // },
         {
             accessorKey: "created_at",
             header: ({ column }) => {
@@ -243,7 +217,7 @@ const TeamsMemberTable = ({ data }: any) => {
                 )
             },
             cell: ({ row }) => {
-                const is_tracking = row.getValue("is_tracking") as string;
+                const is_tracking = row?.original?.is_tracking;
                 return (
                     <div className="flex items-center gap-2 text-primary">
                         <span>{is_tracking ? <CheckIcon size={22} /> : ''}</span>
