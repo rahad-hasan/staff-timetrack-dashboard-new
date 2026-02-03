@@ -36,7 +36,7 @@ export function StatusSelector() {
             </SelectTrigger>
             <SelectContent>
                 <SelectGroup>
-                    {/* <SelectItem value="all">All Status</SelectItem> */}
+                    <SelectItem value="all">Remove Status</SelectItem>
                     <SelectItem value="pending">Pending</SelectItem>
                     <SelectItem value="processing">Processing</SelectItem>
                     <SelectItem value="complete">Complete</SelectItem>

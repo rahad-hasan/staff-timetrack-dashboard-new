@@ -14,10 +14,12 @@ import { formatTZDateDMY } from "@/utils";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import AppPagination from "@/components/Common/AppPagination";
 import { StatusSelector } from "@/components/Common/StatusSelector";
+import SearchBar from "@/components/Common/SearchBar";
 
 const SingleProject = ({ data, task, page }: { data: ISingleProjectData, task: any, page: string | number | string[] | undefined }) => {
     const logInUserData = useLogInUserStore(state => state.logInUserData);
     const [activeTab, setActiveTab] = useState<"Members" | "Tasks">("Members");
+    const [searchTerm, setSearchTerm] = useState("");
     const [open, setOpen] = useState(false)
     const handleTabClick = (tab: "Members" | "Tasks") => {
         setActiveTab(tab);
@@ -88,33 +90,6 @@ const SingleProject = ({ data, task, page }: { data: ISingleProjectData, task: a
                         </tbody>
                     </table>
                 </div>
-
-                {/* <div className=" mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 items-center gap-6">
-                    <div className=" h-[130px] 2xl:h-[150px] border border-borderColor dark:border-darkBorder rounded-xl w-full">
-                        <div className="h-[90px] 2xl:h-[105px] bg-[#fff5db] dark:bg-darkSecondaryBg border-b border-borderColor dark:border-darkBorder flex items-center justify-start rounded-t-xl px-4 ">
-                            <h2 className=" text-2xl font-medium text-center rounded-t-xl text-headingTextColor dark:text-darkTextPrimary">420 hours</h2>
-                        </div>
-                        <div className=" h-[40px] 2xl:h-[45px] flex items-center justify-start px-4 text-headingTextColor dark:text-darkTextPrimary">Total Hours</div>
-                    </div>
-                    <div className=" h-[130px] 2xl:h-[150px] border border-borderColor dark:border-darkBorder rounded-xl w-full">
-                        <div className="h-[90px] 2xl:h-[105px] bg-[#eff7fe] dark:bg-darkSecondaryBg border-b border-borderColor dark:border-darkBorder flex items-center justify-start rounded-t-xl px-4">
-                            <h2 className=" text-2xl font-medium text-center rounded-t-xl text-headingTextColor dark:text-darkTextPrimary">180 hours</h2>
-                        </div>
-                        <div className=" h-[40px] 2xl:h-[45px] flex items-center justify-start px-4 text-headingTextColor dark:text-darkTextPrimary">Billable Hours</div>
-                    </div>
-                    <div className=" h-[130px] 2xl:h-[150px] border border-borderColor dark:border-darkBorder rounded-xl w-full">
-                        <div className="h-[90px] 2xl:h-[105px] bg-[#ede7ff] dark:bg-darkSecondaryBg border-b border-borderColor dark:border-darkBorder flex items-center justify-start rounded-t-xl px-4">
-                            <h2 className=" text-2xl font-medium text-center rounded-t-xl text-headingTextColor dark:text-darkTextPrimary">240 hours</h2>
-                        </div>
-                        <div className=" h-[40px] 2xl:h-[45px] flex items-center justify-start px-4 text-headingTextColor dark:text-darkTextPrimary">Unbilled Hours</div>
-                    </div>
-                    <div className=" h-[130px] 2xl:h-[150px] border border-borderColor dark:border-darkBorder rounded-xl w-full">
-                        <div className="h-[90px] 2xl:h-[105px] bg-[#fee6eb] dark:bg-darkSecondaryBg border-b border-borderColor dark:border-darkBorder flex items-center justify-start rounded-t-xl px-4">
-                            <h2 className=" text-2xl font-medium text-center rounded-t-xl text-headingTextColor dark:text-darkTextPrimary">$6,302</h2>
-                        </div>
-                        <div className=" h-[40px] 2xl:h-[45px] flex items-center justify-start px-4 text-headingTextColor dark:text-darkTextPrimary">Unbilled Amount</div>
-                    </div>
-                </div> */}
                 <div className=" mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 items-center gap-6">
                     {
                         data?.projectManagerAssigns?.map((manager) =>
@@ -166,14 +141,14 @@ const SingleProject = ({ data, task, page }: { data: ISingleProjectData, task: a
 
                 {
                     activeTab === "Members" ?
-                        <></>
+                        <SearchBar onSearch={setSearchTerm} />
                         :
                         <StatusSelector></StatusSelector>
                 }
             </div>
             {
                 activeTab === "Members" ?
-                    <SingleProjectMemberTable data={data?.projectAssigns}></SingleProjectMemberTable>
+                    <SingleProjectMemberTable data={data?.projectAssigns} searchTerm={searchTerm}></SingleProjectMemberTable>
                     :
                     <>
                         <SingleProjectTask data={task?.data}></SingleProjectTask>

@@ -2,16 +2,27 @@
 
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ArrowUpDown } from "lucide-react";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { ProjectAssign } from "@/types/type";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatTZDateDMY, formatTZTime } from "@/utils";
 
-const SingleProjectMemberTable = ({ data }: { data: ProjectAssign[] }) => {
+const SingleProjectMemberTable = ({ data, searchTerm }: { data: ProjectAssign[], searchTerm: string }) => {
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
+
+    const filteredData = useMemo(() => {
+        if (!searchTerm) return data;
+
+        return data.filter((row: ProjectAssign) => {
+            return (
+                row.user.name.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        });
+    }, [data, searchTerm]);
+
     const columns: ColumnDef<ProjectAssign>[] = [
         {
             accessorKey: "name",
@@ -113,7 +124,7 @@ const SingleProjectMemberTable = ({ data }: { data: ProjectAssign[] }) => {
 
 
     const table = useReactTable({
-        data: data,
+        data: filteredData,
         columns,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,
