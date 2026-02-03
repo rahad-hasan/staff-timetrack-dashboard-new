@@ -11,6 +11,9 @@ import { cookies } from "next/headers";
 //   });
 // };
 
+// Define a duration for cookies (e.g., 30 days)
+const MAX_AGE = 60 * 60 * 24 * 30;
+
 export const logIn = async (data: any) => {
   const res = await baseApi("/auth/signin", {
     method: "POST",
@@ -21,12 +24,12 @@ export const logIn = async (data: any) => {
   if (res?.success) {
     const isProd = process.env.NODE_ENV === "production";
     const cookieStore = await cookies();
-
     cookieStore.set("accessToken", res.data.accessToken, {
       httpOnly: true,
       secure: isProd,
       sameSite: "lax",
       path: "/",
+      maxAge: MAX_AGE,
     });
 
     cookieStore.set("refreshToken", res.data.refreshToken, {
@@ -34,6 +37,7 @@ export const logIn = async (data: any) => {
       secure: isProd,
       sameSite: "lax",
       path: "/",
+      maxAge: MAX_AGE,
     });
 
     cookieStore.set("staffTimeDashboardRole", res.data.role, {
@@ -41,6 +45,7 @@ export const logIn = async (data: any) => {
       secure: isProd,
       sameSite: "lax",
       path: "/",
+      maxAge: MAX_AGE,
     });
 
     cookieStore.set("userId", res.data.id, {
@@ -48,6 +53,7 @@ export const logIn = async (data: any) => {
       secure: isProd,
       sameSite: "lax",
       path: "/",
+      maxAge: MAX_AGE,
     });
   }
 
@@ -151,6 +157,7 @@ export const resetPassword = async ({ data }: {
       secure: isProd,
       sameSite: "lax",
       path: "/",
+      maxAge: MAX_AGE,
     });
 
     cookieStore.set("refreshToken", res.data.refreshToken, {
@@ -158,6 +165,7 @@ export const resetPassword = async ({ data }: {
       secure: isProd,
       sameSite: "lax",
       path: "/",
+      maxAge: MAX_AGE,
     });
 
     cookieStore.set("staffTimeDashboardRole", res.data.role, {
@@ -165,6 +173,7 @@ export const resetPassword = async ({ data }: {
       secure: isProd,
       sameSite: "lax",
       path: "/",
+      maxAge: MAX_AGE,
     });
 
     cookieStore.set("userId", res.data.id, {
@@ -172,6 +181,7 @@ export const resetPassword = async ({ data }: {
       secure: isProd,
       sameSite: "lax",
       path: "/",
+      maxAge: MAX_AGE,
     });
   }
 
