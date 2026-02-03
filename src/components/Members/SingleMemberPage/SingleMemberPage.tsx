@@ -81,7 +81,7 @@ const SingleMemberPage = ({ data }: { data: any }) => {
             cam_tracking: Boolean(switches.cam_tracking),
             multi_factor_auth: Boolean(switches.multi_factor_auth),
         };
-        console.log(payload);
+
         try {
             const res = await editSingleDetailsMember({ data: payload, id: data?.id });
 

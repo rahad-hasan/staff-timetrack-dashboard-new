@@ -148,7 +148,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                 return (
                     <div className="flex flex-col">
                         <Link href={`/project-management/projects/${row?.original?.id}`}>
-                            <span className="font-bold text-base text-headingTextColor dark:text-darkTextPrimary capitalize">{project}</span>
+                            <span className="font-bold text-base text-headingTextColor dark:text-darkTextPrimary capitalize hover:underline-offset-2 hover:underline">{project}</span>
                         </Link>
                         <span className=" font-normal text-subTextColor dark:text-darkTextSecondary">{formatTZDayMonthYear(start_date)}</span>
                     </div>

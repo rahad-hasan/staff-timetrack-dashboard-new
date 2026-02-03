@@ -61,7 +61,7 @@ const AttendanceTable = ({ attendanceListData, searchTerm }: any) => {
                                 logInUserData?.role === "manager" ||
                                 logInUserData?.role === "hr") ?
                                 <Link href={`/members/${row?.original?.id}`}>
-                                    <span className="capitalize">{name}</span>
+                                    <span className="capitalize hover:underline-offset-2 hover:underline">{name}</span>
                                 </Link>
                                 :
                                 <span className="capitalize">{name}</span>

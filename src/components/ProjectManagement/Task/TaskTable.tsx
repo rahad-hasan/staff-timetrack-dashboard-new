@@ -128,7 +128,7 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
                 const project = row?.original?.project?.name;
                 return (
                     <div className="flex flex-col">
-                        <span className="font-bold text-base text-headingTextColor dark:text-darkTextPrimary cursor-pointer capitalize"
+                        <span className="font-bold text-base text-headingTextColor dark:text-darkTextPrimary cursor-pointer capitalize hover:underline-offset-2 hover:underline"
                             onClick={() => {
                                 setViewTaskId(row.original.id);
                                 setViewTaskOpen(true);
