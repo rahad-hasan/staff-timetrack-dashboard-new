@@ -13,7 +13,7 @@ import EditProjectModal from "@/components/ProjectManagement/Projects/EditProjec
 import { formatTZDateDMY } from "@/utils";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import AppPagination from "@/components/Common/AppPagination";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { StatusSelector } from "@/components/Common/StatusSelector";
 
 const SingleProject = ({ data, task, page }: { data: ISingleProjectData, task: any, page: string | number | string[] | undefined }) => {
     const logInUserData = useLogInUserStore(state => state.logInUserData);
@@ -168,21 +168,7 @@ const SingleProject = ({ data, task, page }: { data: ISingleProjectData, task: a
                     activeTab === "Members" ?
                         <></>
                         :
-                        <Select>
-                            <SelectTrigger className="w-full max-w-48">
-                                <SelectValue placeholder="Select a status" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectGroup>
-                                    <SelectLabel>status</SelectLabel>
-                                    <SelectItem value="apple">Apple</SelectItem>
-                                    <SelectItem value="banana">Banana</SelectItem>
-                                    <SelectItem value="blueberry">Blueberry</SelectItem>
-                                    <SelectItem value="grapes">Grapes</SelectItem>
-                                    <SelectItem value="pineapple">Pineapple</SelectItem>
-                                </SelectGroup>
-                            </SelectContent>
-                        </Select>
+                        <StatusSelector></StatusSelector>
                 }
             </div>
             {

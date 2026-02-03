@@ -18,6 +18,7 @@ const SingleProjectServer = async ({ params, searchParams }: PageProps) => {
         project_id: id,
         limit: 10,
         page: resolvedSearchParams.page,
+        status: resolvedSearchParams.status
     });
 
     return (
