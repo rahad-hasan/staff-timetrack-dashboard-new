@@ -43,12 +43,14 @@ import {
 import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { popularTimeZoneList } from "@/utils/TimeZoneList";
+import { useLogInUserStore } from "@/store/logInUserStore";
 
 const Configuration = ({ data }: { data: ICompany }) => {
     const [loading, setLoading] = useState(false);
     const daysOfWeek = [
         "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
     ];
+    const { updateUserData } = useLogInUserStore();
 
     const [switches, setSwitches] = useState({
         app_notify: data?.app_notify || false,
@@ -84,6 +86,9 @@ const Configuration = ({ data }: { data: ICompany }) => {
 
             if (res?.success) {
                 toast.success(res?.message || "Updated company info successfully");
+                updateUserData({
+                    timezone: values.time_zone,
+                });
             } else {
                 toast.error(res?.message || "Failed to update", {
                     style: {
