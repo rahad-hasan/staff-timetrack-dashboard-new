@@ -6,8 +6,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import FilterButton from "@/components/Common/FilterButton";
 import CheckIcon from "@/components/Icons/CheckIcon";
-import { format, parseISO } from "date-fns";
 import { IDailyTimeEntryItem } from "@/types/type";
+import { formatTZTime } from "@/utils";
 
 const DailyTimeSheetsTable = ({ data }: { data: IDailyTimeEntryItem[] }) => {
     const [sorting, setSorting] = useState<SortingState>([])
@@ -116,7 +116,7 @@ const DailyTimeSheetsTable = ({ data }: { data: IDailyTimeEntryItem[] }) => {
                                 <h1 className=" font-medium text-headingTextColor dark:text-darkTextPrimary">
                                     {row?.original?.total_duration_formatted}
                                 </h1>
-                                <p className=" text-sm font-thin text-subTextColor dark:text-darkTextSecondary">{format(parseISO(row?.original?.span?.start), 'h:mm a')} - {format(parseISO(row?.original?.span?.end), 'h:mm a')}</p>
+                                <p className=" text-sm font-thin text-subTextColor dark:text-darkTextSecondary">{formatTZTime(row?.original?.span?.start)} - {formatTZTime(row?.original?.span?.end)}</p>
                             </div>
                         </div>
                         <FilterButton />

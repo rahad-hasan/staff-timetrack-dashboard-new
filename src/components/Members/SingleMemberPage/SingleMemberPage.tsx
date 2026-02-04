@@ -23,6 +23,12 @@ import SingleMemberTaskTable from "./SingleMemberTaskTable";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { singleMemberSchema } from "@/zod/schema";
 import { editSingleDetailsMember } from "@/actions/members/action";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { cn } from "@/lib/utils";
+import { popularTimeZoneList } from "@/utils/TimeZoneList";
+// import { useLogInUserStore } from "@/store/logInUserStore";
 
 
 const SingleMemberPage = ({ data }: { data: any }) => {
@@ -31,6 +37,7 @@ const SingleMemberPage = ({ data }: { data: any }) => {
     const handleTabClick = (tab: "Projects" | "Tasks") => {
         setActiveTab(tab);
     };
+    // const { setTimeZone } = useLogInUserStore();
 
     const [switches, setSwitches] = useState({
         is_active: data?.is_active,
@@ -48,24 +55,9 @@ const SingleMemberPage = ({ data }: { data: any }) => {
             phone: data?.phone || "",
             pay_rate_hourly: data?.pay_rate_hourly || 0,
             role: data?.role || "",
+            time_zone: data?.time_zone || "",
         },
     });
-
-    // const onSubmit = async (values: z.infer<typeof singleMemberSchema>) => {
-    //     setLoading(true);
-    //     const finalData = {
-    //         ...values,
-    //         ...switches,
-    //         id: data.id,
-    //     };
-
-    //     console.log("Final Member Data for Update:", finalData);
-
-    //     setTimeout(() => {
-    //         toast.success("Check console for updated data object!");
-    //         setLoading(false);
-    //     }, 1000);
-    // };
 
     async function onSubmit(values: z.infer<typeof singleMemberSchema>) {
         setLoading(true);
@@ -74,6 +66,7 @@ const SingleMemberPage = ({ data }: { data: any }) => {
             email: values.email,
             phone: values.phone ?? "",
             role: values.role,
+            time_zone: values.time_zone,
             pay_rate_hourly: values.pay_rate_hourly,
             is_active: Boolean(switches.is_active),
             is_tracking: Boolean(switches.is_tracking),
@@ -87,6 +80,7 @@ const SingleMemberPage = ({ data }: { data: any }) => {
 
             if (res?.success) {
                 toast.success(res?.message || "Member edited successfully");
+                // setTimeZone(values.time_zone)
             } else {
                 toast.error(res?.message || "Failed to edit member", {
                     style: {
@@ -321,31 +315,89 @@ const SingleMemberPage = ({ data }: { data: any }) => {
                                     )}
                                 />
                             </div>
-
-                            <FormField
-                                control={form.control}
-                                name="role"
-                                render={({ field }) => (
-                                    <FormItem className=" w-full">
-                                        <FormLabel>User Role</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                            <FormControl className=" w-full">
-                                                <SelectTrigger className="dark:bg-darkPrimaryBg dark:border-darkBorder">
-                                                    <SelectValue placeholder="Select a role" />
-                                                </SelectTrigger>
-                                            </FormControl>
-                                            <SelectContent>
-                                                <SelectItem value="admin">Admin</SelectItem>
-                                                <SelectItem value="manager">Manager</SelectItem>
-                                                <SelectItem value="hr">HR</SelectItem>
-                                                <SelectItem value="project_manager">Project Manager</SelectItem>
-                                                <SelectItem value="employee">Employee</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                            <div className="grid sm:grid-cols-2 gap-4 sm:gap-3 items-start">
+                                <FormField
+                                    control={form.control}
+                                    name="role"
+                                    render={({ field }) => (
+                                        <FormItem className=" w-full">
+                                            <FormLabel>User Role</FormLabel>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                <FormControl className=" w-full">
+                                                    <SelectTrigger className="dark:bg-darkPrimaryBg dark:border-darkBorder">
+                                                        <SelectValue placeholder="Select a role" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    <SelectItem value="admin">Admin</SelectItem>
+                                                    <SelectItem value="manager">Manager</SelectItem>
+                                                    <SelectItem value="hr">HR</SelectItem>
+                                                    <SelectItem value="project_manager">Project Manager</SelectItem>
+                                                    <SelectItem value="employee">Employee</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="time_zone"
+                                    render={({ field }) => (
+                                        <FormItem className="flex flex-col">
+                                            <FormLabel>Time Zone</FormLabel>
+                                            <Popover>
+                                                <PopoverTrigger asChild>
+                                                    <FormControl>
+                                                        <Button
+                                                            variant="outline2"
+                                                            role="combobox"
+                                                            className=" flex justify-between dark:text-darkTextPrimary hover:dark:bg-darkPrimaryBg"
+                                                        >
+                                                            <span className="truncate">
+                                                                {field.value
+                                                                    ? popularTimeZoneList.find((tz) => tz.value === field.value)?.label
+                                                                    : "Select time zone"}
+                                                            </span>
+                                                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                                        </Button>
+                                                    </FormControl>
+                                                </PopoverTrigger>
+                                                <PopoverContent className="w-[--radix-popover-trigger-width] p-0 dark:bg-darkSecondaryBg dark:border-darkBorder ">
+                                                    <Command className="dark:bg-darkSecondaryBg">
+                                                        <CommandInput placeholder="Search time zone..." className="" />
+                                                        <CommandList className="overflow-y-scroll no-scrollbar scroll-smooth">
+                                                            <CommandEmpty>No time zone found.</CommandEmpty>
+                                                            <CommandGroup>
+                                                                {popularTimeZoneList.map((tz) => (
+                                                                    <CommandItem
+                                                                        key={tz.value}
+                                                                        value={tz.label}
+                                                                        onSelect={() => {
+                                                                            form.setValue("time_zone", tz.value);
+                                                                            document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+                                                                        }}
+                                                                        className="cursor-pointer hover:dark:bg-darkPrimaryBg"
+                                                                    >
+                                                                        <Check
+                                                                            className={cn(
+                                                                                "mr-2 h-4 w-4",
+                                                                                tz.value === field.value ? "opacity-100" : "opacity-0"
+                                                                            )}
+                                                                        />
+                                                                        {tz.label}
+                                                                    </CommandItem>
+                                                                ))}
+                                                            </CommandGroup>
+                                                        </CommandList>
+                                                    </Command>
+                                                </PopoverContent>
+                                            </Popover>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
 
                             <div className="flex items-center justify-between p-2 border rounded-md dark:border-darkBorder">
                                 <span className="text-sm font-medium">Enable Multi-Factor Authentication</span>

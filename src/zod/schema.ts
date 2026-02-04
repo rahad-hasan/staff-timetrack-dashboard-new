@@ -318,5 +318,7 @@ export const singleMemberSchema = z.object({
         ),
     pay_rate_hourly: z.number().min(0),
     role: z.string().min(2, "role is required"),
+    time_zone: z.string()
+        .min(1, "Time Zone is required"),
 })
 

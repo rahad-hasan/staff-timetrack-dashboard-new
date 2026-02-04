@@ -42,47 +42,14 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";
+import { popularTimeZoneList } from "@/utils/TimeZoneList";
 
 const Configuration = ({ data }: { data: ICompany }) => {
     const [loading, setLoading] = useState(false);
     const daysOfWeek = [
         "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
     ];
-    const popularTimeZones = [
-        // Americas
-        { label: "(GMT-08:00) Pacific Time (US & Canada)", value: "America/Los_Angeles" },
-        { label: "(GMT-07:00) Mountain Time (US & Canada)", value: "America/Denver" },
-        { label: "(GMT-06:00) Central Time (US & Canada)", value: "America/Chicago" },
-        { label: "(GMT-05:00) Eastern Time (US & Canada)", value: "America/New_York" },
-        { label: "(GMT-04:00) Atlantic Time (Canada)", value: "America/Halifax" },
-        { label: "(GMT-03:00) Brazil (Sao Paulo)", value: "America/Sao_Paulo" },
 
-        // Europe & Africa
-        { label: "(GMT+00:00) Western European Time (London)", value: "Europe/London" },
-        { label: "(GMT+01:00) Central European Time (Paris, Berlin)", value: "Europe/Paris" },
-        { label: "(GMT+02:00) Eastern European Time (Cairo, Helsinki)", value: "Europe/Cairo" },
-        { label: "(GMT+02:00) South Africa Standard Time", value: "Africa/Johannesburg" },
-        { label: "(GMT+03:00) Moscow Standard Time", value: "Europe/Moscow" },
-        { label: "(GMT+03:00) East Africa Time (Nairobi)", value: "Africa/Nairobi" },
-
-        // Middle East & Asia
-        { label: "(GMT+03:00) Arabia Standard Time (Riyadh)", value: "Asia/Riyadh" },
-        { label: "(GMT+03:30) Iran Standard Time", value: "Asia/Tehran" },
-        { label: "(GMT+04:00) Gulf Standard Time (Dubai)", value: "Asia/Dubai" },
-        { label: "(GMT+05:00) Pakistan Standard Time (Karachi)", value: "Asia/Karachi" },
-        { label: "(GMT+05:30) India Standard Time (Kolkata)", value: "Asia/Kolkata" },
-        { label: "(GMT+06:00) Bangladesh Standard Time", value: "Asia/Dhaka" },
-        { label: "(GMT+07:00) Indochina Time (Bangkok, Jakarta)", value: "Asia/Bangkok" },
-        { label: "(GMT+08:00) China Standard Time (Beijing)", value: "Asia/Shanghai" },
-        { label: "(GMT+08:00) Singapore / Malaysia", value: "Asia/Singapore" },
-        { label: "(GMT+09:00) Japan / Korea Standard Time", value: "Asia/Tokyo" },
-
-        // Australia & Pacific
-        { label: "(GMT+08:00) Western Australia (Perth)", value: "Australia/Perth" },
-        { label: "(GMT+09:30) Central Australia (Darwin)", value: "Australia/Darwin" },
-        { label: "(GMT+10:00) Eastern Australia (Sydney)", value: "Australia/Sydney" },
-        { label: "(GMT+12:00) New Zealand (Auckland)", value: "Pacific/Auckland" },
-    ];
     const [switches, setSwitches] = useState({
         app_notify: data?.app_notify || false,
         email_notify: data?.email_notify || false,
@@ -287,17 +254,6 @@ const Configuration = ({ data }: { data: ICompany }) => {
                                 )}
                             />
                         </div>
-
-                        {/* Buttons */}
-                        {/* <div className="flex items-center gap-3 w-full pt-3">
-                            <Button type="submit">Save Changes</Button>
-                            <Button
-                                variant="outline2"
-                                className="dark:bg-darkPrimaryBg dark:border-darkBorder dark:text-darkTextPrimary"
-                            >
-                                Cancel
-                            </Button>
-                        </div> */}
                     </form>
                 </Form>
             </div>
@@ -346,7 +302,7 @@ const Configuration = ({ data }: { data: ICompany }) => {
                                                     >
                                                         <span className="truncate">
                                                             {field.value
-                                                                ? popularTimeZones.find((tz) => tz.value === field.value)?.label
+                                                                ? popularTimeZoneList.find((tz) => tz.value === field.value)?.label
                                                                 : "Select time zone"}
                                                         </span>
                                                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -359,7 +315,7 @@ const Configuration = ({ data }: { data: ICompany }) => {
                                                     <CommandList className="overflow-y-scroll no-scrollbar scroll-smooth">
                                                         <CommandEmpty>No time zone found.</CommandEmpty>
                                                         <CommandGroup>
-                                                            {popularTimeZones.map((tz) => (
+                                                            {popularTimeZoneList.map((tz) => (
                                                                 <CommandItem
                                                                     key={tz.value}
                                                                     value={tz.label}

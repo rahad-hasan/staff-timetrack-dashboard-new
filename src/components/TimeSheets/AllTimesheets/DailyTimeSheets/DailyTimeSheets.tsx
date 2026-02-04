@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 import {
     Tooltip,
     TooltipContent,
@@ -6,6 +7,7 @@ import {
 } from "@/components/ui/tooltip"
 import DailyTimeSheetsTable from "./DailyTimeSheetsTable";
 import { formatTZDate, formatTZTime, getTZDecimalHour } from "@/utils";
+
 
 const DailyTimeSheets = ({ data, timeLineData, selectedDate }: { data: any, timeLineData: any, selectedDate: string | number | string[] | undefined }) => {
 
@@ -45,6 +47,7 @@ const DailyTimeSheets = ({ data, timeLineData, selectedDate }: { data: any, time
 
     const isToday = selectedDate === formatTZDate(new Date());
     const dayProgress = getDayProgressPercentage();
+    console.log(activePeriods);
 
     return (
         <>

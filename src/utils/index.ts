@@ -3,9 +3,8 @@ import { formatInTimeZone } from "date-fns-tz";
 
 const getUserTimeZone = () => {
   const logInUserData = useLogInUserStore.getState().logInUserData;
-  return logInUserData?.timezone || "Asia/Dhaka";
+  return logInUserData?.timezone;
 };
-
 
 export const convertDecimalHoursToHMS = (decimalHours: number | null | undefined) => {
   // If duration is negative then return
