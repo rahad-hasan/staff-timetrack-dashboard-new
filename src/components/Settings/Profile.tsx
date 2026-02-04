@@ -44,7 +44,7 @@ const Profile = () => {
     const [imageLoading, setImageLoading] = useState(false);
     const [preview, setPreview] = useState<any>(logInUserData?.image ? logInUserData?.image : profileAvatar)
     const [image, setImage] = useState<any>(null)
-    console.log(image);
+
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (file) {
@@ -90,10 +90,12 @@ const Profile = () => {
     async function upLoadImage() {
         setImageLoading(true);
         try {
-            const res = await uploadProfileImage({ data: image });
-
+            const res = await uploadProfileImage({ data: { image: image } });
             if (res?.success) {
                 toast.success(res?.message || "Image updated successfully");
+                updateUserData({
+                    image: res?.data?.imageUrl
+                })
                 setImage(null);
             } else {
                 toast.error(res?.message || "Failed to update", {
