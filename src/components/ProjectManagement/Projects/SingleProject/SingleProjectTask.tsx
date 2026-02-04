@@ -121,7 +121,7 @@ const SingleProjectTask = ({ data }: { data: Task[] }) => {
             cell: ({ row }) => {
                 const description = row?.original?.description
                 return (
-                    <div className="flex items-center gap-2 min-w-[180px]">
+                    <div className="flex items-center gap-2 min-w-[250px] max-w-[300px] whitespace-normal break-words">
                         <span>{description ? description : "No description available"}</span>
                     </div>
                 )
