@@ -6,7 +6,7 @@ interface ColorState {
     logInUserData: Record<string, any>;
     setLogInUserData: (userData: Record<string, any>) => void;
     resetData: () => void;
-    setTimeZone: (tz: string) => void;
+    updateUserData: (updates: any) => void;
 }
 
 export const useLogInUserStore = create<ColorState>()(
@@ -15,10 +15,10 @@ export const useLogInUserStore = create<ColorState>()(
             logInUserData: {},
             setLogInUserData: (userData) => set({ logInUserData: userData }),
             resetData: () => set({ logInUserData: {} }),
-            setTimeZone: (newTimeZone: string) => set((state) => ({
+            updateUserData: (updates: any) => set((state) => ({
                 logInUserData: {
                     ...state.logInUserData,
-                    timezone: newTimeZone
+                    ...updates,
                 }
             })),
         }),

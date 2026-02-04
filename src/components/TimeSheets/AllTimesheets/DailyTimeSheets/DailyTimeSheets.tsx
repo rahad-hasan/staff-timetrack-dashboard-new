@@ -1,3 +1,4 @@
+"use client"
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import {
@@ -7,10 +8,12 @@ import {
 } from "@/components/ui/tooltip"
 import DailyTimeSheetsTable from "./DailyTimeSheetsTable";
 import { formatTZDate, formatTZTime, getTZDecimalHour } from "@/utils";
-
+import { useLogInUserStore } from "@/store/logInUserStore";
 
 const DailyTimeSheets = ({ data, timeLineData, selectedDate }: { data: any, timeLineData: any, selectedDate: string | number | string[] | undefined }) => {
-
+    const logInUserData = useLogInUserStore((state) => state.logInUserData);
+    const timeZone = logInUserData?.timezone;
+    // const timeZone = data?.time_zone;
     // Helper to format duration from decimal to HH:MM:SS
     const formatDuration = (decimalHours: number) => {
         const totalSeconds = Math.floor(decimalHours * 3600);
@@ -22,8 +25,8 @@ const DailyTimeSheets = ({ data, timeLineData, selectedDate }: { data: any, time
 
     // Transform backend data into activePeriods
     const activePeriods = (timeLineData || []).map((entry: any) => ({
-        start: getTZDecimalHour(entry.start_time),
-        end: getTZDecimalHour(entry.end_time),
+        start: getTZDecimalHour(entry.start_time, timeZone),
+        end: getTZDecimalHour(entry.end_time, timeZone),
         startTime: entry.start_time,
         endTime: entry.end_time,
         project: entry.project?.name || "No Project",
@@ -34,20 +37,19 @@ const DailyTimeSheets = ({ data, timeLineData, selectedDate }: { data: any, time
     // 2. Logic for Day Progress Line
     const getDayProgressPercentage = () => {
         const now = new Date();
-        const todayString = formatTZDate(now); // Match selectedDate format using TZ
+        const todayString = formatTZDate(now, timeZone); // Match selectedDate format using TZ
 
         if (selectedDate !== todayString) {
             return selectedDate! < todayString ? 100 : 0;
         }
 
         // Get the current decimal hour in the user's timezone
-        const decimalHourNow = getTZDecimalHour(now);
+        const decimalHourNow = getTZDecimalHour(now, timeZone);
         return (decimalHourNow / 24) * 100;
     };
 
-    const isToday = selectedDate === formatTZDate(new Date());
+    const isToday = selectedDate === formatTZDate(new Date(), timeZone);
     const dayProgress = getDayProgressPercentage();
-    console.log(activePeriods);
 
     return (
         <>

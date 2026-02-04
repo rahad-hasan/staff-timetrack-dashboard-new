@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 
+import { number } from "zod";
 import { baseApi } from "../baseApi";
 import { cookies } from "next/headers";
 
@@ -66,6 +67,22 @@ export const uploadProfileImage = async ({ data }: {
   }
 }) => {
   return await baseApi(`/auth/update-profile-image`, {
+    method: "PATCH",
+    body: data,
+    tag: "profile",
+    cache: "no-cache"
+  });
+};
+
+export const uploadProfileInfo = async ({ data }: {
+  data: {
+    name: string;
+    phone?: string;
+    time_zone: string;
+    currency?: string;
+  }
+}) => {
+  return await baseApi(`/auth/update-profile`, {
     method: "PATCH",
     body: data,
     tag: "profile",

@@ -264,7 +264,9 @@ export const userBasicInfoSchema = z.object({
             {
                 message: 'Phone number must be a valid international format',
             }
-        )
+        ),
+    time_zone: z.string()
+        .min(1, "Time Zone is required"),
 })
 
 export const screenDeleteReasonSchema = z.object({

@@ -28,8 +28,6 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
 import { popularTimeZoneList } from "@/utils/TimeZoneList";
-// import { useLogInUserStore } from "@/store/logInUserStore";
-
 
 const SingleMemberPage = ({ data }: { data: any }) => {
     const [loading, setLoading] = useState(false);
@@ -37,7 +35,6 @@ const SingleMemberPage = ({ data }: { data: any }) => {
     const handleTabClick = (tab: "Projects" | "Tasks") => {
         setActiveTab(tab);
     };
-    // const { setTimeZone } = useLogInUserStore();
 
     const [switches, setSwitches] = useState({
         is_active: data?.is_active,
@@ -80,7 +77,6 @@ const SingleMemberPage = ({ data }: { data: any }) => {
 
             if (res?.success) {
                 toast.success(res?.message || "Member edited successfully");
-                // setTimeZone(values.time_zone)
             } else {
                 toast.error(res?.message || "Failed to edit member", {
                     style: {
