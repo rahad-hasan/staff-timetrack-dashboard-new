@@ -28,9 +28,13 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Check, ChevronsUpDown, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { addMember } from "@/actions/members/action";
+import { cn } from "@/lib/utils";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { popularTimeZoneList } from "@/utils/TimeZoneList";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "../ui/command";
 
 const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
     const [loading, setLoading] = useState(false);
@@ -45,6 +49,7 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
             name: "",
             email: "",
             role: "",
+            time_zone: "",
             password: "",
         },
     })
@@ -154,6 +159,63 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
                                         </Select>
                                     </div>
                                 </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="time_zone"
+                        render={({ field }) => (
+                            <FormItem className="flex flex-col w-full">
+                                <FormLabel>Time Zone</FormLabel>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <FormControl>
+                                            <Button
+                                                variant="outline2"
+                                                role="combobox"
+                                                className=" flex justify-between dark:text-darkTextPrimary hover:dark:bg-darkPrimaryBg"
+                                            >
+                                                <span className="truncate text-subTextColor dark:text-darkTextSecondary">
+                                                    {field.value
+                                                        ? popularTimeZoneList.find((tz) => tz.value === field.value)?.label
+                                                        : "Select time zone"}
+                                                </span>
+                                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                            </Button>
+                                        </FormControl>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-[--radix-popover-trigger-width] p-0 dark:bg-darkSecondaryBg dark:border-darkBorder ">
+                                        <Command className="dark:bg-darkSecondaryBg">
+                                            <CommandInput placeholder="Search time zone..." className="" />
+                                            <CommandList className="">
+                                                <CommandEmpty>No time zone found.</CommandEmpty>
+                                                <CommandGroup>
+                                                    {popularTimeZoneList.map((tz) => (
+                                                        <CommandItem
+                                                            key={tz.value}
+                                                            value={tz.label}
+                                                            onSelect={() => {
+                                                                form.setValue("time_zone", tz.value);
+                                                                document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+                                                            }}
+                                                            className="cursor-pointer hover:dark:bg-darkPrimaryBg"
+                                                        >
+                                                            <Check
+                                                                className={cn(
+                                                                    "mr-2 h-4 w-4",
+                                                                    tz.value === field.value ? "opacity-100" : "opacity-0"
+                                                                )}
+                                                            />
+                                                            {tz.label}
+                                                        </CommandItem>
+                                                    ))}
+                                                </CommandGroup>
+                                            </CommandList>
+                                        </Command>
+                                    </PopoverContent>
+                                </Popover>
                                 <FormMessage />
                             </FormItem>
                         )}

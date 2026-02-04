@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { getProjects } from "@/actions/projects/action";
 import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
 import { useDebounce } from "@/hooks/use-debounce";
+import { useSearchParams } from "next/navigation";
 
 type ProjectOption = {
     value: string;
@@ -15,12 +16,13 @@ const SelectProjectWrapper = () => {
     const [projects, setProjects] = useState<ProjectOption[]>([]);
     const [loading, setLoading] = useState(false);
     const [searchInput, setSearchInput] = useState("");
+    const searchParams = useSearchParams();
+    const user_id = searchParams.get("user_id");
     const debouncedSearch = useDebounce(searchInput, 500);
-
     const fetchProjects = useCallback(async (searchQuery: string) => {
         setLoading(true);
         try {
-            const res = await getProjects({ search: searchQuery });
+            const res = await getProjects({ search: searchQuery, user_id: user_id });
 
             if (res?.success) {
                 const apiProjects = res.data.map((p: any) => ({
@@ -39,12 +41,12 @@ const SelectProjectWrapper = () => {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [user_id]);
 
     // Trigger on Mount AND when debouncedSearch changes
     useEffect(() => {
         fetchProjects(debouncedSearch);
-    }, [debouncedSearch]);
+    }, [debouncedSearch, fetchProjects]);
 
     return (
         <SelectProjectDropDown

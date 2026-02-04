@@ -167,6 +167,8 @@ export const addNewMemberSchema = z.object({
     name: z.string().min(1, "Name is required"),
     email: z.string().email("Invalid email address"),
     role: z.string().min(1, "Role is required"),
+    time_zone: z.string()
+        .min(1, "Time Zone is required"),
     password: z.string()
         .min(8, "Minimum 8 characters")
         .regex(/[a-z]/, "At least one lowercase letter")

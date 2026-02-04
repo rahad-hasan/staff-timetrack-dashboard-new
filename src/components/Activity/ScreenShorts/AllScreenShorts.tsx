@@ -45,7 +45,7 @@ const AllScreenShorts = ({ data }: { data: IAllScreenshot[] | undefined }) => {
                   {screenShort?.anomaly?.type}
                 </span>
               )}
-              <span className={` absolute -top-2 -right-1.5 text-sm shadow-md px-2 py-[1px] flex items-center justify-center rounded-2xl ${screenShort?.score > 49 ? "bg-green-400" : screenShort?.score > 15 ? "bg-yellow-500" : "bg-rose-500"} text-white `}>
+              <span className={` absolute -top-2 -right-1.5 text-sm font-[500] shadow-md px-2 py-[1px] flex items-center justify-center rounded-2xl ${screenShort?.score > 49 ? "bg-green-400" : screenShort?.score > 15 ? "bg-yellow-500" : "bg-rose-500"} text-white `}>
                 {screenShort?.score}%
               </span>
 
