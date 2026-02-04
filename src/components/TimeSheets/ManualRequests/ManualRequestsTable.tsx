@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
-import { ArrowUpDown, Check } from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
 import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -17,8 +17,10 @@ import { useLogInUserStore } from "@/store/logInUserStore";
 import ConfirmDialog from "@/components/Common/ConfirmDialog";
 import { toast } from "sonner";
 import { approveRejectManualTimeEntry } from "@/actions/timesheets/action";
-import { convertDecimalHoursToHMS, formatTZTime } from "@/utils";
+import { convertDecimalHoursToHMS, formatTZDayMonthYear, formatTZTime } from "@/utils";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 
 const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
@@ -89,6 +91,86 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
             }
         },
         {
+            accessorKey: "user",
+            header: ({ column }) => {
+                return (
+                    <div>
+                        <span
+                            className=" cursor-pointer flex items-center gap-1"
+                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                        >
+                            User
+                            <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </span>
+                    </div>
+                )
+            },
+            cell: ({ row }) => {
+                const name = row?.original?.user?.name;
+                const image = row?.original?.user?.image;
+                return (
+                    <div className="flex items-center gap-2 min-w-[100px]">
+                        <Avatar>
+                            <AvatarImage src={image ?? ""} alt={name} />
+                            <AvatarFallback>
+                                {name
+                                    ?.trim()
+                                    .split(" ")
+                                    .map(word => word[0])
+                                    .join("")
+                                    .slice(0, 2)
+                                    .toUpperCase()}
+                            </AvatarFallback>
+                        </Avatar>
+                        <span className="capitalize hover:underline-offset-2 hover:underline">{name}</span>
+                    </div>
+                )
+            }
+        },
+        {
+            accessorKey: "notes",
+            header: ({ column }) => {
+
+                return (
+                    <div>
+                        <span
+                            className=" cursor-pointer flex items-center gap-1"
+                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                        >
+                            Notes
+                            <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </span>
+                    </div>
+                )
+            },
+            cell: ({ row }) => {
+
+                const truncatedNotes = (row?.original?.notes?.length ?? 0) > 10
+                    ? row?.original?.notes?.substring(0, 10) + "..."
+                    : row?.original?.notes;
+                return (
+                    <div className="flex flex-col">
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <span className="">
+                                    {truncatedNotes ? truncatedNotes : "No Notes"}
+                                </span>
+                            </TooltipTrigger>
+                            {
+                                (row?.original?.notes?.length ?? 0) > 10 &&
+                                <TooltipContent className="p-3 w-56 text-headingTextColor dark:text-darkTextPrimary">
+                                    <div>
+                                        <p className="text-sm">{row?.original?.notes}</p>
+                                    </div>
+                                </TooltipContent>
+                            }
+
+                        </Tooltip>
+                    </div>
+                );
+            },
+        },
+        {
             accessorKey: "status",
             header: ({ column }) => {
                 return (
@@ -130,7 +212,7 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
             }
         },
         {
-            accessorKey: "manual",
+            accessorKey: "start_time",
             header: ({ column }) => {
                 return (
                     <div>
@@ -138,17 +220,17 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
                             className=" cursor-pointer flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                         >
-                            Manual
+                            Date
                             <ArrowUpDown className="ml-2 h-4 w-4" />
                         </span>
                     </div>
                 )
             },
-            cell: () => {
+            cell: ({ row }) => {
 
                 return (
                     <div className="flex items-center gap-2">
-                        <span>{<Check className=" text-primary border border-primary rounded-full p-0.5" />}</span>
+                        <span>{formatTZDayMonthYear(row?.original?.start_time)}</span>
                     </div>
                 );
             },
@@ -189,7 +271,7 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
                                             <FilterButton></FilterButton>
                                         </div>
                                     </PopoverTrigger>
-                                    <PopoverContent side="bottom" align="end" className=" w-[260px] p-2">
+                                    <PopoverContent side="bottom" align="end" className=" w-[250px] p-2">
                                         <div className="">
                                             <div className="space-y-2">
                                                 {/* <div
@@ -230,8 +312,6 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
                                                     cancelText="Cancel"
                                                     onConfirm={() => handleApproveReject({ is_approved: false, id: row?.original?.id })}
                                                 />
-
-
                                             </div>
                                         </div>
                                     </PopoverContent>
