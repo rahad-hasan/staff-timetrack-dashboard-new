@@ -65,32 +65,6 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
 
     const columns: ColumnDef<IManualTimeEntry>[] = [
         {
-            accessorKey: "project",
-            header: ({ column }) => {
-                return (
-                    <div>
-                        <span
-                            className=" cursor-pointer flex items-center gap-1"
-                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        >
-                            Project
-                            <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </span>
-                    </div>
-                )
-            },
-            cell: ({ row }) => {
-                const project = row?.original?.project?.name;
-                const taskName = "Task Not Available In Api";
-                return (
-                    <div className="flex flex-col">
-                        <span className="font-bold text-base text-headingTextColor dark:text-darkTextPrimary">{project}</span>
-                        <span className=" font-normal text-subTextColor dark:text-darkTextSecondary">{taskName}</span>
-                    </div>
-                )
-            }
-        },
-        {
             accessorKey: "user",
             header: ({ column }) => {
                 return (
@@ -123,6 +97,32 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
                             </AvatarFallback>
                         </Avatar>
                         <span className="capitalize hover:underline-offset-2 hover:underline">{name}</span>
+                    </div>
+                )
+            }
+        },
+        {
+            accessorKey: "project",
+            header: ({ column }) => {
+                return (
+                    <div>
+                        <span
+                            className=" cursor-pointer flex items-center gap-1"
+                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                        >
+                            Project
+                            <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </span>
+                    </div>
+                )
+            },
+            cell: ({ row }) => {
+                const project = row?.original?.project?.name;
+                const taskName = "Task Not Available In Api";
+                return (
+                    <div className="flex flex-col">
+                        <span className="font-bold text-base text-headingTextColor dark:text-darkTextPrimary">{project}</span>
+                        <span className=" font-normal text-subTextColor dark:text-darkTextSecondary">{taskName}</span>
                     </div>
                 )
             }

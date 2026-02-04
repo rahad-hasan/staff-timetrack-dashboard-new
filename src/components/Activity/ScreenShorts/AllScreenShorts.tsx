@@ -17,21 +17,6 @@ const AllScreenShorts = ({ data }: { data: IAllScreenshot[] | undefined }) => {
 
   return (
     <>
-      {/* {screenShortsTimely.map((group, groupIndex) => (
-                <div key={groupIndex} className={groupIndex > 0 ? "mt-5" : ""}>
-   
-                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 sm:justify-between sm:items-center">
-                        <div className="flex items-center gap-2">
-                            <Circle size={20} className="text-gray-200 dark:text-darkTextPrimary" />
-                            <p className="text-subTextColor dark:text-darkTextSecondary">{group.time}</p>
-                        </div>
-
-                        <h2 className="text-lg text-subTextColor dark:text-darkTextSecondary">
-                            Total time worked: <span className="font-medium">{group.totalTimeWorked}</span>
-                        </h2>
-                    </div> */}
-
-      {/* Screenshot Grid */}
       <div className="mt-3 grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
         {data?.map((screenShort) => (
           <div key={screenShort?.id} className="mb-5">
@@ -43,7 +28,7 @@ const AllScreenShorts = ({ data }: { data: IAllScreenshot[] | undefined }) => {
                 {screenShort?.task?.name ? screenShort?.task?.name : "No Task"}
               </p>
             </div>
-            <div className="relative flex-nowrap rounded-lg dark:bg-darkSecondaryBg overflow-hidden">
+            <div className="relative flex-nowrap rounded-lg dark:bg-darkSecondaryBg ">
               <Image
                 src={screenShort?.image}
                 onClick={() => {
@@ -56,10 +41,13 @@ const AllScreenShorts = ({ data }: { data: IAllScreenshot[] | undefined }) => {
                 alt="screenshot"
               />
               {screenShort?.anomaly?.type && (
-                <span className=" absolute top-1 right-1 text-xs px-2 py-0.5 rounded-2xl bg-[#ff4646cc] text-white">
+                <span className=" absolute top-1 left-1 text-xs px-2 py-0.5 rounded-2xl bg-[#ff4646cc] text-white">
                   {screenShort?.anomaly?.type}
                 </span>
               )}
+              <span className={` absolute -top-2 -right-1.5 text-sm shadow-md px-2 py-[1px] flex items-center justify-center rounded-2xl ${screenShort?.score > 49 ? "bg-green-400" : screenShort?.score > 15 ? "bg-yellow-500" : "bg-rose-500"} text-white `}>
+                {screenShort?.score}%
+              </span>
 
               <div className="px-3 py-3 border-x border-b border-borderColor dark:border-darkBorder rounded-b-lg">
                 <div className="flex justify-between items-center">
