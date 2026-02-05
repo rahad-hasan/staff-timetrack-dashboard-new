@@ -28,6 +28,10 @@ import postman_logo from '../../../assets/apps_logo/postman_logo.png';
 import terminal_logo from '../../../assets/apps_logo/terminal_logo.png';
 import microsoft_powerPoint from '../../../assets/apps_logo/microsoft_powerPoint.png';
 import edge from '../../../assets/apps_logo/microsoft_edge.png';
+import microsoft_excel from '../../../assets/apps_logo/microsoft_excel.png';
+import notepad from '../../../assets/apps_logo/notepad.png';
+import adobe_acrobat from '../../../assets/apps_logo/adobe_acrobat.png';
+import adobe_illustrator from '../../../assets/apps_logo/adobe_illustrator.png';
 
 const APP_LOGOS: Record<string, any> = {
     chrome: chrome_logo,
@@ -42,8 +46,13 @@ const APP_LOGOS: Record<string, any> = {
     word: microsoft_office_word,
     postman: postman_logo,
     terminal: terminal_logo,
+    command: terminal_logo,
     powerpoint: microsoft_powerPoint,
     edge: edge,
+    excel: microsoft_excel,
+    notepad: notepad,
+    acrobat: adobe_acrobat,
+    illustrator: adobe_illustrator,
 };
 
 const AppNameTable = ({ data }: { data: IApps[] }) => {
