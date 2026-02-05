@@ -133,7 +133,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                 return (
                     <div>
                         <span
-                            className=" flex items-center gap-1"
+                            className=" cursor-pointer flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                         >
                             Project Name
@@ -156,10 +156,10 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
             }
         },
         {
-            accessorKey: "manager",
+            accessorKey: "projectManagerAssigns",
             header: ({ column }) => {
                 return (
-                    <div className="  min-w-[100px]">
+                    <div className=" cursor-pointer min-w-[100px]">
                         <span
                             className=" flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
@@ -206,10 +206,10 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
             }
         },
         {
-            accessorKey: "assignee",
+            accessorKey: "projectAssigns",
             header: ({ column }) => {
                 return (
-                    <div className="  min-w-[120px]">
+                    <div className=" cursor-pointer min-w-[120px]">
                         <span
                             className=" flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
@@ -282,7 +282,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                 return (
                     <div>
                         <span
-                            className=" flex items-center gap-1"
+                            className=" cursor-pointer flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                         >
                             Deadline
@@ -357,7 +357,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
             // header: () => <div className=" text-right">Status</div>,
             header: ({ column }) => {
                 return (
-                    <div className=" flex justify-end">
+                    <div className=" cursor-pointer flex justify-end">
                         <span
                             className="  flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}

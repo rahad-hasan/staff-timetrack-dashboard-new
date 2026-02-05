@@ -162,7 +162,7 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
             }
         },
         {
-            accessorKey: "assignedBy",
+            accessorKey: "assignedBy.name",
             header: ({ column }) => {
                 return (
                     <div>
@@ -191,7 +191,7 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
             }
         },
         {
-            accessorKey: "timeWorked",
+            accessorKey: "duration",
             // header: () => <div className="">Time Worked</div>,
             header: ({ column }) => {
                 return (

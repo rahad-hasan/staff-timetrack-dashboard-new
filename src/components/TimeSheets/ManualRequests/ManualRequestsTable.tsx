@@ -65,7 +65,7 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
 
     const columns: ColumnDef<IManualTimeEntry>[] = [
         {
-            accessorKey: "user",
+            accessorKey: "user.name",
             header: ({ column }) => {
                 return (
                     <div>
@@ -102,7 +102,7 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
             }
         },
         {
-            accessorKey: "project",
+            accessorKey: "project.name",
             header: ({ column }) => {
                 return (
                     <div>

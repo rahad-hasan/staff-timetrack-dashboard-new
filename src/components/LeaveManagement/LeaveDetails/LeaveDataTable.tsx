@@ -21,7 +21,7 @@ const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const loader = useTopLoader();
-    
+
     const selectedYear = searchParams.get("year") || new Date().getFullYear().toString();
 
     // 4. UseCallback for URL changes to prevent child re-renders
@@ -45,7 +45,7 @@ const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
 
     const columns: ColumnDef<IUserLeaveData>[] = [
         {
-            accessorKey: "name",
+            accessorKey: "user.name",
             header: ({ column }) => {
                 return (
                     <div>
@@ -82,7 +82,7 @@ const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
             }
         },
         {
-            accessorKey: "totalLeave",
+            accessorKey: "total_taken",
             header: ({ column }) => {
                 return (
                     <div>
@@ -105,7 +105,7 @@ const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
             }
         },
         {
-            accessorKey: "casualLeave",
+            accessorKey: "casual.taken",
             header: ({ column }) => {
                 return (
                     <div>
@@ -129,7 +129,7 @@ const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
             }
         },
         {
-            accessorKey: "sickLeave",
+            accessorKey: "sick.taken",
             header: ({ column }) => {
                 return (
                     <div>
@@ -152,7 +152,7 @@ const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
             }
         },
         {
-            accessorKey: "paidLeave",
+            accessorKey: "paid.taken",
             header: ({ column }) => {
                 return (
                     <div>
@@ -175,7 +175,7 @@ const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
             }
         },
         {
-            accessorKey: "availableLeave",
+            accessorKey: "available",
             header: ({ column }) => {
                 return (
                     <div>

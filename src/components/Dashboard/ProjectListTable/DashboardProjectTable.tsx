@@ -92,7 +92,7 @@ const DashboardProjectTable = ({ data }: { data: IProject[] }) => {
             }
         },
         {
-            accessorKey: "manager",
+            accessorKey: "projectManagerAssigns",
             header: ({ column }) => {
                 return (
                     <div className="  min-w-[180px]">
@@ -142,7 +142,7 @@ const DashboardProjectTable = ({ data }: { data: IProject[] }) => {
             }
         },
         {
-            accessorKey: "assignee",
+            accessorKey: "projectAssigns",
             header: ({ column }) => {
                 return (
                     <div className="  min-w-[150px]">

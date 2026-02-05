@@ -115,7 +115,7 @@ const AppNameTable = ({ data }: { data: IApps[] }) => {
             }
         },
         {
-            accessorKey: "name",
+            accessorKey: "user.name",
             header: ({ column }) => {
                 return (
                     <div>
@@ -153,7 +153,7 @@ const AppNameTable = ({ data }: { data: IApps[] }) => {
             }
         },
         {
-            accessorKey: "projectName",
+            accessorKey: "project?.name",
             header: ({ column }) => {
                 return (
                     <div className="  min-w-[180px]">
@@ -202,7 +202,7 @@ const AppNameTable = ({ data }: { data: IApps[] }) => {
         //     }
         // },
         {
-            accessorKey: "timeSpent",
+            accessorKey: "duration",
             // header: () => <div className="">Time Worked</div>,
             header: ({ column }) => {
                 return (

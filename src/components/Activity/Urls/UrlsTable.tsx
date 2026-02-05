@@ -52,7 +52,7 @@ const UrlsTable = ({ data }: { data: IUrls[] }) => {
             }
         },
         {
-            accessorKey: "projectName",
+            accessorKey: "project.name",
             header: ({ column }) => {
                 return (
                     <div>
@@ -100,7 +100,7 @@ const UrlsTable = ({ data }: { data: IUrls[] }) => {
         //     }
         // },
         {
-            accessorKey: "timeSpent",
+            accessorKey: "duration",
             // header: () => <div className="">Time Worked</div>,
             header: ({ column }) => {
                 return (
