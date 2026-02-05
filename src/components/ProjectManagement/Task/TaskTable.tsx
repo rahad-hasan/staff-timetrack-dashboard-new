@@ -49,19 +49,22 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
     const router = useRouter();
     const searchParams = useSearchParams();
 
-    const updateQueryParam = (key: string, value: string | boolean) => {
+    const updateQueryParam = (statusType: string, checked: boolean | string) => {
         const params = new URLSearchParams(searchParams.toString());
 
-        if (value === true) {
-            params.set("status", "complete");
+        if (checked === true) {
+            params.set("status", statusType);
         } else {
-            params.delete("status");
+            if (searchParams.get("status") === statusType) {
+                params.delete("status");
+            }
         }
 
-        router.push(`?${params.toString()}`);
+        router.push(`?${params.toString()}`, {scroll: false});
     };
 
     const isComplete = searchParams.get("status") === "complete";
+    const isCancelled = searchParams.get("status") === "cancelled";
 
     async function handleStatusUpdate(values: { status: string, id: number }) {
         setLoading(true);
@@ -492,14 +495,25 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
                 <div className="">
                     <h2 className=" text-base sm:text-lg">TASK LIST</h2>
                 </div>
-                <div className="flex gap-1 items-center">
-                    <Checkbox
-                        id="complete"
-                        className="cursor-pointer border-primary"
-                        checked={isComplete}
-                        onCheckedChange={(checked) => updateQueryParam("complete", checked)}
-                    />
-                    <label htmlFor="complete" className="cursor-pointer text-sm mt-0.5">Completed</label>
+                <div className=" flex items-center gap-3">
+                    <div className="flex gap-1 items-center">
+                        <Checkbox
+                            id="cancelled"
+                            className="cursor-pointer data-[state=checked]:bg-red-500 dark:data-[state=checked]:bg-red-500 border-red-500 data-[state=checked]:border-red-500"
+                            checked={isCancelled}
+                            onCheckedChange={(checked) => updateQueryParam("cancelled", checked)}
+                        />
+                        <label htmlFor="cancelled" className="cursor-pointer text-sm mt-0.5">Cancelled</label>
+                    </div>
+                    <div className="flex gap-1 items-center">
+                        <Checkbox
+                            id="complete"
+                            className="cursor-pointer border-primary"
+                            checked={isComplete}
+                            onCheckedChange={(checked) => updateQueryParam("complete", checked)}
+                        />
+                        <label htmlFor="complete" className="cursor-pointer text-sm mt-0.5">Completed</label>
+                    </div>
                 </div>
             </div>
             <Table>
