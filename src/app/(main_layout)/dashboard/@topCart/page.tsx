@@ -11,9 +11,8 @@ import SecondChart from "@/components/Icons/HeadingChartIcon/SecondChart";
 
 const HeroCart = async ({ searchParams }: ISearchParamsProps) => {
     const params = await searchParams;
-    const statsType = params.tab === "daily" ? "daily" : params.tab || "daily";
     const result = await getDashboardStats({
-        type: statsType,
+        type: params.tab ?? "daily",
     });
 
     const data = result?.data?.metrics;
@@ -47,7 +46,7 @@ const HeroCart = async ({ searchParams }: ISearchParamsProps) => {
                 isUp: apiData?.is_improved,
                 icon: config?.icon,
                 note:
-                    params.tab === "daily"
+                    params.tab === "daily" || params.tab === undefined
                         ? "Yesterday"
                         : params.tab === "weekly"
                             ? "Last Weekly"
