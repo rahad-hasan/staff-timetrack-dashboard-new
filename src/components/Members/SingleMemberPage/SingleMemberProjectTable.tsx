@@ -2,7 +2,7 @@
 
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ArrowUpDown } from "lucide-react";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { Button } from "@/components/ui/button";
@@ -15,11 +15,20 @@ type IProjectMember = {
     duration: string
 }
 
-const SingleMemberProjectTable = ({ data }: { data: IProjectMember[] }) => {
+const SingleMemberProjectTable = ({ data, searchTerm }: { data: IProjectMember[], searchTerm: string }) => {
 
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
 
+    const filteredData = useMemo(() => {
+        if (!searchTerm) return data;
+
+        return data.filter((row: IProjectMember) => {
+            return (
+                row.name.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        });
+    }, [data, searchTerm]);
 
     const getStatusStyles = (status?: string) => {
         switch (status?.toLowerCase()) {
@@ -146,7 +155,7 @@ const SingleMemberProjectTable = ({ data }: { data: IProjectMember[] }) => {
 
 
     const table = useReactTable({
-        data: data,
+        data: filteredData,
         columns,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,

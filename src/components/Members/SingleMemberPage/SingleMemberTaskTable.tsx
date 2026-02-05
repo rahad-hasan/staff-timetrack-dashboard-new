@@ -6,22 +6,40 @@ import { ArrowUpDown } from "lucide-react";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { Button } from "@/components/ui/button";
 import { formatTZDayMonthYear } from "@/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-type ITaskMember = {
-    id: number,
-    name: string,
-    deadline: string,
-    status: string,
-    assignedBy: {
-        id: number,
-        name: string,
-        role: string
-    },
-    duration: string
-}
+export type TUserBasic = {
+    id: number;
+    name: string;
+    email: string;
+    image: string | null;
+};
 
-const SingleMemberTaskTable = ({ data }: { data: ITaskMember[] }) => {
+export type TProjectBasic = {
+    id: number;
+    name: string;
+};
 
+export type TTask = {
+    id: number;
+    name: string;
+    description: string | null;
+    company_id: number;
+    user_id: number;
+    user: TUserBasic;
+    assigned_by: number;
+    assignedBy: TUserBasic;
+    project_id: number;
+    project: TProjectBasic;
+    priority: string;
+    status: string;
+    duration: string;
+    deadline: string | null;
+    created_at: string;
+    updated_at: string;
+};
+
+const SingleMemberTaskTable = ({ data }: { data: TTask[] }) => {
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
 
@@ -50,7 +68,7 @@ const SingleMemberTaskTable = ({ data }: { data: ITaskMember[] }) => {
         }
     };
 
-    const columns: ColumnDef<ITaskMember>[] = [
+    const columns: ColumnDef<TTask>[] = [
         {
             accessorKey: "name",
             header: ({ column }) => {
@@ -93,10 +111,45 @@ const SingleMemberTaskTable = ({ data }: { data: ITaskMember[] }) => {
             },
             cell: ({ row }) => {
                 const name = row?.original?.assignedBy?.name
+                const image = row?.original?.assignedBy?.image
 
                 return (
                     <div className="flex items-center gap-2 min-w-[180px]">
-                        <p>{name}</p>
+                        <Avatar>
+                            <AvatarImage src={image ?? ""} alt={name} />
+                            <AvatarFallback>{name?.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <span>{name}</span>
+                    </div>
+                )
+            }
+        },
+        {
+            accessorKey: "user",
+            header: ({ column }) => {
+                return (
+                    <div>
+                        <span
+                            className=" cursor-pointer flex items-center gap-1"
+                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                        >
+                            Assigned To
+                            <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </span>
+                    </div>
+                )
+            },
+            cell: ({ row }) => {
+                const name = row?.original?.user?.name
+                const image = row?.original?.user?.image
+
+                return (
+                    <div className="flex items-center gap-2 min-w-[180px]">
+                        <Avatar>
+                            <AvatarImage src={image ?? ""} alt={name} />
+                            <AvatarFallback>{name?.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <span>{name}</span>
                     </div>
                 )
             }
@@ -144,7 +197,7 @@ const SingleMemberTaskTable = ({ data }: { data: ITaskMember[] }) => {
                 const deadline = row?.original?.deadline
                 return (
                     <div className="flex items-center gap-2 min-w-[180px]">
-                        <span>{formatTZDayMonthYear(deadline)}</span>
+                        <span>{deadline ? formatTZDayMonthYear(deadline) : "No Deadline"}</span>
                     </div>
                 )
             }

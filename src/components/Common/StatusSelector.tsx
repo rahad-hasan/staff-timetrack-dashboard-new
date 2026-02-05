@@ -26,7 +26,7 @@ export function StatusSelector() {
         } else {
             params.delete("status");
         }
-        router.push(`${pathname}?${params.toString()}`);
+        router.push(`${pathname}?${params.toString()}`, { scroll: false });
     };
 
     return (

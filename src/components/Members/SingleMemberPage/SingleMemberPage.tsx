@@ -28,10 +28,14 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
 import { popularTimeZoneList } from "@/utils/TimeZoneList";
+import SearchBar from "@/components/Common/SearchBar";
+import { StatusSelector } from "@/components/Common/StatusSelector";
+import AppPagination from "@/components/Common/AppPagination";
 
-const SingleMemberPage = ({ data }: { data: any }) => {
+const SingleMemberPage = ({ data, task, page }: { data: any, task: any, page: string | number | string[] | undefined }) => {
     const [loading, setLoading] = useState(false);
     const [activeTab, setActiveTab] = useState<"Projects" | "Tasks">("Projects");
+    const [searchTerm, setSearchTerm] = useState("");
     const handleTabClick = (tab: "Projects" | "Tasks") => {
         setActiveTab(tab);
     };
@@ -431,13 +435,26 @@ const SingleMemberPage = ({ data }: { data: any }) => {
                         ))}
                     </div>
                 </div>
+                {
+                    activeTab === "Projects" ?
+                        <SearchBar onSearch={setSearchTerm} />
+                        :
+                        <StatusSelector></StatusSelector>
+                }
             </div>
 
             {
                 activeTab === "Projects" ?
-                    <SingleMemberProjectTable data={data?.projects}></SingleMemberProjectTable>
+                    <SingleMemberProjectTable data={data?.projects} searchTerm={searchTerm}></SingleMemberProjectTable>
                     :
-                    <SingleMemberTaskTable data={data?.tasks}></SingleMemberTaskTable>
+                    <>
+                        <SingleMemberTaskTable  data={task?.data}></SingleMemberTaskTable>
+                        <AppPagination
+                            total={task?.meta?.total}
+                            currentPage={Number(page)}
+                            limit={task?.meta?.limit ?? 10}
+                        />
+                    </>
             }
         </div>
     );
