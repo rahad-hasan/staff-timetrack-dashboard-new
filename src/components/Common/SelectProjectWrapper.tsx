@@ -32,7 +32,7 @@ const SelectProjectWrapper = () => {
                 }));
 
                 setProjects([
-                    { value: "", label: "All Project", avatar: "" },
+                    { value: "all", label: "All Project", avatar: "" },
                     ...apiProjects,
                 ]);
             }

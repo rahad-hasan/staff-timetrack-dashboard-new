@@ -51,7 +51,7 @@ const SelectProjectDropDown = ({
   const handleSelect = (projectId: string) => {
     const params = new URLSearchParams(searchParams.toString());
 
-    if (projectId === selectedProjectId) {
+    if (projectId === selectedProjectId || projectId === "all") {
       params.delete("project_id");
     } else {
       params.set("project_id", projectId);
