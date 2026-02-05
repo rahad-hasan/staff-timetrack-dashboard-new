@@ -33,6 +33,8 @@ import DeleteIcon from "@/components/Icons/DeleteIcon";
 import ConfirmDialog from "@/components/Common/ConfirmDialog";
 import EditTaskModal from "./EditTaskModal";
 import SingleTaskModal from "./SingleTaskModal";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const TaskTable = ({ data }: { data: ITask[] }) => {
     const [sorting, setSorting] = useState<SortingState>([])
@@ -44,6 +46,22 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
     // for single task modal
     const [viewTaskOpen, setViewTaskOpen] = useState(false);
     const [viewTaskId, setViewTaskId] = useState<number | null>(null);
+    const router = useRouter();
+    const searchParams = useSearchParams();
+
+    const updateQueryParam = (key: string, value: string | boolean) => {
+        const params = new URLSearchParams(searchParams.toString());
+
+        if (value === true) {
+            params.set("status", "complete");
+        } else {
+            params.delete("status");
+        }
+
+        router.push(`?${params.toString()}`);
+    };
+
+    const isComplete = searchParams.get("status") === "complete";
 
     async function handleStatusUpdate(values: { status: string, id: number }) {
         setLoading(true);
@@ -470,8 +488,19 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
 
     return (
         <div className="mt-5 border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">
-            <div className=" mb-5">
-                <h2 className=" text-base sm:text-lg">TASK LIST</h2>
+            <div className=" mb-5 flex items-center justify-between">
+                <div className="">
+                    <h2 className=" text-base sm:text-lg">TASK LIST</h2>
+                </div>
+                <div className="flex gap-1 items-center">
+                    <Checkbox
+                        id="complete"
+                        className="cursor-pointer border-primary"
+                        checked={isComplete}
+                        onCheckedChange={(checked) => updateQueryParam("complete", checked)}
+                    />
+                    <label htmlFor="complete" className="cursor-pointer text-sm mt-0.5">Completed</label>
+                </div>
             </div>
             <Table>
                 <TableHeader>

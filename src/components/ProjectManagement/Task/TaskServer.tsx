@@ -10,6 +10,7 @@ const TaskServer = async ({ searchParams }: any) => {
         project_id: params.project_id,
         user_id: params.user_id,
         page: params.page,
+        status: params.status
     });
 
     return (
