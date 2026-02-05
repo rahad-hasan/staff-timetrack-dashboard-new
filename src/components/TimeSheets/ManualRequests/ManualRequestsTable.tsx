@@ -96,7 +96,7 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
                                     .toUpperCase()}
                             </AvatarFallback>
                         </Avatar>
-                        <span className="capitalize hover:underline-offset-2 hover:underline">{name}</span>
+                        <span className="capitalize">{name}</span>
                     </div>
                 )
             }
@@ -211,32 +211,32 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
                 );
             }
         },
+        // {
+        //     accessorKey: "start_time",
+        //     header: ({ column }) => {
+        //         return (
+        //             <div>
+        //                 <span
+        //                     className=" cursor-pointer flex items-center gap-1"
+        //                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        //                 >
+        //                     Date
+        //                     <ArrowUpDown className="ml-2 h-4 w-4" />
+        //                 </span>
+        //             </div>
+        //         )
+        //     },
+        //     cell: ({ row }) => {
+
+        //         return (
+        //             <div className="flex items-center gap-2">
+        //                 <span>{formatTZDayMonthYear(row?.original?.start_time)}</span>
+        //             </div>
+        //         );
+        //     },
+        // },
         {
             accessorKey: "start_time",
-            header: ({ column }) => {
-                return (
-                    <div>
-                        <span
-                            className=" cursor-pointer flex items-center gap-1"
-                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        >
-                            Date
-                            <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </span>
-                    </div>
-                )
-            },
-            cell: ({ row }) => {
-
-                return (
-                    <div className="flex items-center gap-2">
-                        <span>{formatTZDayMonthYear(row?.original?.start_time)}</span>
-                    </div>
-                );
-            },
-        },
-        {
-            accessorKey: "totalTime",
             // header: () => <div className="">Time Worked</div>,
             header: ({ column }) => {
                 return (
@@ -245,7 +245,7 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
                             className=" cursor-pointer flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                         >
-                            Total time
+                            Date & Time
                             <ArrowUpDown className="ml-2 h-4 w-4" />
                         </span>
                     </div>
@@ -256,9 +256,9 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
                     <div className=" flex justify-between items-center gap-4">
                         <div className="">
                             <h1 className=" font-medium text-headingTextColor dark:text-darkTextPrimary">
-                                {convertDecimalHoursToHMS(row?.original?.duration)}
+                                {formatTZDayMonthYear(row?.original?.start_time)}
                             </h1>
-                            <p className=" text-sm font-thin text-subTextColor dark:text-darkTextSecondary">{formatTZTime(row?.original?.start_time)} - {formatTZTime(row?.original?.end_time)}</p>
+                            <p className=" text-sm font-[400] text-subTextColor/80 dark:text-darkTextSecondary/80">{formatTZTime(row?.original?.start_time)} - {formatTZTime(row?.original?.end_time)} | <span className=" font-semibold text-headingTextColor/75 dark:text-darkTextPrimary/80"> {convertDecimalHoursToHMS(row?.original?.duration)}</span></p>
                         </div>
                         <>
                             {
