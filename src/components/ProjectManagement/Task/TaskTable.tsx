@@ -54,13 +54,14 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
 
         if (checked === true) {
             params.set("status", statusType);
+            params.set("page", "1");
         } else {
             if (searchParams.get("status") === statusType) {
                 params.delete("status");
             }
         }
 
-        router.push(`?${params.toString()}`, {scroll: false});
+        router.push(`?${params.toString()}`, { scroll: false });
     };
 
     const isComplete = searchParams.get("status") === "complete";
