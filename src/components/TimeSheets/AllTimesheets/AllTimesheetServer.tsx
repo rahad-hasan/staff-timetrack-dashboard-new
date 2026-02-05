@@ -12,6 +12,8 @@ import WeeklyTimeSheetsServer from "./WeeklyTimeSheets/WeeklyTimeSheetsServer";
 import WeeklyTimeSheetsSkeleton from "@/skeleton/timesheets/allTimesheets/WeeklyTimeSheetsSkeleton";
 import { getMembersDashboard } from "@/actions/members/action";
 import SelectProjectWrapper from "@/components/Common/SelectProjectWrapper";
+import { getTimezones } from "@/actions/dashboard/action";
+import SelectTimezoneDropDown from "@/components/Common/SelectTimezoneDropDown";
 
 const AllTimesheetServer = async ({ searchParams }: ISearchParamsProps) => {
   const params = await searchParams;
@@ -26,6 +28,8 @@ const AllTimesheetServer = async ({ searchParams }: ISearchParamsProps) => {
     avatar: u.image || "",
   }));
 
+  const timezones = await getTimezones();
+
   return (
     <div>
       {activeTab === "daily" && (
@@ -33,6 +37,7 @@ const AllTimesheetServer = async ({ searchParams }: ISearchParamsProps) => {
           <div className=" mb-5 flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between h-full">
             <div className=" flex flex-col sm:flex-col-reverse xl:flex-row gap-4 md:gap-3">
               <SpecificDatePicker></SpecificDatePicker>
+              <SelectTimezoneDropDown timezones={timezones} />
               <SelectProjectWrapper></SelectProjectWrapper>
             </div>
             <SelectUserDropDown users={users} />
@@ -48,6 +53,7 @@ const AllTimesheetServer = async ({ searchParams }: ISearchParamsProps) => {
           <div className=" mb-5 flex flex-col gap-4 xl:gap-0 xl:flex-row justify-between">
             <div className=" flex gap-3">
               <WeeklyDatePicker />
+              <SelectTimezoneDropDown timezones={timezones} />
               <div className=" hidden md:block">
                 {/* <Button className="dark:text-darkTextPrimary" variant={'filter'}>
                                 <SlidersHorizontal className=" dark:text-darkTextPrimary" /> Filters
@@ -70,6 +76,7 @@ const AllTimesheetServer = async ({ searchParams }: ISearchParamsProps) => {
           <div className=" mb-5 flex flex-col gap-4 md:gap-0 sm:flex-row justify-between">
             <div className="flex gap-3">
               <MonthPicker></MonthPicker>
+              <SelectTimezoneDropDown timezones={timezones} />
               <div className=" hidden md:block h-full">
                 <SelectProjectWrapper></SelectProjectWrapper>
               </div>

@@ -3,6 +3,7 @@
 import { buildQuery } from "@/utils/buildQuery";
 import { baseApi } from "../baseApi";
 import { IMember, IResponse } from "@/types/type";
+import { revalidatePath } from "next/cache";
 
 export const getMembers = async (query = {}): Promise<IResponse<IMember[]>> => {
   const queryString = buildQuery(query);
@@ -41,6 +42,8 @@ export const editSingleDetailsMember = async ({
   };
   id: number | undefined;
 }) => {
+  revalidatePath(`/members/${id}`);
+
   return await baseApi(`/auth/employees/${id}`, {
     method: "PATCH",
     body: data,

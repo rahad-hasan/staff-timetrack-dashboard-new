@@ -66,7 +66,7 @@ export type SearchParams = { [key: string]: string | string[] | undefined };
 
 export interface IMutation<T> {
   data: T;
-  id: number | undefined
+  id: number | undefined;
 }
 
 export interface ProjectAssign {
@@ -136,7 +136,7 @@ export interface ITask {
   deadline: string | null;
   priority: string | null;
   assigned_by: number;
-  status: 'pending' | 'processing' | 'complete' | 'cancelled';
+  status: "pending" | "processing" | "complete" | "cancelled";
   updated_at: string;
   created_at: string;
   duration: string;
@@ -165,12 +165,13 @@ export interface ISingleTask {
   duration: string;
 }
 
-export type ISearchParams = Promise<{ [key: string]: string | string[] | number | undefined }>;
+export type ISearchParams = Promise<{
+  [key: string]: string | string[] | number | undefined;
+}>;
 
 export interface ISearchParamsProps {
   searchParams: ISearchParams;
 }
-
 
 export interface ITimeSheetEntry {
   id: number;
@@ -183,7 +184,7 @@ export interface ITimeSheetEntry {
   end_time: string;
   duration: number;
   system_update: string;
-  status: 'pending' | 'processing' | 'complete' | 'cancelled';
+  status: "pending" | "processing" | "complete" | "cancelled";
   updated_at: string;
   created_at: string;
   project: {
@@ -196,7 +197,6 @@ export interface ITimeSheetEntry {
     is_manual_entry: boolean;
   };
 }
-
 
 export interface Company {
   id: number;
@@ -226,7 +226,6 @@ export interface ILeaveRequest {
   company: Company;
 }
 
-
 export interface Project {
   id: number;
   name: string;
@@ -238,7 +237,7 @@ export interface IManualTimeEntry {
   start_time: string;
   end_time: string;
   duration: number;
-  status: 'pending' | 'processing' | 'complete' | 'cancelled';
+  status: "pending" | "processing" | "complete" | "cancelled";
   user_id: number;
   project_id: number;
   task_id: number;
@@ -353,7 +352,6 @@ export interface ILeaveDetailsResponse {
   details: ILeaveDetails;
 }
 
-
 export type ICompany = {
   id: number;
   name: string;
@@ -394,7 +392,10 @@ export interface ICurrentTask {
   project_name: string;
 }
 
-export type WeeklyChartData = Record<'0' | '1' | '2' | '3' | '4' | '5' | '6', number>;
+export type WeeklyChartData = Record<
+  "0" | "1" | "2" | "3" | "4" | "5" | "6",
+  number
+>;
 
 export interface IMembersStatsDashboard {
   user_id: number;
@@ -409,15 +410,13 @@ export interface IMembersStatsDashboard {
   weekly_chart: WeeklyChartData;
 }
 
-
-
 export interface Task {
   id: number | null;
   name: string | null;
   description?: string | null;
   duration?: string;
   user: User;
-  status?: string
+  status?: string;
 }
 
 export interface TimeSpan {
@@ -481,7 +480,7 @@ export interface ISingleProjectData {
   company_id: number;
   name: string;
   client_id: number;
-  status: string
+  status: string;
   description: string;
   start_date: string;
   deadline: string;
@@ -494,7 +493,6 @@ export interface ISingleProjectData {
   summary: ProjectSummary;
 }
 
-
 export interface AnomalyDetails {
   type?: string;
   reason?: string;
@@ -506,14 +504,15 @@ export interface IAllScreenshot {
   image: string;
   corrupted: string;
   time: string;
+  format_time: string;
   display_name: string;
   score: number;
   mouse_activity: number;
   keyboard_activity: number;
   duration: number;
   anomaly: AnomalyDetails;
-  project: { name: string };
-  task: { name: string } | null;
+  project_name: string;
+  task_name: string;
 }
 
 export interface INotificationItem {
@@ -529,8 +528,7 @@ export interface INotificationItem {
     name: string;
     deadline?: string;
     note: string;
-  }
-  ;
+  };
   created_at: string;
   updated_at: string;
 }
@@ -548,7 +546,6 @@ export interface IDashboardAppsAndUrls {
   row: IRowAppsUrls[];
 }
 
-
 export interface INotes {
   notes: string;
   start_time: string;
@@ -557,3 +554,101 @@ export interface INotes {
   task: Task;
   user: User;
 }
+
+/* =========================
+ * Timeline Detail (Screenshot / Activity)
+ * ========================= */
+export type TTimelineDetail = {
+  id: number;
+  project_name: string;
+  task_name: string | null;
+  user_id: number;
+  company_id: number;
+
+  score: number;
+  mouse_activity: number;
+  keyboard_activity: number;
+  duration: number; // seconds
+
+  corrupted: "NONE" | "PARTIAL" | "FULL";
+  anomaly: Record<string, any>;
+
+  image: string;
+  display_name: string;
+
+  time: string; // ISO UTC string
+  format_time: string; // e.g. "05:17 PM"
+};
+
+/* =========================
+ * Timeline Slots
+ * ========================= */
+
+// Empty 10-minute slot
+export type TTimelineEmptySlot = {
+  type: "empty";
+  from_time: string; // UTC ISO
+  to_time: string; // UTC ISO
+};
+
+// Slot with data
+export type TTimelineDataSlot = {
+  type: "data";
+
+  from_time: string; // UTC ISO
+  to_time: string; // UTC ISO
+
+  date: string; // start of day UTC
+
+  avg_score: number;
+  avg_mouse_activity: number;
+  avg_keyboard_activity: number;
+
+  total_duration: number; // minutes (0–10)
+
+  details: TTimelineDetail[];
+
+  // internal/computed (can be omitted on frontend if desired)
+  fromTs: number;
+  hourKeyUTC: string;
+
+  // formatted for UI (user timezone)
+  format_from_time: string; // "05:10 PM"
+  format_to_time: string; // "05:20 PM"
+};
+
+// Slot union
+export type TTimelineSlot = TTimelineDataSlot | TTimelineEmptySlot;
+
+/* =========================
+ * Hour Block
+ * ========================= */
+export type TTimelineHourBlock = {
+  hourLabel: string; // "05:00 PM - 06:00 PM"
+  totalWorked: string; // HH:mm:ss
+  slots: TTimelineSlot[];
+};
+
+export type TimeSheetDailyItem = {
+  date: string; // YYYY-MM-DD
+  duration: string; // HH:MM:SS
+};
+
+export type TimeSheetRange = {
+  from_date: string; // YYYY-MM-DD
+  to_date: string; // YYYY-MM-DD
+  type: "single_day" | "range";
+};
+
+export type TimeSheetTotals = {
+  duration_hours: string; // decimal hours as string, e.g. "20.975"
+  duration_formatted: string; // HH:MM:SS
+};
+
+export type TimeSheetData = {
+  user_id: number;
+  time_zone: string; // e.g. "UTC"
+  range: TimeSheetRange;
+  daily_data: TimeSheetDailyItem[];
+  totals: TimeSheetTotals;
+};

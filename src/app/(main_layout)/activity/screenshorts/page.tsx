@@ -13,6 +13,9 @@ import { Metadata } from "next";
 import { getMembersDashboard } from "@/actions/members/action";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import SelectProjectWrapper from "@/components/Common/SelectProjectWrapper";
+import { getTimezones } from "@/actions/dashboard/action";
+import SelectTimezoneDropDown from "@/components/Common/SelectTimezoneDropDown";
+import { popularTimeZoneList } from "@/utils/TimeZoneList";
 
 export const metadata: Metadata = {
   title: "Staff Time Tracker Screenshot",
@@ -26,6 +29,8 @@ const ScreenShorts = async ({ searchParams }: ISearchParamsProps) => {
     label: u.name,
     avatar: u.image || "",
   }));
+
+  const timezones = await getTimezones();
 
   return (
     <div>
@@ -42,12 +47,7 @@ const ScreenShorts = async ({ searchParams }: ISearchParamsProps) => {
         <Suspense fallback={null}>
           <div className=" flex flex-col lg:flex-row gap-3">
             <SpecificDatePicker></SpecificDatePicker>
-            {/* Filter */}
-            {/* 
-                    <Button className=" hidden xl:flex dark:text-darkTextPrimary" variant={'filter'}>
-                        <SlidersHorizontal className="dark:text-darkTextPrimary" /> Filters
-                    </Button> 
-            */}
+            <SelectTimezoneDropDown timezones={timezones} />
             <SelectProjectWrapper></SelectProjectWrapper>
           </div>
         </Suspense>

@@ -22,10 +22,10 @@ const AllScreenShorts = ({ data }: { data: IAllScreenshot[] | undefined }) => {
           <div key={screenShort?.id} className="mb-5">
             <div className="text-center space-y-1 mb-2">
               <h2 className="bg-[#F3F4F6] dark:bg-darkSecondaryBg py-1 rounded-full text-sm text-headingTextColor dark:text-darkTextPrimary">
-                {screenShort?.project?.name}
+                {screenShort?.project_name}
               </h2>
               <p className="text-xs text-slate-500 dark:text-darkTextSecondary/60">
-                {screenShort?.task?.name ? screenShort?.task?.name : "No Task"}
+                {screenShort?.task_name ? screenShort?.task_name : "No Task"}
               </p>
             </div>
             <div className="relative flex-nowrap rounded-lg dark:bg-darkSecondaryBg ">
@@ -52,7 +52,7 @@ const AllScreenShorts = ({ data }: { data: IAllScreenshot[] | undefined }) => {
               <div className="px-3 py-3 border-x border-b border-borderColor dark:border-darkBorder rounded-b-lg">
                 <div className="flex justify-between items-center">
                   <p className="text-sm text-subTextColor dark:text-darkTextSecondary">
-                    {formatTZTime(screenShort?.time)}
+                    {screenShort.format_time}
                   </p>
                 </div>
               </div>
