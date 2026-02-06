@@ -2,9 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  compiler: {
-    removeConsole: { exclude: ["error"] },
-  },
+  // compiler: {
+  //   removeConsole: { exclude: ["error"] },
+  // },
   images: {
     domains: ['staff-time-tracker-screenshot.lon1.digitaloceanspaces.com', 'avatar.iran.liara.run', 'https://picsum.photos', 'picsum.photos', 'https://staff-time-tracker-screenshot.lon1.digitaloceanspaces.com'],
   },

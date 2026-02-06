@@ -22,7 +22,6 @@ import { ArrowUpDown } from "lucide-react";
 import { IAttendance } from "@/global/globalTypes";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { formatTZTime } from "@/utils";
 import Link from "next/link";
 import { useLogInUserStore } from "@/store/logInUserStore";
 
@@ -194,7 +193,7 @@ const AttendanceTable = ({ attendanceListData, searchTerm }: any) => {
         return (
           <div>
             <span
-              className=" cursor-pointer flex items-center gap-1"
+              className="cursor-pointer flex items-center gap-1"
               onClick={() =>
                 column.toggleSorting(column.getIsSorted() === "asc")
               }

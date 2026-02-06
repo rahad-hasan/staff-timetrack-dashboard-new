@@ -15,7 +15,7 @@ import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import SelectProjectWrapper from "@/components/Common/SelectProjectWrapper";
 import { getTimezones } from "@/actions/dashboard/action";
 import SelectTimezoneDropDown from "@/components/Common/SelectTimezoneDropDown";
-import { popularTimeZoneList } from "@/utils/TimeZoneList";
+
 
 export const metadata: Metadata = {
   title: "Staff Time Tracker Screenshot",

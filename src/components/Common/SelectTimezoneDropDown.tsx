@@ -26,23 +26,21 @@ type TimezoneOption = {
 };
 
 interface SelectTimezoneDropDownProps {
-  timezones: TimezoneOption[];
-  defaultTimezone?: string;
+  timezones: { data: TimezoneOption[]; defaultValue: string };
 }
 
-const SelectTimezoneDropDown = ({
-  timezones,
-  defaultTimezone,
-}: SelectTimezoneDropDownProps) => {
+const SelectTimezoneDropDown = ({ timezones }: SelectTimezoneDropDownProps) => {
   const loader = useTopLoader();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const selectedTimezone = searchParams.get("timezone") ?? defaultTimezone;
+  const selectedTimezone =
+    searchParams.get("timezone") ?? timezones.defaultValue;
   const [open, setOpen] = useState(false);
 
   const selectTimezone = useMemo(
-    () => timezones.find((p: TimezoneOption) => p.value === selectedTimezone),
+    () =>
+      timezones.data.find((p: TimezoneOption) => p.value === selectedTimezone),
     [timezones, selectedTimezone],
   );
 
@@ -66,11 +64,11 @@ const SelectTimezoneDropDown = ({
           variant="outline2"
           role="combobox"
           aria-expanded={open}
-          className="w-full sm:w-[120px] h-10 bg-[#f6f7f9] flex justify-between items-center gap-2 dark:border-darkBorder dark:text-darkTextPrimary dark:bg-darkPrimaryBg hover:dark:bg-darkPrimaryBg"
+          className="w-[90px] h-10 bg-[#f6f7f9] flex justify-between items-center gap-2 dark:border-darkBorder dark:text-darkTextPrimary dark:bg-darkPrimaryBg hover:dark:bg-darkPrimaryBg"
         >
           <div className="flex items-center gap-3 overflow-hidden">
             <span className="truncate max-w-[150px]">
-              {selectTimezone ? selectTimezone.label : "Timezone..."}
+              {selectTimezone ? selectTimezone.label.split(" ")[0] : "GMT"}
             </span>
           </div>
           <DownArrow size={16} />
@@ -81,7 +79,7 @@ const SelectTimezoneDropDown = ({
         <Command className="dark:bg-darkSecondaryBg">
           <CommandList>
             <CommandGroup>
-              {timezones.map((project: TimezoneOption) => (
+              {timezones.data.map((project: TimezoneOption) => (
                 <CommandItem
                   key={project.value}
                   value={project.label}

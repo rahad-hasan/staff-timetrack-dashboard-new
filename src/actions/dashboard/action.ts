@@ -75,7 +75,12 @@ export const getTimezones = async () => {
   const res = await baseApi("/dashboard/timezone-list", {
     cache: "no-store",
   });
-  return res?.data
-    ? popularTimeZoneList.filter((item) => res?.data.includes(item.value))
-    : [];
+  return {
+    data: res?.data?.data
+      ? popularTimeZoneList.filter((item) =>
+          res?.data?.data.includes(item.value),
+        )
+      : [],
+    defaultValue: res?.data?.user_time,
+  };
 };

@@ -1,15 +1,11 @@
 "use client";
-// import { Circle } from "lucide-react";
-// import screenshort1 from "../../../assets/dashboard/screenshort1.png";
-// import screenshort2 from "../../../assets/dashboard/screenshort2.png";
-// import screenshort3 from "../../../assets/dashboard/screenshort3.png";
+
 import Image from "next/image";
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { IAllScreenshot } from "@/types/type";
 import AllScreenShortsModal from "./AllScreenShortsModal";
 import EmptyTableLogo from "@/assets/empty_table.svg";
-import { formatTZTime } from "@/utils";
 
 const AllScreenShorts = ({ data }: { data: IAllScreenshot[] | undefined }) => {
   const [selectedImage, setSelectedImage] = useState<IAllScreenshot>();
@@ -45,7 +41,9 @@ const AllScreenShorts = ({ data }: { data: IAllScreenshot[] | undefined }) => {
                   {screenShort?.anomaly?.type}
                 </span>
               )}
-              <span className={` absolute -top-2 -right-1.5 text-sm font-[500] shadow-md px-2 py-[1px] flex items-center justify-center rounded-2xl ${screenShort?.score > 49 ? "bg-green-400" : screenShort?.score > 15 ? "bg-yellow-500" : "bg-rose-500"} text-white `}>
+              <span
+                className={` absolute -top-2 -right-1.5 text-sm font-[500] shadow-md px-2 py-[1px] flex items-center justify-center rounded-2xl ${screenShort?.score > 49 ? "bg-green-400" : screenShort?.score > 15 ? "bg-yellow-500" : "bg-rose-500"} text-white `}
+              >
                 {screenShort?.score}%
               </span>
 
