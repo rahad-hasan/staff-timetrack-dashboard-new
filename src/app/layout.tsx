@@ -5,8 +5,6 @@ import { ThemeProvider } from "@/components/Theme/theme-provider";
 import { SidebarRouteSync } from "@/utils/SidebarRouteSync";
 import SetGlobalColor from "@/components/Common/SetGlobalColor";
 import { Toaster } from "@/components/ui/sonner"
-import SocketProvider from "@/socket/SocketProvider";
-import { cookies } from "next/headers";
 import NextTopLoader from 'nextjs-toploader';
 import ClearNavbarStorageOnWindowClose from "@/utils/ClearNavbarStorageOnWindowClose";
 
@@ -42,9 +40,6 @@ export default async function RootLayout({
     children: React.ReactNode;
 }>) {
 
-    const cookieStore = await cookies();
-    const token = cookieStore.get("accessToken");
-
     return (
         <html lang="en" suppressHydrationWarning className={roboto.className}>
             <body
@@ -67,14 +62,12 @@ export default async function RootLayout({
                     <SidebarRouteSync />
                     <ClearNavbarStorageOnWindowClose />
                     {/* <ReplaceActiveNavAfterRemount /> */}
-                    <SocketProvider token={token?.value}>
                         <NextTopLoader
                             color="#2bb0f3"
                             height={2}
                             showSpinner={false}
                         />
                         {children}
-                    </SocketProvider>
                 </ThemeProvider>
             </body>
         </html >

@@ -1,4 +1,4 @@
-import { TrendingDown, TrendingUp } from "lucide-react";
+import { TrendingUp } from "lucide-react";
 
 interface IScreenshotActivityCardProps {
   icon: React.ElementType;
@@ -6,7 +6,7 @@ interface IScreenshotActivityCardProps {
   value: string;
   chart: React.ElementType;
   is_improved: boolean;
-  improved_value: string;
+  // improved_value: string;
 }
 
 function ScreenshotActivityCard({
@@ -15,7 +15,7 @@ function ScreenshotActivityCard({
   value,
   chart: Chart,
   is_improved,
-  improved_value,
+  // improved_value,
 }: IScreenshotActivityCardProps) {
   return (
     <div className="rounded-2xl w-full  transition-all hover:shadow duration-200 relative h-34 2xl:h-40 shadow-sm dark:shadow-slate-100">
@@ -36,19 +36,20 @@ function ScreenshotActivityCard({
         </div>
       </div>
       <div className="bg-bgSecondary dark:bg-darkSecondaryBg rounded-b-2xl border-t px-3 2xl:px-4 py-2 sm:py-2.5 2xl:py-3 flex items-center gap-2 absolute left-0 right-0 bottom-0">
-        {is_improved ? (
+        {/* {is_improved ? (
           <TrendingUp size={20} className={"text-[#12cd69]"} />
-        ) : (
-          <TrendingDown size={20} className={"text-red-500"} />
-        )}
+          ) : (
+            <TrendingDown size={20} className={"text-red-500"} />
+            )} */}
 
-        <p className={is_improved ? "text-[#12cd69]" : "text-red-500"}>
+        <TrendingUp size={20} className={"text-[#12cd69]"} />
+        {/* <p className={is_improved ? "text-[#12cd69]" : "text-red-500"}>
           {improved_value}
-        </p>
+        </p> */}
         <p
-          className={`text-md text-muted-foreground dark:text-darkTextSecondary`}
+          className={`text-md capitalize text-muted-foreground dark:text-darkTextSecondary`}
         >
-          from yesterday
+          Activity on selected date
         </p>
       </div>
     </div>
