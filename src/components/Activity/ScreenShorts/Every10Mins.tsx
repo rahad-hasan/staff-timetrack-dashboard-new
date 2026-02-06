@@ -27,13 +27,13 @@ const Every10Mins = ({ data }: { data: TTimelineHourBlock[] }) => {
   const [selectedImage, setSelectedImage] = useState<any>();
   const [modalOpen, setModalOpen] = useState<boolean>(false);
 
-  const formatDuration = (totalSeconds: number) => {
-    const minutes = Math.ceil((totalSeconds % 3600) / 60);
+  // const formatDuration = (totalSeconds: number) => {
+  //   const minutes = Math.ceil((totalSeconds % 3600) / 60);
 
-    if (minutes > 0) {
-      return `${minutes}m`;
-    }
-  };
+  //   if (minutes > 0) {
+  //     return `${minutes}m`;
+  //   }
+  // };
 
   // const groupDataByHour = (intervals: any[]) => {
   //   const hours: Record<string, any[]> = {};
