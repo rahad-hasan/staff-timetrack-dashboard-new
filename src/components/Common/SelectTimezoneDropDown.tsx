@@ -66,7 +66,7 @@ const SelectTimezoneDropDown = ({
           variant="outline2"
           role="combobox"
           aria-expanded={open}
-          className="w-full sm:w-[140px] h-10 bg-[#f6f7f9] flex justify-between items-center gap-2 dark:border-darkBorder dark:text-darkTextPrimary dark:bg-darkPrimaryBg hover:dark:bg-darkPrimaryBg"
+          className="w-full sm:w-[120px] h-10 bg-[#f6f7f9] flex justify-between items-center gap-2 dark:border-darkBorder dark:text-darkTextPrimary dark:bg-darkPrimaryBg hover:dark:bg-darkPrimaryBg"
         >
           <div className="flex items-center gap-3 overflow-hidden">
             <span className="truncate max-w-[150px]">

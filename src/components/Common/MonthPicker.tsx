@@ -58,7 +58,7 @@ const MonthPicker = () => {
                 onClick={() => handleNavigate(-1)}
                 className="border p-2.5 w-12 sm:w-10 h-10 dark:bg-darkPrimaryBg border-borderColor dark:border-darkBorder text-headingTextColor dark:text-darkTextPrimary rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-darkSecondaryBg"
             />
-            <div className="flex items-center text-primary gap-2 border rounded-md px-4 mx-3 w-full sm:w-auto border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg">
+            <div className="flex items-center text-primary gap-2 border rounded-md px-4 mx-2 w-full sm:w-auto border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg">
                 <CalendarIcon size={20} />
                 <span className="text-sm 2xl:text-base text-headingTextColor font-medium dark:text-darkTextPrimary whitespace-nowrap">
                     {monthDisplay}

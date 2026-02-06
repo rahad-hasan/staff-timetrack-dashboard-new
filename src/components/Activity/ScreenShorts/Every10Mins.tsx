@@ -263,7 +263,7 @@ const Every10Mins = ({ data }: { data: TTimelineHourBlock[] }) => {
                         setModalOpen(true);
                       }}
                       width={300}
-                      height={300}
+                      height={250}
                       className="w-full max-h-[140px] object-cover transition-transform duration-300 hover:scale-[1.01] cursor-pointer"
                       alt="screenshot"
                     />

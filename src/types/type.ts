@@ -196,6 +196,13 @@ export interface ITimeSheetEntry {
     id: number;
     is_manual_entry: boolean;
   };
+
+  format_start_time: string; // e.g. "02:35 PM"
+  format_end_time: string; // e.g. "07:16 PM"
+  format_duration: string; // e.g. "04:41:40"
+
+  start: number; // decimal hour (14.58)
+  end: number; // decimal hour (19.26)
 }
 
 export interface Company {
@@ -246,6 +253,9 @@ export interface IManualTimeEntry {
   created_at: string;
   user: User;
   project: Project;
+  date: string;
+  format_start_time: string;
+  format_end_time: string;
 }
 
 export interface IApps {

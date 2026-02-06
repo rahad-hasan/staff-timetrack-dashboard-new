@@ -5,8 +5,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useMemo, } from "react";
-import { differenceInMinutes } from "date-fns";
+import { useMemo } from "react";
 import {
   CheckCircle2,
   ClipboardList,
@@ -14,14 +13,17 @@ import {
   MousePointer2,
   RefreshCcw,
 } from "lucide-react";
-import { formatTZTime, formatTZTimeHM } from "@/utils";
+import { formatTZTimeHM } from "@/utils";
+import { ITimeSheetEntry } from "@/types/type";
 
-const ReportDailyTimeSheet = ({ dailyTimeEntry }: any) => {
-  const taskEntries = dailyTimeEntry?.data ?? [];
-
-
+const ReportDailyTimeSheet = ({
+  dailyTimeEntry = [],
+}: {
+  dailyTimeEntry: ITimeSheetEntry[];
+}) => {
   // Time sheet timeline calculations
   const TOTAL_MINUTES_IN_DAY = 24 * 60; // 1440
+  const MIN_ENTRY_HEIGHT_PX = 32;
 
   const timeToMinutes = (timeString: string) => {
     if (!timeString) return 0;
@@ -29,48 +31,70 @@ const ReportDailyTimeSheet = ({ dailyTimeEntry }: any) => {
     return hours * 60 + minutes;
   };
 
-  const getDurationMinutes = (start_time: string, end_time: string) => {
-    return (
-      timeToMinutes(formatTZTimeHM(end_time)) -
-      timeToMinutes(formatTZTimeHM(start_time))
-    );
+  const decimalHoursToMinutes = (decimalHours: number | null | undefined) => {
+    if (decimalHours === null || decimalHours === undefined || Number.isNaN(decimalHours)) {
+      return null;
+    }
+    return Math.round(decimalHours * 60);
+  };
+
+  const getEntryMinutes = (entry: ITimeSheetEntry, type: "start" | "end") => {
+    const decimalValue = type === "start" ? entry.start : entry.end;
+    const decimalMinutes = decimalHoursToMinutes(decimalValue);
+    if (decimalMinutes !== null) return decimalMinutes;
+
+    const timeValue = type === "start" ? entry.start_time : entry.end_time;
+    return timeToMinutes(formatTZTimeHM(timeValue));
+  };
+
+  const clampMinutes = (minutes: number) => {
+    if (Number.isNaN(minutes)) return 0;
+    return Math.min(Math.max(minutes, 0), TOTAL_MINUTES_IN_DAY);
   };
 
   const tasksWithLayout = useMemo(() => {
-    const sortedTasks = [...taskEntries].sort(
-      (a, b) =>
-        // timeToMinutes(a.start_time) - timeToMinutes(b.start_time)
-        timeToMinutes(formatTZTimeHM(a.start_time)) -
-        timeToMinutes(formatTZTimeHM(b.start_time)),
-    );
+    // dailyTimeEntry is already sorted upstream; keep order as-is.
+    const sortedTasks = [...dailyTimeEntry];
 
     const tracks: any = []; // tracks means columns
 
     const tasksWithTrack = sortedTasks.map((task) => {
-      const currentTaskStart = timeToMinutes(formatTZTimeHM(task.start_time));
-      const currentTaskEnd = timeToMinutes(formatTZTimeHM(task.end_time));
+      const currentTaskStart = getEntryMinutes(task, "start");
+      const currentTaskEnd = getEntryMinutes(task, "end");
+      const clampedStart = clampMinutes(currentTaskStart);
+      const fallbackDuration = decimalHoursToMinutes(task.duration) ?? 0;
+      const rawDuration =
+        currentTaskEnd >= currentTaskStart
+          ? currentTaskEnd - currentTaskStart
+          : fallbackDuration;
+      const durationMinutes = Math.max(rawDuration, 0);
+      const cappedDuration = Math.min(
+        durationMinutes,
+        TOTAL_MINUTES_IN_DAY - clampedStart,
+      );
+      const displayEnd = clampedStart + cappedDuration;
 
       let assignedTrackIndex = -1;
 
       for (let i = 0; i < tracks.length; i++) {
         const laneEndTime = tracks[i];
-        if (currentTaskStart >= laneEndTime) {
+        if (clampedStart >= laneEndTime) {
           assignedTrackIndex = i;
-          tracks[i] = currentTaskEnd;
+          tracks[i] = displayEnd;
           break;
         }
       }
 
       if (assignedTrackIndex === -1) {
         assignedTrackIndex = tracks.length;
-        tracks.push(currentTaskEnd);
+        tracks.push(displayEnd);
       }
 
       return {
         ...task,
         trackIndex: assignedTrackIndex,
-        startMinutes: currentTaskStart,
-        durationMinutes: getDurationMinutes(task.start_time, task.end_time),
+        startMinutes: clampedStart,
+        durationMinutes: cappedDuration,
       };
     });
 
@@ -79,25 +103,29 @@ const ReportDailyTimeSheet = ({ dailyTimeEntry }: any) => {
     return tasksWithTrack.map((task) => {
       const baseWidth = 100 / maxTracks;
 
+      const heightPx = Math.max(task.durationMinutes, MIN_ENTRY_HEIGHT_PX);
+      const maxHeightPx = Math.max(TOTAL_MINUTES_IN_DAY - task.startMinutes, 0);
+      const safeHeightPx = Math.min(heightPx, maxHeightPx);
+
       return {
         ...task,
         // Vertical (Positioning based on minutes converted to %)
         topPosition: (task.startMinutes / TOTAL_MINUTES_IN_DAY) * 100,
-        heightPercentage: (task.durationMinutes / TOTAL_MINUTES_IN_DAY) * 100,
+        heightPercentage: (safeHeightPx / TOTAL_MINUTES_IN_DAY) * 100,
         // Horizontal (Positioning based on track index)
         leftPercentage: task.trackIndex * baseWidth,
         widthPercentage: baseWidth,
         maxTracks: maxTracks,
       };
     });
-  }, [taskEntries]);
+  }, [dailyTimeEntry]);
 
   const timeLineHours = Array.from({ length: 24 }, (_, i) => i);
 
   const TimelineEntry = ({
     project,
-    start_time,
-    end_time,
+    format_start_time,
+    format_end_time,
     topPosition,
     heightPercentage,
     leftPercentage,
@@ -105,7 +133,7 @@ const ReportDailyTimeSheet = ({ dailyTimeEntry }: any) => {
     trackIndex,
     maxTracks,
     index,
-    duration,
+    format_duration,
     system_update,
     status,
     timeEntry,
@@ -125,37 +153,7 @@ const ReportDailyTimeSheet = ({ dailyTimeEntry }: any) => {
         ? "bg-[#fff5db] text-black border-yellow-400"
         : "bg-[#fee6eb] text-black border-red-500";
 
-    const formattedStartTime = formatTZTime(start_time);
-    const formattedEndTime = formatTZTime(end_time);
     const marginLeftPx = trackIndex === 0 ? 1 : 2;
-
-    // return (
-    //     <div
-    //         className={`flex flex-col ${baseClasses} ${colorClasses}`}
-    //         style={{
-    //             top: `${topPosition}%`,
-    //             height: `${heightPercentage}%`,
-    //             left: `calc(${leftPercentage}% + ${marginLeftPx}px)`,
-    //             width: `calc(${widthPercentage}% - ${maxTracks > 1 ? 2 : 0}px)`,
-    //             minHeight: '2rem'
-    //         }}
-    //     >
-    //         <div className="">{project}</div>
-    //         <div className="font-normal text-base opacity-80 mt-1">
-    //             {formattedstart_time} - {formattedEndTime}
-    //         </div>
-    //     </div>
-    // );
-
-    const formatTimeDuration = (
-      startTime: string | number | Date,
-      endTime: string | number | Date,
-    ) => {
-      const mins = differenceInMinutes(new Date(endTime), new Date(startTime));
-      const h = Math.floor(mins / 60);
-      const m = mins % 60;
-      return h > 0 ? `${h}:${m.toString().padStart(2, "0")}h` : `${m}m`;
-    };
 
     return (
       <Tooltip>
@@ -167,13 +165,12 @@ const ReportDailyTimeSheet = ({ dailyTimeEntry }: any) => {
               height: `${heightPercentage}%`,
               left: `calc(${trackIndex * 300}px + ${marginLeftPx}px)`,
               width: `calc(${300}px - ${maxTracks > 1 ? 2 : 0}px)`,
-              minHeight: "2rem",
             }}
           >
             <div className="flex items-center">
               <div className="">{project?.name}</div>
               <div className="font-normal text-xs opacity-80 ml-1">
-                ( {formattedStartTime} - {formattedEndTime} )
+                ( {format_start_time} - {format_end_time} )
               </div>
             </div>
           </div>
@@ -199,8 +196,7 @@ const ReportDailyTimeSheet = ({ dailyTimeEntry }: any) => {
                 <span>Duration </span>
               </div>
               <span className="font-semibold text-gray-700 dark:text-darkTextSecondary">
-                {" "}
-                {formatTimeDuration(start_time, end_time)}
+                {format_duration}
               </span>
             </div>
 
@@ -251,7 +247,6 @@ const ReportDailyTimeSheet = ({ dailyTimeEntry }: any) => {
 
   return (
     <div className="">
-
       <div className="  overflow-x-auto">
         <div className="flex  pb-2">
           <div className="w-[80px] flex-shrink-0 font-bold text-sm text-subTextColor text-center dark:text-darkTextPrimary">

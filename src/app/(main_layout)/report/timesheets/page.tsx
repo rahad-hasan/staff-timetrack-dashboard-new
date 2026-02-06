@@ -1,7 +1,9 @@
+import { getTimezones } from "@/actions/dashboard/action";
 import { getMembersDashboard } from "@/actions/members/action";
 import DayWeekMonthSelection from "@/components/Common/DayWeekMonthSelection";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import MonthPicker from "@/components/Common/MonthPicker";
+import SelectTimezoneDropDown from "@/components/Common/SelectTimezoneDropDown";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import WeeklyDatePicker from "@/components/Common/WeeklyDatePicker";
@@ -30,6 +32,8 @@ const ReportTimeSheets = async ({ searchParams }: ISearchParamsProps) => {
     avatar: u.image || "",
   }));
 
+  const timezones = await getTimezones();
+
   return (
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5">
@@ -43,7 +47,10 @@ const ReportTimeSheets = async ({ searchParams }: ISearchParamsProps) => {
       {activeTab === "daily" && (
         <>
           <div className="mb-5 flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between">
-            <SpecificDatePicker></SpecificDatePicker>
+            <div className="flex gap-4">
+              <SpecificDatePicker></SpecificDatePicker>
+              <SelectTimezoneDropDown timezones={timezones} />
+            </div>
             <SelectUserDropDown users={users}></SelectUserDropDown>
           </div>
 
@@ -56,25 +63,28 @@ const ReportTimeSheets = async ({ searchParams }: ISearchParamsProps) => {
       {activeTab === "weekly" && (
         <>
           <div className="mb-5 flex flex-col gap-4 lg:gap-0 lg:flex-row justify-between">
-            <div className=" flex gap-3">
+            <div className="flex gap-3">
               <WeeklyDatePicker />
               {/* <Button className=" hidden sm:flex text-headingTextColor dark:text-darkTextPrimary" variant={'filter'}>
                         <SlidersHorizontal className="text-headingTextColor dark:text-darkTextPrimary" /> Filters
                     </Button> */}
+              <SelectTimezoneDropDown timezones={timezones} />
             </div>
             <SelectUserDropDown users={users}></SelectUserDropDown>
           </div>
           <ReportWeeklyTimeSheetServer
             searchParams={searchParams}
           ></ReportWeeklyTimeSheetServer>
-
         </>
       )}
 
       {activeTab === "monthly" && (
         <>
           <div className="mb-5 flex flex-col gap-4 md:gap-0 md:flex-row justify-between">
-            <MonthPicker />
+            <div className="flex gap-4">
+              <MonthPicker />
+              <SelectTimezoneDropDown timezones={timezones} />
+            </div>
             <SelectUserDropDown users={users} />
           </div>
           <Suspense fallback={<ReportMonthlyTimesheetSkeleton />}>
