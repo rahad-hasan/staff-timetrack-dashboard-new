@@ -16,7 +16,7 @@ const AllScreenShorts = ({ data }: { data: IAllScreenshot[] | undefined }) => {
       <div className="mt-3 grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
         {data?.map((screenShort) => (
           <div key={screenShort?.id} className="mb-5">
-            <div className="text-center space-y-1 mb-2">
+            <div className="text-center space-y-1 mb-3">
               <h2 className="bg-[#F3F4F6] dark:bg-darkSecondaryBg py-1 rounded-full text-sm text-headingTextColor dark:text-darkTextPrimary">
                 {screenShort?.project_name}
               </h2>

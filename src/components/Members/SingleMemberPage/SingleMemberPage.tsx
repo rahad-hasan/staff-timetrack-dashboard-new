@@ -144,9 +144,9 @@ const SingleMemberPage = ({ data, task, page }: { data: any, task: any, page: st
                 </div>
 
                 <div className="grid grid-cols-1 gap-4">
-                    <div className="bg-gradient-to-br from-primary/40 to-[#01a07de1]/60 p-4 rounded-2xl text-white sm:min-w-[260px] shadow-md flex flex-col justify-center">
-                        <span className="text-[12px] font-bold uppercase opacity-80">Member Since</span>
-                        <p className="text-lg font-bold mt-1">
+                    <div className="bg-gradient-to-br from-primary/80 to-[#01a07de1]/80 p-4 rounded-2xl text-white sm:min-w-[260px] shadow-md flex flex-col justify-center">
+                        <span className="text-[12px] font-bold uppercase opacity-90 dark:text-darkTextPrimary">Member Since</span>
+                        <p className="text-lg font-bold mt-1 dark:text-darkTextPrimary">
                             {data?.created_at ? new Date(data.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A'}
                         </p>
                     </div>
@@ -444,7 +444,7 @@ const SingleMemberPage = ({ data, task, page }: { data: any, task: any, page: st
                     <SingleMemberProjectTable data={data?.projects} searchTerm={searchTerm}></SingleMemberProjectTable>
                     :
                     <>
-                        <SingleMemberTaskTable  data={task?.data}></SingleMemberTaskTable>
+                        <SingleMemberTaskTable data={task?.data}></SingleMemberTaskTable>
                         <AppPagination
                             total={task?.meta?.total}
                             currentPage={Number(page)}

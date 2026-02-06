@@ -34,11 +34,13 @@ const AllTimesheetServer = async ({ searchParams }: ISearchParamsProps) => {
     <div>
       {activeTab === "daily" && (
         <>
-          <div className=" mb-5 flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between h-full">
+          <div className=" mb-5 flex flex-col gap-4 lg:gap-0 lg:flex-row justify-between h-full">
             <div className=" flex flex-col sm:flex-col-reverse xl:flex-row gap-4 md:gap-3">
               <SpecificDatePicker></SpecificDatePicker>
-              <SelectTimezoneDropDown timezones={timezones} />
-              <SelectProjectWrapper></SelectProjectWrapper>
+              <div className=" flex flex-row gap-3 ">
+                <SelectTimezoneDropDown timezones={timezones} />
+                <SelectProjectWrapper></SelectProjectWrapper>
+              </div>
             </div>
             <SelectUserDropDown users={users} />
           </div>

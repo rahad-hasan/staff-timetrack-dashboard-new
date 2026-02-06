@@ -75,7 +75,7 @@ const SelectUserDropDown = ({
     params.set("user_id", String(logInUserData.id));
 
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-  }, [defaultSelect, logInUserData?.id]);
+  }, []);
 
   const selectedUser = useMemo(
     () => users.find((u) => u.id === value),

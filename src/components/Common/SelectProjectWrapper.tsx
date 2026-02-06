@@ -49,12 +49,14 @@ const SelectProjectWrapper = () => {
     }, [debouncedSearch, fetchProjects]);
 
     return (
-        <SelectProjectDropDown
-            projects={projects}
-            loading={loading}
-            searchInput={searchInput}
-            setSearchInput={setSearchInput}
-        />
+        <div className=" w-full">
+            <SelectProjectDropDown
+                projects={projects}
+                loading={loading}
+                searchInput={searchInput}
+                setSearchInput={setSearchInput}
+            />
+        </div>
     );
 };
 
