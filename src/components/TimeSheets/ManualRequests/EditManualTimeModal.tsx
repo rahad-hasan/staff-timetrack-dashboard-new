@@ -68,6 +68,7 @@ const EditManualTimeModal = ({ onClose, selectedItem }: { onClose: () => void, s
             timeTo: format(parseISO(selectedItem.end_time), "HH:mm:ss"),
             message: selectedItem.notes || "",
         });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedItem]);
 
     const timeToDecimal = (time: string): number => {

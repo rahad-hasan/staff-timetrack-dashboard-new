@@ -50,7 +50,6 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
     const [loading, setLoading] = useState(false);
-    const [deleteLoading, setDeleteLoading] = useState(false);
     const router = useRouter();
     const logInUserData = useLogInUserStore(state => state.logInUserData);
     const resetData = useProjectFormStore(state => state.resetData);
@@ -98,7 +97,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
     }
 
     async function handleDelete(values: IProject) {
-        setDeleteLoading(true);
+
         try {
             const res = await deleteProject(values.id);
 
@@ -121,9 +120,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                     border: 'none'
                 },
             });
-        } finally {
-            setDeleteLoading(false);
-        }
+        } 
     }
 
     const columns: ColumnDef<IProject>[] = [

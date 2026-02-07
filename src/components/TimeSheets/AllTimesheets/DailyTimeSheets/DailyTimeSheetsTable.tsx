@@ -21,7 +21,6 @@ import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import FilterButton from "@/components/Common/FilterButton";
 import CheckIcon from "@/components/Icons/CheckIcon";
 import { IDailyTimeEntryItem } from "@/types/type";
-import { formatTZTime } from "@/utils";
 
 const DailyTimeSheetsTable = ({ data }: { data: IDailyTimeEntryItem[] }) => {
   const [sorting, setSorting] = useState<SortingState>([]);

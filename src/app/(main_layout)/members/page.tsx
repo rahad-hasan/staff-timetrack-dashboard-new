@@ -7,8 +7,7 @@ import { Suspense } from "react";
 import TeamsMemberTableSkeleton from "@/skeleton/teams/TeamsMemberTableSkeleton";
 import MemberTableServer from "@/components/Members/MemberTableServer";
 import { Metadata } from "next";
-// import TeamsMemberTableSkeleton from "@/skeleton/teams/TeamsMemberTableSkeleton";
-// import TeamsTableSkeleton from "@/skeleton/teams/TeamsTableSkeleton";
+
 
 export const metadata: Metadata = {
     title: "Staff Time Tracker Members",
@@ -49,7 +48,6 @@ const MemberPage = async ({ searchParams }: any) => {
                 <MemberTableServer query={query} />
             </Suspense>
 
-            {/* <TeamsMemberTableSkeleton></TeamsMemberTableSkeleton> */}
 
         </div >
     );

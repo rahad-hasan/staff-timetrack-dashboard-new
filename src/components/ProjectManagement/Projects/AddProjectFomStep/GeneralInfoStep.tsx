@@ -44,11 +44,9 @@ const GeneralInfoStep = ({ setStep }: GeneralInfoStepProps) => {
 
     const [clients, setClients] = useState<{ id: number; name: string }[]>([]);
     const [members, setMembers] = useState<{ id: number; name: string; image?: string }[]>([]);
-    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         const loadClients = async () => {
-            setLoading(true);
             try {
                 const res = await getClients();
                 if (res?.success) {
@@ -56,9 +54,7 @@ const GeneralInfoStep = ({ setStep }: GeneralInfoStepProps) => {
                 }
             } catch (err) {
                 console.error("Failed to fetch clients", err);
-            } finally {
-                setLoading(false);
-            }
+            } 
         };
 
         loadClients();
@@ -66,7 +62,7 @@ const GeneralInfoStep = ({ setStep }: GeneralInfoStepProps) => {
 
     useEffect(() => {
         const loadMembers = async () => {
-            setLoading(true);
+
             try {
                 const res = await getMembersDashboard();
                 if (res?.success) {
@@ -74,9 +70,7 @@ const GeneralInfoStep = ({ setStep }: GeneralInfoStepProps) => {
                 }
             } catch (err) {
                 console.error("Failed to fetch clients", err);
-            } finally {
-                setLoading(false);
-            }
+            } 
         };
 
         loadMembers();

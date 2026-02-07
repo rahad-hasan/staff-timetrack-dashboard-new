@@ -45,11 +45,11 @@ interface GeneralInfoStepProps {
 const EditGeneralInfoStep = ({ setStep, selectedProject }: GeneralInfoStepProps) => {
     const [clients, setClients] = useState<{ id: number; name: string }[]>([]);
     const [members, setMembers] = useState<{ id: number; name: string; image?: string }[]>([]);
-    const [loading, setLoading] = useState(false);
+
 
     useEffect(() => {
         const loadClients = async () => {
-            setLoading(true);
+
             try {
                 const res = await getClients();
                 if (res?.success) {
@@ -57,8 +57,6 @@ const EditGeneralInfoStep = ({ setStep, selectedProject }: GeneralInfoStepProps)
                 }
             } catch (err) {
                 console.error("Failed to fetch clients", err);
-            } finally {
-                setLoading(false);
             }
         };
 
@@ -67,7 +65,7 @@ const EditGeneralInfoStep = ({ setStep, selectedProject }: GeneralInfoStepProps)
 
     useEffect(() => {
         const loadMembers = async () => {
-            setLoading(true);
+
             try {
                 const res = await getMembersDashboard();
                 if (res?.success) {
@@ -75,8 +73,6 @@ const EditGeneralInfoStep = ({ setStep, selectedProject }: GeneralInfoStepProps)
                 }
             } catch (err) {
                 console.error("Failed to fetch clients", err);
-            } finally {
-                setLoading(false);
             }
         };
 

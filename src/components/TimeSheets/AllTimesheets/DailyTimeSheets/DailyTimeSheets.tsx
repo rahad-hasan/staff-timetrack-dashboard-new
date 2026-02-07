@@ -52,9 +52,9 @@ const DailyTimeSheets = ({
 
   return (
     <>
-      <div className=" mb-5">
-        <div className=" flex gap-2 mb-2">
-          <h1 className=" font-bold text-headingTextColor dark:text-darkTextPrimary">
+      <div className="mb-5">
+        <div className="flex gap-2 mb-2">
+          <h1 className="font-bold text-headingTextColor dark:text-darkTextPrimary">
             Today:
           </h1>
           <p className="text-headingTextColor dark:text-darkTextPrimary">

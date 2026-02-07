@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import SideBar from "@/components/layout/SideBar";
 import Header from "@/components/layout/Header";
 import { getTodayWorkTime } from "@/actions/dashboard/action";

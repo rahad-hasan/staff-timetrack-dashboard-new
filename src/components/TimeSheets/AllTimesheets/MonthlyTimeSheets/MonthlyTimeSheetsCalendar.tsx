@@ -32,7 +32,6 @@ const MonthlyTimeSheetsCalendar = ({ data }: any) => {
   const dayHeaders = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
 
   const DateCell = ({
-    dateString,
     dayNumber,
     formattedTime,
     activity, // Changed from duration to match new data key

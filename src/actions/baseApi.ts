@@ -82,7 +82,7 @@ export async function baseApi<T = any>(
   let res;
   try {
     res = await doFetch();
-  } catch (error) {
+  } catch {
     // 🌐 Network / server down / DNS / CORS errors land here
     throw new Error("Server is not active. Please try again later.");
   }

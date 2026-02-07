@@ -34,7 +34,6 @@ const ConfirmDialog = ({
   cancelText = "No",
   onConfirm,
   onCancel,
-  loading = false,
   confirmClassName,
 }: ConfirmDialogProps) => {
   const [open, setOpen] = useState(false);

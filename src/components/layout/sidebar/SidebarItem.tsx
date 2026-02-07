@@ -71,6 +71,7 @@ const containerVariants = {
 };
 
 const SidebarItem = ({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   icon: Icon,
   label,
   href,

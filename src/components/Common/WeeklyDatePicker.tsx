@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import React, { useCallback, useEffect, useState, useMemo } from "react";

@@ -32,6 +32,7 @@ export default function SocketProvider({ children, token }: SocketProviderProps)
       socket.off("connect_error");
       socket.disconnect();
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return <>{children}</>;

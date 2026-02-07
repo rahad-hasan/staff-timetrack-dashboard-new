@@ -62,7 +62,7 @@ export async function getHeaders(isFormData: boolean = false) {
   return headers;
 }
  
-export async function getMembers(query: string) {
+export async function getMembers() {
   async function childFn() {
     return await fetch("http://localhost:5000/api/v1/dashboard/members", {
       headers: await getHeaders(),

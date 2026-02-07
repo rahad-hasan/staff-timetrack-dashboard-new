@@ -177,7 +177,7 @@ const ScreenShortsModal = ({
           </div>
         </Carousel>
         <div className="w-full hidden sm:flex flex-wrap justify-center gap-3 px-5 mt-10 mb-5">
-          {visibleThumbs?.map((item, i) => {
+          {visibleThumbs?.map((item) => {
             // Correct index identification
             const realIndex = screenShorts.indexOf(item);
 

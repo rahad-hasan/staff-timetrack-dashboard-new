@@ -5,7 +5,6 @@ import Image from "next/image";
 import { useMemo, useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ArrowUpDown, EllipsisVertical, Pencil, Trash2 } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "../ui/dialog";
 import EditTeamModal from "./EditTeamModal";

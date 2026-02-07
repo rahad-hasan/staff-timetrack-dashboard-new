@@ -23,12 +23,12 @@ import { deleteClient } from "@/actions/clients/action";
 const ClientsTable = ({ data }: any) => {
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
-    const [loading, setLoading] = useState(false);
+
     const [open, setOpen] = useState(false)
     const [selectedClient, setSelectedClient] = useState<IClients | null>(null)
 
     async function handleDelete(info: any) {
-        setLoading(true);
+
         try {
             const res = await deleteClient(info?.id);
 
@@ -51,9 +51,7 @@ const ClientsTable = ({ data }: any) => {
                     border: 'none'
                 },
             });
-        } finally {
-            setLoading(false);
-        }
+        } 
     }
     const columns: ColumnDef<IClients>[] = [
         {

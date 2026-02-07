@@ -49,6 +49,7 @@ const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
         }
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [loadingId, setLoadingId] = useState<number | null>(null);
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})

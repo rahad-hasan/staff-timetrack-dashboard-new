@@ -37,8 +37,6 @@ import { toast } from "sonner";
 import { approveRejectManualTimeEntry } from "@/actions/timesheets/action";
 import {
   convertDecimalHoursToHMS,
-  formatTZDayMonthYear,
-  formatTZTime,
 } from "@/utils";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";

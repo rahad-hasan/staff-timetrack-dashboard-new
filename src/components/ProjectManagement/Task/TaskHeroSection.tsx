@@ -57,6 +57,7 @@ const TaskHeroSection = () => {
     if (searchParams.toString()) {
       router.replace(pathname, { scroll: false });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleCloseDialog = () => {
