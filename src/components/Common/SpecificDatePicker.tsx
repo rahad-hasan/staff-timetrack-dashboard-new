@@ -47,6 +47,7 @@ const SpecificDatePicker = () => {
     const formattedDate = `${yyyy}-${mm}-${dd}`;
 
     if (params.get("date") !== formattedDate) {
+      loader.start();
       params.set("date", formattedDate);
       router.push(`${pathname}?${params.toString()}`, { scroll: false });
     }
