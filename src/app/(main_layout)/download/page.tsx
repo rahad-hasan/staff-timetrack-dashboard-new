@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Download as DownloadIcon } from "lucide-react";
 
 const DownloadPage = () => {
-//   const LINUX_DOWNLOAD_URL = "/apps/linux/staff-time-tracker_0.0.1.deb";
-//   const MACOS_DOWNLOAD_URL = "/apps/macos/staff-time-tracker_0.0.1.exe";
-//   const WINDOWS_DOWNLOAD_URL = "/apps/windows/staff-time-tracker_0.0.1.dmg";
+  //   const LINUX_DOWNLOAD_URL = "/apps/linux/staff-time-tracker_0.0.1.deb";
+  //   const MACOS_DOWNLOAD_URL = "/apps/macos/staff-time-tracker_0.0.1.exe";
+  //   const WINDOWS_DOWNLOAD_URL = "/apps/windows/staff-time-tracker_0.0.1.dmg";
 
   return (
     <div className="container mx-auto py-4 sm:py-8 lg:py-12">
@@ -20,7 +20,7 @@ const DownloadPage = () => {
           Staff Time Tracker is available for Windows, macOS, and Linux
         </p>
         <p className="text-center mt-1 text-sm text-gray-500 dark:text-darkTextSecondary">
-          Current Version: 0.0.1
+          Current Version: 0.0.2
         </p>
       </div>
 
@@ -29,7 +29,7 @@ const DownloadPage = () => {
           <Image src={windows} width={120} height={120} alt="Windows OS icon" />
           <div className="text-lg font-medium">Windows</div>
           <a
-            href={`https://drive.google.com/file/d/1UvYMW2sBhjSnQFh7NSAIts15auDRdG6Y/view?usp=drive_link`}
+            href={`https://drive.google.com/file/d/1Y7d15ItqfGuGOAyw2-a8zkSboD8ksSlo/view?usp=sharing`}
             // download="staff-time-tracker_0.0.1.exe"
             target="_blank"
             // rel="noopener"
@@ -50,7 +50,7 @@ const DownloadPage = () => {
           />
           <div className="text-lg font-medium">Linux</div>
           <a
-            href={`https://drive.google.com/file/d/1susgrXFh4guU-Fkf6M1WaSfN7IbezunM/view?usp=drive_link`}
+            href={`https://drive.google.com/file/d/1ab--0C5OasGR_V_TCM5_IkUz9uP1XnEt/view?usp=sharing`}
             // download="staff-time-tracker_0.0.1.deb"
             target="_blank"
             // rel="noopener"
@@ -71,7 +71,7 @@ const DownloadPage = () => {
           />
           <div className="text-lg font-medium">macOS</div>
           <a
-            href={`https://drive.google.com/file/d/1susgrXFh4guU-Fkf6M1WaSfN7IbezunM/view?usp=share_link`}
+            href={`https://drive.google.com/file/d/1b_zi4YNzKO7OPovNFE2kzBGamai61ImH/view?usp=sharing`}
             // download="staff-time-tracker_0.0.1.exe"
             target="_blank"
             // rel="noopener"
