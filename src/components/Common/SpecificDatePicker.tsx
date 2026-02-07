@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import React, { useCallback, useEffect, useState } from "react";
@@ -47,20 +46,22 @@ const SpecificDatePicker = () => {
     const formattedDate = `${yyyy}-${mm}-${dd}`;
 
     if (params.get("date") !== formattedDate) {
-      loader.start();
       params.set("date", formattedDate);
       router.push(`${pathname}?${params.toString()}`, { scroll: false });
     }
   }, [selectedDate, pathname, router, searchParams]);
 
-  const handleNavigate = useCallback((days: number) => {
-    setSelectedDate((prevDate) => {
-      const newDate = new Date(prevDate);
-      newDate.setDate(newDate.getDate() + days);
-      loader.start();
-      return newDate;
-    });
-  }, []);
+  const handleNavigate = useCallback(
+    (days: number) => {
+      setSelectedDate((prevDate) => {
+        const newDate = new Date(prevDate);
+        newDate.setDate(newDate.getDate() + days);
+        loader.start();
+        return newDate;
+      });
+    },
+    [loader],
+  );
 
   return (
     <div className="w-full">
@@ -85,6 +86,11 @@ const SpecificDatePicker = () => {
               selected={selectedDate}
               onSelect={(date) => {
                 if (date) {
+                  const isSameDay =
+                    date.toDateString() === selectedDate.toDateString();
+                  if (!isSameDay) {
+                    loader.start();
+                  }
                   setSelectedDate(date);
                   setOpen(false);
                 }
