@@ -7,10 +7,8 @@ module.exports = {
       name: "dashboard",
       cwd: "/var/www/dashboard",
 
-      // IMPORTANT: Next.js must be built already
-      script: "npm",
-      args: "run start",
-      interpreter: "none",
+      script: "node_modules/next/dist/bin/next",
+      args: "start",
 
       exec_mode: "cluster",
       instances: 2,
@@ -22,6 +20,8 @@ module.exports = {
       min_uptime: "10s",
       max_restarts: 10,
       restart_delay: 3000,
+      kill_timeout: 5000,
+      listen_timeout: 8000,
 
       env: {
         NODE_ENV: "production",
