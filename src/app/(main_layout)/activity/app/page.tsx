@@ -1,14 +1,13 @@
 import { Settings } from "lucide-react";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
-import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import AppTableServer from "@/components/Activity/App/AppTableServer";
 import { ISearchParamsProps } from "@/types/type";
 import { Suspense } from "react";
 import AppNameTableSkeleton from "@/skeleton/activity/app/AppNameTableSkeleton";
 import { Metadata } from "next";
-import { getMembersDashboard } from "@/actions/members/action";
 import SelectProjectWrapper from "@/components/Common/SelectProjectWrapper";
+import SelectUserWrapper from "@/components/Common/SelectUserWrapper";
 // import AppNameTableSkeleton from "@/skeleton/activity/app/AppNameTableSkeleton";
 
 export const metadata: Metadata = {
@@ -16,13 +15,6 @@ export const metadata: Metadata = {
   description: "Staff Time Tracker Apps",
 };
 const App = async ({ searchParams }: ISearchParamsProps) => {
-  const res = await getMembersDashboard();
-
-  const users = res.data.map((u) => ({
-    id: String(u.id),
-    label: u.name,
-    avatar: u.image || "",
-  }));
 
   return (
     <div>
@@ -61,7 +53,7 @@ const App = async ({ searchParams }: ISearchParamsProps) => {
           </div>
 
           <div className=" flex items-center gap-3">
-            <SelectUserDropDown users={users} />
+            <SelectUserWrapper />
           </div>
         </div>
       </Suspense>

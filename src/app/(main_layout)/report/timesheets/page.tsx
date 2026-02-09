@@ -1,17 +1,19 @@
 import { getTimezones } from "@/actions/dashboard/action";
-import { getMembersDashboard } from "@/actions/members/action";
+import { getDateBaseTimeEntry, getTimeEntry } from "@/actions/report/action";
 import DayWeekMonthSelection from "@/components/Common/DayWeekMonthSelection";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import MonthPicker from "@/components/Common/MonthPicker";
 import SelectTimezoneDropDown from "@/components/Common/SelectTimezoneDropDown";
-import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
+import SelectUserWrapper from "@/components/Common/SelectUserWrapper";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import WeeklyDatePicker from "@/components/Common/WeeklyDatePicker";
-import DayWeekMonthSelectionServer from "@/components/Report/TimeSheets/DayWeekMonthSelectionServer";
-import ReportMonthlyTimeSheetServer from "@/components/Report/TimeSheets/ReportMonthlyTimeSheetServer";
-import ReportWeeklyTimeSheetServer from "@/components/Report/TimeSheets/ReportWeeklyTimeSheetServer";
+import ReportDailyTimeSheet from "@/components/Report/TimeSheets/ReportDailyTimeSheet";
+import ReportMonthlyTimeSheet from "@/components/Report/TimeSheets/ReportMonthlyTimeSheet";
+import ReportWeeklyTimeSheet from "@/components/Report/TimeSheets/ReportWeeklyTimeSheet";
 import ReportMonthlyTimesheetSkeleton from "@/skeleton/report/Timesheet/ReportMonthlyTimesheetSkeleton";
 import { ISearchParamsProps } from "@/types/type";
+import { getDecodedUser } from "@/utils/decodedLogInUser";
+import { endOfMonth, endOfWeek, format, startOfMonth, startOfWeek } from "date-fns";
 import { Metadata } from "next";
 import { Suspense } from "react";
 
@@ -19,20 +21,47 @@ export const metadata: Metadata = {
   title: "Staff Time Tracker Report Timesheets",
   description: "Staff Time Tracker Report Timesheets",
 };
+
 const ReportTimeSheets = async ({ searchParams }: ISearchParamsProps) => {
   const params = await searchParams;
+  const user = await getDecodedUser();
+  const currentDate = format(new Date(), "yyyy-MM-dd");
+
+  const res = await getTimeEntry({
+    date: params.date ?? currentDate,
+    user_id: params.user_id ?? user?.id,
+    timezone: params?.timezone,
+  });
+
+  // weekly
+  const now = new Date();
+  const weekStart = format(startOfWeek(now, { weekStartsOn: 1 }), "yyyy-MM-dd");
+  const weekEnd = format(endOfWeek(now, { weekStartsOn: 1 }), "yyyy-MM-dd");
+
+  const dateBasedTimeEntry = await getDateBaseTimeEntry({
+    user_id: params.user_id ?? user?.id,
+    from_date: params.from_date ?? weekStart,
+    to_date: params.to_date ?? weekEnd,
+    timezone: params?.timezone,
+  });
+
+  // month
+  const monthStart = format(startOfMonth(now), "yyyy-MM-dd");
+  const monthEnd = format(endOfMonth(now), "yyyy-MM-dd");
+
+  const result = await getDateBaseTimeEntry({
+    user_id: params.user_id ?? user?.id,
+    from_date: params.start_month ?? monthStart,
+    to_date: params.end_month ?? monthEnd,
+    timezone: params.timezone,
+  });
+
   type Tab = "daily" | "weekly" | "monthly";
   const activeTab = (params?.tab as Tab) ?? "daily";
 
-  const res = await getMembersDashboard();
-
-  const users = res.data.map((u) => ({
-    id: String(u.id),
-    label: u.name,
-    avatar: u.image || "",
-  }));
-
   const timezones = await getTimezones();
+
+  console.log('This is report timesheets');
 
   return (
     <div>
@@ -40,63 +69,39 @@ const ReportTimeSheets = async ({ searchParams }: ISearchParamsProps) => {
         <HeadingComponent
           heading="All Timesheets"
           subHeading="All the timesheet by team member who completed is displayed here"
-        ></HeadingComponent>
-        <DayWeekMonthSelection></DayWeekMonthSelection>
+        />
+        <DayWeekMonthSelection />
+      </div>
+
+      <div className="mb-5 flex flex-col gap-4 sm:flex-row justify-between">
+        <div className="flex gap-4">
+          {activeTab === "daily" && <SpecificDatePicker />}
+          {activeTab === "weekly" && <WeeklyDatePicker />}
+          {activeTab === "monthly" && <MonthPicker />}
+
+          <SelectTimezoneDropDown timezones={timezones} />
+        </div>
+        <SelectUserWrapper />
       </div>
 
       {activeTab === "daily" && (
-        <>
-          <div className="mb-5 flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between">
-            <div className="flex gap-4">
-              <SpecificDatePicker></SpecificDatePicker>
-              <SelectTimezoneDropDown timezones={timezones} />
-            </div>
-            <SelectUserDropDown users={users}></SelectUserDropDown>
-          </div>
-
-          <DayWeekMonthSelectionServer
-            searchParams={searchParams}
-          ></DayWeekMonthSelectionServer>
-        </>
+        <ReportDailyTimeSheet
+          dailyTimeEntry={res?.data}
+        ></ReportDailyTimeSheet>
       )}
 
       {activeTab === "weekly" && (
-        <>
-          <div className="mb-5 flex flex-col gap-4 lg:gap-0 lg:flex-row justify-between">
-            <div className="flex gap-3">
-              <WeeklyDatePicker />
-              {/* <Button className=" hidden sm:flex text-headingTextColor dark:text-darkTextPrimary" variant={'filter'}>
-                        <SlidersHorizontal className="text-headingTextColor dark:text-darkTextPrimary" /> Filters
-                    </Button> */}
-              <SelectTimezoneDropDown timezones={timezones} />
-            </div>
-            <SelectUserDropDown users={users}></SelectUserDropDown>
-          </div>
-          <ReportWeeklyTimeSheetServer
-            searchParams={searchParams}
-          ></ReportWeeklyTimeSheetServer>
-        </>
+        <ReportWeeklyTimeSheet
+          dateBasedTimeEntry={dateBasedTimeEntry}
+        ></ReportWeeklyTimeSheet>
       )}
 
       {activeTab === "monthly" && (
-        <>
-          <div className="mb-5 flex flex-col gap-4 md:gap-0 md:flex-row justify-between">
-            <div className="flex gap-4">
-              <MonthPicker />
-              <SelectTimezoneDropDown timezones={timezones} />
-            </div>
-            <SelectUserDropDown users={users} />
-          </div>
-          <Suspense fallback={<ReportMonthlyTimesheetSkeleton />}>
-            {params.start_month && params.end_month ? (
-              <ReportMonthlyTimeSheetServer
-                searchParams={searchParams}
-              ></ReportMonthlyTimeSheetServer>
-            ) : (
-              <ReportMonthlyTimesheetSkeleton></ReportMonthlyTimesheetSkeleton>
-            )}
-          </Suspense>
-        </>
+        <Suspense fallback={<ReportMonthlyTimesheetSkeleton />}>
+          <ReportMonthlyTimeSheet
+            data={result?.data?.daily_data}
+          ></ReportMonthlyTimeSheet>
+        </Suspense>
       )}
     </div>
   );

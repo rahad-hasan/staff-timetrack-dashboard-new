@@ -89,18 +89,59 @@ export const uploadProfileInfo = async ({ data }: {
   });
 };
 
-export const changePassword = async ({ data }: {
+export const changePassword = async ({
+  data,
+}: {
   data: {
-    oldPassword: string,
-    newPassword: string,
-  }
+    oldPassword: string;
+    newPassword: string;
+  };
 }) => {
-  return await baseApi(`/auth/change-password`, {
+  const res = await baseApi(`/auth/change-password`, {
     method: "PATCH",
     body: data,
     tag: "profile",
-    cache: "no-cache"
+    cache: "no-cache",
   });
+
+  if (res?.success) {
+    const isProd = process.env.NODE_ENV === "production";
+    const cookieStore = await cookies();
+
+    cookieStore.set("accessToken", res.data.accessToken, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: "lax",
+      path: "/",
+      maxAge: MAX_AGE,
+    });
+
+    cookieStore.set("refreshToken", res.data.refreshToken, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: "lax",
+      path: "/",
+      maxAge: MAX_AGE,
+    });
+
+    cookieStore.set("staffTimeDashboardRole", res.data.role, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: "lax",
+      path: "/",
+      maxAge: MAX_AGE,
+    });
+
+    cookieStore.set("userId", res.data.id, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: "lax",
+      path: "/",
+      maxAge: MAX_AGE,
+    });
+  }
+
+  return res;
 };
 
 export async function clearSessionCookie() {

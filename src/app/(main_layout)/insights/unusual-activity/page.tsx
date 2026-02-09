@@ -1,35 +1,15 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Bell, Settings } from "lucide-react";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useState } from "react";
 import UnusualActivityTable from "@/components/Insights/UnusualActivity/UnusualActivityTable";
-import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import HeadingComponent from "@/components/Common/HeadingComponent";
-import { getMembersDashboard } from "@/actions/members/action";
+import SelectUserWrapper from "@/components/Common/SelectUserWrapper";
 
 const UnusualActivity = () => {
-  const [users, setUsers] = useState<any>([]);
 
-  useEffect(() => {
-    const getMembers = async () => {
-      const res = await getMembersDashboard();
-
-      const users = res.data.map((u) => ({
-        id: String(u.id),
-        label: u.name,
-        avatar: u.image || "",
-      }));
-
-      setUsers(users);
-    };
-
-    getMembers();
-  }, []);
-  const [activeTab, setActiveTab] = useState<
-    "Highly Unusual" | "Unusual" | "Slightly Unusual"
-  >("Highly Unusual");
+  const [activeTab, setActiveTab] = useState<"Highly Unusual" | "Unusual" | "Slightly Unusual">("Highly Unusual");
 
   const handleTabClick = (
     tab: "Highly Unusual" | "Unusual" | "Slightly Unusual",
@@ -67,7 +47,7 @@ const UnusualActivity = () => {
             <SpecificDatePicker></SpecificDatePicker>
           </div>
           <div className=" flex items-center gap-3">
-            <SelectUserDropDown users={users}></SelectUserDropDown>
+            <SelectUserWrapper />
           </div>
         </div>
       </Suspense>
@@ -81,11 +61,10 @@ const UnusualActivity = () => {
                 tab as "Highly Unusual" | "Unusual" | "Slightly Unusual",
               )
             }
-            className={`px-3 py-2 text-[13px] sm:text-sm font-medium transition-all cursor-pointer rounded-lg ${
-              activeTab === tab
+            className={`px-3 py-2 text-[13px] sm:text-sm font-medium transition-all cursor-pointer rounded-lg ${activeTab === tab
                 ? "bg-bgPrimary dark:bg-darkPrimaryBg dark:text-darkTextPrimary text-headingTextColor outline-1 outline-borderColor dark:outline-darkBorder shadow"
                 : "text-subTextColor dark:text-darkTextPrimary hover:text-gray-800"
-            } flex-shrink-0`} // Ensure buttons shrink to fit content
+              } flex-shrink-0`} // Ensure buttons shrink to fit content
           >
             {tab}
           </button>

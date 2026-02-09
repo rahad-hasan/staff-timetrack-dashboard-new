@@ -1,12 +1,11 @@
-import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import ManualRequestTableServer from "@/components/TimeSheets/ManualRequests/ManualRequestTableServer";
 import { ISearchParamsProps } from "@/types/type";
 import ManualRequestsHeroSection from "@/components/TimeSheets/ManualRequests/ManualRequestsHeroSection";
 import { Suspense } from "react";
 import { Metadata } from "next";
-import { getMembersDashboard } from "@/actions/members/action";
 import SelectProjectWrapper from "@/components/Common/SelectProjectWrapper";
+import SelectUserWrapper from "@/components/Common/SelectUserWrapper";
 
 export const metadata: Metadata = {
   title: "Staff Time Tracker Manual Requests",
@@ -14,13 +13,6 @@ export const metadata: Metadata = {
 };
 
 const ManualRequests = async ({ searchParams }: ISearchParamsProps) => {
-  const res = await getMembersDashboard();
-
-  const users = res.data.map((u) => ({
-    id: String(u.id),
-    label: u.name,
-    avatar: u.image || "",
-  }));
 
   return (
     <div>
@@ -39,7 +31,7 @@ const ManualRequests = async ({ searchParams }: ISearchParamsProps) => {
                     </Button>
                 </div> */}
           <SelectProjectWrapper></SelectProjectWrapper>
-          <SelectUserDropDown users={users} defaultSelect={false} />
+          <SelectUserWrapper defaultSelect={false} />
         </div>
       </Suspense>
 

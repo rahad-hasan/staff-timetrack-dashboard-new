@@ -10,11 +10,11 @@ import { ISearchParamsProps } from "@/types/type";
 import ScreenshotsToggle from "@/components/Activity/ScreenShorts/ScreenshotsToggle";
 import ScreenShotsServer from "@/components/Activity/ScreenShorts/ScreenShotsServer";
 import { Metadata } from "next";
-import { getMembersDashboard } from "@/actions/members/action";
-import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
+
 import SelectProjectWrapper from "@/components/Common/SelectProjectWrapper";
 import { getTimezones } from "@/actions/dashboard/action";
 import SelectTimezoneDropDown from "@/components/Common/SelectTimezoneDropDown";
+import SelectUserWrapper from "@/components/Common/SelectUserWrapper";
 
 
 export const metadata: Metadata = {
@@ -22,13 +22,6 @@ export const metadata: Metadata = {
   description: "Staff Time Tracker Screenshot",
 };
 const ScreenShorts = async ({ searchParams }: ISearchParamsProps) => {
-  const res = await getMembersDashboard();
-
-  const users = res.data.map((u) => ({
-    id: String(u.id),
-    label: u.name,
-    avatar: u.image || "",
-  }));
 
   const timezones = await getTimezones();
 
@@ -68,7 +61,7 @@ const ScreenShorts = async ({ searchParams }: ISearchParamsProps) => {
           </Dialog>
           <Suspense fallback={null}>
             <div className="w-full">
-              <SelectUserDropDown users={users} />
+              <SelectUserWrapper />
             </div>
           </Suspense>
         </div>

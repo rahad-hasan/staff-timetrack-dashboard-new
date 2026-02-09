@@ -6,18 +6,10 @@ import CoreWork from "@/components/Insights/Performance/CoreWork";
 import Utilization from "@/components/Insights/Performance/Utilization";
 import DailyFocus from "@/components/Insights/Performance/DailyFocus";
 import Activity from "@/components/Insights/Performance/Activity";
-import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import HeadingComponent from "@/components/Common/HeadingComponent";
-import { getMembersDashboard } from "@/actions/members/action";
+import SelectUserWrapper from "@/components/Common/SelectUserWrapper";
 
 const Performance = async () => {
-  const res = await getMembersDashboard();
-
-  const users = res.data.map((u) => ({
-    id: String(u.id),
-    label: u.name,
-    avatar: u.image || "",
-  }));
 
   return (
     <div>
@@ -51,7 +43,7 @@ const Performance = async () => {
             <SpecificDatePicker></SpecificDatePicker>
           </div>
           <div className=" flex items-center gap-3">
-            <SelectUserDropDown users={users}></SelectUserDropDown>
+            <SelectUserWrapper />
           </div>
         </div>
       </Suspense>

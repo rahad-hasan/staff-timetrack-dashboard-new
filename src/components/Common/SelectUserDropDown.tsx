@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Command,
+  CommandEmpty,
   // CommandEmpty,
   CommandGroup,
   CommandInput,
@@ -28,11 +29,13 @@ import { useTopLoader } from "nextjs-toploader";
 interface ISelectUserDropDown {
   defaultSelect?: boolean;
   users: { id: string; label: string; avatar: string }[];
+  loading: boolean
 }
 
 const SelectUserDropDown = ({
   defaultSelect = true,
   users,
+  loading,
 }: ISelectUserDropDown) => {
   const logInUserData = useLogInUserStore((state) => state.logInUserData);
   const router = useRouter();
@@ -43,30 +46,6 @@ const SelectUserDropDown = ({
   const [open, setOpen] = useState(false);
   const [searchInput, setSearchInput] = useState("");
 
-  // // 2. Fetch Members
-  // useEffect(() => {
-  //   const fetchMembers = async () => {
-  //     setLoading(true);
-  //     try {
-  //       const res = await getMembersDashboard();
-  //       if (res?.success) {
-  //         const formatted = res?.data?.map((u: any) => ({
-  //           id: String(u?.id),
-  //           label: u?.name,
-  //           avatar: u?.image || u?.avatar || "",
-  //         }));
-  //         setUsers(formatted);
-  //       }
-  //     } catch (err) {
-  //       console.error("Fetch members error:", err);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-  //   fetchMembers();
-  // }, []);
-
-  // 3. Logic to handle Default Selection on Mount or Store Update
   useEffect(() => {
     if (!defaultSelect) return;
     if (searchParams.get("user_id")) return;
@@ -128,7 +107,7 @@ const SelectUserDropDown = ({
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent className="sm:w-[250px] p-0 dark:bg-darkSecondaryBg">
+      <PopoverContent className="sm:w-[250px] p-0 dark:bg-darkSecondaryBg dark:border-darkBorder">
         <Command className="dark:bg-darkSecondaryBg">
           <CommandInput
             placeholder="Search User..."
@@ -137,6 +116,9 @@ const SelectUserDropDown = ({
             onValueChange={setSearchInput}
           />
           <CommandList>
+            <CommandEmpty>
+              {loading ? "Loading..." : "No user found."}
+            </CommandEmpty>
             <CommandGroup>
               {users.map((user: any) => (
                 <CommandItem

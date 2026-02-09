@@ -6,16 +6,14 @@ import { useEffect, useState } from "react";
 import SearchBar from "@/components/Common/SearchBar";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import CreateTaskModal from "@/components/ProjectManagement/Task/CreateTaskModal";
-import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useLogInUserStore } from "@/store/logInUserStore";
-import { getMembersDashboard } from "@/actions/members/action";
 import SelectProjectWrapper from "@/components/Common/SelectProjectWrapper";
+import SelectUserWrapper from "@/components/Common/SelectUserWrapper";
 
 const TaskHeroSection = () => {
   const [open, setOpen] = useState(false);
-  const [users, setUsers] = useState<any>([]);
   // type Tab = "List view" | "Kanban";
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -26,22 +24,6 @@ const TaskHeroSection = () => {
     params.set("search", query);
     router.push(`?${params.toString()}`);
   };
-
-  useEffect(() => {
-    const getMembers = async () => {
-      const res = await getMembersDashboard();
-
-      const users = res.data.map((u) => ({
-        id: String(u.id),
-        label: u.name,
-        avatar: u.image || "",
-      }));
-
-      setUsers(users);
-    };
-
-    getMembers();
-  }, []);
 
   // const activeTab = (searchParams.get("tab") as Tab) ?? "List view";
 
@@ -113,7 +95,7 @@ const TaskHeroSection = () => {
           <SelectProjectWrapper></SelectProjectWrapper>
           <div className=" flex items-center gap-3 w-full">
             <div className=" w-full">
-              <SelectUserDropDown users={users} defaultSelect={false} />
+              <SelectUserWrapper defaultSelect={false} />
             </div>
             <div className=" block sm:hidden">
               <SearchBar onSearch={handleSearch}></SearchBar>

@@ -1,27 +1,19 @@
 import { Settings } from "lucide-react";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
-import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import UrlsTableServer from "@/components/Activity/Urls/UrlsTableServer";
 import UrlsTableSkeleton from "@/skeleton/activity/url/UrlsTableSkeleton";
 import { Suspense } from "react";
 import { ISearchParamsProps } from "@/types/type";
 import { Metadata } from "next";
-import { getMembersDashboard } from "@/actions/members/action";
 import SelectProjectWrapper from "@/components/Common/SelectProjectWrapper";
+import SelectUserWrapper from "@/components/Common/SelectUserWrapper";
 
 export const metadata: Metadata = {
   title: "Staff Time Tracker Urls",
   description: "Staff Time Tracker Urls",
 };
 const Urls = async ({ searchParams }: ISearchParamsProps) => {
-  const res = await getMembersDashboard();
-
-  const users = res.data.map((u) => ({
-    id: String(u.id),
-    label: u.name,
-    avatar: u.image || "",
-  }));
 
   return (
     <div>
@@ -70,7 +62,7 @@ const Urls = async ({ searchParams }: ISearchParamsProps) => {
           </div>
 
           <div className="flex items-center gap-3">
-            <SelectUserDropDown users={users} />
+            <SelectUserWrapper />
           </div>
         </div>
       </Suspense>

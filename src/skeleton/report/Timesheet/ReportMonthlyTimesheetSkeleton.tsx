@@ -34,9 +34,9 @@ const ReportMonthlyTimesheetSkeleton = () => {
                                     >
                                         <div className="flex flex-col items-center justify-center h-full gap-2">
                                             {/* Date Number Skeleton */}
-                                            <div className="h-4 w-6 bg-gray-100 dark:bg-gray-800 rounded"></div>
+                                            <div className="h-4 w-6 bg-gray-100 dark:bg-gray-700 rounded"></div>
                                             {/* Time Label Skeleton */}
-                                            <div className="h-4 w-16 bg-gray-50 dark:bg-gray-800/50 rounded-lg"></div>
+                                            <div className="h-4 w-16 bg-gray-50 dark:bg-gray-700/50 rounded-lg"></div>
                                         </div>
                                     </td>
                                 ))}
