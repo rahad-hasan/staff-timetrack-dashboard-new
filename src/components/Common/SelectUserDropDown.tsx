@@ -6,8 +6,6 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Command,
-  CommandEmpty,
-  // CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
@@ -29,7 +27,7 @@ import { useTopLoader } from "nextjs-toploader";
 interface ISelectUserDropDown {
   defaultSelect?: boolean;
   users: { id: string; label: string; avatar: string }[];
-  loading: boolean
+  loading?: boolean
 }
 
 const SelectUserDropDown = ({
@@ -116,9 +114,9 @@ const SelectUserDropDown = ({
             onValueChange={setSearchInput}
           />
           <CommandList>
-            <CommandEmpty>
+            {/* <CommandEmpty>
               {loading ? "Loading..." : "No user found."}
-            </CommandEmpty>
+            </CommandEmpty> */}
             <CommandGroup>
               {users.map((user: any) => (
                 <CommandItem
