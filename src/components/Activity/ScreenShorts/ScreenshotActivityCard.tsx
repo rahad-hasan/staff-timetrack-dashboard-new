@@ -47,7 +47,7 @@ function ScreenshotActivityCard({
           {improved_value}
         </p> */}
         <p
-          className={`text-md capitalize text-muted-foreground dark:text-darkTextSecondary`}
+          className={` text-sm 2xl:text-base capitalize text-muted-foreground dark:text-darkTextSecondary`}
         >
           Activity on selected date
         </p>

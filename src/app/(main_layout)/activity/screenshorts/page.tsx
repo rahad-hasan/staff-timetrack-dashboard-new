@@ -38,10 +38,12 @@ const ScreenShorts = async ({ searchParams }: ISearchParamsProps) => {
       </div>
       <div className="mb-5 flex flex-col gap-4 lg:gap-4 xl:flex-row justify-between">
         <Suspense fallback={null}>
-          <div className=" flex flex-col lg:flex-row gap-3">
+          <div className=" flex flex-col lg:flex-row justify-between gap-3">
             <SpecificDatePicker></SpecificDatePicker>
-            <SelectTimezoneDropDown timezones={timezones} />
-            <SelectProjectWrapper></SelectProjectWrapper>
+            <div className=" flex gap-3 items-center">
+              <SelectTimezoneDropDown timezones={timezones} />
+              <SelectProjectWrapper></SelectProjectWrapper>
+            </div>
           </div>
         </Suspense>
         <div className=" flex items-center gap-3">

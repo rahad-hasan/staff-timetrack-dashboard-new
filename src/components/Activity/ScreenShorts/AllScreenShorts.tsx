@@ -25,17 +25,6 @@ const AllScreenShorts = ({ data }: { data: IAllScreenshot[] | undefined }) => {
               </p>
             </div>
             <div className="relative flex-nowrap rounded-lg dark:bg-darkSecondaryBg ">
-              {/* <Image
-                src={screenShort?.image}
-                onClick={() => {
-                  setSelectedImage(screenShort);
-                  setModalOpen(true);
-                }}
-                width={300}
-                height={250}
-                className="rounded-t-lg w-full max-h-[130px] 2xl:max-h-[140px] transition-transform duration-300 hover:scale-[1.01] cursor-pointer"
-                alt="screenshot"
-              /> */}
               <div className="relative w-full aspect-[4/2.3] overflow-hidden rounded-t-lg bg-gray-100 dark:bg-darkSecondaryBg">
                 <Image
                   src={screenShort?.image}

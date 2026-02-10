@@ -115,30 +115,6 @@ export const changePassword = async ({
       path: "/",
       maxAge: MAX_AGE,
     });
-
-    cookieStore.set("refreshToken", res.data.refreshToken, {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: "lax",
-      path: "/",
-      maxAge: MAX_AGE,
-    });
-
-    cookieStore.set("staffTimeDashboardRole", res.data.role, {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: "lax",
-      path: "/",
-      maxAge: MAX_AGE,
-    });
-
-    cookieStore.set("userId", res.data.id, {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: "lax",
-      path: "/",
-      maxAge: MAX_AGE,
-    });
   }
 
   return res;

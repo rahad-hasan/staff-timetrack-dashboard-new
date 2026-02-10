@@ -19,73 +19,12 @@ import { deleteScreenshot } from "@/actions/screenshots/action";
 import { toast } from "sonner";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import { TTimelineHourBlock } from "@/types/type";
-
 // import emptyActivity from "../../../assets/empty_activity.png";
 
 const Every10Mins = ({ data }: { data: TTimelineHourBlock[] }) => {
   const logInUserData = useLogInUserStore((state) => state.logInUserData);
   const [selectedImage, setSelectedImage] = useState<any>();
   const [modalOpen, setModalOpen] = useState<boolean>(false);
-
-  // const formatDuration = (totalSeconds: number) => {
-  //   const minutes = Math.ceil((totalSeconds % 3600) / 60);
-
-  //   if (minutes > 0) {
-  //     return `${minutes}m`;
-  //   }
-  // };
-
-  // const groupDataByHour = (intervals: any[]) => {
-  //   const hours: Record<string, any[]> = {};
-
-  //   // 1. Group intervals by their hour start (e.g., "2025-12-30T11:00:00")
-  //   intervals?.forEach((interval) => {
-  //     const date = new Date(interval?.from_time);
-  //     date?.setMinutes(0, 0, 0);
-  //     const hourKey = date?.toISOString();
-  //     if (!hours[hourKey]) hours[hourKey] = [];
-  //     hours[hourKey].push(interval);
-  //   });
-
-  //   return Object.entries(hours)?.map(([hourKey, blockIntervals]) => {
-  //     const hourStart = new Date(hourKey);
-  //     const hourEnd = new Date(hourStart);
-  //     hourEnd.setHours(hourEnd.getHours() + 1);
-
-  //     // 2. Generate all six 10-minute slots for this hour
-  //     const slots = [];
-  //     let totalWorkedSeconds = 0;
-
-  //     for (let i = 0; i < 60; i += 10) {
-  //       const slotStart = new Date(hourStart);
-  //       slotStart?.setMinutes(i);
-  //       const slotEnd = new Date(slotStart);
-  //       slotEnd?.setMinutes(i + 10);
-
-  //       // Find if an interval matches this specific 10m slot
-  //       const match = blockIntervals.find(
-  //         (int) => new Date(int.from_time).getTime() === slotStart.getTime(),
-  //       );
-
-  //       if (match) {
-  //         totalWorkedSeconds += match.total_duration;
-  //         slots.push({ type: "data", ...match });
-  //       } else {
-  //         slots.push({
-  //           type: "empty",
-  //           from_time: slotStart.toISOString(),
-  //           to_time: slotEnd.toISOString(),
-  //         });
-  //       }
-  //     }
-
-  //     return {
-  //       hourLabel: `${formatTZTime(hourStart)} - ${formatTZTime(hourEnd)}`,
-  //       totalWorked: totalWorkedSeconds,
-  //       slots,
-  //     };
-  //   });
-  // };
 
   const handleDeleteScreenShot = async (data: any) => {
     const finalData = {
@@ -120,101 +59,8 @@ const Every10Mins = ({ data }: { data: TTimelineHourBlock[] }) => {
     }
   };
 
-  // const processedHours = groupDataByHour(data || []);
-
   return (
     <>
-      {/* <div className="">
-                {data?.map((block: any, blockIndex: any) => (
-                    <div key={blockIndex} className="mt-5">
- 
-                        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 sm:justify-between sm:items-center">
-                            <div className="flex items-center gap-2">
-                                <Circle size={20} className="text-gray-200 dark:text-darkTextPrimary" />
-                                <p className="text-subTextColor dark:text-darkTextSecondary">{format(parseISO(block.from_time), 'h:mm a')} - {format(parseISO(block.to_time), 'h:mm a')}</p>
-                            </div>
-                            <h2 className="text-lg text-subTextColor dark:text-darkTextSecondary">
-                                Total time worked: <span className="font-medium">{formatDuration(block.total_duration)}</span>
-                            </h2>
-                        </div>
- 
-                        <div className="mt-3 grid grid-cols-2 xl:grid-cols-4 2xl:grid-cols-6 3xl:grid-cols-6 gap-4">
-                            {block?.details.map((screenShort: any, index: any) => (
-                                <div
-                                    key={index}
-                                    className="p-2 flex-nowrap rounded-lg border border-borderColor dark:border-darkBorder"
-                                >
-                                    <Image
-                                        src={screenShort?.image}
-                                        onClick={() => {
-                                            setSelectedImage(screenShort.screenShort);
-                                            setModalOpen(true);
-                                        }}
-                                        width={300}
-                                        height={300}
-                                        className="rounded-lg w-full h-34 object-cover transition-transform duration-300 hover:scale-[1.01] cursor-pointer"
-                                        alt="screenshot"
-                                    />
- 
-                                    <div className="mt-3">
-                                        <div className="flex justify-between items-center mb-2">
-                                            <p className=" text-lg font-normal text-subTextColor dark:text-darkTextPrimary">
-                                                {screenShort.start}nai - nai{screenShort.end}
-                                            </p>
-                                            <Dialog>
-                                                <form>
-                                                    <DialogTrigger asChild>
-                                                        <div className="text-red-500 cursor-pointer">
-                                                            <DeleteIcon size={18} />
-                                                        </div>
-                                                    </DialogTrigger>
-                                                    <ScreenShortsDeleteReason></ScreenShortsDeleteReason>
-                                                </form>
-                                            </Dialog>
-                                        </div>
- 
-                                        <p className=" text-sm mb-2 text-subTextColor dark:text-darkTextPrimary">
-                                            {screenShort?.score}% of {screenShort?.duration} minutes
-                                        </p>
- 
- 
-                                        <div className="h-2 bg-[#dce3e3] rounded-full">
- 
-                                            <div
-                                                className={`h-2 ${screenShort.score < 30
-                                                    ? "bg-red-500"
-                                                    : screenShort.score < 60
-                                                        ? "bg-yellow-400"
-                                                        : "bg-primary"}
-                                                     rounded-full relative`}
-                                                style={{ width: `${screenShort.score}%` }}
-                                            >
- 
-                                                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[22px] h-[22px] bg-gradient-to-b from-[#ffffff] to-[#dfe5fd] border-2 border-white rounded-full flex items-center justify-center">
-                                                    <div className={`w-[8px] h-[8px] shadow ${screenShort.score < 30
-                                                        ? "bg-red-500"
-                                                        : screenShort.score < 60
-                                                            ? "bg-yellow-400"
-                                                            : "bg-primary"} rounded-full`}>
-                                                    </div>
-                                                </div>
-                                            </div>
- 
-                                        </div>
-                                        <h2 className="mt-3 text-sm sm:text-base font-bold text-headingTextColor dark:text-darkTextPrimary">
-                                            {screenShort?.project_name}
-                                        </h2>
-                                        <p className="text-subTextColor text-sm md:text-base dark:text-darkTextSecondary">
-                                            {screenShort?.task_name ? screenShort?.task_name : "No Task"}
-                                        </p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                ))}
-            </div> */}
-
       {data?.map((hourGroup, groupIdx) => (
         <div key={groupIdx}>
           <div className="flex gap-2 sm:gap-3 justify-between items-center h-3">
@@ -255,18 +101,19 @@ const Every10Mins = ({ data }: { data: TTimelineHourBlock[] }) => {
                         : "No Task"}
                     </p>
                   </div>
-                  <div className="relative flex-nowrap rounded-lg overflow-hidden dark:bg-darkSecondaryBg">
-                    <Image
-                      src={block?.details?.[0]?.image}
-                      onClick={() => {
-                        setSelectedImage(block?.details);
-                        setModalOpen(true);
-                      }}
-                      width={300}
-                      height={250}
-                      className="w-full max-h-[140px] object-cover transition-transform duration-300 hover:scale-[1.01] cursor-pointer"
-                      alt="screenshot"
-                    />
+                  <div className="relative dark:bg-darkSecondaryBg overflow-hidden rounded-lg">
+                    <div className="relative w-full aspect-[4/2.2] ">
+                      <Image
+                        src={block?.details?.[0]?.image}
+                        alt="screenshot"
+                        fill
+                        onClick={() => {
+                          setSelectedImage(block?.details);
+                          setModalOpen(true);
+                        }}
+                        className="object-cover transition-transform duration-300 hover:scale-[1.05] cursor-pointer"
+                      />
+                    </div>
                     {block?.details?.[0]?.anomaly?.type && (
                       <span className=" absolute top-1 right-1 text-xs px-2 py-0.5 rounded-2xl bg-[#ff4646cc] text-white">
                         {block?.details?.[0]?.anomaly?.type}
@@ -281,45 +128,34 @@ const Every10Mins = ({ data }: { data: TTimelineHourBlock[] }) => {
                         <p className="text-xs sm:text-sm font-normal text-subTextColor dark:text-slate-200">
                           {block?.format_from_time} - {block?.format_to_time}
                         </p>
-                        {/* <Dialog>
-                                                    <form>
-                                                        <DialogTrigger asChild>
-                                                            <div className="text-rose-600 dark:text-rose-500 cursor-pointer">
-                                                                <DeleteIcon size={16} />
-                                                            </div>
-                                                        </DialogTrigger>
-                                                        <ScreenShortsDeleteReason></ScreenShortsDeleteReason>
-                                                    </form>
-                                                </Dialog> */}
                         {(logInUserData?.role === "admin" ||
                           logInUserData?.role === "manager" ||
                           logInUserData?.role === "hr") && (
-                          <ConfirmDialog
-                            trigger={
-                              <div className="text-rose-600 dark:text-rose-500 cursor-pointer">
-                                <DeleteIcon size={16} />
-                              </div>
-                            }
-                            title="Delete the screenshot entry"
-                            description="Are you sure you want to delete? This action cannot be undone."
-                            confirmText="Confirm"
-                            cancelText="Cancel"
-                            onConfirm={() => handleDeleteScreenShot(block)}
-                          />
-                        )}
+                            <ConfirmDialog
+                              trigger={
+                                <div className="text-rose-600 dark:text-rose-500 cursor-pointer">
+                                  <DeleteIcon size={16} />
+                                </div>
+                              }
+                              title="Delete the screenshot entry"
+                              description="Are you sure you want to delete? This action cannot be undone."
+                              confirmText="Confirm"
+                              cancelText="Cancel"
+                              onConfirm={() => handleDeleteScreenShot(block)}
+                            />
+                          )}
                       </div>
 
                       <div className="h-1.5 bg-[#dce3e3] dark:bg-darkPrimaryBg rounded-full">
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <div
-                              className={`h-1.5 ${
-                                block?.avg_score < 30
-                                  ? "bg-red-500"
-                                  : block?.avg_score < 60
-                                    ? "bg-yellow-400"
-                                    : "bg-primary"
-                              }
+                              className={`h-1.5 ${block?.avg_score < 30
+                                ? "bg-red-500"
+                                : block?.avg_score < 60
+                                  ? "bg-yellow-400"
+                                  : "bg-primary"
+                                }
                                 rounded-full relative`}
                               style={{
                                 width: `${block?.avg_score < 10 ? block?.avg_score + 5 : block?.avg_score}%`,
@@ -327,13 +163,12 @@ const Every10Mins = ({ data }: { data: TTimelineHourBlock[] }) => {
                             >
                               <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[17px] h-[17px] bg-gradient-to-b from-[#ffffff] dark:from-[#dadada] to-[#dfe5fd] dark:to-darkSecondaryBg border-2 border-white dark:border-slate-500  rounded-full flex items-center justify-center">
                                 <div
-                                  className={`w-[5px] h-[5px] shadow ${
-                                    block?.avg_score < 30
-                                      ? "bg-red-500"
-                                      : block?.avg_score < 60
-                                        ? "bg-yellow-400"
-                                        : "bg-primary"
-                                  } rounded-full`}
+                                  className={`w-[5px] h-[5px] shadow ${block?.avg_score < 30
+                                    ? "bg-red-500"
+                                    : block?.avg_score < 60
+                                      ? "bg-yellow-400"
+                                      : "bg-primary"
+                                    } rounded-full`}
                                 ></div>
                               </div>
                             </div>
@@ -356,13 +191,12 @@ const Every10Mins = ({ data }: { data: TTimelineHourBlock[] }) => {
                                   </div>
                                   <div className="h-1.5 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                                     <div
-                                      className={`h-1.5 ${
-                                        block?.avg_score < 30
-                                          ? "bg-red-500"
-                                          : block?.avg_score < 60
-                                            ? "bg-yellow-400"
-                                            : "bg-primary"
-                                      }
+                                      className={`h-1.5 ${block?.avg_score < 30
+                                        ? "bg-red-500"
+                                        : block?.avg_score < 60
+                                          ? "bg-yellow-400"
+                                          : "bg-primary"
+                                        }
                                         rounded-full relative`}
                                       style={{ width: `${block.avg_score}%` }}
                                     />
