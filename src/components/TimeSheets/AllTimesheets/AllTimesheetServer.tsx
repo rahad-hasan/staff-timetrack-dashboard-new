@@ -40,7 +40,7 @@ const AllTimesheetServer = async ({ searchParams }: ISearchParamsProps) => {
 
       {activeTab === "daily" && (
         <Suspense fallback={<DailyTimeSheetsSkeleton />}>
-          <DailyTimeSheetsServer searchParams={searchParams} />
+          <DailyTimeSheetsServer searchParams={searchParams} timezones={timezones} />
         </Suspense>
       )}
 

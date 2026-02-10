@@ -31,9 +31,11 @@ import { popularTimeZoneList } from "@/utils/TimeZoneList";
 import SearchBar from "@/components/Common/SearchBar";
 import { StatusSelector } from "@/components/Common/StatusSelector";
 import AppPagination from "@/components/Common/AppPagination";
+import { useLogInUserStore } from "@/store/logInUserStore";
 
 const SingleMemberPage = ({ data, task, page }: { data: any, task: any, page: string | number | string[] | undefined }) => {
     const [loading, setLoading] = useState(false);
+    const logInUserData = useLogInUserStore((state) => state.logInUserData);
     const [activeTab, setActiveTab] = useState<"Projects" | "Tasks">("Projects");
     const [searchTerm, setSearchTerm] = useState("");
     const handleTabClick = (tab: "Projects" | "Tasks") => {
@@ -325,7 +327,10 @@ const SingleMemberPage = ({ data, task, page }: { data: any, task: any, page: st
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
-                                                    <SelectItem value="admin">Admin</SelectItem>
+                                                    {
+                                                        logInUserData?.role === "admin" &&
+                                                        <SelectItem value="admin">Admin</SelectItem>
+                                                    }
                                                     <SelectItem value="manager">Manager</SelectItem>
                                                     <SelectItem value="hr">HR</SelectItem>
                                                     <SelectItem value="project_manager">Project Manager</SelectItem>

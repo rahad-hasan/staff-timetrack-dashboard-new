@@ -8,20 +8,27 @@ import {
 } from "@/components/ui/tooltip";
 import DailyTimeSheetsTable from "./DailyTimeSheetsTable";
 import { formatTZDate, getTZDecimalHour } from "@/utils";
-import { useLogInUserStore } from "@/store/logInUserStore";
+import { useSearchParams } from "next/navigation";
+
+type TimezoneOption = {
+  value: string;
+  label: string;
+};
 
 const DailyTimeSheets = ({
   data,
   timeLineData,
   selectedDate,
+  timezones,
 }: {
   data: any;
   timeLineData: any;
   selectedDate: string | number | string[] | undefined;
+  timezones: { data: TimezoneOption[]; defaultValue: string }
 }) => {
-  const logInUserData = useLogInUserStore((state) => state.logInUserData);
-  const timeZone = logInUserData?.timezone;
-
+  const searchParams = useSearchParams()
+  const selectedTimeZone = searchParams.get("timezone")
+  const currentTimeZone = selectedTimeZone ? selectedTimeZone : timezones?.defaultValue
   // Transform backend data into activePeriods
   const activePeriods = (timeLineData || []).map((entry: any) => ({
     start: entry.start,
@@ -36,19 +43,20 @@ const DailyTimeSheets = ({
   // 2. Logic for Day Progress Line
   const getDayProgressPercentage = () => {
     const now = new Date();
-    const todayString = formatTZDate(now, timeZone); // Match selectedDate format using TZ
+    const todayString = formatTZDate(now, currentTimeZone); // Match selectedDate format using TZ
 
     if (selectedDate !== todayString) {
       return selectedDate! < todayString ? 100 : 0;
     }
 
     // Get the current decimal hour in the user's timezone
-    const decimalHourNow = getTZDecimalHour(now, timeZone);
+    const decimalHourNow = getTZDecimalHour(now, currentTimeZone);
     return (decimalHourNow / 24) * 100;
   };
 
-  const isToday = selectedDate === formatTZDate(new Date(), timeZone);
-  const dayProgress = getDayProgressPercentage();
+  const isToday = selectedDate === formatTZDate(new Date(), currentTimeZone);
+
+  const dayProgress = getDayProgressPercentage()
 
   return (
     <>
@@ -64,14 +72,14 @@ const DailyTimeSheets = ({
         <div
           className={`relative h-5 ${isToday ? "bg-[#dce3e3]" : "bg-[#f6f7f9]"}  dark:bg-darkPrimaryBg rounded-4xl outline outline-borderColor dark:outline-darkBorder`}
         >
-          {isToday && (
-            <div
+          {(isToday) && (
+            <p
               className="absolute h-5 bg-[#f6f7f9] dark:bg-darkSecondaryBg rounded-l-4xl border-r-3 border-[#bdbfbe] dark:border-[#afafaf]"
               style={{
                 left: `0%`,
                 width: `${dayProgress}%`,
               }}
-            ></div>
+            ></p>
           )}
 
           {activePeriods?.map((period: any, index: number) => {

@@ -1,12 +1,17 @@
 import { getDailyTimeEntry } from "@/actions/timesheets/action";
-import { ISearchParamsProps } from "@/types/type";
+import { ISearchParams } from "@/types/type";
 import DailyTimeSheets from "./DailyTimeSheets";
 import AppPagination from "@/components/Common/AppPagination";
 import { getTimeEntry } from "@/actions/report/action";
 import { cookies } from "next/headers";
 import { format } from "date-fns";
 
-const DailyTimeSheetsServer = async ({ searchParams }: ISearchParamsProps) => {
+type TimezoneOption = {
+  value: string;
+  label: string;
+};
+
+const DailyTimeSheetsServer = async ({ searchParams, timezones }: { searchParams: ISearchParams, timezones: { data: TimezoneOption[]; defaultValue: string } }) => {
   const params = await searchParams;
   const cookieStore = await cookies();
   const userId = cookieStore.get("userId")?.value;
@@ -38,6 +43,7 @@ const DailyTimeSheetsServer = async ({ searchParams }: ISearchParamsProps) => {
         data={dailyData}
         timeLineData={timeLineData?.data}
         selectedDate={params.date}
+        timezones={timezones}
       ></DailyTimeSheets>
       <AppPagination
         total={result?.meta?.total ?? 1}

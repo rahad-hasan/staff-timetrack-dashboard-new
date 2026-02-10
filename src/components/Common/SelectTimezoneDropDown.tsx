@@ -75,7 +75,7 @@ const SelectTimezoneDropDown = ({ timezones }: SelectTimezoneDropDownProps) => {
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent className="sm:w-[150px] p-0 dark:bg-darkSecondaryBg">
+      <PopoverContent className="sm:w-[150px] p-0 dark:bg-darkSecondaryBg dark:border-darkBorder">
         <Command className="dark:bg-darkSecondaryBg">
           <CommandList>
             <CommandGroup>
