@@ -110,7 +110,6 @@ export async function baseApi<T = any>(
     redirect("/session-expired");
   }
 
-  /* 🚀 DEBUG BLOCK: Request Details */
   await buildHeaders(isFormData, customHeaders);
 
   if (method !== "GET" && !res.ok) {
