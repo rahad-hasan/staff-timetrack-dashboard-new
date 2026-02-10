@@ -29,41 +29,41 @@ const Every10MinsServer = async ({ searchParams }: ISearchParamsProps) => {
 
     return (
         <div className="min-h-[80vh] xl:h-auto">
-            <div className="mb-5 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
-                <ScreenshotActivityCard
-                    icon={WeeklyActivityColoredIcon}
-                    value={result?.data?.score + "%"}
-                    level="AVG ACTIVITY"
-                    chart={FirstChart}
-                    is_improved={true}
-                //   improved_value={"+1.5%"}
-                />
-                <ScreenshotActivityCard
-                    icon={WeeklyWorkColoredIcon}
-                    value={result?.data?.work_time}
-                    level="WORKED TIME"
-                    chart={SecondChart}
-                    is_improved={true}
-                //   improved_value={"+30m"}
-                />
-                <ScreenshotActivityCard
-                    icon={TotalProjectColoredIcon}
-                    value={result?.data?.mouse_activity + "%"}
-                    level="MOUSE ACTIVITY"
-                    chart={FirstChart}
-                    is_improved={false}
-                //   improved_value={"-2.5%"}
-                />
-                <ScreenshotActivityCard
-                    icon={TeamMemberColoredIcon}
-                    value={result?.data?.keyboard_activity + "%"}
-                    level="KEYBOARD ACTIVITY"
-                    chart={SecondChart}
-                    is_improved={true}
-                //   improved_value={"+3.5%"}
-                />
-            </div>
             <Suspense fallback={<Every10MinsSkeleton />}>
+                <div className="mb-5 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+                    <ScreenshotActivityCard
+                        icon={WeeklyActivityColoredIcon}
+                        value={result?.data?.score + "%"}
+                        level="AVG ACTIVITY"
+                        chart={FirstChart}
+                        is_improved={true}
+                    //   improved_value={"+1.5%"}
+                    />
+                    <ScreenshotActivityCard
+                        icon={WeeklyWorkColoredIcon}
+                        value={result?.data?.work_time}
+                        level="WORKED TIME"
+                        chart={SecondChart}
+                        is_improved={true}
+                    //   improved_value={"+30m"}
+                    />
+                    <ScreenshotActivityCard
+                        icon={TotalProjectColoredIcon}
+                        value={result?.data?.mouse_activity + "%"}
+                        level="MOUSE ACTIVITY"
+                        chart={FirstChart}
+                        is_improved={false}
+                    //   improved_value={"-2.5%"}
+                    />
+                    <ScreenshotActivityCard
+                        icon={TeamMemberColoredIcon}
+                        value={result?.data?.keyboard_activity + "%"}
+                        level="KEYBOARD ACTIVITY"
+                        chart={SecondChart}
+                        is_improved={true}
+                    //   improved_value={"+3.5%"}
+                    />
+                </div>
                 {<Every10Mins data={result?.data?.interval_rows} />}
             </Suspense>
         </div>

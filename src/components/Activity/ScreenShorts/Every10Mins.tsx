@@ -78,7 +78,7 @@ const Every10Mins = ({ data }: { data: TTimelineHourBlock[] }) => {
               <span className="font-medium">{hourGroup.totalWorked}</span>
             </h2>
           </div>
-          <div className="grid grid-cols-2 xl:grid-cols-4 2xl:grid-cols-6 3xl:grid-cols-6 gap-4 pl-4 py-5 border-l dark:border-darkBorder">
+          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-4 pl-4 py-5 border-l dark:border-darkBorder">
             {hourGroup?.slots?.map((block: any, blockIndex: any) =>
               block.type === "empty" ? (
                 <div key={blockIndex} className=" ">
