@@ -296,8 +296,18 @@ export const leaveSettingsSchema = z.object({
 
 
 export const changePasswordSchema = z.object({
-    oldPassword: z.string().min(8, "Password must be at least 8 characters"),
-    newPassword: z.string().min(8, "Password must be at least 8 characters"),
+    oldPassword: z.string()
+        .min(8, "Minimum 8 characters")
+        .regex(/[a-z]/, "At least one lowercase letter")
+        .regex(/[A-Z]/, "At least one uppercase letter")
+        .regex(/\d/, "At least one number")
+        .regex(/[!@#$%^&*(),.?":{}|<>]/, "At least one special character"),
+    newPassword: z.string()
+        .min(8, "Minimum 8 characters")
+        .regex(/[a-z]/, "At least one lowercase letter")
+        .regex(/[A-Z]/, "At least one uppercase letter")
+        .regex(/\d/, "At least one number")
+        .regex(/[!@#$%^&*(),.?":{}|<>]/, "At least one special character"),
 })
 
 export const singleMemberSchema = z.object({
