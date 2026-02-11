@@ -1,8 +1,6 @@
 import { ISearchParamsProps } from "@/types/type";
 import AllScreenShorts from "./AllScreenShorts";
 import { getAllScreenshots } from "@/actions/screenshots/action";
-import { Suspense } from "react";
-import AllScreenShortsSkeleton from "@/skeleton/activity/screenShorts/AllScreenShortsSkeleton";
 import { cookies } from "next/headers";
 import { format } from "date-fns";
 

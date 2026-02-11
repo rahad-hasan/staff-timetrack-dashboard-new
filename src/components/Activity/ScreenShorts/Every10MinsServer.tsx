@@ -1,7 +1,5 @@
 import { getScreenshots10Min } from "@/actions/screenshots/action";
-import Every10MinsSkeleton from "@/skeleton/activity/screenShorts/Every10MinsSkeleton";
 import { ISearchParamsProps } from "@/types/type";
-import { Suspense } from "react";
 import Every10Mins from "./Every10Mins";
 import FirstChart from "@/components/Icons/HeadingChartIcon/FirstChart";
 import SecondChart from "@/components/Icons/HeadingChartIcon/SecondChart";
