@@ -1,11 +1,10 @@
 import { getTimezones } from "@/actions/dashboard/action";
-import { getMembersDashboard } from "@/actions/members/action";
 import { getDateBaseTimeEntry, getTimeEntry } from "@/actions/report/action";
 import DayWeekMonthSelection from "@/components/Common/DayWeekMonthSelection";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import MonthPicker from "@/components/Common/MonthPicker";
 import SelectTimezoneDropDown from "@/components/Common/SelectTimezoneDropDown";
-import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
+import SelectUserWrapper from "@/components/Common/SelectUserWrapper";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import WeeklyDatePicker from "@/components/Common/WeeklyDatePicker";
 import ReportDailyTimeSheet from "@/components/Report/TimeSheets/ReportDailyTimeSheet";
@@ -61,13 +60,6 @@ const ReportTimeSheets = async ({ searchParams }: ISearchParamsProps) => {
   const activeTab = (params?.tab as Tab) ?? "daily";
 
   const timezones = await getTimezones();
-   const userRes = await getMembersDashboard();
-
-  const users = userRes.data.map((u) => ({
-    id: String(u.id),
-    label: u.name,
-    avatar: u.image || "",
-  }));
 
   return (
     <div>
@@ -87,7 +79,8 @@ const ReportTimeSheets = async ({ searchParams }: ISearchParamsProps) => {
 
           <SelectTimezoneDropDown timezones={timezones} />
         </div>
-        <SelectUserDropDown users={users} />
+        {/* <SelectUserDropDown users={users} /> */}
+        <SelectUserWrapper />
       </div>
 
       {activeTab === "daily" && (

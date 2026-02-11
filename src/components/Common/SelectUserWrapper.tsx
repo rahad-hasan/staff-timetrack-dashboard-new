@@ -5,14 +5,13 @@ import { useEffect, useState } from "react";
 import { getMembersDashboard } from "@/actions/members/action";
 import SelectUserDropDown from "./SelectUserDropDown";
 
-const SelectUserWrapper = ({ defaultSelect }: any) => {
+const SelectUserWrapper = ({ defaultSelect }: { defaultSelect?: boolean }) => {
     const [users, setUsers] = useState<{ id: string; label: any; avatar: string }[]>([]);
     const [loading, setLoading] = useState(false);
-    console.log("Component loaded");
+    console.log("Component loaded 😍");
     useEffect(() => {
         const fetchMembers = async () => {
             setLoading(true);
-            console.log("fetchMembers fired");
             try {
                 const res = await getMembersDashboard();
                 if (res?.success) {
@@ -32,7 +31,7 @@ const SelectUserWrapper = ({ defaultSelect }: any) => {
         fetchMembers();
     }, []);
 
-    return <SelectUserDropDown users={users} defaultSelect={defaultSelect} loading={loading}/>;
+    return <SelectUserDropDown users={users} defaultSelect={defaultSelect} loading={loading} />;
 };
 
 export default SelectUserWrapper;

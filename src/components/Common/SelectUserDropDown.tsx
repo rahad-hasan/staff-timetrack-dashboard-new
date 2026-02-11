@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { Check } from "lucide-react";
@@ -6,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Command,
+  CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
@@ -16,7 +16,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import DownArrow from "../Icons/DownArrow";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
@@ -35,42 +35,40 @@ const SelectUserDropDown = ({
   users,
   loading,
 }: ISelectUserDropDown) => {
+  console.log(typeof (users?.[0]?.id));
   const logInUserData = useLogInUserStore((state) => state.logInUserData);
+  console.log(typeof (logInUserData.id));
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const value = searchParams.get("user_id");
+  // const value = searchParams.get("user_id");
   const loader = useTopLoader();
   const [open, setOpen] = useState(false);
   const [searchInput, setSearchInput] = useState("");
 
-  useEffect(() => {
-    if (!defaultSelect) return;
-    if (searchParams.get("user_id")) return;
-    if (!logInUserData?.id) return;
-
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("user_id", String(logInUserData.id));
-
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-  }, []);
+  // 1. Initialize with URL param if it exists, otherwise keep it empty
+  const [valueUser, setValueUser] = useState<any>(defaultSelect && String(logInUserData.id));
 
   const selectedUser = useMemo(
-    () => users.find((u) => u.id === value),
-    [users, value],
+    () => users.find((u) => u.id === valueUser),
+    [users, valueUser],
   );
 
   const handleSelect = (currentId: string) => {
+    setOpen(false);
     const params = new URLSearchParams(searchParams.toString());
 
-    if (currentId === value) {
+    if (currentId === valueUser) {
       params.delete("user_id");
     } else {
       params.set("user_id", currentId);
+      setValueUser(currentId)
     }
     loader.start()
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-    setOpen(false);
+    setTimeout(() => {
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    }, 0);
+
   };
 
   return (
@@ -80,7 +78,7 @@ const SelectUserDropDown = ({
           variant="outline2"
           role="combobox"
           aria-expanded={open}
-          disabled={logInUserData?.role === "employee"}
+          // disabled={logInUserData?.role === "employee"}
           className="w-full sm:w-[250px] h-10 bg-[#f6f7f9] flex justify-between items-center gap-2 dark:border-darkBorder dark:text-darkTextPrimary dark:bg-darkPrimaryBg hover:dark:bg-darkPrimaryBg"
         >
           <div className="flex items-center gap-3 overflow-hidden">
@@ -114,14 +112,18 @@ const SelectUserDropDown = ({
             onValueChange={setSearchInput}
           />
           <CommandList>
-            {/* <CommandEmpty>
+            <CommandEmpty>
               {loading ? "Loading..." : "No user found."}
-            </CommandEmpty> */}
+            </CommandEmpty>
             <CommandGroup>
               {users.map((user: any) => (
                 <CommandItem
                   key={user.id}
                   value={user.label}
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
                   onSelect={() => handleSelect(user.id)}
                   className="cursor-pointer hover:dark:bg-darkPrimaryBg"
                 >
@@ -133,7 +135,7 @@ const SelectUserDropDown = ({
                   <Check
                     className={cn(
                       "ml-auto h-4 w-4 shrink-0",
-                      value === user.id ? "opacity-100" : "opacity-0",
+                      valueUser === user.id ? "opacity-100" : "opacity-0",
                     )}
                   />
                 </CommandItem>
