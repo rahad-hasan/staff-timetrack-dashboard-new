@@ -1,10 +1,10 @@
 import { getDashboardMembersStats } from "@/actions/dashboard/action";
 import DashboardMembersTable from "@/components/Dashboard/Members/DashboardMembersTable";
-import { cookies } from "next/headers";
+import { getDecodedUser } from "@/utils/decodedLogInUser";
 
 const DashboardMembersTableServer = async () => {
-    const cookieStore = await cookies();
-    const role = cookieStore.get("staffTimeDashboardRole")?.value;
+    const user = await getDecodedUser();
+    const role = user?.role;
 
     const allowedRoles = ['admin', 'manager', 'hr'];
 

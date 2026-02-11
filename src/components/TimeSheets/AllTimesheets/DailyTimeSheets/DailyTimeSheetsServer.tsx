@@ -3,8 +3,8 @@ import { ISearchParams } from "@/types/type";
 import DailyTimeSheets from "./DailyTimeSheets";
 import AppPagination from "@/components/Common/AppPagination";
 import { getTimeEntry } from "@/actions/report/action";
-import { cookies } from "next/headers";
 import { format } from "date-fns";
+import { getDecodedUser } from "@/utils/decodedLogInUser";
 
 type TimezoneOption = {
   value: string;
@@ -13,8 +13,8 @@ type TimezoneOption = {
 
 const DailyTimeSheetsServer = async ({ searchParams, timezones }: { searchParams: ISearchParams, timezones: { data: TimezoneOption[]; defaultValue: string } }) => {
   const params = await searchParams;
-  const cookieStore = await cookies();
-  const userId = cookieStore.get("userId")?.value;
+  const user = await getDecodedUser();
+  const userId = user?.id;
   const currentDate = format(new Date(), "yyyy-MM-dd");
 
   const result = await getDailyTimeEntry({

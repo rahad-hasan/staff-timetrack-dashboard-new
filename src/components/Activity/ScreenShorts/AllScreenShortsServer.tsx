@@ -1,12 +1,12 @@
 import { ISearchParamsProps } from "@/types/type";
 import AllScreenShorts from "./AllScreenShorts";
 import { getAllScreenshots } from "@/actions/screenshots/action";
-import { cookies } from "next/headers";
 import { format } from "date-fns";
+import { getDecodedUser } from "@/utils/decodedLogInUser";
 
 const AllScreenShortsServer = async ({ searchParams }: ISearchParamsProps) => {
-  const cookieStore = await cookies();
-  const userId = cookieStore.get("userId")?.value;
+    const user = await getDecodedUser();
+    const userId = user?.id;
   const currentDate = format(new Date(), "yyyy-MM-dd");
   const params = await searchParams;
 

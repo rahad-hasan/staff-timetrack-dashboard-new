@@ -40,15 +40,7 @@ export const logIn = async (data: any) => {
       maxAge: MAX_AGE,
     });
 
-    cookieStore.set("staffTimeDashboardRole", res.data.role, {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: "lax",
-      path: "/",
-      maxAge: MAX_AGE,
-    });
-
-    cookieStore.set("userId", res.data.id, {
+    cookieStore.set("timeZone", res.data.time_zone, {
       httpOnly: true,
       secure: isProd,
       sameSite: "lax",
@@ -124,8 +116,7 @@ export async function clearSessionCookie() {
   const cookieStore = await cookies();
   cookieStore.delete("accessToken");
   cookieStore.delete("refreshToken");
-  cookieStore.delete("staffTimeDashboardRole");
-  cookieStore.delete("userId");
+  cookieStore.delete("timeZone");
 }
 
 export const forgetPassword = async ({ data }: {
@@ -201,15 +192,7 @@ export const resetPassword = async ({ data }: {
       maxAge: MAX_AGE,
     });
 
-    cookieStore.set("staffTimeDashboardRole", res.data.role, {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: "lax",
-      path: "/",
-      maxAge: MAX_AGE,
-    });
-
-    cookieStore.set("userId", res.data.id, {
+    cookieStore.set("timeZone", res.data.time_zone, {
       httpOnly: true,
       secure: isProd,
       sameSite: "lax",

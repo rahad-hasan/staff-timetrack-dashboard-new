@@ -15,8 +15,6 @@ const AttendancePage = async ({ searchParams }: ISearchParamsProps) => {
     const params = await searchParams;
     // const user = await getDecodedUser();
     const currentDate = format(new Date(), "yyyy-MM-dd");
-    // const cookieStore = await cookies();
-    // const role = cookieStore.get("staffTimeDashboardRole")?.value;
     // const allowedRoles = ['admin', 'manager', 'hr'];
     // const isAdmin = role && allowedRoles.includes(role);
     // const targetUserId = isAdmin ? params.user_id : user?.id;
