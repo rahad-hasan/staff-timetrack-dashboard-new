@@ -27,9 +27,11 @@ const Every10MinsServer = async ({ searchParams }: ISearchParamsProps) => {
         timezone: params?.timezone,
     });
 
+    // console.log('Every 10 Min Server Loaded', result);
+
     return (
         <div className="min-h-[80vh] xl:h-auto">
-            <Suspense fallback={<Every10MinsSkeleton />}>
+
                 <div className="mb-5 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
                     <ScreenshotActivityCard
                         icon={WeeklyActivityColoredIcon}
@@ -65,7 +67,7 @@ const Every10MinsServer = async ({ searchParams }: ISearchParamsProps) => {
                     />
                 </div>
                 {<Every10Mins data={result?.data?.interval_rows} />}
-            </Suspense>
+
         </div>
     );
 };

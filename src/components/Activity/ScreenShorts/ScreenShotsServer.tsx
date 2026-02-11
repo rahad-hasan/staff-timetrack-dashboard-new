@@ -2,6 +2,9 @@ import { ISearchParamsProps } from "@/types/type";
 // import AllScreenShortsSkeleton from "@/skeleton/activity/screenShorts/AllScreenShortsSkeleton";
 import Every10MinsServer from "./Every10MinsServer";
 import AllScreenShortsServer from "./AllScreenShortsServer";
+import Every10MinsSkeleton from "@/skeleton/activity/screenShorts/Every10MinsSkeleton";
+import { Suspense } from "react";
+import AllScreenShortsSkeleton from "@/skeleton/activity/screenShorts/AllScreenShortsSkeleton";
 
 const ScreenShotsServer = async ({ searchParams }: ISearchParamsProps) => {
   const params = await searchParams;
@@ -11,13 +14,18 @@ const ScreenShotsServer = async ({ searchParams }: ISearchParamsProps) => {
   return (
     <div>
       {activeTab === "Every 10 min" && (
-        <Every10MinsServer searchParams={searchParams}></Every10MinsServer>
+        <Suspense fallback={<Every10MinsSkeleton />}>
+          <Every10MinsServer searchParams={searchParams}></Every10MinsServer>
+        </Suspense>
       )}
       {activeTab === "All Screenshots" && (
-        <AllScreenShortsServer
-          searchParams={searchParams}
-        ></AllScreenShortsServer>
+        <Suspense fallback={<AllScreenShortsSkeleton />}>
+          <AllScreenShortsServer
+            searchParams={searchParams}
+          ></AllScreenShortsServer>
+        </Suspense>
       )}
+
     </div>
   );
 };

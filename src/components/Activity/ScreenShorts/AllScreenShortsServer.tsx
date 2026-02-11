@@ -19,11 +19,13 @@ const AllScreenShortsServer = async ({ searchParams }: ISearchParamsProps) => {
     project_id: params?.project_id,
   });
 
+  // console.log("All screenshots loaded", result);
+
   return (
     <div>
-      <Suspense fallback={<AllScreenShortsSkeleton />}>
+
         {<AllScreenShorts data={result?.data}></AllScreenShorts>}
-      </Suspense>
+
     </div>
   );
 };

@@ -69,7 +69,7 @@ const SelectUserDropDown = ({
       params.set("user_id", currentId);
     }
     loader.start()
-    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
     setOpen(false);
   };
 

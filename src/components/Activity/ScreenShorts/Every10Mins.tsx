@@ -107,6 +107,7 @@ const Every10Mins = ({ data }: { data: TTimelineHourBlock[] }) => {
                         src={block?.details?.[0]?.image}
                         alt="screenshot"
                         fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         onClick={() => {
                           setSelectedImage(block?.details);
                           setModalOpen(true);

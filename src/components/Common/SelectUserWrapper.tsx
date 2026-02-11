@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { getMembersDashboard } from "@/actions/members/action";
 import SelectUserDropDown from "./SelectUserDropDown";
 
-const SelectUserWrapper = ({ defaultSelect }: { defaultSelect?: boolean }) => {
+const SelectUserWrapper = ({ defaultSelect }: any) => {
     const [users, setUsers] = useState<{ id: string; label: any; avatar: string }[]>([]);
     const [loading, setLoading] = useState(false);
     console.log("Component loaded");
@@ -32,7 +32,7 @@ const SelectUserWrapper = ({ defaultSelect }: { defaultSelect?: boolean }) => {
         fetchMembers();
     }, []);
 
-    return <SelectUserDropDown users={users} defaultSelect={defaultSelect} loading={loading} />;
+    return <SelectUserDropDown users={users} defaultSelect={defaultSelect} loading={loading}/>;
 };
 
 export default SelectUserWrapper;

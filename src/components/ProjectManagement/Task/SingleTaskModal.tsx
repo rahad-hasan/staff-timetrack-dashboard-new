@@ -13,7 +13,7 @@ import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { formatTZDayMonthYear } from "@/utils";
 
 const SingleTaskModal = ({ taskId }: { taskId?: number }) => {
-    console.log("renderrrrrrrrr", taskId);
+    // console.log("renderrrrrrrrr", taskId);
     const [task, setTask] = useState<ISingleTask | null>(null);
     const [loading, setLoading] = useState(false);
 

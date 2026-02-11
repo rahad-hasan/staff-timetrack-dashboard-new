@@ -57,7 +57,7 @@ const SelectProjectDropDown = ({
       params.set("project_id", projectId);
     }
     loader.start();
-    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
     setOpen(false);
   };
 

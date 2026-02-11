@@ -153,7 +153,7 @@ const ReportDailyTimeSheet = ({
         : "bg-[#fee6eb] text-black border-red-500";
 
     const marginLeftPx = trackIndex === 0 ? 1 : 2;
-    console.log('This is daily timesheets component');
+    // console.log('This is daily timesheets component');
     return (
       <Tooltip>
         <TooltipTrigger asChild>

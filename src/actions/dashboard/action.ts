@@ -73,7 +73,6 @@ export const getTodayWorkTime = async () => {
 
 export const getTimezones = async () => {
   const res = await baseApi("/dashboard/timezone-list", {
-    cache: "no-store",
   });
   return {
     data: res?.data?.data
