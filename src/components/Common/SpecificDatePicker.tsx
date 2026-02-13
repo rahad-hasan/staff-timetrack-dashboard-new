@@ -49,7 +49,7 @@ const SpecificDatePicker = () => {
       params.set("date", formattedDate);
       router.push(`${pathname}?${params.toString()}`, { scroll: false });
     }
-  }, []);
+  }, [selectedDate, searchParams, router, pathname]);
 
   const handleNavigate = useCallback(
     (days: number) => {
