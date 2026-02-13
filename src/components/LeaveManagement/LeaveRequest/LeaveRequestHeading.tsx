@@ -7,11 +7,16 @@ const LeaveRequestHeading = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
 
+    const isRejected = searchParams.get("rejected") === "true";
+    const isApproved = searchParams.get("approved") === "true";
+
     const updateQueryParam = (key: string, value: string | boolean) => {
         const params = new URLSearchParams(searchParams.toString());
-
+        params.delete("rejected");
+        params.delete("approved");
         if (value && value !== "false") {
             params.set(key, String(value));
+            params.set("page", "1");
         } else {
             params.delete(key);
         }
@@ -19,11 +24,9 @@ const LeaveRequestHeading = () => {
         router.push(`?${params.toString()}`);
     };
 
-    const isRejected = searchParams.get("rejected") === "true";
-    const isApproved = searchParams.get("approved") === "true";
-
     return (
         <div className="flex items-center justify-between gap-5">
+
             <div className="flex items-center gap-5">
                 <div className="flex gap-1 items-center">
                     <Checkbox
@@ -32,7 +35,7 @@ const LeaveRequestHeading = () => {
                         checked={isRejected}
                         onCheckedChange={(checked) => updateQueryParam("rejected", checked)}
                     />
-                    <label htmlFor="rejected" className="cursor-pointer text-sm">Rejected Request</label>
+                    <label htmlFor="rejected" className="cursor-pointer text-sm mt-0.5">Rejected Request</label>
                 </div>
 
                 <div className="flex gap-1 items-center">
@@ -42,7 +45,7 @@ const LeaveRequestHeading = () => {
                         checked={isApproved}
                         onCheckedChange={(checked) => updateQueryParam("approved", checked)}
                     />
-                    <label htmlFor="approved" className="cursor-pointer text-sm">Approved Request</label>
+                    <label htmlFor="approved" className="cursor-pointer text-sm mt-0.5">Approved Request</label>
                 </div>
             </div>
 
