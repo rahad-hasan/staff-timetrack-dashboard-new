@@ -52,11 +52,10 @@ export const editSingleDetailsMember = async ({
   });
 };
 
-export const getMembersDashboard = async (): Promise<
-  IResponse<{ id: number; name: string; image: string }[]>
-> => {
-  const response = await baseApi(`/dashboard/members`);
-  return response;
+export const getMembersDashboard = async (query = {}): Promise<
+  IResponse<{ id: number; name: string; image: string }[]>> => {
+  const queryString = buildQuery(query);
+  return await baseApi(`/dashboard/members${queryString ? `?${queryString}` : ""}`);
 };
 
 export const addMember = async (data: {

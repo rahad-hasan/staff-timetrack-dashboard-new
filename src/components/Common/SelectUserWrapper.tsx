@@ -4,16 +4,19 @@
 import { useEffect, useState } from "react";
 import { getMembersDashboard } from "@/actions/members/action";
 import SelectUserDropDown from "./SelectUserDropDown";
+import { useSearchParams } from "next/navigation";
 
 const SelectUserWrapper = ({ defaultSelect }: { defaultSelect?: boolean }) => {
+    const searchParams = useSearchParams();
+    const project_id = searchParams.get("project_id");
     const [users, setUsers] = useState<{ id: string; label: any; avatar: string }[]>([]);
     const [loading, setLoading] = useState(false);
-    console.log("Component loaded 😍");
+    
     useEffect(() => {
         const fetchMembers = async () => {
             setLoading(true);
             try {
-                const res = await getMembersDashboard();
+                const res = await getMembersDashboard({project_id: project_id});
                 if (res?.success) {
                     const formatted = res?.data?.map((u: any) => ({
                         id: String(u?.id),
@@ -29,7 +32,7 @@ const SelectUserWrapper = ({ defaultSelect }: { defaultSelect?: boolean }) => {
             }
         };
         fetchMembers();
-    }, []);
+    }, [project_id]);
 
     return <SelectUserDropDown users={users} defaultSelect={defaultSelect} loading={loading} />;
 };
