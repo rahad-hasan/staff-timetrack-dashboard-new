@@ -65,10 +65,10 @@ const SelectUserDropDown = ({
       setValueUser(currentId)
     }
     loader.start()
-    setTimeout(() => {
-      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-    }, 0);
 
+    requestAnimationFrame(() => {
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    })
   };
 
   return (

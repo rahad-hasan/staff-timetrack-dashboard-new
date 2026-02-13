@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
@@ -54,22 +53,7 @@ const TaskHeroSection = () => {
         ></HeadingComponent>
 
         <div className=" flex items-center gap-3 sm:gap-5">
-          {/* <div className="flex gap-3"> */}
-          {/* <div className="inline-flex mt-3 sm:mt-0 h-10 bg-bgSecondary dark:bg-darkSecondaryBg rounded-lg">
-                            {["List view", "Kanban"].map((tab) => (
-                                <button
-                                    key={tab}
-                                    onClick={() => setTab(tab as "List view" | "Kanban")}
-                                    className={`px-3 py-2 text-[13px] sm:text-sm font-medium transition-all cursor-pointer rounded-lg ${activeTab === tab
-                                        ? "bg-bgPrimary dark:bg-darkPrimaryBg dark:text-darkTextPrimary text-headingTextColor outline-1 outline-borderColor dark:outline-darkBorder shadow"
-                                        : "text-subTextColor dark:text-darkTextPrimary hover:text-gray-800"
-                                        } flex-shrink-0`}
-                                >
-                                    {tab}
-                                </button>
-                            ))}
-                        </div> */}
-          {/* </div> */}
+
           {(logInUserData?.role === "admin" ||
             logInUserData?.role === "manager" ||
             logInUserData?.role === "hr" ||
