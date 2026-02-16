@@ -4,7 +4,7 @@
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Image from "next/image";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -49,7 +49,21 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
     const router = useRouter();
     const searchParams = useSearchParams();
 
-    const updateQueryParam = (statusType: string, checked: boolean | string) => {
+    const handleEditOpenChange = useCallback((nextOpen: boolean) => {
+        setOpen(nextOpen);
+        if (!nextOpen) {
+            setSelectedTask(null);
+        }
+    }, []);
+
+    const handleViewOpenChange = useCallback((nextOpen: boolean) => {
+        setViewTaskOpen(nextOpen);
+        if (!nextOpen) {
+            setViewTaskId(null);
+        }
+    }, []);
+
+    const updateQueryParam = useCallback((statusType: string, checked: boolean | string) => {
         const params = new URLSearchParams(searchParams.toString());
 
         if (checked === true) {
@@ -62,12 +76,12 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
         }
 
         router.push(`?${params.toString()}`, { scroll: false });
-    };
+    }, [router, searchParams]);
 
     const isComplete = searchParams.get("status") === "complete";
     const isCancelled = searchParams.get("status") === "cancelled";
 
-    async function handleStatusUpdate(values: { status: string, id: number }) {
+    const handleStatusUpdate = useCallback(async (values: { status: string, id: number }) => {
         setLoading(true);
         try {
             const res = await editTask({ data: { status: values.status }, id: values.id });
@@ -94,9 +108,9 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
         } finally {
             setLoading(false);
         }
-    }
+    }, []);
 
-    async function handleDelete(info: ITask) {
+    const handleDelete = useCallback(async (info: ITask) => {
         setLoading(true);
         try {
             const res = await deleteTask(info?.id);
@@ -123,13 +137,13 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
         } finally {
             setLoading(false);
         }
-    }
+    }, []);
 
     const handleCloseDialog = () => {
-        setOpen(false)
+        handleEditOpenChange(false);
     }
 
-    const columns: ColumnDef<ITask>[] = [
+    const columns = useMemo<ColumnDef<ITask>[]>(() => [
         {
             accessorKey: "name",
             header: ({ column }) => {
@@ -474,7 +488,7 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
                 );
             },
         },
-    ];
+    ], [handleDelete, handleStatusUpdate, loading, logInUserData]);
 
 
     const table = useReactTable({
@@ -550,16 +564,17 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
                 </TableBody>
             </Table>
             {/* Edit modal here */}
-            <Dialog open={open} onOpenChange={setOpen}>
+            <Dialog open={open} onOpenChange={handleEditOpenChange}>
                 {selectedTask && (
                     <EditTaskModal
+                        key={selectedTask.id}
                         handleCloseDialog={handleCloseDialog}
                         selectedProject={selectedTask}
                     />
                 )}
             </Dialog>
             {/* Single task modal here */}
-            <Dialog open={viewTaskOpen} onOpenChange={setViewTaskOpen}>
+            <Dialog open={viewTaskOpen} onOpenChange={handleViewOpenChange}>
                 {viewTaskId && (
                     <SingleTaskModal taskId={viewTaskId} />
                 )}

@@ -16,7 +16,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import React, { useState, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import DownArrow from "../Icons/DownArrow";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
@@ -44,8 +44,13 @@ const SelectUserDropDown = ({
   const [open, setOpen] = useState(false);
   const [searchInput, setSearchInput] = useState("");
 
-  // 1. Initialize with URL param if it exists, otherwise keep it empty
-  const [valueUser, setValueUser] = useState<any>(defaultSelect && String(logInUserData.id));
+  const urlUserId = searchParams.get("user_id");
+  const defaultUserId = defaultSelect ? String(logInUserData?.id ?? "") : "";
+  const [valueUser, setValueUser] = useState<string>(urlUserId ?? defaultUserId);
+
+  useEffect(() => {
+    setValueUser(urlUserId ?? defaultUserId);
+  }, [urlUserId, defaultUserId]);
 
   const selectedUser = useMemo(
     () => users.find((u) => u.id === valueUser),

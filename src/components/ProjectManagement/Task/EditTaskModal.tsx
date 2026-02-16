@@ -32,7 +32,7 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ChevronDownIcon, Search } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
@@ -55,7 +55,10 @@ const EditTaskModal = ({ handleCloseDialog, selectedProject }: { handleCloseDial
     const [projects, setProjects] = useState<ProjectOption[]>([{ value: String(selectedProject.project.id), label: selectedProject.project.name, avatar: '' }]);
     const [memberSearch, setMemberSearch] = useState("");
     const [searchInput, setSearchInput] = useState("");
-    const filteredMembers = members.filter(m => m.name.toLowerCase().includes(memberSearch.toLowerCase()));
+    const filteredMembers = useMemo(
+        () => members.filter(m => m.name.toLowerCase().includes(memberSearch.toLowerCase())),
+        [members, memberSearch]
+    );
     const [openStartDate, setOpenStartDate] = useState(false);
     const [dateStartDate, setStartDate] = useState<Date | undefined>(selectedProject?.deadline ? new Date(selectedProject?.deadline) : undefined);
 
@@ -86,8 +89,17 @@ const EditTaskModal = ({ handleCloseDialog, selectedProject }: { handleCloseDial
                 name: selectedProject.user.name,
                 image: selectedProject.user.image ?? ""
             }]);
+            setProjects([{
+                value: String(selectedProject.project.id),
+                label: selectedProject.project.name,
+                avatar: ""
+            }]);
+            setMemberSearch("");
+            setSearchInput("");
+            setOpenStartDate(false);
+            setStartDate(selectedProject?.deadline ? new Date(selectedProject?.deadline) : undefined);
         }
-    }, [selectedProject]);
+    }, [form, selectedProject]);
 
     // const selectedAssignee = form.watch("assignee");
     const debouncedSearch = useDebounce(searchInput, 500);
@@ -130,11 +142,8 @@ const EditTaskModal = ({ handleCloseDialog, selectedProject }: { handleCloseDial
                     // and doesn't match the original project ID.
                     if (watchedProjectId !== String(selectedProject?.project_id)) {
                         form.setValue("assignee", "");
-                    }
-                    else {
-                        form.reset({
-                            assignee: String(selectedProject?.user?.id) ?? "",
-                        });
+                    } else {
+                        form.setValue("assignee", String(selectedProject?.user?.id) ?? "");
                     }
                 }
             } catch (err) {
