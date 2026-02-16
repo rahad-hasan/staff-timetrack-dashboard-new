@@ -50,19 +50,26 @@ const SelectProjectDropDown = ({
 
   const handleSelect = (projectId: string) => {
     const params = new URLSearchParams(searchParams.toString());
-
     if (projectId === selectedProjectId || projectId === "all") {
       params.delete("project_id");
     } else {
       params.set("project_id", projectId);
     }
     loader.start();
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    setSearchInput("")
     setOpen(false);
+    requestAnimationFrame(() => {
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    })
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={(isOpen) => {
+      setOpen(isOpen);
+      if (!isOpen) {
+        setSearchInput("");
+      }
+    }}>
       <PopoverTrigger asChild>
         <Button
           variant="outline2"

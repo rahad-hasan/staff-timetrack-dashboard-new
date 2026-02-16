@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { Button } from "@/components/ui/button";
@@ -50,8 +51,8 @@ type ProjectOption = {
 const EditTaskModal = ({ handleCloseDialog, selectedProject }: { handleCloseDialog: () => void; selectedProject: ITask }) => {
     const [loading, setLoading] = useState(false);
     const [taskLoading, setTaskLoading] = useState(false);
-    const [members, setMembers] = useState<{ id: number; name: string; image?: string }[]>([]);
-    const [projects, setProjects] = useState<ProjectOption[]>([]);
+    const [members, setMembers] = useState<{ id: number; name: string; image?: string }[]>([{ id: selectedProject.user.id, name: selectedProject.user.name, image: selectedProject.user.image ?? "" }]);
+    const [projects, setProjects] = useState<ProjectOption[]>([{ value: String(selectedProject.project.id), label: selectedProject.project.name, avatar: '' }]);
     const [memberSearch, setMemberSearch] = useState("");
     const [searchInput, setSearchInput] = useState("");
     const filteredMembers = members.filter(m => m.name.toLowerCase().includes(memberSearch.toLowerCase()));
@@ -80,10 +81,15 @@ const EditTaskModal = ({ handleCloseDialog, selectedProject }: { handleCloseDial
                 priority: selectedProject?.priority ?? "",
                 details: selectedProject?.description ?? "",
             });
+            setMembers([{
+                id: selectedProject.user.id,
+                name: selectedProject.user.name,
+                image: selectedProject.user.image ?? ""
+            }]);
         }
-    }, [selectedProject, form]);
+    }, [selectedProject]);
 
-    const selectedAssignee = form.watch("assignee");
+    // const selectedAssignee = form.watch("assignee");
     const debouncedSearch = useDebounce(searchInput, 500);
     useEffect(() => {
         const fetchProjects = async () => {
@@ -107,17 +113,29 @@ const EditTaskModal = ({ handleCloseDialog, selectedProject }: { handleCloseDial
         };
 
         fetchProjects();
-    }, [debouncedSearch, selectedAssignee]);
+    }, [debouncedSearch]);
 
-    const selectedProjectForm = form.watch("project");
+    const watchedProjectId = form.watch("project");
 
     useEffect(() => {
         const loadMembers = async () => {
+            if (!watchedProjectId) return;
             setLoading(true);
             try {
-                const res = await getMembersDashboard({ project_id: selectedProjectForm });
+                const res = await getMembersDashboard({ project_id: watchedProjectId });
                 if (res?.success) {
                     setMembers(res.data);
+
+                    // ONLY reset assignee if the project ID actually changed 
+                    // and doesn't match the original project ID.
+                    if (watchedProjectId !== String(selectedProject?.project_id)) {
+                        form.setValue("assignee", "");
+                    }
+                    else {
+                        form.reset({
+                            assignee: String(selectedProject?.user?.id) ?? "",
+                        });
+                    }
                 }
             } catch (err) {
                 console.error("Failed to fetch members", err);
@@ -126,7 +144,7 @@ const EditTaskModal = ({ handleCloseDialog, selectedProject }: { handleCloseDial
             }
         };
         loadMembers();
-    }, [selectedProjectForm]);
+    }, [watchedProjectId]);
 
     async function onSubmit(values: z.infer<typeof newTaskCreationSchema>) {
         const finalData = {
@@ -188,7 +206,7 @@ const EditTaskModal = ({ handleCloseDialog, selectedProject }: { handleCloseDial
                                 <FormLabel className={""}>Project</FormLabel>
                                 <Select
                                     onValueChange={field.onChange}
-                                    defaultValue={field.value}
+                                    value={field.value}
                                 >
                                     <FormControl>
                                         <SelectTrigger className="w-full dark:bg-darkSecondaryBg">
@@ -240,7 +258,7 @@ const EditTaskModal = ({ handleCloseDialog, selectedProject }: { handleCloseDial
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Assignee</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <Select onValueChange={field.onChange} value={field.value}>
                                     <FormControl>
                                         <SelectTrigger className="w-full dark:bg-darkSecondaryBg">
                                             <SelectValue placeholder="Select a member" />

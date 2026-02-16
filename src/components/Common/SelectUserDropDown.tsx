@@ -35,9 +35,7 @@ const SelectUserDropDown = ({
   users,
   loading,
 }: ISelectUserDropDown) => {
-  console.log(typeof (users?.[0]?.id));
   const logInUserData = useLogInUserStore((state) => state.logInUserData);
-  console.log(typeof (logInUserData.id));
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -65,14 +63,19 @@ const SelectUserDropDown = ({
       setValueUser(currentId)
     }
     loader.start()
-
+    setSearchInput("")
     requestAnimationFrame(() => {
       router.replace(`${pathname}?${params.toString()}`, { scroll: false });
     })
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={(isOpen) => {
+      setOpen(isOpen);
+      if (!isOpen) {
+        setSearchInput("");
+      }
+    }}>
       <PopoverTrigger asChild>
         <Button
           variant="outline2"
