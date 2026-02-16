@@ -20,7 +20,7 @@ const SelectProjectWrapper = () => {
     const fetchProjects = useCallback(async (searchQuery: string) => {
         setLoading(true);
         try {
-            const res = await getProjects({ search: searchQuery });
+            const res = await getProjects({ search: searchQuery, limit: 999 });
 
             if (res?.success) {
                 const apiProjects = res.data.map((p: any) => ({
