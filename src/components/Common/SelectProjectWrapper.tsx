@@ -5,57 +5,56 @@ import { getProjects } from "@/actions/projects/action";
 import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
 import { useDebounce } from "@/hooks/use-debounce";
 
-
 type ProjectOption = {
-    value: string;
-    label: string;
-    avatar?: string;
+  value: string;
+  label: string;
+  avatar?: string;
 };
 
 const SelectProjectWrapper = () => {
-    const [projects, setProjects] = useState<ProjectOption[]>([]);
-    const [loading, setLoading] = useState(false);
-    const [searchInput, setSearchInput] = useState("");
-    const debouncedSearch = useDebounce(searchInput, 500);
-    const fetchProjects = useCallback(async (searchQuery: string) => {
-        setLoading(true);
-        try {
-            const res = await getProjects({ search: searchQuery, limit: 999 });
+  const [projects, setProjects] = useState<ProjectOption[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [searchInput, setSearchInput] = useState("");
+  const debouncedSearch = useDebounce(searchInput, 500);
+  const fetchProjects = useCallback(async (searchQuery: string) => {
+    setLoading(true);
+    try {
+      const res = await getProjects({ search: searchQuery, dropdown: true });
 
-            if (res?.success) {
-                const apiProjects = res.data.map((p: any) => ({
-                    value: String(p.id),
-                    label: p.name,
-                    avatar: p.image || "",
-                }));
+      if (res?.success) {
+        const apiProjects = res.data.map((p: any) => ({
+          value: String(p.id),
+          label: p.name,
+          avatar: p.image || "",
+        }));
 
-                setProjects([
-                    { value: "all", label: "All Project", avatar: "" },
-                    ...apiProjects,
-                ]);
-            }
-        } catch (err) {
-            console.error("Fetch projects error:", err);
-        } finally {
-            setLoading(false);
-        }
-    }, []);
+        setProjects([
+          { value: "all", label: "All Project", avatar: "" },
+          ...apiProjects,
+        ]);
+      }
+    } catch (err) {
+      console.error("Fetch projects error:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-    // Trigger on Mount AND when debouncedSearch changes
-    useEffect(() => {
-        fetchProjects(debouncedSearch);
-    }, [debouncedSearch, fetchProjects]);
+  // Trigger on Mount AND when debouncedSearch changes
+  useEffect(() => {
+    fetchProjects(debouncedSearch);
+  }, [debouncedSearch, fetchProjects]);
 
-    return (
-        <div className=" w-full">
-            <SelectProjectDropDown
-                projects={projects}
-                loading={loading}
-                searchInput={searchInput}
-                setSearchInput={setSearchInput}
-            />
-        </div>
-    );
+  return (
+    <div className=" w-full">
+      <SelectProjectDropDown
+        projects={projects}
+        loading={loading}
+        searchInput={searchInput}
+        setSearchInput={setSearchInput}
+      />
+    </div>
+  );
 };
 
 export default SelectProjectWrapper;
