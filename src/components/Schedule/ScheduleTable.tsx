@@ -25,6 +25,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import EditIcon from "../Icons/FilterOptionIcon/EditIcon";
 import { Dialog } from "../ui/dialog";
 import EditScheduleModal from "./EditScheduleModal";
+import Link from "next/link";
 
 const ScheduleTable = ({ data }: { data: ISchedules[] }) => {
     const [sorting, setSorting] = useState<SortingState>([]);
@@ -54,9 +55,11 @@ const ScheduleTable = ({ data }: { data: ISchedules[] }) => {
                 const name = row.getValue("name") as string;
                 return (
                     <div className="flex items-center gap-2 min-w-[100px]">
-                        <span className="capitalize">
-                            {name}
-                        </span>
+                        <Link href={`/schedule/${row?.original?.id}`}>
+                            <span className="capitalize hover:underline-offset-2 hover:underline">
+                                {name}
+                            </span>
+                        </Link>
                     </div>
                 );
             },

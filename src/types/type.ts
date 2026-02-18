@@ -664,6 +664,7 @@ export type TimeSheetData = {
 };
 
 export interface ISchedules {
+  id?: number;
   name: string;
   start_time: string;
   end_time: string;
@@ -671,6 +672,7 @@ export interface ISchedules {
   grace_out_min: number;
   allow_overtime?: boolean;
   _count?: { scheduleAssigns: number };
+  scheduleAssigns?: [{ user: User }];
   start_time_local?: string;
   end_time_local?: string;
 }

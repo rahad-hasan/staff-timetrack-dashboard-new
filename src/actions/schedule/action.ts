@@ -11,6 +11,12 @@ export const getAllSchedule = async (query = {}): Promise<IResponse<ISchedules[]
     });
 };
 
+export const getSingleSchedule = async ({ id }: { id: string }): Promise<IResponse<ISchedules>> => {
+    return await baseApi(`/schedules/${id}`, {
+        tag: "schedules",
+    });
+};
+
 export const addSchedule = async (data: ISchedules) => {
     return await baseApi(`/schedules`, {
         method: "POST",
