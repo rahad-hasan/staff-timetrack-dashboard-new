@@ -8,10 +8,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { IDailyReportResponse, TLeaveType } from "@/types/type";
 import { getDay, parseISO } from "date-fns";
 import { useState } from "react";
 
-const MonthlyTimeSheetsCalendar = ({ data }: any) => {
+function getTextColor(HMS: string, leave_type: TLeaveType) {
+  if (
+    HMS.split(":")?.reduce((acc, cur) => acc + Number(cur), 0) > 0 &&
+    !leave_type
+  ) {
+    return "text-primary";
+  } else if (leave_type) {
+    return "text-primary/60";
+  } else {
+    return "text-primary/30";
+  }
+}
+
+const MonthlyTimeSheetsCalendar = ({
+  data,
+}: {
+  data: IDailyReportResponse;
+}) => {
   const [viewType, setViewType] = useState("Hours");
 
   // 1. Process the new "daily_data" array format
@@ -36,15 +54,17 @@ const MonthlyTimeSheetsCalendar = ({ data }: any) => {
     formattedTime,
     activity, // Changed from duration to match new data key
     isPadding,
+    leave_type,
   }: {
     dateString?: string;
     dayNumber?: number;
     formattedTime?: string;
     activity?: number;
     isPadding?: boolean;
+    leave_type?: TLeaveType;
   }) => (
     <div
-      className={`p-3 h-28 md:h-24 flex flex-col justify-center items-center border border-gray-200 bg-bgPrimary dark:bg-darkPrimaryBg text-headingTextColor dark:text-darkTextPrimary dark:border-darkBorder`}
+      className={`p-3 h-28 md:h-24 flex flex-col justify-center items-center border bg-bgPrimary dark:bg-darkPrimaryBg text-headingTextColor dark:text-darkTextPrimary ${leave_type ? "border-yellow-300/70 dark:border-yellow-300/50" : "border-gray-200 dark:border-darkBorder"}`}
     >
       {/* Render nothing for padding cells to keep your original layout empty */}
       {!isPadding && (
@@ -56,17 +76,19 @@ const MonthlyTimeSheetsCalendar = ({ data }: any) => {
             <div>
               {formattedTime && (
                 <div
-                  className={`px-2 py-1 text-sm font-medium ${formattedTime.split(":")?.reduce((acc, cur) => acc + Number(cur), 0) > 0 ? "text-primary" : "text-primary/30"}`}
+                  className={`px-2 py-1 text-sm font-medium ${getTextColor(formattedTime, leave_type as TLeaveType)}`}
                 >
-                  {formattedTime}
+                  {leave_type ? leave_type + " leave" : formattedTime}
                 </div>
               )}
             </div>
           ) : (
             <div>
               {/* Using 'activity' from new data format */}
-              <div className="w-16 text-center py-1 text-sm font-medium bg-gray-50 rounded-lg dark:bg-gray-900/25 text-primary">
-                {`${activity || 0}%`}
+              <div
+                className={`w-fit px-3 text-center py-1 text-sm font-medium bg-gray-50 rounded-lg dark:bg-gray-900/25 ${leave_type ? "text-primary/60" : "text-primary"}`}
+              >
+                {leave_type ? leave_type + " leave" : `${activity || 0}%`}
               </div>
             </div>
           )}
@@ -158,7 +180,7 @@ const MonthlyTimeSheetsCalendar = ({ data }: any) => {
           ))}
 
           {/* Mapping through new daily_data array */}
-          {dailyData?.map((dayItem: any) => {
+          {dailyData?.map((dayItem) => {
             const dateObj = parseISO(dayItem?.date);
             return (
               <DateCell
@@ -167,6 +189,7 @@ const MonthlyTimeSheetsCalendar = ({ data }: any) => {
                 dayNumber={dateObj.getDate()}
                 formattedTime={dayItem?.duration}
                 activity={dayItem?.activity}
+                leave_type={dayItem.leave_type}
               />
             );
           })}
