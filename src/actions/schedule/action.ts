@@ -11,19 +11,14 @@ export const getAllSchedule = async (query = {}): Promise<IResponse<ISchedules[]
     });
 };
 
-// export const addLeave = async (data: {
-//     type: string;
-//     start_date: string;
-//     end_date: string;
-//     reason: string;
-// }) => {
-//     return await baseApi(`/leaves`, {
-//         method: "POST",
-//         body: data,
-//         tag: "leaves",
-//         cache: "no-cache",
-//     });
-// };
+export const addSchedule = async (data: ISchedules) => {
+    return await baseApi(`/schedules`, {
+        method: "POST",
+        body: data,
+        tag: "schedules",
+        cache: "no-cache",
+    });
+};
 
 // export const approveRejectLeave = async ({ data }: {
 //     data: {

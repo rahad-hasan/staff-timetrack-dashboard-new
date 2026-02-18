@@ -20,11 +20,15 @@ import { useState } from "react";
 import { ArrowUpDown } from "lucide-react";
 import EmptyTableRow from "../Common/EmptyTableRow";
 import { ISchedules } from "@/types/type";
+import FilterButton from "../Common/FilterButton";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import EditIcon from "../Icons/FilterOptionIcon/EditIcon";
 
 const ScheduleTable = ({ data }: { data: ISchedules[] }) => {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [rowSelection, setRowSelection] = useState({});
-
+    const [open, setOpen] = useState(false);
+    const [selectedSchedule, setSelectedSchedule] = useState<ISchedules | null>(null);
 
     const columns: ColumnDef<ISchedules>[] = [
         {
@@ -48,7 +52,7 @@ const ScheduleTable = ({ data }: { data: ISchedules[] }) => {
                 const name = row.getValue("name") as string;
                 return (
                     <div className="flex items-center gap-2 min-w-[200px]">
-                        <span className="capitalize hover:underline-offset-2 hover:underline">
+                        <span className="capitalize">
                             {name}
                         </span>
                     </div>
@@ -76,7 +80,7 @@ const ScheduleTable = ({ data }: { data: ISchedules[] }) => {
                 const start_time_local = row.getValue("start_time_local") as string;
                 return (
                     <div className="flex items-center gap-2 min-w-[200px]">
-                        <span className="capitalize hover:underline-offset-2 hover:underline">
+                        <span className="capitalize">
                             {start_time_local}
                         </span>
                     </div>
@@ -104,7 +108,7 @@ const ScheduleTable = ({ data }: { data: ISchedules[] }) => {
                 const end_time_local = row.getValue("end_time_local") as string;
                 return (
                     <div className="flex items-center gap-2 min-w-[200px]">
-                        <span className="capitalize hover:underline-offset-2 hover:underline">
+                        <span className="capitalize">
                             {end_time_local}
                         </span>
                     </div>
@@ -132,7 +136,7 @@ const ScheduleTable = ({ data }: { data: ISchedules[] }) => {
                 const scheduleAssigns = row?.original?._count?.scheduleAssigns;
                 return (
                     <div className="flex items-center gap-2 min-w-[200px]">
-                        <span className="capitalize hover:underline-offset-2 hover:underline">
+                        <span className="capitalize">
                             {scheduleAssigns}
                         </span>
                     </div>
@@ -160,7 +164,7 @@ const ScheduleTable = ({ data }: { data: ISchedules[] }) => {
                 const grace_in_min = row?.original?.grace_in_min;
                 return (
                     <div className="flex items-center gap-2 min-w-[200px]">
-                        <span className="capitalize hover:underline-offset-2 hover:underline">
+                        <span className="capitalize">
                             {grace_in_min} Min
                         </span>
                     </div>
@@ -188,14 +192,62 @@ const ScheduleTable = ({ data }: { data: ISchedules[] }) => {
                 const grace_out_min = row?.original?.grace_out_min;
                 return (
                     <div className="flex items-center gap-2 min-w-[200px]">
-                        <span className="capitalize hover:underline-offset-2 hover:underline">
+                        <span className="capitalize">
                             {grace_out_min} Min
                         </span>
                     </div>
                 );
             },
         },
+        {
+            accessorKey: "action",
+            header: () => <div className="">Action</div>,
+            cell: (row) => {
+                return (
+                    <div className="">
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <div>
+                                    <FilterButton></FilterButton>
+                                </div>
+                            </PopoverTrigger>
+                            <PopoverContent side="bottom" align="end" className="w-fit p-2">
+                                <div className="">
+                                    <div className="space-y-2">
+                                        <div
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setSelectedSchedule(row?.row?.original);
+                                                setOpen(true);
+                                            }}
+                                            className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100  hover:dark:bg-darkPrimaryBg px-3 cursor-pointer"
+                                        >
+                                            <EditIcon size={20} />
+                                            <p>Edit</p>
+                                        </div>
+                                        {/* <ConfirmDialog
+                                            trigger={
+                                                <button className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100  hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
+                                                    {<DeleteIcon size={18} />}
 
+                                                    <p>Delete</p>
+                                                </button>
+                                            }
+                                            title="Delete the member"
+                                            description="Are you sure you want to delete this member? This action cannot be undone."
+                                            confirmText="Confirm"
+                                            cancelText="Cancel"
+                                            // confirmClassName="bg-primary hover:bg-primary"
+                                            onConfirm={() => handleDelete(row?.row?.original)}
+                                        /> */}
+                                    </div>
+                                </div>
+                            </PopoverContent>
+                        </Popover>
+                    </div>
+                );
+            },
+        },
     ];
 
     const table = useReactTable({

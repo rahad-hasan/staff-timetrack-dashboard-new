@@ -1,5 +1,5 @@
 import { getAllSchedule } from "@/actions/schedule/action";
-import HeadingComponent from "@/components/Common/HeadingComponent";
+import HeroSchedule from "@/components/Schedule/HeroSchedule";
 import ScheduleTable from "@/components/Schedule/ScheduleTable";
 import { Metadata } from "next";
 
@@ -9,10 +9,10 @@ export const metadata: Metadata = {
 };
 const SchedulePage = async () => {
     const result = await getAllSchedule();
-    console.log(result);
+
     return (
         <div>
-            <HeadingComponent heading="Schedule Management" subHeading="All the teams member schedule details are displayed here"></HeadingComponent>
+            <HeroSchedule></HeroSchedule>
             <ScheduleTable data={result?.data}></ScheduleTable>
         </div>
     );

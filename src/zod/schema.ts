@@ -336,3 +336,23 @@ export const singleMemberSchema = z.object({
         .min(1, "Time Zone is required"),
 })
 
+
+export const ScheduleShiftSchema = z.object({
+    name: z
+        .string({ message: 'Schedule name is required' })
+        .min(2, { message: 'Schedule name must be at least 2 characters long' })
+        .max(60, { message: 'Schedule name must not exceed 60 characters' }),
+    start_time: z.string().min(1, "Shift Start time is required"),
+    end_time: z.string().min(1, "Shift End time is required"),
+    grace_in_min: z
+        .number({ message: "Grace in minutes must be a number" })
+        .int()
+        .min(0, { message: 'Grace in minutes must be 0 or greater' })
+        .max(1440, { message: 'Grace in minutes must be 1440 or less' }),
+
+    grace_out_min: z
+        .number({ message: "Grace out minutes must be a number" })
+        .int()
+        .min(0, { message: 'Grace out minutes must be 0 or greater' })
+        .max(1440, { message: 'Grace out minutes must be 1440 or less' }),
+});
