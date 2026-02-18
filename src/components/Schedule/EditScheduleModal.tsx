@@ -20,25 +20,44 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ClockIcon from "../Icons/ClockIcon";
 import { Checkbox } from "../ui/checkbox";
 import { toast } from "sonner";
-import { addSchedule } from "@/actions/schedule/action";
+import { editSchedule } from "@/actions/schedule/action";
+import { ISchedules } from "@/types/type";
+import { convertTo24Hour } from "@/utils";
 
-
-const AddScheduleModal = ({ onClose }: { onClose: () => void }) => {
+interface EditNewMemberModalProps {
+    onClose: () => void
+    selectedSchedule: ISchedules
+}
+const EditScheduleModal = ({ onClose, selectedSchedule }: EditNewMemberModalProps) => {
     const [loading, setLoading] = useState(false);
-    const [isAllowOvertime, setIsAllowOvertime] = useState(false);
+    const [isAllowOvertime, setIsAllowOvertime] = useState(selectedSchedule?.allow_overtime || false);
+
 
     const form = useForm<z.infer<typeof ScheduleShiftSchema>>({
         resolver: zodResolver(ScheduleShiftSchema),
         defaultValues: {
-            name: "",
-            start_time: "08:30:00",
-            end_time: "11:30:00"
+            name: selectedSchedule?.name,
+            start_time: convertTo24Hour(selectedSchedule.start_time_local),
+            end_time: convertTo24Hour(selectedSchedule.end_time_local),
+            grace_in_min: selectedSchedule?.grace_in_min,
+            grace_out_min: selectedSchedule?.grace_out_min,
         },
     })
+    useEffect(() => {
+        if (selectedSchedule) {
+            form.reset({
+                name: selectedSchedule?.name,
+                start_time: convertTo24Hour(selectedSchedule.start_time_local),
+                end_time: convertTo24Hour(selectedSchedule.end_time_local),
+                grace_in_min: selectedSchedule?.grace_in_min,
+                grace_out_min: selectedSchedule?.grace_out_min,
+            });
+        }
+    }, [selectedSchedule, form]);
 
 
     async function onSubmit(values: z.infer<typeof ScheduleShiftSchema>) {
@@ -52,17 +71,16 @@ const AddScheduleModal = ({ onClose }: { onClose: () => void }) => {
         }
         setLoading(true);
         try {
-            const res = await addSchedule(finalData);
+            const res = await editSchedule({data:finalData, id: selectedSchedule.id});
 
             if (res?.success) {
                 form.reset();
-                setIsAllowOvertime(false);
                 setTimeout(() => {
                     onClose();
                 }, 0);
-                toast.success(res?.message || "Schedule added successfully");
+                toast.success(res?.message || "Schedule updated successfully");
             } else {
-                toast.error(res?.message || "Failed to add schedule", {
+                toast.error(res?.message || "Failed to update schedule", {
                     style: {
                         backgroundColor: '#ef4444',
                         color: 'white',
@@ -87,7 +105,7 @@ const AddScheduleModal = ({ onClose }: { onClose: () => void }) => {
     return (
         <DialogContent className="sm:max-w-[525px]">
             <DialogHeader>
-                <DialogTitle className=" mb-4">Create Schedule</DialogTitle>
+                <DialogTitle className=" mb-4">Edit Schedule</DialogTitle>
             </DialogHeader>
 
             <Form {...form}>
@@ -99,7 +117,7 @@ const AddScheduleModal = ({ onClose }: { onClose: () => void }) => {
                             <FormItem>
                                 <FormLabel>Name</FormLabel>
                                 <FormControl>
-                                    <Input type="text" className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Schedule name" {...field} />
+                                    <Input type="text" className="dark:bg-darkPrimaryBg dark:border-darkBorder " placeholder="Schedule name" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -208,11 +226,11 @@ const AddScheduleModal = ({ onClose }: { onClose: () => void }) => {
                             Allow Overtime
                         </label>
                     </div>
-                    <Button disabled={loading} className=" w-full" type="submit">{loading ? "Loading..." : "Create Schedule"}</Button>
+                    <Button disabled={loading} className=" w-full" type="submit">{loading ? "Loading..." : "Update"}</Button>
                 </form>
             </Form>
         </DialogContent>
     );
 };
 
-export default AddScheduleModal;
+export default EditScheduleModal;

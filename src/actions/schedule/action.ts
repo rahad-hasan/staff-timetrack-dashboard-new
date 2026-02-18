@@ -20,30 +20,14 @@ export const addSchedule = async (data: ISchedules) => {
     });
 };
 
-// export const approveRejectLeave = async ({ data }: {
-//     data: {
-//         leave_id: number,
-//         approved: boolean,
-//         reject_reason?: string
-//     }
-// }) => {
-//     return await baseApi(`/leaves/update-status`, {
-//         method: "PATCH",
-//         body: data,
-//         tag: "leaves",
-//         cache: "no-cache",
-//     });
-// };
 
-// export const deleteLeave = async ({ data, id }: {
-//     data: {
-//         is_deleted: boolean,
-//     },
-//     id: number | undefined
-// }) => {
-//     return await baseApi(`/leaves/${id}`, {
-//         method: "PATCH",
-//         body: data,
-//         tag: "leaves",
-//     });
-// };
+export const editSchedule = async ({ data, id }: {
+    data: ISchedules,
+    id: number | undefined
+}) => {
+    return await baseApi(`/schedules/${id}`, {
+        method: "PATCH",
+        body: data,
+        tag: "schedules",
+    });
+};

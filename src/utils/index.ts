@@ -90,3 +90,29 @@ export const formatTZFullDate = (
   const d = new Date(date);
   return formatInTimeZone(d, timeZone, "EEEE, MMMM d, yyyy");
 };
+
+
+export const convertTo24Hour = (timeStr: string | undefined) => {
+  if (!timeStr) return "00:00:00";
+
+  const parts = timeStr.split(' ');
+  if (parts.length !== 2) return "00:00:00";
+
+  const [time, modifier] = parts;
+  const [hoursStr, minutes] = time.split(':');
+
+  let hours = parseInt(hoursStr, 10);
+  const isPM = modifier.toLowerCase() === 'pm';
+  const isAM = modifier.toLowerCase() === 'am';
+
+  if (isPM && hours < 12) {
+    hours += 12;
+  } else if (isAM && hours === 12) {
+    hours = 0;
+  }
+
+  const paddedHours = hours.toString().padStart(2, '0');
+  const paddedMinutes = minutes.padStart(2, '0');
+
+  return `${paddedHours}:${paddedMinutes}:00`;
+};

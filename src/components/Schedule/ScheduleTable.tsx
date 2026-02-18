@@ -23,6 +23,8 @@ import { ISchedules } from "@/types/type";
 import FilterButton from "../Common/FilterButton";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import EditIcon from "../Icons/FilterOptionIcon/EditIcon";
+import { Dialog } from "../ui/dialog";
+import EditScheduleModal from "./EditScheduleModal";
 
 const ScheduleTable = ({ data }: { data: ISchedules[] }) => {
     const [sorting, setSorting] = useState<SortingState>([]);
@@ -51,7 +53,7 @@ const ScheduleTable = ({ data }: { data: ISchedules[] }) => {
             cell: ({ row }) => {
                 const name = row.getValue("name") as string;
                 return (
-                    <div className="flex items-center gap-2 min-w-[200px]">
+                    <div className="flex items-center gap-2 min-w-[100px]">
                         <span className="capitalize">
                             {name}
                         </span>
@@ -79,7 +81,7 @@ const ScheduleTable = ({ data }: { data: ISchedules[] }) => {
             cell: ({ row }) => {
                 const start_time_local = row.getValue("start_time_local") as string;
                 return (
-                    <div className="flex items-center gap-2 min-w-[200px]">
+                    <div className="flex items-center gap-2 min-w-[100px]">
                         <span className="capitalize">
                             {start_time_local}
                         </span>
@@ -107,7 +109,7 @@ const ScheduleTable = ({ data }: { data: ISchedules[] }) => {
             cell: ({ row }) => {
                 const end_time_local = row.getValue("end_time_local") as string;
                 return (
-                    <div className="flex items-center gap-2 min-w-[200px]">
+                    <div className="flex items-center gap-2 min-w-[100px]">
                         <span className="capitalize">
                             {end_time_local}
                         </span>
@@ -135,7 +137,7 @@ const ScheduleTable = ({ data }: { data: ISchedules[] }) => {
             cell: ({ row }) => {
                 const scheduleAssigns = row?.original?._count?.scheduleAssigns;
                 return (
-                    <div className="flex items-center gap-2 min-w-[200px]">
+                    <div className="flex items-center gap-2 min-w-[100px]">
                         <span className="capitalize">
                             {scheduleAssigns}
                         </span>
@@ -163,7 +165,7 @@ const ScheduleTable = ({ data }: { data: ISchedules[] }) => {
             cell: ({ row }) => {
                 const grace_in_min = row?.original?.grace_in_min;
                 return (
-                    <div className="flex items-center gap-2 min-w-[200px]">
+                    <div className="flex items-center gap-2 min-w-[100px]">
                         <span className="capitalize">
                             {grace_in_min} Min
                         </span>
@@ -191,7 +193,7 @@ const ScheduleTable = ({ data }: { data: ISchedules[] }) => {
             cell: ({ row }) => {
                 const grace_out_min = row?.original?.grace_out_min;
                 return (
-                    <div className="flex items-center gap-2 min-w-[200px]">
+                    <div className="flex items-center gap-2 min-w-[100px]">
                         <span className="capitalize">
                             {grace_out_min} Min
                         </span>
@@ -225,21 +227,6 @@ const ScheduleTable = ({ data }: { data: ISchedules[] }) => {
                                             <EditIcon size={20} />
                                             <p>Edit</p>
                                         </div>
-                                        {/* <ConfirmDialog
-                                            trigger={
-                                                <button className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100  hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                                    {<DeleteIcon size={18} />}
-
-                                                    <p>Delete</p>
-                                                </button>
-                                            }
-                                            title="Delete the member"
-                                            description="Are you sure you want to delete this member? This action cannot be undone."
-                                            confirmText="Confirm"
-                                            cancelText="Cancel"
-                                            // confirmClassName="bg-primary hover:bg-primary"
-                                            onConfirm={() => handleDelete(row?.row?.original)}
-                                        /> */}
                                     </div>
                                 </div>
                             </PopoverContent>
@@ -308,6 +295,15 @@ const ScheduleTable = ({ data }: { data: ISchedules[] }) => {
                     )}
                 </TableBody>
             </Table>
+            {/* Edit Schedule Modal */}
+            <Dialog open={open} onOpenChange={setOpen}>
+                {selectedSchedule && (
+                    <EditScheduleModal
+                        selectedSchedule={selectedSchedule}
+                        onClose={() => setOpen(false)}
+                    />
+                )}
+            </Dialog>
         </div>
     );
 };
