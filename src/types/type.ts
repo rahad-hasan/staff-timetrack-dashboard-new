@@ -662,3 +662,15 @@ export type TimeSheetData = {
   daily_data: TimeSheetDailyItem[];
   totals: TimeSheetTotals;
 };
+
+export interface ISchedules {
+  name: string;
+  start_time: string;
+  end_time: string;
+  grace_in_min: number;
+  grace_out_min: number;
+  allow_overtime: boolean;
+  _count: { scheduleAssigns: number; };
+  start_time_local: string;
+  end_time_local: string;
+}

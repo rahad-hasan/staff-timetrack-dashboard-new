@@ -80,6 +80,13 @@ export const sidebarItems = [
         collapsible: false,
         subItems: [],
     },
+    {
+        icon: Users,
+        label: 'Schedule',
+        key: '/schedule',
+        collapsible: false,
+        subItems: [],
+    },
 ];
 
 

@@ -43,6 +43,7 @@ const coloredIconMapping = {
   Insights: InsightsColoredIcon,
   Projects: ProjectManagementColoredIcon,
   Report: ReportColoredIcon,
+  Schedule: InsightsColoredIcon,
   Members: TeamsColoredIcon,
   Event: CalendarColoredIcon,
   Leaves: LeaveManagementColoredIcon,
