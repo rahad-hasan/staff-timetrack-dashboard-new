@@ -670,7 +670,26 @@ export interface ISchedules {
   grace_in_min: number;
   grace_out_min: number;
   allow_overtime?: boolean;
-  _count?: { scheduleAssigns: number; };
+  _count?: { scheduleAssigns: number };
   start_time_local?: string;
   end_time_local?: string;
+}
+
+export type TLeaveType = "sick" | "casual" | "paid" | "maternity" | null;
+
+export interface IDailyDataItem {
+  date: string; // ISO date string (e.g. "2026-02-01")
+  duration: string; // HH:mm:ss
+  activity: number; // percentage (0–100)
+  active_time: string; // HH:mm:ss
+  idle_time: string; // HH:mm:ss
+  leave_type: TLeaveType;
+}
+
+export interface IDailyReportResponse {
+  daily_data: IDailyDataItem[];
+  total_time: string; // HH:mm:ss
+  total_idle_time: string; // HH:mm:ss
+  total_active_time: string; // HH:mm:ss
+  activity: number; // overall activity %
 }
