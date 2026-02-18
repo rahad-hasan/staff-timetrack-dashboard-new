@@ -74,7 +74,7 @@ const CreateTaskModal = ({ handleCloseDialog }: { handleCloseDialog: () => void 
         const fetchProjects = async () => {
             setLoading(true);
             try {
-                const res = await getProjects({ search: debouncedSearch });
+                const res = await getProjects({ search: debouncedSearch, app: true });
 
                 if (res?.success) {
                     setProjects(

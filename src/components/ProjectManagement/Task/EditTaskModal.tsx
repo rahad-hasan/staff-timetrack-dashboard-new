@@ -107,7 +107,7 @@ const EditTaskModal = ({ handleCloseDialog, selectedProject }: { handleCloseDial
         const fetchProjects = async () => {
             setLoading(true);
             try {
-                const res = await getProjects({ search: debouncedSearch, limit: 9999 });
+                const res = await getProjects({ search: debouncedSearch, app: true });
                 if (res?.success) {
                     setProjects(
                         res.data.map((p: any) => ({
