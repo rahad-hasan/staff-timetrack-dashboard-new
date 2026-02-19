@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import {
@@ -26,12 +27,45 @@ import EditIcon from "../Icons/FilterOptionIcon/EditIcon";
 import { Dialog } from "../ui/dialog";
 import EditScheduleModal from "./EditScheduleModal";
 import Link from "next/link";
+import DeleteIcon from "../Icons/DeleteIcon";
+import { deleteSchedule } from "@/actions/schedule/action";
+import { toast } from "sonner";
+import ConfirmDialog from "../Common/ConfirmDialog";
 
 const ScheduleTable = ({ data }: { data: ISchedules[] }) => {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [rowSelection, setRowSelection] = useState({});
     const [open, setOpen] = useState(false);
     const [selectedSchedule, setSelectedSchedule] = useState<ISchedules | null>(null);
+
+    async function handleDelete(values: ISchedules) {
+        if (!values?.id) {
+            return;
+        }
+        try {
+            const res = await deleteSchedule(values.id);
+
+            if (res?.success) {
+                toast.success(res?.message || "Schedule deleted successfully");
+            } else {
+                toast.error(res?.message || "Failed to delete schedule", {
+                    style: {
+                        backgroundColor: '#ef4444',
+                        color: 'white',
+                        border: 'none'
+                    },
+                });
+            }
+        } catch (error: any) {
+            toast.error(error?.message || "Something went wrong!", {
+                style: {
+                    backgroundColor: '#ef4444',
+                    color: 'white',
+                    border: 'none'
+                },
+            });
+        }
+    }
 
     const columns: ColumnDef<ISchedules>[] = [
         {
@@ -237,9 +271,23 @@ const ScheduleTable = ({ data }: { data: ISchedules[] }) => {
                                             }}
                                             className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100  hover:dark:bg-darkPrimaryBg px-3 cursor-pointer"
                                         >
-                                            <InviteMemberIcon size={20} />
-                                            <p>Assign Member</p>
+                                            <DeleteIcon size={20} />
+                                            <p>Delete Shift</p>
                                         </div> */}
+                                        <ConfirmDialog
+                                            trigger={
+                                                <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
+                                                    <DeleteIcon size={18} />
+                                                    <p>Delete Schedule</p>
+                                                </div>
+                                            }
+                                            title="Delete the schedule"
+                                            description="Are you sure you want to delete this schedule? This action cannot be undone."
+                                            confirmText="Confirm"
+                                            cancelText="Cancel"
+                                            // confirmClassName="bg-primary hover:bg-primary"
+                                            onConfirm={() => handleDelete(row?.row?.original)}
+                                        />
                                     </div>
                                 </div>
                             </PopoverContent>

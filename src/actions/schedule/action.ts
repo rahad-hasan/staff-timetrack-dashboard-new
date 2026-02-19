@@ -48,3 +48,10 @@ export const editSchedule = async ({ data, id }: {
         tag: "schedules",
     });
 };
+
+export const deleteSchedule = async (id: number) => {
+    return await baseApi(`/schedules/${id}`, {
+        method: "DELETE",
+        tag: "schedules",
+    });
+};
