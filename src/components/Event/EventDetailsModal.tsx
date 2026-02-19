@@ -59,7 +59,7 @@ const EventDetailsModal = ({ handleCloseDialog, event }: any) => {
                         :
                         <div className="flex items-center justify-between -mt-3 p-6 pb-3 border-b dark:border-darkBorder">
                             <DialogTitle className="text-xl text-headingTextColor dark:text-darkTextPrimary">
-                                    <h2 className="">Event Details</h2>
+                                <h2 className="">Event Details</h2>
                             </DialogTitle>
                         </div>
                 }
@@ -98,12 +98,29 @@ const EventDetailsModal = ({ handleCloseDialog, event }: any) => {
                         {event?.meeting_link && (
                             <div className="space-y-2 w-full">
                                 <label className="text-[10px] font-bold uppercase tracking-wider text-subTextColor dark:text-darkTextSecondary">Meeting Link</label>
-                                <div className="flex items-center gap-2 p-2 pl-3 rounded-lg border border-borderColor dark:border-darkBorder bg-gray-50/50 dark:bg-transparent">
+                                <div className=" hidden sm:flex items-center gap-2 p-2 pl-3 rounded-lg border border-borderColor dark:border-darkBorder bg-gray-50/50 dark:bg-transparent">
                                     <Link className="w-4 h-4 text-primary shrink-0" />
                                     {event.meeting_link.length > 46
                                         ? `${event.meeting_link.substring(0, 46)}...`
                                         : event.meeting_link
                                     }
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-8 w-8 shrink-0"
+                                        onClick={() => handleCopy(event.meeting_link)}
+                                    >
+                                        {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4 text-subTextColor" />}
+                                    </Button>
+                                </div>
+                                <div className=" flex sm:hidden items-center justify-between gap-2 p-2 pl-3 rounded-lg border border-borderColor dark:border-darkBorder bg-gray-50/50 dark:bg-transparent">
+                                    <div className="flex items-center gap-2">
+                                        <Link className="w-4 h-4 text-primary shrink-0" />
+                                        {event.meeting_link.length > 25
+                                            ? `${event.meeting_link.substring(0, 25)}...`
+                                            : event.meeting_link
+                                        }
+                                    </div>
                                     <Button
                                         variant="ghost"
                                         size="icon"
