@@ -1,13 +1,12 @@
 import { getSingleSchedule } from "@/actions/schedule/action";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
     Clock, Users, ArrowLeft, Settings,
-    Calendar, CircleCheck,
+    Calendar,
 } from "lucide-react";
 import Link from "next/link";
-import { User } from "@/types/type";
 import { getDuration } from "@/utils";
+import SingleScheduleMemberTable from "@/components/Schedule/SingleScheduleMemberTable";
 
 const SingleSchedulePage = async ({ params }: { params: Promise<{ id: string }> }) => {
     const { id } = await params;
@@ -32,8 +31,7 @@ const SingleSchedulePage = async ({ params }: { params: Promise<{ id: string }> 
             </div>
 
             <main className=" px-4 py-8">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 xl:gap-8">
-
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 xl:gap-8 items-center">
                     <div className="lg:col-span-4 space-y-6">
                         <section className="p-6 rounded-2xl bg-white dark:bg-darkPrimaryBg border border-borderColor dark:border-darkBorder">
                             <h3 className="text-sm font-bold uppercase tracking-wider text-gray-400 mb-6 flex items-center gap-2">
@@ -63,17 +61,9 @@ const SingleSchedulePage = async ({ params }: { params: Promise<{ id: string }> 
                                 </button>
                             </div>
                         </section>
-
-                        <div className="p-6 rounded-2xl bg-blue-50 dark:bg-darkSecondaryBg text-white overflow-hidden relative">
-                            <Calendar className="absolute -right-4 -bottom-4 w-32 h-32 text-headingTextColor/30 dark:text-darkTextSecondary opacity-10" />
-                            <h4 className="text-headingTextColor dark:text-darkTextPrimary text-sm">Total Assigned</h4>
-                            <p className="text-headingTextColor dark:text-darkTextPrimary text-4xl font-bold mt-1">{schedule.scheduleAssigns?.length || 0}</p>
-                            <p className="text-headingTextColor dark:text-darkTextPrimary text-xs mt-4">Staff time track members follow this shift</p>
-                        </div>
                     </div>
 
-                    <div className="lg:col-span-8 space-y-8">
-
+                    <div className="lg:col-span-8  space-y-4 xl:space-y-8">
                         <div className="bg-white dark:bg-darkPrimaryBg rounded-3xl p-8 border border-borderColor dark:border-darkBorder overflow-hidden relative">
                             <div className="h-fit sticky top-24 z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-8 ">
                                 <div>
@@ -105,44 +95,22 @@ const SingleSchedulePage = async ({ params }: { params: Promise<{ id: string }> 
                                 </div>
                             </div>
                         </div>
-
-                        <div>
-                            <div className="flex items-center justify-between mb-4 px-2">
-                                <h3 className="text-lg font-bold flex items-center gap-2">
-                                    <Users className="w-5 h-5 text-headingTextColor dark:text-darkTextPrimary" />
-                                    Active Personnel
-                                </h3>
-                            </div>
-
-                            <div className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3 gap-4">
-                                {schedule.scheduleAssigns?.map((assign: { user: User }) => (
-                                    <div
-                                        key={assign.user.id}
-                                        className="group p-4 bg-white dark:bg-darkPrimaryBg border border-borderColor dark:border-darkBorder rounded-2xl flex items-center gap-4"
-                                    >
-                                        <div className="relative">
-                                            <Avatar className="h-12 w-12 ring-2 ring-primary">
-                                                <AvatarImage src={assign.user.image ?? ""} />
-                                                <AvatarFallback className="">{assign.user.name[0]}</AvatarFallback>
-                                            </Avatar>
-                                            <div className="absolute -bottom-1 -right-1 bg-white dark:bg-darkPrimaryBg rounded-full p-0.5">
-                                                <CircleCheck className="w-4 h-4 text-primary" />
-                                            </div>
-                                        </div>
-                                        <div className="flex-1 overflow-hidden">
-                                            <Link href={`/members/${assign.user.id}`}>
-                                                <p className="font-bold hover:underline-offset-2 hover:underline">
-                                                    {assign.user.name}
-                                                </p>
-                                            </Link>
-                                            <p className="text-xs text-gray-500 truncate">{assign.user.email}</p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
+                        <div className="p-6 rounded-2xl bg-blue-50 dark:bg-darkSecondaryBg text-white overflow-hidden relative">
+                            <Calendar className="absolute -right-3 -bottom-4 w-32 h-32 text-headingTextColor/30 dark:text-darkTextSecondary opacity-10" />
+                            <h4 className="text-headingTextColor dark:text-darkTextPrimary text-sm">Total Assigned</h4>
+                            <p className="text-headingTextColor dark:text-darkTextPrimary text-4xl font-bold mt-1">{schedule.scheduleAssigns?.length || 0}</p>
+                            <p className="text-headingTextColor dark:text-darkTextPrimary text-xs mt-2">Staff time track members follow this shift</p>
                         </div>
-
                     </div>
+                </div>
+                <div>
+                    <div className="flex items-center justify-between my-4 px-2">
+                        <h3 className="text-lg font-bold flex items-center gap-2">
+                            <Users className="w-5 h-5 text-headingTextColor dark:text-darkTextPrimary" />
+                            Active Personnel
+                        </h3>
+                    </div>
+                    <SingleScheduleMemberTable data={schedule.scheduleAssigns}></SingleScheduleMemberTable>
                 </div>
             </main>
         </div>
