@@ -203,7 +203,7 @@ const Profile = () => {
 
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                    <div className=" grid grid-cols-2 gap-4 sm:gap-3 items-start">
+                    <div className=" grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-3 items-start">
                         <FormField
                             control={form.control}
                             name="name"
@@ -253,7 +253,7 @@ const Profile = () => {
                         />
                     </div>
 
-                    <div className="flex items-start gap-3">
+                    <div className="flex flex-col sm:flex-row items-start gap-3">
                         <FormField
                             control={form.control}
                             name="email"
@@ -368,7 +368,7 @@ const Profile = () => {
                                     </FormItem>
                                 )}
                             />
-                            <div className=" w-full"></div>
+                            <div className=" hidden sm:block w-full"></div>
                         </div>
                     }
 

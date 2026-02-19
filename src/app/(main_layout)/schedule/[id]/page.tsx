@@ -3,10 +3,11 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
     Clock, Users, ArrowLeft, Settings,
-    Calendar, CircleCheck, MoreHorizontal
+    Calendar, CircleCheck,
 } from "lucide-react";
 import Link from "next/link";
 import { User } from "@/types/type";
+import { getDuration } from "@/utils";
 
 const SingleSchedulePage = async ({ params }: { params: Promise<{ id: string }> }) => {
     const { id } = await params;
@@ -14,22 +15,19 @@ const SingleSchedulePage = async ({ params }: { params: Promise<{ id: string }> 
     const schedule = result?.data;
 
     return (
-        <div className="min-h-screen bg-gray-50/50 dark:bg-darkSecondaryBg/20 pb-5">
-            <div className="sticky top-0 z-10 bg-white/80 dark:bg-darkPrimaryBg/80 backdrop-blur-md border-b border-borderColor dark:border-darkBorder">
-                <div className="px-4 h-16 flex items-center justify-between">
+        <div className="min-h-screen bg-gray-50/50 dark:bg-darkSecondaryBg/20 pb-5 rounded-b-lg">
+            <div className=" bg-white/80 dark:bg-darkPrimaryBg/80 backdrop-blur-md border-b border-borderColor dark:border-darkBorder">
+                <div className="px-4 pb-5 pt-1 flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <Link href="/schedule" className="hover:text-blue-500 transition-colors">
+                        <Link href="/schedule" className="">
                             <ArrowLeft className="w-5 h-5" />
                         </Link>
                         <div className="h-6 w-[1px] bg-gray-300 dark:bg-darkBorder" />
                         <h1 className="font-semibold text-lg">{schedule.name}</h1>
-                        <Badge variant="outline" className="hidden sm:flex text-md border-blue-200 text-blue-600 bg-blue-50">
+                        <Badge variant="outline" className="hidden sm:flex text-md border-blue-200 text-blue-600 bg-blue-50 dark:bg-darkSecondaryBg dark:border-darkBorder dark:text-blue-400">
                             Active Shift
                         </Badge>
                     </div>
-                    <button className="p-2 hover:bg-gray-100 dark:hover:bg-darkPrimaryBg rounded-full">
-                        <MoreHorizontal className="w-5 h-5" />
-                    </button>
                 </div>
             </div>
 
@@ -66,32 +64,32 @@ const SingleSchedulePage = async ({ params }: { params: Promise<{ id: string }> 
                             </div>
                         </section>
 
-                        <div className="p-6 rounded-2xl bg-blue-50 text-white overflow-hidden relative">
-                            <Calendar className="absolute -right-4 -bottom-4 w-32 h-32 opacity-10" />
+                        <div className="p-6 rounded-2xl bg-blue-50 dark:bg-darkSecondaryBg text-white overflow-hidden relative">
+                            <Calendar className="absolute -right-4 -bottom-4 w-32 h-32 text-headingTextColor/30 dark:text-darkTextSecondary opacity-10" />
                             <h4 className="text-headingTextColor dark:text-darkTextPrimary text-sm">Total Assigned</h4>
                             <p className="text-headingTextColor dark:text-darkTextPrimary text-4xl font-bold mt-1">{schedule.scheduleAssigns?.length || 0}</p>
-                            <p className="text-headingTextColor dark:text-darkTextPrimary text-xs mt-4">Staff members follow this shift</p>
+                            <p className="text-headingTextColor dark:text-darkTextPrimary text-xs mt-4">Staff time track members follow this shift</p>
                         </div>
                     </div>
 
                     <div className="lg:col-span-8 space-y-8">
 
                         <div className="bg-white dark:bg-darkPrimaryBg rounded-3xl p-8 border border-borderColor dark:border-darkBorder overflow-hidden relative">
-                            <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
+                            <div className="h-fit sticky top-24 z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-8 ">
                                 <div>
                                     <p className="text-sm font-medium text-gray-400 mb-2">Shift Schedule</p>
                                     <div className="flex items-end gap-2">
-                                        <h2 className=" text-4xl xl:text-5xl font-black tracking-tighter text-headingTextColor dark:text-darkTextPrimary">
+                                        <h2 className=" text-2xl sm:text-4xl xl:text-5xl font-black tracking-tighter text-headingTextColor dark:text-darkTextPrimary">
                                             {schedule.start_time_local?.split(' ')[0]}
                                         </h2>
-                                        <h2 className="text-xl font-bold mb-1 text-gray-500">
+                                        <h2 className="text-sm sm:text-xl font-bold mb-1 text-gray-500">
                                             {schedule.start_time_local?.split(' ')[1]}
                                         </h2>
                                         <div className="mx-4 h-8 w-[2px] bg-gray-200 hidden md:block" />
-                                        <h2 className=" text-4xl xl:text-5xl font-black tracking-tighter text-gray-400">
+                                        <h2 className=" text-2xl sm:text-4xl xl:text-5xl font-black tracking-tighter text-gray-400">
                                             {schedule.end_time_local?.split(' ')[0]}
                                         </h2>
-                                        <h2 className="text-xl font-bold mb-1 text-gray-300 uppercase">
+                                        <h2 className="text-sm sm:text-xl font-bold mb-1 text-gray-300 uppercase">
                                             {schedule.end_time_local?.split(' ')[1]}
                                         </h2>
                                     </div>
@@ -102,7 +100,7 @@ const SingleSchedulePage = async ({ params }: { params: Promise<{ id: string }> 
                                             <Clock className="w-6 h-6 text-headingTextColor dark:text-darkTextPrimary" />
                                         </div>
                                         <p className="text-[10px] mt-1 font-bold uppercase text-gray-400 tracking-widest">Duration</p>
-                                        <p className="text-sm font-semibold">9.0 Hours</p>
+                                        <p className="text-sm font-semibold">{getDuration(schedule.start_time, schedule.end_time)}</p>
                                     </div>
                                 </div>
                             </div>
@@ -116,7 +114,7 @@ const SingleSchedulePage = async ({ params }: { params: Promise<{ id: string }> 
                                 </h3>
                             </div>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3 gap-4">
                                 {schedule.scheduleAssigns?.map((assign: { user: User }) => (
                                     <div
                                         key={assign.user.id}

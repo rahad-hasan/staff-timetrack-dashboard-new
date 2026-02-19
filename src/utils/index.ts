@@ -1,5 +1,5 @@
 import { useLogInUserStore } from "@/store/logInUserStore";
-import { formatInTimeZone } from "date-fns-tz";
+import { formatInTimeZone, fromZonedTime } from "date-fns-tz";
 
 const getUserTimeZone = () => {
   const logInUserData = useLogInUserStore.getState().logInUserData;
@@ -115,4 +115,17 @@ export const convertTo24Hour = (timeStr: string | undefined) => {
   const paddedMinutes = minutes.padStart(2, '0');
 
   return `${paddedHours}:${paddedMinutes}:00`;
+};
+
+export const getDuration = (start?: string, end?: string, tz = getUserTimeZone()) => {
+  if (!start || !end) return "0h";
+
+  const startUtc = fromZonedTime(start, tz);
+  const endUtc = fromZonedTime(end, tz);
+
+  const diffMs = endUtc.getTime() - startUtc.getTime();
+
+  const hours = diffMs / (1000 * 60 * 60);
+
+  return `${hours.toFixed(1)} Hours`;
 };
