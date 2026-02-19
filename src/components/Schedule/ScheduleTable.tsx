@@ -230,6 +230,16 @@ const ScheduleTable = ({ data }: { data: ISchedules[] }) => {
                                             <EditIcon size={20} />
                                             <p>Edit</p>
                                         </div>
+                                        {/* <div
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setSelectedSchedule(row?.row?.original);
+                                            }}
+                                            className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100  hover:dark:bg-darkPrimaryBg px-3 cursor-pointer"
+                                        >
+                                            <InviteMemberIcon size={20} />
+                                            <p>Assign Member</p>
+                                        </div> */}
                                     </div>
                                 </div>
                             </PopoverContent>

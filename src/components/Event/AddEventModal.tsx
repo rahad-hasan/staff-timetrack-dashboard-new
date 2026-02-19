@@ -394,7 +394,7 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
                       <MultiSelectValue placeholder="Select members..." />
                     </MultiSelectTrigger>
 
-                    <MultiSelectContent className="dark:bg-darkSecondaryBg">
+                    <MultiSelectContent onWheel={(e) => e.stopPropagation()} className="dark:bg-darkSecondaryBg">
                       <MultiSelectGroup className="dark:bg-darkSecondaryBg">
                         {members.map((member) => (
                           <MultiSelectItem

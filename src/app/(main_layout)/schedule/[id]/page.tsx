@@ -7,6 +7,7 @@ import {
 import Link from "next/link";
 import { getDuration } from "@/utils";
 import SingleScheduleMemberTable from "@/components/Schedule/SingleScheduleMemberTable";
+import AssignMemberModal from "@/components/Schedule/AssignMemberModal";
 
 const SingleSchedulePage = async ({ params }: { params: Promise<{ id: string }> }) => {
     const { id } = await params;
@@ -54,12 +55,8 @@ const SingleSchedulePage = async ({ params }: { params: Promise<{ id: string }> 
                                     <span className="font-mono font-medium">{schedule.grace_out_min} Minutes</span>
                                 </div>
                             </div>
+                            <AssignMemberModal schedule={schedule}></AssignMemberModal>
 
-                            <div className="mt-8 pt-6 border-t border-dashed border-borderColor dark:border-darkBorder">
-                                <button className="w-full py-2 bg-primary text-white rounded-lg font-medium transition-all">
-                                    Edit Configuration
-                                </button>
-                            </div>
                         </section>
                     </div>
 

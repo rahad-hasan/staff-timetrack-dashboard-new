@@ -356,3 +356,10 @@ export const ScheduleShiftSchema = z.object({
         .min(0, { message: 'Grace out minutes must be 0 or greater' })
         .max(1440, { message: 'Grace out minutes must be 1440 or less' }),
 });
+
+
+export const scheduleAssignMemberSchema = z.object({
+    members: z
+        .array(z.union([z.number(), z.string()]))
+        .min(1, "At least one member is required"),
+})

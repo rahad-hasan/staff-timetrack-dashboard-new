@@ -26,6 +26,17 @@ export const addSchedule = async (data: ISchedules) => {
     });
 };
 
+export const assignSchedule = async (data: {
+    schedule_id: number,
+    member_ids: number[] | string
+}) => {
+    return await baseApi(`/schedules/assign`, {
+        method: "POST",
+        body: data,
+        tag: "schedules",
+        cache: "no-cache",
+    });
+};
 
 export const editSchedule = async ({ data, id }: {
     data: ISchedules,
