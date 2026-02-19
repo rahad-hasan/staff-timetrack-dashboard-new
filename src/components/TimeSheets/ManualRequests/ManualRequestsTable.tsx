@@ -45,6 +45,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import Link from "next/link";
 
 const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -71,12 +72,12 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
       if (res?.success) {
         toast.success(
           res?.message ||
-            `Manual request ${is_approved ? "approved" : "rejected"} successfully`,
+          `Manual request ${is_approved ? "approved" : "rejected"} successfully`,
         );
       } else {
         toast.error(
           res?.message ||
-            `Failed to ${is_approved ? "approved" : "rejected"} manual request`,
+          `Failed to ${is_approved ? "approved" : "rejected"} manual request`,
           {
             style: {
               backgroundColor: "#ef4444",
@@ -133,7 +134,9 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
                   .toUpperCase()}
               </AvatarFallback>
             </Avatar>
-            <span className="capitalize">{name}</span>
+            <Link href={`/members/${row?.original?.user?.id}`}>
+              <span className="capitalize hover:underline-offset-2 hover:underline">{name}</span>
+            </Link>
           </div>
         );
       },
@@ -316,20 +319,20 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
               {(logInUserData?.role === "admin" ||
                 logInUserData?.role === "manager" ||
                 logInUserData?.role === "hr") && (
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <div>
-                      <FilterButton></FilterButton>
-                    </div>
-                  </PopoverTrigger>
-                  <PopoverContent
-                    side="bottom"
-                    align="end"
-                    className=" w-[250px] p-2"
-                  >
-                    <div className="">
-                      <div className="space-y-2">
-                        {/* <div
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <div>
+                        <FilterButton></FilterButton>
+                      </div>
+                    </PopoverTrigger>
+                    <PopoverContent
+                      side="bottom"
+                      align="end"
+                      className=" w-[250px] p-2"
+                    >
+                      <div className="">
+                        <div className="space-y-2">
+                          {/* <div
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 setSelectedItem(row?.original);
@@ -340,48 +343,48 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
                                             <p>Edit Time</p>
                                         </div> */}
 
-                        <ConfirmDialog
-                          trigger={
-                            <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                              <ApproveIcon size={20} />
-                              <p>Approve requested time</p>
-                            </div>
-                          }
-                          title="Approve the entry"
-                          description="Are you sure you want to approve this entry? This action cannot be undone."
-                          confirmText="Confirm"
-                          cancelText="Cancel"
-                          confirmClassName="bg-primary hover:bg-primary"
-                          onConfirm={() =>
-                            handleApproveReject({
-                              is_approved: true,
-                              id: row?.original?.id,
-                            })
-                          }
-                        />
-                        <ConfirmDialog
-                          trigger={
-                            <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                              <DenyIcon size={20} />
-                              <p>Deny requested time</p>
-                            </div>
-                          }
-                          title="Reject the entry"
-                          description="Are you sure you want to reject this entry? This action cannot be undone."
-                          confirmText="Confirm"
-                          cancelText="Cancel"
-                          onConfirm={() =>
-                            handleApproveReject({
-                              is_approved: false,
-                              id: row?.original?.id,
-                            })
-                          }
-                        />
+                          <ConfirmDialog
+                            trigger={
+                              <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
+                                <ApproveIcon size={20} />
+                                <p>Approve requested time</p>
+                              </div>
+                            }
+                            title="Approve the entry"
+                            description="Are you sure you want to approve this entry? This action cannot be undone."
+                            confirmText="Confirm"
+                            cancelText="Cancel"
+                            confirmClassName="bg-primary hover:bg-primary"
+                            onConfirm={() =>
+                              handleApproveReject({
+                                is_approved: true,
+                                id: row?.original?.id,
+                              })
+                            }
+                          />
+                          <ConfirmDialog
+                            trigger={
+                              <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
+                                <DenyIcon size={20} />
+                                <p>Deny requested time</p>
+                              </div>
+                            }
+                            title="Reject the entry"
+                            description="Are you sure you want to reject this entry? This action cannot be undone."
+                            confirmText="Confirm"
+                            cancelText="Cancel"
+                            onConfirm={() =>
+                              handleApproveReject({
+                                is_approved: false,
+                                id: row?.original?.id,
+                              })
+                            }
+                          />
+                        </div>
                       </div>
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              )}
+                    </PopoverContent>
+                  </Popover>
+                )}
             </>
           </div>
         );
@@ -414,9 +417,9 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
                   {header.isPlaceholder
                     ? null
                     : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
+                      header.column.columnDef.header,
+                      header.getContext(),
+                    )}
                 </TableHead>
               ))}
             </TableRow>
