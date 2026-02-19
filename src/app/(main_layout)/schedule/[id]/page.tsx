@@ -24,7 +24,7 @@ const SingleSchedulePage = async ({ params }: { params: Promise<{ id: string }> 
                         </Link>
                         <div className="h-6 w-[1px] bg-gray-300 dark:bg-darkBorder" />
                         <h1 className="font-semibold text-lg">{schedule.name}</h1>
-                        <Badge variant="outline" className="hidden sm:flex text-md border-blue-200 text-blue-600 bg-blue-50 dark:bg-darkSecondaryBg dark:border-darkBorder dark:text-blue-400">
+                        <Badge variant="outline" className="flex text-xs sm:text-md border-blue-200 text-blue-600 bg-blue-50 dark:bg-darkSecondaryBg dark:border-darkBorder dark:text-blue-400">
                             Active Shift
                         </Badge>
                     </div>
@@ -32,9 +32,9 @@ const SingleSchedulePage = async ({ params }: { params: Promise<{ id: string }> 
             </div>
 
             <main className=" px-4 py-8">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 xl:gap-8 items-center">
-                    <div className="lg:col-span-4 space-y-6">
-                        <section className="p-6 rounded-2xl bg-white dark:bg-darkPrimaryBg border border-borderColor dark:border-darkBorder">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 xl:gap-8 items-stretch">
+                    <div className="lg:col-span-4 space-y-6 ">
+                        <section className="p-6 h-full rounded-2xl bg-white dark:bg-darkPrimaryBg border border-borderColor dark:border-darkBorder">
                             <h3 className="text-sm font-bold uppercase tracking-wider text-gray-400 mb-6 flex items-center gap-2">
                                 <Settings className="w-4 h-4" /> Schedule Rules
                             </h3>
@@ -60,9 +60,9 @@ const SingleSchedulePage = async ({ params }: { params: Promise<{ id: string }> 
                         </section>
                     </div>
 
-                    <div className="lg:col-span-8  space-y-4 xl:space-y-8">
-                        <div className="bg-white dark:bg-darkPrimaryBg rounded-3xl p-8 border border-borderColor dark:border-darkBorder overflow-hidden relative">
-                            <div className="h-fit sticky top-24 z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-8 ">
+                    <div className="lg:col-span-8 h-full space-y-4 xl:space-y-8 flex flex-col">
+                        <div className="bg-white sm:h-full dark:bg-darkPrimaryBg rounded-3xl p-8 border border-borderColor dark:border-darkBorder overflow-hidden relative">
+                            <div className=" z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-8 ">
                                 <div>
                                     <p className="text-sm font-medium text-gray-400 mb-2">Shift Schedule</p>
                                     <div className="flex items-end gap-2">
@@ -92,7 +92,7 @@ const SingleSchedulePage = async ({ params }: { params: Promise<{ id: string }> 
                                 </div>
                             </div>
                         </div>
-                        <div className="p-6 rounded-2xl bg-blue-50 dark:bg-darkSecondaryBg text-white overflow-hidden relative">
+                        <div className="p-6 sm:h-full rounded-2xl bg-blue-50 dark:bg-darkSecondaryBg text-white overflow-hidden relative">
                             <Calendar className="absolute -right-3 -bottom-4 w-32 h-32 text-headingTextColor/30 dark:text-darkTextSecondary opacity-10" />
                             <h4 className="text-headingTextColor dark:text-darkTextPrimary text-sm">Total Assigned</h4>
                             <p className="text-headingTextColor dark:text-darkTextPrimary text-4xl font-bold mt-1">{schedule.scheduleAssigns?.length || 0}</p>

@@ -72,7 +72,7 @@ const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
                         <Dialog>
                             <form>
                                 <DialogTrigger asChild>
-                                    <span className=" font-medium cursor-pointer">{name}</span>
+                                    <span className=" font-medium cursor-pointer hover:underline-offset-2 hover:underline">{name}</span>
 
                                 </DialogTrigger>
                                 <LeaveDataDetailsModal data={row?.original}></LeaveDataDetailsModal>

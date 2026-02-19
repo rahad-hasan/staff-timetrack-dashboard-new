@@ -120,7 +120,7 @@ const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
                         {/* <Dialog>
                             <form>
                                 <DialogTrigger asChild> */}
-                        <Link href={`/leave-management/user-leave-history/${row?.original?.user?.id}`}><p className=" cursor-pointer">{name}</p></Link>
+                        <Link href={`/leave-management/user-leave-history/${row?.original?.user?.id}`}><p className=" cursor-pointer hover:underline-offset-2 hover:underline">{name}</p></Link>
                         {/* </DialogTrigger>
                                 <LeaveHistory></LeaveHistory>
                             </form>
