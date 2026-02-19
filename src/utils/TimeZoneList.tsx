@@ -1,36 +1,34 @@
-export const popularTimeZoneList = [
-  // --- UK & EUROPE ---
-  { label: "+0 London", value: "Europe/London" },
-  { label: "+1 Berlin", value: "Europe/Berlin" },
-  { label: "+1 Paris", value: "Europe/Paris" },
-  { label: "+2 Athens", value: "Europe/Athens" },
-  { label: "+3 Istanbul", value: "Europe/Istanbul" },
+export const popularTimeZoneList = Intl.supportedValuesOf("timeZone")
+  .map((tz) => {
+    const now = new Date();
 
-  // --- NORTH AMERICA ---
-  { label: "-8 Los Angeles", value: "America/Los_Angeles" },
-  { label: "-7 Denver", value: "America/Denver" },
-  { label: "-6 Chicago", value: "America/Chicago" },
-  { label: "-5 New York", value: "America/New_York" },
+    // Get offset like GMT+06:00
+    const offsetString =
+      new Intl.DateTimeFormat("en-US", {
+        timeZone: tz,
+        timeZoneName: "shortOffset",
+      })
+        .formatToParts(now)
+        .find((part) => part.type === "timeZoneName")?.value || "GMT+0";
 
-  // --- SOUTH AMERICA ---
-  { label: "-3 Sao Paulo", value: "America/Sao_Paulo" },
-  { label: "-3 Buenos Aires", value: "America/Argentina/Buenos_Aires" },
+    // Extract numeric offset
+    const offsetMatch = offsetString.match(/GMT([+-]\d+)(?::(\d+))?/);
 
-  // --- AFRICA ---
-  { label: "+2 Johannesburg", value: "Africa/Johannesburg" },
+    let offset = "+0";
 
-  // --- MIDDLE EAST ---
-  { label: "+3 Riyadh", value: "Asia/Riyadh" },
-  { label: "+4 Dubai", value: "Asia/Dubai" },
+    if (offsetMatch) {
+      const hours = offsetMatch[1];
+      const minutes = offsetMatch[2];
 
-  // --- SOUTH & EAST ASIA ---
-  { label: "+5 Karachi", value: "Asia/Karachi" },
-  { label: "+5:30 India", value: "Asia/Kolkata" },
-  { label: "+6 Dhaka", value: "Asia/Dhaka" },
-  { label: "+7 Bangkok", value: "Asia/Bangkok" },
-  { label: "+8 Singapore", value: "Asia/Singapore" },
-  { label: "+9 Tokyo", value: "Asia/Tokyo" },
+      offset = minutes && minutes !== "00" ? `${hours}:${minutes}` : hours;
+    }
 
-  // --- AUSTRALIA ---
-  { label: "+10 Sydney", value: "Australia/Sydney" },
-];
+    // Get only city name (last part)
+    const city = tz.split("/").pop()?.replace(/_/g, " ") || tz;
+
+    return {
+      label: `${offset} ${city}`,
+      value: tz,
+    };
+  })
+  .sort((a, b) => a.label.localeCompare(b.label));
