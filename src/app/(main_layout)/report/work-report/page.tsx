@@ -1,6 +1,7 @@
 import { getWorkReport } from "@/actions/report/action";
 import SelectUserWrapper from "@/components/Common/SelectUserWrapper";
 import CalendarIcon from "@/components/Icons/CalendarIcon";
+import AllowOvertimeCheckbox from "@/components/Report/WorkReport/AllowOvertimeCheckbox";
 import { ISearchParamsProps, IUserWorkReport } from "@/types/type";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
 import { format, parseISO, startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay } from "date-fns";
@@ -11,7 +12,7 @@ const WorkReport = async ({ searchParams }: ISearchParamsProps) => {
     const user = await getDecodedUser();
     const res = await getWorkReport({
         user_id: params.user_id ?? user?.id,
-        allow_overtime: params?.allow_overtime,
+        allow_overtime: params?.allow_overtime ?? false,
     });
 
     const data: IUserWorkReport = res?.data;
@@ -37,7 +38,10 @@ const WorkReport = async ({ searchParams }: ISearchParamsProps) => {
                         {data.time_zone}
                     </div>
                 </div>
-                <SelectUserWrapper />
+                <div className=" flex flex-col md:flex-row md:items-center gap-4">
+                    <AllowOvertimeCheckbox />
+                    <SelectUserWrapper />
+                </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
