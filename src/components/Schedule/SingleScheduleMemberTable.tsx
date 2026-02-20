@@ -59,7 +59,7 @@ const SingleScheduleMemberTable = ({ data }: { data: [{ user: User; }] | undefin
             }
         },
         {
-            accessorKey: "email",
+            accessorKey: "user.email",
             header: ({ column }) => {
                 return (
                     <div>

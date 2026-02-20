@@ -89,6 +89,7 @@ export interface User {
   name: string;
   email: string;
   image: string | null;
+  time_zone?: string;
 }
 
 export interface ProjectSummary {
@@ -694,4 +695,41 @@ export interface IDailyReportResponse {
   total_idle_time: string; // HH:mm:ss
   total_active_time: string; // HH:mm:ss
   activity: number; // overall activity %
+}
+
+export interface IUserWorkReport {
+  user: User;
+  schedule: {
+    id: number;
+    name: string;
+    start_time: string;
+    end_time: string;
+    grace_in_min: number;
+    grace_out_min: number;
+    allow_overtime: boolean;
+  };
+  time_zone: string;
+  from_date: string;
+  to_date: string;
+  summary: {
+    late_days: number;
+    early_days: number;
+    total_late_minutes: number;
+    total_early_minutes: number;
+    total_late_hm: string;
+    total_early_hm: string;
+    total_worked_duration: string;
+  };
+  days: {
+    date: string;
+    check_in: string;
+    check_out: string;
+    check_in_local: string;
+    check_out_local: string;
+    late_minutes: number;
+    early_minutes: number;
+    late_hm: string;
+    early_hm: string;
+    worked_duration: string;
+  }[];
 }

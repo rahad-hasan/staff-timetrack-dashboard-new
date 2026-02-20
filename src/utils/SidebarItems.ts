@@ -71,6 +71,7 @@ export const sidebarItems = [
             { label: 'Timesheet', key: '/report/timesheets' },
             // { label: 'Time & activities', key: '/report/time-and-activities' },
             { label: 'Attendance', key: '/report/attendance' },
+            { label: 'Work Report', key: '/report/work-report' },
         ],
     },
     {

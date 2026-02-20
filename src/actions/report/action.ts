@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 
 import { buildQuery } from "@/utils/buildQuery";
 import { baseApi } from "../baseApi";
-import { IDailyReportResponse, IResponse, ITimeSheetEntry } from "@/types/type";
+import { IDailyReportResponse, IResponse, ITimeSheetEntry, IUserWorkReport } from "@/types/type";
 
 export const getTimeEntry = async (
   query = {},
@@ -33,5 +32,15 @@ export const getAttendance = async (
   return await baseApi(`/check-in-out${queryString ? `?${queryString}` : ""}`, {
     tag: "attendance",
     cache: "no-cache",
+  });
+};
+
+
+export const getWorkReport = async (
+  query = {},
+): Promise<IResponse<IUserWorkReport>> => {
+  const queryString = buildQuery(query);
+  return await baseApi(`/check-in-out/monthly-report${queryString ? `?${queryString}` : ""}`, {
+    tag: "workReport",
   });
 };
