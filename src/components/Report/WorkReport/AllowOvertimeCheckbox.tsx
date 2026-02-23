@@ -1,32 +1,36 @@
 "use client";
 
 import { Checkbox } from '@/components/ui/checkbox';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-const AllowOvertimeCheckbox = () => {
+const AllowOvertimeCheckbox = ({ overTime }: { overTime?: boolean }) => {
     const router = useRouter();
     const searchParams = useSearchParams();
+    console.log("render work report Check Box");
+    const isChecked = useMemo(() => {
+        const param = searchParams.get("allow_overtime");
 
-    const isChecked = searchParams.get("allow_overtime") === "true";
+        if (param !== null) {
+            return param === "true";
+        }
+
+        return overTime ?? false;
+    }, [searchParams, overTime]);
 
     const updateQueryParam = useCallback((checked: boolean) => {
         const params = new URLSearchParams(searchParams.toString());
 
-        if (checked) {
-            params.set("allow_overtime", "true");
-        } else {
-            params.delete("allow_overtime");
-        }
+        params.set("allow_overtime", checked ? "true" : "false");
 
-        router.push(`?${params.toString()}`, { scroll: false });
+        router.replace(`?${params.toString()}`, { scroll: false });
     }, [router, searchParams]);
 
     return (
         <div className="flex gap-1.5 items-center">
             <Checkbox
                 id="allow_overtime"
-                className="cursor-pointer data-[state=checked]:bg-primary dark:data-[state=checked]:bg-primary border-primary data-[state=checked]:border-primary"
+                className="cursor-pointer data-[state=checked]:bg-primary border-primary"
                 checked={isChecked}
                 onCheckedChange={(checked) => updateQueryParam(checked as boolean)}
             />

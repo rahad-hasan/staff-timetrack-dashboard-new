@@ -37,7 +37,7 @@ const WorkReportTable = ({ data }: {
 }) => {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [rowSelection, setRowSelection] = useState({});
-
+    console.log("render work report Table");
     const columns: ColumnDef<IDaysReport>[] = [
         {
             accessorKey: "date",
@@ -60,9 +60,9 @@ const WorkReportTable = ({ data }: {
                 const date = row.getValue("date") as string;
                 return (
                     <div className="flex items-center gap-2 min-w-[100px]">
-                            <span className="capitalize">
-                                {date}
-                            </span>
+                        <span className="capitalize">
+                            {date}
+                        </span>
                     </div>
                 );
             },
@@ -144,7 +144,7 @@ const WorkReportTable = ({ data }: {
                 const late_hm = row.getValue("late_hm") as string;
                 return (
                     <div className="flex items-center gap-2 min-w-[100px]">
-                        <span className="capitalize">
+                        <span className="">
                             {late_hm}
                         </span>
                     </div>
@@ -172,7 +172,7 @@ const WorkReportTable = ({ data }: {
                 const early_hm = row.getValue("early_hm") as string;
                 return (
                     <div className="flex items-center gap-2 min-w-[100px]">
-                        <span className="capitalize">
+                        <span className="">
                             {early_hm}
                         </span>
                     </div>
@@ -229,40 +229,55 @@ const WorkReportTable = ({ data }: {
                     Schedules
                 </h2>
             </div>
-            <Table>
+            <Table className="border-separate border-spacing-y-0.5">
                 <TableHeader>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                        <TableRow key={headerGroup.id}>
-                            {headerGroup.headers.map((header) => (
+                    {table.getHeaderGroups().map((hg) => (
+                        <TableRow key={hg.id}>
+                            {hg.headers.map((header) => (
                                 <TableHead key={header.id}>
                                     {header.isPlaceholder
                                         ? null
-                                        : flexRender(
-                                            header.column.columnDef.header,
-                                            header.getContext(),
-                                        )}
+                                        : flexRender(header.column.columnDef.header, header.getContext())}
                                 </TableHead>
                             ))}
                         </TableRow>
                     ))}
                 </TableHeader>
+
                 <TableBody>
-                    {table.getRowModel().rows?.length ? (
-                        table.getRowModel().rows.map((row) => (
-                            <TableRow key={row.id}>
-                                {row.getVisibleCells().map((cell) => (
-                                    <TableCell key={cell.id}>
-                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                    </TableCell>
-                                ))}
-                            </TableRow>
-                        ))
+                    {table.getRowModel().rows.length ? (
+                        table.getRowModel().rows.map((row) => {
+                            const isLate = row.original.late_minutes > 0;
+
+                            return (
+                                <TableRow key={row.id} className="overflow-hidden last:[&_td]:pb-4">
+                                    {row.getVisibleCells().map((cell, idx, arr) => {
+                                        const isFirst = idx === 0;
+                                        const isLast = idx === arr.length - 1;
+
+                                        return (
+                                            <TableCell
+                                                key={cell.id}
+                                                className={[
+                                                    "border-y border-borderColor dark:border-darkBorder",
+                                                    isFirst && "border-l rounded-l-lg",
+                                                    isLast && "border-r rounded-r-lg",
+
+                                                    isLate
+                                                        ? "bg-red-400/30 dark:bg-red-400/50 border-red-400/50 dark:border-red-400/50"
+                                                        : "bg-transparent",
+                                                ].join(" ")}
+                                            >
+                                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                            </TableCell>
+                                        );
+                                    })}
+                                </TableRow>
+                            );
+                        })
                     ) : (
                         <TableRow>
-                            <EmptyTableRow
-                                columns={columns}
-                                text="No schedules found."
-                            ></EmptyTableRow>
+                            <EmptyTableRow columns={columns} text="No schedules found." />
                         </TableRow>
                     )}
                 </TableBody>

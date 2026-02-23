@@ -17,7 +17,7 @@ const WorkReport = async ({ searchParams }: ISearchParamsProps) => {
         user_id: params.user_id ?? user?.id,
         allow_overtime: params?.allow_overtime ?? false,
     });
-
+    console.log("render work report");
     const data: IUserWorkReport = res?.data;
     if (!data) return <div className="">
         <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
@@ -28,7 +28,7 @@ const WorkReport = async ({ searchParams }: ISearchParamsProps) => {
                 </h1>
             </div>
             <div className=" flex flex-col md:flex-row md:items-center gap-4">
-                <AllowOvertimeCheckbox />
+                {/* <AllowOvertimeCheckbox /> */}
                 <SelectUserWrapper />
             </div>
         </div>
@@ -61,7 +61,7 @@ const WorkReport = async ({ searchParams }: ISearchParamsProps) => {
                     </div>
                 </div>
                 <div className=" flex flex-col md:flex-row md:items-center gap-4">
-                    <AllowOvertimeCheckbox />
+                    <AllowOvertimeCheckbox overTime={data?.schedule?.allow_overtime} />
                     <SelectUserWrapper />
                 </div>
             </div>
