@@ -55,7 +55,7 @@ const Urls = async ({ searchParams }: ISearchParamsProps) => {
              */}
 
       <Suspense fallback={null}>
-        <div className="mb-5 flex flex-col gap-4 sm:gap-3 xl:flex-row justify-between">
+        <div className="mb-5 flex flex-col gap-4 sm:gap-3 lg:flex-row justify-between">
           <div className="flex flex-col sm:flex-row gap-3">
             <SpecificDatePicker />
             <SelectProjectWrapper />

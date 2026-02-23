@@ -20,7 +20,7 @@ const UrlsTable = ({ data }: { data: IUrls[] }) => {
             accessorKey: "url",
             header: ({ column }) => {
                 return (
-                    <div className="  min-w-[220px]">
+                    <div className=" min-w-[120px]">
                         <span
                             className=" cursor-pointer flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
@@ -35,7 +35,7 @@ const UrlsTable = ({ data }: { data: IUrls[] }) => {
                 const url = row.getValue("url") as string;
                 // const image = row.original.image;
                 return (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 min-w-[120px]">
                         <Avatar className="w-9 h-9 shrink-0">
                             <AvatarImage src={""} />
                             <AvatarFallback>
@@ -99,6 +99,30 @@ const UrlsTable = ({ data }: { data: IUrls[] }) => {
         //         );
         //     }
         // },
+        {
+            accessorKey: "session",
+            header: ({ column }) => {
+                return (
+                    <div className="">
+                        <span
+                            className=" cursor-pointer flex items-center gap-1"
+                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                        >
+                            Session
+                            <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </span>
+                    </div>
+                )
+            },
+            cell: ({ row }) => {
+
+                return (
+                    <div className="flex items-center gap-2">
+                        <span className=" font-medium">{row?.original?.session}</span>
+                    </div>
+                );
+            }
+        },
         {
             accessorKey: "duration",
             // header: () => <div className="">Time Worked</div>,

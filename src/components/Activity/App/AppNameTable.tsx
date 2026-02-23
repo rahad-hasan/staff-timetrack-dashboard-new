@@ -65,7 +65,7 @@ const AppNameTable = ({ data }: { data: IApps[] }) => {
             accessorKey: "app_name",
             header: ({ column }) => {
                 return (
-                    <div className="  min-w-[120px] max-w-[190px]">
+                    <div className=" min-w-[120px] max-w-[190px]">
                         <span
                             className=" cursor-pointer flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
