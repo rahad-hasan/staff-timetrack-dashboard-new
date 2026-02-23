@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
-
+"use client"
 import {
     ColumnDef,
     flexRender,
@@ -19,57 +17,30 @@ import {
 } from "@/components/ui/table";
 import { useState } from "react";
 import { ArrowUpDown } from "lucide-react";
-import EmptyTableRow from "../Common/EmptyTableRow";
-import { ISchedules } from "@/types/type";
-import FilterButton from "../Common/FilterButton";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import EditIcon from "../Icons/FilterOptionIcon/EditIcon";
-import { Dialog } from "../ui/dialog";
-import EditScheduleModal from "./EditScheduleModal";
-import Link from "next/link";
-import DeleteIcon from "../Icons/DeleteIcon";
-import { deleteSchedule } from "@/actions/schedule/action";
-import { toast } from "sonner";
-import ConfirmDialog from "../Common/ConfirmDialog";
+import EmptyTableRow from "@/components/Common/EmptyTableRow";
 
-const ScheduleTable = ({ data }: { data: ISchedules[] }) => {
+type IDaysReport = {
+    date: string;
+    check_in: string;
+    check_out: string;
+    check_in_local: string;
+    check_out_local: string;
+    late_minutes: number;
+    early_minutes: number;
+    late_hm: string;
+    early_hm: string;
+    worked_duration: string;
+}
+
+const WorkReportTable = ({ data }: {
+    data: IDaysReport[]
+}) => {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [rowSelection, setRowSelection] = useState({});
-    const [open, setOpen] = useState(false);
-    const [selectedSchedule, setSelectedSchedule] = useState<ISchedules | null>(null);
 
-    async function handleDelete(values: ISchedules) {
-        if (!values?.id) {
-            return;
-        }
-        try {
-            const res = await deleteSchedule(values.id);
-
-            if (res?.success) {
-                toast.success(res?.message || "Schedule deleted successfully");
-            } else {
-                toast.error(res?.message || "Failed to delete schedule", {
-                    style: {
-                        backgroundColor: '#ef4444',
-                        color: 'white',
-                        border: 'none'
-                    },
-                });
-            }
-        } catch (error: any) {
-            toast.error(error?.message || "Something went wrong!", {
-                style: {
-                    backgroundColor: '#ef4444',
-                    color: 'white',
-                    border: 'none'
-                },
-            });
-        }
-    }
-
-    const columns: ColumnDef<ISchedules>[] = [
+    const columns: ColumnDef<IDaysReport>[] = [
         {
-            accessorKey: "name",
+            accessorKey: "date",
             header: ({ column }) => {
                 return (
                     <div>
@@ -79,27 +50,25 @@ const ScheduleTable = ({ data }: { data: ISchedules[] }) => {
                                 column.toggleSorting(column.getIsSorted() === "asc")
                             }
                         >
-                            Name
+                            Date
                             <ArrowUpDown className="ml-2 h-4 w-4" />
                         </span>
                     </div>
                 );
             },
             cell: ({ row }) => {
-                const name = row.getValue("name") as string;
+                const date = row.getValue("date") as string;
                 return (
                     <div className="flex items-center gap-2 min-w-[100px]">
-                        <Link href={`/schedule/${row?.original?.id}`}>
-                            <span className="capitalize hover:underline-offset-2 hover:underline">
-                                {name}
+                            <span className="capitalize">
+                                {date}
                             </span>
-                        </Link>
                     </div>
                 );
             },
         },
         {
-            accessorKey: "start_time_local",
+            accessorKey: "check_in_local",
             header: ({ column }) => {
                 return (
                     <div>
@@ -109,25 +78,25 @@ const ScheduleTable = ({ data }: { data: ISchedules[] }) => {
                                 column.toggleSorting(column.getIsSorted() === "asc")
                             }
                         >
-                            Shift Start
+                            Check In
                             <ArrowUpDown className="ml-2 h-4 w-4" />
                         </span>
                     </div>
                 );
             },
             cell: ({ row }) => {
-                const start_time_local = row.getValue("start_time_local") as string;
+                const check_in_local = row.getValue("check_in_local") as string;
                 return (
                     <div className="flex items-center gap-2 min-w-[100px]">
                         <span className="capitalize">
-                            {start_time_local}
+                            {check_in_local}
                         </span>
                     </div>
                 );
             },
         },
         {
-            accessorKey: "end_time_local",
+            accessorKey: "check_out_local",
             header: ({ column }) => {
                 return (
                     <div>
@@ -137,25 +106,25 @@ const ScheduleTable = ({ data }: { data: ISchedules[] }) => {
                                 column.toggleSorting(column.getIsSorted() === "asc")
                             }
                         >
-                            Shift End
+                            Check Out
                             <ArrowUpDown className="ml-2 h-4 w-4" />
                         </span>
                     </div>
                 );
             },
             cell: ({ row }) => {
-                const end_time_local = row.getValue("end_time_local") as string;
+                const check_out_local = row.getValue("check_out_local") as string;
                 return (
                     <div className="flex items-center gap-2 min-w-[100px]">
                         <span className="capitalize">
-                            {end_time_local}
+                            {check_out_local}
                         </span>
                     </div>
                 );
             },
         },
         {
-            accessorKey: "_count?.scheduleAssigns",
+            accessorKey: "late_hm",
             header: ({ column }) => {
                 return (
                     <div>
@@ -165,25 +134,25 @@ const ScheduleTable = ({ data }: { data: ISchedules[] }) => {
                                 column.toggleSorting(column.getIsSorted() === "asc")
                             }
                         >
-                            Schedule Assigns
+                            Late
                             <ArrowUpDown className="ml-2 h-4 w-4" />
                         </span>
                     </div>
                 );
             },
             cell: ({ row }) => {
-                const scheduleAssigns = row?.original?._count?.scheduleAssigns;
+                const late_hm = row.getValue("late_hm") as string;
                 return (
                     <div className="flex items-center gap-2 min-w-[100px]">
                         <span className="capitalize">
-                            {scheduleAssigns}
+                            {late_hm}
                         </span>
                     </div>
                 );
             },
         },
         {
-            accessorKey: "grace_in_min",
+            accessorKey: "early_hm",
             header: ({ column }) => {
                 return (
                     <div>
@@ -193,25 +162,25 @@ const ScheduleTable = ({ data }: { data: ISchedules[] }) => {
                                 column.toggleSorting(column.getIsSorted() === "asc")
                             }
                         >
-                            Grace In
+                            Early
                             <ArrowUpDown className="ml-2 h-4 w-4" />
                         </span>
                     </div>
                 );
             },
             cell: ({ row }) => {
-                const grace_in_min = row?.original?.grace_in_min;
+                const early_hm = row.getValue("early_hm") as string;
                 return (
                     <div className="flex items-center gap-2 min-w-[100px]">
                         <span className="capitalize">
-                            {grace_in_min} Min
+                            {early_hm}
                         </span>
                     </div>
                 );
             },
         },
         {
-            accessorKey: "grace_out_min",
+            accessorKey: "worked_duration",
             header: ({ column }) => {
                 return (
                     <div>
@@ -221,77 +190,19 @@ const ScheduleTable = ({ data }: { data: ISchedules[] }) => {
                                 column.toggleSorting(column.getIsSorted() === "asc")
                             }
                         >
-                            Grace Out
+                            Worked Duration
                             <ArrowUpDown className="ml-2 h-4 w-4" />
                         </span>
                     </div>
                 );
             },
             cell: ({ row }) => {
-                const grace_out_min = row?.original?.grace_out_min;
+                const worked_duration = row.getValue("worked_duration") as string;
                 return (
                     <div className="flex items-center gap-2 min-w-[100px]">
                         <span className="capitalize">
-                            {grace_out_min} Min
+                            {worked_duration}
                         </span>
-                    </div>
-                );
-            },
-        },
-        {
-            accessorKey: "action",
-            header: () => <div className="">Action</div>,
-            cell: (row) => {
-                return (
-                    <div className="">
-                        <Popover>
-                            <PopoverTrigger asChild>
-                                <div>
-                                    <FilterButton></FilterButton>
-                                </div>
-                            </PopoverTrigger>
-                            <PopoverContent side="bottom" align="end" className="w-fit p-2">
-                                <div className="">
-                                    <div className="space-y-2">
-                                        <div
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setSelectedSchedule(row?.row?.original);
-                                                setOpen(true);
-                                            }}
-                                            className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100  hover:dark:bg-darkPrimaryBg px-3 cursor-pointer"
-                                        >
-                                            <EditIcon size={20} />
-                                            <p>Edit</p>
-                                        </div>
-                                        {/* <div
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setSelectedSchedule(row?.row?.original);
-                                            }}
-                                            className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100  hover:dark:bg-darkPrimaryBg px-3 cursor-pointer"
-                                        >
-                                            <DeleteIcon size={20} />
-                                            <p>Delete Shift</p>
-                                        </div> */}
-                                        <ConfirmDialog
-                                            trigger={
-                                                <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                                    <DeleteIcon size={18} />
-                                                    <p>Delete</p>
-                                                </div>
-                                            }
-                                            title="Delete the schedule"
-                                            description="Are you sure you want to delete this schedule? This action cannot be undone."
-                                            confirmText="Confirm"
-                                            cancelText="Cancel"
-                                            // confirmClassName="bg-primary hover:bg-primary"
-                                            onConfirm={() => handleDelete(row?.row?.original)}
-                                        />
-                                    </div>
-                                </div>
-                            </PopoverContent>
-                        </Popover>
                     </div>
                 );
             },
@@ -356,17 +267,8 @@ const ScheduleTable = ({ data }: { data: ISchedules[] }) => {
                     )}
                 </TableBody>
             </Table>
-            {/* Edit Schedule Modal */}
-            <Dialog open={open} onOpenChange={setOpen}>
-                {selectedSchedule && (
-                    <EditScheduleModal
-                        selectedSchedule={selectedSchedule}
-                        onClose={() => setOpen(false)}
-                    />
-                )}
-            </Dialog>
         </div>
     );
 };
 
-export default ScheduleTable;
+export default WorkReportTable;

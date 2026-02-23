@@ -1,6 +1,11 @@
 "use client";
 
-export default function Error() {
+export default function ProjectError() {
+//   ({
+//   error,
+// }: {
+//   error: Error;
+// })
   return (
     <div className="flex flex-col items-center justify-center h-[60vh] text-center">
       <h2 className="text-xl font-semibold mb-2">

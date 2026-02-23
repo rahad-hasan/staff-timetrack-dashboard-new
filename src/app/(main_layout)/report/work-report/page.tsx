@@ -2,10 +2,13 @@ import { getWorkReport } from "@/actions/report/action";
 import SelectUserWrapper from "@/components/Common/SelectUserWrapper";
 import CalendarIcon from "@/components/Icons/CalendarIcon";
 import AllowOvertimeCheckbox from "@/components/Report/WorkReport/AllowOvertimeCheckbox";
+import WorkReportTable from "@/components/Report/WorkReport/WorkReportTable";
 import { ISearchParamsProps, IUserWorkReport } from "@/types/type";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
-import { format, parseISO, startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay } from "date-fns";
+import { format, parseISO, startOfMonth } from "date-fns";
 import { Clock, AlertCircle } from "lucide-react";
+import EmptyTableLogo from "@/assets/empty_table.svg";
+import Image from "next/image";
 
 const WorkReport = async ({ searchParams }: ISearchParamsProps) => {
     const params = await searchParams;
@@ -16,14 +19,33 @@ const WorkReport = async ({ searchParams }: ISearchParamsProps) => {
     });
 
     const data: IUserWorkReport = res?.data;
-    if (!data) return <div className="p-10 text-center">No report data available.</div>;
+    if (!data) return <div className="">
+        <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
+            <div className="flex items-center gap-3">
+                <h1 className=" text-md sm:text-xl xl:text-2xl font-bold text-headingTextColor dark:text-darkTextPrimary flex items-center gap-2">
+                    <CalendarIcon className=" text-primary" size={25} />
+                    Work Report:
+                </h1>
+            </div>
+            <div className=" flex flex-col md:flex-row md:items-center gap-4">
+                <AllowOvertimeCheckbox />
+                <SelectUserWrapper />
+            </div>
+        </div>
+        <div className="flex flex-col items-center justify-center gap-5 h-[60vh] text-center">
+
+            <Image src={EmptyTableLogo} alt="table empty" width={120} height={120} />
+            {res?.message}
+
+        </div>
+    </div>;
 
     const reportDate = parseISO(data.from_date);
     const monthStart = startOfMonth(reportDate);
-    const calendarDays = eachDayOfInterval({
-        start: startOfWeek(monthStart),
-        end: endOfWeek(endOfMonth(monthStart)),
-    });
+    // const calendarDays = eachDayOfInterval({
+    //     start: startOfWeek(monthStart),
+    //     end: endOfWeek(endOfMonth(monthStart)),
+    // });
 
     return (
         <div className="space-y-6">
@@ -89,8 +111,9 @@ const WorkReport = async ({ searchParams }: ISearchParamsProps) => {
                     </div>
                 </div>
             </div>
+            <WorkReportTable data={res?.data?.days}></WorkReportTable>
 
-            <div className=" overflow-x-scroll lg:overflow-auto">
+            {/* <div className=" overflow-x-scroll lg:overflow-auto">
                 <div className=" dark:bg-darkSecondaryBg border border-borderColor dark:border-darkBorder rounded-xl overflow-hidden min-w-[900px]">
                     <div className="grid grid-cols-7 border-b border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkSecondaryBg text-center font-semibold text-subTextColor dark:text-darkTextSecondary text-sm">
                         {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(d => (
@@ -112,14 +135,6 @@ const WorkReport = async ({ searchParams }: ISearchParamsProps) => {
 
                                     {dayData ? (
                                         <div className="mt-1 space-y-1 text-[14px]">
-                                            {/* <div className="grid grid-cols-2 gap-1 ">
-                                            <div className="bg-emerald-100 text-emerald-800 rounded px-1 font-medium">
-                                                IN: {dayData.check_in_local}
-                                            </div>
-                                            <div className="bg-rose-100 text-rose-800 rounded px-1 font-medium">
-                                                OUT: {dayData.check_out_local}
-                                            </div>
-                                        </div> */}
                                             <div className="bg-emerald-100 text-emerald-800 rounded px-1 font-medium">
                                                 IN: {dayData.check_in_local}
                                             </div>
@@ -153,7 +168,7 @@ const WorkReport = async ({ searchParams }: ISearchParamsProps) => {
                         })}
                     </div>
                 </div>
-            </div>
+            </div> */}
         </div>
     );
 };

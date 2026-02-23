@@ -23,7 +23,7 @@ const AllowOvertimeCheckbox = () => {
     }, [router, searchParams]);
 
     return (
-        <div className="flex gap-1 items-center">
+        <div className="flex gap-1.5 items-center">
             <Checkbox
                 id="allow_overtime"
                 className="cursor-pointer data-[state=checked]:bg-primary dark:data-[state=checked]:bg-primary border-primary data-[state=checked]:border-primary"

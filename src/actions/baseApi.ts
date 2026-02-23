@@ -73,18 +73,22 @@ export async function baseApi<T = any>(
       cache,
       ...(method === "GET" &&
         (tag || revalidate) && {
-          next: {
-            ...(tag && { tags: [tag] }),
-            ...(revalidate !== undefined && { revalidate }),
-          },
-        }),
+        next: {
+          ...(tag && { tags: [tag] }),
+          ...(revalidate !== undefined && { revalidate }),
+        },
+      }),
     });
   let res;
   try {
     res = await doFetch();
   } catch {
     // 🌐 Network / server down / DNS / CORS errors land here
-    throw new Error("Server is not active. Please try again later.");
+    // throw new Error("Server is not active. Please try again later.");
+    return {
+      success: false,
+      message: "Server is not active. Please try again later.",
+    } as T;
   }
 
   // if (res.status === 401) {
@@ -116,9 +120,42 @@ export async function baseApi<T = any>(
     return res.json() as Promise<T>;
   }
 
+  // if (!res.ok) {
+  //   // const text = await res.text();
+  //   // throw new Error(text || `Request failed with ${res.status}`);
+  //   return (
+  //     {
+  //       success: false,
+  //       message: `Request failed with ${res}`,
+  //     }
+  //   ) as T;
+  // }
+
+  // // 🔄 auto revalidate on mutations
+  // if (method !== "GET" && tag) {
+  //   revalidateTag(tag);
+  // }
+
+  // if (res.status === 204) return null as T;
+
+  // return res.json() as Promise<T>;
+
+  let data: any = null;
+  try {
+    data = await res.json();
+  } catch {
+    data = null;
+  }
+
   if (!res.ok) {
-    const text = await res.text();
-    throw new Error(text || `Request failed with ${res.status}`);
+    return {
+      success: false,
+      message:
+        data?.message ||
+        data?.errorMessages?.[0]?.message ||
+        `Request failed with ${res.status}`,
+      errorMessages: data?.errorMessages,
+    } as T;
   }
 
   // 🔄 auto revalidate on mutations
@@ -128,5 +165,5 @@ export async function baseApi<T = any>(
 
   if (res.status === 204) return null as T;
 
-  return res.json() as Promise<T>;
+  return data as T;
 }

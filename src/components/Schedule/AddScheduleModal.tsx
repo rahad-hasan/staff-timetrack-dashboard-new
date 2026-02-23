@@ -48,7 +48,7 @@ const AddScheduleModal = ({ onClose }: { onClose: () => void }) => {
             end_time: values.end_time,
             grace_in_min: values.grace_in_min,
             grace_out_min: values.grace_out_min,
-            ...(isAllowOvertime && { allow_overtime: isAllowOvertime })
+            allow_overtime: isAllowOvertime,
         }
         setLoading(true);
         try {
