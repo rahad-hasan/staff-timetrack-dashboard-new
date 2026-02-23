@@ -61,12 +61,11 @@ const AppNameTable = ({ data }: { data: IApps[] }) => {
     const [rowSelection, setRowSelection] = useState({})
 
     const columns: ColumnDef<IApps>[] = [
-
         {
             accessorKey: "app_name",
             header: ({ column }) => {
                 return (
-                    <div className="  min-w-[160px]">
+                    <div className="  min-w-[120px] max-w-[190px]">
                         <span
                             className=" cursor-pointer flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
@@ -86,9 +85,9 @@ const AppNameTable = ({ data }: { data: IApps[] }) => {
                 const matchedKey = Object.keys(APP_LOGOS).find(key => lowerAppName.includes(key));
                 const logoSrc = matchedKey ? APP_LOGOS[matchedKey] : null;
                 return (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 min-w-[120px] max-w-[190px]">
                         {logoSrc ? (
-                            <div className="w-9 h-9 flex items-center justify-center shrink-0">
+                            <div className="w-9 h-9 flex items-center justify-center ">
                                 <Image
                                     src={logoSrc}
                                     alt={appName}
@@ -98,7 +97,7 @@ const AppNameTable = ({ data }: { data: IApps[] }) => {
                                 />
                             </div>
                         ) : (
-                            <Avatar className="w-9 h-9 shrink-0">
+                            <Avatar className="w-9 h-9 ">
                                 <AvatarImage src={""} />
                                 <AvatarFallback>
                                     {appName.charAt(0)}
@@ -133,7 +132,7 @@ const AppNameTable = ({ data }: { data: IApps[] }) => {
                 const name = row.original.user.name;
                 const img = row.original.user.image;
                 return (
-                    <div className="flex items-center gap-2 min-w-[200px]">
+                    <div className="flex items-center gap-2 min-w-[160px]">
                         <Avatar className=" w-9 h-9">
                             <AvatarImage src={img || undefined} alt={name} />
                             <AvatarFallback className="">
@@ -156,7 +155,7 @@ const AppNameTable = ({ data }: { data: IApps[] }) => {
             accessorKey: "project?.name",
             header: ({ column }) => {
                 return (
-                    <div className="  min-w-[180px]">
+                    <div className="  min-w-[100px]">
                         <span
                             className=" cursor-pointer flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
@@ -176,37 +175,36 @@ const AppNameTable = ({ data }: { data: IApps[] }) => {
                 );
             }
         },
-        // {
-        //     accessorKey: "session",
-        //     header: ({ column }) => {
-        //         return (
-        //             <div>
-        //                 <span
-        //                     className=" cursor-pointer flex items-center gap-1"
-        //                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        //                 >
-        //                     Sessions
-        //                     <ArrowUpDown className="ml-2 h-4 w-4" />
-        //                 </span>
-        //             </div>
-        //         )
-        //     },
-        //     cell: ({ row }) => {
-        //         const session = row.getValue("session") as string;
+        {
+            accessorKey: "session",
+            header: ({ column }) => {
+                return (
+                    <div className="">
+                        <span
+                            className=" cursor-pointer flex items-center gap-1"
+                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                        >
+                            Session
+                            <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </span>
+                    </div>
+                )
+            },
+            cell: ({ row }) => {
 
-        //         return (
-        //             <div className="flex items-center gap-2">
-        //                 <span className=" bg-[#5db0f1] text-white rounded-2xl font-normal px-3 py-0.5">nai</span>
-        //             </div>
-        //         );
-        //     }
-        // },
+                return (
+                    <div className="flex items-center gap-2">
+                        <span className=" font-medium">{row?.original?.session}</span>
+                    </div>
+                );
+            }
+        },
         {
             accessorKey: "duration",
             // header: () => <div className="">Time Worked</div>,
             header: ({ column }) => {
                 return (
-                    <div className="  min-w-[250px] flex justify-center">
+                    <div className="  min-w-[100px] flex justify-center">
                         <span
                             className=" cursor-pointer flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}

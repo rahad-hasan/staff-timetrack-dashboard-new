@@ -270,6 +270,7 @@ export interface IApps {
   app_name: string;
   url: string;
   duration: string;
+  session: number;
   tab_id: number | null;
   updated_at: string;
   created_at: string;
