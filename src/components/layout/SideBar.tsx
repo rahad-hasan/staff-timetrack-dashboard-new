@@ -58,7 +58,7 @@ const SideBar = () => {
     return (
         <div
             // ref={sidebarRef}
-            className='sticky top-0 z-[50]'>
+            className='sticky top-0 bottom-0 z-[50]'>
             <div className='overflow-y-scroll no-scrollbar scroll-smooth'>
                 <div className={`${isCollapsed ? "w-[90px]" : "w-[260px]"} h-screen py-5 z-50  flex flex-col transition-all duration-300`}>
                     <div

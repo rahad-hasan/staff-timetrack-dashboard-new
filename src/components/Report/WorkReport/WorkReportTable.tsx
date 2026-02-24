@@ -256,9 +256,9 @@ const WorkReportTable = ({ data }: {
                                         const isFirst = idx === 0;
                                         const isLast = idx === arr.length - 1;
                                         const getRowStyles = (isLate: boolean, isEarly: boolean) => {
-                                            if (isLate && isEarly) return "bg-lime-50 dark:bg-lime-500/15 border-lime-300/70 dark:border-lime-300/30";
-                                            if (isLate) return "bg-pink-50 dark:bg-pink-500/10 border-pink-300/70 dark:border-pink-300/30";
-                                            if (isEarly) return "bg-orange-50 dark:bg-orange-500/15 border-orange-300/70 dark:border-orange-300/30";
+                                            if (isLate && isEarly) return "bg-lime-100 dark:bg-lime-500/10 border-lime-500 dark:border-lime-500";
+                                            if (isLate) return "bg-pink-100 dark:bg-pink-500/10 border-pink-500 dark:border-pink-500";
+                                            if (isEarly) return "bg-yellow-100/60 dark:bg-yellow-500/10 border-yellow-500 dark:border-yellow-500";
                                             return "bg-transparent";
                                         };
                                         return (

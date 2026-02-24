@@ -113,44 +113,44 @@ const AppNameTable = ({ data }: { data: IApps[] }) => {
                 )
             }
         },
-        {
-            accessorKey: "user.name",
-            header: ({ column }) => {
-                return (
-                    <div>
-                        <span
-                            className=" cursor-pointer flex items-center gap-1"
-                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        >
-                            User name
-                            <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </span>
-                    </div>
-                )
-            },
-            cell: ({ row }) => {
-                const name = row.original.user.name;
-                const img = row.original.user.image;
-                return (
-                    <div className="flex items-center gap-2 min-w-[160px]">
-                        <Avatar className=" w-9 h-9">
-                            <AvatarImage src={img || undefined} alt={name} />
-                            <AvatarFallback className="">
-                                {name
-                                    ?.trim()
-                                    .split(" ")
-                                    .map(word => word[0])
-                                    .join("")
-                                    .slice(0, 2)
-                                    .toUpperCase()}
-                            </AvatarFallback>
-                        </Avatar>
+        // {
+        //     accessorKey: "user.name",
+        //     header: ({ column }) => {
+        //         return (
+        //             <div>
+        //                 <span
+        //                     className=" cursor-pointer flex items-center gap-1"
+        //                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        //                 >
+        //                     User name
+        //                     <ArrowUpDown className="ml-2 h-4 w-4" />
+        //                 </span>
+        //             </div>
+        //         )
+        //     },
+        //     cell: ({ row }) => {
+        //         const name = row.original.user.name;
+        //         const img = row.original.user.image;
+        //         return (
+        //             <div className="flex items-center gap-2 min-w-[160px]">
+        //                 <Avatar className=" w-9 h-9">
+        //                     <AvatarImage src={img || undefined} alt={name} />
+        //                     <AvatarFallback className="">
+        //                         {name
+        //                             ?.trim()
+        //                             .split(" ")
+        //                             .map(word => word[0])
+        //                             .join("")
+        //                             .slice(0, 2)
+        //                             .toUpperCase()}
+        //                     </AvatarFallback>
+        //                 </Avatar>
 
-                        <span className="">{name}</span>
-                    </div>
-                )
-            }
-        },
+        //                 <span className="">{name}</span>
+        //             </div>
+        //         )
+        //     }
+        // },
         {
             accessorKey: "project?.name",
             header: ({ column }) => {
