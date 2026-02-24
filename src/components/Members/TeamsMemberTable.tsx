@@ -96,7 +96,7 @@ const TeamsMemberTable = ({ data }: any) => {
         const name = row.getValue("name") as string;
         const img = row.original.image;
         return (
-          <div className="flex items-center gap-2 min-w-[200px]">
+          <div className="flex items-center gap-2 min-w-[220px]">
             <Avatar>
               <AvatarImage src={img ?? ""} alt={name} />
               <AvatarFallback>
@@ -111,7 +111,7 @@ const TeamsMemberTable = ({ data }: any) => {
             </Avatar>
 
             <Link href={`/members/${row?.original?.id}`}>
-              <span className="capitalize hover:underline-offset-2 hover:underline">
+              <span className="capitalize hover:underline-offset-2 hover:underline break-words whitespace-normal">
                 {name}
               </span>
             </Link>
@@ -270,11 +270,6 @@ const TeamsMemberTable = ({ data }: any) => {
               <PopoverContent side="bottom" align="end" className="w-fit p-2">
                 <div className="">
                   <div className="space-y-2">
-                    {/* <div
-                                        className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100  hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                        <DownloadIcon size={18} />
-                                        <p>Export Report</p>
-                                    </div> */}
                     <div
                       onClick={(e) => {
                         e.stopPropagation();

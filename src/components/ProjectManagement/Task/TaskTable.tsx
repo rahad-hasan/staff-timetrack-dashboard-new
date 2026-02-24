@@ -205,7 +205,7 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
                             <AvatarImage src={image} alt={assignee} />
                             <AvatarFallback>{assignee?.charAt(0)}</AvatarFallback>
                         </Avatar>
-                        <span className="capitalize ">{assignee}</span>
+                        <span className="capitalize break-words whitespace-normal">{assignee}</span>
                     </div>
                 );
             }
