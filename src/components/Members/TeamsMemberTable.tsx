@@ -37,11 +37,11 @@ import { ITeamMembers } from "@/global/globalTypes";
 import { toast } from "sonner";
 import { deleteMember } from "@/actions/members/action";
 import ConfirmDialog from "../Common/ConfirmDialog";
-import { formatTZDayMonthYear } from "@/utils";
 import Link from "next/link";
 import CheckIcon from "../Icons/CheckIcon";
 
 const TeamsMemberTable = ({ data }: any) => {
+  console.log(data);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState({});
 
@@ -96,7 +96,7 @@ const TeamsMemberTable = ({ data }: any) => {
         const name = row.getValue("name") as string;
         const img = row.original.image;
         return (
-          <div className="flex items-center gap-2 min-w-[220px]">
+          <div className="flex items-center gap-2 min-w-[170px]">
             <Avatar>
               <AvatarImage src={img ?? ""} alt={name} />
               <AvatarFallback>
@@ -172,7 +172,7 @@ const TeamsMemberTable = ({ data }: any) => {
         const role = row.getValue("role") as string;
         return (
           <div className="flex flex-col">
-            <span className=" text-base capitalize">{role}</span>
+            <span className=" text-sm 2xl:text-base capitalize">{role}</span>
           </div>
         );
       },
@@ -203,8 +203,34 @@ const TeamsMemberTable = ({ data }: any) => {
         );
       },
     },
+    // {
+    //   accessorKey: "created_at",
+    //   header: ({ column }) => {
+    //     return (
+    //       <div>
+    //         <span
+    //           className=" cursor-pointer flex items-center gap-1"
+    //           onClick={() =>
+    //             column.toggleSorting(column.getIsSorted() === "asc")
+    //           }
+    //         >
+    //           Member since
+    //           <ArrowUpDown className="ml-2 h-4 w-4" />
+    //         </span>
+    //       </div>
+    //     );
+    //   },
+    //   cell: ({ row }) => {
+    //     const created_at = row.getValue("created_at") as string;
+    //     return (
+    //       <div className="flex flex-col">
+    //         <span className="">{formatTZDayMonthYear(created_at)}</span>
+    //       </div>
+    //     );
+    //   },
+    // },
     {
-      accessorKey: "created_at",
+      accessorKey: "scheduleAssigns",
       header: ({ column }) => {
         return (
           <div>
@@ -214,17 +240,22 @@ const TeamsMemberTable = ({ data }: any) => {
                 column.toggleSorting(column.getIsSorted() === "asc")
               }
             >
-              Member since
+              Schedule Assigns
               <ArrowUpDown className="ml-2 h-4 w-4" />
             </span>
           </div>
         );
       },
       cell: ({ row }) => {
-        const created_at = row.getValue("created_at") as string;
+        const scheduleAssigns = row.getValue("scheduleAssigns") as any[];
         return (
-          <div className="flex flex-col">
-            <span className="">{formatTZDayMonthYear(created_at)}</span>
+          <div className="flex flex-col break-words whitespace-normal">
+            {/* <span className="">{formatTZDayMonthYear(created_at)}</span> */}
+            {
+              scheduleAssigns?.map((schedule: any) => {
+                return <span key={schedule.schedule.id} className="">{schedule.schedule.name},</span>
+              })
+            }
           </div>
         );
       },
@@ -335,9 +366,9 @@ const TeamsMemberTable = ({ data }: any) => {
                   {header.isPlaceholder
                     ? null
                     : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
+                      header.column.columnDef.header,
+                      header.getContext(),
+                    )}
                 </TableHead>
               ))}
             </TableRow>
