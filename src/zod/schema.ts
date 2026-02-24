@@ -166,9 +166,25 @@ export const newTeamSchema = z.object({
 export const addNewMemberSchema = z.object({
     name: z.string().min(1, "Name is required"),
     email: z.string().email("Invalid email address"),
+    phone: z
+        .string()
+        .refine(
+            (val) => {
+                const parsed = parsePhoneNumberFromString(val);
+                return parsed?.isValid();
+            },
+            {
+                message: 'Phone number must be a valid international format',
+            }
+        ),
     role: z.string().min(1, "Role is required"),
     time_zone: z.string()
         .min(1, "Time Zone is required"),
+    pay_rate_hourly: z
+        .number({ message: "Pay rate must be a number" })
+        .int()
+        .min(1, { message: 'Pay rate must be 1 or greater' })
+        .max(10000, { message: 'Pay rate must be 10000 or less' }),
     password: z.string()
         .min(8, "Minimum 8 characters")
         .regex(/[a-z]/, "At least one lowercase letter")

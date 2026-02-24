@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { Check, ChevronsUpDown, Eye, EyeOff } from "lucide-react";
+import { Check, ChevronsUpDown, Eye, EyeOff, Phone } from "lucide-react";
 import { toast } from "sonner";
 import { addMember } from "@/actions/members/action";
 import { cn } from "@/lib/utils";
@@ -129,6 +129,33 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
                     />
                     <FormField
                         control={form.control}
+                        name="phone"
+                        render={({ field }) => (
+                            <FormItem className="w-full ">
+                                <FormLabel>Phone Number</FormLabel>
+                                <FormControl>
+                                    <div className="relative">
+                                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 h-4 w-4" >
+                                            <Phone size={16} />
+                                        </div>
+                                        <Input
+                                            type="text"
+                                            placeholder="Enter Phone Number"
+                                            className="pl-9 dark:bg-darkPrimaryBg dark:border-darkBorder"
+                                            {...field}
+                                            onChange={(e) => {
+                                                const sanitizedValue = e.target.value.replace(/[^\d+]/g, "");
+                                                field.onChange(sanitizedValue);
+                                            }}
+                                        />
+                                    </div>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
                         name="role"
                         render={({ field }) => (
                             <FormItem>
@@ -216,6 +243,26 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
                                         </Command>
                                     </PopoverContent>
                                 </Popover>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="pay_rate_hourly"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Pay Rate (Hourly)</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        type="number"
+                                        {...field}
+                                        className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="10 means 10 dollars per hour"
+                                        onChange={(e) =>
+                                            field.onChange(e.target.value === "" ? undefined : e.target.valueAsNumber)
+                                        }
+                                    />
+                                </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}

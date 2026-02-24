@@ -248,13 +248,19 @@ const WorkReportTable = ({ data }: {
                     {table.getRowModel().rows.length ? (
                         table.getRowModel().rows.map((row) => {
                             const isLate = row.original.late_minutes > 0;
+                            const isEarly = row.original.early_minutes > 0;
 
                             return (
                                 <TableRow key={row.id} className="overflow-hidden last:[&_td]:pb-4">
                                     {row.getVisibleCells().map((cell, idx, arr) => {
                                         const isFirst = idx === 0;
                                         const isLast = idx === arr.length - 1;
-
+                                        const getRowStyles = (isLate: boolean, isEarly: boolean) => {
+                                            if (isLate && isEarly) return "bg-lime-50 dark:bg-lime-500/15 border-lime-300/70 dark:border-lime-300/30";
+                                            if (isLate) return "bg-pink-50 dark:bg-pink-500/10 border-pink-300/70 dark:border-pink-300/30";
+                                            if (isEarly) return "bg-orange-50 dark:bg-orange-500/15 border-orange-300/70 dark:border-orange-300/30";
+                                            return "bg-transparent";
+                                        };
                                         return (
                                             <TableCell
                                                 key={cell.id}
@@ -262,10 +268,10 @@ const WorkReportTable = ({ data }: {
                                                     "border-y border-borderColor dark:border-darkBorder",
                                                     isFirst && "border-l rounded-l-lg",
                                                     isLast && "border-r rounded-r-lg",
-
-                                                    isLate
-                                                        ? "bg-red-400/30 dark:bg-red-400/50 border-red-400/50 dark:border-red-400/50"
-                                                        : "bg-transparent",
+                                                    getRowStyles(isLate, isEarly)
+                                                    // isLate
+                                                    //     ? "bg-pink-50 dark:bg-pink-500/10 border-pink-300 dark:border-pink-300"
+                                                    //     : isEarly ? "bg-orange-50 dark:bg-orange-500/15 border-orange-300 dark:border-orange-300" : (isLate && isEarly) ? "bg-lime-50 dark:bg-lime-500/15 border-lime-300 dark:border-lime-300" : "bg-transparent",
                                                 ].join(" ")}
                                             >
                                                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
