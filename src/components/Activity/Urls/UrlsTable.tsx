@@ -35,7 +35,7 @@ const UrlsTable = ({ data }: { data: IUrls[] }) => {
                 const url = row.getValue("url") as string;
                 // const image = row.original.image;
                 return (
-                    <div className="flex items-center gap-2 min-w-[120px]">
+                    <div className="flex items-center gap-2 min-w-[150px]">
                         <Avatar className="w-9 h-9 shrink-0">
                             <AvatarImage src={""} />
                             <AvatarFallback>
@@ -44,7 +44,7 @@ const UrlsTable = ({ data }: { data: IUrls[] }) => {
                             </AvatarFallback>
                         </Avatar>
                         <div className="">
-                            <p className=" text-sm font-bold text-headingTextColor dark:text-darkTextPrimary">{url}</p>
+                            <p className=" text-sm font-bold text-headingTextColor dark:text-darkTextPrimary break-words whitespace-normal">{url}</p>
                             <span className=" font-normal text-subTextColor dark:text-darkTextSecondary">Site</span>
                         </div>
                     </div>
