@@ -180,6 +180,8 @@ export const addNewMemberSchema = z.object({
     role: z.string().min(1, "Role is required"),
     time_zone: z.string()
         .min(1, "Time Zone is required"),
+    project: z.string().min(1, "Project is required"),
+    schedule: z.string().min(1, "Schedule is required"),
     pay_rate_hourly: z
         .number({ message: "Pay rate must be a number" })
         .int()
