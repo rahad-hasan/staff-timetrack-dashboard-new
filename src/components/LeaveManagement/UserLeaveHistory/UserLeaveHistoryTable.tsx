@@ -72,7 +72,7 @@ const UserLeaveHistoryTable = ({ data }: { data: ILeaveRequest[] }) => {
                                     .toUpperCase()}
                             </AvatarFallback>
                         </Avatar>
-                        <p className=" cursor-pointer">{name}</p>
+                        <p className=" break-words whitespace-normal">{name}</p>
 
                     </div>
                 )

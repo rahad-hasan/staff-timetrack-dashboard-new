@@ -120,7 +120,7 @@ const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
                         {/* <Dialog>
                             <form>
                                 <DialogTrigger asChild> */}
-                        <Link href={`/leave-management/user-leave-history/${row?.original?.user?.id}`}><p className=" cursor-pointer hover:underline-offset-2 hover:underline">{name}</p></Link>
+                        <Link href={`/leave-management/user-leave-history/${row?.original?.user?.id}`}><p className=" cursor-pointer hover:underline-offset-2 hover:underline break-words whitespace-normal">{name}</p></Link>
                         {/* </DialogTrigger>
                                 <LeaveHistory></LeaveHistory>
                             </form>
@@ -165,8 +165,8 @@ const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
             cell: ({ row }) => {
                 const start_date = row.getValue("start_date") as string;
                 return (
-                    <div className="flex flex-col">
-                        <span className="">{formatTZDayMonthYear(start_date)}</span>
+                    <div className="flex flex-col min-w-[100px]">
+                        <span className="break-words whitespace-normal">{formatTZDayMonthYear(start_date)}</span>
                     </div>
                 )
             }
@@ -186,8 +186,8 @@ const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
             cell: ({ row }) => {
                 const end_date = row.getValue("end_date") as string;
                 return (
-                    <div className="flex flex-col">
-                        <span className="">{formatTZDayMonthYear(end_date)}</span>
+                    <div className="flex flex-col min-w-[100px]">
+                        <span className="break-words whitespace-normal">{formatTZDayMonthYear(end_date)}</span>
                     </div>
                 )
             }
@@ -234,7 +234,7 @@ const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
                     <div className="flex flex-col">
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <span className="">
+                                <span className="break-words whitespace-normal">
                                     {truncatedReason}
                                 </span>
                             </TooltipTrigger>
@@ -269,7 +269,7 @@ const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
 
                 return (
                     <Button
-                        className={`text-sm border flex items-center gap-2 px-3 h-8 shadow-none ${styles.button} cursor-default capitalize`}
+                        className={`text-xs 2xl:text-sm border flex items-center gap-2 px-2 2xl:px-3 h-7.5 2xl:h-8 shadow-none ${styles.button} cursor-default capitalize`}
                     >
                         <span className={`w-2 h-2 rounded-full ${styles.dot}`}></span>
                         {status || "N/A"}
@@ -302,7 +302,7 @@ const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
                     return (
                         <div className="flex items-center gap-3">
                             <ConfirmDialog
-                                trigger={<Button size={'sm'} className="text-sm px-2 rounded-lg">Approve</Button>}
+                                trigger={<Button size={'sm'} className=" text-xs 2xl:text-sm px-2 2xl:px-3 h-7.5 2xl:h-8 rounded-lg">Approve</Button>}
                                 title="Approve the request"
                                 description="Are you sure you want to approve the request? This action cannot be undone."
                                 confirmText="Confirm"
@@ -313,7 +313,7 @@ const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
 
                             <Dialog>
                                 <DialogTrigger asChild>
-                                    <Button size={'sm'} className="text-sm bg-red-500 hover:bg-red-500 dark:text-white px-2 rounded-lg">
+                                    <Button size={'sm'} className=" text-xs 2xl:text-sm px-2 2xl:px-3 h-7.5 2xl:h-8 bg-red-500 hover:bg-red-500 dark:text-white rounded-lg">
                                         Reject
                                     </Button>
                                 </DialogTrigger>

@@ -64,7 +64,7 @@ const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
                 const name = row?.original?.user?.name;
                 const image = row?.original?.user?.image ? row?.original?.user?.image : ""
                 return (
-                    <div className="flex items-center gap-2 min-w-[180px]">
+                    <div className="flex items-center gap-2 min-w-[200px]">
                         <Avatar className="">
                             <AvatarImage src={image} alt={name}></AvatarImage>
                             <AvatarFallback>{name?.charAt(0)}</AvatarFallback>
@@ -72,7 +72,7 @@ const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
                         <Dialog>
                             <form>
                                 <DialogTrigger asChild>
-                                    <span className=" font-medium cursor-pointer hover:underline-offset-2 hover:underline">{name}</span>
+                                    <span className=" font-medium cursor-pointer hover:underline-offset-2 hover:underline break-words whitespace-normal">{name}</span>
 
                                 </DialogTrigger>
                                 <LeaveDataDetailsModal data={row?.original}></LeaveDataDetailsModal>

@@ -82,8 +82,8 @@ const DashboardTaskTable = ({ data }: { data: ITask[] }) => {
                 const name = row.getValue("name") as string;
                 const project = row?.original?.project?.name;
                 return (
-                    <div className="flex flex-col">
-                        <span className="font-bold text-base text-headingTextColor dark:text-darkTextPrimary">{name}</span>
+                    <div className="flex flex-col min-w-[180px]">
+                        <span className="font-bold text-base text-headingTextColor dark:text-darkTextPrimary break-words whitespace-normal">{name}</span>
                         <span className=" font-normal text-subTextColor dark:text-darkTextSecondary">{project}</span>
                     </div>
                 )

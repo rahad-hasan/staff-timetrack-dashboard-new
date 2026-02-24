@@ -61,7 +61,7 @@ const CoreWorkMembers = ({ data = [] }: { data: ICoreMember[] }) => {
               <AvatarImage src={image} alt={name}></AvatarImage>
               <AvatarFallback>{name?.charAt(0)}</AvatarFallback>
             </Avatar>
-            <span className="font-bold text-headingTextColor dark:text-darkTextPrimary">
+            <span className="font-bold text-headingTextColor dark:text-darkTextPrimary break-words whitespace-normal">
               {name}
             </span>
           </div>
