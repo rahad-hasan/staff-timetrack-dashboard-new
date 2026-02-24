@@ -163,14 +163,19 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
                 const name = row.getValue("name") as string;
                 const project = row?.original?.project?.name;
                 return (
-                    <div className="flex flex-col">
-                        <span className="font-bold text-base text-headingTextColor dark:text-darkTextPrimary cursor-pointer capitalize hover:underline-offset-2 hover:underline"
+                    <div className="flex flex-col min-w-[200px] xl:max-w-[160px] 2xl:max-w-full">
+                        <span
+                            className="font-bold text-base text-headingTextColor dark:text-darkTextPrimary cursor-pointer capitalize hover:underline break-words whitespace-normal"
                             onClick={() => {
                                 setViewTaskId(row.original.id);
                                 setViewTaskOpen(true);
                             }}
-                        >{name}</span>
-                        <span className=" font-normal text-subTextColor dark:text-darkTextSecondary">{project}</span>
+                        >
+                            {name}
+                        </span>
+                        <span className="font-normal text-subTextColor dark:text-darkTextSecondary break-words whitespace-normal">
+                            {project}
+                        </span>
                     </div>
                 )
             }
@@ -194,12 +199,13 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
                 const assignee = row?.original?.assignedBy?.name;
                 const image = row?.original?.assignedBy?.image;
                 return (
-                    <div className="flex items-center gap-2 min-w-[180px]">
-                        <Avatar>
+                    // Added items-center and min-w-0 to the parent to help with truncation
+                    <div className="flex items-center gap-2  min-w-[100px] xl:max-w-[160px] 2xl:max-w-full">
+                        <Avatar className="h-8 w-8 flex-shrink-0">
                             <AvatarImage src={image} alt={assignee} />
                             <AvatarFallback>{assignee?.charAt(0)}</AvatarFallback>
                         </Avatar>
-                        <span className="capitalize">{assignee}</span>
+                        <span className="capitalize ">{assignee}</span>
                     </div>
                 );
             }
@@ -252,61 +258,6 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
                 );
             }
         },
-        // {
-        //     accessorKey: "status",
-        //     // header: "Status",
-        //     // header: () => <div className=" text-right">Status</div>,
-        //     header: ({ column }) => {
-        //         return (
-        //             <div className=" flex justify-end">
-        //                 <span
-        //                     className=" cursor-pointer flex items-center gap-1"
-        //                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        //                 >
-        //                     Status
-        //                     <ArrowUpDown className="ml-2 h-4 w-4" />
-        //                 </span>
-        //             </div>
-        //         )
-        //     },
-        //     cell: ({ row }) => {
-        //         const status = row.getValue("status") as string;
-
-        //         const statusClass =
-        //             status === "In Progress"
-        //                 ? "bg-blue-100 dark:bg-darkPrimaryBg text-blue-800 dark:text-darkTextPrimary"
-        //                 : "bg-gray-100 dark:bg-darkPrimaryBg text-gray-800 dark:text-darkTextPrimary";
-
-        //         const handleStatusChange = (newStatus: string) => {
-        //             console.log(newStatus);
-        //         };
-
-        //         return (
-        //             <div className="flex justify-end">
-        //                 <DropdownMenu>
-        //                     <DropdownMenuTrigger asChild>
-        //                         <Button
-        //                             variant="outline2"
-        //                             className={`px-2 py-1.5 rounded-full text-sm font-medium ${statusClass}`}
-        //                         >
-        //                             <span className={` w-2 h-2 rounded-full ${status === "In Progress" ? "bg-blue-300 dark:bg-gray-300 " : "bg-gray-300"}`}></span>
-        //                             {status}
-        //                             <ChevronDown />
-        //                         </Button>
-        //                     </DropdownMenuTrigger>
-        //                     <DropdownMenuContent align="end">
-        //                         <DropdownMenuItem className=" cursor-pointer" onClick={() => handleStatusChange("In Progress")}>
-        //                             In Progress
-        //                         </DropdownMenuItem>
-        //                         <DropdownMenuItem className=" cursor-pointer" onClick={() => handleStatusChange("Pending")}>
-        //                             Pending
-        //                         </DropdownMenuItem>
-        //                     </DropdownMenuContent>
-        //                 </DropdownMenu>
-        //             </div>
-        //         );
-        //     },
-        // },
         {
             accessorKey: "status",
             // header: "Status",
