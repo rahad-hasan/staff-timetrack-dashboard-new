@@ -41,7 +41,7 @@ const App = async ({ searchParams }: ISearchParamsProps) => {
       </div>
 
       <Suspense fallback={null}>
-        <div className=" mb-5 flex flex-col gap-4 sm:gap-3 xl:flex-row justify-between">
+        <div className=" mb-5 flex flex-col gap-4 sm:gap-3 lg:flex-row justify-between">
           <div className=" flex flex-col sm:flex-row gap-4 md:gap-3">
             <SpecificDatePicker></SpecificDatePicker>
             {/* Filter */}

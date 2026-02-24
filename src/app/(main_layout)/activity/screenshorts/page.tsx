@@ -10,7 +10,6 @@ import { ISearchParamsProps } from "@/types/type";
 import ScreenshotsToggle from "@/components/Activity/ScreenShorts/ScreenshotsToggle";
 import ScreenShotsServer from "@/components/Activity/ScreenShorts/ScreenShotsServer";
 import { Metadata } from "next";
-
 import SelectProjectWrapper from "@/components/Common/SelectProjectWrapper";
 import { getTimezones } from "@/actions/dashboard/action";
 import SelectTimezoneDropDown from "@/components/Common/SelectTimezoneDropDown";
