@@ -93,6 +93,8 @@ const SelectUserDropDown = ({
             {selectedUser && (
               <Avatar className="w-6 h-6">
                 <AvatarImage
+                  width={50}
+                  height={50}
                   src={selectedUser.avatar ?? ""}
                   alt={selectedUser.label}
                   className=" bg-darkTextPrimary"

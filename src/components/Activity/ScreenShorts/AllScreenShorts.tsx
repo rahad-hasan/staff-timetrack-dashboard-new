@@ -30,6 +30,7 @@ const AllScreenShorts = ({ data }: { data: IAllScreenshot[] | undefined }) => {
                   src={screenShort?.image}
                   alt="screenshot"
                   fill
+                  sizes="(max-width: 768px) 20vw, (max-width: 1200px) 18vw, 15vw"
                   className="object-cover cursor-pointer transition-transform duration-300 hover:scale-[1.01]"
                   onClick={() => {
                     setSelectedImage(screenShort);
