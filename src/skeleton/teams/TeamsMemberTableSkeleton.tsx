@@ -6,7 +6,7 @@ const TeamsMemberTableSkeleton = () => {
         <div className={`bg-gray-200 dark:bg-gray-700 ${className} ${isRounded ? 'rounded-full' : 'rounded-md'}`}></div>
     );
 
-    const MIN_TABLE_WIDTH = 'min-w-[1200px]';
+    const MIN_TABLE_WIDTH = 'min-w-[900px]';
 
     return (
         <div className="border border-borderColor dark:border-darkBorder  dark:bg-darkPrimaryBg rounded-lg p-5 animate-pulse max-w-full mt-5">
@@ -22,11 +22,10 @@ const TeamsMemberTableSkeleton = () => {
                         <div className="w-[23%]">Member name</div>
                         <div className="w-[10%]">Status</div>
                         <div className="w-[10%]">Role</div>
-                        <div className="w-[10%] text-center">Project</div>
-                        <div className="w-[14%] text-center">Limit</div>
-                        <div className="w-[13%] ">Member since</div>
-                        <div className="w-[10%] text-center">Time Tracking</div>
-                        <div className="w-[8%] flex justify-end">Action</div>
+                        <div className="w-[15%] text-center">Project</div>
+                        <div className="w-[15%] ">Schedule Assigns</div>
+                        <div className="w-[16%] text-center">Time Tracking</div>
+                        <div className="w-[9%] flex justify-end">Action</div>
                     </div>
 
                     <div className="space-y-0">
@@ -46,24 +45,19 @@ const TeamsMemberTableSkeleton = () => {
                                     <PlaceholderBlock className="h-4 w-4/4" />
                                 </div>
 
-                                <div className="w-[10%] flex justify-center">
+                                <div className="w-[15%] flex justify-center">
                                     <PlaceholderBlock className="h-4 w-4" />
                                 </div>
 
-                                <div className="w-[14%] flex items-center flex-col gap-1">
-                                    <PlaceholderBlock className="h-3 w-3/5" />
-                                    <PlaceholderBlock className="h-3 w-3/5" />
-                                </div>
-
-                                <div className="w-[13%] flex ">
+                                <div className="w-[15%] flex ">
                                     <PlaceholderBlock className="h-4 w-20" />
                                 </div>
 
-                                <div className="w-[10%] flex justify-center">
+                                <div className="w-[16%] flex justify-center">
                                     <PlaceholderBlock className="h-6 w-16 rounded-full" />
                                 </div>
 
-                                <div className="w-[8%] flex justify-end">
+                                <div className="w-[9%] flex justify-end">
                                     <PlaceholderBlock className="h-6 w-6 rounded-full" />
                                 </div>
                             </div>

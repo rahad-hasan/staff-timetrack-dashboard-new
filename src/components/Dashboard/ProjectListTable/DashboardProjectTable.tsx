@@ -95,7 +95,7 @@ const DashboardProjectTable = ({ data }: { data: IProject[] }) => {
             accessorKey: "projectManagerAssigns",
             header: ({ column }) => {
                 return (
-                    <div className="  min-w-[180px]">
+                    <div className="  min-w-[100px]">
                         <span
                             className=" cursor-pointer flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
@@ -108,13 +108,13 @@ const DashboardProjectTable = ({ data }: { data: IProject[] }) => {
             },
             cell: ({ row }) => {
                 const managers = row.original.projectManagerAssigns ?? [];
-                const MAX_VISIBLE = 3;
+                const MAX_VISIBLE = 2;
 
                 const visibleManagers = managers.slice(0, MAX_VISIBLE);
                 const remainingCount = managers.length - MAX_VISIBLE;
 
                 return (
-                    <div className="flex items-center">
+                    <div className="flex items-center min-w-[100px] ">
                         {visibleManagers.map((item, index) => (
                             <Avatar key={index} className={index !== 0 ? "-ml-3" : ""}>
                                 <AvatarImage
@@ -232,61 +232,6 @@ const DashboardProjectTable = ({ data }: { data: IProject[] }) => {
                 return <div className="">{format(new Date(deadline), "EEE, MMM d, yyyy")}</div>;
             },
         },
-        // {
-        //     accessorKey: "status",
-        //     // header: "Status",
-        //     // header: () => <div className=" text-right">Status</div>,
-        //     header: ({ column }) => {
-        //         return (
-        //             <div className=" flex justify-end">
-        //                 <span
-        //                     className=" cursor-pointer flex items-center gap-1"
-        //                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        //                 >
-        //                     Status
-        //                     <ArrowUpDown className="ml-2 h-4 w-4" />
-        //                 </span>
-        //             </div>
-        //         )
-        //     },
-        //     cell: ({ row }) => {
-        //         const status = row.getValue("status") as string;
-
-        //         const statusClass =
-        //             status === "In Progress"
-        //                 ? "bg-blue-100 dark:bg-darkPrimaryBg text-blue-800 dark:text-darkTextPrimary"
-        //                 : "bg-gray-100 dark:bg-darkPrimaryBg text-gray-800 dark:text-darkTextPrimary";
-
-        //         const handleStatusChange = (newStatus: string) => {
-        //             console.log(newStatus);
-        //         };
-
-        //         return (
-        //             <div className="flex justify-end">
-        //                 <DropdownMenu>
-        //                     <DropdownMenuTrigger asChild>
-        //                         <Button
-        //                             variant="outline2"
-        //                             className={`px-2 py-1.5 rounded-full text-sm font-medium ${statusClass}`}
-        //                         >
-        //                             <span className={` w-2 h-2 rounded-full ${status === "In Progress" ? "bg-blue-300 dark:bg-gray-300 " : "bg-gray-300"}`}></span>
-        //                             {status}
-        //                             <ChevronDown />
-        //                         </Button>
-        //                     </DropdownMenuTrigger>
-        //                     <DropdownMenuContent align="end">
-        //                         <DropdownMenuItem className=" cursor-pointer" onClick={() => handleStatusChange("In Progress")}>
-        //                             In Progress
-        //                         </DropdownMenuItem>
-        //                         <DropdownMenuItem className=" cursor-pointer" onClick={() => handleStatusChange("Pending")}>
-        //                             Pending
-        //                         </DropdownMenuItem>
-        //                     </DropdownMenuContent>
-        //                 </DropdownMenu>
-        //             </div>
-        //         );
-        //     },
-        // },
         {
             accessorKey: "status",
             // header: "Status",
@@ -330,7 +275,7 @@ const DashboardProjectTable = ({ data }: { data: IProject[] }) => {
                                     <DropdownMenuTrigger asChild>
                                         <Button
                                             variant="outline2"
-                                            className={`px-2 py-2 rounded-xl text-sm font-medium ${statusClass}`}
+                                            className={`  h-9 2xl:h-10 px-2 2xl:px-4 rounded-xl text-xs 2xl:text-sm font-medium ${statusClass}`}
                                         >
                                             <span className={` w-2 h-2 rounded-full ${status === "processing" ? "bg-[#efaf07] " : status === "cancelled" ? "bg-[#f40139]" : status === "pending" ? "bg-[#5db0f1]" : "bg-[#26bd6c]"}`}></span>
                                             {status}

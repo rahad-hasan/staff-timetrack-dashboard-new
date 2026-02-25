@@ -252,9 +252,13 @@ const TeamsMemberTable = ({ data }: any) => {
           <div className="flex flex-col break-words whitespace-normal">
             {/* <span className="">{formatTZDayMonthYear(created_at)}</span> */}
             {
-              scheduleAssigns?.map((schedule: any) => {
-                return <span key={schedule.schedule.id} className="">{schedule.schedule.name},</span>
-              })
+              scheduleAssigns.length === 1 ?
+                scheduleAssigns?.map((schedule: any) => {
+                  return <span key={schedule.schedule.id} className="">{schedule.schedule.name}</span>
+                }) :
+                scheduleAssigns?.map((schedule: any) => {
+                  return <span key={schedule.schedule.id} className="">{schedule.schedule.name},</span>
+                })
             }
           </div>
         );

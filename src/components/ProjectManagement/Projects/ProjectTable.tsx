@@ -389,7 +389,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                                     <DropdownMenuTrigger asChild>
                                         <Button
                                             variant="outline2"
-                                            className={`px-2 py-2 rounded-xl text-sm font-medium ${statusClass}`}
+                                            className={`h-9 2xl:h-10 px-2 2xl:px-4 rounded-xl text-xs 2xl:text-sm font-medium ${statusClass}`}
                                         >
                                             <span className={` w-2 h-2 rounded-full ${status === "processing" ? "bg-[#efaf07] " : status === "cancelled" ? "bg-[#f40139]" : status === "pending" ? "bg-[#5db0f1]" : "bg-[#26bd6c]"}`}></span>
                                             {status}
