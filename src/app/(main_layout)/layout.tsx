@@ -21,12 +21,12 @@ export default async function RootLayout({
       <div
         className={` w-full flex bg-bgSecondary dark:bg-darkSecondaryBg`}
       >
-        <div className="hidden md:block">
+        <div className="hidden lg:block">
           <SideBar></SideBar>
         </div>
-        <div className=" bg-bgPrimary w-full md:border border-borderColor dark:bg-darkPrimaryBg dark:border-darkBorder md:rounded-[8px] md:my-3 md:mr-3 min-h-[100vh] lg:min-h-auto">
+        <div className=" bg-bgPrimary w-full lg:border border-borderColor dark:bg-darkPrimaryBg dark:border-darkBorder lg:rounded-[8px] lg:my-3 lg:mr-3 min-h-[100vh] lg:min-h-auto">
           <Header data={result?.data}></Header>
-          <div className="p-3 md:p-5 w-full dark:bg-darkPrimaryBg md:rounded-b-[12px]">
+          <div className="p-3 lg:p-5 w-full dark:bg-darkPrimaryBg lg:rounded-b-[12px]">
             {children}
           </div>
         </div>

@@ -60,7 +60,7 @@ const SideBar = () => {
             // ref={sidebarRef}
             className='sticky top-0 bottom-0 z-[50]'>
             <div className='overflow-y-scroll no-scrollbar scroll-smooth'>
-                <div className={`${isCollapsed ? "w-[90px]" : "w-[260px]"} h-screen py-5 z-50  flex flex-col transition-all duration-300`}>
+                <div className={`${isCollapsed ? "w-[90px]" : " w-[240px] 2xl:w-[260px]"} h-screen py-5 z-50  flex flex-col transition-all duration-300`}>
                     <div
                         className={`flex items-center justify-between bg-bgPrimary dark:bg-darkPrimaryBg  mx-4 rounded-2xl border border-borderColor dark:border-darkBorder ${isCollapsed ? "flex-col py-2 px-2" : "flex-row py-2.5 px-3"
                             } transition-all duration-300`}

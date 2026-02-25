@@ -43,9 +43,8 @@ const Header = ({ data }: { data: { duration: string } }) => {
 
     // console.log(notificationsList);
 
-
     return (
-        <div className=" border-b border-borderColor dark:border-darkBorder py-3 md:py-3.5 2xl:py-5 px-3 md:px-5 flex items-center justify-between rounded-t-lg dark:bg-darkPrimaryBg">
+        <div className=" border-b border-borderColor dark:border-darkBorder py-3 lg:py-3.5 2xl:py-5 px-3 lg:px-5 flex items-center justify-between rounded-t-lg dark:bg-darkPrimaryBg">
             <div>
                 {/* <Popover open={open} onOpenChange={setOpen} modal>
                     <PopoverTrigger asChild>
@@ -56,7 +55,7 @@ const Header = ({ data }: { data: { duration: string } }) => {
                 <Button className=" dark:border-darkBorder dark:hover:bg-darkSecondaryBg cursor-default" variant={'filter'}><CirclePlay className="text-primary size-5.5 sm:size-5.5" /><span className="  dark:text-darkTextPrimary">{data?.duration}</span></Button>
             </div>
 
-            <div className=" hidden md:flex items-center gap-4">
+            <div className=" hidden lg:flex items-center gap-4">
                 <div>
                     <DarkMoodToggle></DarkMoodToggle>
                 </div>
@@ -73,7 +72,7 @@ const Header = ({ data }: { data: { duration: string } }) => {
             </div>
 
             {/* mobile menu */}
-            <div className=" flex items-center gap-4 md:hidden">
+            <div className=" flex items-center gap-4 lg:hidden">
                 <div>
                     <DarkMoodToggle></DarkMoodToggle>
                 </div>
