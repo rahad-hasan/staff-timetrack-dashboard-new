@@ -209,7 +209,7 @@ const Profile = () => {
                             name="name"
                             render={({ field }) => (
                                 <FormItem className="w-full ">
-                                    <FormLabel>Full Name</FormLabel>
+                                    <FormLabel required={true}>Full Name</FormLabel>
                                     <FormControl>
                                         <div className="relative">
                                             <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 h-4 w-4" >
@@ -232,7 +232,7 @@ const Profile = () => {
                             name="title"
                             render={({ field }) => (
                                 <FormItem className="w-full ">
-                                    <FormLabel>Job Title</FormLabel>
+                                    <FormLabel required={true}>Job Title</FormLabel>
                                     <FormControl>
                                         <div className="relative">
                                             <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 h-4 w-4" >
@@ -259,7 +259,7 @@ const Profile = () => {
                             name="email"
                             render={({ field }) => (
                                 <FormItem className="w-full ">
-                                    <FormLabel>Email Address</FormLabel>
+                                    <FormLabel required={true}>Email Address</FormLabel>
                                     <FormControl>
                                         <div className="relative">
                                             <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 h-4 w-4" >
@@ -316,7 +316,7 @@ const Profile = () => {
                                 name="time_zone"
                                 render={({ field }) => (
                                     <FormItem className="flex flex-col w-full">
-                                        <FormLabel>Time Zone</FormLabel>
+                                        <FormLabel required={true}>Time Zone</FormLabel>
                                         <Popover>
                                             <PopoverTrigger asChild>
                                                 <FormControl>

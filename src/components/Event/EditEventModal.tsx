@@ -131,7 +131,7 @@ const EditEventModal = ({ handleCloseDialog, event }: any) => {
                     name="date"
                     render={({ field }) => (
                         <FormItem className="w-full">
-                            <FormLabel>Change Event Date</FormLabel>
+                            <FormLabel required={true}>Change Event Date</FormLabel>
                             <FormControl>
                                 <Popover open={openStartDate} onOpenChange={setOpenStartDate}>
                                     <PopoverTrigger asChild>
@@ -170,7 +170,7 @@ const EditEventModal = ({ handleCloseDialog, event }: any) => {
                         name="start_time"
                         render={({ field }) => (
                             <FormItem className=" w-full">
-                                <FormLabel>Start Time</FormLabel>
+                                <FormLabel required={true}>Start Time</FormLabel>
                                 <FormControl className="">
                                     <div className='relative '>
                                         <div className='text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 peer-disabled:opacity-50'>
@@ -194,7 +194,7 @@ const EditEventModal = ({ handleCloseDialog, event }: any) => {
                         name="end_time"
                         render={({ field }) => (
                             <FormItem className=" w-full">
-                                <FormLabel>End Time</FormLabel>
+                                <FormLabel required={true}>End Time</FormLabel>
                                 <FormControl className="">
                                     <div className='relative '>
                                         <div className='text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 peer-disabled:opacity-50'>

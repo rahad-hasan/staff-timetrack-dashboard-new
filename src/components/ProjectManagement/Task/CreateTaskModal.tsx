@@ -176,7 +176,7 @@ const CreateTaskModal = ({ handleCloseDialog }: { handleCloseDialog: () => void 
                         name="project"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className={""}>Project</FormLabel>
+                                <FormLabel required={true} className={""}>Project</FormLabel>
                                 <Select
                                     onValueChange={field.onChange}
                                     defaultValue={field.value}
@@ -231,7 +231,7 @@ const CreateTaskModal = ({ handleCloseDialog }: { handleCloseDialog: () => void 
                         name="assignee"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className={!selectedProject ? "opacity-50" : ""}>Assignee</FormLabel>
+                                <FormLabel required={true} className={!selectedProject ? "opacity-50" : ""}>Assignee</FormLabel>
                                 <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!selectedProject}>
                                     <FormControl>
                                         <SelectTrigger className="w-full dark:bg-darkSecondaryBg">
@@ -282,7 +282,7 @@ const CreateTaskModal = ({ handleCloseDialog }: { handleCloseDialog: () => void 
                         name="taskName"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Task Name</FormLabel>
+                                <FormLabel required={true}>Task Name</FormLabel>
                                 <FormControl>
                                     <Input className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Task Name" {...field} />
                                 </FormControl>
@@ -296,7 +296,7 @@ const CreateTaskModal = ({ handleCloseDialog }: { handleCloseDialog: () => void 
                         name="deadline"
                         render={({ field }) => (
                             <FormItem className="w-full">
-                                <FormLabel>Deadline</FormLabel>
+                                <FormLabel required={true}>Deadline</FormLabel>
                                 <FormControl>
                                     <Popover open={openStartDate} onOpenChange={setOpenStartDate}>
                                         <PopoverTrigger asChild>
@@ -333,7 +333,7 @@ const CreateTaskModal = ({ handleCloseDialog }: { handleCloseDialog: () => void 
                         name="priority"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Priority</FormLabel>
+                                <FormLabel required={true}>Priority</FormLabel>
                                 <Select
                                     onValueChange={field.onChange}
                                     defaultValue={field.value}

@@ -226,7 +226,7 @@ const AddManualTimeModal = ({ onClose }: { onClose: () => void }) => {
                                     name="project"
                                     render={({ field }) => (
                                         <FormItem className="w-full">
-                                            <FormLabel>Project</FormLabel>
+                                            <FormLabel required={true}>Project</FormLabel>
                                             <FormControl>
                                                 <div className="relative">
                                                     <Select
@@ -322,7 +322,7 @@ const AddManualTimeModal = ({ onClose }: { onClose: () => void }) => {
                                     name="date"
                                     render={({ field }) => (
                                         <FormItem className=" w-full ">
-                                            <FormLabel>Date</FormLabel>
+                                            <FormLabel required={true}>Date</FormLabel>
                                             <Popover open={open} onOpenChange={setOpen}>
                                                 <PopoverTrigger asChild>
                                                     <Button
@@ -355,7 +355,7 @@ const AddManualTimeModal = ({ onClose }: { onClose: () => void }) => {
                                     )}
                                 />
 
-                                <FormLabel className="-mb-1 ">Time</FormLabel>
+                                <FormLabel required={true} className="-mb-1 ">Time</FormLabel>
                                 <div className=" flex flex-col md:flex-row md:items-center gap-2 md:gap-3">
                                     <FormField
                                         control={form.control}

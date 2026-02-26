@@ -177,7 +177,7 @@ const Configuration = ({ data }: { data: ICompany }) => {
                                 name="paid_leave"
                                 render={({ field }) => (
                                     <FormItem className="w-full">
-                                        <FormLabel>Paid Leave</FormLabel>
+                                        <FormLabel required={true}>Paid Leave</FormLabel>
                                         <FormControl>
                                             <Input
                                                 type="number"
@@ -198,7 +198,7 @@ const Configuration = ({ data }: { data: ICompany }) => {
                                 name="casual_leave"
                                 render={({ field }) => (
                                     <FormItem className="w-full">
-                                        <FormLabel>Casual Leave</FormLabel>
+                                        <FormLabel required={true}>Casual Leave</FormLabel>
                                         <FormControl>
                                             <Input
                                                 type="number"
@@ -223,7 +223,7 @@ const Configuration = ({ data }: { data: ICompany }) => {
                                 name="sick_leave"
                                 render={({ field }) => (
                                     <FormItem className="w-full">
-                                        <FormLabel>Sick Leave</FormLabel>
+                                        <FormLabel required={true}>Sick Leave</FormLabel>
                                         <FormControl>
                                             <Input
                                                 type="number"
@@ -244,7 +244,7 @@ const Configuration = ({ data }: { data: ICompany }) => {
                                 name="maternity_leave"
                                 render={({ field }) => (
                                     <FormItem className="w-full">
-                                        <FormLabel>Maternity Leave</FormLabel>
+                                        <FormLabel required={true}>Maternity Leave</FormLabel>
                                         <FormControl>
                                             <Input
                                                 type="number"
@@ -277,7 +277,7 @@ const Configuration = ({ data }: { data: ICompany }) => {
                                 name="address"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Address</FormLabel>
+                                        <FormLabel required={true}>Address</FormLabel>
                                         <FormControl>
                                             <Input
                                                 placeholder="Enter address"
@@ -296,7 +296,7 @@ const Configuration = ({ data }: { data: ICompany }) => {
                                 name="time_zone"
                                 render={({ field }) => (
                                     <FormItem className="flex flex-col">
-                                        <FormLabel>Time Zone</FormLabel>
+                                        <FormLabel required={true}>Time Zone</FormLabel>
                                         <Popover>
                                             <PopoverTrigger asChild>
                                                 <FormControl>
@@ -356,7 +356,7 @@ const Configuration = ({ data }: { data: ICompany }) => {
                                 name="idle_minutes_limit"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Idle Minutes Limit</FormLabel>
+                                        <FormLabel required={true}>Idle Minutes Limit</FormLabel>
                                         <FormControl>
                                             <Input
                                                 type="number"
@@ -377,7 +377,7 @@ const Configuration = ({ data }: { data: ICompany }) => {
                                     name="week_start"
                                     render={({ field }) => (
                                         <FormItem className="w-full">
-                                            <FormLabel>Week Start Day</FormLabel>
+                                            <FormLabel required={true}>Week Start Day</FormLabel>
                                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                 <FormControl className=" w-full">
                                                     <SelectTrigger className="dark:bg-darkPrimaryBg dark:border-darkBorder">

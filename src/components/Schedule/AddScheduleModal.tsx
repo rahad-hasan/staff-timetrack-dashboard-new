@@ -97,7 +97,7 @@ const AddScheduleModal = ({ onClose }: { onClose: () => void }) => {
                         name="name"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Name</FormLabel>
+                                <FormLabel required={true}>Name</FormLabel>
                                 <FormControl>
                                     <Input type="text" className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Schedule name" {...field} />
                                 </FormControl>
@@ -110,7 +110,7 @@ const AddScheduleModal = ({ onClose }: { onClose: () => void }) => {
                         name="start_time"
                         render={({ field }) => (
                             <FormItem className=" w-full">
-                                <FormLabel>Shift Start Time</FormLabel>
+                                <FormLabel required={true}>Shift Start Time</FormLabel>
                                 <FormControl className="">
                                     <div className='relative '>
                                         <div className='text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 peer-disabled:opacity-50'>
@@ -134,7 +134,7 @@ const AddScheduleModal = ({ onClose }: { onClose: () => void }) => {
                         name="end_time"
                         render={({ field }) => (
                             <FormItem className=" w-full">
-                                <FormLabel>Shift End Time</FormLabel>
+                                <FormLabel required={true}>Shift End Time</FormLabel>
                                 <FormControl className="">
                                     <div className='relative '>
                                         <div className='text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 peer-disabled:opacity-50'>
@@ -158,7 +158,7 @@ const AddScheduleModal = ({ onClose }: { onClose: () => void }) => {
                         name="grace_in_min"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Grace In Minutes</FormLabel>
+                                <FormLabel required={true}>Grace In Minutes</FormLabel>
                                 <FormControl>
                                     <Input
                                         type="number"
@@ -178,7 +178,7 @@ const AddScheduleModal = ({ onClose }: { onClose: () => void }) => {
                         name="grace_out_min"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Grace Out Minutes</FormLabel>
+                                <FormLabel required={true}>Grace Out Minutes</FormLabel>
                                 <FormControl>
                                     <Input
                                         type="number"
@@ -199,7 +199,7 @@ const AddScheduleModal = ({ onClose }: { onClose: () => void }) => {
                         name="break_in_min"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Break In Minutes</FormLabel>
+                                <FormLabel required={true}>Break In Minutes</FormLabel>
                                 <FormControl>
                                     <Input
                                         type="number"

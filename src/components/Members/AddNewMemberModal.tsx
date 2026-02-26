@@ -201,7 +201,7 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
                                 name="name"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Name</FormLabel>
+                                        <FormLabel required={true}>Name</FormLabel>
                                         <FormControl>
                                             <Input type="text" className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Add member name" {...field} />
                                         </FormControl>
@@ -214,7 +214,7 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
                                 name="email"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Email</FormLabel>
+                                        <FormLabel required={true}>Email</FormLabel>
                                         <FormControl>
                                             <Input type="text" className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Enter member email" {...field} />
                                         </FormControl>
@@ -254,7 +254,7 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
                                 name="role"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Role</FormLabel>
+                                        <FormLabel required={true}>Role</FormLabel>
                                         <FormControl>
                                             <div className="relative">
                                                 <Select
@@ -315,7 +315,7 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
                                 name="project"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className={""}>Project</FormLabel>
+                                        <FormLabel required={true} className={""}>Project</FormLabel>
                                         <Select
                                             onValueChange={field.onChange}
                                             defaultValue={field.value}
@@ -369,7 +369,7 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
                                 name="password"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Password</FormLabel>
+                                        <FormLabel required={true}>Password</FormLabel>
                                         <FormControl>
                                             <div className="relative">
                                                 <Input
@@ -396,7 +396,7 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
                                 name="time_zone"
                                 render={({ field }) => (
                                     <FormItem className="flex flex-col w-full">
-                                        <FormLabel>Time Zone</FormLabel>
+                                        <FormLabel required={true}>Time Zone</FormLabel>
                                         <Popover>
                                             <PopoverTrigger asChild>
                                                 <FormControl>

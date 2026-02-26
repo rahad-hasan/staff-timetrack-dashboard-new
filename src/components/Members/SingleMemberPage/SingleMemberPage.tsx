@@ -250,7 +250,7 @@ const SingleMemberPage = ({ data, task, page }: { data: any, task: any, page: st
                                     name="name"
                                     render={({ field }) => (
                                         <FormItem className="w-full">
-                                            <FormLabel>Full Name</FormLabel>
+                                            <FormLabel required={true}>Full Name</FormLabel>
                                             <FormControl>
                                                 <Input {...field} className="dark:bg-darkPrimaryBg dark:border-darkBorder" />
                                             </FormControl>
@@ -264,7 +264,7 @@ const SingleMemberPage = ({ data, task, page }: { data: any, task: any, page: st
                                     name="email"
                                     render={({ field }) => (
                                         <FormItem className="w-full">
-                                            <FormLabel>Email Address</FormLabel>
+                                            <FormLabel required={true}>Email Address</FormLabel>
                                             <FormControl>
                                                 <Input {...field} className="opacity-70 dark:bg-darkPrimaryBg dark:border-darkBorder" />
                                             </FormControl>
@@ -280,7 +280,7 @@ const SingleMemberPage = ({ data, task, page }: { data: any, task: any, page: st
                                     name="pay_rate_hourly"
                                     render={({ field }) => (
                                         <FormItem className="w-full">
-                                            <FormLabel className="text-sm">Hourly Pay Rate ($)</FormLabel>
+                                            <FormLabel required={true} className="text-sm">Hourly Pay Rate ($)</FormLabel>
                                             <FormControl>
                                                 <Input
                                                     type="number"
@@ -319,7 +319,7 @@ const SingleMemberPage = ({ data, task, page }: { data: any, task: any, page: st
                                     name="role"
                                     render={({ field }) => (
                                         <FormItem className=" w-full">
-                                            <FormLabel>User Role</FormLabel>
+                                            <FormLabel required={true}>User Role</FormLabel>
                                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                 <FormControl className=" w-full">
                                                     <SelectTrigger className="dark:bg-darkPrimaryBg dark:border-darkBorder">
@@ -346,7 +346,7 @@ const SingleMemberPage = ({ data, task, page }: { data: any, task: any, page: st
                                     name="time_zone"
                                     render={({ field }) => (
                                         <FormItem className="flex flex-col">
-                                            <FormLabel>Time Zone</FormLabel>
+                                            <FormLabel required={true}>Time Zone</FormLabel>
                                             <Popover>
                                                 <PopoverTrigger asChild>
                                                     <FormControl>

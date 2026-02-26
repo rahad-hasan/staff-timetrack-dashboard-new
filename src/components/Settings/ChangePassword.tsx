@@ -74,7 +74,7 @@ const ChangePassword = () => {
                             name="oldPassword"
                             render={({ field }) => (
                                 <FormItem className="w-full">
-                                    <FormLabel>Old Password</FormLabel>
+                                    <FormLabel required={true}>Old Password</FormLabel>
                                     <FormControl>
                                         <div className="relative">
                                             <Input
@@ -102,7 +102,7 @@ const ChangePassword = () => {
                             name="newPassword"
                             render={({ field }) => (
                                 <FormItem className="w-full">
-                                    <FormLabel>New Password</FormLabel>
+                                    <FormLabel required={true}>New Password</FormLabel>
                                     <FormControl>
                                         <div className="relative">
                                             <Input

@@ -89,7 +89,7 @@ const AddClientModal = ({ onClose }: { onClose: () => void }) => {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Name</FormLabel>
+                <FormLabel required={true}>Name</FormLabel>
                 <FormControl>
                   <Input
                     type="text"
@@ -107,7 +107,7 @@ const AddClientModal = ({ onClose }: { onClose: () => void }) => {
             name="address"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Address</FormLabel>
+                <FormLabel required={true}>Address</FormLabel>
                 <FormControl>
                   <Input
                     type="text"
@@ -125,7 +125,7 @@ const AddClientModal = ({ onClose }: { onClose: () => void }) => {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel required={true}>Email</FormLabel>
                 <FormControl>
                   <Input
                     type="text"
@@ -143,7 +143,7 @@ const AddClientModal = ({ onClose }: { onClose: () => void }) => {
             name="phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Phone</FormLabel>
+                <FormLabel required={true}>Phone</FormLabel>
                 <FormControl>
                   <Input
                     type="text"

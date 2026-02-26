@@ -54,7 +54,7 @@ const GeneralInfoStep = ({ setStep }: GeneralInfoStepProps) => {
                 }
             } catch (err) {
                 console.error("Failed to fetch clients", err);
-            } 
+            }
         };
 
         loadClients();
@@ -70,7 +70,7 @@ const GeneralInfoStep = ({ setStep }: GeneralInfoStepProps) => {
                 }
             } catch (err) {
                 console.error("Failed to fetch clients", err);
-            } 
+            }
         };
 
         loadMembers();
@@ -125,7 +125,7 @@ const GeneralInfoStep = ({ setStep }: GeneralInfoStepProps) => {
                         name="projectName"
                         render={({ field }) => (
                             <FormItem className="dark:text-darkTextPrimary">
-                                <FormLabel>Project Name</FormLabel>
+                                <FormLabel required={true}>Project Name</FormLabel>
                                 <FormControl className="">
                                     <Input type="text" className="dark:border-darkBorder dark:bg-darkPrimaryBg dark:text-darkTextPrimary" placeholder="Project Name" {...field} />
                                 </FormControl>
@@ -138,7 +138,7 @@ const GeneralInfoStep = ({ setStep }: GeneralInfoStepProps) => {
                         name="client"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Client</FormLabel>
+                                <FormLabel required={true}>Client</FormLabel>
                                 <FormControl>
                                     <Select
                                         value={field.value ? String(field.value) : ""}
@@ -176,7 +176,7 @@ const GeneralInfoStep = ({ setStep }: GeneralInfoStepProps) => {
                         name="members"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Members</FormLabel>
+                                <FormLabel required={true}>Members</FormLabel>
                                 <FormControl>
                                     <MultiSelect
                                         values={selectedMemberIds}
@@ -223,7 +223,7 @@ const GeneralInfoStep = ({ setStep }: GeneralInfoStepProps) => {
                         name="description"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Description</FormLabel>
+                                <FormLabel required={true}>Description</FormLabel>
                                 <FormControl>
                                     <Textarea className="dark:border-darkBorder" {...field} />
                                 </FormControl>
@@ -239,7 +239,7 @@ const GeneralInfoStep = ({ setStep }: GeneralInfoStepProps) => {
                                 name="startDate"
                                 render={({ field }) => (
                                     <FormItem className="w-full">
-                                        <FormLabel>Start Date</FormLabel>
+                                        <FormLabel required={true}>Start Date</FormLabel>
                                         <FormControl>
                                             <Popover open={openStartDate} onOpenChange={setOpenStartDate}>
                                                 <PopoverTrigger asChild>
@@ -278,7 +278,7 @@ const GeneralInfoStep = ({ setStep }: GeneralInfoStepProps) => {
                                 name="deadline"
                                 render={({ field }) => (
                                     <FormItem className="w-full">
-                                        <FormLabel>Deadline</FormLabel>
+                                        <FormLabel required={true}>Deadline</FormLabel>
                                         <FormControl>
                                             <Popover open={openDeadLine} onOpenChange={setDeadLineOpen}>
                                                 <PopoverTrigger asChild>

@@ -140,7 +140,7 @@ const EditBudgetAndHoursStep = ({ setStep, onClose, selectedProject }: GeneralIn
                                     {/* {
                                         budgetType === "Fixed Budget" ? */}
                                     {/* <FormLabel>Fixed Rate</FormLabel> */}
-                                    <FormLabel>Project Budget</FormLabel>
+                                    <FormLabel required={true}>Project Budget</FormLabel>
                                     {/*        :
                                             <FormLabel>Hourly Rate</FormLabel>
                                      */}

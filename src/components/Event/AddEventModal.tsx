@@ -165,7 +165,7 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
             name="eventName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Event name</FormLabel>
+                <FormLabel required={true}>Event name</FormLabel>
                 <FormControl>
                   <Input
                     type="text"
@@ -183,7 +183,7 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
             name="date"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel>Event Date</FormLabel>
+                <FormLabel required={true}>Event Date</FormLabel>
                 <FormControl>
                   <Popover open={openStartDate} onOpenChange={setOpenStartDate}>
                     <PopoverTrigger asChild>
@@ -244,7 +244,7 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
               name="start_time"
               render={({ field }) => (
                 <FormItem className=" w-full">
-                  <FormLabel>Start Time</FormLabel>
+                  <FormLabel required={true}>Start Time</FormLabel>
                   <FormControl className="">
                     <div className="relative ">
                       <div className="text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 peer-disabled:opacity-50">
@@ -271,7 +271,7 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
               name="end_time"
               render={({ field }) => (
                 <FormItem className=" w-full">
-                  <FormLabel>End Time</FormLabel>
+                  <FormLabel required={true}>End Time</FormLabel>
                   <FormControl className="">
                     <div className="relative ">
                       <div className="text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 peer-disabled:opacity-50">
@@ -300,7 +300,7 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
                         name="project"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Add Project (optional)</FormLabel>
+                                <FormLabel required={true}>Add Project (optional)</FormLabel>
                                 <FormControl>
                                     <div className="relative">
                                         <Select
@@ -336,7 +336,7 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
                         name="members"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Members</FormLabel>
+                                <FormLabel required={true}>Members</FormLabel>
                                 <FormControl>
                                     <MultiSelect
                                         values={field.value}
@@ -371,7 +371,7 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
             name="members"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Members</FormLabel>
+                <FormLabel required={true}>Members</FormLabel>
                 <FormControl>
                   <MultiSelect
                     // values={selectedMemberIds}
@@ -443,7 +443,7 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Description</FormLabel>
+                <FormLabel required={true}>Description</FormLabel>
                 <FormControl>
                   <Textarea
                     className="dark:border-darkBorder"

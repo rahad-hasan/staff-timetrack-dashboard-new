@@ -200,7 +200,7 @@ const AssignMemberModal = ({ schedule }: { schedule: ISchedules }) => {
                                 name="project"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel className={""}>Project</FormLabel>
+                                        <FormLabel required={true} className={""}>Project</FormLabel>
                                         <Select
                                             onValueChange={field.onChange}
                                             defaultValue={field.value}
@@ -254,7 +254,7 @@ const AssignMemberModal = ({ schedule }: { schedule: ISchedules }) => {
                                 name="members"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Members</FormLabel>
+                                        <FormLabel required={true}>Members</FormLabel>
                                         <FormControl>
                                             <MultiSelect
                                                 // values={selectedMemberIds}

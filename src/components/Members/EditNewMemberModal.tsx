@@ -115,7 +115,7 @@ const EditNewMemberModal = ({ onClose, selectedUser }: EditNewMemberModalProps) 
                         name="name"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Name</FormLabel>
+                                <FormLabel required={true}>Name</FormLabel>
                                 <FormControl>
                                     <Input type="text" className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Add member name" {...field} />
                                 </FormControl>
@@ -141,7 +141,7 @@ const EditNewMemberModal = ({ onClose, selectedUser }: EditNewMemberModalProps) 
                         name="role"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Role</FormLabel>
+                                <FormLabel required={true}>Role</FormLabel>
                                 <FormControl>
                                     <div className="relative">
                                         <Select

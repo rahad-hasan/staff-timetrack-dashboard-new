@@ -212,7 +212,7 @@ const EditTaskModal = ({ handleCloseDialog, selectedProject }: { handleCloseDial
                         name="project"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className={""}>Project</FormLabel>
+                                <FormLabel required={true} className={""}>Project</FormLabel>
                                 <Select
                                     onValueChange={field.onChange}
                                     value={field.value}
@@ -266,7 +266,7 @@ const EditTaskModal = ({ handleCloseDialog, selectedProject }: { handleCloseDial
                         name="assignee"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Assignee</FormLabel>
+                                <FormLabel required={true}>Assignee</FormLabel>
                                 <Select onValueChange={field.onChange} value={field.value}>
                                     <FormControl>
                                         <SelectTrigger className="w-full dark:bg-darkSecondaryBg">
@@ -318,7 +318,7 @@ const EditTaskModal = ({ handleCloseDialog, selectedProject }: { handleCloseDial
                         name="taskName"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Task Name</FormLabel>
+                                <FormLabel required={true}>Task Name</FormLabel>
                                 <FormControl>
                                     <Input className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Task Name" {...field} />
                                 </FormControl>
@@ -332,7 +332,7 @@ const EditTaskModal = ({ handleCloseDialog, selectedProject }: { handleCloseDial
                         name="deadline"
                         render={({ field }) => (
                             <FormItem className="w-full">
-                                <FormLabel>Deadline</FormLabel>
+                                <FormLabel required={true}>Deadline</FormLabel>
                                 <FormControl>
                                     <Popover open={openStartDate} onOpenChange={setOpenStartDate}>
                                         <PopoverTrigger asChild>
@@ -369,7 +369,7 @@ const EditTaskModal = ({ handleCloseDialog, selectedProject }: { handleCloseDial
                         name="priority"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Priority</FormLabel>
+                                <FormLabel required={true}>Priority</FormLabel>
                                 <Select
                                     onValueChange={field.onChange}
                                     defaultValue={field.value}
