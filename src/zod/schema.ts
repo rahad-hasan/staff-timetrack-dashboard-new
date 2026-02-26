@@ -377,6 +377,7 @@ export const ScheduleShiftSchema = z.object({
 
 
 export const scheduleAssignMemberSchema = z.object({
+    project: z.string().min(1, "Project is required"),
     members: z
         .array(z.union([z.number(), z.string()]))
         .min(1, "At least one member is required"),

@@ -35,9 +35,25 @@ import { getMembersDashboard } from "@/actions/members/action";
 import { ISchedules } from "@/types/type";
 import { toast } from "sonner";
 import { assignSchedule } from "@/actions/schedule/action";
+import { useDebounce } from "@/hooks/use-debounce";
+import { getProjects } from "@/actions/projects/action";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { Search } from "lucide-react";
+import { Input } from "../ui/input";
+
+
+type ProjectOption = {
+    value: string;
+    label: string;
+    avatar?: string;
+};
 const AssignMemberModal = ({ schedule }: { schedule: ISchedules }) => {
+    console.log(schedule);
     const [open, setOpen] = useState(false)
     const [loading, setLoading] = useState(false);
+    const [membersLoading, setMembersLoading] = useState(false);
+    const [searchInput, setSearchInput] = useState("");
+    const [projects, setProjects] = useState<ProjectOption[]>([]);
     const [members, setMembers] = useState<
         { id: number | string; name: string; email?: string; image?: string }[]
     >([]);
@@ -57,6 +73,7 @@ const AssignMemberModal = ({ schedule }: { schedule: ISchedules }) => {
                 email: assign.user.email,
                 image: assign.user.image || "",
             }));
+            setMembers(defaultMembers)
             const defaultIds = defaultMembers.map(m => m.id);
             form.reset({
                 members: defaultIds,
@@ -64,11 +81,40 @@ const AssignMemberModal = ({ schedule }: { schedule: ISchedules }) => {
         }
     }, [schedule, form]);
 
+    const debouncedSearch = useDebounce(searchInput, 500);
     useEffect(() => {
-        const loadMembers = async () => {
+        const fetchProjects = async () => {
             setLoading(true);
             try {
-                const res = await getMembersDashboard();
+                const res = await getProjects({ search: debouncedSearch, app: true });
+
+                if (res?.success) {
+                    setProjects(
+                        res.data.map((p: any) => ({
+                            value: String(p.id),
+                            label: p.name,
+                            avatar: p.image || "",
+                        }))
+                    );
+                }
+            } catch (err) {
+                console.error("Fetch projects error:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProjects();
+    }, [debouncedSearch]);
+    const selectedProject = form.watch("project");
+    useEffect(() => {
+        if (!selectedProject) {
+            return;
+        }
+        const loadMembers = async () => {
+            setMembersLoading(true);
+            try {
+                const res = await getMembersDashboard({ project_id: selectedProject });
                 if (res?.success) {
                     const apiMembers = res.data;
                     setMembers([{ id: "all", name: "All", image: "" }, ...apiMembers]);
@@ -76,12 +122,12 @@ const AssignMemberModal = ({ schedule }: { schedule: ISchedules }) => {
             } catch (err) {
                 console.error("Failed to fetch clients", err);
             } finally {
-                setLoading(false);
+                setMembersLoading(false);
             }
         };
 
         loadMembers();
-    }, []);
+    }, [selectedProject]);
 
     async function onSubmit(values: z.infer<typeof scheduleAssignMemberSchema>) {
         if (!schedule?.id) {
@@ -101,7 +147,9 @@ const AssignMemberModal = ({ schedule }: { schedule: ISchedules }) => {
 
             if (res?.success) {
                 toast.success(res?.message || "Schedules assigned successfully");
-                setOpen(false);
+                setTimeout(() => {
+                    setOpen(false);
+                }, 0);
             } else {
                 toast.error(res?.message || "Failed to assign schedules", {
                     style: {
@@ -149,6 +197,60 @@ const AssignMemberModal = ({ schedule }: { schedule: ISchedules }) => {
                         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 ">
                             <FormField
                                 control={form.control}
+                                name="project"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className={""}>Project</FormLabel>
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            defaultValue={field.value}
+                                        // disabled={!selectedAssignee}
+                                        >
+                                            <FormControl>
+                                                <SelectTrigger className="w-full dark:bg-darkSecondaryBg">
+                                                    <SelectValue
+                                                        placeholder={"Select an assignee first"}
+                                                    />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent className="dark:bg-darkSecondaryBg">
+                                                <div className="flex items-center px-2 pb-2 pt-1">
+                                                    <Search className="mr-2 h-4 w-4 opacity-50" />
+                                                    <Input
+                                                        placeholder="Search projects..."
+                                                        className="h-8 border-none focus-visible:ring-0"
+                                                        value={searchInput}
+                                                        onKeyDown={(e) => e.stopPropagation()}
+                                                        onChange={(e) => setSearchInput(e.target.value)}
+                                                    />
+                                                </div>
+                                                {projects.length === 0 ? (
+                                                    <p className="text-sm text-center py-2">
+                                                        {loading ? "Loading..." : "No projects found."}
+                                                    </p>
+                                                ) : (
+                                                    projects.map((p) => (
+                                                        <SelectItem key={p.value} value={p.value}>
+                                                            <div className="flex items-center gap-2">
+                                                                {p.avatar && (
+                                                                    <Avatar className="h-4 w-4">
+                                                                        <AvatarImage src={p.avatar} />
+                                                                        <AvatarFallback className="text-[8px]">P</AvatarFallback>
+                                                                    </Avatar>
+                                                                )}
+                                                                {p.label}
+                                                            </div>
+                                                        </SelectItem>
+                                                    ))
+                                                )}
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
                                 name="members"
                                 render={({ field }) => (
                                     <FormItem>
@@ -176,23 +278,23 @@ const AssignMemberModal = ({ schedule }: { schedule: ISchedules }) => {
                                                 </MultiSelectTrigger>
 
                                                 <MultiSelectContent onWheel={(e) => e.stopPropagation()} className="dark:bg-darkSecondaryBg">
-                                                        <MultiSelectGroup className="dark:bg-darkSecondaryBg">
-                                                            {members.map((member) => (
-                                                                <MultiSelectItem
-                                                                    key={member.id}
-                                                                    value={String(member.id)}
-                                                                    className=" px-0 cursor-pointer hover:dark:bg-darkPrimaryBg"
-                                                                >
-                                                                    <Avatar>
-                                                                        <AvatarImage src={member.image || ""} />
-                                                                        <AvatarFallback>
-                                                                            {member.name.charAt(0)}
-                                                                        </AvatarFallback>
-                                                                    </Avatar>
-                                                                    <p>{member.name}</p>
-                                                                </MultiSelectItem>
-                                                            ))}
-                                                        </MultiSelectGroup>
+                                                    <MultiSelectGroup className="dark:bg-darkSecondaryBg">
+                                                        {members.map((member) => (
+                                                            <MultiSelectItem
+                                                                key={member.id}
+                                                                value={String(member.id)}
+                                                                className=" px-0 cursor-pointer hover:dark:bg-darkPrimaryBg"
+                                                            >
+                                                                <Avatar>
+                                                                    <AvatarImage src={member.image || ""} />
+                                                                    <AvatarFallback>
+                                                                        {member.name.charAt(0)}
+                                                                    </AvatarFallback>
+                                                                </Avatar>
+                                                                <p>{member.name}</p>
+                                                            </MultiSelectItem>
+                                                        ))}
+                                                    </MultiSelectGroup>
                                                 </MultiSelectContent>
                                             </MultiSelect>
                                         </FormControl>
@@ -201,7 +303,7 @@ const AssignMemberModal = ({ schedule }: { schedule: ISchedules }) => {
                                 )}
                             />
 
-                            <Button className=" w-full" type="submit" disabled={loading}>
+                            <Button className=" w-full" type="submit" disabled={loading || membersLoading}>
                                 {loading ? "Loading..." : "Assign Now"}
                             </Button>
                         </form>

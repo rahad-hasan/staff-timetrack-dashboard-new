@@ -49,7 +49,10 @@ const EditEventModal = ({ handleCloseDialog, event }: any) => {
     const zonedStartTime = event?.start_time && utcToUserDate(event.start_time);
     const zonedEndTime = event?.end_time && utcToUserDate(event.end_time);
 
-    const form = useForm<z.infer<typeof editEventSchema>>({
+    type FormInput = z.input<typeof editEventSchema>;
+    type FormOutput = z.output<typeof editEventSchema>;
+
+    const form = useForm<FormInput, any, FormOutput>({
         resolver: zodResolver(editEventSchema),
         defaultValues: {
             date: zonedDate,
@@ -121,105 +124,105 @@ const EditEventModal = ({ handleCloseDialog, event }: any) => {
     }
 
     return (
-            <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                    control={form.control}
+                    name="date"
+                    render={({ field }) => (
+                        <FormItem className="w-full">
+                            <FormLabel>Change Event Date</FormLabel>
+                            <FormControl>
+                                <Popover open={openStartDate} onOpenChange={setOpenStartDate}>
+                                    <PopoverTrigger asChild>
+                                        <Button
+                                            variant="outline2"
+                                            className="w-full py-1.5 justify-between font-normal dark:text-darkTextSecondary dark:bg-darkPrimaryBg dark:border-darkBorder"
+                                        >
+                                            <div className="flex items-center gap-2">
+                                                <CalendarDays className="h-4 w-4" />
+                                                {/* WATCH the form value directly */}
+                                                {field.value ? field.value.toLocaleDateString() : "Set a date"}
+                                            </div>
+                                            <ChevronDownIcon className="h-4 w-4" />
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0" align="start">
+                                        <Calendar
+                                            mode="single"
+                                            selected={field.value!}
+                                            onSelect={(date) => {
+                                                field.onChange(date);
+                                                setOpenStartDate(false);
+                                            }}
+                                            initialFocus
+                                        />
+                                    </PopoverContent>
+                                </Popover>
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <div className=" flex items-center gap-3">
                     <FormField
                         control={form.control}
-                        name="date"
+                        name="start_time"
                         render={({ field }) => (
-                            <FormItem className="w-full">
-                                <FormLabel>Change Event Date</FormLabel>
-                                <FormControl>
-                                    <Popover open={openStartDate} onOpenChange={setOpenStartDate}>
-                                        <PopoverTrigger asChild>
-                                            <Button
-                                                variant="outline2"
-                                                className="w-full py-1.5 justify-between font-normal dark:text-darkTextSecondary dark:bg-darkPrimaryBg dark:border-darkBorder"
-                                            >
-                                                <div className="flex items-center gap-2">
-                                                    <CalendarDays className="h-4 w-4" />
-                                                    {/* WATCH the form value directly */}
-                                                    {field.value ? field.value.toLocaleDateString() : "Set a date"}
-                                                </div>
-                                                <ChevronDownIcon className="h-4 w-4" />
-                                            </Button>
-                                        </PopoverTrigger>
-                                        <PopoverContent className="w-auto p-0" align="start">
-                                            <Calendar
-                                                mode="single"
-                                                selected={field.value!}
-                                                onSelect={(date) => {
-                                                    field.onChange(date);
-                                                    setOpenStartDate(false);
-                                                }}
-                                                initialFocus
-                                            />
-                                        </PopoverContent>
-                                    </Popover>
+                            <FormItem className=" w-full">
+                                <FormLabel>Start Time</FormLabel>
+                                <FormControl className="">
+                                    <div className='relative '>
+                                        <div className='text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 peer-disabled:opacity-50'>
+                                            <ClockIcon size={16} className=" text-headingTextColor dark:text-darkTextPrimary" />
+                                        </div>
+                                        <Input
+                                            type='time'
+                                            id='time-picker'
+                                            step='1'
+                                            {...field}
+                                            className='peer bg-background dark:bg-darkPrimaryBg dark:border-darkBorder appearance-none pl-9 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none'
+                                        />
+                                    </div>
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
-                    <div className=" flex items-center gap-3">
-                        <FormField
-                            control={form.control}
-                            name="start_time"
-                            render={({ field }) => (
-                                <FormItem className=" w-full">
-                                    <FormLabel>Start Time</FormLabel>
-                                    <FormControl className="">
-                                        <div className='relative '>
-                                            <div className='text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 peer-disabled:opacity-50'>
-                                                <ClockIcon size={16} className=" text-headingTextColor dark:text-darkTextPrimary" />
-                                            </div>
-                                            <Input
-                                                type='time'
-                                                id='time-picker'
-                                                step='1'
-                                                {...field}
-                                                className='peer bg-background dark:bg-darkPrimaryBg dark:border-darkBorder appearance-none pl-9 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none'
-                                            />
+                    <FormField
+                        control={form.control}
+                        name="end_time"
+                        render={({ field }) => (
+                            <FormItem className=" w-full">
+                                <FormLabel>End Time</FormLabel>
+                                <FormControl className="">
+                                    <div className='relative '>
+                                        <div className='text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 peer-disabled:opacity-50'>
+                                            <ClockIcon size={16} className=" text-headingTextColor dark:text-darkTextPrimary" />
                                         </div>
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="end_time"
-                            render={({ field }) => (
-                                <FormItem className=" w-full">
-                                    <FormLabel>End Time</FormLabel>
-                                    <FormControl className="">
-                                        <div className='relative '>
-                                            <div className='text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 peer-disabled:opacity-50'>
-                                                <ClockIcon size={16} className=" text-headingTextColor dark:text-darkTextPrimary" />
-                                            </div>
-                                            <Input
-                                                type='time'
-                                                id='time-picker'
-                                                step='1'
-                                                {...field}
-                                                className='peer bg-background dark:bg-darkPrimaryBg dark:border-darkBorder appearance-none pl-9 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none'
-                                            />
-                                        </div>
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-                    </div>
-                    <Button
-                        className="w-full"
-                        type="submit"
-                        disabled={loading}
-                    >
-                        {loading ? "Updating..." : "Reschedule Event"}
-                    </Button>
-                </form>
-            </Form>
+                                        <Input
+                                            type='time'
+                                            id='time-picker'
+                                            step='1'
+                                            {...field}
+                                            className='peer bg-background dark:bg-darkPrimaryBg dark:border-darkBorder appearance-none pl-9 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none'
+                                        />
+                                    </div>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
+                <Button
+                    className="w-full"
+                    type="submit"
+                    disabled={loading}
+                >
+                    {loading ? "Updating..." : "Reschedule Event"}
+                </Button>
+            </form>
+        </Form>
 
     );
 };

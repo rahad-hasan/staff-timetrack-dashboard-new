@@ -55,3 +55,11 @@ export const deleteSchedule = async (id: number) => {
         tag: "schedules",
     });
 };
+
+export const deleteMemberFromSchedule = async ({ data, id }: { data: {member_id: number}, id: number }) => {
+    return await baseApi(`/schedules/remove-members/${id}`, {
+        method: "DELETE",
+        body: data,
+        tag: "schedules",
+    });
+};

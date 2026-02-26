@@ -1,20 +1,29 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { ArrowUpDown } from "lucide-react";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { User } from "@/types/type";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import SearchBar from "../Common/SearchBar";
 import Link from "next/link";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import FilterButton from "../Common/FilterButton";
+import ConfirmDialog from "../Common/ConfirmDialog";
+import DeleteIcon from "../Icons/DeleteIcon";
+import { deleteMemberFromSchedule } from "@/actions/schedule/action";
+import { toast } from "sonner";
 
-const SingleScheduleMemberTable = ({ data }: { data: [{ user: User; }] | undefined }) => {
+const SingleScheduleMemberTable = ({ id, data }: { id: number | undefined, data: [{ user: User; }] | undefined }) => {
     console.log(data);
-    const [sorting, setSorting] = useState<SortingState>([])
+    const [sorting, setSorting] = useState<SortingState>([]);
+    const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
-    const [rowSelection, setRowSelection] = useState({})
+    const [rowSelection, setRowSelection] = useState({});
 
     const filteredData = useMemo(() => {
         if (!searchTerm) return data;
@@ -25,6 +34,37 @@ const SingleScheduleMemberTable = ({ data }: { data: [{ user: User; }] | undefin
             );
         });
     }, [data, searchTerm]);
+
+    const handleDelete = useCallback(async (user: User) => {
+        // console.log({ data: { member_id: user?.id }, id: id! });
+        setLoading(true);
+        try {
+            const res = await deleteMemberFromSchedule({ data: { member_id: user?.id }, id: id! });
+
+            if (res?.success) {
+                toast.success(res?.message || "Member removed successfully");
+            } else {
+                toast.error(res?.message || "Failed to remove member", {
+                    style: {
+                        backgroundColor: '#ef4444',
+                        color: 'white',
+                        border: 'none'
+                    },
+                });
+            }
+        } catch (error: any) {
+            toast.error(error?.message || "Something went wrong!", {
+                style: {
+                    backgroundColor: '#ef4444',
+                    color: 'white',
+                    border: 'none'
+                },
+            });
+        } finally {
+            setLoading(false);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const columns: ColumnDef<{ user: User }>[] = [
         {
@@ -81,6 +121,48 @@ const SingleScheduleMemberTable = ({ data }: { data: [{ user: User; }] | undefin
                     </div>
                 )
             }
+        },
+        {
+            accessorKey: "action",
+            header: () =>
+                <>
+                    <div className="">Action</div>
+                </>,
+            cell: ({ row }) => {
+                return (
+                    <>
+                        <div className="">
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <div>
+                                        <FilterButton></FilterButton>
+                                    </div>
+                                </PopoverTrigger>
+                                <PopoverContent side="bottom" align="center" className=" w-[120px] p-2">
+                                    <div className="">
+                                        <div className="space-y-2">
+                                            <ConfirmDialog
+                                                trigger={
+                                                    <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
+                                                        <DeleteIcon size={18} />
+                                                        <p>Remove</p>
+                                                    </div>
+                                                }
+                                                title="Remove the member from schedule"
+                                                description="Are you sure you want to remove this member from the schedule? This action cannot be undone."
+                                                confirmText="Confirm"
+                                                cancelText="Cancel"
+                                                // confirmClassName="bg-primary hover:bg-primary"
+                                                onConfirm={() => handleDelete(row?.original?.user)}
+                                            />
+                                        </div>
+                                    </div>
+                                </PopoverContent>
+                            </Popover>
+                        </div>
+                    </>
+                );
+            },
         },
     ];
 

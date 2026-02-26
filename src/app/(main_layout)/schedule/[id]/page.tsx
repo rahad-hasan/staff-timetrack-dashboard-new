@@ -107,7 +107,7 @@ const SingleSchedulePage = async ({ params }: { params: Promise<{ id: string }> 
                             Active Personnel
                         </h3>
                     </div>
-                    <SingleScheduleMemberTable data={schedule.scheduleAssigns}></SingleScheduleMemberTable>
+                    <SingleScheduleMemberTable id={schedule.id} data={schedule.scheduleAssigns}></SingleScheduleMemberTable>
                 </div>
             </main>
         </div>
