@@ -182,7 +182,7 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
     };
 
     return (
-        <DialogContent className="sm:max-w-[525px]">
+        <DialogContent className="sm:max-w-[525px] max-h-[95vh] overflow-y-auto">
             <DialogHeader>
                 <div className=" flex gap-3 items-center mt-5 mb-4">
                     <span className=" h-1.5 rounded-full bg-primary w-full"></span>
@@ -312,6 +312,87 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
                         <div className=" space-y-4">
                             <FormField
                                 control={form.control}
+                                name="project"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel className={""}>Project</FormLabel>
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            defaultValue={field.value}
+                                        // disabled={!selectedAssignee}
+                                        >
+                                            <FormControl>
+                                                <SelectTrigger className="w-full dark:bg-darkSecondaryBg">
+                                                    <SelectValue
+                                                        placeholder={"Select project"}
+                                                    />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent className="dark:bg-darkSecondaryBg">
+                                                <div className="flex items-center px-2 pb-2 pt-1">
+                                                    <Search className="mr-2 h-4 w-4 opacity-50" />
+                                                    <Input
+                                                        placeholder="Search projects..."
+                                                        className="h-8 border-none focus-visible:ring-0"
+                                                        value={searchInput}
+                                                        onKeyDown={(e) => e.stopPropagation()}
+                                                        onChange={(e) => setSearchInput(e.target.value)}
+                                                    />
+                                                </div>
+                                                {projects.length === 0 ? (
+                                                    <p className="text-sm text-center py-2">
+                                                        {loading ? "Loading..." : "No projects found."}
+                                                    </p>
+                                                ) : (
+                                                    projects.map((p) => (
+                                                        <SelectItem key={p.value} value={p.value}>
+                                                            <div className="flex items-center gap-2">
+                                                                {p.avatar && (
+                                                                    <Avatar className="h-4 w-4">
+                                                                        <AvatarImage src={p.avatar} />
+                                                                        <AvatarFallback className="text-[8px]">P</AvatarFallback>
+                                                                    </Avatar>
+                                                                )}
+                                                                {p.label}
+                                                            </div>
+                                                        </SelectItem>
+                                                    ))
+                                                )}
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="password"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Password</FormLabel>
+                                        <FormControl>
+                                            <div className="relative">
+                                                <Input
+                                                    type={showPassword ? "text" : "password"}
+                                                    className=" dark:border-darkBorder"
+                                                    placeholder="Password"
+                                                    {...field}
+                                                />
+                                                <div
+                                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
+                                                    onClick={togglePasswordVisibility}
+                                                >
+                                                    {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+                                                </div>
+                                            </div>
+                                            {/* <Input type="password" className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Set Password" {...field} /> */}
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
                                 name="time_zone"
                                 render={({ field }) => (
                                     <FormItem className="flex flex-col w-full">
@@ -366,60 +447,6 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
                                                 </Command>
                                             </PopoverContent>
                                         </Popover>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="project"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel className={""}>Project</FormLabel>
-                                        <Select
-                                            onValueChange={field.onChange}
-                                            defaultValue={field.value}
-                                        // disabled={!selectedAssignee}
-                                        >
-                                            <FormControl>
-                                                <SelectTrigger className="w-full dark:bg-darkSecondaryBg">
-                                                    <SelectValue
-                                                        placeholder={"Select project"}
-                                                    />
-                                                </SelectTrigger>
-                                            </FormControl>
-                                            <SelectContent className="dark:bg-darkSecondaryBg">
-                                                <div className="flex items-center px-2 pb-2 pt-1">
-                                                    <Search className="mr-2 h-4 w-4 opacity-50" />
-                                                    <Input
-                                                        placeholder="Search projects..."
-                                                        className="h-8 border-none focus-visible:ring-0"
-                                                        value={searchInput}
-                                                        onKeyDown={(e) => e.stopPropagation()}
-                                                        onChange={(e) => setSearchInput(e.target.value)}
-                                                    />
-                                                </div>
-                                                {projects.length === 0 ? (
-                                                    <p className="text-sm text-center py-2">
-                                                        {loading ? "Loading..." : "No projects found."}
-                                                    </p>
-                                                ) : (
-                                                    projects.map((p) => (
-                                                        <SelectItem key={p.value} value={p.value}>
-                                                            <div className="flex items-center gap-2">
-                                                                {p.avatar && (
-                                                                    <Avatar className="h-4 w-4">
-                                                                        <AvatarImage src={p.avatar} />
-                                                                        <AvatarFallback className="text-[8px]">P</AvatarFallback>
-                                                                    </Avatar>
-                                                                )}
-                                                                {p.label}
-                                                            </div>
-                                                        </SelectItem>
-                                                    ))
-                                                )}
-                                            </SelectContent>
-                                        </Select>
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -488,38 +515,11 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
                                             <Input
                                                 type="number"
                                                 {...field}
-                                                className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="10 means 10 dollars per hour"
+                                                className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Only USD is supported"
                                                 onChange={(e) =>
                                                     field.onChange(e.target.value === "" ? undefined : e.target.valueAsNumber)
                                                 }
                                             />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="password"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Password</FormLabel>
-                                        <FormControl>
-                                            <div className="relative">
-                                                <Input
-                                                    type={showPassword ? "text" : "password"}
-                                                    className=" dark:border-darkBorder"
-                                                    placeholder="Password"
-                                                    {...field}
-                                                />
-                                                <div
-                                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
-                                                    onClick={togglePasswordVisibility}
-                                                >
-                                                    {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
-                                                </div>
-                                            </div>
-                                            {/* <Input type="password" className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Set Password" {...field} /> */}
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>

@@ -176,17 +176,17 @@ export const addNewMemberSchema = z.object({
             {
                 message: 'Phone number must be a valid international format',
             }
-        ),
+        ).optional(),
     role: z.string().min(1, "Role is required"),
     time_zone: z.string()
         .min(1, "Time Zone is required"),
     project: z.string().min(1, "Project is required"),
-    schedule: z.string().min(1, "Schedule is required"),
+    schedule: z.string().min(1, "Schedule is required").optional(),
     pay_rate_hourly: z
         .number({ message: "Pay rate must be a number" })
         .int()
         .min(1, { message: 'Pay rate must be 1 or greater' })
-        .max(10000, { message: 'Pay rate must be 10000 or less' }),
+        .max(10000, { message: 'Pay rate must be 10000 or less' }).optional(),
     password: z.string()
         .min(8, "Minimum 8 characters")
         .regex(/[a-z]/, "At least one lowercase letter")
