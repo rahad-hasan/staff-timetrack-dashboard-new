@@ -26,7 +26,6 @@ import { Checkbox } from "../ui/checkbox";
 import { toast } from "sonner";
 import { addSchedule } from "@/actions/schedule/action";
 
-
 const AddScheduleModal = ({ onClose }: { onClose: () => void }) => {
     const [loading, setLoading] = useState(false);
     const [isAllowOvertime, setIsAllowOvertime] = useState(false);
@@ -48,6 +47,7 @@ const AddScheduleModal = ({ onClose }: { onClose: () => void }) => {
             end_time: values.end_time,
             grace_in_min: values.grace_in_min,
             grace_out_min: values.grace_out_min,
+            break_in_min: values.break_in_min,
             allow_overtime: isAllowOvertime,
         }
         setLoading(true);
@@ -85,7 +85,7 @@ const AddScheduleModal = ({ onClose }: { onClose: () => void }) => {
 
 
     return (
-        <DialogContent className="sm:max-w-[525px]">
+        <DialogContent className="sm:max-w-[525px] max-h-[95vh] overflow-y-auto">
             <DialogHeader>
                 <DialogTitle className=" mb-4">Create Schedule</DialogTitle>
             </DialogHeader>
@@ -179,6 +179,27 @@ const AddScheduleModal = ({ onClose }: { onClose: () => void }) => {
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Grace Out Minutes</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        type="number"
+                                        {...field}
+                                        className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="10 means 10 minutes"
+                                        onChange={(e) =>
+                                            field.onChange(e.target.value === "" ? undefined : e.target.valueAsNumber)
+                                        }
+                                    />
+
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="break_in_min"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Break In Minutes</FormLabel>
                                 <FormControl>
                                     <Input
                                         type="number"

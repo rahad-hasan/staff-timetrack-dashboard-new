@@ -176,7 +176,7 @@ const AssignMemberModal = ({ schedule }: { schedule: ISchedules }) => {
         <div>
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild>
-                    <div className="mt-8 pt-6 border-t border-dashed border-borderColor dark:border-darkBorder">
+                    <div className="mt-6 pt-6 border-t border-dashed border-borderColor dark:border-darkBorder">
                         <Button onClick={() => setOpen(true)} className="">
                             <InviteMemberIcon size={20} />  Assign Member
                         </Button>

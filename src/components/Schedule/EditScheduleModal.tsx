@@ -36,7 +36,6 @@ const EditScheduleModal = ({ onClose, selectedSchedule }: EditNewMemberModalProp
     const [loading, setLoading] = useState(false);
     const [isAllowOvertime, setIsAllowOvertime] = useState(selectedSchedule?.allow_overtime || false);
 
-
     const form = useForm<z.infer<typeof ScheduleShiftSchema>>({
         resolver: zodResolver(ScheduleShiftSchema),
         defaultValues: {
@@ -45,6 +44,7 @@ const EditScheduleModal = ({ onClose, selectedSchedule }: EditNewMemberModalProp
             end_time: convertTo24Hour(selectedSchedule.end_time_local),
             grace_in_min: selectedSchedule?.grace_in_min,
             grace_out_min: selectedSchedule?.grace_out_min,
+            break_in_min: selectedSchedule?.break_in_min,
         },
     })
     useEffect(() => {
@@ -55,10 +55,10 @@ const EditScheduleModal = ({ onClose, selectedSchedule }: EditNewMemberModalProp
                 end_time: convertTo24Hour(selectedSchedule.end_time_local),
                 grace_in_min: selectedSchedule?.grace_in_min,
                 grace_out_min: selectedSchedule?.grace_out_min,
+                break_in_min: selectedSchedule?.break_in_min,
             });
         }
     }, [selectedSchedule, form]);
-
 
     async function onSubmit(values: z.infer<typeof ScheduleShiftSchema>) {
         const finalData = {
@@ -67,11 +67,12 @@ const EditScheduleModal = ({ onClose, selectedSchedule }: EditNewMemberModalProp
             end_time: values.end_time,
             grace_in_min: values.grace_in_min,
             grace_out_min: values.grace_out_min,
+            break_in_min: values.break_in_min,
             ...(isAllowOvertime && { allow_overtime: isAllowOvertime })
         }
         setLoading(true);
         try {
-            const res = await editSchedule({data:finalData, id: selectedSchedule.id});
+            const res = await editSchedule({ data: finalData, id: selectedSchedule.id });
 
             if (res?.success) {
                 form.reset();
@@ -101,9 +102,8 @@ const EditScheduleModal = ({ onClose, selectedSchedule }: EditNewMemberModalProp
         }
     }
 
-
     return (
-        <DialogContent className="sm:max-w-[525px]">
+        <DialogContent className="sm:max-w-[525px] max-h-[95vh] overflow-y-auto">
             <DialogHeader>
                 <DialogTitle className=" mb-4">Edit Schedule</DialogTitle>
             </DialogHeader>
@@ -197,6 +197,27 @@ const EditScheduleModal = ({ onClose, selectedSchedule }: EditNewMemberModalProp
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Grace Out Minutes</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        type="number"
+                                        {...field}
+                                        className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="10 means 10 minutes"
+                                        onChange={(e) =>
+                                            field.onChange(e.target.value === "" ? undefined : e.target.valueAsNumber)
+                                        }
+                                    />
+
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="break_in_min"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Break In Minutes</FormLabel>
                                 <FormControl>
                                     <Input
                                         type="number"

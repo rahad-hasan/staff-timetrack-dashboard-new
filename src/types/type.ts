@@ -673,6 +673,7 @@ export interface ISchedules {
   end_time: string;
   grace_in_min: number;
   grace_out_min: number;
+  break_in_min: number;
   allow_overtime?: boolean;
   _count?: { scheduleAssigns: number };
   scheduleAssigns?: [{ user: User }];

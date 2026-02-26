@@ -33,13 +33,13 @@ const SingleSchedulePage = async ({ params }: { params: Promise<{ id: string }> 
 
             <main className=" px-4 py-8">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 xl:gap-8 items-stretch">
-                    <div className="lg:col-span-4 space-y-6 ">
+                    <div className="lg:col-span-4 space-y-5 ">
                         <section className="p-6 h-full rounded-2xl bg-white dark:bg-darkPrimaryBg border border-borderColor dark:border-darkBorder">
-                            <h3 className="text-sm font-bold uppercase tracking-wider text-gray-400 mb-6 flex items-center gap-2">
+                            <h3 className="text-sm font-bold uppercase tracking-wider text-gray-400 mb-4 flex items-center gap-2">
                                 <Settings className="w-4 h-4" /> Schedule Rules
                             </h3>
 
-                            <div className="space-y-6">
+                            <div className="space-y-4">
                                 <div className="flex justify-between items-center">
                                     <span className="text-gray-500 dark:text-darkTextSecondary">Overtime</span>
                                     <span className={`px-2 py-1 rounded text-xs font-bold ${schedule.allow_overtime ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
@@ -53,6 +53,10 @@ const SingleSchedulePage = async ({ params }: { params: Promise<{ id: string }> 
                                 <div className="flex justify-between items-center">
                                     <span className="text-gray-500 dark:text-darkTextSecondary">Grace Out Period</span>
                                     <span className="font-mono font-medium">{schedule.grace_out_min} Minutes</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <span className="text-gray-500 dark:text-darkTextSecondary">Break In Period</span>
+                                    <span className="font-mono font-medium">{schedule.break_in_min} Minutes</span>
                                 </div>
                             </div>
                             <AssignMemberModal schedule={schedule}></AssignMemberModal>

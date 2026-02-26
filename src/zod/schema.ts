@@ -373,6 +373,12 @@ export const ScheduleShiftSchema = z.object({
         .int()
         .min(0, { message: 'Grace out minutes must be 0 or greater' })
         .max(1440, { message: 'Grace out minutes must be 1440 or less' }),
+
+    break_in_min: z
+        .number({ message: "Break in minutes must be a number" })
+        .int()
+        .min(0, { message: 'Break in minutes must be 0 or greater' })
+        .max(1440, { message: 'Break in minutes must be 1440 or less' }),
 });
 
 

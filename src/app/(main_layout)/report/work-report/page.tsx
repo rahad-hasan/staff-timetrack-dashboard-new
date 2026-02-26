@@ -15,9 +15,9 @@ const WorkReport = async ({ searchParams }: ISearchParamsProps) => {
     const user = await getDecodedUser();
     const res = await getWorkReport({
         user_id: params.user_id ?? user?.id,
-        allow_overtime: params?.allow_overtime ?? false,
+        allow_overtime: params?.allow_overtime,
     });
-    console.log("render work report");
+
     const data: IUserWorkReport = res?.data;
     if (!data) return <div className="">
         <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
