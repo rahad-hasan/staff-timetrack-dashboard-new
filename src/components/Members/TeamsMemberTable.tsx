@@ -143,7 +143,7 @@ const TeamsMemberTable = ({ data }: any) => {
             {is_active ? (
               <button className="text-primary py-1">Active</button>
             ) : (
-              <button className="text-red-500 rounded-lg px-2 py-1">
+              <button className="text-red-500 rounded-lg py-1">
                 Inactive
               </button>
             )}
