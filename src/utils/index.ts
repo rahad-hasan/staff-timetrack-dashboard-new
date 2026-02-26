@@ -117,15 +117,24 @@ export const convertTo24Hour = (timeStr: string | undefined) => {
   return `${paddedHours}:${paddedMinutes}:00`;
 };
 
-export const getDuration = (start?: string, end?: string, tz = getUserTimeZone()) => {
+export const getDuration = (start?: string, end?: string, breakInMin = 0, tz = getUserTimeZone()) => {
   if (!start || !end) return "0h";
 
   const startUtc = fromZonedTime(start, tz);
   const endUtc = fromZonedTime(end, tz);
 
-  const diffMs = endUtc.getTime() - startUtc.getTime();
+  // Get total diff in ms
+  let diffMs = endUtc.getTime() - startUtc.getTime();
 
-  const hours = diffMs / (1000 * 60 * 60);
+  // Subtract break duration (convert minutes to ms: min * 60s * 1000ms)
+  if (breakInMin > 0) {
+    diffMs -= (breakInMin * 60 * 1000);
+  }
+
+  // Ensure we don't return negative hours if break is longer than total time
+  const finalDiffMs = Math.max(0, diffMs);
+
+  const hours = finalDiffMs / (1000 * 60 * 60);
 
   return `${hours.toFixed(1)} Hours`;
 };

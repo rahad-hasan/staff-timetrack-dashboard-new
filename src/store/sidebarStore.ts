@@ -1,6 +1,6 @@
 import { othersSidebarItems, sidebarItems } from "@/utils/SidebarItems";
 import { create } from "zustand";
-import { persist, devtools } from "zustand/middleware";
+import { devtools } from "zustand/middleware";
 
 
 interface SidebarState {
@@ -68,9 +68,9 @@ export const useSidebarStore = create<SidebarState>()(
                 set({ openMenu: null, activeMenu: null, activeSubItem: "", isCollapsed: false }),
         }),
 
-        {
-            name: "sidebar-storage", // localStorage key
-        }
+        // {
+        //     name: "sidebar-storage", // localStorage key
+        // }
         // )
     )
 );

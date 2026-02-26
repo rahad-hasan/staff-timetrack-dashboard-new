@@ -91,7 +91,7 @@ const SingleSchedulePage = async ({ params }: { params: Promise<{ id: string }> 
                                             <Clock className="w-6 h-6 text-headingTextColor dark:text-darkTextPrimary" />
                                         </div>
                                         <p className="text-[10px] mt-1 font-bold uppercase text-gray-400 tracking-widest">Duration</p>
-                                        <p className="text-sm font-semibold">{getDuration(schedule.start_time, schedule.end_time)}</p>
+                                        <p className="text-sm font-semibold">{getDuration(schedule.start_time, schedule.end_time, schedule?.break_in_min)}</p>
                                     </div>
                                 </div>
                             </div>
