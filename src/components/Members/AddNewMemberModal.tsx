@@ -184,7 +184,11 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
     return (
         <DialogContent className="sm:max-w-[525px]">
             <DialogHeader>
-                <DialogTitle className=" mb-4">Add Member</DialogTitle>
+                <div className=" flex gap-3 items-center mt-5 mb-4">
+                    <span className=" h-1.5 rounded-full bg-primary w-full"></span>
+                    <span className={` h-1.5 rounded-full ${step >= 2 ? "bg-primary" : "bg-[#dce3e3]"}  w-full `}></span>
+                </div>
+                <DialogTitle className=" mb-2">Add Member</DialogTitle>
             </DialogHeader>
 
             <Form {...form}>

@@ -302,7 +302,6 @@ const AssignMemberModal = ({ schedule }: { schedule: ISchedules }) => {
                                     </FormItem>
                                 )}
                             />
-
                             <Button className=" w-full" type="submit" disabled={loading || membersLoading}>
                                 {loading ? "Loading..." : "Assign Now"}
                             </Button>
@@ -310,7 +309,6 @@ const AssignMemberModal = ({ schedule }: { schedule: ISchedules }) => {
                     </Form>
                 </DialogContent>
             </Dialog>
-
         </div>
     );
 };
