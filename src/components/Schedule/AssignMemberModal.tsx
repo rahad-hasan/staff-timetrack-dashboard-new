@@ -56,7 +56,7 @@ const AssignMemberModal = ({ schedule }: { schedule: ISchedules }) => {
     const [projects, setProjects] = useState<ProjectOption[]>([]);
     const [members, setMembers] = useState<
         { id: number | string; name: string; email?: string; image?: string }[]
-    >([{ id: "all", name: "All", image: "" }, { id: "all_project_members", name: "Selected Project Members", image: "" }]);
+    >([]);
 
     console.log(members);
 
@@ -75,7 +75,7 @@ const AssignMemberModal = ({ schedule }: { schedule: ISchedules }) => {
                 email: assign.user.email,
                 image: assign.user.image || "",
             }));
-            setMembers([...members, ...defaultMembers])
+            setMembers(defaultMembers)
             const defaultIds = defaultMembers.map(m => m.id);
             form.reset({
                 members: defaultIds,
@@ -119,7 +119,7 @@ const AssignMemberModal = ({ schedule }: { schedule: ISchedules }) => {
                 const res = await getMembersDashboard({ project_id: selectedProject });
                 if (res?.success) {
                     const apiMembers = res.data;
-                    setMembers([...members, ...apiMembers]);
+                    setMembers([{ id: "all", name: "All", image: "" }, { id: "all_project_members", name: "Selected Project Members", image: "" }, ...apiMembers]);
                 }
             } catch (err) {
                 console.error("Failed to fetch clients", err);

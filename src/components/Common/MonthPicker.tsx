@@ -70,11 +70,11 @@ const MonthPicker = () => {
     const formatMonth = (date: Date) => {
         return format(date, "MMMM yyyy");
     };
-    
+
     const monthDisplay = formatMonth(selectedDate);
 
     return (
-        <div className="flex w-full">
+        <div className="flex ">
             <ChevronLeft
                 onClick={() => handleNavigate(-1)}
                 className="border p-2.5 w-12 sm:w-10 h-10 dark:bg-darkPrimaryBg border-borderColor dark:border-darkBorder text-headingTextColor dark:text-darkTextPrimary rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-darkSecondaryBg"

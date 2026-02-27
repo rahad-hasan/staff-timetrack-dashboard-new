@@ -14,13 +14,15 @@ import MonthPicker from "@/components/Common/MonthPicker";
 const WorkReport = async ({ searchParams }: ISearchParamsProps) => {
     console.log('render .....................................');
     const params = await searchParams;
-    // const yearDate = params?.start_month as string;
-    // const [year, month] = yearDate?.split("-");
-    // console.log(year, month);
+    const yearDate = params?.start_month as string | undefined;
+    const [year, month] = yearDate ? yearDate.split("-") : [undefined, undefined]
     const user = await getDecodedUser();
+
     const res = await getWorkReport({
         user_id: params.user_id ?? user?.id,
         allow_overtime: params?.allow_overtime,
+        ...(year && { year }),
+        ...(month && { month }),
     });
 
     const data: IUserWorkReport = res?.data;
@@ -54,27 +56,39 @@ const WorkReport = async ({ searchParams }: ISearchParamsProps) => {
 
     return (
         <div className="space-y-6">
-            <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
-                <div className="flex items-center gap-3">
-                    <h1 className=" text-md sm:text-xl xl:text-2xl font-bold text-headingTextColor dark:text-darkTextPrimary flex items-center gap-2">
+            <div className="flex flex-col gap-3 xl:flex-row sm:justify-between xl:items-center">
+                <div className="flex flex-col md:flex-row lg:items-center gap-3">
+                    <h1 className="text-xl 2xl:text-2xl font-bold text-headingTextColor dark:text-darkTextPrimary flex items-center gap-2">
                         <CalendarIcon className=" text-primary" size={25} />
                         Work Report: {format(monthStart, "MMMM yyyy")}
                     </h1>
-                    <div className="px-4 py-2 bg-blue-50 dark:bg-darkSecondaryBg rounded-full text-sm font-medium">
+                    {/* <div className="px-4 py-2 bg-blue-50 dark:bg-darkSecondaryBg rounded-full text-sm font-medium">
                         {data.time_zone}
-                    </div>
+                    </div> */}
                     <MonthPicker></MonthPicker>
                 </div>
-                <div className=" flex flex-col md:flex-row md:items-center gap-4">
+                <div className=" hidden xl:flex flex-col md:flex-row md:items-center gap-4">
                     <AllowOvertimeCheckbox overTime={data?.schedule?.allow_overtime} />
                     <SelectUserWrapper />
+                </div>
+                <div className=" flex xl:hidden flex-col md:flex-row md:items-center gap-4">
+                    <SelectUserWrapper />
+                    <AllowOvertimeCheckbox overTime={data?.schedule?.allow_overtime} />
                 </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
 
                 <div className="bg-white dark:bg-darkSecondaryBg p-5 rounded-xl border border-borderColor dark:border-darkBorder">
-                    <h3 className="text-sm font-semibold text-subTextColor dark:text-darkTextSecondary uppercase tracking-wider mb-3">Active Schedule</h3>
+                    <div className="flex justify-between items-center mb-3">
+                        <h3 className="text-sm font-semibold text-subTextColor dark:text-darkTextSecondary uppercase tracking-wider">
+                            Active Schedule
+                        </h3>
+                        {/* TIMEZONE MOVED HERE */}
+                        <span className="px-3 py-1.5 bg-blue-50 dark:bg-darkSecondaryBg rounded-full text-xs font-medium">
+                            {data.time_zone}
+                        </span>
+                    </div>
                     <div className="flex flex-col gap-1">
                         <span className="text-lg font-bold text-headingTextColor dark:text-darkTextPrimary">{data.schedule.name}</span>
                         <div className="flex items-center gap-2 text-sm text-subTextColor dark:text-darkTextSecondary">
