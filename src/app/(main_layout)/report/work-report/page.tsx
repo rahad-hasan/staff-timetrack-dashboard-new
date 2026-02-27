@@ -85,7 +85,7 @@ const WorkReport = async ({ searchParams }: ISearchParamsProps) => {
                             Active Schedule
                         </h3>
                         {/* TIMEZONE MOVED HERE */}
-                        <span className="px-3 py-1.5 bg-blue-50 dark:bg-darkSecondaryBg rounded-full text-xs font-medium">
+                        <span className="px-3 py-1.5 bg-blue-50 dark:bg-darkPrimaryBg rounded-full text-xs font-medium">
                             {data.time_zone}
                         </span>
                     </div>
@@ -93,7 +93,7 @@ const WorkReport = async ({ searchParams }: ISearchParamsProps) => {
                         <span className="text-lg font-bold text-headingTextColor dark:text-darkTextPrimary">{data.schedule.name}</span>
                         <div className="flex items-center gap-2 text-sm text-subTextColor dark:text-darkTextSecondary">
                             <Clock className="w-4 h-4" />
-                            {format(parseISO(data.schedule.start_time), "hh:mm a")} - {format(parseISO(data.schedule.end_time), "hh:mm a")}
+                            {format(data.schedule.start_time, "hh:mm a")} - {format(data.schedule.end_time, "hh:mm a")}
                         </div>
                         <div className="mt-2 flex gap-2">
                             <span className="text-[14px] bg-slate-100 dark:bg-darkPrimaryBg/70 px-2 py-1 rounded">Grace In: {data.schedule.grace_in_min}m</span>

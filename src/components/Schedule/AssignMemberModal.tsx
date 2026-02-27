@@ -54,11 +54,15 @@ const AssignMemberModal = ({ schedule }: { schedule: ISchedules }) => {
     const [membersLoading, setMembersLoading] = useState(false);
     const [searchInput, setSearchInput] = useState("");
     const [projects, setProjects] = useState<ProjectOption[]>([]);
-    const [members, setMembers] = useState<
-        { id: number | string; name: string; email?: string; image?: string }[]
-    >([]);
+    console.log(projects);
+    // const [members, setMembers] = useState<
+    //     { id: number | string; name: string; email?: string; image?: string }[]
+    // >([]);
+    // const [selectedMembers, setSelectedMembers] = useState<
+    //     { id: number | string; name: string; email?: string; image?: string }[]
+    // >([]);
 
-    console.log(members);
+    // console.log(members);
 
     const form = useForm<z.infer<typeof scheduleAssignMemberSchema>>({
         resolver: zodResolver(scheduleAssignMemberSchema),
@@ -67,37 +71,39 @@ const AssignMemberModal = ({ schedule }: { schedule: ISchedules }) => {
         },
     });
 
+    const [availableMembers, setAvailableMembers] = useState<{ id: number | string; name: string; email?: string; image?: string }[]>([]);
+    // const [selectedMembers, setSelectedMembers] = useState<{ id: number | string; name: string; email?: string; image?: string }[]>([]);
+
     useEffect(() => {
         if (schedule?.scheduleAssigns) {
-            const defaultMembers = schedule.scheduleAssigns.map((assign) => ({
+            const initialMembers = schedule.scheduleAssigns.map((assign) => ({
                 id: assign.user.id,
                 name: assign.user.name,
                 email: assign.user.email,
                 image: assign.user.image || "",
             }));
-            setMembers(defaultMembers)
-            const defaultIds = defaultMembers.map(m => m.id);
-            form.reset({
-                members: defaultIds,
-            });
+            setAvailableMembers(initialMembers);
+            form.reset({ members: initialMembers.map(m => m.id) });
         }
     }, [schedule, form]);
 
     const debouncedSearch = useDebounce(searchInput, 500);
+
     useEffect(() => {
         const fetchProjects = async () => {
             setLoading(true);
             try {
                 const res = await getProjects({ search: debouncedSearch, app: true });
 
+
                 if (res?.success) {
-                    setProjects(
-                        res.data.map((p: any) => ({
-                            value: String(p.id),
-                            label: p.name,
-                            avatar: p.image || "",
-                        }))
-                    );
+                    const mapped = res.data.map((p: any) => ({
+                        value: String(p.id),
+                        label: p.name,
+                        avatar: p.image || "",
+                    }));
+                    setProjects([
+                        { value: "all", label: "All" }, ...mapped,]);
                 }
             } catch (err) {
                 console.error("Fetch projects error:", err);
@@ -109,25 +115,23 @@ const AssignMemberModal = ({ schedule }: { schedule: ISchedules }) => {
         fetchProjects();
     }, [debouncedSearch]);
     const selectedProject = form.watch("project");
+    // 2. Fetching logic updates availableMembers
     useEffect(() => {
-        if (!selectedProject) {
-            return;
-        }
+        if (!selectedProject) return;
         const loadMembers = async () => {
             setMembersLoading(true);
             try {
-                const res = await getMembersDashboard({ project_id: selectedProject });
+                const res = await getMembersDashboard(selectedProject === "all" ? {} : { project_id: selectedProject });
                 if (res?.success) {
-                    const apiMembers = res.data;
-                    setMembers([{ id: "all", name: "All", image: "" }, { id: "all_project_members", name: "Selected Project Members", image: "" }, ...apiMembers]);
+                    // Keep the "Special" options separate or at the top
+                    setAvailableMembers(res.data);
                 }
             } catch (err) {
-                console.error("Failed to fetch clients", err);
+                console.error(err);
             } finally {
                 setMembersLoading(false);
             }
         };
-
         loadMembers();
     }, [selectedProject]);
 
@@ -173,6 +177,9 @@ const AssignMemberModal = ({ schedule }: { schedule: ISchedules }) => {
             setLoading(false);
         }
     }
+
+    const dedupeIds = (ids: (string | number)[]) =>
+        Array.from(new Set(ids.map((x) => Number(x))));
 
     return (
         <div>
@@ -259,42 +266,23 @@ const AssignMemberModal = ({ schedule }: { schedule: ISchedules }) => {
                                         <FormLabel required={true}>Members</FormLabel>
                                         <FormControl>
                                             <MultiSelect
+
                                                 values={field.value.map(String)}
                                                 onValuesChange={(vals) => {
                                                     const lastSelected = vals[vals.length - 1];
 
-                                                    // ✅ CASE 1: ALL selected
                                                     if (lastSelected === "all") {
-                                                        field.onChange(["all"]);
+                                                        const currentSelected = form.getValues("members") ?? [];
+                                                        const allIds = dedupeIds([
+                                                            ...currentSelected,
+                                                            ...availableMembers.map((m) => m.id),
+                                                        ]);
+                                                        field.onChange(allIds);
                                                         return;
                                                     }
 
-                                                    // ❗ remove "all" if previously selected
                                                     const filtered = vals.filter((v) => v !== "all");
-
-                                                    // ✅ CASE 2: all_project_members
-                                                    if (lastSelected === "all_project_members") {
-                                                        const projectMemberIds = members
-                                                            .filter(
-                                                                (m) =>
-                                                                    m.id !== "all" &&
-                                                                    m.id !== "all_project_members"
-                                                            )
-                                                            .map((m) => Number(m.id));
-
-                                                        const merged = Array.from(
-                                                            new Set([
-                                                                ...field.value.filter((v) => v !== "all"),
-                                                                ...projectMemberIds,
-                                                            ])
-                                                        );
-
-                                                        field.onChange(merged);
-                                                        return;
-                                                    }
-
-                                                    // ✅ CASE 3: normal selection
-                                                    field.onChange(filtered.map((v) => Number(v)));
+                                                    field.onChange(dedupeIds(filtered));
                                                 }}
                                             >
                                                 <MultiSelectTrigger className=" w-full hover:bg-white py-2 dark:bg-darkSecondaryBg hover:dark:bg-darkSecondaryBg">
@@ -302,22 +290,48 @@ const AssignMemberModal = ({ schedule }: { schedule: ISchedules }) => {
                                                 </MultiSelectTrigger>
 
                                                 <MultiSelectContent onWheel={(e) => e.stopPropagation()} className="dark:bg-darkSecondaryBg">
-                                                    <MultiSelectGroup className="dark:bg-darkSecondaryBg">
-                                                        {members.map((member) => (
-                                                            <MultiSelectItem
-                                                                key={member.id}
-                                                                value={String(member.id)}
-                                                                className=" px-0 cursor-pointer hover:dark:bg-darkPrimaryBg"
-                                                            >
-                                                                <Avatar>
-                                                                    <AvatarImage src={member.image || ""} />
-                                                                    <AvatarFallback>
-                                                                        {member.name.charAt(0)}
-                                                                    </AvatarFallback>
-                                                                </Avatar>
-                                                                <p>{member.name}</p>
-                                                            </MultiSelectItem>
-                                                        ))}
+                                                    {/* Section 1: Special Actions */}
+                                                    <MultiSelectGroup>
+                                                        <MultiSelectItem className=" cursor-pointer" value="all">
+                                                            <Avatar className="h-6 w-6 mr-2">
+                                                                <AvatarImage src={""} />
+                                                                <AvatarFallback>A</AvatarFallback>
+                                                            </Avatar>
+                                                            All
+                                                        </MultiSelectItem>
+                                                    </MultiSelectGroup>
+
+                                                    {/* Section 2: Already Selected (Optional, for quick reference)
+                                                    {selectedMembers.length > 0 && (
+                                                        <MultiSelectGroup className="">
+                                                            <p className="text-xs font-semibold px-2 py-1 text-muted-foreground">previously Assigned</p>
+                                                            {selectedMembers.map((member) => (
+                                                                <MultiSelectItem key={`selected-${member.id}`} value={String(member.id)}>
+                                                                    <Avatar className="h-6 w-6 mr-2">
+                                                                        <AvatarImage src={member.image} />
+                                                                        <AvatarFallback>{member.name[0]}</AvatarFallback>
+                                                                    </Avatar>
+                                                                    {member.name}
+                                                                </MultiSelectItem>
+                                                            ))}
+                                                        </MultiSelectGroup>
+                                                    )} */}
+
+                                                    {/* Section 3: Available from API */}
+                                                    <MultiSelectGroup>
+                                                        <p className="text-xs font-semibold px-2 py-1 text-muted-foreground">Available Members</p>
+                                                        {availableMembers
+                                                            // Optional: Filter out people already in selectedMembers to avoid duplicates
+                                                            // .filter(m => !selectedMembers.find(s => s.id === m.id))
+                                                            .map((member) => (
+                                                                <MultiSelectItem className=" cursor-pointer" key={member.id} value={String(member.id)}>
+                                                                    <Avatar className="h-6 w-6 mr-2">
+                                                                        <AvatarImage src={member.image} />
+                                                                        <AvatarFallback>{member.name[0]}</AvatarFallback>
+                                                                    </Avatar>
+                                                                    {member.name}
+                                                                </MultiSelectItem>
+                                                            ))}
                                                     </MultiSelectGroup>
                                                 </MultiSelectContent>
                                             </MultiSelect>
