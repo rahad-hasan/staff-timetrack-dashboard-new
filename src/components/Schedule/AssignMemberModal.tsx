@@ -48,7 +48,7 @@ type ProjectOption = {
     avatar?: string;
 };
 const AssignMemberModal = ({ schedule }: { schedule: ISchedules }) => {
-    console.log(schedule);
+    // console.log(schedule);
     const [open, setOpen] = useState(false)
     const [loading, setLoading] = useState(false);
     const [membersLoading, setMembersLoading] = useState(false);
@@ -56,7 +56,9 @@ const AssignMemberModal = ({ schedule }: { schedule: ISchedules }) => {
     const [projects, setProjects] = useState<ProjectOption[]>([]);
     const [members, setMembers] = useState<
         { id: number | string; name: string; email?: string; image?: string }[]
-    >([]);
+    >([{ id: "all", name: "All", image: "" }, { id: "all_project_members", name: "Selected Project Members", image: "" }]);
+
+    console.log(members);
 
     const form = useForm<z.infer<typeof scheduleAssignMemberSchema>>({
         resolver: zodResolver(scheduleAssignMemberSchema),
@@ -73,7 +75,7 @@ const AssignMemberModal = ({ schedule }: { schedule: ISchedules }) => {
                 email: assign.user.email,
                 image: assign.user.image || "",
             }));
-            setMembers(defaultMembers)
+            setMembers([...members, ...defaultMembers])
             const defaultIds = defaultMembers.map(m => m.id);
             form.reset({
                 members: defaultIds,
@@ -117,7 +119,7 @@ const AssignMemberModal = ({ schedule }: { schedule: ISchedules }) => {
                 const res = await getMembersDashboard({ project_id: selectedProject });
                 if (res?.success) {
                     const apiMembers = res.data;
-                    setMembers([{ id: "all", name: "All", image: "" }, ...apiMembers]);
+                    setMembers([...members, ...apiMembers]);
                 }
             } catch (err) {
                 console.error("Failed to fetch clients", err);
@@ -257,20 +259,42 @@ const AssignMemberModal = ({ schedule }: { schedule: ISchedules }) => {
                                         <FormLabel required={true}>Members</FormLabel>
                                         <FormControl>
                                             <MultiSelect
-                                                // values={selectedMemberIds}
                                                 values={field.value.map(String)}
                                                 onValuesChange={(vals) => {
-                                                    let processedValues: (string | number)[];
                                                     const lastSelected = vals[vals.length - 1];
 
+                                                    // ✅ CASE 1: ALL selected
                                                     if (lastSelected === "all") {
-                                                        processedValues = ["all"];
-                                                    } else {
-                                                        const filtered = vals.filter((v) => v !== "all");
-                                                        processedValues = filtered.map((v) => Number(v));
+                                                        field.onChange(["all"]);
+                                                        return;
                                                     }
 
-                                                    field.onChange(processedValues);
+                                                    // ❗ remove "all" if previously selected
+                                                    const filtered = vals.filter((v) => v !== "all");
+
+                                                    // ✅ CASE 2: all_project_members
+                                                    if (lastSelected === "all_project_members") {
+                                                        const projectMemberIds = members
+                                                            .filter(
+                                                                (m) =>
+                                                                    m.id !== "all" &&
+                                                                    m.id !== "all_project_members"
+                                                            )
+                                                            .map((m) => Number(m.id));
+
+                                                        const merged = Array.from(
+                                                            new Set([
+                                                                ...field.value.filter((v) => v !== "all"),
+                                                                ...projectMemberIds,
+                                                            ])
+                                                        );
+
+                                                        field.onChange(merged);
+                                                        return;
+                                                    }
+
+                                                    // ✅ CASE 3: normal selection
+                                                    field.onChange(filtered.map((v) => Number(v)));
                                                 }}
                                             >
                                                 <MultiSelectTrigger className=" w-full hover:bg-white py-2 dark:bg-darkSecondaryBg hover:dark:bg-darkSecondaryBg">

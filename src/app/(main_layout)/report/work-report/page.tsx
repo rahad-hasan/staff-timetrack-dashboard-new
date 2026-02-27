@@ -9,9 +9,14 @@ import { format, parseISO, startOfMonth } from "date-fns";
 import { Clock, AlertCircle } from "lucide-react";
 import EmptyTableLogo from "@/assets/empty_table.svg";
 import Image from "next/image";
+import MonthPicker from "@/components/Common/MonthPicker";
 
 const WorkReport = async ({ searchParams }: ISearchParamsProps) => {
+    console.log('render .....................................');
     const params = await searchParams;
+    // const yearDate = params?.start_month as string;
+    // const [year, month] = yearDate?.split("-");
+    // console.log(year, month);
     const user = await getDecodedUser();
     const res = await getWorkReport({
         user_id: params.user_id ?? user?.id,
@@ -49,7 +54,6 @@ const WorkReport = async ({ searchParams }: ISearchParamsProps) => {
 
     return (
         <div className="space-y-6">
-
             <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
                 <div className="flex items-center gap-3">
                     <h1 className=" text-md sm:text-xl xl:text-2xl font-bold text-headingTextColor dark:text-darkTextPrimary flex items-center gap-2">
@@ -59,6 +63,7 @@ const WorkReport = async ({ searchParams }: ISearchParamsProps) => {
                     <div className="px-4 py-2 bg-blue-50 dark:bg-darkSecondaryBg rounded-full text-sm font-medium">
                         {data.time_zone}
                     </div>
+                    <MonthPicker></MonthPicker>
                 </div>
                 <div className=" flex flex-col md:flex-row md:items-center gap-4">
                     <AllowOvertimeCheckbox overTime={data?.schedule?.allow_overtime} />
