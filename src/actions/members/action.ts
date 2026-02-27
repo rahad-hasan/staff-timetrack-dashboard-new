@@ -68,6 +68,7 @@ export const addMember = async (data: {
     method: "POST",
     body: data,
     tag: "members",
+    cache: "no-cache",
   });
 };
 
@@ -95,5 +96,6 @@ export const deleteMember = async (id: number | undefined) => {
   return await baseApi(`/auth/employees/${id}`, {
     method: "DELETE",
     tag: "members",
+    cache: "no-cache",
   });
 };

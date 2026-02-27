@@ -46,6 +46,7 @@ export const editSchedule = async ({ data, id }: {
         method: "PATCH",
         body: data,
         tag: "schedules",
+        cache: "no-cache",
     });
 };
 
@@ -56,7 +57,7 @@ export const deleteSchedule = async (id: number) => {
     });
 };
 
-export const deleteMemberFromSchedule = async ({ data, id }: { data: {member_id: number}, id: number }) => {
+export const deleteMemberFromSchedule = async ({ data, id }: { data: { member_id: number }, id: number }) => {
     return await baseApi(`/schedules/remove-members/${id}`, {
         method: "DELETE",
         body: data,

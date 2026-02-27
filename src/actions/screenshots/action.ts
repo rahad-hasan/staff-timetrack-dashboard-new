@@ -37,5 +37,6 @@ export const deleteScreenshot = async ({ data }: {
         method: "DELETE",
         body: data,
         tag: "screenshots",
+        cache: "no-cache",
     });
 };

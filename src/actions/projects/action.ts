@@ -42,5 +42,6 @@ export const deleteProject = async (id: number | undefined) => {
     return await baseApi(`/projects/${id}`, {
         method: "DELETE",
         tag: "projects",
+        cache: "no-cache",
     });
 };

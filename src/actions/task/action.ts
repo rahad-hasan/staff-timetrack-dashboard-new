@@ -34,7 +34,7 @@ export const editTask = async ({ data, id }: {
     return await baseApi(`/tasks/${id}`, {
         method: "PATCH",
         body: data,
-        cache: "no-store",
+        cache: "no-cache",
         tag: "tasks",
     });
 };
@@ -43,5 +43,6 @@ export const deleteTask = async (id: number | undefined) => {
     return await baseApi(`/tasks/${id}`, {
         method: "DELETE",
         tag: "tasks",
+        cache: "no-cache",
     });
 };

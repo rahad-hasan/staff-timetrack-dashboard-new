@@ -18,6 +18,7 @@ export const readNotifications = async ({ data }: any) => {
         method: "PATCH",
         body: data,
         tag: "notifications",
+        cache: "no-cache",
     });
 };
 
