@@ -37,7 +37,25 @@ const WorkReportTable = ({ data }: {
 }) => {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [rowSelection, setRowSelection] = useState({});
-    console.log("render work report Table");
+    const getRowToneClass = (isLate: boolean, isEarly: boolean) => {
+        if (isLate && isEarly) {
+            return "bg-lime-50/70 dark:bg-lime-500/10 border-lime-200/80 dark:border-lime-500/40";
+        }
+        if (isLate) {
+            return "bg-rose-50/70 dark:bg-rose-500/10 border-rose-200/80 dark:border-rose-500/40";
+        }
+        if (isEarly) {
+            return "bg-amber-50/70 dark:bg-amber-500/10 border-amber-200/80 dark:border-amber-500/40";
+        }
+        return "";
+    };
+
+    const getAccentClass = (isLate: boolean, isEarly: boolean) => {
+        if (isLate && isEarly) return "border-l-lime-500";
+        if (isLate) return "border-l-rose-500";
+        if (isEarly) return "border-l-amber-500";
+        return "border-l-borderColor dark:border-l-darkBorder";
+    };
     const columns: ColumnDef<IDaysReport>[] = [
         {
             accessorKey: "date",
@@ -223,18 +241,35 @@ const WorkReportTable = ({ data }: {
     });
 
     return (
-        <div className="mt-5 border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg  p-4 2xl:p-5 rounded-[12px]">
-            <div className=" mb-5">
+        <div className="mt-5 border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">
+            <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
                 <h2 className=" text-base sm:text-lg text-headingTextColor dark:text-darkTextPrimary">
-                    Schedules
+                    Work Report
                 </h2>
+                <div className="flex flex-wrap items-center gap-4 text-[11px] font-semibold text-subTextColor dark:text-darkTextSecondary">
+                    <span className="inline-flex items-center gap-2">
+                        <span className="h-2 w-2 rounded-full bg-rose-500" />
+                        Late
+                    </span>
+                    <span className="inline-flex items-center gap-2">
+                        <span className="h-2 w-2 rounded-full bg-amber-500" />
+                        Early
+                    </span>
+                    <span className="inline-flex items-center gap-2">
+                        <span className="h-2 w-2 rounded-full bg-lime-500" />
+                        Late + Early
+                    </span>
+                </div>
             </div>
-            <Table className="border-separate border-spacing-y-0.5">
+            <Table className="border-separate border-spacing-y-1">
                 <TableHeader>
                     {table.getHeaderGroups().map((hg) => (
-                        <TableRow key={hg.id}>
+                        <TableRow key={hg.id} className="border-b-0">
                             {hg.headers.map((header) => (
-                                <TableHead key={header.id}>
+                                <TableHead
+                                    key={header.id}
+                                    className="text-subTextColor dark:text-darkTextPrimary"
+                                >
                                     {header.isPlaceholder
                                         ? null
                                         : flexRender(header.column.columnDef.header, header.getContext())}
@@ -249,29 +284,26 @@ const WorkReportTable = ({ data }: {
                         table.getRowModel().rows.map((row) => {
                             const isLate = row.original.late_minutes > 0;
                             const isEarly = row.original.early_minutes > 0;
+                            const rowToneClass = getRowToneClass(isLate, isEarly);
+                            const leftAccentClass = getAccentClass(isLate, isEarly);
+                            const isHighlighted = isLate || isEarly;
 
                             return (
-                                <TableRow key={row.id} className="overflow-hidden last:[&_td]:pb-4">
+                                <TableRow key={row.id} className="group border-b-0 overflow-hidden last:[&_td]:pb-4">
                                     {row.getVisibleCells().map((cell, idx, arr) => {
                                         const isFirst = idx === 0;
                                         const isLast = idx === arr.length - 1;
-                                        const getRowStyles = (isLate: boolean, isEarly: boolean) => {
-                                            if (isLate && isEarly) return "bg-lime-100 dark:bg-lime-500/10 border-lime-500 dark:border-lime-500";
-                                            if (isLate) return "bg-pink-100 dark:bg-pink-500/10 border-pink-500 dark:border-pink-500";
-                                            if (isEarly) return "bg-yellow-100/60 dark:bg-yellow-500/10 border-yellow-500 dark:border-yellow-500";
-                                            return "bg-transparent";
-                                        };
                                         return (
                                             <TableCell
                                                 key={cell.id}
                                                 className={[
-                                                    "border-y border-borderColor dark:border-darkBorder",
-                                                    isFirst && "border-l rounded-l-lg",
-                                                    isLast && "border-r rounded-r-lg",
-                                                    getRowStyles(isLate, isEarly)
-                                                    // isLate
-                                                    //     ? "bg-pink-50 dark:bg-pink-500/10 border-pink-300 dark:border-pink-300"
-                                                    //     : isEarly ? "bg-orange-50 dark:bg-orange-500/15 border-orange-300 dark:border-orange-300" : (isLate && isEarly) ? "bg-lime-50 dark:bg-lime-500/15 border-lime-300 dark:border-lime-300" : "bg-transparent",
+                                                    "border-y border-borderColor/80 dark:border-darkBorder/40 bg-white/60 dark:bg-darkPrimaryBg/40 px-4 py-3 text-sm transition-colors group-hover:bg-white/90 dark:group-hover:bg-darkPrimaryBg/60",
+                                                    isFirst && "rounded-l-xl",
+                                                    isLast && "rounded-r-xl",
+                                                    isFirst && (isHighlighted ? "border-l-4" : "border-l"),
+                                                    isLast && "border-r",
+                                                    rowToneClass,
+                                                    isFirst && isHighlighted && leftAccentClass,
                                                 ].join(" ")}
                                             >
                                                 {flexRender(cell.column.columnDef.cell, cell.getContext())}

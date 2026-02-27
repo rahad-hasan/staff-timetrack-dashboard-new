@@ -92,8 +92,8 @@ const WorkReport = async ({ searchParams }: ISearchParamsProps) => {
                     <p className="text-[14px] text-subTextColor dark:text-darkTextSecondary mt-2">Report Period: <span className=" font-semibold dark:text-darkTextPrimary/90">{data.from_date}</span> To <span className=" font-semibold dark:text-darkTextPrimary/90">{data.to_date}</span></p>
                 </div>
 
-                <div className="bg-white dark:bg-darkSecondaryBg p-5 rounded-xl border border-borderColor dark:border-darkBorder grid grid-cols-2 gap-4">
-                    <div className=" space-y-2">
+                <div className="bg-white dark:bg-darkSecondaryBg rounded-xl border border-borderColor dark:border-darkBorder grid grid-cols-2 gap-4">
+                    <div className="p-5 space-y-2">
                         <h3 className=" text-[12px] xl:text-[14px] font-semibold text-red-500 uppercase">Late Arrivals</h3>
                         <div className="flex items-center gap-1">
                             <AlertCircle className=" w-5 xl:w-6 h-5 xl:h-6 text-red-500" />
@@ -101,7 +101,7 @@ const WorkReport = async ({ searchParams }: ISearchParamsProps) => {
                         </div>
                         <span className="text-[14px] xl:text-[16px] text-subTextColor dark:text-darkTextSecondary">Total: {data.summary.total_late_hm}</span>
                     </div>
-                    <div className="border-l border-borderColor dark:border-darkBorder pl-4 space-y-2">
+                    <div className="border-l border-borderColor dark:border-darkBorder p-5 space-y-2">
                         <h3 className=" text-[12px] xl:text-[14px] font-semibold text-amber-500 uppercase">Early Departures</h3>
                         <div className="flex items-center gap-1">
                             <AlertCircle className=" w-5 xl:w-6 h-5 xl:h-6 text-amber-500" />
