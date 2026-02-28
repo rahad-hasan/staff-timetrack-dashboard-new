@@ -12,7 +12,6 @@ import Image from "next/image";
 import MonthPicker from "@/components/Common/MonthPicker";
 
 const WorkReport = async ({ searchParams }: ISearchParamsProps) => {
-    console.log('render .....................................');
     const params = await searchParams;
     const yearDate = params?.start_month as string | undefined;
     const [year, month] = yearDate ? yearDate.split("-") : [undefined, undefined]
