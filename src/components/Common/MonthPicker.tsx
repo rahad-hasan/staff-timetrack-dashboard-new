@@ -2,7 +2,7 @@
 "use client"
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useMemo } from "react";
 import CalendarIcon from "../Icons/CalendarIcon";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { format, startOfMonth, endOfMonth, addMonths } from "date-fns";
@@ -15,7 +15,7 @@ const MonthPicker = () => {
     const searchParams = useSearchParams();
     const pathname = usePathname();
 
-    // 1. Sync URL params whenever the selectedDate (month) changes
+    // // 1. Sync URL params whenever the selectedDate (month) changes
     // useEffect(() => {
     //     const params = new URLSearchParams(searchParams.toString());
 
@@ -38,33 +38,34 @@ const MonthPicker = () => {
     // }, [selectedDate, pathname, router, searchParams]);
 
 
+    const startParam = searchParams.get("start_month");
 
-    const [selectedDate, setSelectedDate] = useState(() => {
-        const start = searchParams.get("start_month");
-        return start ? new Date(start) : new Date();
-    });
+    const selectedDate = useMemo(() => {
+        if (!startParam) return new Date();
+        const d = new Date(startParam);
+        return isNaN(d.getTime()) ? new Date() : d;
+    }, [startParam]);
 
     const handleNavigate = useCallback((direction: number) => {
-        // 1. Calculate the NEW date based on current state
         const nextDate = addMonths(selectedDate, direction);
 
-        // 2. Derive the new month boundaries
         const firstDay = startOfMonth(nextDate);
         const lastDay = endOfMonth(nextDate);
 
         const fromDate = format(firstDay, "yyyy-MM-dd");
         const toDate = format(lastDay, "yyyy-MM-dd");
 
-        // 3. Update the URL
-        const params = new URLSearchParams(searchParams.toString());
+        // const params = new URLSearchParams(searchParams.toString());
+        const params = new URLSearchParams(window.location.search);
         params.set("start_month", fromDate);
         params.set("end_month", toDate);
+        params.delete("date");
+        params.delete("from_date");
+        params.delete("to_date");
 
         loader.start();
-        router.push(`${pathname}?${params.toString()}`, { scroll: false });
 
-        // 4. Finally, update the local state to match
-        setSelectedDate(nextDate);
+        router.push(`${pathname}?${params.toString()}`, { scroll: false });
     }, [selectedDate, pathname, router, searchParams]);
 
     const formatMonth = (date: Date) => {
@@ -72,6 +73,22 @@ const MonthPicker = () => {
     };
 
     const monthDisplay = formatMonth(selectedDate);
+
+    // const formatMonth = (date: Date) => {
+    //     return format(date, "MMMM yyyy");
+    // };
+
+    // const handleNavigate = useCallback((months: number) => {
+    //     setSelectedDate(prevDate => {
+    //         const newDate = new Date(prevDate);
+    //         newDate.setDate(1);
+    //         newDate.setMonth(newDate.getMonth() + months);
+    //         loader.start();
+    //         return newDate;
+    //     });
+    // }, [setSelectedDate]);
+
+    // const monthDisplay = formatMonth(selectedDate);
 
     return (
         <div className="flex ">

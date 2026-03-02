@@ -10,7 +10,7 @@ const WeeklyTimeSheetsServer = async ({ searchParams }: ISearchParamsProps) => {
   const now = new Date();
   const weekStart = format(startOfWeek(now, { weekStartsOn: 1 }), "yyyy-MM-dd");
   const weekEnd = format(endOfWeek(now, { weekStartsOn: 1 }), "yyyy-MM-dd");
-
+  console.log('this is weekly time sheet server!!!!!! rendered');
   const result = await getWeeklyAndMonthlyTimeEntry({
     from_date: params.from_date ?? weekStart,
     to_date: params.to_date ?? weekEnd,
