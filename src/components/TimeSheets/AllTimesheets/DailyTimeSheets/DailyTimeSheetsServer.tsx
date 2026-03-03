@@ -16,7 +16,6 @@ const DailyTimeSheetsServer = async ({ searchParams, timezones }: { searchParams
   const user = await getDecodedUser();
   const userId = user?.id;
   const currentDate = format(new Date(), "yyyy-MM-dd");
-  console.log('this is daily time sheet server!!! rendered');
 
   const result = await getDailyTimeEntry({
     search: params.search,

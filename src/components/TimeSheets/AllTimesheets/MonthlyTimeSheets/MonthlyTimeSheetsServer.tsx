@@ -12,7 +12,6 @@ const MonthlyTimeSheetsServer = async ({
   const now = new Date();
   const monthStart = format(startOfMonth(now), "yyyy-MM-dd");
   const monthEnd = format(endOfMonth(now), "yyyy-MM-dd");
-  console.log('this is monthly time sheet server!!!!!!!!!! rendered');
   const result = await getDateBaseTimeEntry({
     from_date: params.start_month ?? monthStart,
     to_date: params.end_month ?? monthEnd,

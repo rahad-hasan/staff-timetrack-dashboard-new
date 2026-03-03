@@ -19,7 +19,6 @@ import { deleteMemberFromSchedule } from "@/actions/schedule/action";
 import { toast } from "sonner";
 
 const SingleScheduleMemberTable = ({ id, data }: { id: number | undefined, data: [{ user: User; }] | undefined }) => {
-    console.log(data);
     const [sorting, setSorting] = useState<SortingState>([]);
     const [loading, setLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");

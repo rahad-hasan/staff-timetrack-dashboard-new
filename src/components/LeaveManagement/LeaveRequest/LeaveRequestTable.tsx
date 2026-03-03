@@ -20,7 +20,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { formatTZDayMonthYear } from "@/utils";
 
 const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
-    console.log(data);
     const logInUserData = useLogInUserStore(state => state.logInUserData);
 
     const getStatusStyles = (status?: string) => {

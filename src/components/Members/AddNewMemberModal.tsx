@@ -140,7 +140,6 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
             schedule_id: Number(values.schedule),
             time_zone: values.time_zone
         }
-        console.log(finalData);
         setLoading(true);
         try {
             const res = await addMember(finalData);

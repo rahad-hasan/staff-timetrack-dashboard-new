@@ -7,7 +7,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 const AllowOvertimeCheckbox = ({ overTime }: { overTime?: boolean }) => {
     const router = useRouter();
     const searchParams = useSearchParams();
-    console.log("render work report Check Box");
     const isChecked = useMemo(() => {
         const param = searchParams.get("allow_overtime");
 

@@ -142,8 +142,6 @@ const WeeklyDatePicker = () => {
       newStartDate.setDate(newStartDate.getDate() + weeks * 7);
 
       const { start: newStart, end: newEnd } = getWeekRange(newStartDate);
-      console.log(window.location.search);
-      console.log(searchParams.toString());
       // const params = new URLSearchParams(searchParams.toString());
       const params = new URLSearchParams(window.location.search);
       params.set("from_date", formatDateToISO(newStart));
@@ -153,6 +151,7 @@ const WeeklyDatePicker = () => {
       loader.start();
       router.replace(`${pathname}?${params.toString()}`, { scroll: false });
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [start, searchParams, pathname, router, loader]
   );
 

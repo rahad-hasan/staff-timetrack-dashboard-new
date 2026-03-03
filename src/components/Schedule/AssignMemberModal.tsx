@@ -54,7 +54,6 @@ const AssignMemberModal = ({ schedule }: { schedule: ISchedules }) => {
     const [membersLoading, setMembersLoading] = useState(false);
     const [searchInput, setSearchInput] = useState("");
     const [projects, setProjects] = useState<ProjectOption[]>([]);
-    console.log(projects);
     // const [members, setMembers] = useState<
     //     { id: number | string; name: string; email?: string; image?: string }[]
     // >([]);

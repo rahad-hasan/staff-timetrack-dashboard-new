@@ -41,7 +41,6 @@ import Link from "next/link";
 import CheckIcon from "../Icons/CheckIcon";
 
 const TeamsMemberTable = ({ data }: any) => {
-  console.log(data);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState({});
 
