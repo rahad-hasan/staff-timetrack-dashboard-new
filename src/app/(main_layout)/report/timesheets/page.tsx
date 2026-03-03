@@ -84,19 +84,23 @@ const ReportTimeSheets = async ({ searchParams }: ISearchParamsProps) => {
       </div>
 
       {activeTab === "daily" && (
-        <ReportDailyTimeSheet
-          dailyTimeEntry={res?.data}
-        ></ReportDailyTimeSheet>
+        <Suspense key={`daily-${params.date}`}>
+          <ReportDailyTimeSheet
+            dailyTimeEntry={res?.data}
+          ></ReportDailyTimeSheet>
+        </Suspense>
       )}
 
       {activeTab === "weekly" && (
-        <ReportWeeklyTimeSheet
-          dateBasedTimeEntry={dateBasedTimeEntry}
-        ></ReportWeeklyTimeSheet>
+        <Suspense key={`weekly-${params.from_date}-${params.to_date}`}>
+          <ReportWeeklyTimeSheet
+            dateBasedTimeEntry={dateBasedTimeEntry}
+          ></ReportWeeklyTimeSheet>
+        </Suspense>
       )}
 
       {activeTab === "monthly" && (
-        <Suspense fallback={<ReportMonthlyTimesheetSkeleton />}>
+        <Suspense key={`monthly-${params.start_month}-${params.end_month}`} fallback={<ReportMonthlyTimesheetSkeleton />}>
           <ReportMonthlyTimeSheet
             data={result?.data?.daily_data}
           ></ReportMonthlyTimeSheet>
