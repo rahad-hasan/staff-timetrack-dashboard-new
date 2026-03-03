@@ -39,24 +39,34 @@ const AllTimesheetServer = async ({ searchParams }: ISearchParamsProps) => {
       </div>
 
       {activeTab === "daily" && (
-        <Suspense key={`daily-${params.date}`} fallback={<DailyTimeSheetsSkeleton />}>
-          {/* <DailyTimeSheetsServer searchParams={searchParams} timezones={timezones} /> */}
-          <DailyTimeSheetsSkeleton />
+        <Suspense
+          key={`daily-${params.date}`}
+          fallback={<DailyTimeSheetsSkeleton />}
+        >
+          <DailyTimeSheetsServer
+            searchParams={searchParams}
+            timezones={timezones}
+          />
         </Suspense>
       )}
 
       {activeTab === "weekly" && (
-        <Suspense key={`weekly-${params.from_date}-${params.to_date}`} fallback={<WeeklyTimeSheetsSkeleton />}>
+        <Suspense
+          key={`weekly-${params.from_date}-${params.to_date}`}
+          fallback={<WeeklyTimeSheetsSkeleton />}
+        >
           <WeeklyTimeSheetsServer searchParams={searchParams} />
         </Suspense>
       )}
 
       {activeTab === "monthly" && (
-        <Suspense key={`monthly-${params.start_month}-${params.end_month}`} fallback={<MonthlyTimeSheetsCalendarSkeleton />}>
+        <Suspense
+          key={`monthly-${params.start_month}-${params.end_month}`}
+          fallback={<MonthlyTimeSheetsCalendarSkeleton />}
+        >
           <MonthlyTimeSheetsServer searchParams={searchParams} />
         </Suspense>
       )}
-
     </div>
   );
 };
