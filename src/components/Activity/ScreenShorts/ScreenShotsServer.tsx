@@ -14,18 +14,20 @@ const ScreenShotsServer = async ({ searchParams }: ISearchParamsProps) => {
   return (
     <div>
       {activeTab === "Every 10 min" && (
-        <Suspense fallback={<Every10MinsSkeleton />}>
+        <Suspense key={String(params?.date)} fallback={<Every10MinsSkeleton />}>
           <Every10MinsServer searchParams={searchParams}></Every10MinsServer>
         </Suspense>
       )}
       {activeTab === "All Screenshots" && (
-        <Suspense fallback={<AllScreenShortsSkeleton />}>
+        <Suspense
+          key={String(params?.date)}
+          fallback={<AllScreenShortsSkeleton />}
+        >
           <AllScreenShortsServer
             searchParams={searchParams}
           ></AllScreenShortsServer>
         </Suspense>
       )}
-
     </div>
   );
 };
