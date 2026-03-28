@@ -15,7 +15,6 @@ export const metadata: Metadata = {
   description: "Staff Time Tracker Apps",
 };
 const App = async ({ searchParams }: ISearchParamsProps) => {
-
   return (
     <div>
       <div className="flex items-center justify-between gap-3 mb-5">

@@ -259,42 +259,10 @@ export interface IManualTimeEntry {
   format_end_time: string;
 }
 
-export interface IApps {
-  id: number;
-  company_id: number;
-  user_id: number;
-  app_id: number | null;
-  project_id: number;
-  task_id: number;
-  date: string;
-  app_name: string;
+export interface IUrl {
   url: string;
   duration: string;
   session: number;
-  tab_id: number | null;
-  updated_at: string;
-  created_at: string;
-  user: User;
-  project: Project;
-}
-
-export interface IUrls {
-  id: number;
-  company_id: number;
-  user_id: number;
-  app_id: number | null;
-  project_id: number;
-  task_id: number;
-  date: string;
-  app_name: string;
-  url: string;
-  duration: string;
-  session: number;
-  tab_id: number | null;
-  updated_at: string;
-  created_at: string;
-  user: User;
-  project: Project;
 }
 
 export interface IStatItem {
@@ -722,6 +690,7 @@ export interface IUserWorkReport {
     total_late_hm: string;
     total_early_hm: string;
     total_worked_duration: string;
+    earnings: null | number;
   };
   days: {
     date: string;
@@ -735,4 +704,10 @@ export interface IUserWorkReport {
     early_hm: string;
     worked_duration: string;
   }[];
+}
+
+export interface IApp {
+  app_name: string;
+  duration: string;
+  session: number;
 }
