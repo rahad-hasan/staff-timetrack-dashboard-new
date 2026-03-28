@@ -267,3 +267,8 @@
 .thin-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #0f1613; /* Darker grey on hover */
 }
+
+/* Remove topLoader vertical line */
+#nprogress .peg {
+  display: none !important;
+}

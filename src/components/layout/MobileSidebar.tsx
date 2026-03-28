@@ -10,7 +10,8 @@ import { othersSidebarItems, sidebarItems, sidebarItemsEmployee } from "@/utils/
 import { useSidebarStore } from "@/store/sidebarStore";
 import MobileSidebarItem from "./sidebar/MobileSidebarItem";
 import MobileSubItem from "./sidebar/MobileSubItem";
-import timerLogo from '../../assets/timerLogo.svg';
+// import timerLogo from '../../assets/timerLogo.svg';
+import timerLogo from '../../assets/NewLogo.png'
 import { useLogInUserStore } from "@/store/logInUserStore";
 
 const MobileSidebar = () => {
@@ -41,12 +42,19 @@ const MobileSidebar = () => {
                             className={`w-10 h-10`}
                         />
                         <h2 className="text-xl font-bold text-headingTextColor dark:text-darkTextPrimary">Tracker</h2> */}
-                        <Image
+                        {/* <Image
                             src={timerLogo}
                             alt="Logo"
                             width={100}
                             height={100}
                             className={`h-10 w-10 bg-primary rounded-xl p-2 shadow-lg`}
+                        /> */}
+                        <Image
+                            src={timerLogo}
+                            alt="Logo"
+                            width={0}
+                            height={0}
+                            className={`h-auto my-2 px-1 w-12 py-1`}
                         />
                         <h2 className="text-2xl font-bold text-headingTextColor dark:text-darkTextPrimary">Tracker</h2>
                     </div>
@@ -82,7 +90,7 @@ const MobileSidebar = () => {
                         ))}
                     </div>
 
-                    <div className="pt-3 border-t-2 border-borderColor mt-4 pb-8">
+                    <div className="pt-3 border-t-2 border-borderColor dark:border-darkBorder mt-4 pb-8">
                         <span className="text-xs uppercase text-gray-400 mb-4">Others</span>
                         {othersSidebarItems.map((item) => (
                             <div key={item.key}>

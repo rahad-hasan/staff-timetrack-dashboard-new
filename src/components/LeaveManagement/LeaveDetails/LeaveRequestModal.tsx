@@ -139,7 +139,7 @@ const LeaveRequestModal = ({ onClose }: { onClose: () => void }) => {
                         name="leaveType"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Select leave type</FormLabel>
+                                <FormLabel required={true}>Select leave type</FormLabel>
                                 <FormControl>
                                     <div className="relative">
                                         <Select
@@ -177,7 +177,7 @@ const LeaveRequestModal = ({ onClose }: { onClose: () => void }) => {
                             name="startDate"
                             render={({ field }) => (
                                 <FormItem className="w-full">
-                                    <FormLabel>Start Date</FormLabel>
+                                    <FormLabel required={true}>Start Date</FormLabel>
                                     <FormControl>
                                         <Popover open={openStartDate} onOpenChange={setOpenStartDate}>
                                             <PopoverTrigger asChild>
@@ -215,7 +215,7 @@ const LeaveRequestModal = ({ onClose }: { onClose: () => void }) => {
                             name="endDate"
                             render={({ field }) => (
                                 <FormItem className="w-full">
-                                    <FormLabel>End Date</FormLabel>
+                                    <FormLabel required={true}>End Date</FormLabel>
                                     <FormControl>
                                         <Popover open={openEndDate} onOpenChange={setOpenEndDate}>
                                             <PopoverTrigger asChild>
@@ -254,7 +254,7 @@ const LeaveRequestModal = ({ onClose }: { onClose: () => void }) => {
                         name="reason"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Reason</FormLabel>
+                                <FormLabel required={true}>Reason</FormLabel>
                                 <FormControl>
                                     <Textarea className="dark:border-darkBorder" placeholder="Type reason" {...field} />
                                 </FormControl>

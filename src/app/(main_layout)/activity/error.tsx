@@ -1,0 +1,14 @@
+"use client";
+
+export default function ScreenShotsError() {
+  return (
+    <div className="flex flex-col items-center justify-center h-[60vh] text-center">
+      <h2 className="text-xl font-semibold mb-2">
+        {"Something Went Wrong"}
+      </h2>
+
+      <p className="text-sm text-gray-500 dark:text-darkTextSecondary mb-4">Please try again later.</p>
+
+    </div>
+  );
+}

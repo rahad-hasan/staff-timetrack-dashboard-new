@@ -29,6 +29,7 @@ const MemberHeroSection = () => {
     //     params.set("page", String(page));
     //     router.push(`?${params.toString()}`);
     // };
+    
     return (
         <div>
             <div className="flex items-center justify-between gap-3 mb-5">
@@ -60,7 +61,7 @@ const MemberHeroSection = () => {
 
                 {/* </div> */}
             </div>
-            <div className=" flex items-center justify-between">
+            <div className=" flex items-center justify-end md:justify-between">
                 {/* <div className="flex gap-3">
                     <div className="flex  bg-[#f6f7f9] dark:bg-darkSecondaryBg rounded-lg overflow-hidden">
                         {["Teams", "Members"].map((tab) => (

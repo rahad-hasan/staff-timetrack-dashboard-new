@@ -8,7 +8,7 @@ import { Button } from "../ui/button";
 //     Popover,
 //     PopoverTrigger,
 // } from "@/components/ui/popover"
-import { Download, Menu, } from "lucide-react";
+import { CirclePlay, Download, Menu, } from "lucide-react";
 // import StartTimer from "./Header/StartTimer";
 import {
     Sheet,
@@ -23,26 +23,19 @@ import { useEffect, useState } from "react";
 import { socket } from "@/socket/socket";
 // import bellIcon from '../../assets/header/bell.svg'
 
-const Header = () => {
+const Header = ({ data }: { data: { duration: string } }) => {
     // const [open, setOpen] = useState(false);
     const [notificationsList, setNotificationsList] = useState<any[]>([]);
     const unreadCount = notificationsList.filter(n => n.is_read === false).length;
 
 
     useEffect(() => {
-        // 2. Listen for real-time notifications
         const handleIncomingData = (data: any) => {
-
-            // Assuming your backend returns an array or an object with a data property
             const newList = Array.isArray(data) ? data : data?.data || [];
 
             setNotificationsList(newList);
         };
         socket.on("notifications", handleIncomingData);
-        // 3. Initial fetch if socket is already connected
-        // if (socket.connected) {
-        //     socket.emit("notifications", { page: 1, limit: 10 });
-        // }
         return () => {
             socket.off("notifications", handleIncomingData);
         };
@@ -50,19 +43,19 @@ const Header = () => {
 
     // console.log(notificationsList);
 
-
     return (
-        <div className=" border-b border-borderColor dark:border-darkBorder py-3 md:py-3.5 2xl:py-5 px-3 md:px-5 flex items-center justify-end rounded-t-lg dark:bg-darkPrimaryBg">
-            {/* <div>
-                <Popover open={open} onOpenChange={setOpen} modal>
+        <div className=" border-b border-borderColor dark:border-darkBorder py-3 lg:py-3.5 2xl:py-5 px-3 lg:px-5 flex items-center justify-between rounded-t-lg dark:bg-darkPrimaryBg">
+            <div>
+                {/* <Popover open={open} onOpenChange={setOpen} modal>
                     <PopoverTrigger asChild>
                         <Button className=" dark:border-darkBorder dark:hover:bg-darkSecondaryBg" variant={'filter'}><CirclePlay className="text-primary size-5.5 sm:size-5.5" /><span className=" hidden lg:block dark:text-darkTextPrimary">Start Timer</span></Button>
                     </PopoverTrigger>
                     <StartTimer onClose={() => setOpen(false)}></StartTimer>
-                </Popover>
-            </div> */}
+                </Popover> */}
+                <Button className=" dark:border-darkBorder dark:hover:bg-darkSecondaryBg cursor-default" variant={'filter'}><CirclePlay className="text-primary size-5.5 sm:size-5.5" /><span className="  dark:text-darkTextPrimary">{data?.duration}</span></Button>
+            </div>
 
-            <div className=" hidden md:flex items-center gap-4">
+            <div className=" hidden lg:flex items-center gap-4">
                 <div>
                     <DarkMoodToggle></DarkMoodToggle>
                 </div>
@@ -79,7 +72,7 @@ const Header = () => {
             </div>
 
             {/* mobile menu */}
-            <div className=" flex items-center gap-4 md:hidden">
+            <div className=" flex items-center gap-4 lg:hidden">
                 <div>
                     <DarkMoodToggle></DarkMoodToggle>
                 </div>
@@ -94,7 +87,6 @@ const Header = () => {
                     <MobileSidebar></MobileSidebar>
                 </Sheet>
             </div>
-
         </div >
     );
 };

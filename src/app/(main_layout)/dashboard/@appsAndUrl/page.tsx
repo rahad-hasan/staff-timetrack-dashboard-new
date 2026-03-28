@@ -1,11 +1,11 @@
 import { getDashboardAppsAndUrls } from "@/actions/dashboard/action";
 import AppsAndUrl from "@/components/Dashboard/AppAndUrl/AppsAndUrl";
 import { ISearchParamsProps } from "@/types/type";
-import { cookies } from "next/headers";
+import { getDecodedUser } from "@/utils/decodedLogInUser";
 
 const AppsAndUrlServer = async ({ searchParams }: ISearchParamsProps) => {
-    const cookieStore = await cookies();
-    const role = cookieStore.get("staffTimeDashboardRole")?.value;
+    const user = await getDecodedUser();
+    const role = user?.role;
 
     const allowedRoles = ['admin', 'manager', 'hr'];
 

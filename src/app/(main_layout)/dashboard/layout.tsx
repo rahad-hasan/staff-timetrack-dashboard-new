@@ -1,7 +1,8 @@
-import { cookies } from "next/headers";
+import { getDecodedUser } from "@/utils/decodedLogInUser";
 
 export default async function DashboardLayout({
   children,
+  topCart,
   recentActivity,
   insights,
   members,
@@ -10,6 +11,7 @@ export default async function DashboardLayout({
   taskListTable,
 }: Readonly<{
   children: React.ReactNode;
+  topCart: React.ReactNode;
   recentActivity: React.ReactNode;
   insights: React.ReactNode;
   members: React.ReactNode;
@@ -17,12 +19,13 @@ export default async function DashboardLayout({
   projectListTable: React.ReactNode;
   taskListTable: React.ReactNode;
 }>) {
-  const cookieStore = await cookies();
-  const role = cookieStore.get("staffTimeDashboardRole")?.value;
+  const user = await getDecodedUser();
+  const role = user?.role;
 
   return (
-    <div className="w-full space-y-5">
+    <div className="w-full">
       {children}
+      {topCart}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {recentActivity}
         {insights}

@@ -25,14 +25,16 @@ export const addEvent = async (data: any
         method: "POST",
         body: data,
         tag: "events",
+        cache: "no-cache",
     });
 };
 
-export const rescheduleEvent = async ({id,data}: {id:number, data:any}) => {
+export const rescheduleEvent = async ({ id, data }: { id: number, data: any }) => {
     return await baseApi(`/events/${id}`, {
         method: "PATCH",
         body: data,
         tag: "events",
+        cache: "no-cache",
     });
 };
 

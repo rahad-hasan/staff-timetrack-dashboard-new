@@ -4,7 +4,7 @@
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Image from "next/image";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -20,7 +20,6 @@ import highFlag from '../../../assets/dashboard/highFlag.svg'
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog } from "@/components/ui/dialog";
-import EditTaskModal from "./EditTaskModal";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import FilterButton from "@/components/Common/FilterButton";
 import { ITask } from "@/types/type";
@@ -28,19 +27,61 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import EditIcon from "@/components/Icons/FilterOptionIcon/EditIcon";
 // import DeleteIcon from "@/components/Icons/DeleteIcon";
 import { toast } from "sonner";
-import { editTask } from "@/actions/task/action";
+import { deleteTask, editTask } from "@/actions/task/action";
 import { useLogInUserStore } from "@/store/logInUserStore";
+import DeleteIcon from "@/components/Icons/DeleteIcon";
+import ConfirmDialog from "@/components/Common/ConfirmDialog";
+import EditTaskModal from "./EditTaskModal";
+import SingleTaskModal from "./SingleTaskModal";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const TaskTable = ({ data }: { data: ITask[] }) => {
-
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false)
     const [selectedTask, setSelectedTask] = useState<ITask | null>(null)
     const logInUserData = useLogInUserStore(state => state.logInUserData);
+    // for single task modal
+    const [viewTaskOpen, setViewTaskOpen] = useState(false);
+    const [viewTaskId, setViewTaskId] = useState<number | null>(null);
+    const router = useRouter();
+    const searchParams = useSearchParams();
 
-    async function handleStatusUpdate(values: { status: string, id: number }) {
+    const handleEditOpenChange = useCallback((nextOpen: boolean) => {
+        setOpen(nextOpen);
+        if (!nextOpen) {
+            setSelectedTask(null);
+        }
+    }, []);
+
+    const handleViewOpenChange = useCallback((nextOpen: boolean) => {
+        setViewTaskOpen(nextOpen);
+        if (!nextOpen) {
+            setViewTaskId(null);
+        }
+    }, []);
+
+    const updateQueryParam = useCallback((statusType: string, checked: boolean | string) => {
+        const params = new URLSearchParams(searchParams.toString());
+
+        if (checked === true) {
+            params.set("status", statusType);
+            params.set("page", "1");
+        } else {
+            if (searchParams.get("status") === statusType) {
+                params.delete("status");
+            }
+        }
+
+        router.push(`?${params.toString()}`, { scroll: false });
+    }, [router, searchParams]);
+
+    const isComplete = searchParams.get("status") === "complete";
+    const isCancelled = searchParams.get("status") === "cancelled";
+
+    const handleStatusUpdate = useCallback(async (values: { status: string, id: number }) => {
         setLoading(true);
         try {
             const res = await editTask({ data: { status: values.status }, id: values.id });
@@ -57,7 +98,6 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
                 });
             }
         } catch (error: any) {
-            console.error("failed:", error);
             toast.error(error?.message || "Something went wrong!", {
                 style: {
                     backgroundColor: '#ef4444',
@@ -68,11 +108,42 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
         } finally {
             setLoading(false);
         }
-    }
+    }, []);
+
+    const handleDelete = useCallback(async (info: ITask) => {
+        setLoading(true);
+        try {
+            const res = await deleteTask(info?.id);
+
+            if (res?.success) {
+                toast.success(res?.message || "Task deleted successfully");
+            } else {
+                toast.error(res?.message || "Failed to delete task", {
+                    style: {
+                        backgroundColor: '#ef4444',
+                        color: 'white',
+                        border: 'none'
+                    },
+                });
+            }
+        } catch (error: any) {
+            toast.error(error?.message || "Something went wrong!", {
+                style: {
+                    backgroundColor: '#ef4444',
+                    color: 'white',
+                    border: 'none'
+                },
+            });
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
     const handleCloseDialog = () => {
-        setOpen(false)
+        handleEditOpenChange(false);
     }
-    const columns: ColumnDef<ITask>[] = [
+
+    const columns = useMemo<ColumnDef<ITask>[]>(() => [
         {
             accessorKey: "name",
             header: ({ column }) => {
@@ -92,15 +163,25 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
                 const name = row.getValue("name") as string;
                 const project = row?.original?.project?.name;
                 return (
-                    <div className="flex flex-col">
-                        <span className="font-bold text-base text-headingTextColor dark:text-darkTextPrimary">{name}</span>
-                        <span className=" font-normal text-subTextColor dark:text-darkTextSecondary">{project}</span>
+                    <div className="flex flex-col min-w-[200px] xl:max-w-[160px] 2xl:max-w-full">
+                        <span
+                            className="font-bold text-base text-headingTextColor dark:text-darkTextPrimary cursor-pointer capitalize hover:underline break-words whitespace-normal"
+                            onClick={() => {
+                                setViewTaskId(row.original.id);
+                                setViewTaskOpen(true);
+                            }}
+                        >
+                            {name}
+                        </span>
+                        <span className="font-normal text-subTextColor dark:text-darkTextSecondary break-words whitespace-normal">
+                            {project}
+                        </span>
                     </div>
                 )
             }
         },
         {
-            accessorKey: "assignedBy",
+            accessorKey: "assignedBy.name",
             header: ({ column }) => {
                 return (
                     <div>
@@ -118,18 +199,19 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
                 const assignee = row?.original?.assignedBy?.name;
                 const image = row?.original?.assignedBy?.image;
                 return (
-                    <div className="flex items-center gap-2 min-w-[180px]">
-                        <Avatar>
+                    // Added items-center and min-w-0 to the parent to help with truncation
+                    <div className="flex items-center gap-2  min-w-[100px] xl:max-w-[160px] 2xl:max-w-full">
+                        <Avatar className="h-8 w-8 flex-shrink-0">
                             <AvatarImage src={image} alt={assignee} />
                             <AvatarFallback>{assignee?.charAt(0)}</AvatarFallback>
                         </Avatar>
-                        <span>{assignee}</span>
+                        <span className="capitalize break-words whitespace-normal">{assignee}</span>
                     </div>
                 );
             }
         },
         {
-            accessorKey: "timeWorked",
+            accessorKey: "duration",
             // header: () => <div className="">Time Worked</div>,
             header: ({ column }) => {
                 return (
@@ -176,61 +258,6 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
                 );
             }
         },
-        // {
-        //     accessorKey: "status",
-        //     // header: "Status",
-        //     // header: () => <div className=" text-right">Status</div>,
-        //     header: ({ column }) => {
-        //         return (
-        //             <div className=" flex justify-end">
-        //                 <span
-        //                     className=" cursor-pointer flex items-center gap-1"
-        //                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        //                 >
-        //                     Status
-        //                     <ArrowUpDown className="ml-2 h-4 w-4" />
-        //                 </span>
-        //             </div>
-        //         )
-        //     },
-        //     cell: ({ row }) => {
-        //         const status = row.getValue("status") as string;
-
-        //         const statusClass =
-        //             status === "In Progress"
-        //                 ? "bg-blue-100 dark:bg-darkPrimaryBg text-blue-800 dark:text-darkTextPrimary"
-        //                 : "bg-gray-100 dark:bg-darkPrimaryBg text-gray-800 dark:text-darkTextPrimary";
-
-        //         const handleStatusChange = (newStatus: string) => {
-        //             console.log(newStatus);
-        //         };
-
-        //         return (
-        //             <div className="flex justify-end">
-        //                 <DropdownMenu>
-        //                     <DropdownMenuTrigger asChild>
-        //                         <Button
-        //                             variant="outline2"
-        //                             className={`px-2 py-1.5 rounded-full text-sm font-medium ${statusClass}`}
-        //                         >
-        //                             <span className={` w-2 h-2 rounded-full ${status === "In Progress" ? "bg-blue-300 dark:bg-gray-300 " : "bg-gray-300"}`}></span>
-        //                             {status}
-        //                             <ChevronDown />
-        //                         </Button>
-        //                     </DropdownMenuTrigger>
-        //                     <DropdownMenuContent align="end">
-        //                         <DropdownMenuItem className=" cursor-pointer" onClick={() => handleStatusChange("In Progress")}>
-        //                             In Progress
-        //                         </DropdownMenuItem>
-        //                         <DropdownMenuItem className=" cursor-pointer" onClick={() => handleStatusChange("Pending")}>
-        //                             Pending
-        //                         </DropdownMenuItem>
-        //                     </DropdownMenuContent>
-        //                 </DropdownMenu>
-        //             </div>
-        //         );
-        //     },
-        // },
         {
             accessorKey: "status",
             // header: "Status",
@@ -268,12 +295,14 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
                         {
                             (logInUserData?.role === 'admin' ||
                                 logInUserData?.role === 'manager' ||
-                                logInUserData?.role === 'hr') ?
+                                logInUserData?.role === 'hr' ||
+                                logInUserData?.role === 'project_manager'
+                            ) ?
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
                                         <Button
                                             variant="outline2"
-                                            className={`px-2 py-2 rounded-xl text-sm font-medium ${statusClass}`}
+                                            className={`h-9 2xl:h-10 px-2 2xl:px-4 rounded-xl text-xs 2xl:text-sm font-medium ${statusClass}`}
                                         >
                                             <span className={` w-2 h-2 rounded-full ${status === "processing" ? "bg-[#efaf07] " : status === "cancelled" ? "bg-[#f40139]" : status === "pending" ? "bg-[#5db0f1]" : "bg-[#26bd6c]"}`}></span>
                                             {status}
@@ -347,7 +376,10 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
                     {
                         (logInUserData?.role === 'admin' ||
                             logInUserData?.role === 'manager' ||
-                            logInUserData?.role === 'hr') &&
+                            logInUserData?.role === 'hr' ||
+                            logInUserData?.role === 'project_manager'
+
+                        ) &&
                         <div className="">Action</div>
                     }
                 </>,
@@ -357,7 +389,9 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
                         {
                             (logInUserData?.role === 'admin' ||
                                 logInUserData?.role === 'manager' ||
-                                logInUserData?.role === 'hr') &&
+                                logInUserData?.role === 'hr' ||
+                                logInUserData?.role === 'project_manager'
+                            ) &&
                             <div className="">
                                 <Popover>
                                     <PopoverTrigger asChild>
@@ -378,13 +412,23 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
                                                     }}
                                                     className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
                                                     <EditIcon size={18} />
-                                                    <p>Edit Client</p>
+                                                    <p>Edit Task</p>
                                                 </div>
 
-                                                {/* <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                        <DeleteIcon size={18} />
-                                        <p>Delete Client</p>
-                                    </div> */}
+                                                <ConfirmDialog
+                                                    trigger={
+                                                        <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
+                                                            <DeleteIcon size={18} />
+                                                            <p>Delete Task</p>
+                                                        </div>
+                                                    }
+                                                    title="Delete the task"
+                                                    description="Are you sure you want to delete this task? This action cannot be undone."
+                                                    confirmText="Confirm"
+                                                    cancelText="Cancel"
+                                                    // confirmClassName="bg-primary hover:bg-primary"
+                                                    onConfirm={() => handleDelete(row?.original)}
+                                                />
                                             </div>
                                         </div>
                                     </PopoverContent>
@@ -395,7 +439,7 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
                 );
             },
         },
-    ];
+    ], [handleDelete, handleStatusUpdate, loading, logInUserData]);
 
 
     const table = useReactTable({
@@ -413,8 +457,30 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
 
     return (
         <div className="mt-5 border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">
-            <div className=" mb-5">
-                <h2 className=" text-base sm:text-lg">TASK LIST</h2>
+            <div className=" mb-5 flex items-center justify-between">
+                <div className="">
+                    <h2 className=" text-base sm:text-lg">TASK LIST</h2>
+                </div>
+                <div className=" flex items-center gap-3">
+                    <div className="flex gap-1 items-center">
+                        <Checkbox
+                            id="cancelled"
+                            className="cursor-pointer data-[state=checked]:bg-red-500 dark:data-[state=checked]:bg-red-500 border-red-500 data-[state=checked]:border-red-500"
+                            checked={isCancelled}
+                            onCheckedChange={(checked) => updateQueryParam("cancelled", checked)}
+                        />
+                        <label htmlFor="cancelled" className="cursor-pointer text-sm mt-0.5">Cancelled</label>
+                    </div>
+                    <div className="flex gap-1 items-center">
+                        <Checkbox
+                            id="complete"
+                            className="cursor-pointer border-primary"
+                            checked={isComplete}
+                            onCheckedChange={(checked) => updateQueryParam("complete", checked)}
+                        />
+                        <label htmlFor="complete" className="cursor-pointer text-sm mt-0.5">Completed</label>
+                    </div>
+                </div>
             </div>
             <Table>
                 <TableHeader>
@@ -449,14 +515,22 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
                 </TableBody>
             </Table>
             {/* Edit modal here */}
-            <Dialog open={open} onOpenChange={setOpen}>
+            <Dialog open={open} onOpenChange={handleEditOpenChange}>
                 {selectedTask && (
                     <EditTaskModal
+                        key={selectedTask.id}
                         handleCloseDialog={handleCloseDialog}
                         selectedProject={selectedTask}
                     />
                 )}
             </Dialog>
+            {/* Single task modal here */}
+            <Dialog open={viewTaskOpen} onOpenChange={handleViewOpenChange}>
+                {viewTaskId && (
+                    <SingleTaskModal taskId={viewTaskId} />
+                )}
+            </Dialog>
+
         </div>
     );
 };

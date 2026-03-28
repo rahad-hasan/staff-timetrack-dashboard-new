@@ -34,10 +34,13 @@ import EditIcon from "@/components/Icons/FilterOptionIcon/EditIcon";
 // import DeleteIcon from "@/components/Icons/DeleteIcon";
 import EditProjectModal from "./EditProjectModal";
 import { toast } from "sonner";
-import { editProject } from "@/actions/projects/action";
+import { deleteProject, editProject } from "@/actions/projects/action";
 import { useProjectFormStore } from "@/store/ProjectFormStore";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import { formatTZDayMonthYear } from "@/utils";
+import DeleteIcon from "@/components/Icons/DeleteIcon";
+import ConfirmDialog from "@/components/Common/ConfirmDialog";
+import Link from "next/link";
 
 
 const ProjectTable = ({ data }: { data: IProject[] }) => {
@@ -93,6 +96,33 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
         }
     }
 
+    async function handleDelete(values: IProject) {
+
+        try {
+            const res = await deleteProject(values.id);
+
+            if (res?.success) {
+                toast.success(res?.message || "Project deleted successfully");
+            } else {
+                toast.error(res?.message || "Failed to delete project", {
+                    style: {
+                        backgroundColor: '#ef4444',
+                        color: 'white',
+                        border: 'none'
+                    },
+                });
+            }
+        } catch (error: any) {
+            toast.error(error?.message || "Something went wrong!", {
+                style: {
+                    backgroundColor: '#ef4444',
+                    color: 'white',
+                    border: 'none'
+                },
+            });
+        } 
+    }
+
     const columns: ColumnDef<IProject>[] = [
         {
             accessorKey: "name",
@@ -100,7 +130,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                 return (
                     <div>
                         <span
-                            className=" flex items-center gap-1"
+                            className=" cursor-pointer flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                         >
                             Project Name
@@ -110,21 +140,23 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                 )
             },
             cell: ({ row }) => {
-                const task = row.getValue("name") as string;
+                const project = row.getValue("name") as string;
                 const start_date = row.original.start_date;
                 return (
                     <div className="flex flex-col">
-                        <span className="font-bold text-base text-headingTextColor dark:text-darkTextPrimary">{task}</span>
+                        <Link href={`/project-management/projects/${row?.original?.id}`}>
+                            <span className="font-bold text-base text-headingTextColor dark:text-darkTextPrimary capitalize hover:underline-offset-2 hover:underline">{project}</span>
+                        </Link>
                         <span className=" font-normal text-subTextColor dark:text-darkTextSecondary">{formatTZDayMonthYear(start_date)}</span>
                     </div>
                 )
             }
         },
         {
-            accessorKey: "manager",
+            accessorKey: "projectManagerAssigns",
             header: ({ column }) => {
                 return (
-                    <div className="  min-w-[180px]">
+                    <div className=" cursor-pointer min-w-[100px]">
                         <span
                             className=" flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
@@ -171,10 +203,10 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
             }
         },
         {
-            accessorKey: "assignee",
+            accessorKey: "projectAssigns",
             header: ({ column }) => {
                 return (
-                    <div className="  min-w-[150px]">
+                    <div className=" cursor-pointer min-w-[120px]">
                         <span
                             className=" flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
@@ -219,27 +251,27 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                 );
             }
         },
-        {
-            accessorKey: "timeWorked",
-            // header: () => <div className="">Time Worked</div>,
-            header: ({ column }) => {
-                return (
-                    <div>
-                        <span
-                            className=" flex items-center gap-1"
-                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        >
-                            Time Worked
-                            <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </span>
-                    </div>
-                )
-            },
-            cell: ({ row }) => {
+        // {
+        //     accessorKey: "timeWorked",
+        //     // header: () => <div className="">Time Worked</div>,
+        //     header: ({ column }) => {
+        //         return (
+        //             <div>
+        //                 <span
+        //                     className=" flex items-center gap-1"
+        //                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        //                 >
+        //                     Time Worked
+        //                     <ArrowUpDown className="ml-2 h-4 w-4" />
+        //                 </span>
+        //             </div>
+        //         )
+        //     },
+        //     cell: ({ row }) => {
 
-                return <div className="">{row?.original?.summary?.duration}</div>;
-            },
-        },
+        //         return <div className="">{row?.original?.summary?.duration}</div>;
+        //     },
+        // },
         {
             accessorKey: "deadline",
             // header: () => <div className="">Time Worked</div>,
@@ -247,7 +279,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                 return (
                     <div>
                         <span
-                            className=" flex items-center gap-1"
+                            className=" cursor-pointer flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                         >
                             Deadline
@@ -322,7 +354,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
             // header: () => <div className=" text-right">Status</div>,
             header: ({ column }) => {
                 return (
-                    <div className=" flex justify-end">
+                    <div className=" cursor-pointer flex justify-end">
                         <span
                             className="  flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
@@ -357,7 +389,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                                     <DropdownMenuTrigger asChild>
                                         <Button
                                             variant="outline2"
-                                            className={`px-2 py-2 rounded-xl text-sm font-medium ${statusClass}`}
+                                            className={`h-9 2xl:h-10 px-2 2xl:px-4 rounded-xl text-xs 2xl:text-sm font-medium ${statusClass}`}
                                         >
                                             <span className={` w-2 h-2 rounded-full ${status === "processing" ? "bg-[#efaf07] " : status === "cancelled" ? "bg-[#f40139]" : status === "pending" ? "bg-[#5db0f1]" : "bg-[#26bd6c]"}`}></span>
                                             {status}
@@ -470,10 +502,21 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                                         <ArchiveIcon size={18} />
                                         <p>Archive Project</p>
                                     </div> */}
-                                    {/* <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                        <DeleteIcon size={18} />
-                                        <p>Delete Project</p>
-                                    </div> */}
+                                    <ConfirmDialog
+                                        trigger={
+                                            <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
+                                                <DeleteIcon size={18} />
+                                                <p>Delete Project</p>
+                                            </div>
+                                        }
+                                        title="Delete the project"
+                                        description="Are you sure you want to delete this project? This action cannot be undone."
+                                        confirmText="Confirm"
+                                        cancelText="Cancel"
+                                        // confirmClassName="bg-primary hover:bg-primary"
+                                        onConfirm={() => handleDelete(row?.original)}
+                                    />
+
                                 </div>
                             </div>
                         </PopoverContent>
@@ -502,7 +545,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
             <div className=" mb-5">
                 <h2 className=" text-base sm:text-lg">Projects</h2>
             </div>
-            <Table>
+            <Table >
                 <TableHeader>
                     {table.getHeaderGroups().map(headerGroup => (
                         <TableRow key={headerGroup.id}>

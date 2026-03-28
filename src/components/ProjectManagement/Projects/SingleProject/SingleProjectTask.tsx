@@ -6,6 +6,7 @@ import { ArrowUpDown } from "lucide-react";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { Task } from "@/types/type";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const SingleProjectTask = ({ data }: { data: Task[] }) => {
     const [sorting, setSorting] = useState<SortingState>([])
@@ -65,6 +66,44 @@ const SingleProjectTask = ({ data }: { data: Task[] }) => {
             }
         },
         {
+            accessorKey: "userName",
+            header: ({ column }) => {
+                return (
+                    <div>
+                        <span
+                            className=" cursor-pointer flex items-center gap-1"
+                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                        >
+                            Assigned To
+                            <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </span>
+                    </div>
+                )
+            },
+            cell: ({ row }) => {
+                const name = row?.original?.user?.name
+                const image = row?.original?.user?.image
+
+                return (
+                    <div className="flex items-center gap-2 min-w-[180px]">
+                        <Avatar>
+                            <AvatarImage src={image || undefined} alt={name} />
+                            <AvatarFallback>
+                                {name
+                                    ?.trim()
+                                    .split(" ")
+                                    .map(word => word[0])
+                                    .join("")
+                                    .slice(0, 2)
+                                    .toUpperCase()}
+                            </AvatarFallback>
+                        </Avatar>
+                        <span className="capitalize">{name}</span>
+                    </div>
+                )
+            }
+        },
+        {
             accessorKey: "description",
             header: ({ column }) => {
                 return (
@@ -82,8 +121,33 @@ const SingleProjectTask = ({ data }: { data: Task[] }) => {
             cell: ({ row }) => {
                 const description = row?.original?.description
                 return (
-                    <div className="flex items-center gap-2 min-w-[180px]">
+                    <div className="flex items-center gap-2 min-w-[250px] max-w-[300px] whitespace-normal break-words">
                         <span>{description ? description : "No description available"}</span>
+                    </div>
+                )
+            }
+        },
+        {
+            accessorKey: "duration",
+            header: ({ column }) => {
+                return (
+                    <div>
+                        <span
+                            className=" cursor-pointer flex items-center gap-1"
+                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                        >
+                            Duration
+                            <ArrowUpDown className="ml-2 h-4 w-4" />
+                        </span>
+                    </div>
+                )
+            },
+            cell: ({ row }) => {
+                const duration = row?.original?.duration
+
+                return (
+                    <div className="flex items-center gap-2 min-w-[180px]">
+                        <span>{duration}</span>
                     </div>
                 )
             }

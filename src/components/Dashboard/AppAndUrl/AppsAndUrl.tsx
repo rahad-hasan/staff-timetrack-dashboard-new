@@ -20,6 +20,12 @@ import zoom_logo from '../../../assets/apps_logo/zoom_logo.png';
 import microsoft_office_word from '../../../assets/apps_logo/microsoft_office_word.png';
 import postman_logo from '../../../assets/apps_logo/postman_logo.png';
 import terminal_logo from '../../../assets/apps_logo/terminal_logo.png';
+import microsoft_powerPoint from '../../../assets/apps_logo/microsoft_powerPoint.png';
+import edge from '../../../assets/apps_logo/microsoft_edge.png';
+import microsoft_excel from '../../../assets/apps_logo/microsoft_excel.png';
+import notepad from '../../../assets/apps_logo/notepad.png';
+import adobe_acrobat from '../../../assets/apps_logo/adobe_acrobat.png';
+import adobe_illustrator from '../../../assets/apps_logo/adobe_illustrator.png';
 import Image from "next/image";
 
 const APP_LOGOS: Record<string, any> = {
@@ -32,9 +38,16 @@ const APP_LOGOS: Record<string, any> = {
     vscode: vs_code_logo,
     code: vs_code_logo,
     zoom: zoom_logo,
-    office: microsoft_office_word,
+    word: microsoft_office_word,
     postman: postman_logo,
     terminal: terminal_logo,
+    command: terminal_logo,
+    powerpoint: microsoft_powerPoint,
+    edge: edge,
+    excel: microsoft_excel,
+    notepad: notepad,
+    acrobat: adobe_acrobat,
+    illustrator: adobe_illustrator,
 };
 const AppsAndUrl = ({ data }: { data: IRowAppsUrls[] }) => {
 
@@ -114,7 +127,7 @@ const AppsAndUrl = ({ data }: { data: IRowAppsUrls[] }) => {
     const emptyRowsCount = Math?.max(0, MIN_ROWS - actualRows?.length);
 
     return (
-        <div className="w-full h-full border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">
+        <div className="w-full h-full border border-borderColor/60 dark:border-darkBorder/50 dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">
             <div className="flex justify-between items-center">
                 <h2 className="text-base sm:text-lg text-headingTextColor dark:text-darkTextPrimary font-medium uppercase">APPS & URL</h2>
                 <div className="flex items-center gap-3">

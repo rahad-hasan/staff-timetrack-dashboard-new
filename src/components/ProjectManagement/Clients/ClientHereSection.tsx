@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client"
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import { useEffect, useState } from "react";

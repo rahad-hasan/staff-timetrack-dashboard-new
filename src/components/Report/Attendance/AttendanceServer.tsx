@@ -1,30 +1,22 @@
+"use client"
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import AttendanceTable from "@/components/Report/Attendance/AttendanceTable";
-import { ISearchParamsProps } from "@/types/type";
-import { getAttendance } from "@/actions/report/action";
-// import { getDecodedUser } from "@/utils/decodedLogInUser";
-import { format } from "date-fns";
-// import { cookies } from "next/headers";
+import { useState } from "react";
+import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
+import AttendanceHeroSearch from "./AttendanceHeroSearch";
 
-// import AttendanceTableSkeleton from "@/skeleton/report/Attendance/AttendanceTableSkeleton";0
-
-const AttendanceServer = async ({ searchParams }: ISearchParamsProps) => {
-    const params = await searchParams;
-    // const user = await getDecodedUser();
-    const currentDate = format(new Date(), "yyyy-MM-dd");
-    // const cookieStore = await cookies();
-    // const role = cookieStore.get("staffTimeDashboardRole")?.value;
-    // const allowedRoles = ['admin', 'manager', 'hr'];
-    // const isAdmin = role && allowedRoles.includes(role);
-    // const targetUserId = isAdmin ? params.user_id : user?.id;
-
-    const attendanceListData = await getAttendance({
-        date: params.date ?? currentDate,
-        search: params.search,
-    });
+const AttendanceServer = ({ attendanceListData }: any) => {
+    const [searchTerm, setSearchTerm] = useState("");
 
     return (
         <div>
-            <AttendanceTable attendanceListData={attendanceListData?.data}></AttendanceTable>
+            <div className="flex items-center justify-between w-full mb-5">
+                <div className="flex flex-col items-end md:flex-row gap-4 md:gap-3 w-full">
+                    <SpecificDatePicker />
+                    <AttendanceHeroSearch onSearchChange={setSearchTerm} />
+                </div>
+            </div>
+            <AttendanceTable attendanceListData={attendanceListData} searchTerm={searchTerm}></AttendanceTable>
         </div>
     );
 };

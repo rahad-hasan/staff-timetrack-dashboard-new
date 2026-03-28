@@ -11,6 +11,9 @@ import { cookies } from "next/headers";
 //   });
 // };
 
+// Define a duration for cookies (e.g., 30 days)
+const MAX_AGE = 60 * 60 * 24 * 30;
+
 export const logIn = async (data: any) => {
   const res = await baseApi("/auth/signin", {
     method: "POST",
@@ -21,12 +24,12 @@ export const logIn = async (data: any) => {
   if (res?.success) {
     const isProd = process.env.NODE_ENV === "production";
     const cookieStore = await cookies();
-
     cookieStore.set("accessToken", res.data.accessToken, {
       httpOnly: true,
       secure: isProd,
       sameSite: "lax",
       path: "/",
+      maxAge: MAX_AGE,
     });
 
     cookieStore.set("refreshToken", res.data.refreshToken, {
@@ -34,20 +37,15 @@ export const logIn = async (data: any) => {
       secure: isProd,
       sameSite: "lax",
       path: "/",
+      maxAge: MAX_AGE,
     });
 
-    cookieStore.set("staffTimeDashboardRole", res.data.role, {
+    cookieStore.set("timeZone", res.data.time_zone, {
       httpOnly: true,
       secure: isProd,
       sameSite: "lax",
       path: "/",
-    });
-
-    cookieStore.set("userId", res.data.id, {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: "lax",
-      path: "/",
+      maxAge: MAX_AGE,
     });
   }
 
@@ -63,28 +61,62 @@ export const uploadProfileImage = async ({ data }: {
     method: "PATCH",
     body: data,
     tag: "profile",
+    cache: "no-cache"
   });
 };
 
-export const changePassword = async ({ data }: {
+export const uploadProfileInfo = async ({ data }: {
   data: {
-    oldPassword: string,
-    newPassword: string,
+    name: string;
+    phone?: string;
+    time_zone: string;
+    currency?: string;
   }
 }) => {
-  return await baseApi(`/auth/change-password`, {
+  return await baseApi(`/auth/update-profile`, {
     method: "PATCH",
     body: data,
     tag: "profile",
+    cache: "no-cache"
   });
+};
+
+export const changePassword = async ({
+  data,
+}: {
+  data: {
+    oldPassword: string;
+    newPassword: string;
+  };
+}) => {
+  const res = await baseApi(`/auth/change-password`, {
+    method: "PATCH",
+    body: data,
+    tag: "profile",
+    cache: "no-cache",
+  });
+
+  if (res?.success) {
+    const isProd = process.env.NODE_ENV === "production";
+    const cookieStore = await cookies();
+
+    cookieStore.set("accessToken", res.data.accessToken, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: "lax",
+      path: "/",
+      maxAge: MAX_AGE,
+    });
+  }
+
+  return res;
 };
 
 export async function clearSessionCookie() {
   const cookieStore = await cookies();
   cookieStore.delete("accessToken");
   cookieStore.delete("refreshToken");
-  cookieStore.delete("staffTimeDashboardRole");
-  cookieStore.delete("userId");
+  cookieStore.delete("timeZone");
 }
 
 export const forgetPassword = async ({ data }: {
@@ -149,6 +181,7 @@ export const resetPassword = async ({ data }: {
       secure: isProd,
       sameSite: "lax",
       path: "/",
+      maxAge: MAX_AGE,
     });
 
     cookieStore.set("refreshToken", res.data.refreshToken, {
@@ -156,20 +189,15 @@ export const resetPassword = async ({ data }: {
       secure: isProd,
       sameSite: "lax",
       path: "/",
+      maxAge: MAX_AGE,
     });
 
-    cookieStore.set("staffTimeDashboardRole", res.data.role, {
+    cookieStore.set("timeZone", res.data.time_zone, {
       httpOnly: true,
       secure: isProd,
       sameSite: "lax",
       path: "/",
-    });
-
-    cookieStore.set("userId", res.data.id, {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: "lax",
-      path: "/",
+      maxAge: MAX_AGE,
     });
   }
 

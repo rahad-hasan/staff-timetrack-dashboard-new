@@ -55,7 +55,7 @@ const AddMemberStep = ({ setStep }: GeneralInfoStepProps) => {
                         name="manager"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Manager</FormLabel>
+                                <FormLabel required={true}>Manager</FormLabel>
                                 <FormControl>
                                     <MultiSelect
                                         values={field.value?.map(String) || []}

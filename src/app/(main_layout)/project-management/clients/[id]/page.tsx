@@ -1,6 +1,5 @@
 "use client"
 
-import ProjectTable from "@/components/ProjectManagement/Projects/ProjectTable";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, Pencil, Plus } from "lucide-react";
 import Link from "next/link";

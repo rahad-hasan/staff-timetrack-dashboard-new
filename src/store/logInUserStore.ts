@@ -6,6 +6,7 @@ interface ColorState {
     logInUserData: Record<string, any>;
     setLogInUserData: (userData: Record<string, any>) => void;
     resetData: () => void;
+    updateUserData: (updates: any) => void;
 }
 
 export const useLogInUserStore = create<ColorState>()(
@@ -14,6 +15,12 @@ export const useLogInUserStore = create<ColorState>()(
             logInUserData: {},
             setLogInUserData: (userData) => set({ logInUserData: userData }),
             resetData: () => set({ logInUserData: {} }),
+            updateUserData: (updates: any) => set((state) => ({
+                logInUserData: {
+                    ...state.logInUserData,
+                    ...updates,
+                }
+            })),
         }),
         {
             name: "log-in-user",

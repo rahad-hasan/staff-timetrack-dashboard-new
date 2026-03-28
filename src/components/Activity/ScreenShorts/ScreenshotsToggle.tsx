@@ -1,17 +1,20 @@
 "use client"
 import { useRouter, useSearchParams } from "next/navigation";
+import { useTopLoader } from "nextjs-toploader";
 
 const ScreenshotsToggle = () => {
     type Tab = "Every 10 min" | "All Screenshots";
     const searchParams = useSearchParams();
     const router = useRouter();
+    const loader = useTopLoader();
     const activeTab = (searchParams.get("tab") as Tab) ?? "Every 10 min";
     const setTab = (tab: Tab) => {
         const params = new URLSearchParams(searchParams.toString());
         params.set("tab", tab);
+        loader.start()
         router.push(`?${params.toString()}`);
     };
-    
+
     return (
         <div className="flex gap-3">
             <div className="grid grid-cols-2 xl:flex mt-3 lg:mt-0 bg-bgSecondary dark:bg-darkSecondaryBg rounded-lg ">

@@ -16,5 +16,6 @@ export const updateCompanyInfo = async ({ data, id }: { data: Partial<ICompany>,
         method: "PATCH",
         body: data,
         tag: "company",
+        cache: "no-cache",
     });
 };

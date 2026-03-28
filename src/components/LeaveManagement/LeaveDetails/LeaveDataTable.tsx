@@ -1,22 +1,52 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client"
 
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { ArrowUpDown } from "lucide-react";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { IUserLeaveData } from "@/types/type";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import LeaveDataDetailsModal from "./LeaveDataDetailsModal";
+import SearchBar from "@/components/Common/SearchBar";
+import { YearPicker } from "@/components/Common/YearPicker";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useTopLoader } from "nextjs-toploader";
 
 const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
+    const [searchTerm, setSearchTerm] = useState("");
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const loader = useTopLoader();
+
+    const selectedYear = searchParams.get("year") || new Date().getFullYear().toString();
+
+    // 4. UseCallback for URL changes to prevent child re-renders
+    const handleYearChange = useCallback((year: string) => {
+        const params = new URLSearchParams(searchParams.toString());
+        if (year) params.set("year", year);
+        else params.delete("year");
+        loader.start()
+        router.push(`?${params.toString()}`, { scroll: false });
+    }, [router, searchParams]);
+
+    const filteredData = useMemo(() => {
+        if (!searchTerm) return data;
+
+        return data?.filter((row: IUserLeaveData) => {
+            return (
+                row?.user?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        });
+    }, [data, searchTerm]);
 
     const columns: ColumnDef<IUserLeaveData>[] = [
         {
-            accessorKey: "name",
+            accessorKey: "user.name",
             header: ({ column }) => {
                 return (
                     <div>
@@ -34,7 +64,7 @@ const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
                 const name = row?.original?.user?.name;
                 const image = row?.original?.user?.image ? row?.original?.user?.image : ""
                 return (
-                    <div className="flex items-center gap-2 min-w-[180px]">
+                    <div className="flex items-center gap-2 min-w-[200px]">
                         <Avatar className="">
                             <AvatarImage src={image} alt={name}></AvatarImage>
                             <AvatarFallback>{name?.charAt(0)}</AvatarFallback>
@@ -42,7 +72,7 @@ const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
                         <Dialog>
                             <form>
                                 <DialogTrigger asChild>
-                                    <span className=" font-medium cursor-pointer">{name}</span>
+                                    <span className=" font-medium cursor-pointer hover:underline-offset-2 hover:underline break-words whitespace-normal">{name}</span>
 
                                 </DialogTrigger>
                                 <LeaveDataDetailsModal data={row?.original}></LeaveDataDetailsModal>
@@ -53,7 +83,7 @@ const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
             }
         },
         {
-            accessorKey: "totalLeave",
+            accessorKey: "total_taken",
             header: ({ column }) => {
                 return (
                     <div>
@@ -76,7 +106,7 @@ const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
             }
         },
         {
-            accessorKey: "casualLeave",
+            accessorKey: "casual.taken",
             header: ({ column }) => {
                 return (
                     <div>
@@ -100,7 +130,7 @@ const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
             }
         },
         {
-            accessorKey: "sickLeave",
+            accessorKey: "sick.taken",
             header: ({ column }) => {
                 return (
                     <div>
@@ -123,7 +153,7 @@ const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
             }
         },
         {
-            accessorKey: "paidLeave",
+            accessorKey: "paid.taken",
             header: ({ column }) => {
                 return (
                     <div>
@@ -146,7 +176,7 @@ const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
             }
         },
         {
-            accessorKey: "availableLeave",
+            accessorKey: "available",
             header: ({ column }) => {
                 return (
                     <div>
@@ -161,24 +191,22 @@ const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
                 )
             },
             cell: ({ row }) => {
-                const taken = row?.original?.total_taken || 0;
-                const allowed = row?.original?.total_allowed || 1;
-                const percentage = Math.min((taken / allowed) * 100, 100);
+                const taken = row?.original?.available || 0;
                 const withColor =
-                    percentage > 80 ? 'bg-red-500' :
-                        percentage > 50 ? 'bg-yellow-500' :
-                            'bg-green-500';
+                    taken > 80 ? 'bg-green-500' :
+                        taken > 50 ? 'bg-yellow-500' :
+                            'bg-red-500';
 
                 return (
                     <div className="flex items-center gap-2">
                         <div className="bg-[#ececec] dark:bg-gray-700 flex h-4 w-24 rounded-full relative overflow-hidden">
                             <div
                                 className={`${withColor} h-full rounded-full transition-all duration-300`}
-                                style={{ width: `${percentage}%` }}
+                                style={{ width: `${taken}%` }}
                             />
                         </div>
                         <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
-                            {Math.round(percentage)}%
+                            {taken}%
                         </span>
                     </div>
                 );
@@ -186,9 +214,8 @@ const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
         }
     ];
 
-
     const table = useReactTable({
-        data: data,
+        data: filteredData,
         columns,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,
@@ -201,43 +228,54 @@ const LeaveDataTable = ({ data }: { data: IUserLeaveData[] }) => {
     });
 
     return (
-        <div className="mt-5 border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">
-            <div className=" mb-5">
-                <h2 className=" text-base sm:text-lg dark:text-darkTextPrimary">Leave Data</h2>
+        <>
+            <div className=' mt-5 flex justify-between items-center'>
+                <YearPicker
+                    value={selectedYear}
+                    onYearChange={handleYearChange}
+                    startYear={new Date().getFullYear() - 1}
+                    endYear={new Date().getFullYear() + 1}>
+                </YearPicker>
+                <SearchBar onSearch={setSearchTerm} />
             </div>
-            <Table>
-                <TableHeader>
-                    {table.getHeaderGroups().map(headerGroup => (
-                        <TableRow key={headerGroup.id}>
-                            {headerGroup.headers.map(header => (
-                                <TableHead key={header.id}>
-                                    {header.isPlaceholder
-                                        ? null
-                                        : flexRender(header.column.columnDef.header, header.getContext())}
-                                </TableHead>
-                            ))}
-                        </TableRow>
-                    ))}
-                </TableHeader>
-                <TableBody>
-                    {table.getRowModel().rows?.length ? (
-                        table.getRowModel().rows.map(row => (
-                            <TableRow key={row.id}>
-                                {row.getVisibleCells().map(cell => (
-                                    <TableCell key={cell.id}>
-                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                    </TableCell>
+            <div className="mt-5 border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">
+                <div className=" mb-5">
+                    <h2 className=" text-base sm:text-lg dark:text-darkTextPrimary">Leave Data</h2>
+                </div>
+                <Table>
+                    <TableHeader>
+                        {table.getHeaderGroups().map(headerGroup => (
+                            <TableRow key={headerGroup.id}>
+                                {headerGroup.headers.map(header => (
+                                    <TableHead key={header.id}>
+                                        {header.isPlaceholder
+                                            ? null
+                                            : flexRender(header.column.columnDef.header, header.getContext())}
+                                    </TableHead>
                                 ))}
                             </TableRow>
-                        ))
-                    ) : (
-                        <TableRow>
-                            <EmptyTableRow columns={columns} text="No leave data found."></EmptyTableRow>
-                        </TableRow>
-                    )}
-                </TableBody>
-            </Table>
-        </div>
+                        ))}
+                    </TableHeader>
+                    <TableBody>
+                        {table.getRowModel().rows?.length ? (
+                            table.getRowModel().rows.map(row => (
+                                <TableRow key={row.id}>
+                                    {row.getVisibleCells().map(cell => (
+                                        <TableCell key={cell.id}>
+                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                        </TableCell>
+                                    ))}
+                                </TableRow>
+                            ))
+                        ) : (
+                            <TableRow>
+                                <EmptyTableRow columns={columns} text="No leave data found."></EmptyTableRow>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
+            </div>
+        </>
     );
 };
 

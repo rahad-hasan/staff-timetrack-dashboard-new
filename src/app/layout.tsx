@@ -5,8 +5,6 @@ import { ThemeProvider } from "@/components/Theme/theme-provider";
 import { SidebarRouteSync } from "@/utils/SidebarRouteSync";
 import SetGlobalColor from "@/components/Common/SetGlobalColor";
 import { Toaster } from "@/components/ui/sonner"
-import SocketProvider from "@/socket/SocketProvider";
-import { cookies } from "next/headers";
 import NextTopLoader from 'nextjs-toploader';
 import ClearNavbarStorageOnWindowClose from "@/utils/ClearNavbarStorageOnWindowClose";
 
@@ -24,6 +22,13 @@ const roboto = Roboto({
     display: 'swap'
 });
 
+// const nunito = Nunito({
+//     subsets: ['latin'],
+//     weight: ['300', '400', '500', '700', '800', '900'],
+//     variable: '--font-nunito',
+//     display: 'swap'
+// });
+
 export const metadata: Metadata = {
     title: "Staff Time Tracker Dashboard",
     description: "Staff Time Tracker Dashboard",
@@ -34,9 +39,6 @@ export default async function RootLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-
-    const cookieStore = await cookies();
-    const token = cookieStore.get("accessToken");
 
     return (
         <html lang="en" suppressHydrationWarning className={roboto.className}>
@@ -60,14 +62,12 @@ export default async function RootLayout({
                     <SidebarRouteSync />
                     <ClearNavbarStorageOnWindowClose />
                     {/* <ReplaceActiveNavAfterRemount /> */}
-                    <SocketProvider token={token?.value}>
                         <NextTopLoader
                             color="#2bb0f3"
                             height={2}
                             showSpinner={false}
                         />
                         {children}
-                    </SocketProvider>
                 </ThemeProvider>
             </body>
         </html >

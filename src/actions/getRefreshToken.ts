@@ -1,6 +1,6 @@
 "use server";
+
 import { cookies } from "next/headers";
-const isProd = process.env.NODE_ENV === "production";
 const BASE_URL = "http://localhost:5000/api/v1";
 
 export async function getRefreshToken() {

@@ -17,9 +17,12 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { changePassword } from "@/actions/auth/action";
+import { Eye, EyeOff } from "lucide-react";
 
 const ChangePassword = () => {
     const [loading, setLoading] = useState(false);
+    const [showOldPassword, setShowOldPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
     const form = useForm<z.infer<typeof changePasswordSchema>>({
         resolver: zodResolver(changePasswordSchema),
         defaultValues: {
@@ -71,14 +74,23 @@ const ChangePassword = () => {
                             name="oldPassword"
                             render={({ field }) => (
                                 <FormItem className="w-full">
-                                    <FormLabel>Old Password</FormLabel>
+                                    <FormLabel required={true}>Old Password</FormLabel>
                                     <FormControl>
-                                        <Input
-                                            type="password"
-                                            placeholder="Old Password"
-                                            className="dark:bg-darkPrimaryBg dark:border-darkBorder"
-                                            {...field}
-                                        />
+                                        <div className="relative">
+                                            <Input
+                                                type={showOldPassword ? "text" : "password"}
+                                                placeholder="Old Password"
+                                                className="dark:bg-darkPrimaryBg dark:border-darkBorder"
+                                                {...field}
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowOldPassword(!showOldPassword)}
+                                                className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500 hover:text-gray-700 dark:text-gray-400"
+                                            >
+                                                {showOldPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                            </button>
+                                        </div>
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -90,14 +102,23 @@ const ChangePassword = () => {
                             name="newPassword"
                             render={({ field }) => (
                                 <FormItem className="w-full">
-                                    <FormLabel>New Password</FormLabel>
+                                    <FormLabel required={true}>New Password</FormLabel>
                                     <FormControl>
-                                        <Input
-                                            type="password"
-                                            placeholder="New Password"
-                                            className="dark:bg-darkPrimaryBg dark:border-darkBorder"
-                                            {...field}
-                                        />
+                                        <div className="relative">
+                                            <Input
+                                                type={showNewPassword ? "text" : "password"}
+                                                placeholder="New Password"
+                                                className="dark:bg-darkPrimaryBg dark:border-darkBorder"
+                                                {...field}
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowNewPassword(!showNewPassword)}
+                                                className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500 hover:text-gray-700 dark:text-gray-400"
+                                            >
+                                                {showNewPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                            </button>
+                                        </div>
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>

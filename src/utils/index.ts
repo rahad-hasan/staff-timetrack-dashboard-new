@@ -1,11 +1,10 @@
 import { useLogInUserStore } from "@/store/logInUserStore";
-import { formatInTimeZone } from "date-fns-tz";
+import { formatInTimeZone, fromZonedTime } from "date-fns-tz";
 
 const getUserTimeZone = () => {
   const logInUserData = useLogInUserStore.getState().logInUserData;
-  return logInUserData?.timezone || "Asia/Dhaka";
+  return logInUserData?.timezone;
 };
-
 
 export const convertDecimalHoursToHMS = (decimalHours: number | null | undefined) => {
   // If duration is negative then return
@@ -82,4 +81,60 @@ export const formatTZDateDMY = (
   timeZone = getUserTimeZone()
 ) => {
   return formatInTimeZone(new Date(date), timeZone, "dd/MM/yyyy");
+};
+
+export const formatTZFullDate = (
+  date: string | Date | number,
+  timeZone = getUserTimeZone()
+): string => {
+  const d = new Date(date);
+  return formatInTimeZone(d, timeZone, "EEEE, MMMM d, yyyy");
+};
+
+
+export const convertTo24Hour = (timeStr: string | undefined) => {
+  if (!timeStr) return "00:00:00";
+
+  const parts = timeStr.split(' ');
+  if (parts.length !== 2) return "00:00:00";
+
+  const [time, modifier] = parts;
+  const [hoursStr, minutes] = time.split(':');
+
+  let hours = parseInt(hoursStr, 10);
+  const isPM = modifier.toLowerCase() === 'pm';
+  const isAM = modifier.toLowerCase() === 'am';
+
+  if (isPM && hours < 12) {
+    hours += 12;
+  } else if (isAM && hours === 12) {
+    hours = 0;
+  }
+
+  const paddedHours = hours.toString().padStart(2, '0');
+  const paddedMinutes = minutes.padStart(2, '0');
+
+  return `${paddedHours}:${paddedMinutes}:00`;
+};
+
+export const getDuration = (start?: string, end?: string, breakInMin = 0, tz = getUserTimeZone()) => {
+  if (!start || !end) return "0h";
+
+  const startUtc = fromZonedTime(start, tz);
+  const endUtc = fromZonedTime(end, tz);
+
+  // Get total diff in ms
+  let diffMs = endUtc.getTime() - startUtc.getTime();
+
+  // Subtract break duration (convert minutes to ms: min * 60s * 1000ms)
+  if (breakInMin > 0) {
+    diffMs -= (breakInMin * 60 * 1000);
+  }
+
+  // Ensure we don't return negative hours if break is longer than total time
+  const finalDiffMs = Math.max(0, diffMs);
+
+  const hours = finalDiffMs / (1000 * 60 * 60);
+
+  return `${hours.toFixed(1)} Hours`;
 };

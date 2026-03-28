@@ -41,7 +41,7 @@ export const addManualTimeSchema = z.object({
     }),
     task: z.any().refine((val) => val !== undefined && val !== null && val !== "", {
         message: "Task is required",
-    }),
+    }).optional(),
     date: z.date().nullable().refine((date) => date !== null && !isNaN(date.getTime()), {
         message: "Date is required",
     }),
@@ -137,7 +137,7 @@ export const newTaskCreationSchema = z.object({
         message: "Deadline is required",
     }),
     priority: z.string().min(1, "Priority is required"),
-    details: z.string().min(1, "Task details is required"),
+    details: z.string().optional(),
 })
 
 export const newClientSchema = z.object({
@@ -166,7 +166,27 @@ export const newTeamSchema = z.object({
 export const addNewMemberSchema = z.object({
     name: z.string().min(1, "Name is required"),
     email: z.string().email("Invalid email address"),
+    phone: z
+        .string()
+        .refine(
+            (val) => {
+                const parsed = parsePhoneNumberFromString(val);
+                return parsed?.isValid();
+            },
+            {
+                message: 'Phone number must be a valid international format',
+            }
+        ).optional(),
     role: z.string().min(1, "Role is required"),
+    time_zone: z.string()
+        .min(1, "Time Zone is required"),
+    project: z.string().min(1, "Project is required"),
+    schedule: z.string().min(1, "Schedule is required").optional(),
+    pay_rate_hourly: z
+        .number({ message: "Pay rate must be a number" })
+        .int()
+        .min(1, { message: 'Pay rate must be 1 or greater' })
+        .max(10000, { message: 'Pay rate must be 10000 or less' }).optional(),
     password: z.string()
         .min(8, "Minimum 8 characters")
         .regex(/[a-z]/, "At least one lowercase letter")
@@ -187,7 +207,7 @@ export const editMemberSchema = z.object({
         .regex(/[a-z]/, "At least one lowercase letter")
         .regex(/[A-Z]/, "At least one uppercase letter")
         .regex(/\d/, "At least one number")
-        .regex(/[!@#$%^&*(),.?":{}|<>]/, "At least one special character"),
+        .regex(/[!@#$%^&*(),.?":{}|<>]/, "At least one special character").optional(),
 })
 
 export const addNewEventSchema = z.object({
@@ -195,9 +215,28 @@ export const addNewEventSchema = z.object({
     date: z.date().refine(date => !isNaN(date.getTime()), {
         message: "Date is required",
     }),
-    time: z.string().min(1, "Time is required"),
+    start_time: z.string().min(1, "Start time is required"),
+    end_time: z.string().min(1, "End time is required"),
     project: z.string().optional(),
-    meetingLink: z.string().optional(),
+    meetingLink: z
+        .string()
+        .optional()
+        .or(z.literal(''))
+        .refine((value) => {
+            if (!value || value === "") return true;
+            try {
+                new URL(value);
+                return true;
+            } catch {
+                return false;
+            }
+        }, { message: 'Meeting link must be a valid HTTP/HTTPS URL' })
+        .refine((value) => {
+            if (!value || value === "") return true;
+            return /^https?:\/\/[a-z0-9.-]*(meet|teams)[a-z0-9.-]*\/\S+/i.test(value);
+        }, {
+            message: 'Meeting link must be a valid Meet or Teams URL',
+        }),
     members: z
         .array(z.union([z.number(), z.string()]))
         .min(1, "At least one member is required"),
@@ -211,7 +250,8 @@ export const editEventSchema = z.object({
         .refine((date) => date !== null, {
             message: "Date is required",
         }),
-    time: z.string().min(1, "Time is required"),
+    start_time: z.string().min(1, "Start time is required"),
+    end_time: z.string().min(1, "End time is required"),
 });
 
 export const leaveRequestSchema = z.object({
@@ -234,6 +274,19 @@ export const userBasicInfoSchema = z.object({
     title: z.string().min(1, "Title is required"),
     email: z.string().email("Invalid email address"),
     password: z.string().min(8, "Password must be at least 8 characters").optional(),
+    phone: z
+        .string()
+        .refine(
+            (val) => {
+                const parsed = parsePhoneNumberFromString(val);
+                return parsed?.isValid();
+            },
+            {
+                message: 'Phone number must be a valid international format',
+            }
+        ),
+    time_zone: z.string()
+        .min(1, "Time Zone is required"),
 })
 
 export const screenDeleteReasonSchema = z.object({
@@ -261,6 +314,77 @@ export const leaveSettingsSchema = z.object({
 
 
 export const changePasswordSchema = z.object({
-    oldPassword: z.string().min(8, "Password must be at least 8 characters"),
-    newPassword: z.string().min(8, "Password must be at least 8 characters"),
+    oldPassword: z.string()
+        .min(8, "Minimum 8 characters")
+        .regex(/[a-z]/, "At least one lowercase letter")
+        .regex(/[A-Z]/, "At least one uppercase letter")
+        .regex(/\d/, "At least one number")
+        .regex(/[!@#$%^&*(),.?":{}|<>]/, "At least one special character"),
+    newPassword: z.string()
+        .min(8, "Minimum 8 characters")
+        .regex(/[a-z]/, "At least one lowercase letter")
+        .regex(/[A-Z]/, "At least one uppercase letter")
+        .regex(/\d/, "At least one number")
+        .regex(/[!@#$%^&*(),.?":{}|<>]/, "At least one special character"),
+})
+
+export const singleMemberSchema = z.object({
+    name: z.string().min(2, "Name is required"),
+    email: z.string().email("Invalid email"),
+    phone: z
+        .string()
+        .optional()
+        .or(z.literal("")) // 👈 This allows the empty string from your input to pass
+        .refine(
+            (val) => {
+                // If there's no value, it's valid (optional)
+                if (!val || val.length === 0) return true;
+
+                // If there IS a value, check if it's a valid international number
+                const parsed = parsePhoneNumberFromString(val);
+                return parsed?.isValid();
+            },
+            {
+                message: 'Phone number must be a valid international format',
+            }
+        ),
+    pay_rate_hourly: z.number().min(0),
+    role: z.string().min(2, "role is required"),
+    time_zone: z.string()
+        .min(1, "Time Zone is required"),
+})
+
+
+export const ScheduleShiftSchema = z.object({
+    name: z
+        .string({ message: 'Schedule name is required' })
+        .min(2, { message: 'Schedule name must be at least 2 characters long' })
+        .max(60, { message: 'Schedule name must not exceed 60 characters' }),
+    start_time: z.string().min(1, "Shift Start time is required"),
+    end_time: z.string().min(1, "Shift End time is required"),
+    grace_in_min: z
+        .number({ message: "Grace in minutes must be a number" })
+        .int()
+        .min(0, { message: 'Grace in minutes must be 0 or greater' })
+        .max(1440, { message: 'Grace in minutes must be 1440 or less' }),
+
+    grace_out_min: z
+        .number({ message: "Grace out minutes must be a number" })
+        .int()
+        .min(0, { message: 'Grace out minutes must be 0 or greater' })
+        .max(1440, { message: 'Grace out minutes must be 1440 or less' }),
+
+    break_in_min: z
+        .number({ message: "Break in minutes must be a number" })
+        .int()
+        .min(0, { message: 'Break in minutes must be 0 or greater' })
+        .max(1440, { message: 'Break in minutes must be 1440 or less' }),
+});
+
+
+export const scheduleAssignMemberSchema = z.object({
+    project: z.string().min(1, "Project is required"),
+    members: z
+        .array(z.union([z.number(), z.string()]))
+        .min(1, "At least one member is required"),
 })

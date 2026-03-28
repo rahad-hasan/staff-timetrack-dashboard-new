@@ -35,14 +35,16 @@ import { Check } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ICoreMember } from "@/types/type";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
+import { useTopLoader } from "nextjs-toploader";
 
 const CoreWorkMembers = ({ data = [] }: { data: ICoreMember[] }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
-
+  const loader = useTopLoader();
   const setType = (type: string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("type", type);
+    loader.start()
     router.push(`?${params.toString()}`);
   };
 
@@ -59,7 +61,7 @@ const CoreWorkMembers = ({ data = [] }: { data: ICoreMember[] }) => {
               <AvatarImage src={image} alt={name}></AvatarImage>
               <AvatarFallback>{name?.charAt(0)}</AvatarFallback>
             </Avatar>
-            <span className="font-bold text-headingTextColor dark:text-darkTextPrimary">
+            <span className="font-bold text-headingTextColor dark:text-darkTextPrimary break-words whitespace-normal">
               {name}
             </span>
           </div>
@@ -106,7 +108,7 @@ const CoreWorkMembers = ({ data = [] }: { data: ICoreMember[] }) => {
   const emptyRowsCount = Math.max(0, MIN_ROWS - actualRows.length);
 
   return (
-    <div className="w-full border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px] h-full">
+    <div className="w-full border border-borderColor/60 dark:border-darkBorder/50 dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px] h-full">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5 sm:gap-3 sm:w-1/2">
           <h2 className="text-base sm:text-lg uppercase text-headingTextColor dark:text-darkTextPrimary">

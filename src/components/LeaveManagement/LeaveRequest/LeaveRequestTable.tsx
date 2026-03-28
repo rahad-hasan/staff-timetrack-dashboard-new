@@ -7,7 +7,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import RejectLeaveRequestModal from "./RejectLeaveRequestModal";
-// import LeaveHistory from "../LeaveDetails/LeaveDataDetailsModal";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { ILeaveRequest } from "@/types/type";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -21,7 +20,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { formatTZDayMonthYear } from "@/utils";
 
 const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
-
     const logInUserData = useLogInUserStore(state => state.logInUserData);
 
     const getStatusStyles = (status?: string) => {
@@ -41,7 +39,7 @@ const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
                     button: "bg-[#eff7fe] border-[#5db0f1] text-[#5db0f1] hover:bg-[#eff7fe] dark:bg-transparent",
                     dot: "bg-[#5db0f1]"
                 };
-            default: // completed or others
+            default:
                 return {
                     button: "bg-[#e9f8f0] border-[#26bd6c] text-[#26bd6c] hover:bg-[#e9f8f0] dark:bg-transparent",
                     dot: "bg-[#26bd6c]"
@@ -49,6 +47,7 @@ const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
         }
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [loadingId, setLoadingId] = useState<number | null>(null);
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
@@ -120,7 +119,7 @@ const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
                         {/* <Dialog>
                             <form>
                                 <DialogTrigger asChild> */}
-                        <Link href={`/leave-management/user-leave-history/${row?.original?.user?.id}`}><p className=" cursor-pointer">{name}</p></Link>
+                        <Link href={`/leave-management/user-leave-history/${row?.original?.user?.id}`}><p className=" cursor-pointer hover:underline-offset-2 hover:underline break-words whitespace-normal">{name}</p></Link>
                         {/* </DialogTrigger>
                                 <LeaveHistory></LeaveHistory>
                             </form>
@@ -165,8 +164,8 @@ const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
             cell: ({ row }) => {
                 const start_date = row.getValue("start_date") as string;
                 return (
-                    <div className="flex flex-col">
-                        <span className="">{formatTZDayMonthYear(start_date)}</span>
+                    <div className="flex flex-col min-w-[100px]">
+                        <span className="break-words whitespace-normal">{formatTZDayMonthYear(start_date)}</span>
                     </div>
                 )
             }
@@ -186,8 +185,8 @@ const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
             cell: ({ row }) => {
                 const end_date = row.getValue("end_date") as string;
                 return (
-                    <div className="flex flex-col">
-                        <span className="">{formatTZDayMonthYear(end_date)}</span>
+                    <div className="flex flex-col min-w-[100px]">
+                        <span className="break-words whitespace-normal">{formatTZDayMonthYear(end_date)}</span>
                     </div>
                 )
             }
@@ -234,7 +233,7 @@ const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
                     <div className="flex flex-col">
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <span className="">
+                                <span className="break-words whitespace-normal">
                                     {truncatedReason}
                                 </span>
                             </TooltipTrigger>
@@ -252,37 +251,6 @@ const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
                 );
             }
         },
-        // {
-        //     accessorKey: "availableLeave",
-        //     header: () => {
-        //         return (
-        //             <div>
-        //                 <p>
-        //                     Available Leave
-        //                 </p>
-        //             </div>
-        //         )
-        //     },
-        //     cell: ({ row }) => {
-        //         const availableLeave = row.getValue("availableLeave") as number;
-        //         const widthPercentage = Math.min((availableLeave / 32) * 100, 100);
-        //         const barColor =
-        //             availableLeave < 10
-        //                 ? "bg-green-500"
-        //                 : availableLeave < 20
-        //                     ? "bg-yellow-500"
-        //                     : "bg-red-500";
-        //         return (
-        //             <div className=" flex items-center ">
-        //                 <p className=" w-7">{availableLeave}</p>
-        //                 <div className={`bg-gray-100 dark:bg-gray-500 flex h-4.5 w-16 rounded-full relative`}>
-        //                     <p className={`${barColor} flex h-4.5 rounded-full absolute top-0 left-0`} style={{ width: `${widthPercentage}%` }}></p>
-        //                 </div>
-        //             </div>
-        //         )
-        //     }
-        // },
-
         {
             accessorKey: "status",
             header: ({ column }) => (
@@ -300,7 +268,7 @@ const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
 
                 return (
                     <Button
-                        className={`text-sm border flex items-center gap-2 px-3 h-8 shadow-none ${styles.button} cursor-default capitalize`}
+                        className={`text-xs 2xl:text-sm border flex items-center gap-2 px-2 2xl:px-3 h-7.5 2xl:h-8 shadow-none ${styles.button} cursor-default capitalize`}
                     >
                         <span className={`w-2 h-2 rounded-full ${styles.dot}`}></span>
                         {status || "N/A"}
@@ -311,52 +279,54 @@ const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
         {
             accessorKey: "action",
             header: () => {
+                const isAdminOrHr = logInUserData?.role === 'admin' || logInUserData?.role === 'hr';
+
+                if (!isAdminOrHr) return null;
                 return (
-                    <>
-                        {
-                            (logInUserData?.role === 'admin' ||
-                                logInUserData?.role === 'hr') &&
-                            <div>
-                                <p>
-                                    Action
-                                </p>
-                            </div>
-                        }
-                    </>
+                    <div>
+                        <p>
+                            Action
+                        </p>
+                    </div>
                 )
 
             },
             cell: ({ row }) => {
-                return (
-                    <>
-                        {
-                            (logInUserData?.role === 'admin' ||
-                                logInUserData?.role === 'hr') &&
-                            <div className="flex items-center gap-3" >
-                                <ConfirmDialog
-                                    trigger={
-                                        <Button size={'sm'} className=" text-sm px-2 rounded-lg">Approve</Button>
-                                    }
-                                    title="Approve the request"
-                                    description="Are you sure you want to approve the request? This action cannot be undone."
-                                    confirmText="Confirm"
-                                    cancelText="Cancel"
-                                    confirmClassName="bg-primary hover:bg-primary"
-                                    onConfirm={() => handleApprove(row?.original)}
-                                />
+                const isAdminOrHr = logInUserData?.role === 'admin' || logInUserData?.role === 'hr';
+                const isRejected = row.original.is_rejected;
+                const isFullyApproved = row.original.hr_approved && row.original.admin_approved;
+                const isNotFullyApproved = !isFullyApproved;
 
-                                <Dialog>
-                                    <form>
-                                        <DialogTrigger asChild>
-                                            <Button size={'sm'} className=" text-sm bg-red-500 hover:bg-red-500 dark:text-white px-2 rounded-lg">Reject</Button>
-                                        </DialogTrigger>
-                                        <RejectLeaveRequestModal data={row?.original}></RejectLeaveRequestModal>
-                                    </form>
-                                </Dialog>
-                            </div>
-                        }
-                    </>
-                )
+                if (isAdminOrHr && !isRejected && isNotFullyApproved) {
+                    return (
+                        <div className="flex items-center gap-3">
+                            <ConfirmDialog
+                                trigger={<Button size={'sm'} className=" text-xs 2xl:text-sm px-2 2xl:px-3 h-7.5 2xl:h-8 rounded-lg">Approve</Button>}
+                                title="Approve the request"
+                                description="Are you sure you want to approve the request? This action cannot be undone."
+                                confirmText="Confirm"
+                                cancelText="Cancel"
+                                confirmClassName="bg-primary hover:bg-primary"
+                                onConfirm={() => handleApprove(row.original)}
+                            />
+
+                            <Dialog>
+                                <DialogTrigger asChild>
+                                    <Button size={'sm'} className=" text-xs 2xl:text-sm px-2 2xl:px-3 h-7.5 2xl:h-8 bg-red-500 hover:bg-red-500 dark:text-white rounded-lg">
+                                        Reject
+                                    </Button>
+                                </DialogTrigger>
+                                <RejectLeaveRequestModal data={row.original} />
+                            </Dialog>
+                        </div>
+                    );
+                }
+
+                return (
+                    <div className="flex ">
+                        <span className="text-muted-foreground opacity-50">—</span>
+                    </div>
+                );
             }
         },
     ];
@@ -375,7 +345,7 @@ const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
     });
 
     return (
-        <div className="mt-5 border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5  rounded-[12px]">
+        <div className="mt-5 border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">
             <div className=" mb-5">
                 <h2 className=" text-base sm:text-lg dark:text-darkTextPrimary">Leave Request</h2>
             </div>

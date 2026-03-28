@@ -22,6 +22,7 @@ export const addProject = async (data: ICreateProjectPayload) => {
         method: "POST",
         body: data,
         tag: "projects",
+        cache: "no-cache",
     });
 };
 
@@ -32,20 +33,15 @@ export const editProject = async ({ data, id }: {
     return await baseApi(`/projects/${id}`, {
         method: "PATCH",
         body: data,
-        cache: "no-store",
+        cache: "no-cache",
         tag: "projects",
     });
 };
 
-export const deleteProject = async ({ data, id }: {
-    data: {
-        is_deleted: boolean,
-    },
-    id: number | undefined
-}) => {
+export const deleteProject = async (id: number | undefined) => {
     return await baseApi(`/projects/${id}`, {
-        method: "PATCH",
-        body: data,
+        method: "DELETE",
         tag: "projects",
+        cache: "no-cache",
     });
 };

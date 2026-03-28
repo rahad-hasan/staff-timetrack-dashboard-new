@@ -66,7 +66,7 @@ export type SearchParams = { [key: string]: string | string[] | undefined };
 
 export interface IMutation<T> {
   data: T;
-  id: number | undefined
+  id: number | undefined;
 }
 
 export interface ProjectAssign {
@@ -89,6 +89,7 @@ export interface User {
   name: string;
   email: string;
   image: string | null;
+  time_zone?: string;
 }
 
 export interface ProjectSummary {
@@ -136,7 +137,7 @@ export interface ITask {
   deadline: string | null;
   priority: string | null;
   assigned_by: number;
-  status: 'pending' | 'processing' | 'complete' | 'cancelled';
+  status: "pending" | "processing" | "complete" | "cancelled";
   updated_at: string;
   created_at: string;
   duration: string;
@@ -148,12 +149,30 @@ export interface ITask {
   user: IUser;
 }
 
-export type ISearchParams = Promise<{ [key: string]: string | string[] | number | undefined }>;
+export interface ISingleTask {
+  id: number;
+  name: string;
+  deadline: string | null;
+  description: string | null;
+  status: string;
+  project_id: number;
+  project_name: string;
+  user_id: number;
+  user_name: string;
+  assigned_user_id: number;
+  assigned_user_name: string;
+  email: string;
+  image: string | null;
+  duration: string;
+}
+
+export type ISearchParams = Promise<{
+  [key: string]: string | string[] | number | undefined;
+}>;
 
 export interface ISearchParamsProps {
   searchParams: ISearchParams;
 }
-
 
 export interface ITimeSheetEntry {
   id: number;
@@ -166,7 +185,7 @@ export interface ITimeSheetEntry {
   end_time: string;
   duration: number;
   system_update: string;
-  status: 'pending' | 'processing' | 'complete' | 'cancelled';
+  status: "pending" | "processing" | "complete" | "cancelled";
   updated_at: string;
   created_at: string;
   project: {
@@ -178,8 +197,14 @@ export interface ITimeSheetEntry {
     id: number;
     is_manual_entry: boolean;
   };
-}
 
+  format_start_time: string; // e.g. "02:35 PM"
+  format_end_time: string; // e.g. "07:16 PM"
+  format_duration: string; // e.g. "04:41:40"
+
+  start: number; // decimal hour (14.58)
+  end: number; // decimal hour (19.26)
+}
 
 export interface Company {
   id: number;
@@ -209,7 +234,6 @@ export interface ILeaveRequest {
   company: Company;
 }
 
-
 export interface Project {
   id: number;
   name: string;
@@ -221,7 +245,7 @@ export interface IManualTimeEntry {
   start_time: string;
   end_time: string;
   duration: number;
-  status: 'pending' | 'processing' | 'complete' | 'cancelled';
+  status: "pending" | "processing" | "complete" | "cancelled";
   user_id: number;
   project_id: number;
   task_id: number;
@@ -230,42 +254,15 @@ export interface IManualTimeEntry {
   created_at: string;
   user: User;
   project: Project;
+  date: string;
+  format_start_time: string;
+  format_end_time: string;
 }
 
-export interface IApps {
-  id: number;
-  company_id: number;
-  user_id: number;
-  app_id: number | null;
-  project_id: number;
-  task_id: number;
-  date: string;
-  app_name: string;
+export interface IUrl {
   url: string;
   duration: string;
-  tab_id: number | null;
-  updated_at: string;
-  created_at: string;
-  user: User;
-  project: Project;
-}
-
-export interface IUrls {
-  id: number;
-  company_id: number;
-  user_id: number;
-  app_id: number | null;
-  project_id: number;
-  task_id: number;
-  date: string;
-  app_name: string;
-  url: string;
-  duration: string;
-  tab_id: number | null;
-  updated_at: string;
-  created_at: string;
-  user: User;
-  project: Project;
+  session: number;
 }
 
 export interface IStatItem {
@@ -336,7 +333,6 @@ export interface ILeaveDetailsResponse {
   details: ILeaveDetails;
 }
 
-
 export type ICompany = {
   id: number;
   name: string;
@@ -377,7 +373,10 @@ export interface ICurrentTask {
   project_name: string;
 }
 
-export type WeeklyChartData = Record<'0' | '1' | '2' | '3' | '4' | '5' | '6', number>;
+export type WeeklyChartData = Record<
+  "0" | "1" | "2" | "3" | "4" | "5" | "6",
+  number
+>;
 
 export interface IMembersStatsDashboard {
   user_id: number;
@@ -392,13 +391,13 @@ export interface IMembersStatsDashboard {
   weekly_chart: WeeklyChartData;
 }
 
-
-
 export interface Task {
   id: number | null;
   name: string | null;
   description?: string | null;
-  status?: string
+  duration?: string;
+  user: User;
+  status?: string;
 }
 
 export interface TimeSpan {
@@ -462,7 +461,7 @@ export interface ISingleProjectData {
   company_id: number;
   name: string;
   client_id: number;
-  status: string
+  status: string;
   description: string;
   start_date: string;
   deadline: string;
@@ -475,7 +474,6 @@ export interface ISingleProjectData {
   summary: ProjectSummary;
 }
 
-
 export interface AnomalyDetails {
   type?: string;
   reason?: string;
@@ -487,14 +485,15 @@ export interface IAllScreenshot {
   image: string;
   corrupted: string;
   time: string;
+  format_time: string;
   display_name: string;
   score: number;
   mouse_activity: number;
   keyboard_activity: number;
   duration: number;
   anomaly: AnomalyDetails;
-  project: { name: string };
-  task: { name: string } | null;
+  project_name: string;
+  task_name: string;
 }
 
 export interface INotificationItem {
@@ -510,8 +509,7 @@ export interface INotificationItem {
     name: string;
     deadline?: string;
     note: string;
-  }
-  ;
+  };
   created_at: string;
   updated_at: string;
 }
@@ -529,7 +527,6 @@ export interface IDashboardAppsAndUrls {
   row: IRowAppsUrls[];
 }
 
-
 export interface INotes {
   notes: string;
   start_time: string;
@@ -537,4 +534,180 @@ export interface INotes {
   project: Project;
   task: Task;
   user: User;
+}
+
+/* =========================
+ * Timeline Detail (Screenshot / Activity)
+ * ========================= */
+export type TTimelineDetail = {
+  id: number;
+  project_name: string;
+  task_name: string | null;
+  user_id: number;
+  company_id: number;
+
+  score: number;
+  mouse_activity: number;
+  keyboard_activity: number;
+  duration: number; // seconds
+
+  corrupted: "NONE" | "PARTIAL" | "FULL";
+  anomaly: Record<string, any>;
+
+  image: string;
+  display_name: string;
+
+  time: string; // ISO UTC string
+  format_time: string; // e.g. "05:17 PM"
+};
+
+/* =========================
+ * Timeline Slots
+ * ========================= */
+
+// Empty 10-minute slot
+export type TTimelineEmptySlot = {
+  type: "empty";
+  from_time: string; // UTC ISO
+  to_time: string; // UTC ISO
+};
+
+// Slot with data
+export type TTimelineDataSlot = {
+  type: "data";
+
+  from_time: string; // UTC ISO
+  to_time: string; // UTC ISO
+
+  date: string; // start of day UTC
+
+  avg_score: number;
+  avg_mouse_activity: number;
+  avg_keyboard_activity: number;
+
+  total_duration: number; // minutes (0–10)
+
+  details: TTimelineDetail[];
+
+  // internal/computed (can be omitted on frontend if desired)
+  fromTs: number;
+  hourKeyUTC: string;
+
+  // formatted for UI (user timezone)
+  format_from_time: string; // "05:10 PM"
+  format_to_time: string; // "05:20 PM"
+};
+
+// Slot union
+export type TTimelineSlot = TTimelineDataSlot | TTimelineEmptySlot;
+
+/* =========================
+ * Hour Block
+ * ========================= */
+export type TTimelineHourBlock = {
+  hourLabel: string; // "05:00 PM - 06:00 PM"
+  totalWorked: string; // HH:mm:ss
+  slots: TTimelineSlot[];
+};
+
+export type TimeSheetDailyItem = {
+  date: string; // YYYY-MM-DD
+  duration: string; // HH:MM:SS
+};
+
+export type TimeSheetRange = {
+  from_date: string; // YYYY-MM-DD
+  to_date: string; // YYYY-MM-DD
+  type: "single_day" | "range";
+};
+
+export type TimeSheetTotals = {
+  duration_hours: string; // decimal hours as string, e.g. "20.975"
+  duration_formatted: string; // HH:MM:SS
+};
+
+export type TimeSheetData = {
+  user_id: number;
+  time_zone: string; // e.g. "UTC"
+  range: TimeSheetRange;
+  daily_data: TimeSheetDailyItem[];
+  totals: TimeSheetTotals;
+};
+
+export interface ISchedules {
+  id?: number;
+  name: string;
+  start_time: string;
+  end_time: string;
+  grace_in_min: number;
+  grace_out_min: number;
+  break_in_min: number;
+  allow_overtime?: boolean;
+  _count?: { scheduleAssigns: number };
+  scheduleAssigns?: [{ user: User }];
+  start_time_local?: string;
+  end_time_local?: string;
+}
+
+export type TLeaveType = "sick" | "casual" | "paid" | "maternity" | null;
+
+export interface IDailyDataItem {
+  date: string; // ISO date string (e.g. "2026-02-01")
+  duration: string; // HH:mm:ss
+  activity: number; // percentage (0–100)
+  active_time: string; // HH:mm:ss
+  idle_time: string; // HH:mm:ss
+  leave_type: TLeaveType;
+}
+
+export interface IDailyReportResponse {
+  daily_data: IDailyDataItem[];
+  total_time: string; // HH:mm:ss
+  total_idle_time: string; // HH:mm:ss
+  total_active_time: string; // HH:mm:ss
+  activity: number; // overall activity %
+}
+
+export interface IUserWorkReport {
+  user: User;
+  schedule: {
+    id: number;
+    name: string;
+    start_time: string;
+    end_time: string;
+    grace_in_min: number;
+    grace_out_min: number;
+    allow_overtime: boolean;
+  };
+  time_zone: string;
+  from_date: string;
+  to_date: string;
+  summary: {
+    late_days: number;
+    early_days: number;
+    total_late_minutes: number;
+    total_early_minutes: number;
+    total_late_hm: string;
+    total_early_hm: string;
+    total_worked_duration: string;
+    earnings: null | number;
+  };
+  days: {
+    date: string;
+    check_in: string;
+    check_out: string;
+    check_in_local: string;
+    check_out_local: string;
+    late_minutes: number;
+    early_minutes: number;
+    late_hm: string;
+    early_hm: string;
+    worked_duration: string;
+  }[];
+}
+
+export interface IApp {
+  app_name: string;
+  duration: string;
+  session: number;
 }

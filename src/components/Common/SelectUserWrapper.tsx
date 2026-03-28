@@ -1,0 +1,40 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
+
+import { useEffect, useState } from "react";
+import { getMembersDashboard } from "@/actions/members/action";
+import SelectUserDropDown from "./SelectUserDropDown";
+import { useSearchParams } from "next/navigation";
+
+const SelectUserWrapper = ({ defaultSelect }: { defaultSelect?: boolean }) => {
+    const searchParams = useSearchParams();
+    const project_id = searchParams.get("project_id");
+    const [users, setUsers] = useState<{ id: string; label: any; avatar: string }[]>([]);
+    const [loading, setLoading] = useState(false);
+    
+    useEffect(() => {
+        const fetchMembers = async () => {
+            setLoading(true);
+            try {
+                const res = await getMembersDashboard({project_id: project_id});
+                if (res?.success) {
+                    const formatted = res?.data?.map((u: any) => ({
+                        id: String(u?.id),
+                        label: u?.name,
+                        avatar: u?.image || u?.avatar || "",
+                    }));
+                    setUsers(formatted);
+                }
+            } catch (err) {
+                console.error("Fetch members error:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchMembers();
+    }, [project_id]);
+
+    return <SelectUserDropDown users={users} defaultSelect={defaultSelect} loading={loading} />;
+};
+
+export default SelectUserWrapper;

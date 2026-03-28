@@ -1,29 +1,39 @@
+export const dynamic = "force-dynamic";
+
 import SideBar from "@/components/layout/SideBar";
 import Header from "@/components/layout/Header";
+import { getTodayWorkTime } from "@/actions/dashboard/action";
+import { cookies } from "next/headers";
+import SocketProvider from "@/socket/SocketProvider";
 // import TrackerChatBot from "@/components/Chats/TrackerChatBot";
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  
+  const result = await getTodayWorkTime();
+  const cookieStore = await cookies();
+  const token = cookieStore.get("accessToken");
+
   return (
-    <div
-      className={` w-full flex bg-bgSecondary dark:bg-darkSecondaryBg`}
-    >
-      <div className="hidden md:block">
-        <SideBar></SideBar>
-      </div>
-      <div className=" bg-bgPrimary w-full md:border border-borderColor dark:bg-darkPrimaryBg dark:border-darkBorder md:rounded-[8px] md:my-3 md:mr-3 min-h-[100vh] lg:min-h-auto">
-        <Header></Header>
-        <div className="p-3 md:p-5 w-full dark:bg-darkPrimaryBg md:rounded-b-[12px]">
-          {children}
+    <SocketProvider token={token?.value}>
+      <div
+        className={` w-full flex bg-bgSecondary dark:bg-darkSecondaryBg`}
+      >
+        <div className="hidden lg:block">
+          <SideBar></SideBar>
         </div>
+        <div className=" bg-bgPrimary w-full lg:border border-borderColor dark:bg-darkPrimaryBg dark:border-darkBorder lg:rounded-[8px] lg:my-3 lg:mr-3 min-h-[100vh] lg:min-h-auto">
+          <Header data={result?.data}></Header>
+          <div className="p-3 lg:p-5 w-full dark:bg-darkPrimaryBg lg:rounded-b-[12px]">
+            {children}
+          </div>
+        </div>
+
+        {/* <TrackerChatBot></TrackerChatBot> */}
+
       </div>
-
-      {/* <TrackerChatBot></TrackerChatBot> */}
-
-    </div>
+    </SocketProvider>
   );
 }

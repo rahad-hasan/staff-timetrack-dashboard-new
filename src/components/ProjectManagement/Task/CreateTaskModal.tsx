@@ -60,7 +60,7 @@ const CreateTaskModal = ({ handleCloseDialog }: { handleCloseDialog: () => void 
     const form = useForm<z.infer<typeof newTaskCreationSchema>>({
         resolver: zodResolver(newTaskCreationSchema),
         defaultValues: {
-            assignee: "", // Changed to empty string for single ID
+            assignee: "",
             project: "",
             taskName: "",
             deadline: null,
@@ -69,35 +69,12 @@ const CreateTaskModal = ({ handleCloseDialog }: { handleCloseDialog: () => void 
         },
     });
 
-    useEffect(() => {
-        const loadMembers = async () => {
-            setLoading(true);
-            try {
-                const res = await getMembersDashboard();
-                if (res?.success) {
-                    setMembers(res.data);
-                }
-            } catch (err) {
-                console.error("Failed to fetch members", err);
-            } finally {
-                setLoading(false);
-            }
-        };
-        loadMembers();
-    }, []);
-
-
-    const selectedAssignee = form.watch("assignee");
     const debouncedSearch = useDebounce(searchInput, 500);
     useEffect(() => {
-        if (!selectedAssignee) {
-            setProjects([]);
-            return;
-        }
         const fetchProjects = async () => {
             setLoading(true);
             try {
-                const res = await getProjects({ search: debouncedSearch, user_id: selectedAssignee });
+                const res = await getProjects({ search: debouncedSearch, app: true });
 
                 if (res?.success) {
                     setProjects(
@@ -116,8 +93,29 @@ const CreateTaskModal = ({ handleCloseDialog }: { handleCloseDialog: () => void 
         };
 
         fetchProjects();
-    }, [debouncedSearch, selectedAssignee]);
+    }, [debouncedSearch]);
+    const selectedProject = form.watch("project");
 
+    useEffect(() => {
+        if (!selectedProject) {
+            setMembers([]);
+            return;
+        }
+        const loadMembers = async () => {
+            setLoading(true);
+            try {
+                const res = await getMembersDashboard({ project_id: selectedProject });
+                if (res?.success) {
+                    setMembers(res.data);
+                }
+            } catch (err) {
+                console.error("Failed to fetch members", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadMembers();
+    }, [selectedProject]);
 
     async function onSubmit(values: z.infer<typeof newTaskCreationSchema>) {
         const finalData = {
@@ -126,7 +124,7 @@ const CreateTaskModal = ({ handleCloseDialog }: { handleCloseDialog: () => void 
             assignee: Number(values.assignee),
             deadline: values.deadline ? new Date(values.deadline).toISOString() : null,
             priority: values.priority,
-            description: values.details,
+            ...(values.details && { description: values.details }),
         }
         setProjectLoading(true);
         try {
@@ -173,15 +171,68 @@ const CreateTaskModal = ({ handleCloseDialog }: { handleCloseDialog: () => void 
 
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                    <FormField
+                        control={form.control}
+                        name="project"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel required={true} className={""}>Project</FormLabel>
+                                <Select
+                                    onValueChange={field.onChange}
+                                    defaultValue={field.value}
+                                // disabled={!selectedAssignee}
+                                >
+                                    <FormControl>
+                                        <SelectTrigger className="w-full dark:bg-darkSecondaryBg">
+                                            <SelectValue
+                                                placeholder={"Select an assignee first"}
+                                            />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent className="dark:bg-darkSecondaryBg">
+                                        <div className="flex items-center px-2 pb-2 pt-1">
+                                            <Search className="mr-2 h-4 w-4 opacity-50" />
+                                            <Input
+                                                placeholder="Search projects..."
+                                                className="h-8 border-none focus-visible:ring-0"
+                                                value={searchInput}
+                                                onKeyDown={(e) => e.stopPropagation()}
+                                                onChange={(e) => setSearchInput(e.target.value)}
+                                            />
+                                        </div>
+                                        {projects.length === 0 ? (
+                                            <p className="text-sm text-center py-2">
+                                                {loading ? "Loading..." : "No projects found."}
+                                            </p>
+                                        ) : (
+                                            projects.map((p) => (
+                                                <SelectItem key={p.value} value={p.value}>
+                                                    <div className="flex items-center gap-2">
+                                                        {p.avatar && (
+                                                            <Avatar className="h-4 w-4">
+                                                                <AvatarImage src={p.avatar} />
+                                                                <AvatarFallback className="text-[8px]">P</AvatarFallback>
+                                                            </Avatar>
+                                                        )}
+                                                        {p.label}
+                                                    </div>
+                                                </SelectItem>
+                                            ))
+                                        )}
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
 
-                    {/* FIXED ASSIGNEE - SINGLE SELECTION */}
                     <FormField
                         control={form.control}
                         name="assignee"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Assignee</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormLabel required={true} className={!selectedProject ? "opacity-50" : ""}>Assignee</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!selectedProject}>
                                     <FormControl>
                                         <SelectTrigger className="w-full dark:bg-darkSecondaryBg">
                                             <SelectValue placeholder="Select a member" />
@@ -228,69 +279,10 @@ const CreateTaskModal = ({ handleCloseDialog }: { handleCloseDialog: () => void 
                     />
                     <FormField
                         control={form.control}
-                        name="project"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className={!selectedAssignee ? "opacity-50" : ""}>Project</FormLabel>
-                                <Select
-                                    onValueChange={field.onChange}
-                                    defaultValue={field.value}
-                                    disabled={!selectedAssignee}
-                                >
-                                    <FormControl>
-                                        <SelectTrigger className="w-full dark:bg-darkSecondaryBg">
-                                            <SelectValue
-                                                placeholder={
-                                                    !selectedAssignee
-                                                        ? "Select an assignee first"
-                                                        : loading ? "Loading..." : "Select Project"
-                                                }
-                                            />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent className="dark:bg-darkSecondaryBg">
-                                        <div className="flex items-center px-2 pb-2 pt-1">
-                                            <Search className="mr-2 h-4 w-4 opacity-50" />
-                                            <Input
-                                                placeholder="Search projects..."
-                                                className="h-8 border-none focus-visible:ring-0"
-                                                value={searchInput}
-                                                onKeyDown={(e) => e.stopPropagation()}
-                                                onChange={(e) => setSearchInput(e.target.value)}
-                                            />
-                                        </div>
-                                        {projects.length === 0 ? (
-                                            <p className="text-sm text-center py-2">
-                                                {loading ? "Loading..." : "No projects found."}
-                                            </p>
-                                        ) : (
-                                            projects.map((p) => (
-                                                <SelectItem key={p.value} value={p.value}>
-                                                    <div className="flex items-center gap-2">
-                                                        {p.avatar && (
-                                                            <Avatar className="h-4 w-4">
-                                                                <AvatarImage src={p.avatar} />
-                                                                <AvatarFallback className="text-[8px]">P</AvatarFallback>
-                                                            </Avatar>
-                                                        )}
-                                                        {p.label}
-                                                    </div>
-                                                </SelectItem>
-                                            ))
-                                        )}
-                                    </SelectContent>
-                                </Select>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-
-                    <FormField
-                        control={form.control}
                         name="taskName"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Task Name</FormLabel>
+                                <FormLabel required={true}>Task Name</FormLabel>
                                 <FormControl>
                                     <Input className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Task Name" {...field} />
                                 </FormControl>
@@ -304,7 +296,7 @@ const CreateTaskModal = ({ handleCloseDialog }: { handleCloseDialog: () => void 
                         name="deadline"
                         render={({ field }) => (
                             <FormItem className="w-full">
-                                <FormLabel>Deadline</FormLabel>
+                                <FormLabel required={true}>Deadline</FormLabel>
                                 <FormControl>
                                     <Popover open={openStartDate} onOpenChange={setOpenStartDate}>
                                         <PopoverTrigger asChild>
@@ -341,7 +333,7 @@ const CreateTaskModal = ({ handleCloseDialog }: { handleCloseDialog: () => void 
                         name="priority"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Priority</FormLabel>
+                                <FormLabel required={true}>Priority</FormLabel>
                                 <Select
                                     onValueChange={field.onChange}
                                     defaultValue={field.value}

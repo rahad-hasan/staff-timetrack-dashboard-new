@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -20,9 +20,9 @@ import {
 } from "@/components/ui/popover";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import DownArrow from "@/components/Icons/DownArrow";
-import { getProjects } from "@/actions/projects/action";
+
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useDebounce } from "@/hooks/use-debounce";
+import { useTopLoader } from "nextjs-toploader";
 
 type ProjectOption = {
   value: string;
@@ -30,65 +30,46 @@ type ProjectOption = {
   avatar?: string;
 };
 
-const SelectProjectDropDown = () => {
+const SelectProjectDropDown = ({
+  loading,
+  projects,
+  searchInput,
+  setSearchInput,
+}: any) => {
+  const loader = useTopLoader();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const selectedProjectId = searchParams.get("project_id");
   const [open, setOpen] = useState(false);
-  const [searchInput, setSearchInput] = useState("");
-  const [projects, setProjects] = useState<ProjectOption[]>([]);
-  const [loading, setLoading] = useState(false);
-
-  const debouncedSearch = useDebounce(searchInput, 500);
-
-  useEffect(() => {
-    const fetchProjects = async () => {
-      setLoading(true);
-      try {
-        const res = await getProjects({ search: debouncedSearch });
-
-        if (res?.success) {
-          const apiProjects = res.data.map((p: any) => ({
-            value: String(p.id),
-            label: p.name,
-            avatar: p.image || "",
-          }));
-          setProjects([
-            { value: "", label: "All Project", avatar: "" },
-            ...apiProjects
-          ]);
-        }
-      } catch (err) {
-        console.error("Fetch projects error:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProjects();
-  }, [debouncedSearch]);
 
   const selectedProject = useMemo(
-    () => projects.find((p) => p.value === selectedProjectId),
-    [projects, selectedProjectId]
+    () => projects.find((p: ProjectOption) => p.value === selectedProjectId),
+    [projects, selectedProjectId],
   );
 
   const handleSelect = (projectId: string) => {
     const params = new URLSearchParams(searchParams.toString());
-
-    if (projectId === selectedProjectId) {
+    if (projectId === selectedProjectId || projectId === "all") {
       params.delete("project_id");
     } else {
       params.set("project_id", projectId);
     }
-
-    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    loader.start();
+    setSearchInput("")
     setOpen(false);
+    requestAnimationFrame(() => {
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    })
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={(isOpen) => {
+      setOpen(isOpen);
+      if (!isOpen) {
+        setSearchInput("");
+      }
+    }}>
       <PopoverTrigger asChild>
         <Button
           variant="outline2"
@@ -113,7 +94,7 @@ const SelectProjectDropDown = () => {
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent className="sm:w-[250px] p-0 dark:bg-darkSecondaryBg">
+      <PopoverContent className="sm:w-[250px] p-0 dark:bg-darkSecondaryBg dark:border-darkBorder">
         <Command className="dark:bg-darkSecondaryBg">
           <CommandInput
             placeholder="Search Project..."
@@ -128,7 +109,7 @@ const SelectProjectDropDown = () => {
             </CommandEmpty>
 
             <CommandGroup>
-              {projects.map((project) => (
+              {projects.map((project: ProjectOption) => (
                 <CommandItem
                   key={project.value}
                   value={project.label}
@@ -137,9 +118,7 @@ const SelectProjectDropDown = () => {
                 >
                   <Avatar className="w-6 h-6 mr-2 shrink-0">
                     <AvatarImage src={project.avatar} />
-                    <AvatarFallback>
-                      {project.label.charAt(0)}
-                    </AvatarFallback>
+                    <AvatarFallback>{project.label.charAt(0)}</AvatarFallback>
                   </Avatar>
 
                   <span className="truncate">{project.label}</span>
@@ -149,7 +128,7 @@ const SelectProjectDropDown = () => {
                       "ml-auto h-4 w-4 shrink-0",
                       selectedProjectId === project.value
                         ? "opacity-100"
-                        : "opacity-0"
+                        : "opacity-0",
                     )}
                   />
                 </CommandItem>

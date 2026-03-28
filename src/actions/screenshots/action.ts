@@ -15,6 +15,7 @@ export const getAllScreenshots = async (query = {}): Promise<IResponse<IAllScree
     const queryString = buildQuery(query);
     return await baseApi(`/activities/all-screenshots${queryString ? `?${queryString}` : ""}`, {
         tag: "allScreenshots",
+        revalidate: 30
     });
 };
 
@@ -36,5 +37,6 @@ export const deleteScreenshot = async ({ data }: {
         method: "DELETE",
         body: data,
         tag: "screenshots",
+        cache: "no-cache",
     });
 };

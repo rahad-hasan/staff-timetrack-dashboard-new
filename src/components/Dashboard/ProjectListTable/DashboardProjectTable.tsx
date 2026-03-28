@@ -23,9 +23,10 @@ import { toast } from "sonner";
 import { editProject } from "@/actions/projects/action";
 import Link from "next/link";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
+import { useLogInUserStore } from "@/store/logInUserStore";
 
 const DashboardProjectTable = ({ data }: { data: IProject[] }) => {
-
+    const logInUserData = useLogInUserStore(state => state.logInUserData);
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
     const [loading, setLoading] = useState(false);
@@ -91,10 +92,10 @@ const DashboardProjectTable = ({ data }: { data: IProject[] }) => {
             }
         },
         {
-            accessorKey: "manager",
+            accessorKey: "projectManagerAssigns",
             header: ({ column }) => {
                 return (
-                    <div className="  min-w-[180px]">
+                    <div className="  min-w-[100px]">
                         <span
                             className=" cursor-pointer flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
@@ -107,13 +108,13 @@ const DashboardProjectTable = ({ data }: { data: IProject[] }) => {
             },
             cell: ({ row }) => {
                 const managers = row.original.projectManagerAssigns ?? [];
-                const MAX_VISIBLE = 3;
+                const MAX_VISIBLE = 2;
 
                 const visibleManagers = managers.slice(0, MAX_VISIBLE);
                 const remainingCount = managers.length - MAX_VISIBLE;
 
                 return (
-                    <div className="flex items-center">
+                    <div className="flex items-center min-w-[100px] ">
                         {visibleManagers.map((item, index) => (
                             <Avatar key={index} className={index !== 0 ? "-ml-3" : ""}>
                                 <AvatarImage
@@ -141,7 +142,7 @@ const DashboardProjectTable = ({ data }: { data: IProject[] }) => {
             }
         },
         {
-            accessorKey: "assignee",
+            accessorKey: "projectAssigns",
             header: ({ column }) => {
                 return (
                     <div className="  min-w-[150px]">
@@ -190,7 +191,7 @@ const DashboardProjectTable = ({ data }: { data: IProject[] }) => {
             }
         },
         {
-            accessorKey: "timeWorked",
+            accessorKey: "budget",
             // header: () => <div className="">Time Worked</div>,
             header: ({ column }) => {
                 return (
@@ -199,7 +200,7 @@ const DashboardProjectTable = ({ data }: { data: IProject[] }) => {
                             className=" cursor-pointer flex items-center gap-1"
                             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                         >
-                            Time Worked
+                            Budget
                             <ArrowUpDown className="ml-2 h-4 w-4" />
                         </span>
                     </div>
@@ -207,7 +208,7 @@ const DashboardProjectTable = ({ data }: { data: IProject[] }) => {
             },
             cell: ({ row }) => {
 
-                return <div className="">{row?.original?.summary?.duration}</div>;
+                return <div className="">${row?.original?.budget}</div>;
             },
         },
         {
@@ -231,61 +232,6 @@ const DashboardProjectTable = ({ data }: { data: IProject[] }) => {
                 return <div className="">{format(new Date(deadline), "EEE, MMM d, yyyy")}</div>;
             },
         },
-        // {
-        //     accessorKey: "status",
-        //     // header: "Status",
-        //     // header: () => <div className=" text-right">Status</div>,
-        //     header: ({ column }) => {
-        //         return (
-        //             <div className=" flex justify-end">
-        //                 <span
-        //                     className=" cursor-pointer flex items-center gap-1"
-        //                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        //                 >
-        //                     Status
-        //                     <ArrowUpDown className="ml-2 h-4 w-4" />
-        //                 </span>
-        //             </div>
-        //         )
-        //     },
-        //     cell: ({ row }) => {
-        //         const status = row.getValue("status") as string;
-
-        //         const statusClass =
-        //             status === "In Progress"
-        //                 ? "bg-blue-100 dark:bg-darkPrimaryBg text-blue-800 dark:text-darkTextPrimary"
-        //                 : "bg-gray-100 dark:bg-darkPrimaryBg text-gray-800 dark:text-darkTextPrimary";
-
-        //         const handleStatusChange = (newStatus: string) => {
-        //             console.log(newStatus);
-        //         };
-
-        //         return (
-        //             <div className="flex justify-end">
-        //                 <DropdownMenu>
-        //                     <DropdownMenuTrigger asChild>
-        //                         <Button
-        //                             variant="outline2"
-        //                             className={`px-2 py-1.5 rounded-full text-sm font-medium ${statusClass}`}
-        //                         >
-        //                             <span className={` w-2 h-2 rounded-full ${status === "In Progress" ? "bg-blue-300 dark:bg-gray-300 " : "bg-gray-300"}`}></span>
-        //                             {status}
-        //                             <ChevronDown />
-        //                         </Button>
-        //                     </DropdownMenuTrigger>
-        //                     <DropdownMenuContent align="end">
-        //                         <DropdownMenuItem className=" cursor-pointer" onClick={() => handleStatusChange("In Progress")}>
-        //                             In Progress
-        //                         </DropdownMenuItem>
-        //                         <DropdownMenuItem className=" cursor-pointer" onClick={() => handleStatusChange("Pending")}>
-        //                             Pending
-        //                         </DropdownMenuItem>
-        //                     </DropdownMenuContent>
-        //                 </DropdownMenu>
-        //             </div>
-        //         );
-        //     },
-        // },
         {
             accessorKey: "status",
             // header: "Status",
@@ -320,63 +266,78 @@ const DashboardProjectTable = ({ data }: { data: IProject[] }) => {
 
                 return (
                     <div className="flex justify-end">
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
+                        {
+                            (logInUserData?.role === 'admin' ||
+                                logInUserData?.role === 'manager' ||
+                                logInUserData?.role === 'hr')
+                                ?
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button
+                                            variant="outline2"
+                                            className={`  h-9 2xl:h-10 px-2 2xl:px-4 rounded-xl text-xs 2xl:text-sm font-medium ${statusClass}`}
+                                        >
+                                            <span className={` w-2 h-2 rounded-full ${status === "processing" ? "bg-[#efaf07] " : status === "cancelled" ? "bg-[#f40139]" : status === "pending" ? "bg-[#5db0f1]" : "bg-[#26bd6c]"}`}></span>
+                                            {status}
+                                            <ChevronDown />
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end" className=" space-y-2 w-[200px] p-2 rounded-lg">
+                                        <DropdownMenuItem
+                                            className="cursor-pointer rounded-lg bg-[#fff5db] border border-[#efaf07] text-[#efaf07] focus:text-[#efaf07] dark:bg-darkSecondaryBg dark:border-darkBorder py-2"
+                                            disabled={loading}
+                                            onClick={() => handleStatusUpdate({ status: "processing", id: row?.original?.id })}
+                                        >
+                                            {
+                                                status === "processing" && <Check className=" bg-[#efaf07] text-white rounded-full p-0.5" />
+                                            }
+                                            In Progress
+                                        </DropdownMenuItem>
+
+                                        <DropdownMenuItem
+                                            className="cursor-pointer rounded-lg bg-[#fee6eb] border border-[#fcc2cf] text-[#f40139] focus:text-[#f40139] dark:bg-darkSecondaryBg dark:border-darkBorder py-2"
+                                            disabled={loading}
+                                            onClick={() => handleStatusUpdate({ status: "cancelled", id: row?.original?.id })}
+                                        >
+                                            {
+                                                status === "cancelled" && <Check className=" bg-[#f40139] text-white rounded-full p-0.5" />
+                                            }
+                                            Cancel
+                                        </DropdownMenuItem>
+
+                                        <DropdownMenuItem
+                                            className="cursor-pointer rounded-lg bg-[#eff7fe] border border-[#cde7fb] text-[#5db0f1] focus:text-[#5db0f1] dark:bg-darkSecondaryBg dark:border-darkBorder py-2"
+                                            disabled={loading}
+                                            onClick={() => handleStatusUpdate({ status: "pending", id: row?.original?.id })}
+                                        >
+                                            {
+                                                status === "pending" && <Check className=" bg-[#5db0f1] text-white rounded-full p-0.5" />
+                                            }
+                                            Pending
+                                        </DropdownMenuItem>
+
+                                        <DropdownMenuItem
+                                            className="cursor-pointer rounded-lg bg-[#e9f8f0] border border-[#bcebd1] text-[#26bd6c] focus:text-[#26bd6c] dark:bg-darkSecondaryBg dark:border-darkBorder py-2"
+                                            disabled={loading}
+                                            onClick={() => handleStatusUpdate({ status: "complete", id: row?.original?.id })}
+                                        >
+                                            {
+                                                status === "complete" && <Check className=" bg-[#26bd6c] text-white rounded-full p-0.5" />
+                                            }
+                                            Done
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                                :
                                 <Button
                                     variant="outline2"
-                                    className={`px-2 py-2 rounded-xl text-sm font-medium ${statusClass}`}
+                                    className={`px-2 py-2 rounded-xl text-sm font-medium ${statusClass} cursor-default`}
                                 >
                                     <span className={` w-2 h-2 rounded-full ${status === "processing" ? "bg-[#efaf07] " : status === "cancelled" ? "bg-[#f40139]" : status === "pending" ? "bg-[#5db0f1]" : "bg-[#26bd6c]"}`}></span>
                                     {status}
                                     <ChevronDown />
                                 </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className=" space-y-2 w-[200px] p-2 rounded-lg">
-                                <DropdownMenuItem
-                                    className="cursor-pointer rounded-lg bg-[#fff5db] border border-[#efaf07] text-[#efaf07] focus:text-[#efaf07] dark:bg-darkSecondaryBg dark:border-darkBorder py-2"
-                                    disabled={loading}
-                                    onClick={() => handleStatusUpdate({ status: "processing", id: row?.original?.id })}
-                                >
-                                    {
-                                        status === "processing" && <Check className=" bg-[#efaf07] text-white rounded-full p-0.5" />
-                                    }
-                                    In Progress
-                                </DropdownMenuItem>
-
-                                <DropdownMenuItem
-                                    className="cursor-pointer rounded-lg bg-[#fee6eb] border border-[#fcc2cf] text-[#f40139] focus:text-[#f40139] dark:bg-darkSecondaryBg dark:border-darkBorder py-2"
-                                    disabled={loading}
-                                    onClick={() => handleStatusUpdate({ status: "cancelled", id: row?.original?.id })}
-                                >
-                                    {
-                                        status === "cancelled" && <Check className=" bg-[#f40139] text-white rounded-full p-0.5" />
-                                    }
-                                    Cancel
-                                </DropdownMenuItem>
-
-                                <DropdownMenuItem
-                                    className="cursor-pointer rounded-lg bg-[#eff7fe] border border-[#cde7fb] text-[#5db0f1] focus:text-[#5db0f1] dark:bg-darkSecondaryBg dark:border-darkBorder py-2"
-                                    disabled={loading}
-                                    onClick={() => handleStatusUpdate({ status: "pending", id: row?.original?.id })}
-                                >
-                                    {
-                                        status === "pending" && <Check className=" bg-[#5db0f1] text-white rounded-full p-0.5" />
-                                    }
-                                    Pending
-                                </DropdownMenuItem>
-
-                                <DropdownMenuItem
-                                    className="cursor-pointer rounded-lg bg-[#e9f8f0] border border-[#bcebd1] text-[#26bd6c] focus:text-[#26bd6c] dark:bg-darkSecondaryBg dark:border-darkBorder py-2"
-                                    disabled={loading}
-                                    onClick={() => handleStatusUpdate({ status: "complete", id: row?.original?.id })}
-                                >
-                                    {
-                                        status === "complete" && <Check className=" bg-[#26bd6c] text-white rounded-full p-0.5" />
-                                    }
-                                    Done
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                        }
                     </div>
                 );
             },
@@ -453,7 +414,7 @@ const DashboardProjectTable = ({ data }: { data: IProject[] }) => {
 
 
     return (
-        <div className="mt-5 border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">
+        <div className="mt-5 border border-borderColor/60 dark:border-darkBorder/50 dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">
             <div className=" flex justify-between items-center mb-5">
                 <h2 className=" text-base sm:text-lg text-headingTextColor dark:text-darkTextPrimary uppercase">Project list</h2>
                 <div className=" flex items-center gap-3">

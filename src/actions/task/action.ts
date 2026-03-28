@@ -3,11 +3,17 @@
 
 import { buildQuery } from "@/utils/buildQuery";
 import { baseApi } from "../baseApi";
-import { IResponse, ITask } from "@/types/type";
+import { IResponse, ISingleTask, ITask } from "@/types/type";
 
 export const getTasks = async (query = {}): Promise<IResponse<ITask[]>> => {
     const queryString = buildQuery(query);
     return await baseApi(`/tasks${queryString ? `?${queryString}` : ""}`, {
+        tag: "tasks",
+    });
+};
+
+export const getSingleTask = async (id: number): Promise<IResponse<ISingleTask>> => {
+    return await baseApi(`/tasks/${id}`, {
         tag: "tasks",
     });
 };
@@ -17,6 +23,7 @@ export const addTask = async (data: any) => {
         method: "POST",
         body: data,
         tag: "tasks",
+        cache: "no-cache",
     });
 };
 
@@ -27,20 +34,15 @@ export const editTask = async ({ data, id }: {
     return await baseApi(`/tasks/${id}`, {
         method: "PATCH",
         body: data,
-        cache: "no-store",
+        cache: "no-cache",
         tag: "tasks",
     });
 };
 
-export const deleteTask = async ({ data, id }: {
-    data: {
-        is_deleted: boolean,
-    },
-    id: number | undefined
-}) => {
+export const deleteTask = async (id: number | undefined) => {
     return await baseApi(`/tasks/${id}`, {
-        method: "PATCH",
-        body: data,
+        method: "DELETE",
         tag: "tasks",
+        cache: "no-cache",
     });
 };

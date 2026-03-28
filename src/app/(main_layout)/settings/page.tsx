@@ -1,4 +1,4 @@
-import GlobalColorPicker from "@/components/Common/GlobalColorPicker";
+// import GlobalColorPicker from "@/components/Common/GlobalColorPicker";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 // import TimeTrackingIcon from "@/components/Icons/TimeTrackingIcon";
 // import UserRoleIcon from "@/components/Icons/UserRoleIcon";
@@ -20,7 +20,7 @@ const SettingsPage = async ({ searchParams }: ISearchParamsProps) => {
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 sm:mb-5">
                     <HeadingComponent heading="Settings" subHeading="All the teams and member are displayed here"></HeadingComponent>
                 </div>
-                <GlobalColorPicker></GlobalColorPicker>
+                {/* <GlobalColorPicker></GlobalColorPicker> */}
             </div>
             <Suspense fallback={null}>
                 <SettingsTabs></SettingsTabs>

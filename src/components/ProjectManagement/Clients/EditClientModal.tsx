@@ -98,7 +98,7 @@ const EditClientModal = ({ onClose, selectedClient }: EditClientModalProps) => {
                         name="name"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Name</FormLabel>
+                                <FormLabel required={true}>Name</FormLabel>
                                 <FormControl>
                                     <Input type="text" className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Client Name" {...field} />
                                 </FormControl>
@@ -111,7 +111,7 @@ const EditClientModal = ({ onClose, selectedClient }: EditClientModalProps) => {
                         name="address"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Address</FormLabel>
+                                <FormLabel required={true}>Address</FormLabel>
                                 <FormControl>
                                     <Input type="text" className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Enter Address" {...field} />
                                 </FormControl>
@@ -124,7 +124,7 @@ const EditClientModal = ({ onClose, selectedClient }: EditClientModalProps) => {
                         name="email"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Email</FormLabel>
+                                <FormLabel required={true}>Email</FormLabel>
                                 <FormControl>
                                     <Input type="text" className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Enter Email" {...field} />
                                 </FormControl>
@@ -137,7 +137,7 @@ const EditClientModal = ({ onClose, selectedClient }: EditClientModalProps) => {
                         name="phone"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Phone</FormLabel>
+                                <FormLabel required={true}>Phone</FormLabel>
                                 <FormControl>
                                     <Input
                                         type="text"

@@ -12,8 +12,6 @@ export default function SocketProvider({ children, token }: SocketProviderProps)
 
     if (token) {
       socket.auth = { token: token };
-
-      console.log("Attempting to connect with token...");
       socket.connect();
     } else {
       console.warn("No token found, socket will not connect.");
@@ -32,6 +30,7 @@ export default function SocketProvider({ children, token }: SocketProviderProps)
       socket.off("connect_error");
       socket.disconnect();
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return <>{children}</>;

@@ -1,4 +1,4 @@
-const SingleProjectSkeleton = () => {
+const Loading = () => {
   return (
     <div className="animate-pulse w-full">
       {/* 1. Header Section (Breadcrumb & Buttons) */}
@@ -85,4 +85,4 @@ const SingleProjectSkeleton = () => {
   );
 };
 
-export default SingleProjectSkeleton;
+export default Loading;

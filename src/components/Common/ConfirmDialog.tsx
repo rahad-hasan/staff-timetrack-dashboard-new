@@ -34,11 +34,11 @@ const ConfirmDialog = ({
   cancelText = "No",
   onConfirm,
   onCancel,
-  loading = false,
   confirmClassName,
 }: ConfirmDialogProps) => {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
 
   const handleConfirm = async (e: React.MouseEvent<HTMLButtonElement>) => {
     // 1. Prevent Radix from auto-closing the dialog
@@ -46,11 +46,11 @@ const ConfirmDialog = ({
     setIsLoading(true);
     try {
       await onConfirm();
-      setOpen(false);
     } catch (error) {
       console.error("Error confirming:", error);
     } finally {
       setIsLoading(false);
+      setOpen(false);
     }
   };
 

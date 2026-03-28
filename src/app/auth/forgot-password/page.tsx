@@ -8,13 +8,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
-import logo from '../../../assets/logo.svg'
+// import logo from '../../../assets/logo.svg'
 import roundedEmail from '../../../assets/auth/roundedEmail.svg'
 import { useState } from "react";
 import { toast } from "sonner";
 import { forgetPassword } from "@/actions/auth/action";
 import { useRouter } from "next/navigation";
-
+import timerLogo from '../../../assets/NewLogo.png'
 const ForgotPassword = () => {
     const [loading, setLoading] = useState(false);
     const router = useRouter();
@@ -58,7 +58,7 @@ const ForgotPassword = () => {
         <div className=" w-full dark:bg-darkSecondaryBg">
             <div className=" w-full flex items-center justify-center">
 
-                <div
+                {/* <div
                     className={`flex items-center gap-1.5 px-8 py-5 `}
                 >
                     <Image
@@ -67,6 +67,17 @@ const ForgotPassword = () => {
                         width={0}
                         height={0}
                         className={`w-12 h-12`}
+                    />
+                    <h2 className="text-2xl font-bold">Tracker</h2>
+                </div> */}
+
+                <div className={`flex items-center gap-1.5 px-8 py-5 `}>
+                    <Image
+                        src={timerLogo}
+                        alt="Logo"
+                        width={0}
+                        height={0}
+                        className={`w-12`}
                     />
                     <h2 className="text-2xl font-bold">Tracker</h2>
                 </div>

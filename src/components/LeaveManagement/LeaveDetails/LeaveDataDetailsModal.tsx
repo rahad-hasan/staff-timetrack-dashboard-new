@@ -15,8 +15,6 @@ type TLeaveCategory = {
 };
 
 const LeaveDataDetailsModal = ({ data }: { data: IUserLeaveData }) => {
-
-
     const LeaveCard = ({
         title,
         stats,
@@ -31,7 +29,7 @@ const LeaveDataDetailsModal = ({ data }: { data: IUserLeaveData }) => {
         const percentage = Math.min((stats?.taken / stats?.allowed) * 100, 100);
 
         return (
-            
+
             <div className=" relative overflow-hidden rounded-2xl border border-gray-100 dark:border-darkBorder bg-white dark:bg-[#00000007] p-4 shadow-sm transition-all hover:shadow-md">
                 <div className="flex items-center gap-3 mb-4">
                     <div className={`h-2 w-2 rounded-full ${color} shadow-[0_0_3px] shadow-current`} />

@@ -7,13 +7,13 @@ import {
 import { ISearchParamsProps } from "@/types/type";
 import { formatTZDayMonthHourMin } from "@/utils";
 import { format } from "date-fns";
-import { cookies } from "next/headers";
 import EmptyTableLogo from "@/assets/empty_table.svg";
 import Image from "next/image";
+import { getDecodedUser } from "@/utils/decodedLogInUser";
 
 const AllNotesModal = async ({ searchParams }: ISearchParamsProps) => {
-  const cookieStore = await cookies();
-  const userId = cookieStore.get("userId")?.value;
+    const user = await getDecodedUser();
+    const userId = user?.id;
   const params = await searchParams;
   const currentDate = format(new Date(), "yyyy-MM-dd");
 

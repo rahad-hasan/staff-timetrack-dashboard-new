@@ -9,7 +9,8 @@ import { useSidebarStore } from '@/store/sidebarStore';
 import SidebarItem from './sidebar/SidebarItem';
 import SubItem from './sidebar/SubItem';
 // import TrialCart from './sidebar/TrialCart';
-import timerLogo from '../../assets/timerLogo.svg'
+// import timerLogo from '../../assets/timerLogo.svg'
+import timerLogo from '../../assets/NewLogo.png'
 import CollapsedIcon from '../Icons/CollapsedIcon';
 import clsx from 'clsx';
 import React from 'react';
@@ -36,32 +37,51 @@ const SideBar = () => {
         logInUserData?.role === 'manager' ||
         logInUserData?.role === 'hr') ? sidebarItems : sidebarItemsEmployee;
 
+    // const sidebarRef = useRef<HTMLDivElement>(null);
+
+    // useEffect(() => {
+    //     const handleClickOutside = (event: MouseEvent) => {
+    //         if (
+    //             sidebarRef.current &&
+    //             !sidebarRef.current.contains(event.target as Node)
+    //         ) {
+    //             setOpenMenu(null);
+    //         }
+    //     };
+
+    //     document.addEventListener("mousedown", handleClickOutside);
+
+    //     return () => {
+    //         document.removeEventListener("mousedown", handleClickOutside);
+    //     };
+    // }, [setOpenMenu]);
     return (
-        <div className='sticky top-0 z-[50]'>
+        <div
+            // ref={sidebarRef}
+            className='sticky top-0 bottom-0 z-[50]'>
             <div className='overflow-y-scroll no-scrollbar scroll-smooth'>
-                <div className={`${isCollapsed ? "w-[90px]" : "w-[260px]"} h-screen py-5 z-50  flex flex-col transition-all duration-300`}>
+                <div className={`${isCollapsed ? "w-[90px]" : " w-[240px] 2xl:w-[260px]"} h-screen py-5 z-50  flex flex-col transition-all duration-300`}>
                     <div
                         className={`flex items-center justify-between bg-bgPrimary dark:bg-darkPrimaryBg  mx-4 rounded-2xl border border-borderColor dark:border-darkBorder ${isCollapsed ? "flex-col py-2 px-2" : "flex-row py-2.5 px-3"
                             } transition-all duration-300`}
                     >
                         <div
-                            className={`flex items-center ${isCollapsed ? "flex-col gap-0" : "gap-1.5"
-                                }`}
+                            className={`flex items-center ${isCollapsed ? "flex-col gap-0" : "gap-1.5"}`}
                         >
-                            {/* <Image
-                                src={logo}
-                                alt="Logo"
-                                width={0}
-                                height={0}
-                                className={`w-12 h-12`}
-                            /> */}
                             <Image
                                 src={timerLogo}
                                 alt="Logo"
                                 width={0}
                                 height={0}
-                                className={` ${isCollapsed ? "h-auto my-2 w-auto" : "h-10 w-10"}  bg-primary rounded-xl p-2 shadow-lg`}
+                                className={` ${isCollapsed ? "h-auto my-2 w-10 px-1" : "max-w-12"}  rounded-xl py-1`}
                             />
+                            {/* <Image
+                                src={timerLogo}
+                                alt="Logo"
+                                width={0}
+                                height={0}
+                                className={` ${isCollapsed ? "h-auto my-2 w-auto" : "h-10 w-10"}  bg-primary rounded-xl p-2 shadow-lg`}
+                            /> */}
                             {!isCollapsed && <h2 className="text-2xl font-bold text-headingTextColor dark:text-darkTextPrimary">Tracker</h2>}
                         </div>
 

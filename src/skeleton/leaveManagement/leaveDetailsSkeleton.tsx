@@ -27,7 +27,14 @@ const leaveDetailsSkeleton = () => {
                     </div>
                 ))}
             </div>
-
+            <div className=" flex items-center justify-between mt-5">
+                <div className={` mt-3 w-[200px] lg:w-[200px] sm:mt-0 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 opacity-50`}>
+                    <div className="h-full w-full border-white/20 dark:border-gray-600" />
+                </div>
+                <div className={` mt-3 w-[50px] sm:w-[280px] sm:mt-0 h-10 rounded-lg bg-gray-200 dark:bg-gray-700 opacity-50`}>
+                    <div className="h-full w-full border-white/20 dark:border-gray-600" />
+                </div>
+            </div>
             <div className="border border-borderColor dark:border-darkBorder rounded-lg p-5 animate-pulse max-w-full mt-5">
 
                 <div className="mb-5">
