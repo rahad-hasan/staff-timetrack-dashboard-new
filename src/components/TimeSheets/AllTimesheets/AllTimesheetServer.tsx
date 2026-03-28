@@ -40,7 +40,8 @@ const AllTimesheetServer = async ({ searchParams }: ISearchParamsProps) => {
 
       {activeTab === "daily" && (
         <Suspense
-          key={`daily-${params.date}`}
+          // key={`daily-${params.date}`}
+          key={JSON.stringify(params)}
           fallback={<DailyTimeSheetsSkeleton />}
         >
           <DailyTimeSheetsServer

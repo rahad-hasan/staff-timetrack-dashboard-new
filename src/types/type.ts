@@ -248,7 +248,7 @@ export interface IManualTimeEntry {
   status: "pending" | "processing" | "complete" | "cancelled";
   user_id: number;
   project_id: number;
-  task_id: number;
+  task?: { id: number; name: string };
   system_update: string;
   notes: string | null;
   created_at: string;

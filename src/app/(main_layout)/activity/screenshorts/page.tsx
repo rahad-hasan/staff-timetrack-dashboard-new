@@ -66,9 +66,7 @@ const ScreenShorts = async ({ searchParams }: ISearchParamsProps) => {
         </div>
       </div>
 
-      <Suspense fallback={null} key={JSON.stringify(searchParams)}>
-        <ScreenShotsServer searchParams={searchParams} />
-      </Suspense>
+      <ScreenShotsServer searchParams={searchParams} />
     </div>
   );
 };

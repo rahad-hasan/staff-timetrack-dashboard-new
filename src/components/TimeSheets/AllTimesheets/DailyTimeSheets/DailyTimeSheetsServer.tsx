@@ -11,7 +11,13 @@ type TimezoneOption = {
   label: string;
 };
 
-const DailyTimeSheetsServer = async ({ searchParams, timezones }: { searchParams: ISearchParams, timezones: { data: TimezoneOption[]; defaultValue: string } }) => {
+const DailyTimeSheetsServer = async ({
+  searchParams,
+  timezones,
+}: {
+  searchParams: ISearchParams;
+  timezones: { data: TimezoneOption[]; defaultValue: string };
+}) => {
   const params = await searchParams;
   const user = await getDecodedUser();
   const userId = user?.id;

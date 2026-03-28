@@ -7,26 +7,30 @@ import TaskTableSkeleton from "@/skeleton/projectManagement/task/TaskTableSkelet
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Staff Time Tracker Task",
-    description: "Staff Time Tracker Task",
+  title: "Staff Time Tracker Task",
+  description: "Staff Time Tracker Task",
 };
 const TaskPage = async ({ searchParams }: ISearchParamsProps) => {
-    const params = await searchParams;
-    type Tab = "List view" | "Kanban";
-    const tabs = (params?.tab as Tab) ?? "List view";
+  const params = await searchParams;
+  type Tab = "List view" | "Kanban";
+  const tabs = (params?.tab as Tab) ?? "List view";
 
-    const loadingFallback = tabs === "List view" ? <TaskTableSkeleton></TaskTableSkeleton> : <KanbanDndListSkeleton></KanbanDndListSkeleton>;
-
-    return (
-        <div>
-            <TaskHeroSection></TaskHeroSection>
-
-            <Suspense fallback={loadingFallback}>
-                <TaskServer searchParams={searchParams} />
-            </Suspense>
-
-        </div>
+  const loadingFallback =
+    tabs === "List view" ? (
+      <TaskTableSkeleton></TaskTableSkeleton>
+    ) : (
+      <KanbanDndListSkeleton></KanbanDndListSkeleton>
     );
+
+  return (
+    <div>
+      <TaskHeroSection></TaskHeroSection>
+
+      <Suspense fallback={loadingFallback} key={JSON.stringify(params)}>
+        <TaskServer searchParams={searchParams} />
+      </Suspense>
+    </div>
+  );
 };
 
 export default TaskPage;
