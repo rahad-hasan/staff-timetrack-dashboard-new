@@ -20,7 +20,7 @@ const DownloadPage = () => {
           Staff Time Tracker is available for Windows, macOS, and Linux
         </p>
         <p className="text-center mt-1 text-sm text-gray-500 dark:text-darkTextSecondary">
-          Current Version: 0.0.3
+          Current Version: 0.0.4
         </p>
       </div>
 
@@ -29,10 +29,10 @@ const DownloadPage = () => {
           <Image src={windows} width={120} height={120} alt="Windows OS icon" />
           <div className="text-lg font-medium">Windows</div>
           <a
-            href={`https://drive.google.com/file/d/12d24LxNZtANKkrp6qpBmu-6KJtToDQJP/view?usp=sharing`}
+            href={`https://drive.google.com/file/d/1cuq3R40FqQg1OZnsYRuJJGfxh6z9ASpj/view?usp=sharing`}
             // download="staff-time-tracker_0.0.1.exe"
             target="_blank"
-          // rel="noopener"
+            // rel="noopener"
           >
             <Button size={"sm"} variant={"download"} className="text-sm">
               <DownloadIcon className="w-4 h-4 mr-1" /> Download
@@ -50,10 +50,10 @@ const DownloadPage = () => {
           />
           <div className="text-lg font-medium">Linux</div>
           <a
-            href={`https://drive.google.com/file/d/1p-T20oAeRJVyr3Ka7Rp27XnymaJUCLDY/view?usp=sharing`}
+            href={`https://drive.google.com/file/d/1CYeOdQUSuDl3dLRAhCgu9y_wY3xazVnN/view?usp=sharing`}
             // download="staff-time-tracker_0.0.1.deb"
             target="_blank"
-          // rel="noopener"
+            // rel="noopener"
           >
             <Button size={"sm"} variant={"download"} className="text-sm">
               <DownloadIcon className="w-4 h-4 mr-1" /> Download
@@ -74,7 +74,7 @@ const DownloadPage = () => {
             href={`https://drive.google.com/file/d/1b_zi4YNzKO7OPovNFE2kzBGamai61ImH/view?usp=sharing`}
             // download="staff-time-tracker_0.0.1.exe"
             target="_blank"
-          // rel="noopener"
+            // rel="noopener"
           >
             <Button size={"sm"} variant={"download"} className="text-sm">
               <DownloadIcon className="w-4 h-4 mr-1" /> Download
