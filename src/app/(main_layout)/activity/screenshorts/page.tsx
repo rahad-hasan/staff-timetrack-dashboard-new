@@ -15,13 +15,11 @@ import { getTimezones } from "@/actions/dashboard/action";
 import SelectTimezoneDropDown from "@/components/Common/SelectTimezoneDropDown";
 import SelectUserWrapper from "@/components/Common/SelectUserWrapper";
 
-
 export const metadata: Metadata = {
   title: "Staff Time Tracker Screenshot",
   description: "Staff Time Tracker Screenshot",
 };
 const ScreenShorts = async ({ searchParams }: ISearchParamsProps) => {
-
   const timezones = await getTimezones();
 
   return (
@@ -68,7 +66,9 @@ const ScreenShorts = async ({ searchParams }: ISearchParamsProps) => {
         </div>
       </div>
 
-      <ScreenShotsServer searchParams={searchParams}></ScreenShotsServer>
+      <Suspense fallback={null} key={JSON.stringify(searchParams)}>
+        <ScreenShotsServer searchParams={searchParams} />
+      </Suspense>
     </div>
   );
 };
