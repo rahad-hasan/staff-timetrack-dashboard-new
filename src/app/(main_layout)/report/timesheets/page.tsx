@@ -3,17 +3,18 @@ import { getDateBaseTimeEntry, getTimeEntry } from "@/actions/report/action";
 import DayWeekMonthSelection from "@/components/Common/DayWeekMonthSelection";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import MonthPicker from "@/components/Common/MonthPicker";
+import SelectDateRange from "@/components/Common/SelectDateRange";
 import SelectTimezoneDropDown from "@/components/Common/SelectTimezoneDropDown";
 import SelectUserWrapper from "@/components/Common/SelectUserWrapper";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
-import WeeklyDatePicker from "@/components/Common/WeeklyDatePicker";
+// import WeeklyDatePicker from "@/components/Common/WeeklyDatePicker";
 import ReportDailyTimeSheet from "@/components/Report/TimeSheets/ReportDailyTimeSheet";
 import ReportMonthlyTimeSheet from "@/components/Report/TimeSheets/ReportMonthlyTimeSheet";
 import ReportWeeklyTimeSheet from "@/components/Report/TimeSheets/ReportWeeklyTimeSheet";
 import ReportMonthlyTimesheetSkeleton from "@/skeleton/report/Timesheet/ReportMonthlyTimesheetSkeleton";
 import { ISearchParamsProps } from "@/types/type";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
-import { endOfMonth, endOfWeek, format, startOfMonth, startOfWeek } from "date-fns";
+import { addDays, endOfMonth, format, startOfMonth } from "date-fns";
 import { Metadata } from "next";
 import { Suspense } from "react";
 
@@ -35,8 +36,9 @@ const ReportTimeSheets = async ({ searchParams }: ISearchParamsProps) => {
 
   // weekly
   const now = new Date();
-  const weekStart = format(startOfWeek(now, { weekStartsOn: 1 }), "yyyy-MM-dd");
-  const weekEnd = format(endOfWeek(now, { weekStartsOn: 1 }), "yyyy-MM-dd");
+  const weekUnformattedEnd = addDays(now, 6)
+  const weekStart = format(now, "yyyy-MM-dd");
+  const weekEnd = format(weekUnformattedEnd, "yyyy-MM-dd");
 
   const dateBasedTimeEntry = await getDateBaseTimeEntry({
     user_id: params.user_id ?? user?.id,
@@ -74,7 +76,8 @@ const ReportTimeSheets = async ({ searchParams }: ISearchParamsProps) => {
       <div className="mb-5 flex flex-col gap-4 sm:flex-row justify-between">
         <div className="flex gap-4">
           {activeTab === "daily" && <SpecificDatePicker />}
-          {activeTab === "weekly" && <WeeklyDatePicker />}
+          {/* {activeTab === "weekly" && <WeeklyDatePicker /> } */}
+          {activeTab === "weekly" && <SelectDateRange/>}
           {activeTab === "monthly" && <MonthPicker />}
 
           <SelectTimezoneDropDown timezones={timezones} />
