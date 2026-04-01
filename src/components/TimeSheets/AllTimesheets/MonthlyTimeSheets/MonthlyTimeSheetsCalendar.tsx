@@ -71,7 +71,7 @@ const MonthlyTimeSheetsCalendar = ({
       className={`relative p-3 h-28 md:h-24 flex flex-col justify-center items-center border bg-bgPrimary dark:bg-darkPrimaryBg text-headingTextColor dark:text-darkTextPrimary ${leave_type ? "border-yellow-300/70 dark:border-yellow-300/50" : "border-gray-200 dark:border-darkBorder"}`}
     >
       {is_manual_entry && (
-        <div className={`w-2.5 h-2.5 rounded-full absolute left-1 top-1 ${is_manual_entry_approved ? "bg-green-600" : "bg-amber-600"}`}></div>
+        <div className={`w-2.5 h-2.5 rounded-full absolute left-1 top-1 ${is_manual_entry_approved ? "bg-green-600" : "bg-amber-600 animate-pulse"}`}></div>
       )}
       {/* Render nothing for padding cells to keep your original layout empty */}
       {!isPadding && (
