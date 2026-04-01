@@ -29,6 +29,7 @@ const DailyTimeSheets = ({
   const searchParams = useSearchParams()
   const selectedTimeZone = searchParams.get("timezone")
   const currentTimeZone = selectedTimeZone ? selectedTimeZone : timezones?.defaultValue
+
   // Transform backend data into activePeriods
   const activePeriods = (timeLineData || []).map((entry: any) => ({
     start: entry.start,
@@ -38,6 +39,7 @@ const DailyTimeSheets = ({
     project: entry.project?.name || "No Project",
     task: entry.task?.name || "No Task",
     duration: entry.format_duration,
+    is_manual_entry: entry?.timeEntry?.is_manual_entry,
   }));
 
   // 2. Logic for Day Progress Line
@@ -92,7 +94,7 @@ const DailyTimeSheets = ({
                 <TooltipTrigger asChild>
                   <div
                     key={index}
-                    className="absolute h-5 bg-primary rounded-4xl z-50"
+                    className={`absolute h-5 ${period?.is_manual_entry ? "bg-amber-400" : "bg-primary"} rounded-4xl z-50`}
                     style={{
                       left: `${startPercent}%`,
                       width: `${width}%`,
@@ -116,6 +118,16 @@ const DailyTimeSheets = ({
                     <h2 className=" text-[15px] text-headingTextColor dark:text-darkTextPrimary">
                       End Time: {period?.endTime}
                     </h2>
+
+                    {
+                      period?.is_manual_entry &&
+                      <div className="mt-2">
+                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[11px] font-medium border border-amber-200 dark:border-amber-800">
+                          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                          Manual Entry
+                        </span>
+                      </div>
+                    }
                   </div>
                 </TooltipContent>
               </Tooltip>
@@ -137,9 +149,9 @@ const DailyTimeSheets = ({
               <span
                 key={i}
                 className={`text-sm text-gray-400 dark:text-darkTextSecondary
-                                ${!isAlwaysVisible ? "hidden lg:inline xl:inline" : ""}
-                                sm:first:ml-1
-                                `}
+                   ${!isAlwaysVisible ? "hidden lg:inline xl:inline" : ""}
+                   sm:first:ml-1
+                `}
               >
                 {hour}h
               </span>

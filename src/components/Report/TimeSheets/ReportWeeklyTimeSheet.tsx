@@ -28,8 +28,6 @@ const ReportWeeklyTimeSheet = ({ dateBasedTimeEntry }: any) => {
     weekTotal: dateBasedTimeEntry?.data?.total_time,
   };
 
-  console.log(rows);
-
   return (
     <div>
 
