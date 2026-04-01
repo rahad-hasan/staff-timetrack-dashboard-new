@@ -137,8 +137,9 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
             phone: values.phone,
             project_id: Number(values.project),
             role: values.role,
-            schedule_id: Number(values.schedule),
-            time_zone: values.time_zone
+            time_zone: values.time_zone,
+            // schedule_id: Number(values.schedule),
+            ...(values.schedule && { schedule_id: Number(values.schedule) })
         }
         setLoading(true);
         try {
