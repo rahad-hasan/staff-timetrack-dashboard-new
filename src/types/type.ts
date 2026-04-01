@@ -658,6 +658,8 @@ export interface IDailyDataItem {
   active_time: string; // HH:mm:ss
   idle_time: string; // HH:mm:ss
   leave_type: TLeaveType;
+  is_manual_entry: boolean;
+  is_manual_entry_approved: boolean;
 }
 
 export interface IDailyReportResponse {

@@ -55,6 +55,8 @@ const MonthlyTimeSheetsCalendar = ({
     activity, // Changed from duration to match new data key
     isPadding,
     leave_type,
+    is_manual_entry,
+    is_manual_entry_approved,
   }: {
     dateString?: string;
     dayNumber?: number;
@@ -62,10 +64,15 @@ const MonthlyTimeSheetsCalendar = ({
     activity?: number;
     isPadding?: boolean;
     leave_type?: TLeaveType;
+    is_manual_entry?: boolean;
+    is_manual_entry_approved?: boolean;
   }) => (
     <div
-      className={`p-3 h-28 md:h-24 flex flex-col justify-center items-center border bg-bgPrimary dark:bg-darkPrimaryBg text-headingTextColor dark:text-darkTextPrimary ${leave_type ? "border-yellow-300/70 dark:border-yellow-300/50" : "border-gray-200 dark:border-darkBorder"}`}
+      className={`relative p-3 h-28 md:h-24 flex flex-col justify-center items-center border bg-bgPrimary dark:bg-darkPrimaryBg text-headingTextColor dark:text-darkTextPrimary ${leave_type ? "border-yellow-300/70 dark:border-yellow-300/50" : "border-gray-200 dark:border-darkBorder"}`}
     >
+      {is_manual_entry && (
+        <div className={`w-2.5 h-2.5 rounded-full absolute left-1 top-1 ${is_manual_entry_approved ? "bg-green-600" : "bg-amber-600"}`}></div>
+      )}
       {/* Render nothing for padding cells to keep your original layout empty */}
       {!isPadding && (
         <>
@@ -190,6 +197,8 @@ const MonthlyTimeSheetsCalendar = ({
                 formattedTime={dayItem?.duration}
                 activity={dayItem?.activity}
                 leave_type={dayItem.leave_type}
+                is_manual_entry={dayItem.is_manual_entry}
+                is_manual_entry_approved={dayItem.is_manual_entry_approved}
               />
             );
           })}
