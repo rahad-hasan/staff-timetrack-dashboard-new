@@ -42,7 +42,6 @@ const MonthlyTimeSheetsCalendar = ({
   // 1. Process the new "daily_data" array format
   const dailyData = data?.daily_data || [];
 
-
   const getPaddingCells = () => {
     if (dailyData.length === 0) return [];
     // Get the first date from the new array structure
@@ -78,10 +77,12 @@ const MonthlyTimeSheetsCalendar = ({
   }) => {
     const content = (
       <div
-        className={`relative p-3 h-28 md:h-24 flex flex-col justify-center items-center border bg-bgPrimary dark:bg-darkPrimaryBg text-headingTextColor dark:text-darkTextPrimary ${leave_type ? "border-yellow-300/70 dark:border-yellow-300/50" : "border-gray-200 dark:border-darkBorder"}`}
+        className={`hover:bg-slate-500/5 relative p-3 h-28 md:h-24 flex flex-col justify-center items-center border text-headingTextColor dark:text-darkTextPrimary ${leave_type ? "border-yellow-300/70 dark:border-yellow-300/50" : "border-gray-200 dark:border-darkBorder"}`}
       >
         {is_manual_entry && (
-          <div className={`w-2.5 h-2.5 rounded-full absolute left-1 top-1 ${is_manual_entry_approved ? "bg-green-600" : "bg-amber-600 animate-pulse"}`}></div>
+          <div
+            className={`w-2.5 h-2.5 rounded-full absolute left-1 top-1 ${is_manual_entry_approved ? "bg-green-600" : "bg-amber-600 animate-pulse"}`}
+          ></div>
         )}
         {/* Render nothing for padding cells to keep your original layout empty */}
         {!isPadding && (
@@ -114,13 +115,17 @@ const MonthlyTimeSheetsCalendar = ({
       </div>
     );
     return is_manual_entry && !is_manual_entry_approved ? (
-      <Link href={`/timesheets/manual-requests?user_id=${userId || String(logInUserId)}`}>
+      <Link
+        href={`/timesheets/manual-requests?user_id=${userId || String(logInUserId)}&date=${dateString}`}
+      >
         {content}
       </Link>
-    ) : formattedTime === '00:00:00' ? (
+    ) : formattedTime === "00:00:00" || isPadding ? (
       content
     ) : (
-      <Link href={`/timesheets/all-timesheets?tab=daily&user_id=${userId || String(logInUserId)}&date=${dateString}`} >
+      <Link
+        href={`/timesheets/all-timesheets?tab=daily&user_id=${userId || String(logInUserId)}&date=${dateString}`}
+      >
         {content}
       </Link>
     );
