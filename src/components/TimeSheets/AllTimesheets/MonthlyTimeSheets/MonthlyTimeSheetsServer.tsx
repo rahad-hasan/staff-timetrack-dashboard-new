@@ -22,7 +22,7 @@ const MonthlyTimeSheetsServer = async ({
 
   return (
     <div>
-      <MonthlyTimeSheetsCalendar data={result?.data} />
+      <MonthlyTimeSheetsCalendar logInUserId={user?.id} data={result?.data} />
     </div>
   );
 };

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import {
   Select,
@@ -10,6 +9,8 @@ import {
 } from "@/components/ui/select";
 import { IDailyReportResponse, TLeaveType } from "@/types/type";
 import { getDay, parseISO } from "date-fns";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 function getTextColor(HMS: string, leave_type: TLeaveType) {
@@ -26,14 +27,22 @@ function getTextColor(HMS: string, leave_type: TLeaveType) {
 }
 
 const MonthlyTimeSheetsCalendar = ({
+  logInUserId,
   data,
 }: {
+  logInUserId: number | undefined;
   data: IDailyReportResponse;
 }) => {
+  const searchParams = useSearchParams();
+
+  const userId = searchParams.get("user_id");
+
   const [viewType, setViewType] = useState("Hours");
 
   // 1. Process the new "daily_data" array format
   const dailyData = data?.daily_data || [];
+
+  console.log("Daily Data", dailyData);
 
   const getPaddingCells = () => {
     if (dailyData.length === 0) return [];
@@ -50,6 +59,7 @@ const MonthlyTimeSheetsCalendar = ({
   const dayHeaders = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
 
   const DateCell = ({
+    dateString,
     dayNumber,
     formattedTime,
     activity, // Changed from duration to match new data key
@@ -66,43 +76,57 @@ const MonthlyTimeSheetsCalendar = ({
     leave_type?: TLeaveType;
     is_manual_entry?: boolean;
     is_manual_entry_approved?: boolean;
-  }) => (
-    <div
-      className={`relative p-3 h-28 md:h-24 flex flex-col justify-center items-center border bg-bgPrimary dark:bg-darkPrimaryBg text-headingTextColor dark:text-darkTextPrimary ${leave_type ? "border-yellow-300/70 dark:border-yellow-300/50" : "border-gray-200 dark:border-darkBorder"}`}
-    >
-      {is_manual_entry && (
-        <div className={`w-2.5 h-2.5 rounded-full absolute left-1 top-1 ${is_manual_entry_approved ? "bg-green-600" : "bg-amber-600 animate-pulse"}`}></div>
-      )}
-      {/* Render nothing for padding cells to keep your original layout empty */}
-      {!isPadding && (
-        <>
-          <span className="font-thin text-lg mb-1 text-headingTextColor/60 dark:text-darkTextSecondary/70">
-            {dayNumber}
-          </span>
-          {viewType === "Hours" ? (
-            <div>
-              {formattedTime && (
-                <div
-                  className={`px-2 py-1 text-sm font-medium ${getTextColor(formattedTime, leave_type as TLeaveType)}`}
-                >
-                  {leave_type ? leave_type + " leave" : formattedTime}
-                </div>
-              )}
-            </div>
-          ) : (
-            <div>
-              {/* Using 'activity' from new data format */}
-              <div
-                className={`w-fit px-3 text-center py-1 text-sm font-medium bg-gray-50 rounded-lg dark:bg-gray-900/25 ${leave_type ? "text-primary/60" : "text-primary"}`}
-              >
-                {leave_type ? leave_type + " leave" : `${activity || 0}%`}
+  }) => {
+    console.log(dayNumber);
+    const content = (
+      <div
+        className={`relative p-3 h-28 md:h-24 flex flex-col justify-center items-center border bg-bgPrimary dark:bg-darkPrimaryBg text-headingTextColor dark:text-darkTextPrimary ${leave_type ? "border-yellow-300/70 dark:border-yellow-300/50" : "border-gray-200 dark:border-darkBorder"}`}
+      >
+        {is_manual_entry && (
+          <div className={`w-2.5 h-2.5 rounded-full absolute left-1 top-1 ${is_manual_entry_approved ? "bg-green-600" : "bg-amber-600 animate-pulse"}`}></div>
+        )}
+        {/* Render nothing for padding cells to keep your original layout empty */}
+        {!isPadding && (
+          <>
+            <span className="font-thin text-lg mb-1 text-headingTextColor/60 dark:text-darkTextSecondary/70">
+              {dayNumber}
+            </span>
+            {viewType === "Hours" ? (
+              <div>
+                {formattedTime && (
+                  <div
+                    className={`px-2 py-1 text-sm font-medium ${getTextColor(formattedTime, leave_type as TLeaveType)}`}
+                  >
+                    {leave_type ? leave_type + " leave" : formattedTime}
+                  </div>
+                )}
               </div>
-            </div>
-          )}
-        </>
-      )}
-    </div>
-  );
+            ) : (
+              <div>
+                {/* Using 'activity' from new data format */}
+                <div
+                  className={`w-fit px-3 text-center py-1 text-sm font-medium bg-gray-50 rounded-lg dark:bg-gray-900/25 ${leave_type ? "text-primary/60" : "text-primary"}`}
+                >
+                  {leave_type ? leave_type + " leave" : `${activity || 0}%`}
+                </div>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    );
+    return is_manual_entry && !is_manual_entry_approved ? (
+      <Link href={`/timesheets/manual-requests?user_id=${userId || String(logInUserId)}`}>
+        {content}
+      </Link>
+    ) : formattedTime === '00:00:00' ? (
+      content
+    ) : (
+      <Link href={`/timesheets/all-timesheets?tab=daily&user_id=${userId || String(logInUserId)}&date=${dateString}`} >
+        {content}
+      </Link>
+    );
+  };
 
   const DayHeader = ({
     day,
