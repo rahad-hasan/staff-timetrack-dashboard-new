@@ -42,7 +42,6 @@ const MonthlyTimeSheetsCalendar = ({
   // 1. Process the new "daily_data" array format
   const dailyData = data?.daily_data || [];
 
-  console.log("Daily Data", dailyData);
 
   const getPaddingCells = () => {
     if (dailyData.length === 0) return [];
@@ -77,7 +76,6 @@ const MonthlyTimeSheetsCalendar = ({
     is_manual_entry?: boolean;
     is_manual_entry_approved?: boolean;
   }) => {
-    console.log(dayNumber);
     const content = (
       <div
         className={`relative p-3 h-28 md:h-24 flex flex-col justify-center items-center border bg-bgPrimary dark:bg-darkPrimaryBg text-headingTextColor dark:text-darkTextPrimary ${leave_type ? "border-yellow-300/70 dark:border-yellow-300/50" : "border-gray-200 dark:border-darkBorder"}`}
