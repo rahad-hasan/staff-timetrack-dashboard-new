@@ -181,6 +181,7 @@ export interface ITimeSheetEntry {
   project_id: number;
   task_id: number | null;
   time_entries_id: number;
+  notes?: string;
   start_time: string;
   end_time: string;
   duration: number;

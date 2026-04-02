@@ -33,7 +33,11 @@ const ReportDailyTimeSheet = ({
   };
 
   const decimalHoursToMinutes = (decimalHours: number | null | undefined) => {
-    if (decimalHours === null || decimalHours === undefined || Number.isNaN(decimalHours)) {
+    if (
+      decimalHours === null ||
+      decimalHours === undefined ||
+      Number.isNaN(decimalHours)
+    ) {
       return null;
     }
     return Math.round(decimalHours * 60);
@@ -175,7 +179,7 @@ const ReportDailyTimeSheet = ({
           </div>
         </TooltipTrigger>
 
-        <TooltipContent className=" p-0 overflow-hidden min-w-[240px]">
+        <TooltipContent className=" p-0 overflow-hidden min-w-60">
           <div className="bg-gray-50 dark:bg-darkSecondaryBg px-4 py-3 border-b border-borderColor dark:border-darkBorder">
             <div className="flex items-center gap-2">
               <ClipboardList className="w-4 h-4 text-primary" />
@@ -248,18 +252,18 @@ const ReportDailyTimeSheet = ({
     <div className="">
       <div className="  overflow-x-auto">
         <div className="flex  pb-2">
-          <div className="w-[80px] flex-shrink-0 font-bold text-sm text-subTextColor text-center dark:text-darkTextPrimary">
+          <div className="w-20 shrink-0 font-bold text-sm text-subTextColor text-center dark:text-darkTextPrimary">
             Time
           </div>
-          <div className="flex-grow font-bold text-sm text-subTextColor ml-4"></div>
+          <div className="grow font-bold text-sm text-subTextColor ml-4"></div>
         </div>
 
-        <div className="flex min-w-[800px] border-t border-gray-200 dark:border-darkBorder">
-          <div className="w-[80px]">
+        <div className="flex min-w-200 border-t border-gray-200 dark:border-darkBorder">
+          <div className="w-20">
             {timeLineHours.map((hour) => (
               <div
                 key={hour}
-                className="h-[60px] text-xs font-medium text-gray-500 flex items-center justify-center border-b border-borderColor dark:border-darkBorder dark:text-darkTextSecondary"
+                className="h-15 text-xs font-medium text-gray-500 flex items-center justify-center border-b border-borderColor dark:border-darkBorder dark:text-darkTextSecondary"
               >
                 {hour.toString().padStart(2, "0")}:00
               </div>
@@ -267,7 +271,7 @@ const ReportDailyTimeSheet = ({
           </div>
 
           <div
-            className="flex-grow relative border-l border-gray-200 dark:border-darkBorder "
+            className="grow relative border-l border-gray-200 dark:border-darkBorder "
             style={{ height: `${(TOTAL_MINUTES_IN_DAY / 60) * 60}px` }}
           >
             {timeLineHours.map((hour) => (
