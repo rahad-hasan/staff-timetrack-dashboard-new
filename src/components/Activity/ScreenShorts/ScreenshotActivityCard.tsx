@@ -8,6 +8,7 @@ interface IScreenshotActivityCardProps {
   is_improved: boolean;
   deleted_time?: string;
   // improved_value: string;
+  delete_time?: string;
 }
 
 function ScreenshotActivityCard({
@@ -16,7 +17,11 @@ function ScreenshotActivityCard({
   value,
   chart: Chart,
   is_improved,
+<<<<<<< HEAD
   deleted_time,
+=======
+  delete_time = "00:00:00",
+>>>>>>> a54f1e1 (show deleted time)
   // improved_value,
 }: IScreenshotActivityCardProps) {
 
@@ -35,7 +40,9 @@ function ScreenshotActivityCard({
             </h3>
           </div>
         </div>
-        <div className={` w-16 sm:w-18 h-9 xl:w-[55px] xl:h-9 2xl:w-22 2xl:h-12 ${is_improved ? "text-[#12cd69]" : "text-red-600"}`}>
+        <div
+          className={` w-16 sm:w-18 h-9 xl:w-13.75 xl:h-9 2xl:w-22 2xl:h-12 ${is_improved ? "text-[#12cd69]" : "text-red-600"}`}
+        >
           <Chart color={is_improved ? "#3BC1A8" : "#FF0000"}></Chart>
         </div>
       </div>
@@ -46,6 +53,7 @@ function ScreenshotActivityCard({
             <TrendingDown size={20} className={"text-red-500"} />
             )} */}
 
+<<<<<<< HEAD
         {/* <p className={is_improved ? "text-[#12cd69]" : "text-red-500"}>
           {improved_value}
         </p> */}
@@ -73,6 +81,27 @@ function ScreenshotActivityCard({
               </p>
             </>
         }
+=======
+        {delete_time === "00:00:00" ? (
+          <>
+            <TrendingUp size={20} className={"text-[#12cd69]"} />
+            <p
+              className={` text-sm 2xl:text-base capitalize text-muted-foreground dark:text-darkTextSecondary`}
+            >
+              Activity on selected date
+            </p>
+          </>
+        ) : (
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-2 text-gray-400 text-xs">
+              <span className="tracking-wider uppercase">Deleted Time</span>
+            </div>
+            <span className="text-red-400 text-sm font-semibold">
+              - {delete_time}
+            </span>
+          </div>
+        )}
+>>>>>>> a54f1e1 (show deleted time)
       </div>
     </div>
   );

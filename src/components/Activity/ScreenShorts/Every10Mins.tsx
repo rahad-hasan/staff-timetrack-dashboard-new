@@ -18,7 +18,7 @@ import ConfirmDialog from "@/components/Common/ConfirmDialog";
 import { deleteScreenshot } from "@/actions/screenshots/action";
 import { toast } from "sonner";
 import { useLogInUserStore } from "@/store/logInUserStore";
-import { TTimelineHourBlock } from "@/types/type";
+import { TTimelineDataSlot, TTimelineHourBlock } from "@/types/type";
 // import emptyActivity from "../../../assets/empty_activity.png";
 
 const Every10Mins = ({ data }: { data: TTimelineHourBlock[] }) => {
@@ -26,11 +26,12 @@ const Every10Mins = ({ data }: { data: TTimelineHourBlock[] }) => {
   const [selectedImage, setSelectedImage] = useState<any>();
   const [modalOpen, setModalOpen] = useState<boolean>(false);
 
-  const handleDeleteScreenShot = async (data: any) => {
+  const handleDeleteScreenShot = async (data: TTimelineDataSlot) => {
     const finalData = {
       user_id: data?.details[0]?.user_id,
       from_time: data?.from_time,
       to_time: data?.to_time,
+      duration: data?.total_duration,
     };
     try {
       const res = await deleteScreenshot({
@@ -79,7 +80,7 @@ const Every10Mins = ({ data }: { data: TTimelineHourBlock[] }) => {
             </h2>
           </div>
           <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-4 pl-4 py-5 border-l dark:border-darkBorder">
-            {hourGroup?.slots?.map((block: any, blockIndex: any) =>
+            {hourGroup?.slots?.map((block, blockIndex) =>
               block.type === "empty" ? (
                 <div key={blockIndex} className=" ">
                   <div className="min-h-10 flex items-center justify-center border border-dashed border-borderColor dark:border-darkBorder rounded-lg bg-gray-50/50 dark:bg-darkSecondaryBg xl:mt-14">
