@@ -15,7 +15,8 @@ export const getTimeEntry = async (
 ): Promise<IResponse<ITimeSheetEntry[]>> => {
   const queryString = buildQuery(query);
   return await baseApi(`/time-entries${queryString ? `?${queryString}` : ""}`, {
-    tag: "timeEntry",
+    // tag: "timeEntry",
+    tag: "manualTimeEntry", // this is related with manual time request accepting and rejecting, so I put the same tag as manual time entry
   });
 };
 

@@ -81,7 +81,7 @@ export const getDailyTimeEntry = async (
   return await baseApi(
     `/time-entries/daily-time-sheet${queryString ? `?${queryString}` : ""}`,
     {
-      tag: "DailyTimeEntry",
+      tag: "manualTimeEntry",
     },
   );
 };
@@ -93,7 +93,7 @@ export const getWeeklyAndMonthlyTimeEntry = async (
   return await baseApi(
     `/time-entries/weekly-time-sheet${queryString ? `?${queryString}` : ""}`,
     {
-      tag: "DailyTimeEntry",
+      tag: "manualTimeEntry",
       cache: "no-store",
     },
   );
