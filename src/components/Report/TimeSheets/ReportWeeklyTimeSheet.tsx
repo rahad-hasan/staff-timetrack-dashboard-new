@@ -4,8 +4,6 @@
 import { format } from "date-fns";
 
 const ReportWeeklyTimeSheet = ({ dateBasedTimeEntry }: any) => {
-
-
   // table data
   type DayMeta = { name: string };
   type Row = {
@@ -30,7 +28,6 @@ const ReportWeeklyTimeSheet = ({ dateBasedTimeEntry }: any) => {
 
   return (
     <div>
-
       <div className="overflow-x-auto w-full ">
         {/* <table className="w-full border-collapse">
           <thead className="">
@@ -68,15 +65,29 @@ const ReportWeeklyTimeSheet = ({ dateBasedTimeEntry }: any) => {
         </table> */}
 
         <div className="mb-2.5">
-          <h1 className="text-headingTextColor dark:text-darkTextPrimary text-md md:text-xl">Total Hour: <span className="font-bold">{rows?.weekTotal}</span></h1>
+          <h1 className="text-headingTextColor dark:text-darkTextPrimary text-md md:text-xl">
+            Total Hour:{" "}
+            <span className="font-bold text-primary">{rows?.weekTotal}</span>
+          </h1>
         </div>
 
         <div className=" grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] md:grid-cols-7 gap-2">
           {rows?.times?.map((time) => (
-            <div key={time.date} className=" border rounded-lg dark:border-darkBorder p-4 flex flex-col justify-center items-center gap-1.5">
-              <h2 className="font-bold text-headingTextColor dark:text-darkTextPrimary">{format(new Date(time.date), "EEE").toUpperCase()}</h2>
-              <p className=" text-textGray dark:text-darkTextSecondary">{format(time.date, "dd")}</p>
-              <h2 className={`${time.duration === "00:00:00" ? "text-textGray dark:text-darkTextSecondary" : "text-primary"} font-bold`}>{time.duration}</h2>
+            <div
+              key={time.date}
+              className=" border rounded-lg dark:border-darkBorder p-4 flex flex-col justify-center items-center gap-1.5"
+            >
+              <h2 className="font-bold text-headingTextColor/70 dark:text-darkTextPrimary/60">
+                {format(new Date(time.date), "EEE").toUpperCase()}
+              </h2>
+              <p className=" text-textGray dark:text-darkTextSecondary">
+                {format(time.date, "dd")}
+              </p>
+              <h2
+                className={`${time.duration === "00:00:00" ? "text-textGray dark:text-darkTextSecondary" : "text-primary"} font-bold`}
+              >
+                {time.duration}
+              </h2>
             </div>
           ))}
         </div>

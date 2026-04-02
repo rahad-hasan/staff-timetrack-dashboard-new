@@ -9,6 +9,8 @@ import {
 import DailyTimeSheetsTable from "./DailyTimeSheetsTable";
 import { formatTZDate, getTZDecimalHour } from "@/utils";
 import { useSearchParams } from "next/navigation";
+import { ITimeSheetEntry } from "@/types/type";
+import TimeEntryTooltip from "@/components/Common/TimeEntryTooltip";
 
 type TimezoneOption = {
   value: string;
@@ -22,22 +24,26 @@ const DailyTimeSheets = ({
   timezones,
 }: {
   data: any;
-  timeLineData: any;
+  timeLineData: ITimeSheetEntry[];
   selectedDate: string | number | string[] | undefined;
-  timezones: { data: TimezoneOption[]; defaultValue: string }
+  timezones: { data: TimezoneOption[]; defaultValue: string };
 }) => {
-  const searchParams = useSearchParams()
-  const selectedTimeZone = searchParams.get("timezone")
-  const currentTimeZone = selectedTimeZone ? selectedTimeZone : timezones?.defaultValue
+  const searchParams = useSearchParams();
+  const selectedTimeZone = searchParams.get("timezone");
+  const currentTimeZone = selectedTimeZone
+    ? selectedTimeZone
+    : timezones?.defaultValue;
 
   // Transform backend data into activePeriods
-  const activePeriods = (timeLineData || []).map((entry: any) => ({
+  const activePeriods = (timeLineData || []).map((entry) => ({
+    id: entry.id,
     start: entry.start,
     end: entry.end,
     startTime: entry.format_start_time,
     endTime: entry.format_end_time,
     project: entry.project?.name || "No Project",
     task: entry.task?.name || "No Task",
+    notes: entry.notes,
     duration: entry.format_duration,
     is_manual_entry: entry?.timeEntry?.is_manual_entry,
   }));
@@ -58,7 +64,7 @@ const DailyTimeSheets = ({
 
   const isToday = selectedDate === formatTZDate(new Date(), currentTimeZone);
 
-  const dayProgress = getDayProgressPercentage()
+  const dayProgress = getDayProgressPercentage();
 
   return (
     <>
@@ -74,7 +80,7 @@ const DailyTimeSheets = ({
         <div
           className={`relative h-5 ${isToday ? "bg-[#dce3e3]" : "bg-[#f6f7f9]"}  dark:bg-darkPrimaryBg rounded-4xl outline outline-borderColor dark:outline-darkBorder`}
         >
-          {(isToday) && (
+          {isToday && (
             <p
               className="absolute h-5 bg-[#f6f7f9] dark:bg-darkSecondaryBg rounded-l-4xl border-r-3 border-[#bdbfbe] dark:border-[#afafaf]"
               style={{
@@ -84,7 +90,7 @@ const DailyTimeSheets = ({
             ></p>
           )}
 
-          {activePeriods?.map((period: any, index: number) => {
+          {activePeriods?.map((period, index: number) => {
             const startPercent = (period.start / 24) * 100;
             const endPercent = (period.end / 24) * 100;
             const width = endPercent - startPercent;
@@ -101,34 +107,8 @@ const DailyTimeSheets = ({
                     }}
                   ></div>
                 </TooltipTrigger>
-                <TooltipContent className=" p-3">
-                  <div>
-                    <h2 className=" text-[15px] mb-2 text-headingTextColor dark:text-darkTextPrimary">
-                      Project: {period?.project}
-                    </h2>
-                    <h2 className=" text-[15px] mb-2 text-headingTextColor dark:text-darkTextPrimary">
-                      Task: {period?.task}
-                    </h2>
-                    <h2 className=" text-[15px] mb-2 text-headingTextColor dark:text-darkTextPrimary">
-                      Duration: {period?.duration}
-                    </h2>
-                    <h2 className=" text-[15px] mb-2 text-headingTextColor dark:text-darkTextPrimary">
-                      Start Time: {period?.startTime}
-                    </h2>
-                    <h2 className=" text-[15px] text-headingTextColor dark:text-darkTextPrimary">
-                      End Time: {period?.endTime}
-                    </h2>
-
-                    {
-                      period?.is_manual_entry &&
-                      <div className="mt-2">
-                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[11px] font-medium border border-amber-200 dark:border-amber-800">
-                          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                          Manual Entry
-                        </span>
-                      </div>
-                    }
-                  </div>
+                <TooltipContent className="p-0">
+                  <TimeEntryTooltip entry={period} />
                 </TooltipContent>
               </Tooltip>
             );
