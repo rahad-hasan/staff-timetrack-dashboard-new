@@ -21,67 +21,12 @@ const Every10MinsServer = async ({ searchParams }: ISearchParamsProps) => {
   const cookieStore = await cookies();
   const cookieTimeZone = cookieStore.get("timeZone")?.value;
 
-<<<<<<< HEAD
-    const result = await getScreenshots10Min({
-        date: params.date ?? currentDate,
-        user_id: params.user_id ?? userId,
-        project_id: params?.project_id,
-        timezone: params?.timezone ?? cookieTimeZone,
-    });
-    console.log(result);
-    // console.log('Every 10 Min Server Loaded', result);
-
-    return (
-        <div className="min-h-[80vh] xl:h-auto">
-
-            <div className="mb-5 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
-                <ScreenshotActivityCard
-                    icon={WeeklyActivityColoredIcon}
-                    value={result?.data?.score + "%"}
-                    level="AVG ACTIVITY"
-                    chart={FirstChart}
-                    is_improved={true}
-                //   improved_value={"+1.5%"}
-                />
-                <ScreenshotActivityCard
-                    icon={WeeklyWorkColoredIcon}
-                    value={result?.data?.work_time}
-                    level="WORKED TIME"
-                    chart={SecondChart}
-                    is_improved={true}
-                    deleted_time={result?.data?.delete_time}
-                //   improved_value={"+30m"}
-                />
-                <ScreenshotActivityCard
-                    icon={TotalProjectColoredIcon}
-                    value={result?.data?.mouse_activity + "%"}
-                    level="MOUSE ACTIVITY"
-                    chart={FirstChart}
-                    is_improved={false}
-                //   improved_value={"-2.5%"}
-                />
-                <ScreenshotActivityCard
-                    icon={TeamMemberColoredIcon}
-                    value={result?.data?.keyboard_activity + "%"}
-                    level="KEYBOARD ACTIVITY"
-                    chart={SecondChart}
-                    is_improved={true}
-                //   improved_value={"+3.5%"}
-                />
-            </div>
-            {<Every10Mins data={result?.data?.interval_rows} />}
-
-        </div>
-    );
-=======
   const result = await getScreenshots10Min({
     date: params.date ?? currentDate,
     user_id: params.user_id ?? userId,
     project_id: params?.project_id,
     timezone: params?.timezone ?? cookieTimeZone,
   });
-
-  // console.log('Every 10 Min Server Loaded', result);
 
   return (
     <div className="min-h-[80vh] xl:h-auto">
@@ -100,7 +45,7 @@ const Every10MinsServer = async ({ searchParams }: ISearchParamsProps) => {
           level="WORKED TIME"
           chart={SecondChart}
           is_improved={true}
-          delete_time={result?.data?.delete_time}
+          deleted_time={result?.data?.delete_time}
           //   improved_value={"+30m"}
         />
         <ScreenshotActivityCard
@@ -123,7 +68,6 @@ const Every10MinsServer = async ({ searchParams }: ISearchParamsProps) => {
       {<Every10Mins data={result?.data?.interval_rows} />}
     </div>
   );
->>>>>>> a54f1e1 (show deleted time)
 };
 
 export default Every10MinsServer;
