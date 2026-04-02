@@ -37,8 +37,12 @@ interface EditNewMemberModalProps {
     selectedUser: ITeamMembers | null
 }
 const EditNewMemberModal = ({ onClose, selectedUser }: EditNewMemberModalProps) => {
-    const [loading, setLoading] = useState(false);
 
+    const handleClose = () => {
+        onClose();
+    }
+
+    const [loading, setLoading] = useState(false);
     const manager = ["admin", "manager", "hr", "project_manager", "employee"];
     const [managerSearch, setManagerSearch] = useState("");
 
@@ -53,6 +57,7 @@ const EditNewMemberModal = ({ onClose, selectedUser }: EditNewMemberModalProps) 
             // password: "",
         },
     })
+
     useEffect(() => {
         if (selectedUser) {
             form.reset({
@@ -74,10 +79,10 @@ const EditNewMemberModal = ({ onClose, selectedUser }: EditNewMemberModalProps) 
             const res = await editMember({ data: finalData, id: selectedUser?.id });
 
             if (res?.success) {
-                form.reset();
-                setTimeout(() => {
+                requestAnimationFrame(() => {
+                    form.reset();
                     onClose();
-                }, 0);
+                });
                 toast.success(res?.message || "Member edited successfully");
             } else {
                 toast.error(res?.message || "Failed to edit member", {
@@ -107,7 +112,10 @@ const EditNewMemberModal = ({ onClose, selectedUser }: EditNewMemberModalProps) 
             <DialogHeader>
                 <DialogTitle className=" mb-4">Edit Member</DialogTitle>
             </DialogHeader>
-
+            <div>
+                <p className=" text-sm text-muted-foreground">Editing member details is currently unavailable. Please contact support for assistance.</p>
+                <button className=" cursor-pointer" onClick={handleClose}>Close</button>
+            </div>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 ">
                     <FormField
@@ -123,19 +131,7 @@ const EditNewMemberModal = ({ onClose, selectedUser }: EditNewMemberModalProps) 
                             </FormItem>
                         )}
                     />
-                    {/* <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Email</FormLabel>
-                                <FormControl>
-                                    <Input type="text" className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Enter member email" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    /> */}
+
                     <FormField
                         control={form.control}
                         name="role"
@@ -172,22 +168,10 @@ const EditNewMemberModal = ({ onClose, selectedUser }: EditNewMemberModalProps) 
                             </FormItem>
                         )}
                     />
-                    {/* <FormField
-                        control={form.control}
-                        name="password"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Password</FormLabel>
-                                <FormControl>
-                                    <Input type="password" className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Set Password" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    /> */}
-                    {/* <DialogClose asChild> */}
+
+
                     <Button className=" w-full" disabled={loading} type="submit">{loading ? "Loading..." : "Submit"}</Button>
-                    {/* </DialogClose> */}
+
                 </form>
             </Form>
         </DialogContent>

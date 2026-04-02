@@ -50,7 +50,9 @@ const ConfirmDialog = ({
       console.error("Error confirming:", error);
     } finally {
       setIsLoading(false);
-      setOpen(false);
+      requestAnimationFrame(() => {
+        setOpen(false);
+      });
     }
   };
 

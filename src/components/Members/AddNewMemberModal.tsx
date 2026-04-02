@@ -146,10 +146,10 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
             const res = await addMember(finalData);
 
             if (res?.success) {
-                form.reset();
-                setTimeout(() => {
+                requestAnimationFrame(() => {
+                    form.reset();
                     onClose();
-                }, 0);
+                });
                 toast.success(res?.message || "Member added successfully");
             } else {
                 toast.error(res?.message || "Failed to add member", {
