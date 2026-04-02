@@ -12,6 +12,7 @@ import {
   ClipboardList,
   Clock,
   MousePointer2,
+  Notebook,
   RefreshCcw,
 } from "lucide-react";
 import { formatTZTimeHM } from "@/utils";
@@ -141,6 +142,7 @@ const ReportDailyTimeSheet = ({
     status,
     timeEntry,
     task,
+    notes
   }: any) => {
     const baseClasses =
       "absolute p-2 text-xs font-medium rounded-lg border-l-4 shadow-lg z-10 transition-all duration-300 hover:shadow-xl";
@@ -151,6 +153,7 @@ const ReportDailyTimeSheet = ({
     // } else {
     //     colorClasses = 'bg-[#fee6eb] text-black border-red-500';
     // }
+    
     const colorClasses =
       index % 2 === 0
         ? "bg-[#fff5db] text-black border-yellow-400"
@@ -209,11 +212,10 @@ const ReportDailyTimeSheet = ({
                 <span>Status</span>
               </div>
               <span
-                className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                  status === "complete"
-                    ? "bg-green-100 text-green-700"
-                    : "bg-amber-100 text-amber-700"
-                }`}
+                className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${status === "complete"
+                  ? "bg-green-100 text-green-700"
+                  : "bg-amber-100 text-amber-700"
+                  }`}
               >
                 {status}
               </span>
@@ -229,7 +231,7 @@ const ReportDailyTimeSheet = ({
               </span>
             </div>
 
-            <div className="pt-2 border-t border-borderColor dark:border-darkBorder flex items-center gap-2 text-[10px]">
+            <div className="pt-3 border-t border-borderColor dark:border-darkBorder flex items-center gap-2 text-[10px]">
               {timeEntry?.is_manual_entry ? (
                 <div className="flex items-center gap-1.5 text-amber-600 font-medium">
                   <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
@@ -237,11 +239,19 @@ const ReportDailyTimeSheet = ({
                 </div>
               ) : (
                 <div className="flex items-center gap-1.5 text-primary font-medium">
-                  <MousePointer2 className="w-3 h-3" />
+                  <MousePointer2 className="w-3.5 h-3.5" />
                   System Tracked
                 </div>
               )}
             </div>
+
+            <div className="pt-2.5 border-t border-borderColor dark:border-darkBorder flex items-center gap-2 text-[10px]">
+              <div className="flex items-center gap-1.5 text-gray-500 dark:text-darkTextSecondary font-medium">
+                <Notebook className="w-3.5 h-3.5" />
+                {notes || "No notes for this entry."}
+              </div>
+            </div>
+
           </div>
         </TooltipContent>
       </Tooltip>

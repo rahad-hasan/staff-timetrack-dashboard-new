@@ -34,12 +34,10 @@ import EditIcon from "@/components/Icons/FilterOptionIcon/EditIcon";
 // import DeleteIcon from "@/components/Icons/DeleteIcon";
 import EditProjectModal from "./EditProjectModal";
 import { toast } from "sonner";
-import { deleteProject, editProject } from "@/actions/projects/action";
+import { editProject } from "@/actions/projects/action";
 import { useProjectFormStore } from "@/store/ProjectFormStore";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import { formatTZDayMonthYear } from "@/utils";
-import DeleteIcon from "@/components/Icons/DeleteIcon";
-import ConfirmDialog from "@/components/Common/ConfirmDialog";
 import Link from "next/link";
 
 
