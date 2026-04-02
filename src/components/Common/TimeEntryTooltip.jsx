@@ -11,6 +11,7 @@ function TimeEntryTooltip({ entry }) {
     endTime = "—",
     isManual = false,
     notes = "",
+    system_update,
   } = entry || {};
 
   return (

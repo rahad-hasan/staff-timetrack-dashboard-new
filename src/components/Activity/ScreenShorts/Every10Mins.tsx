@@ -64,7 +64,7 @@ const Every10Mins = ({ data }: { data: TTimelineHourBlock[] }) => {
       {data?.map((hourGroup, groupIdx) => (
         <div key={groupIdx}>
           <div className="flex gap-2 sm:gap-3 justify-between items-center h-3">
-            <div className="flex items-center gap-2 -ml-[6px]">
+            <div className="flex items-center gap-2 -ml-1.5">
               <Circle
                 size={12}
                 className="text-gray-200 dark:text-darkTextPrimary/50"
@@ -92,7 +92,7 @@ const Every10Mins = ({ data }: { data: TTimelineHourBlock[] }) => {
               ) : (
                 <div key={blockIndex} className="mb-5">
                   <div className="text-center space-y-1 mb-2">
-                    <h2 className="bg-[#F3F4F6] dark:bg-darkSecondaryBg py-1 rounded-full text-sm text-headingTextColor dark:text-darkTextPrimary">
+                    <h2 className="bg-darkTextPrimary dark:bg-darkSecondaryBg py-1 rounded-full text-sm text-headingTextColor dark:text-darkTextPrimary">
                       {block?.details?.[0]?.project_name}
                     </h2>
                     <p className="text-xs text-slate-500 dark:text-darkTextSecondary/60">
@@ -132,44 +132,46 @@ const Every10Mins = ({ data }: { data: TTimelineHourBlock[] }) => {
                         {(logInUserData?.role === "admin" ||
                           logInUserData?.role === "manager" ||
                           logInUserData?.role === "hr") && (
-                            <ConfirmDialog
-                              trigger={
-                                <div className="text-rose-600 dark:text-rose-500 cursor-pointer">
-                                  <DeleteIcon size={16} />
-                                </div>
-                              }
-                              title="Delete the screenshot entry"
-                              description="Are you sure you want to delete? This action cannot be undone."
-                              confirmText="Confirm"
-                              cancelText="Cancel"
-                              onConfirm={() => handleDeleteScreenShot(block)}
-                            />
-                          )}
+                          <ConfirmDialog
+                            trigger={
+                              <div className="text-rose-600 dark:text-rose-500 cursor-pointer">
+                                <DeleteIcon size={16} />
+                              </div>
+                            }
+                            title="Delete the screenshot entry"
+                            description="Are you sure you want to delete? This action cannot be undone."
+                            confirmText="Confirm"
+                            cancelText="Cancel"
+                            onConfirm={() => handleDeleteScreenShot(block)}
+                          />
+                        )}
                       </div>
 
-                      <div className="h-1.5 bg-[#dce3e3] dark:bg-darkPrimaryBg rounded-full">
+                      <div className="h-1.5 bg-borderColor dark:bg-darkPrimaryBg rounded-full">
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <div
-                              className={`h-1.5 ${block?.avg_score < 30
-                                ? "bg-red-500"
-                                : block?.avg_score < 60
-                                  ? "bg-yellow-400"
-                                  : "bg-primary"
-                                }
+                              className={`h-1.5 ${
+                                block?.avg_score < 30
+                                  ? "bg-red-500"
+                                  : block?.avg_score < 60
+                                    ? "bg-yellow-400"
+                                    : "bg-primary"
+                              }
                                 rounded-full relative`}
                               style={{
                                 width: `${block?.avg_score < 10 ? block?.avg_score + 5 : block?.avg_score}%`,
                               }}
                             >
-                              <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[17px] h-[17px] bg-gradient-to-b from-[#ffffff] dark:from-[#dadada] to-[#dfe5fd] dark:to-darkSecondaryBg border-2 border-white dark:border-slate-500  rounded-full flex items-center justify-center">
+                              <div className="absolute right-0 top-1/2 -translate-y-1/2 w-4.25 h-4.25 bg-linear-to-b from-bgPrimary dark:from-[#dadada] to-[#dfe5fd] dark:to-darkSecondaryBg border-2 border-white dark:border-slate-500  rounded-full flex items-center justify-center">
                                 <div
-                                  className={`w-[5px] h-[5px] shadow ${block?.avg_score < 30
-                                    ? "bg-red-500"
-                                    : block?.avg_score < 60
-                                      ? "bg-yellow-400"
-                                      : "bg-primary"
-                                    } rounded-full`}
+                                  className={`w-1.25 h-1.25 shadow ${
+                                    block?.avg_score < 30
+                                      ? "bg-red-500"
+                                      : block?.avg_score < 60
+                                        ? "bg-yellow-400"
+                                        : "bg-primary"
+                                  } rounded-full`}
                                 ></div>
                               </div>
                             </div>
@@ -192,12 +194,13 @@ const Every10Mins = ({ data }: { data: TTimelineHourBlock[] }) => {
                                   </div>
                                   <div className="h-1.5 w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                                     <div
-                                      className={`h-1.5 ${block?.avg_score < 30
-                                        ? "bg-red-500"
-                                        : block?.avg_score < 60
-                                          ? "bg-yellow-400"
-                                          : "bg-primary"
-                                        }
+                                      className={`h-1.5 ${
+                                        block?.avg_score < 30
+                                          ? "bg-red-500"
+                                          : block?.avg_score < 60
+                                            ? "bg-yellow-400"
+                                            : "bg-primary"
+                                      }
                                         rounded-full relative`}
                                       style={{ width: `${block.avg_score}%` }}
                                     />

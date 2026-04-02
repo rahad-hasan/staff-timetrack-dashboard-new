@@ -8,6 +8,7 @@ import {
   ITimeSheetEntry,
   IUserWorkReport,
 } from "@/types/type";
+import { revalidateTag } from "next/cache";
 
 export const getTimeEntry = async (
   query = {},
@@ -16,6 +17,20 @@ export const getTimeEntry = async (
   return await baseApi(`/time-entries${queryString ? `?${queryString}` : ""}`, {
     tag: "timeEntry",
   });
+};
+
+export const deleteTimeEntry = async (id: number): Promise<IResponse<null>> => {
+  const res = await baseApi(`/time-entries/remove-manual-time/${id}`, {
+    method: "DELETE",
+    tag: "timeEntry",
+    cache: "no-cache",
+  });
+
+  if (res?.success) {
+    revalidateTag("DailyTimeEntry");
+  }
+
+  return res;
 };
 
 export const getDateBaseTimeEntry = async (
