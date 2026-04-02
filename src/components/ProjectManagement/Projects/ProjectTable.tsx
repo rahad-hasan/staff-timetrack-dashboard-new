@@ -96,32 +96,32 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
         }
     }
 
-    async function handleDelete(values: IProject) {
+    // async function handleDelete(values: IProject) {
 
-        try {
-            const res = await deleteProject(values.id);
+    //     try {
+    //         const res = await deleteProject(values.id);
 
-            if (res?.success) {
-                toast.success(res?.message || "Project deleted successfully");
-            } else {
-                toast.error(res?.message || "Failed to delete project", {
-                    style: {
-                        backgroundColor: '#ef4444',
-                        color: 'white',
-                        border: 'none'
-                    },
-                });
-            }
-        } catch (error: any) {
-            toast.error(error?.message || "Something went wrong!", {
-                style: {
-                    backgroundColor: '#ef4444',
-                    color: 'white',
-                    border: 'none'
-                },
-            });
-        } 
-    }
+    //         if (res?.success) {
+    //             toast.success(res?.message || "Project deleted successfully");
+    //         } else {
+    //             toast.error(res?.message || "Failed to delete project", {
+    //                 style: {
+    //                     backgroundColor: '#ef4444',
+    //                     color: 'white',
+    //                     border: 'none'
+    //                 },
+    //             });
+    //         }
+    //     } catch (error: any) {
+    //         toast.error(error?.message || "Something went wrong!", {
+    //             style: {
+    //                 backgroundColor: '#ef4444',
+    //                 color: 'white',
+    //                 border: 'none'
+    //             },
+    //         });
+    //     } 
+    // }
 
     const columns: ColumnDef<IProject>[] = [
         {
@@ -502,7 +502,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                                         <ArchiveIcon size={18} />
                                         <p>Archive Project</p>
                                     </div> */}
-                                    <ConfirmDialog
+                                    {/* <ConfirmDialog
                                         trigger={
                                             <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
                                                 <DeleteIcon size={18} />
@@ -515,7 +515,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                                         cancelText="Cancel"
                                         // confirmClassName="bg-primary hover:bg-primary"
                                         onConfirm={() => handleDelete(row?.original)}
-                                    />
+                                    /> */}
 
                                 </div>
                             </div>
