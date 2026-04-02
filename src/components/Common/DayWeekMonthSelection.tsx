@@ -9,7 +9,7 @@ const DayWeekMonthSelection = () => {
     const router = useRouter();
     const activeTab = (searchParams.get("tab") as Tab) ?? "daily";
     const setTab = (tab: Tab) => {
-        const params = new URLSearchParams(searchParams.toString());
+        const params = new URLSearchParams();
         params.set("tab", tab);
         router.push(`?${params.toString()}`);
     };

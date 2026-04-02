@@ -59,10 +59,6 @@ const MonthPicker = () => {
         const params = new URLSearchParams(window.location.search);
         params.set("start_month", fromDate);
         params.set("end_month", toDate);
-        params.delete("date");
-        params.delete("from_date");
-        params.delete("to_date");
-
         loader.start();
 
         router.push(`${pathname}?${params.toString()}`, { scroll: false });
