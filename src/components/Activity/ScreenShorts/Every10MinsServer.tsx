@@ -27,7 +27,7 @@ const Every10MinsServer = async ({ searchParams }: ISearchParamsProps) => {
         project_id: params?.project_id,
         timezone: params?.timezone ?? cookieTimeZone,
     });
-
+    console.log(result);
     // console.log('Every 10 Min Server Loaded', result);
 
     return (
@@ -48,6 +48,7 @@ const Every10MinsServer = async ({ searchParams }: ISearchParamsProps) => {
                     level="WORKED TIME"
                     chart={SecondChart}
                     is_improved={true}
+                    deleted_time={result?.data?.delete_time}
                 //   improved_value={"+30m"}
                 />
                 <ScreenshotActivityCard

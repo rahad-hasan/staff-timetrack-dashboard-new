@@ -1,4 +1,4 @@
-import { TrendingUp } from "lucide-react";
+import { Trash2, TrendingUp } from "lucide-react";
 
 interface IScreenshotActivityCardProps {
   icon: React.ElementType;
@@ -6,6 +6,7 @@ interface IScreenshotActivityCardProps {
   value: string;
   chart: React.ElementType;
   is_improved: boolean;
+  deleted_time?: string;
   // improved_value: string;
 }
 
@@ -15,8 +16,11 @@ function ScreenshotActivityCard({
   value,
   chart: Chart,
   is_improved,
+  deleted_time,
   // improved_value,
 }: IScreenshotActivityCardProps) {
+
+
   return (
     <div className="rounded-2xl w-full  transition-all hover:shadow duration-200 relative h-34 2xl:h-40 shadow-sm dark:shadow-slate-100">
       <div className="border-x-2 border-t-2 border-borderColor/40 dark:border-darkBorder/25 flex items-center justify-between px-3 2xl:px-4 py-[1.4rem] 2xl:py-[1.8rem] bg-bgPrimary dark:bg-darkPrimaryBg rounded-t-2xl">
@@ -42,15 +46,33 @@ function ScreenshotActivityCard({
             <TrendingDown size={20} className={"text-red-500"} />
             )} */}
 
-        <TrendingUp size={20} className={"text-[#12cd69]"} />
         {/* <p className={is_improved ? "text-[#12cd69]" : "text-red-500"}>
           {improved_value}
         </p> */}
-        <p
+        {/* <p
           className={` text-sm 2xl:text-base capitalize text-muted-foreground dark:text-darkTextSecondary`}
         >
           Activity on selected date
-        </p>
+        </p> */}
+        {
+          deleted_time ? <>
+            <Trash2 size={18} className="text-red-500 -mt-[2px]" />
+            <p
+              className={` text-sm 2xl:text-base capitalize text-muted-foreground dark:text-darkTextSecondary`}
+            >
+             <span className=" font-semibold">{deleted_time}</span> time deleted
+            </p>
+          </>
+            :
+            <>
+              <TrendingUp size={20} className={"text-[#12cd69]"} />
+              <p
+                className={` text-sm 2xl:text-base capitalize text-muted-foreground dark:text-darkTextSecondary`}
+              >
+                Activity on selected date
+              </p>
+            </>
+        }
       </div>
     </div>
   );
