@@ -40,13 +40,11 @@ function ScreenshotActivityCard({
           <Chart color={is_improved ? "#3BC1A8" : "#FF0000"}></Chart>
         </div>
       </div>
-      <div className="bg-bgSecondary dark:bg-darkSecondaryBg rounded-b-2xl border-t px-3 2xl:px-4 py-2 sm:py-2.5 2xl:py-3 flex items-center gap-2 absolute left-0 right-0 bottom-0">
+      <div className="bg-bgSecondary dark:bg-darkSecondaryBg rounded-b-2xl border-t px-3 2xl:px-4 py-2 sm:py-2.5 2xl:py-3 flex items-center gap-2 absolute left-0 right-0 bottom-0 h-12">
         {deleted_time === "00:00:00" ? (
           <>
             <TrendingUp size={20} className={"text-[#12cd69]"} />
-            <p
-              className={` text-sm 2xl:text-base capitalize text-muted-foreground dark:text-darkTextSecondary`}
-            >
+            <p className={`tracking-wider uppercase text-xs text-gray-400`}>
               Activity on selected date
             </p>
           </>
