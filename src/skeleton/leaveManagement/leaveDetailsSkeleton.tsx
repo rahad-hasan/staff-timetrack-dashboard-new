@@ -46,11 +46,11 @@ const leaveDetailsSkeleton = () => {
 
                         <div className="flex border-b border-gray-200 dark:border-darkBorder py-3 text-sm font-medium text-gray-500 px-1">
                             <div className="w-[25%]">Member name</div>
-                            <div className="w-[15%]">Total Leave</div>
-                            <div className="w-[15%]">Casual Leave</div>
-                            <div className="w-[20%]">Sick Leave</div>
-                            <div className="w-[10%] ">Paid Leave</div>
-                            <div className="w-[10%] ">Available Leave</div>
+                            <div className="w-[15%]">Allowed</div>
+                            <div className="w-[15%]">Taken</div>
+                            <div className="w-[20%]">Remaining</div>
+                            <div className="w-[10%] ">Hours</div>
+                            <div className="w-[10%] ">Policies</div>
                         </div>
 
                         <div className="space-y-0">

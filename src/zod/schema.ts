@@ -286,8 +286,10 @@ export const editEventSchema = z.object({
   end_time: z.string().min(1, "End time is required"),
 });
 
-export const leaveRequestSchema = z.object({
-  leaveType: z.string().min(1, "Leave type is required"),
+const leaveRequestBaseSchema = z
+  .object({
+  leaveTypeId: z.string().min(1, "Leave type is required"),
+  supportingDocument: z.unknown().nullable().optional(),
   startDate: z
     .date()
     .nullable()
@@ -301,10 +303,64 @@ export const leaveRequestSchema = z.object({
       message: "End date is required",
     }),
   reason: z.string().min(1, "Reason is required"),
-});
+  })
+  .superRefine((values, ctx) => {
+    if (values.startDate && values.endDate && values.endDate < values.startDate) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["endDate"],
+        message: "End date cannot be before the start date",
+      });
+    }
+  });
+
+export const createLeaveRequestSchema = (
+  requiredDocumentLeaveTypeIds: Iterable<string | number> = [],
+) => {
+  const requiredIds = new Set(
+    Array.from(requiredDocumentLeaveTypeIds, (id) => String(id)),
+  );
+
+  return leaveRequestBaseSchema.superRefine((values, ctx) => {
+    if (requiredIds.has(values.leaveTypeId) && !values.supportingDocument) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["supportingDocument"],
+        message: "Supporting document is required for this leave type",
+      });
+    }
+  });
+};
+
+export const leaveRequestSchema = createLeaveRequestSchema();
 
 export const leaveRejectRequestSchema = z.object({
   reason: z.string().min(1, "Reason is required"),
+});
+
+export const leaveTypeFormSchema = z.object({
+  title: z
+    .string()
+    .trim()
+    .min(2, "Title must be at least 2 characters")
+    .max(80, "Title must be 80 characters or less"),
+  color_code: z
+    .string()
+    .trim()
+    .regex(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/, "Enter a valid hex color"),
+  days_allowed: z
+    .number({ message: "Annual limit is required" })
+    .int("Annual limit must be a whole number")
+    .min(0, "Annual limit must be 0 or greater"),
+  requires_document: z.boolean(),
+  is_active: z.boolean(),
+  applicable_gender: z.enum(["male", "female", "other", "all"]),
+  min_notice_days: z
+    .number({ message: "Min notice must be a number" })
+    .int("Min notice must be a whole number")
+    .min(0, "Min notice must be 0 or greater")
+    .nullable(),
+  allow_past_dates: z.boolean(),
 });
 
 export const userBasicInfoSchema = z.object({
@@ -332,10 +388,6 @@ export const screenDeleteReasonSchema = z.object({
 });
 
 export const leaveSettingsSchema = z.object({
-  paid_leave: z.number().min(1, "Paid Leave is required"),
-  casual_leave: z.number().min(1, "Casual Leave is required"),
-  sick_leave: z.number().min(1, "Sick Leave is required"),
-  maternity_leave: z.number().min(1, "Maternity Leave is required"),
   address: z
     .string()
     .min(1, "Address is required")

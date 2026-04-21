@@ -156,8 +156,38 @@ export const othersSidebarItems = [
         key: '/leave-management',
         collapsible: true,
         subItems: [
-            { label: 'Leave details', key: '/leave-management/leave-details' },
-            { label: 'Leave request', key: '/leave-management/leave-request' },
+            { label: 'My Leaves', key: '/leave-management/my-leaves' },
+            { label: 'Leave Types', key: '/leave-management/leave-types' },
+            { label: 'Request Queue', key: '/leave-management/leave-request' },
+            { label: 'Leave History', key: '/leave-management/history' },
+            { label: 'Calendar', key: '/leave-management/calendar' },
+        ],
+    },
+    {
+        icon: Settings,
+        label: 'Settings',
+        key: '/settings',
+        collapsible: false,
+        subItems: [],
+    },
+]
+
+export const othersSidebarItemsEmployee = [
+    {
+        icon: CalendarDays,
+        label: 'Event',
+        key: '/event',
+        collapsible: false,
+        subItems: [],
+    },
+    {
+        icon: AlarmClock,
+        label: 'Leaves',
+        key: '/leave-management',
+        collapsible: true,
+        subItems: [
+            { label: 'My Leaves', key: '/leave-management/my-leaves' },
+            { label: 'Calendar', key: '/leave-management/calendar' },
         ],
     },
     {

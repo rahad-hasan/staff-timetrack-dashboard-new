@@ -3,7 +3,7 @@ import Image from 'next/image';
 // import logo from '../../assets/logo.svg'
 // import fit from '../../assets/fit.svg'
 // import { useEffect, useState } from 'react';
-import { othersSidebarItems, sidebarItems, sidebarItemsEmployee } from '@/utils/SidebarItems';
+import { othersSidebarItems, othersSidebarItemsEmployee, sidebarItems, sidebarItemsEmployee } from '@/utils/SidebarItems';
 import { useSidebarStore } from '@/store/sidebarStore';
 // import { usePathname } from 'next/navigation';
 import SidebarItem from './sidebar/SidebarItem';
@@ -33,9 +33,13 @@ const SideBar = () => {
     // console.log('isCollapsed', isCollapsed);
     // console.log('openMenu', openMenu);
 
-    const roleBasedSidebarItems = (logInUserData?.role === 'admin' ||
+    const isManagerialRole = logInUserData?.role === 'admin' ||
         logInUserData?.role === 'manager' ||
-        logInUserData?.role === 'hr') ? sidebarItems : sidebarItemsEmployee;
+        logInUserData?.role === 'hr' ||
+        logInUserData?.role === 'project_manager';
+
+    const roleBasedSidebarItems = isManagerialRole ? sidebarItems : sidebarItemsEmployee;
+    const roleBasedOtherItems = isManagerialRole ? othersSidebarItems : othersSidebarItemsEmployee;
 
     // const sidebarRef = useRef<HTMLDivElement>(null);
 
@@ -138,7 +142,7 @@ const SideBar = () => {
                         {!isCollapsed && (
                             <h2 className="text-xs uppercase text-subTextColor dark:text-darkTextSecondary mb-2">Others</h2>
                         )}
-                        {othersSidebarItems.map((item) => (
+                        {roleBasedOtherItems.map((item) => (
                             <div key={item.key}>
                                 <SidebarItem
                                     icon={item.icon}

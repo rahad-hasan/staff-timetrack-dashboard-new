@@ -4,6 +4,7 @@ export interface IMeta {
   limit: number;
   total: number;
   totalPages: number;
+  [key: string]: unknown;
 }
 
 export interface IResponse<T> {
@@ -211,18 +212,105 @@ export interface Company {
   id: number;
   name: string;
   phone: string;
-  address: string;
+  address: string | null;
   email: string;
 }
 
-export interface ILeaveRequest {
+export type LeaveApplicableGender = "male" | "female" | "other" | "all";
+export type ApplicableGender = LeaveApplicableGender;
+
+export type LeaveStatus = "pending" | "approved" | "rejected";
+
+export interface LeaveUser {
+  id: number;
+  name: string;
+  image: string | null;
+  email: string;
+  gender: "male" | "female" | "other";
+}
+
+export interface LeaveType {
+  id: number;
+  title: string;
+  color_code: string;
+  is_active: boolean;
+  days_allowed: number;
+  requires_document: boolean;
+  applicable_gender: LeaveApplicableGender;
+  min_notice_days: number | null;
+  allow_past_dates: boolean;
+  company_id: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface LeaveTypeRecord extends LeaveType {
+  leave_requests_count: number;
+  can_delete: boolean;
+}
+
+export interface CreateLeaveTypePayload {
+  title: string;
+  color_code: string;
+  days_allowed: number;
+  requires_document?: boolean;
+  is_active?: boolean;
+  applicable_gender?: ApplicableGender;
+  min_notice_days?: number | null;
+  allow_past_dates?: boolean;
+}
+
+export interface UpdateLeaveTypePayload {
+  title?: string;
+  color_code?: string;
+  days_allowed?: number;
+  requires_document?: boolean;
+  is_active?: boolean;
+  applicable_gender?: ApplicableGender;
+  min_notice_days?: number | null;
+  allow_past_dates?: boolean;
+}
+
+export interface LeaveTypeListFilters {
+  [key: string]: string | number | boolean | undefined;
+  search?: string;
+  is_active?: boolean;
+}
+
+export interface LeaveTypeSummary {
+  id: number;
+  title: string;
+  color_code: string;
+  is_active: boolean;
+  requires_document: boolean;
+  applicable_gender: LeaveApplicableGender;
+  min_notice_days: number | null;
+  allow_past_dates: boolean;
+  allowed: number;
+  taken: number;
+  remaining: number;
+  approved_hours: number;
+  approved_hours_formatted: string;
+}
+
+export interface UserScopedLeaveTypeRecord extends LeaveTypeRecord {
+  allowed: number;
+  taken: number;
+  remaining: number;
+  approved_hours: number;
+  approved_hours_formatted: string;
+}
+
+export interface LeaveRecord {
   id: number;
   company_id: number;
   user_id: number;
-  type: string;
+  leave_type_id: number;
   start_date: string;
   end_date: string;
   leave_count: number;
+  approved_hours: number;
+  approved_hours_formatted: string;
   reason: string;
   hr_approved: boolean;
   admin_approved: boolean;
@@ -231,9 +319,13 @@ export interface ILeaveRequest {
   reject_reason: string | null;
   created_at: string;
   updated_at: string;
-  user: User;
-  company: Company;
+  status: LeaveStatus;
+  leaveType: LeaveType;
+  user?: LeaveUser;
+  company?: Company;
 }
+
+export type ILeaveRequest = LeaveRecord;
 
 export interface Project {
   id: number;
@@ -309,29 +401,110 @@ export interface ILeaveStats {
   remaining: number;
 }
 
-export interface ILeaveDetails {
-  paid_leave: number;
-  casual_leave: number;
-  sick_leave: number;
-  maternity_leave: number;
-}
-
 export interface IUserLeaveData {
-  user: User;
+  user: LeaveUser;
   year: number;
   total_allowed: number;
   total_taken: number;
   total_remaining: number;
   available: number;
-  casual: ILeaveStats;
-  sick: ILeaveStats;
-  maternity: ILeaveStats;
-  paid: ILeaveStats;
+  approved_leave_hours: number;
+  approved_leave_hours_formatted: string;
+  leave_types: LeaveTypeSummary[];
 }
 
 export interface ILeaveDetailsResponse {
   data: IUserLeaveData[];
-  details: ILeaveDetails;
+  details: {
+    year: number;
+    leave_types: LeaveType[];
+  };
+}
+
+export interface UserLeaveSummary {
+  user: LeaveUser;
+  year: number;
+  summary: {
+    total_allowed: number;
+    total_taken: number;
+    total_remaining: number;
+    available_percentage: number;
+    available_leaves: number;
+    approved_leave_hours: number;
+    approved_leave_hours_formatted: string;
+    leave_types: LeaveTypeSummary[];
+  };
+  requests: {
+    pending: LeaveRecord[];
+    approved: LeaveRecord[];
+    rejected: LeaveRecord[];
+  };
+  next_holidays: LeaveHoliday[];
+}
+
+export interface AdminLeaveHistoryFilters {
+  [key: string]: string | number | boolean | undefined;
+  user_id?: number;
+  start_date?: string;
+  end_date?: string;
+  status?: LeaveStatus;
+}
+
+export interface LeaveHoliday {
+  id?: number;
+  name: string;
+  date: string;
+  description?: string | null;
+  source?: string | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export type LeaveHolidayListData =
+  | LeaveHoliday[]
+  | {
+      holidays?: LeaveHoliday[];
+      data?: LeaveHoliday[];
+    };
+
+export interface MandatoryLeaveParsedHoliday extends LeaveHoliday {
+  row: number;
+  already_exists: boolean;
+}
+
+export interface MandatoryLeaveRejectedRow {
+  row: number;
+  reason: string;
+  raw: unknown;
+}
+
+export interface MandatoryLeaveParseSummary {
+  total_rows: number;
+  parsed_count: number;
+  rejected_count: number;
+  existing_count: number;
+}
+
+export interface MandatoryLeaveParseResult {
+  parsed: MandatoryLeaveParsedHoliday[];
+  rejected: MandatoryLeaveRejectedRow[];
+  summary: MandatoryLeaveParseSummary;
+}
+
+export interface MandatoryLeaveImportResult {
+  total_submitted: number;
+  imported_count: number;
+  skipped_count: number;
+}
+
+export interface MandatoryLeaveParsePayload {
+  file_name: string;
+  file_content: string;
+  file_encoding: "text" | "base64";
+}
+
+export interface MandatoryLeaveImportPayload {
+  holidays: Array<Pick<LeaveHoliday, "name" | "date" | "description" | "source">>;
 }
 
 export type ICompany = {
@@ -346,10 +519,6 @@ export type ICompany = {
   idle_minutes_limit: number;
   url_tracking_enabled: boolean;
   week_start: string;
-  paid_leave: number;
-  casual_leave: number;
-  sick_leave: number;
-  maternity_leave: number;
   app_notify: boolean;
   email_notify: boolean;
   updated_at: string;
@@ -650,7 +819,7 @@ export interface ISchedules {
   end_time_local?: string;
 }
 
-export type TLeaveType = "sick" | "casual" | "paid" | "maternity" | null;
+export type TLeaveType = string | null;
 
 export interface IDailyDataItem {
   date: string; // ISO date string (e.g. "2026-02-01")

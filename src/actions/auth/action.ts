@@ -14,6 +14,47 @@ import { cookies } from "next/headers";
 // Define a duration for cookies (e.g., 30 days)
 const MAX_AGE = 60 * 60 * 24 * 30;
 
+async function setSessionMetaCookies(
+  data: {
+    id?: number | string;
+    email?: string | null;
+    role?: string | null;
+  },
+) {
+  const isProd = process.env.NODE_ENV === "production";
+  const cookieStore = await cookies();
+
+  if (data.id !== undefined && data.id !== null) {
+    cookieStore.set("userId", String(data.id), {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: "lax",
+      path: "/",
+      maxAge: MAX_AGE,
+    });
+  }
+
+  if (data.email) {
+    cookieStore.set("userEmail", data.email, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: "lax",
+      path: "/",
+      maxAge: MAX_AGE,
+    });
+  }
+
+  if (data.role) {
+    cookieStore.set("userRole", data.role, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: "lax",
+      path: "/",
+      maxAge: MAX_AGE,
+    });
+  }
+}
+
 export const logIn = async (data: any) => {
   const res = await baseApi("/auth/signin", {
     method: "POST",
@@ -46,6 +87,12 @@ export const logIn = async (data: any) => {
       sameSite: "lax",
       path: "/",
       maxAge: MAX_AGE,
+    });
+
+    await setSessionMetaCookies({
+      id: res.data.id,
+      email: res.data.email,
+      role: res.data.role,
     });
   }
 
@@ -117,6 +164,9 @@ export async function clearSessionCookie() {
   cookieStore.delete("accessToken");
   cookieStore.delete("refreshToken");
   cookieStore.delete("timeZone");
+  cookieStore.delete("userId");
+  cookieStore.delete("userEmail");
+  cookieStore.delete("userRole");
 }
 
 export const forgetPassword = async ({ data }: {
@@ -198,6 +248,12 @@ export const resetPassword = async ({ data }: {
       sameSite: "lax",
       path: "/",
       maxAge: MAX_AGE,
+    });
+
+    await setSessionMetaCookies({
+      id: res.data.id,
+      email: res.data.email,
+      role: res.data.role,
     });
   }
 

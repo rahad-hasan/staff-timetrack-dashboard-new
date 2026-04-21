@@ -20,11 +20,12 @@ const LeaveRequestTableSkeleton = () => {
 
                     <div className="flex border-b border-gray-200 dark:border-darkBorder py-3 text-sm font-medium text-gray-500 px-1">
                         <div className="w-[20%]">Member name</div>
+                        <div className="w-[15%]">Leave type</div>
                         <div className="w-[15%]">From</div>
                         <div className="w-[10%]">To</div>
                         <div className="w-[10%]">Days</div>
-                        <div className="w-[20%] ">Reason</div>
-                        <div className="w-[10%] ">Available Leave</div>
+                        <div className="w-[10%] ">Hours</div>
+                        <div className="w-[10%] ">Status</div>
                         <div className="w-[20%] ">Action</div>
                     </div>
 
@@ -35,6 +36,10 @@ const LeaveRequestTableSkeleton = () => {
                                 <div className="w-[20%] flex items-center gap-2">
                                     <PlaceholderBlock className="w-8 h-8 " isRounded={true} />
                                     <PlaceholderBlock className="h-4 w-3/5" />
+                                </div>
+
+                                <div className="w-[15%] flex justify-start">
+                                    <PlaceholderBlock className="h-4 w-20 " />
                                 </div>
 
                                 <div className="w-[15%] flex justify-start">
@@ -49,12 +54,12 @@ const LeaveRequestTableSkeleton = () => {
                                     <PlaceholderBlock className="h-4 w-8" />
                                 </div>
 
-                                <div className="w-[20%] gap-1">
-                                    <PlaceholderBlock className="h-4 w-24" />
+                                <div className="w-[10%] flex ">
+                                    <PlaceholderBlock className="h-4 w-20" />
                                 </div>
 
                                 <div className="w-[10%] flex ">
-                                    <PlaceholderBlock className="h-4 w-20" />
+                                    <PlaceholderBlock className="h-4 w-18" />
                                 </div>
 
                                 <div className="w-[20%] flex gap-2">

@@ -1,388 +1,294 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-"use client"
+"use client";
 
-import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
-import RejectLeaveRequestModal from "./RejectLeaveRequestModal";
-import EmptyTableRow from "@/components/Common/EmptyTableRow";
-import { ILeaveRequest } from "@/types/type";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { toast } from "sonner";
-import { approveRejectLeave } from "@/actions/leaves/action";
 import Link from "next/link";
+import { useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { CheckCircle2, SearchX } from "lucide-react";
+import { toast } from "sonner";
+
+import { approveRejectLeave } from "@/actions/leaves/action";
 import ConfirmDialog from "@/components/Common/ConfirmDialog";
-import { useLogInUserStore } from "@/store/logInUserStore";
-import { ArrowUpDown } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import SearchBar from "@/components/Common/SearchBar";
+import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog } from "@/components/ui/dialog";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatTZDayMonthYear } from "@/utils";
+import { getLeaveStatusTheme, getLeaveTypeTheme } from "@/lib/leave";
+import { LeaveRecord } from "@/types/type";
+import RejectLeaveRequestModal from "./RejectLeaveRequestModal";
 
-const LeaveRequestTable = ({ data }: { data: ILeaveRequest[] }) => {
-    const logInUserData = useLogInUserStore(state => state.logInUserData);
+type LeaveRequestTableProps = {
+  data: LeaveRecord[];
+  canManageUsers: boolean;
+  users?: { id: string; label: string; avatar: string }[];
+};
 
-    const getStatusStyles = (status?: string) => {
-        switch (status?.toLowerCase()) {
-            case "processing":
-                return {
-                    button: "bg-[#fff5db] border-[#efaf07] text-[#efaf07] hover:bg-[#fff5db] dark:bg-transparent",
-                    dot: "bg-[#efaf07]"
-                };
-            case "rejected":
-                return {
-                    button: "bg-[#fee6eb] border-[#f40139] text-[#f40139] hover:bg-[#fee6eb] dark:bg-transparent",
-                    dot: "bg-[#f40139]"
-                };
-            case "pending":
-                return {
-                    button: "bg-[#eff7fe] border-[#5db0f1] text-[#5db0f1] hover:bg-[#eff7fe] dark:bg-transparent",
-                    dot: "bg-[#5db0f1]"
-                };
-            default:
-                return {
-                    button: "bg-[#e9f8f0] border-[#26bd6c] text-[#26bd6c] hover:bg-[#e9f8f0] dark:bg-transparent",
-                    dot: "bg-[#26bd6c]"
-                };
-        }
-    };
+const LeaveRequestTable = ({
+  data,
+  canManageUsers,
+  users = [],
+}: LeaveRequestTableProps) => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [activeRejectId, setActiveRejectId] = useState<number | null>(null);
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [loadingId, setLoadingId] = useState<number | null>(null);
-    const [sorting, setSorting] = useState<SortingState>([])
-    const [rowSelection, setRowSelection] = useState({})
+  const isApproved = searchParams.get("approved") === "true";
+  const isRejected = searchParams.get("rejected") === "true";
 
-    async function handleApprove(values: ILeaveRequest) {
+  const updateQueryParam = (key: string, value?: string | boolean) => {
+    const params = new URLSearchParams(searchParams.toString());
 
-        setLoadingId(values.id);
-        try {
-            const res = await approveRejectLeave({
-                data: {
-                    leave_id: values.id,
-                    approved: true
-                }
-            });
-
-            if (res?.success) {
-                toast.success(res?.message || "Request approved successfully");
-            } else {
-                toast.error(res?.message || "Failed to approve request", {
-                    style: {
-                        backgroundColor: '#ef4444',
-                        color: 'white',
-                        border: 'none'
-                    },
-                });
-            }
-        } catch (error: any) {
-            toast.error(error.message || "Something went wrong!", {
-                style: {
-                    backgroundColor: '#ef4444',
-                    color: 'white',
-                    border: 'none'
-                },
-            });
-        } finally {
-            setLoadingId(null);
-        }
+    if (key === "approved" || key === "rejected") {
+      params.delete("approved");
+      params.delete("rejected");
     }
 
-    const columns: ColumnDef<ILeaveRequest>[] = [
-        {
-            accessorKey: "name",
-            header: () => {
-                return (
-                    <div>
-                        <p>
-                            Member name
-                        </p>
-                    </div>
-                )
-            },
-            cell: ({ row }) => {
-                const img = row?.original?.user?.image ? row?.original?.user?.image : ''
-                const name = row?.original?.user?.name
-                return (
-                    <div className="flex items-center gap-2 min-w-[160px]">
-                        <Avatar>
-                            <AvatarImage src={img} alt={name} />
-                            <AvatarFallback>
-                                {name
-                                    ?.trim()
-                                    .split(" ")
-                                    .map(word => word[0])
-                                    .join("")
-                                    .slice(0, 2)
-                                    .toUpperCase()}
-                            </AvatarFallback>
-                        </Avatar>
-                        {/* <Dialog>
-                            <form>
-                                <DialogTrigger asChild> */}
-                        <Link href={`/leave-management/user-leave-history/${row?.original?.user?.id}`}><p className=" cursor-pointer hover:underline-offset-2 hover:underline break-words whitespace-normal">{name}</p></Link>
-                        {/* </DialogTrigger>
-                                <LeaveHistory></LeaveHistory>
-                            </form>
-                        </Dialog> */}
-                    </div>
-                )
-            }
-        },
-        {
-            accessorKey: "type",
-            header: () => {
-                return (
-                    <div>
-                        <p>
+    if (value === undefined || value === "" || value === false) {
+      params.delete(key);
+    } else {
+      params.set(key, String(value));
+    }
 
-                            leave Type
-                        </p>
-                    </div>
-                )
-            },
-            cell: ({ row }) => {
-                const leaveType = row.getValue("type") as string;
-                return (
-                    <div className="flex flex-col">
-                        <span className="capitalize">{leaveType} Leave</span>
-                    </div>
-                )
-            }
-        },
-        {
-            accessorKey: "start_date",
-            header: () => {
-                return (
-                    <div>
-                        <p>
+    params.delete("page");
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+  };
 
-                            From
-                        </p>
-                    </div>
-                )
-            },
-            cell: ({ row }) => {
-                const start_date = row.getValue("start_date") as string;
-                return (
-                    <div className="flex flex-col min-w-[100px]">
-                        <span className="break-words whitespace-normal">{formatTZDayMonthYear(start_date)}</span>
-                    </div>
-                )
-            }
-        },
-        {
-            accessorKey: "end_date",
-            header: () => {
-                return (
-                    <div>
-                        <p>
-
-                            To
-                        </p>
-                    </div>
-                )
-            },
-            cell: ({ row }) => {
-                const end_date = row.getValue("end_date") as string;
-                return (
-                    <div className="flex flex-col min-w-[100px]">
-                        <span className="break-words whitespace-normal">{formatTZDayMonthYear(end_date)}</span>
-                    </div>
-                )
-            }
-        },
-        {
-            accessorKey: "leave_count",
-            header: () => {
-                return (
-                    <div>
-                        <p>
-                            Days
-                        </p>
-                    </div>
-                )
-            },
-            cell: ({ row }) => {
-                const leave_count = row.getValue("leave_count") as string;
-                return (
-                    <div className="flex flex-col">
-                        <span className="">{leave_count}</span>
-                    </div>
-                )
-            }
-        },
-        {
-            accessorKey: "reason",
-            header: () => {
-                return (
-                    <div>
-                        <p>
-                            Reason
-                        </p>
-                    </div>
-                )
-            },
-            cell: ({ row }) => {
-                const reason = row.getValue("reason") as string;
-
-                const truncatedReason = reason?.length > 10
-                    ? reason.substring(0, 10) + "..."
-                    : reason;
-
-                return (
-                    <div className="flex flex-col">
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <span className="break-words whitespace-normal">
-                                    {truncatedReason}
-                                </span>
-                            </TooltipTrigger>
-                            {
-                                reason.length > 10 &&
-                                <TooltipContent className="p-3 w-56 text-headingTextColor dark:text-darkTextPrimary">
-                                    <div>
-                                        <p className="text-sm">{reason}</p>
-                                    </div>
-                                </TooltipContent>
-                            }
-
-                        </Tooltip>
-                    </div>
-                );
-            }
-        },
-        {
-            accessorKey: "status",
-            header: ({ column }) => (
-                <span
-                    className="cursor-pointer flex items-center gap-1"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    Status
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </span>
-            ),
-            cell: ({ row }) => {
-                const status = row.original.hr_approved && row.original.admin_approved ? "approved" : row.original.hr_approved ? "processing" : row.original.is_rejected ? "rejected" : "pending";
-                const styles = getStatusStyles(status);
-
-                return (
-                    <Button
-                        className={`text-xs 2xl:text-sm border flex items-center gap-2 px-2 2xl:px-3 h-7.5 2xl:h-8 shadow-none ${styles.button} cursor-default capitalize`}
-                    >
-                        <span className={`w-2 h-2 rounded-full ${styles.dot}`}></span>
-                        {status || "N/A"}
-                    </Button>
-                );
-            },
-        },
-        {
-            accessorKey: "action",
-            header: () => {
-                const isAdminOrHr = logInUserData?.role === 'admin' || logInUserData?.role === 'hr';
-
-                if (!isAdminOrHr) return null;
-                return (
-                    <div>
-                        <p>
-                            Action
-                        </p>
-                    </div>
-                )
-
-            },
-            cell: ({ row }) => {
-                const isAdminOrHr = logInUserData?.role === 'admin' || logInUserData?.role === 'hr';
-                const isRejected = row.original.is_rejected;
-                const isFullyApproved = row.original.hr_approved && row.original.admin_approved;
-                const isNotFullyApproved = !isFullyApproved;
-
-                if (isAdminOrHr && !isRejected && isNotFullyApproved) {
-                    return (
-                        <div className="flex items-center gap-3">
-                            <ConfirmDialog
-                                trigger={<Button size={'sm'} className=" text-xs 2xl:text-sm px-2 2xl:px-3 h-7.5 2xl:h-8 rounded-lg">Approve</Button>}
-                                title="Approve the request"
-                                description="Are you sure you want to approve the request? This action cannot be undone."
-                                confirmText="Confirm"
-                                cancelText="Cancel"
-                                confirmClassName="bg-primary hover:bg-primary"
-                                onConfirm={() => handleApprove(row.original)}
-                            />
-
-                            <Dialog>
-                                <DialogTrigger asChild>
-                                    <Button size={'sm'} className=" text-xs 2xl:text-sm px-2 2xl:px-3 h-7.5 2xl:h-8 bg-red-500 hover:bg-red-500 dark:text-white rounded-lg">
-                                        Reject
-                                    </Button>
-                                </DialogTrigger>
-                                <RejectLeaveRequestModal data={row.original} />
-                            </Dialog>
-                        </div>
-                    );
-                }
-
-                return (
-                    <div className="flex ">
-                        <span className="text-muted-foreground opacity-50">—</span>
-                    </div>
-                );
-            }
-        },
-    ];
-
-    const table = useReactTable({
-        data: data,
-        columns,
-        getCoreRowModel: getCoreRowModel(),
-        onSortingChange: setSorting,
-        getSortedRowModel: getSortedRowModel(),
-        onRowSelectionChange: setRowSelection,
-        state: {
-            sorting,
-            rowSelection,
-        },
+  const handleApprove = async (leave: LeaveRecord) => {
+    const response = await approveRejectLeave({
+      data: {
+        leave_id: leave.id,
+        approved: true,
+      },
     });
 
-    return (
-        <div className="mt-5 border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">
-            <div className=" mb-5">
-                <h2 className=" text-base sm:text-lg dark:text-darkTextPrimary">Leave Request</h2>
-            </div>
-            <Table>
-                <TableHeader>
-                    {table.getHeaderGroups().map(headerGroup => (
-                        <TableRow key={headerGroup.id}>
-                            {headerGroup.headers.map(header => (
-                                <TableHead key={header.id}>
-                                    {header.isPlaceholder
-                                        ? null
-                                        : flexRender(header.column.columnDef.header, header.getContext())}
-                                </TableHead>
-                            ))}
-                        </TableRow>
-                    ))}
-                </TableHeader>
-                <TableBody>
-                    {table.getRowModel().rows?.length ? (
-                        table.getRowModel().rows.map(row => (
-                            <TableRow key={row.id}>
-                                {row.getVisibleCells().map(cell => (
-                                    <TableCell key={cell.id}>
-                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                    </TableCell>
-                                ))}
-                            </TableRow>
-                        ))
-                    ) : (
-                        <TableRow>
-                            <EmptyTableRow columns={columns} text="No leave request found."></EmptyTableRow>
-                        </TableRow>
-                    )}
-                </TableBody>
-            </Table>
+    if (response?.success) {
+      toast.success(response.message || "Leave request approved");
+      router.refresh();
+      return;
+    }
+
+    toast.error(response?.message || "Failed to approve leave request", {
+      style: {
+        backgroundColor: "#ef4444",
+        color: "white",
+        border: "none",
+      },
+    });
+  };
+
+  return (
+    <div className="space-y-5">
+      <div className="flex flex-col gap-4 rounded-[24px] border border-borderColor bg-white p-5 shadow-sm dark:border-darkBorder dark:bg-darkSecondaryBg">
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-headingTextColor dark:text-darkTextPrimary">
+              Leave request queue
+            </h2>
+            <p className="text-sm text-subTextColor">
+              Review pending leave requests and switch to approved or rejected views when needed.
+            </p>
+          </div>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            {canManageUsers ? <SelectUserDropDown users={users} defaultSelect={false} /> : null}
+            <SearchBar onSearch={(query) => updateQueryParam("search", query)} />
+          </div>
         </div>
-    );
+
+        <div className="flex flex-wrap items-center gap-5">
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="approved"
+              className="border-primary"
+              checked={isApproved}
+              onCheckedChange={(checked) => updateQueryParam("approved", checked === true)}
+            />
+            <label htmlFor="approved" className="cursor-pointer text-sm text-headingTextColor dark:text-darkTextPrimary">
+              Approved
+            </label>
+          </div>
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="rejected"
+              className="border-primary"
+              checked={isRejected}
+              onCheckedChange={(checked) => updateQueryParam("rejected", checked === true)}
+            />
+            <label htmlFor="rejected" className="cursor-pointer text-sm text-headingTextColor dark:text-darkTextPrimary">
+              Rejected
+            </label>
+          </div>
+          {!isApproved && !isRejected ? (
+            <div className="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-700 dark:text-amber-200">
+              Pending requests are shown by default
+            </div>
+          ) : null}
+        </div>
+      </div>
+
+      <div className="rounded-[24px] border border-borderColor bg-white p-5 shadow-sm dark:border-darkBorder dark:bg-darkSecondaryBg">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Employee</TableHead>
+              <TableHead>Leave type</TableHead>
+              <TableHead>Start date</TableHead>
+              <TableHead>End date</TableHead>
+              <TableHead>Days</TableHead>
+              <TableHead>Approved hours</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Reason</TableHead>
+              <TableHead>Action</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {data.length ? (
+              data.map((leave) => {
+                const leaveTypeTheme = getLeaveTypeTheme(leave.leaveType?.color_code);
+                const statusTheme = getLeaveStatusTheme(leave.status);
+                const employeeName = leave.user?.name ?? "Unknown employee";
+
+                return (
+                  <TableRow key={leave.id}>
+                    <TableCell>
+                      <Link
+                        href={
+                          leave.user
+                            ? `/leave-management/user-leave-history/${leave.user.id}`
+                            : "#"
+                        }
+                        className="flex min-w-[180px] items-center gap-3"
+                      >
+                        <Avatar>
+                          <AvatarImage src={leave.user?.image ?? ""} alt={employeeName} />
+                          <AvatarFallback>
+                            {employeeName
+                              .trim()
+                              .split(" ")
+                              .map((word) => word[0])
+                              .join("")
+                              .slice(0, 2)
+                              .toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-medium text-headingTextColor dark:text-darkTextPrimary">
+                            {employeeName}
+                          </p>
+                          <p className="text-xs text-subTextColor">{leave.user?.email}</p>
+                        </div>
+                      </Link>
+                    </TableCell>
+                    <TableCell>
+                      <div
+                        className="inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium"
+                        style={{
+                          backgroundColor: leaveTypeTheme.backgroundColor,
+                          color: leaveTypeTheme.textColor,
+                        }}
+                      >
+                        <span
+                          className="h-2.5 w-2.5 rounded-full"
+                          style={{ backgroundColor: leaveTypeTheme.color }}
+                        />
+                        {leave.leaveType?.title}
+                      </div>
+                    </TableCell>
+                    <TableCell>{formatTZDayMonthYear(leave.start_date)}</TableCell>
+                    <TableCell>{formatTZDayMonthYear(leave.end_date)}</TableCell>
+                    <TableCell>{leave.leave_count}</TableCell>
+                    <TableCell>{leave.approved_hours_formatted}</TableCell>
+                    <TableCell>
+                      <div
+                        className="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-sm font-medium"
+                        style={{
+                          borderColor: statusTheme.borderColor,
+                          backgroundColor: statusTheme.backgroundColor,
+                          color: statusTheme.color,
+                        }}
+                      >
+                        <span
+                          className="h-2 w-2 rounded-full"
+                          style={{ backgroundColor: statusTheme.color }}
+                        />
+                        {statusTheme.label}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="max-w-[240px] space-y-1">
+                        <p className="text-sm text-headingTextColor dark:text-darkTextPrimary">
+                          {leave.reason}
+                        </p>
+                        {leave.reject_reason ? (
+                          <p className="text-xs text-rose-600 dark:text-rose-300">
+                            Reject reason: {leave.reject_reason}
+                          </p>
+                        ) : null}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      {canManageUsers && leave.status === "pending" ? (
+                        <div className="flex min-w-[190px] items-center gap-2">
+                          <ConfirmDialog
+                            trigger={
+                              <Button size="sm">
+                                <CheckCircle2 className="size-4" />
+                                Approve
+                              </Button>
+                            }
+                            title="Approve this leave request?"
+                            description="This will update the request queue and the employee leave summary."
+                            confirmText="Approve request"
+                            cancelText="Cancel"
+                            onConfirm={() => handleApprove(leave)}
+                            confirmClassName="bg-primary hover:bg-primary/90"
+                          />
+
+                          <Dialog
+                            open={activeRejectId === leave.id}
+                            onOpenChange={(open) => setActiveRejectId(open ? leave.id : null)}
+                          >
+                            <Button
+                              size="sm"
+                              className="bg-red-500 hover:bg-red-500"
+                              onClick={() => setActiveRejectId(leave.id)}
+                            >
+                              Reject
+                            </Button>
+                            {activeRejectId === leave.id ? (
+                              <RejectLeaveRequestModal
+                                data={leave}
+                                onClose={() => setActiveRejectId(null)}
+                                onSuccess={() => router.refresh()}
+                              />
+                            ) : null}
+                          </Dialog>
+                        </div>
+                      ) : (
+                        <span className="text-subTextColor">-</span>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              })
+            ) : (
+              <TableRow>
+                <TableCell colSpan={9} className="py-16 text-center text-subTextColor">
+                  <div className="flex flex-col items-center gap-2">
+                    <SearchX className="size-6" />
+                    <span>No leave requests found for the current filters.</span>
+                  </div>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
+  );
 };
 
 export default LeaveRequestTable;

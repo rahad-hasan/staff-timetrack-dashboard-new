@@ -4,9 +4,9 @@
 import { cookies } from "next/headers";
 import { revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
+import { API_BASE_URL } from "@/lib/apiConfig";
 
-const BASE_URL = "https://server.stafftimetrack.com/api/v1";
-// const BASE_URL = "http://localhost:5000/api/v1";
+// const API_BASE_URL = "https://server.stafftimetrack.com/api/v1";
 
 type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
@@ -62,7 +62,7 @@ export async function baseApi<T = any>(
     revalidate = 60,
   } = options;
 
-  const fullUrl = url.startsWith("http") ? url : `${BASE_URL}${url}`;
+  const fullUrl = url.startsWith("http") ? url : `${API_BASE_URL}${url}`;
 
   const doFetch = async () =>
     fetch(fullUrl, {

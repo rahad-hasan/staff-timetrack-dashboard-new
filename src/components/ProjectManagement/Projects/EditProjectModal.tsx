@@ -18,7 +18,7 @@ const EditProjectModal = ({ onClose, selectedProject }: { onClose: () => void; s
     return (
         <DialogContent
             onInteractOutside={(event) => event.preventDefault()}
-            className=" w-full sm:max-w-[525px] max-h-[95vh] overflow-y-auto">
+            className="w-full sm:max-w-[525px] max-h-[95vh] overflow-y-auto">
             <DialogHeader>
                 <DialogTitle>
                     <div className=" flex gap-3 items-center mt-5">

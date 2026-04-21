@@ -23,9 +23,12 @@ const MobileSidebar = () => {
     } = useSidebarStore();
     const logInUserData = useLogInUserStore(state => state.logInUserData);
 
-    const roleBasedSidebarItems = (logInUserData?.role === 'admin' ||
+    const isManagerialRole = logInUserData?.role === 'admin' ||
         logInUserData?.role === 'manager' ||
-        logInUserData?.role === 'hr') ? sidebarItems : sidebarItemsEmployee;
+        logInUserData?.role === 'hr' ||
+        logInUserData?.role === 'project_manager';
+
+    const roleBasedSidebarItems = isManagerialRole ? sidebarItems : sidebarItemsEmployee;
 
     return (
         <SheetContent className=" dark:bg-darkPrimaryBg">

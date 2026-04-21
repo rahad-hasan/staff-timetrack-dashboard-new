@@ -60,10 +60,6 @@ const Configuration = ({ data }: { data: ICompany }) => {
     const form = useForm<z.infer<typeof leaveSettingsSchema>>({
         resolver: zodResolver(leaveSettingsSchema),
         defaultValues: {
-            paid_leave: data?.paid_leave || 0,
-            casual_leave: data?.casual_leave || 0,
-            sick_leave: data?.sick_leave || 0,
-            maternity_leave: data?.maternity_leave || 0,
             address: data?.address || "",
             time_zone: data?.time_zone || "",
             idle_minutes_limit: data?.idle_minutes_limit || 10,
@@ -167,100 +163,9 @@ const Configuration = ({ data }: { data: ICompany }) => {
 
             <div className={`rounded-md border border-borderColor dark:border-darkBorder p-3 md:p-4  mb-4`}>
                 <span className="text-subTextColor dark:text-darkTextPrimary  text-sm font-medium ">Leave Configuration</span>
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-2">
-                        <div className="grid grid-cols-2 gap-4 sm:gap-3 items-start">
-
-                            {/* Paid Leave */}
-                            <FormField
-                                control={form.control}
-                                name="paid_leave"
-                                render={({ field }) => (
-                                    <FormItem className="w-full">
-                                        <FormLabel required={true}>Paid Leave</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                type="number"
-                                                placeholder="Paid Leave"
-                                                className="dark:bg-darkPrimaryBg dark:border-darkBorder"
-                                                {...field}
-                                                onChange={(e) => field.onChange(e.target.valueAsNumber)}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            {/* Casual Leave */}
-                            <FormField
-                                control={form.control}
-                                name="casual_leave"
-                                render={({ field }) => (
-                                    <FormItem className="w-full">
-                                        <FormLabel required={true}>Casual Leave</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                type="number"
-                                                placeholder="Casual Leave"
-                                                className="dark:bg-darkPrimaryBg dark:border-darkBorder"
-                                                {...field}
-                                                onChange={(e) => field.onChange(e.target.valueAsNumber)}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
-
-                        {/* Second Row */}
-                        <div className="grid grid-cols-2 gap-4 sm:gap-3 items-start">
-
-                            {/* Sick Leave */}
-                            <FormField
-                                control={form.control}
-                                name="sick_leave"
-                                render={({ field }) => (
-                                    <FormItem className="w-full">
-                                        <FormLabel required={true}>Sick Leave</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                type="number"
-                                                placeholder="Sick Leave"
-                                                className="dark:bg-darkPrimaryBg dark:border-darkBorder"
-                                                {...field}
-                                                onChange={(e) => field.onChange(e.target.valueAsNumber)}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-
-                            {/* Maternity Leave */}
-                            <FormField
-                                control={form.control}
-                                name="maternity_leave"
-                                render={({ field }) => (
-                                    <FormItem className="w-full">
-                                        <FormLabel required={true}>Maternity Leave</FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                type="number"
-                                                placeholder="Maternity Leave"
-                                                className="dark:bg-darkPrimaryBg dark:border-darkBorder"
-                                                {...field}
-                                                onChange={(e) => field.onChange(e.target.valueAsNumber)}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
-                    </form>
-                </Form>
+                <div className="mt-3 rounded-2xl border border-dashed border-borderColor bg-bgSecondary/60 px-4 py-5 text-sm text-subTextColor dark:border-darkBorder dark:bg-darkPrimaryBg">
+                    Leave limits are no longer configured from company settings. Manage tenant leave policies from the read-only <span className="font-medium text-headingTextColor dark:text-darkTextPrimary">Leave Types</span> screen until the dedicated CRUD API is available.
+                </div>
             </div>
 
 

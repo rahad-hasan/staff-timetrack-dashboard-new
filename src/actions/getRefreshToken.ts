@@ -1,7 +1,7 @@
 "use server";
 
 import { cookies } from "next/headers";
-const BASE_URL = "http://localhost:5000/api/v1";
+import { API_BASE_URL } from "@/lib/apiConfig";
 
 export async function getRefreshToken() {
     const cookieStore = await cookies();
@@ -10,7 +10,7 @@ export async function getRefreshToken() {
 
 export async function refreshAccessTokenFromServer() {
     const token = await getRefreshToken();
-    const res = await fetch(`${BASE_URL}/auth/refresh-token`, {
+    const res = await fetch(`${API_BASE_URL}/auth/refresh-token`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
