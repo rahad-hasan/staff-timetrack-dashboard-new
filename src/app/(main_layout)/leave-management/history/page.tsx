@@ -16,9 +16,12 @@ const LeaveHistoryPage = async ({ searchParams }: ISearchParamsProps) => {
   const params = await searchParams;
   const currentUser = await getDecodedUser();
   const canManageUsers = ["admin", "manager", "hr"].includes(currentUser?.role ?? "");
+  const currentPage =
+    typeof params.page === "string" ? Number(params.page) || 1 : 1;
 
   const [historyResponse, membersResponse] = await Promise.all([
     getLeaveHistory({
+      page: currentPage,
       user_id: canManageUsers ? Number(params.user_id) || undefined : undefined,
       start_date: typeof params.start_date === "string" ? params.start_date : undefined,
       end_date: typeof params.end_date === "string" ? params.end_date : undefined,
@@ -44,6 +47,9 @@ const LeaveHistoryPage = async ({ searchParams }: ISearchParamsProps) => {
         data={historyResponse.data ?? []}
         canManageUsers={canManageUsers}
         users={users}
+        total={(historyResponse.meta?.total as number) ?? 0}
+        currentPage={currentPage}
+        limit={(historyResponse.meta?.limit as number) ?? 10}
       />
     </div>
   );

@@ -42,6 +42,10 @@ export async function POST(request: Request) {
 
     if (response.ok && payload?.success) {
       revalidateTag("leave-holidays");
+      revalidateTag("leaves");
+      revalidatePath("/leave-management/holidays");
+      revalidatePath("/leave-management/calendar");
+      revalidatePath("/leave-management/my-leaves");
       revalidatePath("/leave-management/leave-types");
     }
 

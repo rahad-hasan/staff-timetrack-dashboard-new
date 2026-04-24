@@ -1,10 +1,19 @@
 "use client";
 
 import axios from "axios";
-import { Loader2, TriangleAlert, Upload } from "lucide-react";
+import {
+  CheckCircle2,
+  FileSpreadsheet,
+  FileWarning,
+  Loader2,
+  Sparkles,
+  TriangleAlert,
+  Upload,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DialogContent,
@@ -143,6 +152,16 @@ function previewRawValue(raw: unknown) {
   }
 }
 
+function getParsedStatusClasses(alreadyExists: boolean) {
+  return alreadyExists
+    ? "bg-amber-100 text-amber-800"
+    : "bg-emerald-100 text-emerald-800";
+}
+
+function getParsedStatusLabel(alreadyExists: boolean) {
+  return alreadyExists ? "Already exists" : "Ready to import";
+}
+
 function normalizeParseResult(data: Partial<MandatoryLeaveParseResult> | null | undefined) {
   return {
     parsed: Array.isArray(data?.parsed) ? data.parsed : [],
@@ -210,6 +229,38 @@ const MandatoryLeaveImportDialog = ({
 
   const importableCount = importPayload.holidays.length;
   const summary = parseResult?.summary;
+  const summaryCards = [
+    {
+      label: "Total rows",
+      value: summary?.total_rows ?? 0,
+      color: "#2563eb",
+      icon: FileSpreadsheet,
+    },
+    {
+      label: "Parsed",
+      value: summary?.parsed_count ?? 0,
+      color: "#16a34a",
+      icon: CheckCircle2,
+    },
+    {
+      label: "Rejected",
+      value: summary?.rejected_count ?? 0,
+      color: "#dc2626",
+      icon: FileWarning,
+    },
+    {
+      label: "Already exists",
+      value: summary?.existing_count ?? 0,
+      color: "#ca8a04",
+      icon: Sparkles,
+    },
+    {
+      label: "Importable",
+      value: importableCount,
+      color: "#7c3aed",
+      icon: Upload,
+    },
+  ];
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0] ?? null;
@@ -304,131 +355,155 @@ const MandatoryLeaveImportDialog = ({
           event.preventDefault();
         }
       }}
-      className="w-full max-w-[1100px] border-borderColor p-0 dark:border-darkBorder dark:bg-darkSecondaryBg"
+      className="w-full max-w-[1180px] border-borderColor p-0 dark:border-darkBorder dark:bg-darkSecondaryBg"
     >
-      <div className="max-h-[85vh] overflow-y-auto">
-        <div className="border-b border-borderColor p-6 dark:border-darkBorder">
+      <div className="max-h-[88vh] overflow-y-auto">
+        <div className="border-b border-borderColor bg-[linear-gradient(135deg,#ffffff_0%,#f8fbff_50%,#fdf2f8_100%)] p-6 dark:border-darkBorder dark:bg-darkSecondaryBg">
           <DialogHeader>
             <DialogTitle className="text-headingTextColor dark:text-darkTextPrimary">
               Mandatory leave import
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="max-w-3xl">
               Upload CSV, TSV, TXT, or text-based PDF files for {selectedYear}. PDFs are converted
               to base64 on the client before parsing, and scanned image-only PDFs may be rejected by
               the backend parser.
             </DialogDescription>
           </DialogHeader>
+
+          <div className="mt-5 flex flex-wrap gap-3 text-sm">
+            <Badge className="bg-white px-3 py-1.5 text-headingTextColor shadow-sm dark:bg-darkPrimaryBg dark:text-darkTextPrimary">
+              Import target: {selectedYear}
+            </Badge>
+            <Badge className="bg-primary/10 px-3 py-1.5 text-primary">
+              Existing rows are auto-skipped
+            </Badge>
+            <Badge className="bg-white px-3 py-1.5 text-subTextColor shadow-sm dark:bg-darkPrimaryBg">
+              File types: CSV, TSV, TXT, PSV, PDF
+            </Badge>
+          </div>
         </div>
 
         <div className="space-y-6 p-6">
-          <div className="rounded-[24px] border border-borderColor bg-bgSecondary/50 p-5 dark:border-darkBorder dark:bg-darkPrimaryBg">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-              <div>
-                <p className="text-sm font-medium text-headingTextColor dark:text-darkTextPrimary">
-                  Step 1. Choose a source file
-                </p>
-                <p className="text-sm text-subTextColor">
-                  Supported inputs: CSV, TSV, semicolon-delimited text, pipe-delimited text, and
-                  text-based PDF.
-                </p>
+          <div className="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
+            <div className="rounded-[28px] border border-borderColor bg-bgSecondary/50 p-5 dark:border-darkBorder dark:bg-darkPrimaryBg">
+              <div className="flex items-start gap-3">
+                <div className="rounded-2xl bg-primary/10 p-3 text-primary">
+                  <FileSpreadsheet className="size-5" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-headingTextColor dark:text-darkTextPrimary">
+                    Step 1. Choose and parse a source file
+                  </p>
+                  <p className="mt-1 text-sm text-subTextColor">
+                    Supported inputs: CSV, TSV, semicolon-delimited text, pipe-delimited text, and
+                    text-based PDF.
+                  </p>
+                </div>
               </div>
 
-              <div className="w-full max-w-[360px]">
+              <div className="mt-5 rounded-[24px] border border-dashed border-borderColor bg-white p-4 dark:border-darkBorder dark:bg-darkSecondaryBg">
                 <Input
                   type="file"
                   accept={FILE_ACCEPT}
                   onChange={handleFileChange}
-                  className="cursor-pointer dark:border-darkBorder dark:bg-darkSecondaryBg"
+                  className="cursor-pointer dark:border-darkBorder dark:bg-darkPrimaryBg"
                 />
               </div>
-            </div>
 
-            <div className="mt-4 flex flex-wrap items-center gap-3 text-sm">
-              <div className="rounded-full bg-white px-3 py-1.5 text-headingTextColor dark:bg-darkSecondaryBg dark:text-darkTextPrimary">
-                {selectedFile ? selectedFile.name : "No file selected"}
+              <div className="mt-4 flex flex-wrap items-center gap-3 text-sm">
+                <Badge className="bg-white px-3 py-1.5 text-headingTextColor shadow-sm dark:bg-darkSecondaryBg dark:text-darkTextPrimary">
+                  {selectedFile ? selectedFile.name : "No file selected"}
+                </Badge>
+                {selectedFile ? (
+                  <Badge className="bg-primary/10 px-3 py-1.5 text-primary">
+                    {getFileKind(selectedFile) === "pdf" ? "PDF / base64" : "Text / raw content"}
+                  </Badge>
+                ) : null}
               </div>
-              {selectedFile ? (
-                <div className="rounded-full bg-primary/10 px-3 py-1.5 text-primary">
-                  {getFileKind(selectedFile) === "pdf" ? "PDF / base64" : "Text / raw content"}
-                </div>
-              ) : null}
+
+              <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+                <Button
+                  onClick={handleParse}
+                  disabled={!selectedFile || isParsing || isImporting}
+                  className="sm:min-w-[170px]"
+                >
+                  {isParsing ? (
+                    <>
+                      <Loader2 className="size-4 animate-spin" />
+                      Parsing file
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="size-4" />
+                      Parse file
+                    </>
+                  )}
+                </Button>
+
+                <Button
+                  variant="outline2"
+                  onClick={handleImport}
+                  disabled={!parseResult || !importableCount || isParsing || isImporting}
+                  className="dark:bg-darkSecondaryBg sm:min-w-[220px]"
+                >
+                  {isImporting ? (
+                    <>
+                      <Loader2 className="size-4 animate-spin" />
+                      Importing holidays
+                    </>
+                  ) : (
+                    `Step 2. Confirm import (${importableCount})`
+                  )}
+                </Button>
+              </div>
             </div>
 
-            <div className="mt-5 flex flex-wrap gap-3">
-              <Button onClick={handleParse} disabled={!selectedFile || isParsing || isImporting}>
-                {isParsing ? (
-                  <>
-                    <Loader2 className="size-4 animate-spin" />
-                    Parsing file
-                  </>
-                ) : (
-                  <>
-                    <Upload className="size-4" />
-                    Parse file
-                  </>
-                )}
-              </Button>
-
-              <Button
-                variant="outline2"
-                onClick={handleImport}
-                disabled={!parseResult || !importableCount || isParsing || isImporting}
-                className="dark:bg-darkSecondaryBg"
-              >
-                {isImporting ? (
-                  <>
-                    <Loader2 className="size-4 animate-spin" />
-                    Importing holidays
-                  </>
-                ) : (
-                  `Step 2. Confirm import (${importableCount})`
-                )}
-              </Button>
+            <div className="rounded-[28px] border border-borderColor bg-white p-5 shadow-sm dark:border-darkBorder dark:bg-darkPrimaryBg">
+              <p className="text-sm font-semibold text-headingTextColor dark:text-darkTextPrimary">
+                Import flow
+              </p>
+              <div className="mt-4 space-y-3 text-sm text-subTextColor">
+                <div className="rounded-[20px] bg-bgSecondary/70 px-4 py-3 dark:bg-darkSecondaryBg">
+                  1. Upload a structured file for {selectedYear}.
+                </div>
+                <div className="rounded-[20px] bg-bgSecondary/70 px-4 py-3 dark:bg-darkSecondaryBg">
+                  2. Parse the dataset and review valid, duplicate, and rejected rows.
+                </div>
+                <div className="rounded-[20px] bg-bgSecondary/70 px-4 py-3 dark:bg-darkSecondaryBg">
+                  3. Import only clean rows that do not already exist in the holiday table.
+                </div>
+              </div>
             </div>
           </div>
 
           {parseResult ? (
             <>
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-                {[
-                  {
-                    label: "Total rows",
-                    value: summary?.total_rows ?? 0,
-                    color: "#2563eb",
-                  },
-                  {
-                    label: "Parsed",
-                    value: summary?.parsed_count ?? 0,
-                    color: "#16a34a",
-                  },
-                  {
-                    label: "Rejected",
-                    value: summary?.rejected_count ?? 0,
-                    color: "#dc2626",
-                  },
-                  {
-                    label: "Already exists",
-                    value: summary?.existing_count ?? 0,
-                    color: "#ca8a04",
-                  },
-                  {
-                    label: "Importable",
-                    value: importableCount,
-                    color: "#7c3aed",
-                  },
-                ].map((item) => (
-                  <div
-                    key={item.label}
-                    className="rounded-[24px] border border-borderColor bg-white p-5 shadow-sm dark:border-darkBorder dark:bg-darkPrimaryBg"
-                  >
-                    <p className="text-xs uppercase tracking-[0.14em] text-subTextColor">
-                      {item.label}
-                    </p>
-                    <p className="mt-2 text-3xl font-semibold" style={{ color: item.color }}>
-                      {item.value}
-                    </p>
-                  </div>
-                ))}
+                {summaryCards.map((item) => {
+                  const Icon = item.icon;
+
+                  return (
+                    <div
+                      key={item.label}
+                      className="rounded-[24px] border border-borderColor bg-white p-5 shadow-sm dark:border-darkBorder dark:bg-darkPrimaryBg"
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <p className="text-xs uppercase tracking-[0.14em] text-subTextColor">
+                          {item.label}
+                        </p>
+                        <div
+                          className="rounded-2xl p-2"
+                          style={{ backgroundColor: `${item.color}14`, color: item.color }}
+                        >
+                          <Icon className="size-4" />
+                        </div>
+                      </div>
+                      <p className="mt-3 text-3xl font-semibold" style={{ color: item.color }}>
+                        {item.value}
+                      </p>
+                    </div>
+                  );
+                })}
               </div>
 
               <div className="rounded-[24px] border border-borderColor bg-white p-5 shadow-sm dark:border-darkBorder dark:bg-darkPrimaryBg">
@@ -447,42 +522,82 @@ const MandatoryLeaveImportDialog = ({
                 </div>
 
                 {parsedRows.length ? (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Row</TableHead>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Description</TableHead>
-                        <TableHead>Source</TableHead>
-                        <TableHead>Status</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
+                  <>
+                    <div className="grid gap-4 lg:hidden">
                       {parsedRows.map((row) => (
-                        <TableRow key={`${row.row}-${row.name}-${row.date}`}>
-                          <TableCell>{row.row}</TableCell>
-                          <TableCell>{row.name}</TableCell>
-                          <TableCell>{row.date}</TableCell>
-                          <TableCell className="max-w-[260px] whitespace-normal text-subTextColor">
-                            {row.description || "-"}
-                          </TableCell>
-                          <TableCell>{row.source || "-"}</TableCell>
-                          <TableCell>
-                            <span
-                              className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${
-                                row.already_exists
-                                  ? "bg-amber-100 text-amber-800"
-                                  : "bg-emerald-100 text-emerald-800"
-                              }`}
-                            >
-                              {row.already_exists ? "Already exists" : "Ready to import"}
-                            </span>
-                          </TableCell>
-                        </TableRow>
+                        <div
+                          key={`${row.row}-${row.name}-${row.date}`}
+                          className="rounded-[22px] border border-borderColor bg-bgSecondary/40 p-4 dark:border-darkBorder dark:bg-darkSecondaryBg"
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <div>
+                              <p className="text-base font-semibold text-headingTextColor dark:text-darkTextPrimary">
+                                Row {row.row}: {row.name}
+                              </p>
+                              <p className="mt-1 text-sm text-subTextColor">{row.date}</p>
+                            </div>
+                            <Badge className={getParsedStatusClasses(row.already_exists)}>
+                              {getParsedStatusLabel(row.already_exists)}
+                            </Badge>
+                          </div>
+                          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                            <div className="rounded-2xl bg-white px-3 py-3 text-sm dark:bg-darkPrimaryBg">
+                              <p className="text-xs uppercase tracking-[0.14em] text-subTextColor">
+                                Source
+                              </p>
+                              <p className="mt-1 font-medium text-headingTextColor dark:text-darkTextPrimary">
+                                {row.source || "-"}
+                              </p>
+                            </div>
+                            <div className="rounded-2xl bg-white px-3 py-3 text-sm dark:bg-darkPrimaryBg">
+                              <p className="text-xs uppercase tracking-[0.14em] text-subTextColor">
+                                Date
+                              </p>
+                              <p className="mt-1 font-medium text-headingTextColor dark:text-darkTextPrimary">
+                                {row.date}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="mt-3 rounded-2xl bg-white px-3 py-3 text-sm text-subTextColor dark:bg-darkPrimaryBg">
+                            {row.description || "No description provided."}
+                          </div>
+                        </div>
                       ))}
-                    </TableBody>
-                  </Table>
+                    </div>
+
+                    <div className="hidden lg:block">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Row</TableHead>
+                            <TableHead>Name</TableHead>
+                            <TableHead>Date</TableHead>
+                            <TableHead>Description</TableHead>
+                            <TableHead>Source</TableHead>
+                            <TableHead>Status</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {parsedRows.map((row) => (
+                            <TableRow key={`${row.row}-${row.name}-${row.date}`}>
+                              <TableCell>{row.row}</TableCell>
+                              <TableCell>{row.name}</TableCell>
+                              <TableCell>{row.date}</TableCell>
+                              <TableCell className="max-w-[260px] whitespace-normal text-subTextColor">
+                                {row.description || "-"}
+                              </TableCell>
+                              <TableCell>{row.source || "-"}</TableCell>
+                              <TableCell>
+                                <Badge className={getParsedStatusClasses(row.already_exists)}>
+                                  {getParsedStatusLabel(row.already_exists)}
+                                </Badge>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </>
                 ) : (
                   <div className="rounded-2xl border border-dashed border-borderColor px-4 py-12 text-center text-subTextColor dark:border-darkBorder">
                     No valid rows were parsed from the selected file.
@@ -507,30 +622,61 @@ const MandatoryLeaveImportDialog = ({
                 </div>
 
                 {rejectedRows.length ? (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Row</TableHead>
-                        <TableHead>Reason</TableHead>
-                        <TableHead>Raw preview</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
+                  <>
+                    <div className="grid gap-4 lg:hidden">
                       {rejectedRows.map((row, index) => (
-                        <TableRow key={`${row.row}-${index}`}>
-                          <TableCell>{row.row}</TableCell>
-                          <TableCell className="max-w-[280px] whitespace-normal">
-                            {row.reason}
-                          </TableCell>
-                          <TableCell className="max-w-[420px] whitespace-normal text-xs text-subTextColor">
+                        <div
+                          key={`${row.row}-${index}`}
+                          className="rounded-[22px] border border-red-200 bg-red-50/60 p-4 dark:border-red-900/50 dark:bg-red-950/20"
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <div>
+                              <p className="text-base font-semibold text-headingTextColor dark:text-darkTextPrimary">
+                                Row {row.row}
+                              </p>
+                              <p className="mt-1 text-sm text-red-700 dark:text-red-300">
+                                {row.reason}
+                              </p>
+                            </div>
+                            <Badge className="bg-red-100 text-red-700">Rejected</Badge>
+                          </div>
+
+                          <div className="mt-4 rounded-2xl bg-white px-3 py-3 text-xs text-subTextColor dark:bg-darkPrimaryBg">
                             <pre className="whitespace-pre-wrap break-words font-sans">
                               {previewRawValue(row.raw)}
                             </pre>
-                          </TableCell>
-                        </TableRow>
+                          </div>
+                        </div>
                       ))}
-                    </TableBody>
-                  </Table>
+                    </div>
+
+                    <div className="hidden lg:block">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Row</TableHead>
+                            <TableHead>Reason</TableHead>
+                            <TableHead>Raw preview</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {rejectedRows.map((row, index) => (
+                            <TableRow key={`${row.row}-${index}`}>
+                              <TableCell>{row.row}</TableCell>
+                              <TableCell className="max-w-[280px] whitespace-normal">
+                                {row.reason}
+                              </TableCell>
+                              <TableCell className="max-w-[420px] whitespace-normal text-xs text-subTextColor">
+                                <pre className="whitespace-pre-wrap break-words font-sans">
+                                  {previewRawValue(row.raw)}
+                                </pre>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </>
                 ) : (
                   <div className="rounded-2xl border border-dashed border-borderColor px-4 py-12 text-center text-subTextColor dark:border-darkBorder">
                     No rejected rows. The parsed dataset is clean.
@@ -541,7 +687,7 @@ const MandatoryLeaveImportDialog = ({
           ) : null}
         </div>
 
-        <DialogFooter className="border-t border-borderColor px-6 py-4 dark:border-darkBorder">
+        <DialogFooter className="border-t border-borderColor px-6 py-4 dark:border-darkBorder sm:flex-row">
           <Button
             variant="outline2"
             onClick={() => handleOpenChange(false)}

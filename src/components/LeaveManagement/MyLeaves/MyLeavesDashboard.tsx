@@ -32,13 +32,17 @@ import {
   getLeaveTypeTheme,
 } from "@/lib/leave";
 import { useLogInUserStore } from "@/store/logInUserStore";
-import { LeaveRecord, UserLeaveSummary, UserScopedLeaveTypeRecord } from "@/types/type";
+import {
+  LeaveRecord,
+  LeaveRequestTypeDropdownRecord,
+  UserLeaveSummary,
+} from "@/types/type";
 import { formatTZDayMonthYear } from "@/utils";
 import LeaveRequestModal from "../shared/LeaveRequestModal";
 
 type MyLeavesDashboardProps = {
   data: UserLeaveSummary;
-  leaveTypes: UserScopedLeaveTypeRecord[];
+  leaveTypes: LeaveRequestTypeDropdownRecord[];
   currentUserId?: number;
   canManageUsers?: boolean;
   users?: { id: string; label: string; avatar: string }[];
@@ -101,7 +105,9 @@ const MyLeavesDashboard = ({
     ["admin", "manager", "hr", "project_manager"].includes(logInUserRole ?? "");
 
   const [requestOpen, setRequestOpen] = useState(false);
-  const [selectedLeaveTypeId, setSelectedLeaveTypeId] = useState<number | null>(null);
+  const [selectedLeaveTypeId, setSelectedLeaveTypeId] = useState<number | null>(
+    null,
+  );
   const [activeTab, setActiveTab] = useState<HistoryTab>("pending");
 
   const isSelfView = currentUserId === data.user.id;
@@ -114,7 +120,10 @@ const MyLeavesDashboard = ({
   };
   const nextHolidays = (data.next_holidays ?? []).slice(0, 3);
 
-  const historyItems = useMemo(() => data.requests[activeTab], [activeTab, data.requests]);
+  const historyItems = useMemo(
+    () => data.requests[activeTab],
+    [activeTab, data.requests],
+  );
 
   const headerHeading =
     headingTitle ??
@@ -131,7 +140,9 @@ const MyLeavesDashboard = ({
     params.set("year", year);
     params.delete("page");
     loader.start();
-    const nextUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
+    const nextUrl = params.toString()
+      ? `${pathname}?${params.toString()}`
+      : pathname;
     router.push(nextUrl, { scroll: false });
   };
 
@@ -247,7 +258,9 @@ const MyLeavesDashboard = ({
                 </p>
               </div>
               <div>
-                <p className="text-xs uppercase tracking-[0.14em]">Approved hours</p>
+                <p className="text-xs uppercase tracking-[0.14em]">
+                  Approved hours
+                </p>
                 <p className="mt-1 font-medium text-headingTextColor dark:text-darkTextPrimary">
                   {request.approved_hours_formatted}
                 </p>
@@ -256,7 +269,9 @@ const MyLeavesDashboard = ({
 
             <div className="space-y-2">
               <div>
-                <p className="text-xs uppercase tracking-[0.14em] text-subTextColor">Reason</p>
+                <p className="text-xs uppercase tracking-[0.14em] text-subTextColor">
+                  Reason
+                </p>
                 <p className="mt-1 text-sm text-headingTextColor dark:text-darkTextPrimary">
                   {request.reason}
                 </p>
@@ -308,14 +323,21 @@ const MyLeavesDashboard = ({
       <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
         <div className="space-y-3">
           {backHref ? (
-            <Button asChild variant="outline2" className="w-fit dark:bg-darkPrimaryBg">
+            <Button
+              asChild
+              variant="outline2"
+              className="w-fit dark:bg-darkPrimaryBg"
+            >
               <Link href={backHref}>
                 <ArrowLeft className="size-4" />
                 {backLabel}
               </Link>
             </Button>
           ) : null}
-          <HeadingComponent heading={headerHeading} subHeading={headerSubheading} />
+          <HeadingComponent
+            heading={headerHeading}
+            subHeading={headerSubheading}
+          />
         </div>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -351,9 +373,13 @@ const MyLeavesDashboard = ({
                   <h2 className="text-3xl font-semibold tracking-tight text-headingTextColor dark:text-darkTextPrimary">
                     {data.user.name}
                   </h2>
-                  <p className="mt-2 text-sm text-subTextColor">{data.user.email}</p>
+                  <p className="mt-2 text-sm text-subTextColor">
+                    {data.user.email}
+                  </p>
                 </div>
-                <p className="max-w-2xl text-sm text-subTextColor">{headerSubheading}</p>
+                <p className="max-w-2xl text-sm text-subTextColor">
+                  {headerSubheading}
+                </p>
               </div>
 
               <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
@@ -386,7 +412,9 @@ const MyLeavesDashboard = ({
                   >
                     {card.value}
                   </p>
-                  <p className="mt-2 text-sm text-subTextColor">{card.helper}</p>
+                  <p className="mt-2 text-sm text-subTextColor">
+                    {card.helper}
+                  </p>
                 </div>
               ))}
             </div>
@@ -408,7 +436,11 @@ const MyLeavesDashboard = ({
                 </p>
               </div>
             </div>
-            <Button asChild variant="outline2" className="mt-5 w-full dark:bg-darkPrimaryBg">
+            <Button
+              asChild
+              variant="outline2"
+              className="mt-5 w-full dark:bg-darkPrimaryBg"
+            >
               <Link href="/leave-management/calendar">
                 Open calendar
                 <ChevronRight className="size-4" />
@@ -487,8 +519,11 @@ const MyLeavesDashboard = ({
           {leaveTypes.length ? (
             leaveTypes.map((leaveType) => {
               const theme = getLeaveTypeTheme(leaveType.color_code);
-              const usedPercentage = leaveType.allowed
-                ? Math.min((leaveType.taken / leaveType.allowed) * 100, 100)
+              const usedPercentage = leaveType.days_allowed
+                ? Math.min(
+                    (leaveType.taken / leaveType.days_allowed) * 100,
+                    100,
+                  )
                 : 0;
 
               return (
@@ -518,11 +553,11 @@ const MyLeavesDashboard = ({
                             color: theme.textColor,
                           }}
                         >
-                          {leaveType.allowed} days / year
+                          {leaveType.days_allowed} days / year
                         </span>
-                        <span className="rounded-full bg-bgSecondary px-2.5 py-1 text-xs font-medium text-headingTextColor dark:bg-darkPrimaryBg dark:text-darkTextPrimary">
+                        {/* <span className="rounded-full bg-bgSecondary px-2.5 py-1 text-xs font-medium text-headingTextColor dark:bg-darkPrimaryBg dark:text-darkTextPrimary">
                           {leaveType.is_active ? "Active" : "Inactive"}
-                        </span>
+                        </span> */}
                       </div>
                     </div>
 
@@ -531,7 +566,7 @@ const MyLeavesDashboard = ({
                         Left
                       </p>
                       <p className="mt-1 text-2xl font-semibold text-headingTextColor dark:text-darkTextPrimary">
-                        {leaveType.remaining}
+                        {leaveType.left}
                       </p>
                     </div>
                   </div>
@@ -553,22 +588,28 @@ const MyLeavesDashboard = ({
 
                     <div className="grid gap-3 sm:grid-cols-2">
                       <div className="rounded-2xl bg-bgSecondary px-3 py-3 dark:bg-darkPrimaryBg">
-                        <p className="text-[11px] uppercase tracking-[0.18em]">Attachment</p>
+                        <p className="text-[11px] uppercase tracking-[0.18em]">
+                          Attachment
+                        </p>
                         <p className="mt-1 font-medium text-headingTextColor dark:text-darkTextPrimary">
-                          {leaveType.requires_document ? "Required" : "Optional"}
+                          {leaveType.requires_document
+                            ? "Required"
+                            : "Optional"}
                         </p>
                       </div>
 
                       <div className="rounded-2xl bg-bgSecondary px-3 py-3 dark:bg-darkPrimaryBg">
-                        <p className="text-[11px] uppercase tracking-[0.18em]">Used</p>
+                        <p className="text-[11px] uppercase tracking-[0.18em]">
+                          Used
+                        </p>
                         <p className="mt-1 font-medium text-headingTextColor dark:text-darkTextPrimary">
-                          {leaveType.taken} of {leaveType.allowed}
+                          {leaveType.taken} of {leaveType.days_allowed}
                         </p>
                       </div>
                     </div>
 
                     <div className="flex items-center justify-between text-xs text-subTextColor">
-                      <span>{leaveType.approved_hours_formatted} approved</span>
+                      {/* <span>{leaveType.approved_hours_formatted} approved</span> */}
                       {leaveType.applicable_gender !== "all" ? (
                         <span className="inline-flex items-center gap-1 rounded-full bg-sky-500/10 px-2.5 py-1 text-[11px] font-medium text-sky-700 dark:text-sky-200">
                           <ShieldCheck className="size-3.5" />
@@ -589,8 +630,8 @@ const MyLeavesDashboard = ({
                       />
                     </div>
                     <div className="mt-2 flex items-center justify-between text-sm text-subTextColor">
-                      <span>{leaveType.remaining} left</span>
-                      <span>{leaveType.allowed} total</span>
+                      <span>{leaveType.left} left</span>
+                      <span>{leaveType.days_allowed} total</span>
                     </div>
                   </div>
 
@@ -599,13 +640,13 @@ const MyLeavesDashboard = ({
                       variant="outline2"
                       className="mt-4 h-10 w-full rounded-xl border-borderColor bg-white text-headingTextColor hover:bg-slate-50 dark:border-darkBorder dark:bg-darkPrimaryBg dark:text-darkTextPrimary dark:hover:bg-darkPrimaryBg"
                       onClick={() => handleOpenRequest(leaveType.id)}
-                      disabled={!leaveType.is_active}
                     >
                       Apply
                     </Button>
                   ) : (
                     <div className="mt-5 rounded-2xl border border-dashed border-borderColor px-4 py-3 text-sm text-subTextColor dark:border-darkBorder">
-                      Leave requests can only be submitted from the employee’s own account.
+                      Leave requests can only be submitted from the employee’s
+                      own account.
                     </div>
                   )}
                 </div>

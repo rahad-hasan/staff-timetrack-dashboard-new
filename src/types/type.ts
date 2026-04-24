@@ -301,6 +301,19 @@ export interface UserScopedLeaveTypeRecord extends LeaveTypeRecord {
   approved_hours_formatted: string;
 }
 
+export interface LeaveRequestTypeDropdownRecord {
+  id: number;
+  title: string;
+  color_code: string;
+  requires_document: boolean;
+  applicable_gender: LeaveApplicableGender;
+  min_notice_days: number | null;
+  allow_past_dates: boolean;
+  days_allowed: number;
+  taken: number;
+  left: number;
+}
+
 export interface LeaveRecord {
   id: number;
   company_id: number;
@@ -326,6 +339,38 @@ export interface LeaveRecord {
 }
 
 export type ILeaveRequest = LeaveRecord;
+
+export interface LeaveCalendarLeaveItem {
+  type: "leave";
+  title: string;
+  id: number;
+  status: LeaveStatus;
+  color?: string | null;
+  reason?: string | null;
+  username?: string | null;
+}
+
+export interface LeaveCalendarHolidayItem {
+  type: "holiday";
+  title: string;
+  description?: string | null;
+  source?: string | null;
+}
+
+export type LeaveCalendarDayItem =
+  | LeaveCalendarLeaveItem
+  | LeaveCalendarHolidayItem;
+
+export interface LeaveCalendarData {
+  days: Record<string, LeaveCalendarDayItem[]>;
+}
+
+export interface LeaveCalendarFilters {
+  [key: string]: string | number | boolean | undefined;
+  year?: string | number;
+  month?: string | number;
+  user_id?: string | number;
+}
 
 export interface Project {
   id: number;
@@ -454,10 +499,19 @@ export interface LeaveHoliday {
   id?: number;
   name: string;
   date: string;
+  duration?: number | null;
   description?: string | null;
   source?: string | null;
   created_at?: string;
   updated_at?: string;
+}
+
+export interface CreateLeaveHolidayPayload {
+  name: string;
+  date: string;
+  duration: number;
+  description?: string;
+  source: string;
 }
 
 export type LeaveHolidayListData =

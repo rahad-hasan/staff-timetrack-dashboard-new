@@ -1,28 +1,7 @@
-import { getLeaveDetails, getLeaveHolidays, getLeaveTypes } from "@/actions/leaves/action";
-import {
-  ILeaveDetailsResponse,
-  ISearchParamsProps,
-  LeaveHoliday,
-  LeaveHolidayListData,
-} from "@/types/type";
+import { getLeaveDetails, getLeaveTypes } from "@/actions/leaves/action";
+import { ILeaveDetailsResponse, ISearchParamsProps } from "@/types/type";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
 import LeaveTypesBoard from "./LeaveTypesBoard";
-
-const extractHolidayRows = (holidayData: LeaveHolidayListData | undefined): LeaveHoliday[] => {
-  if (Array.isArray(holidayData)) {
-    return holidayData;
-  }
-
-  if (Array.isArray(holidayData?.holidays)) {
-    return holidayData.holidays;
-  }
-
-  if (Array.isArray(holidayData?.data)) {
-    return holidayData.data;
-  }
-
-  return [];
-};
 
 const normalizeLeaveDetails = (
   detailsData: ILeaveDetailsResponse | undefined,
@@ -51,7 +30,7 @@ const LeaveTypesServer = async ({ searchParams }: ISearchParamsProps) => {
         ? false
         : undefined;
 
-  const [leaveTypesResponse, leaveDetailsResponse, holidaysResponse] = await Promise.all([
+  const [leaveTypesResponse, leaveDetailsResponse] = await Promise.all([
     getLeaveTypes({
       search: typeof params.search === "string" ? params.search : undefined,
       is_active: isActiveFilter,
@@ -59,18 +38,13 @@ const LeaveTypesServer = async ({ searchParams }: ISearchParamsProps) => {
     getLeaveDetails({
       year: params.year,
     }),
-    getLeaveHolidays({
-      year: typeof params.year === "string" ? params.year : new Date().getFullYear(),
-    }),
   ]);
 
   return (
     <LeaveTypesBoard
       leaveTypes={leaveTypesResponse?.data ?? []}
-      holidays={extractHolidayRows(holidaysResponse?.data)}
       detailsData={normalizeLeaveDetails(leaveDetailsResponse?.data, fallbackYear)}
       canEditLeaveTypes={["admin", "hr"].includes(role)}
-      canImportMandatoryLeave={["admin", "hr"].includes(role)}
     />
   );
 };

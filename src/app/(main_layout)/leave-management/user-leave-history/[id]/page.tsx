@@ -1,10 +1,9 @@
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
 
-import { getLeaveTypes, getUserLeaveSummary } from "@/actions/leaves/action";
+import { getUserLeaveSummary } from "@/actions/leaves/action";
 import { getMembersDashboard } from "@/actions/members/action";
 import MyLeavesDashboard from "@/components/LeaveManagement/MyLeaves/MyLeavesDashboard";
-import { buildUserScopedLeaveTypes } from "@/lib/leave";
 import { ISearchParams } from "@/types/type";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
 
@@ -32,15 +31,12 @@ const UserLeaveHistoryPage = async ({ params, searchParams }: PageProps) => {
     redirect("/leave-management/my-leaves");
   }
 
-  const [summaryResponse, membersResponse, leaveTypesResponse] = await Promise.all([
+  const [summaryResponse, membersResponse] = await Promise.all([
     getUserLeaveSummary({
       year: resolvedSearchParams.year,
       user_id: userId,
     }),
     canManageUsers ? getMembersDashboard() : Promise.resolve(null),
-    getLeaveTypes({
-      is_active: true,
-    }),
   ]);
 
   const users =
@@ -78,15 +74,9 @@ const UserLeaveHistoryPage = async ({ params, searchParams }: PageProps) => {
       next_holidays: [],
     };
 
-  const leaveTypes = buildUserScopedLeaveTypes(
-    leaveTypesResponse?.data ?? [],
-    summaryData.summary.leave_types,
-  );
-
   return (
     <MyLeavesDashboard
       data={summaryData}
-      leaveTypes={leaveTypes}
       currentUserId={currentUser?.id}
       canManageUsers={canManageUsers}
       users={users}

@@ -288,24 +288,35 @@ export const editEventSchema = z.object({
 
 const leaveRequestBaseSchema = z
   .object({
-  leaveTypeId: z.string().min(1, "Leave type is required"),
-  supportingDocument: z.unknown().nullable().optional(),
-  startDate: z
-    .date()
-    .nullable()
-    .refine((date) => date !== null && !isNaN(date.getTime()), {
-      message: "Start date is required",
-    }),
-  endDate: z
-    .date()
-    .nullable()
-    .refine((date) => date !== null && !isNaN(date.getTime()), {
-      message: "End date is required",
-    }),
-  reason: z.string().min(1, "Reason is required"),
+    leaveTypeId: z.string().min(1, "Leave type is required"),
+    // supportingDocument: z.unknown().nullable().optional(),
+    supportingDocument: z
+      .instanceof(File)
+      .nullable()
+      .optional()
+      .refine((file) => !file || file instanceof File, {
+        message: "Document must be a valid file",
+      }),
+    startDate: z
+      .date()
+      .nullable()
+      .refine((date) => date !== null && !isNaN(date.getTime()), {
+        message: "Start date is required",
+      }),
+    endDate: z
+      .date()
+      .nullable()
+      .refine((date) => date !== null && !isNaN(date.getTime()), {
+        message: "End date is required",
+      }),
+    reason: z.string().min(1, "Reason is required"),
   })
   .superRefine((values, ctx) => {
-    if (values.startDate && values.endDate && values.endDate < values.startDate) {
+    if (
+      values.startDate &&
+      values.endDate &&
+      values.endDate < values.startDate
+    ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["endDate"],
@@ -361,6 +372,33 @@ export const leaveTypeFormSchema = z.object({
     .min(0, "Min notice must be 0 or greater")
     .nullable(),
   allow_past_dates: z.boolean(),
+});
+
+export const leaveHolidayFormSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(2, "Holiday name must be at least 2 characters")
+    .max(120, "Holiday name must be 120 characters or less"),
+  date: z
+    .string()
+    .trim()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Select a valid date"),
+  duration: z
+    .number({ message: "Duration is required" })
+    .int("Duration must be a whole number")
+    .min(1, "Duration must be at least 1 day")
+    .max(31, "Duration must be 31 days or less"),
+  description: z
+    .string()
+    .trim()
+    .max(500, "Description must be 500 characters or less")
+    .optional(),
+  source: z
+    .string()
+    .trim()
+    .min(1, "Source is required")
+    .max(60, "Source must be 60 characters or less"),
 });
 
 export const userBasicInfoSchema = z.object({

@@ -9,9 +9,13 @@ import { ChevronDownIcon, FileText, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 
 import { addLeave } from "@/actions/leaves/action";
-import { UserScopedLeaveTypeRecord } from "@/types/type";
+import { LeaveRequestTypeDropdownRecord } from "@/types/type";
 import { createLeaveRequestSchema, leaveRequestSchema } from "@/zod/schema";
-import { getLeaveTypeTheme, formatApplicableGender, formatNoticeDays } from "@/lib/leave";
+import {
+  getLeaveTypeTheme,
+  formatApplicableGender,
+  formatNoticeDays,
+} from "@/lib/leave";
 import { Button } from "@/components/ui/button";
 import {
   DialogClose,
@@ -45,7 +49,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
 type LeaveRequestModalProps = {
-  leaveTypes: UserScopedLeaveTypeRecord[];
+  leaveTypes: LeaveRequestTypeDropdownRecord[];
   defaultLeaveTypeId?: number | null;
   onClose: () => void;
   onSuccess?: () => void;
@@ -83,7 +87,9 @@ const LeaveRequestModal = ({
   );
 
   const form = useForm<LeaveRequestFormValues>({
-    resolver: zodResolver(createLeaveRequestSchema(requiredDocumentLeaveTypeIds)),
+    resolver: zodResolver(
+      createLeaveRequestSchema(requiredDocumentLeaveTypeIds),
+    ),
     defaultValues: defaultFormValues,
   });
 
@@ -116,11 +122,14 @@ const LeaveRequestModal = ({
   async function onSubmit(values: LeaveRequestFormValues) {
     setLoading(true);
 
+    console.log(values.supportingDocument);
+
     const response = await addLeave({
       leave_type_id: Number(values.leaveTypeId),
       start_date: format(new Date(values.startDate!), "yyyy-MM-dd"),
       end_date: format(new Date(values.endDate!), "yyyy-MM-dd"),
       reason: values.reason,
+      document: values.supportingDocument,
     });
 
     if (response?.success) {
@@ -143,7 +152,6 @@ const LeaveRequestModal = ({
   }
 
   const theme = getLeaveTypeTheme(selectedLeaveType?.color_code);
-  const activeTypes = leaveTypes.filter((leaveType) => leaveType.is_active);
 
   return (
     <DialogContent
@@ -160,7 +168,10 @@ const LeaveRequestModal = ({
       </DialogHeader>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-5">
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-4 sm:space-y-5"
+        >
           <FormField
             control={form.control}
             name="leaveTypeId"
@@ -173,8 +184,10 @@ const LeaveRequestModal = ({
                       <SelectValue placeholder="Choose a leave type" />
                     </SelectTrigger>
                     <SelectContent className="dark:bg-darkSecondaryBg">
-                      {activeTypes.map((leaveType) => {
-                        const itemTheme = getLeaveTypeTheme(leaveType.color_code);
+                      {leaveTypes.map((leaveType) => {
+                        const itemTheme = getLeaveTypeTheme(
+                          leaveType.color_code,
+                        );
 
                         return (
                           <SelectItem
@@ -189,7 +202,7 @@ const LeaveRequestModal = ({
                               />
                               <span>{leaveType.title}</span>
                               <span className="text-xs text-subTextColor">
-                                {leaveType.remaining} left
+                                {leaveType.left} left
                               </span>
                             </div>
                           </SelectItem>
@@ -232,7 +245,9 @@ const LeaveRequestModal = ({
                     {selectedLeaveType.applicable_gender !== "all" ? (
                       <span className="inline-flex items-center gap-1 rounded-full bg-white/80 px-2.5 py-1 text-xs font-medium text-headingTextColor dark:bg-darkPrimaryBg">
                         <ShieldCheck className="size-3.5" />
-                        {formatApplicableGender(selectedLeaveType.applicable_gender)}
+                        {formatApplicableGender(
+                          selectedLeaveType.applicable_gender,
+                        )}
                       </span>
                     ) : null}
                   </div>
@@ -246,10 +261,10 @@ const LeaveRequestModal = ({
                     className="text-3xl font-semibold"
                     style={{ color: theme.textColor }}
                   >
-                    {selectedLeaveType.remaining}
+                    {selectedLeaveType.left}
                   </p>
                   <p className="text-sm text-subTextColor">
-                    of {selectedLeaveType.allowed} annual
+                    of {selectedLeaveType.days_allowed} annual
                   </p>
                 </div>
               </div>
@@ -283,7 +298,10 @@ const LeaveRequestModal = ({
                 <FormItem className="w-full">
                   <FormLabel required>Start date</FormLabel>
                   <FormControl>
-                    <Popover open={openStartDate} onOpenChange={setOpenStartDate}>
+                    <Popover
+                      open={openStartDate}
+                      onOpenChange={setOpenStartDate}
+                    >
                       <PopoverTrigger asChild>
                         <Button
                           variant="outline2"
@@ -295,7 +313,10 @@ const LeaveRequestModal = ({
                           <ChevronDownIcon />
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+                      <PopoverContent
+                        className="w-auto overflow-hidden p-0"
+                        align="start"
+                      >
                         <Calendar
                           mode="single"
                           selected={startDate ?? undefined}
@@ -326,11 +347,16 @@ const LeaveRequestModal = ({
                           variant="outline2"
                           className="w-full justify-between text-left font-normal dark:bg-darkPrimaryBg dark:text-darkTextPrimary"
                         >
-                          {endDate ? format(endDate, "dd MMM yyyy") : "Pick an end date"}
+                          {endDate
+                            ? format(endDate, "dd MMM yyyy")
+                            : "Pick an end date"}
                           <ChevronDownIcon />
                         </Button>
                       </PopoverTrigger>
-                      <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+                      <PopoverContent
+                        className="w-auto overflow-hidden p-0"
+                        align="start"
+                      >
                         <Calendar
                           mode="single"
                           selected={endDate ?? undefined}
@@ -371,7 +397,9 @@ const LeaveRequestModal = ({
                   {supportingDocument ? (
                     <span className="inline-flex max-w-full items-center gap-2 rounded-full bg-white px-3 py-1 text-xs font-medium text-headingTextColor dark:bg-darkSecondaryBg dark:text-darkTextPrimary">
                       <FileText className="size-3.5 shrink-0" />
-                      <span className="truncate">{(supportingDocument as File).name}</span>
+                      <span className="truncate">
+                        {(supportingDocument as File).name}
+                      </span>
                     </span>
                   ) : null}
                 </div>
@@ -392,7 +420,8 @@ const LeaveRequestModal = ({
                 </FormControl>
 
                 <p className="mt-2 text-xs text-subTextColor">
-                  Attach a PDF, image, or document file when extra proof is needed.
+                  Attach a PDF, image, or document file when extra proof is
+                  needed.
                 </p>
                 <FormMessage />
               </FormItem>
@@ -429,7 +458,7 @@ const LeaveRequestModal = ({
             </DialogClose>
             <Button
               type="submit"
-              disabled={loading || !activeTypes.length}
+              disabled={loading || !leaveTypes.length}
               className="w-full sm:w-auto"
             >
               {loading ? "Submitting..." : "Submit request"}

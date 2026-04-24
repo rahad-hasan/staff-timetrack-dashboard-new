@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Download, RotateCcw } from "lucide-react";
+import { Download, Eye, RotateCcw, SearchX } from "lucide-react";
 
+import AppPagination from "@/components/Common/AppPagination";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,23 +20,35 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { formatTZDayMonthYear } from "@/utils";
 import { getLeaveStatusTheme, getLeaveTypeTheme } from "@/lib/leave";
 import { LeaveRecord, LeaveStatus } from "@/types/type";
+import LeaveHistoryDetailsSheet from "./LeaveHistoryDetailsSheet";
 
 const LeaveHistoryReport = ({
   data,
   canManageUsers,
   users = [],
+  total,
+  currentPage,
+  limit,
 }: {
   data: LeaveRecord[];
   canManageUsers: boolean;
   users?: { id: string; label: string; avatar: string }[];
+  total: number;
+  currentPage: number;
+  limit: number;
 }) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const [selectedLeave, setSelectedLeave] = useState<LeaveRecord | null>(null);
 
   const statusFilter = searchParams.get("status");
   const startDate = searchParams.get("start_date") ?? "";
   const endDate = searchParams.get("end_date") ?? "";
+
+  useEffect(() => {
+    setSelectedLeave(null);
+  }, [data]);
 
   const updateQueryParam = (key: string, value?: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -45,15 +59,29 @@ const LeaveHistoryReport = ({
       params.set(key, value);
     }
 
-    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    params.delete("page");
+
+    const query = params.toString();
+    router.push(query ? `${pathname}?${query}` : pathname, { scroll: false });
   };
 
   const clearFilters = () => {
+    setSelectedLeave(null);
     router.push(pathname, { scroll: false });
   };
 
   return (
     <div className="space-y-5">
+      <LeaveHistoryDetailsSheet
+        leave={selectedLeave}
+        open={Boolean(selectedLeave)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setSelectedLeave(null);
+          }
+        }}
+      />
+
       <div className="rounded-[24px] border border-borderColor bg-white p-5 shadow-sm dark:border-darkBorder dark:bg-darkSecondaryBg">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
           <div>
@@ -72,7 +100,11 @@ const LeaveHistoryReport = ({
 
         <div className="mt-5 grid gap-3 xl:grid-cols-[1fr_200px_200px_170px_auto]">
           {canManageUsers ? (
-            <SelectUserDropDown users={users} defaultSelect={false} />
+            <SelectUserDropDown
+              users={users}
+              defaultSelect={false}
+              resetPageOnChange
+            />
           ) : (
             <div className="hidden xl:block" />
           )}
@@ -112,6 +144,15 @@ const LeaveHistoryReport = ({
       </div>
 
       <div className="rounded-[24px] border border-borderColor bg-white p-5 shadow-sm dark:border-darkBorder dark:bg-darkSecondaryBg">
+        <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-subTextColor">
+            {total ? `${total} history item${total === 1 ? "" : "s"} found` : "No history items found"}
+          </p>
+          <div className="rounded-full bg-primary/8 px-3 py-1 text-xs font-medium text-primary">
+            Long notes are trimmed here. Use View for the full text.
+          </div>
+        </div>
+
         <Table>
           <TableHeader>
             <TableRow>
@@ -122,8 +163,8 @@ const LeaveHistoryReport = ({
               <TableHead>Days</TableHead>
               <TableHead>Approved hours</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Reason</TableHead>
-              <TableHead>Reject reason</TableHead>
+              <TableHead>Notes</TableHead>
+              <TableHead>Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -184,11 +225,36 @@ const LeaveHistoryReport = ({
                         {statusTheme.label}
                       </div>
                     </TableCell>
-                    <TableCell className="max-w-[260px] text-sm text-headingTextColor dark:text-darkTextPrimary">
-                      {leave.reason}
+                    <TableCell className="max-w-[260px] whitespace-normal">
+                      <div className="space-y-2">
+                        <p
+                          className="line-clamp-2 break-words text-sm text-headingTextColor dark:text-darkTextPrimary"
+                          title={leave.reason}
+                        >
+                          {leave.reason}
+                        </p>
+                        {leave.reject_reason ? (
+                          <p
+                            className="line-clamp-2 break-words text-xs text-rose-600 dark:text-rose-300"
+                            title={leave.reject_reason}
+                          >
+                            Reject reason: {leave.reject_reason}
+                          </p>
+                        ) : (
+                          <p className="text-xs text-subTextColor">No rejection note</p>
+                        )}
+                      </div>
                     </TableCell>
-                    <TableCell className="max-w-[240px] text-sm text-subTextColor">
-                      {leave.reject_reason ?? "-"}
+                    <TableCell>
+                      <Button
+                        variant="outline2"
+                        size="sm"
+                        className="dark:bg-darkPrimaryBg"
+                        onClick={() => setSelectedLeave(leave)}
+                      >
+                        <Eye className="size-4" />
+                        View
+                      </Button>
                     </TableCell>
                   </TableRow>
                 );
@@ -196,12 +262,21 @@ const LeaveHistoryReport = ({
             ) : (
               <TableRow>
                 <TableCell colSpan={9} className="py-16 text-center text-subTextColor">
-                  No leave history matched the selected filters.
+                  <div className="flex flex-col items-center gap-2">
+                    <SearchX className="size-6" />
+                    <span>No leave history matched the selected filters.</span>
+                  </div>
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
+
+        <AppPagination
+          total={total}
+          currentPage={currentPage}
+          limit={limit}
+        />
       </div>
     </div>
   );

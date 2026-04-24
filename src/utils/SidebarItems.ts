@@ -158,6 +158,7 @@ export const othersSidebarItems = [
         subItems: [
             { label: 'My Leaves', key: '/leave-management/my-leaves' },
             { label: 'Leave Types', key: '/leave-management/leave-types' },
+            { label: 'Holidays', key: '/leave-management/holidays' },
             { label: 'Request Queue', key: '/leave-management/leave-request' },
             { label: 'Leave History', key: '/leave-management/history' },
             { label: 'Calendar', key: '/leave-management/calendar' },

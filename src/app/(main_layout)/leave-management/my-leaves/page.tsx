@@ -1,6 +1,10 @@
 import { Metadata } from "next";
 
-import { getLeaveTypes, getUserLeaveSummary } from "@/actions/leaves/action";
+import {
+  getLeaveRequestTypeDropdown,
+  getLeaveTypes,
+  getUserLeaveSummary,
+} from "@/actions/leaves/action";
 import { getMembers } from "@/actions/members/action";
 import MyLeavesDashboard from "@/components/LeaveManagement/MyLeaves/MyLeavesDashboard";
 import { ISearchParamsProps } from "@/types/type";
@@ -15,13 +19,16 @@ export const metadata: Metadata = {
 const MyLeavesPage = async ({ searchParams }: ISearchParamsProps) => {
   const params = await searchParams;
   const currentUser = await getDecodedUser();
-  const canManageUsers = ["admin", "manager", "hr"].includes(currentUser?.role ?? "");
+  const canManageUsers = ["admin", "manager", "hr"].includes(
+    currentUser?.role ?? "",
+  );
   const selectedUserId =
     canManageUsers && typeof params.user_id === "string"
       ? Number(params.user_id)
       : undefined;
 
-  const [summaryResponse, membersResponse, leaveTypesResponse] = await Promise.all([
+  const [summaryResponse, membersResponse, leaveTypesResponse] =
+    await Promise.all([
       getUserLeaveSummary({
         year: params.year,
         user_id: selectedUserId,
@@ -32,38 +39,35 @@ const MyLeavesPage = async ({ searchParams }: ISearchParamsProps) => {
             limit: 500,
           })
         : Promise.resolve(null),
-      getLeaveTypes({
-        is_active: true,
-      }),
+      getLeaveRequestTypeDropdown(),
     ]);
 
-  const summaryData =
-    summaryResponse?.data ?? {
-      user: {
-        id: Number(params.user_id) || currentUser?.id || 0,
-        name: "Leave summary unavailable",
-        image: null,
-        email: currentUser?.email ?? "",
-        gender: "other" as const,
-      },
-      year: Number(params.year) || new Date().getFullYear(),
-      summary: {
-        total_allowed: 0,
-        total_taken: 0,
-        total_remaining: 0,
-        available_percentage: 0,
-        available_leaves: 0,
-        approved_leave_hours: 0,
-        approved_leave_hours_formatted: "0h",
-        leave_types: [],
-      },
-      requests: {
-        pending: [],
-        approved: [],
-        rejected: [],
-      },
-      next_holidays: [],
-    };
+  const summaryData = summaryResponse?.data ?? {
+    user: {
+      id: Number(params.user_id) || currentUser?.id || 0,
+      name: "Leave summary unavailable",
+      image: null,
+      email: currentUser?.email ?? "",
+      gender: "other" as const,
+    },
+    year: Number(params.year) || new Date().getFullYear(),
+    summary: {
+      total_allowed: 0,
+      total_taken: 0,
+      total_remaining: 0,
+      available_percentage: 0,
+      available_leaves: 0,
+      approved_leave_hours: 0,
+      approved_leave_hours_formatted: "0h",
+      leave_types: [],
+    },
+    requests: {
+      pending: [],
+      approved: [],
+      rejected: [],
+    },
+    next_holidays: [],
+  };
 
   const memberUsers =
     membersResponse?.data
@@ -87,15 +91,10 @@ const MyLeavesPage = async ({ searchParams }: ISearchParamsProps) => {
     ).values(),
   ).sort((first, second) => first.label.localeCompare(second.label));
 
-  const leaveTypes = buildUserScopedLeaveTypes(
-    leaveTypesResponse?.data ?? [],
-    summaryData.summary.leave_types,
-  );
-
   return (
     <MyLeavesDashboard
       data={summaryData}
-      leaveTypes={leaveTypes}
+      leaveTypes={leaveTypesResponse.data}
       currentUserId={currentUser?.id}
       canManageUsers={canManageUsers}
       users={users}

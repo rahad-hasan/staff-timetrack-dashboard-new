@@ -27,13 +27,15 @@ import { useTopLoader } from "nextjs-toploader";
 interface ISelectUserDropDown {
   defaultSelect?: boolean;
   users: { id: string; label: string; avatar: string }[];
-  loading?: boolean
+  loading?: boolean;
+  resetPageOnChange?: boolean;
 }
 
 const SelectUserDropDown = ({
   defaultSelect = true,
   users,
   loading,
+  resetPageOnChange = false,
 }: ISelectUserDropDown) => {
   const logInUserData = useLogInUserStore((state) => state.logInUserData);
   const router = useRouter();
@@ -65,13 +67,17 @@ const SelectUserDropDown = ({
       params.delete("user_id");
     } else {
       params.set("user_id", currentId);
-      setValueUser(currentId)
+      setValueUser(currentId);
     }
-    loader.start()
-    setSearchInput("")
+    if (resetPageOnChange) {
+      params.delete("page");
+    }
+    const query = params.toString();
+    loader.start();
+    setSearchInput("");
     requestAnimationFrame(() => {
-      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-    })
+      router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+    });
   };
 
   return (

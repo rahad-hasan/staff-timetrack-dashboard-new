@@ -1,43 +1,45 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { CheckCircle2, SearchX } from "lucide-react";
-import { toast } from "sonner";
+import { Eye, SearchX } from "lucide-react";
 
-import { approveRejectLeave } from "@/actions/leaves/action";
-import ConfirmDialog from "@/components/Common/ConfirmDialog";
 import SearchBar from "@/components/Common/SearchBar";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Dialog } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatTZDayMonthYear } from "@/utils";
 import { getLeaveStatusTheme, getLeaveTypeTheme } from "@/lib/leave";
 import { LeaveRecord } from "@/types/type";
-import RejectLeaveRequestModal from "./RejectLeaveRequestModal";
+import LeaveRequestDetailsSheet from "./LeaveRequestDetailsSheet";
 
 type LeaveRequestTableProps = {
   data: LeaveRecord[];
   canManageUsers: boolean;
+  canTakeAction: boolean;
   users?: { id: string; label: string; avatar: string }[];
 };
 
 const LeaveRequestTable = ({
   data,
   canManageUsers,
+  canTakeAction,
   users = [],
 }: LeaveRequestTableProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [activeRejectId, setActiveRejectId] = useState<number | null>(null);
+  const [selectedLeave, setSelectedLeave] = useState<LeaveRecord | null>(null);
 
   const isApproved = searchParams.get("approved") === "true";
   const isRejected = searchParams.get("rejected") === "true";
+
+  useEffect(() => {
+    setSelectedLeave(null);
+  }, [data]);
 
   const updateQueryParam = (key: string, value?: string | boolean) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -54,34 +56,24 @@ const LeaveRequestTable = ({
     }
 
     params.delete("page");
-    router.push(`${pathname}?${params.toString()}`, { scroll: false });
-  };
-
-  const handleApprove = async (leave: LeaveRecord) => {
-    const response = await approveRejectLeave({
-      data: {
-        leave_id: leave.id,
-        approved: true,
-      },
-    });
-
-    if (response?.success) {
-      toast.success(response.message || "Leave request approved");
-      router.refresh();
-      return;
-    }
-
-    toast.error(response?.message || "Failed to approve leave request", {
-      style: {
-        backgroundColor: "#ef4444",
-        color: "white",
-        border: "none",
-      },
-    });
+    const query = params.toString();
+    router.push(query ? `${pathname}?${query}` : pathname, { scroll: false });
   };
 
   return (
     <div className="space-y-5">
+      <LeaveRequestDetailsSheet
+        leave={selectedLeave}
+        open={Boolean(selectedLeave)}
+        canTakeAction={canTakeAction}
+        onMutated={() => router.refresh()}
+        onOpenChange={(open) => {
+          if (!open) {
+            setSelectedLeave(null);
+          }
+        }}
+      />
+
       <div className="flex flex-col gap-4 rounded-[24px] border border-borderColor bg-white p-5 shadow-sm dark:border-darkBorder dark:bg-darkSecondaryBg">
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div>
@@ -93,7 +85,13 @@ const LeaveRequestTable = ({
             </p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-            {canManageUsers ? <SelectUserDropDown users={users} defaultSelect={false} /> : null}
+            {canManageUsers ? (
+              <SelectUserDropDown
+                users={users}
+                defaultSelect={false}
+                resetPageOnChange
+              />
+            ) : null}
             <SearchBar onSearch={(query) => updateQueryParam("search", query)} />
           </div>
         </div>
@@ -130,6 +128,15 @@ const LeaveRequestTable = ({
       </div>
 
       <div className="rounded-[24px] border border-borderColor bg-white p-5 shadow-sm dark:border-darkBorder dark:bg-darkSecondaryBg">
+        <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-subTextColor">
+            Review requests in the table, then open the side drawer for the full note, document preview, and workflow actions.
+          </p>
+          <div className="rounded-full bg-primary/8 px-3 py-1 text-xs font-medium text-primary">
+            Long reasons are trimmed here
+          </div>
+        </div>
+
         <Table>
           <TableHeader>
             <TableRow>
@@ -218,58 +225,35 @@ const LeaveRequestTable = ({
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="max-w-[240px] space-y-1">
-                        <p className="text-sm text-headingTextColor dark:text-darkTextPrimary">
+                      <div className="max-w-[240px] space-y-2 whitespace-normal">
+                        <p
+                          className="line-clamp-2 break-words text-sm text-headingTextColor dark:text-darkTextPrimary"
+                          title={leave.reason}
+                        >
                           {leave.reason}
                         </p>
                         {leave.reject_reason ? (
-                          <p className="text-xs text-rose-600 dark:text-rose-300">
+                          <p
+                            className="line-clamp-2 break-words text-xs text-rose-600 dark:text-rose-300"
+                            title={leave.reject_reason}
+                          >
                             Reject reason: {leave.reject_reason}
                           </p>
-                        ) : null}
+                        ) : (
+                          <p className="text-xs text-subTextColor">No rejection note</p>
+                        )}
                       </div>
                     </TableCell>
                     <TableCell>
-                      {canManageUsers && leave.status === "pending" ? (
-                        <div className="flex min-w-[190px] items-center gap-2">
-                          <ConfirmDialog
-                            trigger={
-                              <Button size="sm">
-                                <CheckCircle2 className="size-4" />
-                                Approve
-                              </Button>
-                            }
-                            title="Approve this leave request?"
-                            description="This will update the request queue and the employee leave summary."
-                            confirmText="Approve request"
-                            cancelText="Cancel"
-                            onConfirm={() => handleApprove(leave)}
-                            confirmClassName="bg-primary hover:bg-primary/90"
-                          />
-
-                          <Dialog
-                            open={activeRejectId === leave.id}
-                            onOpenChange={(open) => setActiveRejectId(open ? leave.id : null)}
-                          >
-                            <Button
-                              size="sm"
-                              className="bg-red-500 hover:bg-red-500"
-                              onClick={() => setActiveRejectId(leave.id)}
-                            >
-                              Reject
-                            </Button>
-                            {activeRejectId === leave.id ? (
-                              <RejectLeaveRequestModal
-                                data={leave}
-                                onClose={() => setActiveRejectId(null)}
-                                onSuccess={() => router.refresh()}
-                              />
-                            ) : null}
-                          </Dialog>
-                        </div>
-                      ) : (
-                        <span className="text-subTextColor">-</span>
-                      )}
+                      <Button
+                        variant="outline2"
+                        size="sm"
+                        className="dark:bg-darkPrimaryBg"
+                        onClick={() => setSelectedLeave(leave)}
+                      >
+                        <Eye className="size-4" />
+                        View
+                      </Button>
                     </TableCell>
                   </TableRow>
                 );

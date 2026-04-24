@@ -9,6 +9,7 @@ const LeaveRequestServer = async ({ searchParams }: ISearchParamsProps) => {
   const params = await searchParams;
   const currentUser = await getDecodedUser();
   const canManageUsers = ["admin", "manager", "hr"].includes(currentUser?.role ?? "");
+  const canTakeAction = ["admin", "hr"].includes(currentUser?.role ?? "");
 
   const approved =
     params.approved === "true" ? true : canManageUsers ? false : undefined;
@@ -38,6 +39,7 @@ const LeaveRequestServer = async ({ searchParams }: ISearchParamsProps) => {
       <LeaveRequestTable
         data={leaveResponse?.data ?? []}
         canManageUsers={canManageUsers}
+        canTakeAction={canTakeAction}
         users={users}
       />
       <AppPagination

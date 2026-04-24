@@ -7,6 +7,7 @@ import { useTopLoader } from "nextjs-toploader";
 import {
   ArrowUpRight,
   CalendarClock,
+  CalendarRange,
   PencilLine,
   Plus,
   Power,
@@ -30,25 +31,20 @@ import {
   getLeaveTypeTheme,
 } from "@/lib/leave";
 import { useLogInUserStore } from "@/store/logInUserStore";
-import { ILeaveDetailsResponse, LeaveHoliday, LeaveTypeRecord } from "@/types/type";
-import MandatoryLeaveSection from "./MandatoryLeaveSection";
+import { ILeaveDetailsResponse, LeaveTypeRecord } from "@/types/type";
 import LeaveTypeDetailsSheet from "./LeaveTypeDetailsSheet";
 import LeaveTypeFormDialog from "./LeaveTypeFormDialog";
 
 type LeaveTypesBoardProps = {
   leaveTypes: LeaveTypeRecord[];
-  holidays: LeaveHoliday[];
   detailsData: ILeaveDetailsResponse;
   canEditLeaveTypes: boolean;
-  canImportMandatoryLeave: boolean;
 };
 
 const LeaveTypesBoard = ({
   leaveTypes,
-  holidays,
   detailsData,
   canEditLeaveTypes,
-  canImportMandatoryLeave,
 }: LeaveTypesBoardProps) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -73,8 +69,6 @@ const LeaveTypesBoard = ({
   const selectedYear = searchParams.get("year") || String(resolvedDetails.year);
   const resolvedCanEditLeaveTypes =
     canEditLeaveTypes || ["admin", "hr"].includes(logInUserRole ?? "");
-  const resolvedCanImportMandatoryLeave =
-    canImportMandatoryLeave || ["admin", "hr"].includes(logInUserRole ?? "");
 
   const [searchDraft, setSearchDraft] = useState(currentSearch);
   const [teamSearch, setTeamSearch] = useState("");
@@ -245,10 +239,6 @@ const LeaveTypesBoard = ({
     leaveTypes.length === 0 &&
     (Boolean(currentSearch.trim()) || currentFilter !== "all");
 
-  const handleMandatoryLeaveImported = () => {
-    router.refresh();
-  };
-
   return (
     <div className="space-y-6">
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
@@ -367,12 +357,44 @@ const LeaveTypesBoard = ({
         ))}
       </div>
 
-      <MandatoryLeaveSection
-        holidays={holidays}
-        selectedYear={selectedYear}
-        canImportMandatoryLeave={resolvedCanImportMandatoryLeave}
-        onImported={handleMandatoryLeaveImported}
-      />
+      <div className="rounded-[28px] border border-borderColor bg-white p-6 shadow-sm dark:border-darkBorder dark:bg-darkSecondaryBg">
+        <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
+          <div className="max-w-3xl">
+            <p className="text-sm uppercase tracking-[0.16em] text-subTextColor">
+              Holiday workspace
+            </p>
+            <h3 className="mt-2 text-xl font-semibold text-headingTextColor dark:text-darkTextPrimary">
+              Holidays are managed separately now
+            </h3>
+            <p className="mt-2 text-sm text-subTextColor">
+              Open the dedicated holiday screen to add records manually, import source files, and
+              review the year-specific holiday registry without mixing it into leave policy setup.
+            </p>
+          </div>
+
+          <div className="rounded-[24px] border border-borderColor bg-bgSecondary/60 p-4 dark:border-darkBorder dark:bg-darkPrimaryBg">
+            <div className="flex items-start gap-3">
+              <div className="rounded-2xl bg-primary/10 p-3 text-primary">
+                <CalendarRange className="size-5" />
+              </div>
+              <div>
+                <p className="font-semibold text-headingTextColor dark:text-darkTextPrimary">
+                  Holiday management
+                </p>
+                <p className="mt-1 text-sm text-subTextColor">
+                  Use the dedicated submenu to manage holidays for {selectedYear}.
+                </p>
+              </div>
+            </div>
+            <Button asChild className="mt-4 w-full">
+              <Link href="/leave-management/holidays">
+                Open holidays
+                <ArrowUpRight className="size-4" />
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </div>
 
       <div className="rounded-[28px] border border-borderColor bg-white p-6 shadow-sm dark:border-darkBorder dark:bg-darkSecondaryBg">
         <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">

@@ -1,32 +1,33 @@
-import { Suspense } from "react";
 import { Metadata } from "next";
+import { Suspense } from "react";
 
 import HeadingComponent from "@/components/Common/HeadingComponent";
+import HolidayManagementServer from "@/components/LeaveManagement/Holidays/HolidayManagementServer";
 import LeaveManagementSubNav from "@/components/LeaveManagement/LeaveManagementSubNav";
-import LeaveTypesServer from "@/components/LeaveManagement/LeaveTypes/LeaveTypesServer";
 import LeaveDetailsSkeleton from "@/skeleton/leaveManagement/leaveDetailsSkeleton";
 import { ISearchParamsProps } from "@/types/type";
 
 export const metadata: Metadata = {
-  title: "Staff Time Tracker Leave Types",
-  description: "Staff Time Tracker Leave Types",
+  title: "Staff Time Tracker Holidays",
+  description: "Staff Time Tracker Holidays",
 };
 
-const LeaveTypesPage = ({ searchParams }: ISearchParamsProps) => {
+const HolidaysPage = ({ searchParams }: ISearchParamsProps) => {
   return (
     <div>
       <div className="mb-5">
         <HeadingComponent
-          heading="Leave Types"
-          subHeading="Create, refine, retire, and inspect tenant leave policies for the current workspace."
+          heading="Holidays"
+          subHeading="Review, create, and import company or public holidays that feed the leave calendar and upcoming holiday widgets."
         />
         <LeaveManagementSubNav />
       </div>
+
       <Suspense fallback={<LeaveDetailsSkeleton />}>
-        <LeaveTypesServer searchParams={searchParams} />
+        <HolidayManagementServer searchParams={searchParams} />
       </Suspense>
     </div>
   );
 };
 
-export default LeaveTypesPage;
+export default HolidaysPage;
