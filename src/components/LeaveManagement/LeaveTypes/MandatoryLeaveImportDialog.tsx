@@ -154,8 +154,8 @@ function previewRawValue(raw: unknown) {
 
 function getParsedStatusClasses(alreadyExists: boolean) {
   return alreadyExists
-    ? "bg-amber-100 text-amber-800"
-    : "bg-emerald-100 text-emerald-800";
+    ? "border-amber-200 bg-amber-100 text-amber-800 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-200"
+    : "border-emerald-200 bg-emerald-100 text-emerald-800 dark:border-emerald-400/20 dark:bg-emerald-400/10 dark:text-emerald-200";
 }
 
 function getParsedStatusLabel(alreadyExists: boolean) {
@@ -358,7 +358,7 @@ const MandatoryLeaveImportDialog = ({
       className="w-full max-w-[1180px] border-borderColor p-0 dark:border-darkBorder dark:bg-darkSecondaryBg"
     >
       <div className="max-h-[88vh] overflow-y-auto">
-        <div className="border-b border-borderColor bg-[linear-gradient(135deg,#ffffff_0%,#f8fbff_50%,#fdf2f8_100%)] p-6 dark:border-darkBorder dark:bg-darkSecondaryBg">
+        <div className="border-b border-borderColor bg-[linear-gradient(135deg,#ffffff_0%,#f8fbff_50%,#fdf2f8_100%)] p-6 dark:border-darkBorder dark:bg-[linear-gradient(135deg,rgba(50,57,71,1)_0%,rgba(33,39,51,1)_100%)]">
           <DialogHeader>
             <DialogTitle className="text-headingTextColor dark:text-darkTextPrimary">
               Mandatory leave import
@@ -374,10 +374,10 @@ const MandatoryLeaveImportDialog = ({
             <Badge className="bg-white px-3 py-1.5 text-headingTextColor shadow-sm dark:bg-darkPrimaryBg dark:text-darkTextPrimary">
               Import target: {selectedYear}
             </Badge>
-            <Badge className="bg-primary/10 px-3 py-1.5 text-primary">
+            <Badge className="bg-primary/10 px-3 py-1.5 text-primary dark:bg-primary/15">
               Existing rows are auto-skipped
             </Badge>
-            <Badge className="bg-white px-3 py-1.5 text-subTextColor shadow-sm dark:bg-darkPrimaryBg">
+            <Badge className="bg-white px-3 py-1.5 text-subTextColor shadow-sm dark:bg-darkPrimaryBg dark:text-darkTextSecondary">
               File types: CSV, TSV, TXT, PSV, PDF
             </Badge>
           </div>
@@ -415,7 +415,7 @@ const MandatoryLeaveImportDialog = ({
                   {selectedFile ? selectedFile.name : "No file selected"}
                 </Badge>
                 {selectedFile ? (
-                  <Badge className="bg-primary/10 px-3 py-1.5 text-primary">
+                  <Badge className="bg-primary/10 px-3 py-1.5 text-primary dark:bg-primary/15">
                     {getFileKind(selectedFile) === "pdf" ? "PDF / base64" : "Text / raw content"}
                   </Badge>
                 ) : null}
@@ -516,7 +516,7 @@ const MandatoryLeaveImportDialog = ({
                       Existing holidays are highlighted and excluded from the final import request.
                     </p>
                   </div>
-                  <div className="rounded-full bg-primary/8 px-3 py-1 text-xs font-medium text-primary">
+                  <div className="rounded-full bg-primary/8 px-3 py-1 text-xs font-medium text-primary dark:bg-primary/15">
                     Only valid, non-existing rows are submitted.
                   </div>
                 </div>
@@ -615,7 +615,7 @@ const MandatoryLeaveImportDialog = ({
                       These rows are blocked from import until the source file is corrected.
                     </p>
                   </div>
-                  <div className="inline-flex items-center gap-2 rounded-full bg-red-50 px-3 py-1 text-xs font-medium text-red-700">
+                  <div className="inline-flex items-center gap-2 rounded-full bg-red-50 px-3 py-1 text-xs font-medium text-red-700 dark:bg-red-500/12 dark:text-red-200">
                     <TriangleAlert className="size-4" />
                     {rejectedRows.length} rejected
                   </div>
@@ -638,7 +638,9 @@ const MandatoryLeaveImportDialog = ({
                                 {row.reason}
                               </p>
                             </div>
-                            <Badge className="bg-red-100 text-red-700">Rejected</Badge>
+                            <Badge className="border-red-200 bg-red-100 text-red-700 dark:border-red-400/20 dark:bg-red-500/12 dark:text-red-200">
+                              Rejected
+                            </Badge>
                           </div>
 
                           <div className="mt-4 rounded-2xl bg-white px-3 py-3 text-xs text-subTextColor dark:bg-darkPrimaryBg">

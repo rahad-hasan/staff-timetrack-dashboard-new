@@ -162,7 +162,7 @@ const LeaveRequestModal = ({
         <DialogTitle className="text-headingTextColor dark:text-darkTextPrimary">
           Request leave
         </DialogTitle>
-        <DialogDescription>
+        <DialogDescription className="dark:text-darkTextSecondary">
           Submit a leave request using the policies configured for your tenant.
         </DialogDescription>
       </DialogHeader>
@@ -201,7 +201,7 @@ const LeaveRequestModal = ({
                                 style={{ backgroundColor: itemTheme.color }}
                               />
                               <span>{leaveType.title}</span>
-                              <span className="text-xs text-subTextColor">
+                              <span className="text-xs text-subTextColor dark:text-darkTextSecondary">
                                 {leaveType.left} left
                               </span>
                             </div>
@@ -237,13 +237,13 @@ const LeaveRequestModal = ({
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {selectedLeaveType.requires_document ? (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-white/80 px-2.5 py-1 text-xs font-medium text-headingTextColor dark:bg-darkPrimaryBg">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-white/80 px-2.5 py-1 text-xs font-medium text-headingTextColor dark:bg-darkPrimaryBg dark:text-darkTextPrimary">
                         <FileText className="size-3.5" />
                         Requires document
                       </span>
                     ) : null}
                     {selectedLeaveType.applicable_gender !== "all" ? (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-white/80 px-2.5 py-1 text-xs font-medium text-headingTextColor dark:bg-darkPrimaryBg">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-white/80 px-2.5 py-1 text-xs font-medium text-headingTextColor dark:bg-darkPrimaryBg dark:text-darkTextPrimary">
                         <ShieldCheck className="size-3.5" />
                         {formatApplicableGender(
                           selectedLeaveType.applicable_gender,
@@ -263,7 +263,7 @@ const LeaveRequestModal = ({
                   >
                     {selectedLeaveType.left}
                   </p>
-                  <p className="text-sm text-subTextColor">
+                  <p className="text-sm text-subTextColor dark:text-darkTextSecondary">
                     of {selectedLeaveType.days_allowed} annual
                   </p>
                 </div>
@@ -388,7 +388,7 @@ const LeaveRequestModal = ({
                     >
                       Supporting document
                     </FormLabel>
-                    <p className="text-sm text-subTextColor">
+                    <p className="text-sm text-subTextColor dark:text-darkTextSecondary">
                       {isDocumentRequired
                         ? "Upload a file before submitting this leave request."
                         : "Optional for the selected leave type."}
@@ -408,7 +408,7 @@ const LeaveRequestModal = ({
                   <Input
                     id="leave-supporting-document"
                     type="file"
-                    accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                    accept=".pdf,.jpg,.jpeg,.png"
                     name={field.name}
                     className="mt-3 h-auto cursor-pointer py-2 dark:border-darkBorder dark:bg-darkSecondaryBg"
                     aria-required={isDocumentRequired}
@@ -419,7 +419,7 @@ const LeaveRequestModal = ({
                   />
                 </FormControl>
 
-                <p className="mt-2 text-xs text-subTextColor">
+                <p className="mt-2 text-xs text-subTextColor dark:text-darkTextSecondary">
                   Attach a PDF, image, or document file when extra proof is
                   needed.
                 </p>

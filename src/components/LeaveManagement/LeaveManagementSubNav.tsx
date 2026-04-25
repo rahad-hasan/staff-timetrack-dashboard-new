@@ -33,12 +33,14 @@ const LeaveManagementSubNav = () => {
             className={cn(
               "min-w-[220px] rounded-[22px] border px-4 py-3 transition-colors",
               isActive
-                ? "border-primary bg-primary/10 text-headingTextColor dark:border-primary/40 dark:bg-primary/15"
-                : "border-borderColor bg-white text-headingTextColor hover:border-primary/30 hover:bg-primary/5 dark:border-darkBorder dark:bg-darkSecondaryBg",
+                ? "border-primary bg-primary/10 text-headingTextColor dark:border-primary/40 dark:bg-primary/15 dark:text-darkTextPrimary"
+                : "border-borderColor bg-white text-headingTextColor hover:border-primary/30 hover:bg-primary/5 dark:border-darkBorder dark:bg-darkSecondaryBg dark:text-darkTextPrimary",
             )}
           >
             <p className="text-sm font-semibold dark:text-darkTextPrimary">{item.title}</p>
-            <p className="mt-1 text-xs text-subTextColor">{item.description}</p>
+            <p className="mt-1 text-xs text-subTextColor dark:text-darkTextSecondary">
+              {item.description}
+            </p>
           </Link>
         );
       })}

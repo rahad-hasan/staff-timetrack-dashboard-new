@@ -265,7 +265,7 @@ const LeaveTypesBoard = ({
         refreshKey={detailsRefreshKey}
       />
 
-      <div className="rounded-[28px] border border-borderColor bg-white p-6 shadow-sm dark:border-darkBorder dark:bg-darkSecondaryBg">
+      <div className="rounded-[28px] border border-borderColor bg-white p-6 shadow-sm dark:border-darkBorder dark:bg-[linear-gradient(135deg,rgba(50,57,71,1)_0%,rgba(33,39,51,1)_100%)]">
         <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
           <div className="max-w-2xl">
             <p className="text-sm uppercase tracking-[0.16em] text-subTextColor">
@@ -274,7 +274,7 @@ const LeaveTypesBoard = ({
             <h2 className="mt-2 text-3xl font-semibold text-headingTextColor dark:text-darkTextPrimary">
               Tenant leave types
             </h2>
-            <p className="mt-2 text-sm text-subTextColor">
+            <p className="mt-2 text-sm text-subTextColor dark:text-darkTextSecondary">
               Manage real tenant-scoped leave types from the backend LeaveType API. Employees only consume active policies, while admin and HR can create, refine, retire, or delete them safely.
             </p>
           </div>
@@ -292,7 +292,7 @@ const LeaveTypesBoard = ({
                 New type
               </Button>
             ) : (
-              <div className="rounded-full bg-bgSecondary px-4 py-2 text-sm text-subTextColor dark:bg-darkPrimaryBg">
+              <div className="rounded-full bg-bgSecondary px-4 py-2 text-sm text-subTextColor dark:bg-darkPrimaryBg dark:text-darkTextSecondary">
                 This role has read-only access to leave types.
               </div>
             )}
@@ -352,7 +352,9 @@ const LeaveTypesBoard = ({
             <p className="mt-2 text-3xl font-semibold" style={{ color: card.color }}>
               {card.value}
             </p>
-            <p className="mt-1 text-sm text-subTextColor">{card.helper}</p>
+            <p className="mt-1 text-sm text-subTextColor dark:text-darkTextSecondary">
+              {card.helper}
+            </p>
           </div>
         ))}
       </div>
@@ -366,7 +368,7 @@ const LeaveTypesBoard = ({
             <h3 className="mt-2 text-xl font-semibold text-headingTextColor dark:text-darkTextPrimary">
               Holidays are managed separately now
             </h3>
-            <p className="mt-2 text-sm text-subTextColor">
+            <p className="mt-2 text-sm text-subTextColor dark:text-darkTextSecondary">
               Open the dedicated holiday screen to add records manually, import source files, and
               review the year-specific holiday registry without mixing it into leave policy setup.
             </p>
@@ -381,7 +383,7 @@ const LeaveTypesBoard = ({
                 <p className="font-semibold text-headingTextColor dark:text-darkTextPrimary">
                   Holiday management
                 </p>
-                <p className="mt-1 text-sm text-subTextColor">
+                <p className="mt-1 text-sm text-subTextColor dark:text-darkTextSecondary">
                   Use the dedicated submenu to manage holidays for {selectedYear}.
                 </p>
               </div>
@@ -402,11 +404,11 @@ const LeaveTypesBoard = ({
             <h3 className="text-lg font-semibold text-headingTextColor dark:text-darkTextPrimary">
               Policy catalog
             </h3>
-            <p className="text-sm text-subTextColor">
+            <p className="text-sm text-subTextColor dark:text-darkTextSecondary">
               Cards are powered by <code>/leaves/types</code> and show real backend policy rules.
             </p>
           </div>
-          <div className="rounded-full bg-primary/8 px-3 py-1 text-xs font-medium text-primary">
+          <div className="rounded-full bg-primary/8 px-3 py-1 text-xs font-medium text-primary dark:bg-primary/15">
             Active types appear in employee request flows.
           </div>
         </div>
@@ -565,7 +567,7 @@ const LeaveTypesBoard = ({
                 ? "No leave types matched the current search or status filter."
                 : "No leave types have been created for this workspace yet."}
             </div>
-            <p className="mt-3 text-sm text-subTextColor">
+            <p className="mt-3 text-sm text-subTextColor dark:text-darkTextSecondary">
               {resolvedCanEditLeaveTypes
                 ? "Create the first leave type to unlock policy-driven leave requests."
                 : "Leave types will appear here as soon as an admin or HR user creates them."}
@@ -586,7 +588,7 @@ const LeaveTypesBoard = ({
             <h3 className="text-lg font-semibold text-headingTextColor dark:text-darkTextPrimary">
               Employee leave coverage
             </h3>
-            <p className="text-sm text-subTextColor">
+            <p className="text-sm text-subTextColor dark:text-darkTextSecondary">
               Team-wide leave balances from <code>/leaves/details</code>, linked to each user’s leave history page.
             </p>
           </div>
@@ -622,7 +624,9 @@ const LeaveTypesBoard = ({
                       <p className="font-semibold text-headingTextColor dark:text-darkTextPrimary">
                         {row.user.name}
                       </p>
-                      <p className="text-sm text-subTextColor">{row.user.email}</p>
+                      <p className="text-sm text-subTextColor dark:text-darkTextSecondary">
+                        {row.user.email}
+                      </p>
                     </div>
                   </Link>
 
@@ -688,7 +692,7 @@ const LeaveTypesBoard = ({
                       );
                     })
                   ) : (
-                    <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-sm text-subTextColor dark:bg-darkSecondaryBg">
+                    <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-sm text-subTextColor dark:bg-darkSecondaryBg dark:text-darkTextSecondary">
                       <Users2 className="size-4" />
                       No leave type summary available for this user.
                     </div>
@@ -704,7 +708,7 @@ const LeaveTypesBoard = ({
                       <p className="text-sm font-medium text-headingTextColor dark:text-darkTextPrimary">
                         Leave history detail
                       </p>
-                      <p className="text-xs text-subTextColor">
+                      <p className="text-xs text-subTextColor dark:text-darkTextSecondary">
                         Open the employee’s dashboard-style leave history page.
                       </p>
                     </div>
@@ -719,7 +723,7 @@ const LeaveTypesBoard = ({
               </div>
             ))
           ) : (
-            <div className="rounded-[24px] border border-dashed border-borderColor px-6 py-16 text-center text-subTextColor dark:border-darkBorder">
+            <div className="rounded-[24px] border border-dashed border-borderColor px-6 py-16 text-center text-subTextColor dark:border-darkBorder dark:text-darkTextSecondary">
               No employees matched the current search.
             </div>
           )}

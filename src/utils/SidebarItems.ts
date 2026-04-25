@@ -188,6 +188,7 @@ export const othersSidebarItemsEmployee = [
         collapsible: true,
         subItems: [
             { label: 'My Leaves', key: '/leave-management/my-leaves' },
+            { label: 'Holidays', key: '/leave-management/holidays' },
             { label: 'Calendar', key: '/leave-management/calendar' },
         ],
     },

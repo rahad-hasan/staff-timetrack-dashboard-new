@@ -77,6 +77,7 @@ const UserLeaveHistoryPage = async ({ params, searchParams }: PageProps) => {
   return (
     <MyLeavesDashboard
       data={summaryData}
+      leaveTypes={[]}
       currentUserId={currentUser?.id}
       canManageUsers={canManageUsers}
       users={users}

@@ -96,6 +96,9 @@
 }
 
 .dark {
+  --color-headingTextColor: #F3F4F6;
+  --color-subTextColor: #bdbdbd;
+  --color-textGray: #bdbdbd;
   --background: oklch(0.1450 0 0);
   --foreground: oklch(0.9850 0 0);
   --card: oklch(0.2050 0 0);

@@ -18,7 +18,7 @@ const HolidaysPage = ({ searchParams }: ISearchParamsProps) => {
       <div className="mb-5">
         <HeadingComponent
           heading="Holidays"
-          subHeading="Review, create, and import company or public holidays that feed the leave calendar and upcoming holiday widgets."
+          subHeading="Review the workspace holiday registry. Admin and HR can create, update, delete, and import company or public holidays."
         />
         <LeaveManagementSubNav />
       </div>

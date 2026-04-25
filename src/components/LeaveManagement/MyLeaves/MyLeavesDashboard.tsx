@@ -360,7 +360,7 @@ const MyLeavesDashboard = ({
       </div>
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1.45fr)_360px]">
-        <div className="relative overflow-hidden rounded-[30px] border border-borderColor bg-[linear-gradient(135deg,#ffffff_0%,#fff8f8_50%,#f8fbff_100%)] p-6 shadow-sm dark:border-darkBorder dark:bg-darkSecondaryBg">
+        <div className="relative overflow-hidden rounded-[30px] border border-borderColor bg-[linear-gradient(135deg,#ffffff_0%,#fff8f8_50%,#f8fbff_100%)] p-6 shadow-sm dark:border-darkBorder dark:bg-[linear-gradient(135deg,rgba(50,57,71,1)_0%,rgba(33,39,51,1)_100%)]">
           <div className="absolute right-0 top-0 h-36 w-36 rounded-full bg-primary/10 blur-3xl" />
           <div className="relative space-y-6">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
@@ -373,11 +373,11 @@ const MyLeavesDashboard = ({
                   <h2 className="text-3xl font-semibold tracking-tight text-headingTextColor dark:text-darkTextPrimary">
                     {data.user.name}
                   </h2>
-                  <p className="mt-2 text-sm text-subTextColor">
+                  <p className="mt-2 text-sm text-subTextColor dark:text-darkTextSecondary">
                     {data.user.email}
                   </p>
                 </div>
-                <p className="max-w-2xl text-sm text-subTextColor">
+                <p className="max-w-2xl text-sm text-subTextColor dark:text-darkTextSecondary">
                   {headerSubheading}
                 </p>
               </div>
@@ -412,7 +412,7 @@ const MyLeavesDashboard = ({
                   >
                     {card.value}
                   </p>
-                  <p className="mt-2 text-sm text-subTextColor">
+                  <p className="mt-2 text-sm text-subTextColor dark:text-darkTextSecondary">
                     {card.helper}
                   </p>
                 </div>
@@ -431,7 +431,7 @@ const MyLeavesDashboard = ({
                 <p className="text-base font-semibold text-headingTextColor dark:text-darkTextPrimary">
                   Team leave calendar
                 </p>
-                <p className="text-sm text-subTextColor">
+                <p className="text-sm text-subTextColor dark:text-darkTextSecondary">
                   Review month-level leave activity with live leave type colors.
                 </p>
               </div>
@@ -457,7 +457,7 @@ const MyLeavesDashboard = ({
                 <p className="text-base font-semibold text-headingTextColor dark:text-darkTextPrimary">
                   Next holidays
                 </p>
-                <p className="text-sm text-subTextColor">
+                <p className="text-sm text-subTextColor dark:text-darkTextSecondary">
                   Upcoming company and public holidays.
                 </p>
               </div>
@@ -481,14 +481,14 @@ const MyLeavesDashboard = ({
                       <p className="text-base font-semibold text-headingTextColor dark:text-darkTextPrimary">
                         {holiday.name}
                       </p>
-                      <p className="mt-1 text-sm text-subTextColor">
+                      <p className="mt-1 text-sm text-subTextColor dark:text-darkTextSecondary">
                         {formatHolidayDate(holiday.date)}
                         {formatHolidayWeekday(holiday.date)
                           ? ` · ${formatHolidayWeekday(holiday.date)}`
                           : ""}
                       </p>
                       {holiday.source ? (
-                        <p className="mt-2 text-xs uppercase tracking-[0.16em] text-subTextColor">
+                        <p className="mt-2 text-xs uppercase tracking-[0.16em] text-subTextColor dark:text-darkTextSecondary">
                           {holiday.source}
                         </p>
                       ) : null}
@@ -497,7 +497,7 @@ const MyLeavesDashboard = ({
                 ))}
               </div>
             ) : (
-              <div className="px-5 py-10 text-center text-sm text-subTextColor">
+              <div className="px-5 py-10 text-center text-sm text-subTextColor dark:text-darkTextSecondary">
                 No upcoming holidays are available for the selected year.
               </div>
             )}
@@ -510,7 +510,7 @@ const MyLeavesDashboard = ({
           <h2 className="text-xl font-semibold text-headingTextColor dark:text-darkTextPrimary">
             Leave balances
           </h2>
-          <p className="text-sm text-subTextColor">
+          <p className="text-sm text-subTextColor dark:text-darkTextSecondary">
             Apply against each leave type from a more compact balance view.
           </p>
         </div>
@@ -644,7 +644,7 @@ const MyLeavesDashboard = ({
                       Apply
                     </Button>
                   ) : (
-                    <div className="mt-5 rounded-2xl border border-dashed border-borderColor px-4 py-3 text-sm text-subTextColor dark:border-darkBorder">
+                    <div className="mt-5 rounded-2xl border border-dashed border-borderColor px-4 py-3 text-sm text-subTextColor dark:border-darkBorder dark:text-darkTextSecondary">
                       Leave requests can only be submitted from the employee’s
                       own account.
                     </div>
@@ -653,7 +653,7 @@ const MyLeavesDashboard = ({
               );
             })
           ) : (
-            <div className="rounded-[24px] border border-dashed border-borderColor bg-white p-8 text-center text-subTextColor dark:border-darkBorder dark:bg-darkSecondaryBg md:col-span-2 xl:col-span-4">
+            <div className="rounded-[24px] border border-dashed border-borderColor bg-white p-8 text-center text-subTextColor dark:border-darkBorder dark:bg-darkSecondaryBg dark:text-darkTextSecondary md:col-span-2 xl:col-span-4">
               <div className="mx-auto flex w-fit items-center gap-2 rounded-full bg-amber-500/10 px-3 py-1 text-amber-700 dark:text-amber-200">
                 <FileWarning className="size-4" />
                 No active leave types are available for this workspace yet.
@@ -669,7 +669,7 @@ const MyLeavesDashboard = ({
             <h2 className="text-lg font-semibold text-headingTextColor dark:text-darkTextPrimary">
               Leave history
             </h2>
-            <p className="text-sm text-subTextColor">
+            <p className="text-sm text-subTextColor dark:text-darkTextSecondary">
               Review pending, approved, and rejected requests separately.
             </p>
           </div>

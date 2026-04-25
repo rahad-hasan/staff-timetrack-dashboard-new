@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format, isValid, parseISO } from "date-fns";
 import { useForm } from "react-hook-form";
@@ -8,7 +8,7 @@ import z from "zod";
 import { CalendarDays, Clock3, FileText, Loader2, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 
-import { createLeaveHoliday } from "@/actions/leaves/action";
+import { createLeaveHoliday, updateLeaveHoliday } from "@/actions/leaves/action";
 import {
   Form,
   FormControl,
@@ -27,23 +27,30 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { LeaveHoliday } from "@/types/type";
 import { leaveHolidayFormSchema } from "@/zod/schema";
 
 type HolidayFormDialogProps = {
+  mode: "create" | "edit";
+  initialData?: LeaveHoliday | null;
   selectedYear: string;
   onClose: () => void;
   onSuccess: () => void;
 };
 
-const getDefaultValues = (): z.infer<typeof leaveHolidayFormSchema> => ({
-  name: "",
-  date: "",
-  duration: 1,
-  description: "",
-  source: "",
+const getDefaultValues = (
+  initialData?: LeaveHoliday | null,
+): z.infer<typeof leaveHolidayFormSchema> => ({
+  name: initialData?.name ?? "",
+  date: initialData?.date ?? "",
+  duration: initialData?.duration ?? 1,
+  description: initialData?.description ?? "",
+  source: initialData?.source ?? "",
 });
 
 const HolidayFormDialog = ({
+  mode,
+  initialData,
   selectedYear,
   onClose,
   onSuccess,
@@ -52,8 +59,12 @@ const HolidayFormDialog = ({
 
   const form = useForm<z.infer<typeof leaveHolidayFormSchema>>({
     resolver: zodResolver(leaveHolidayFormSchema),
-    defaultValues: getDefaultValues(),
+    defaultValues: getDefaultValues(initialData),
   });
+
+  useEffect(() => {
+    form.reset(getDefaultValues(initialData));
+  }, [form, initialData, mode]);
 
   const values = form.watch();
 
@@ -77,30 +88,49 @@ const HolidayFormDialog = ({
 
     setLoading(true);
 
-    const response = await createLeaveHoliday({
+    const holidayPayload = {
       name: payload.name.trim(),
       date: payload.date,
       duration: payload.duration,
       description: payload.description?.trim() ?? "",
       source: payload.source.trim(),
-    });
+    };
+
+    const response =
+      mode === "create"
+        ? await createLeaveHoliday(holidayPayload)
+        : initialData?.id
+          ? await updateLeaveHoliday(initialData.id, holidayPayload)
+          : {
+              success: false,
+              message: "This holiday cannot be updated because its record id is missing.",
+            };
 
     if (response?.success) {
-      toast.success(response.message || "Holiday created successfully.");
-      form.reset(getDefaultValues());
+      toast.success(
+        response.message ||
+          (mode === "create"
+            ? "Holiday created successfully."
+            : "Holiday updated successfully."),
+      );
+      form.reset(getDefaultValues(initialData));
       onSuccess();
       onClose();
       setLoading(false);
       return;
     }
 
-    toast.error(response?.message || "Failed to create holiday.", {
-      style: {
-        backgroundColor: "#ef4444",
-        color: "white",
-        border: "none",
+    toast.error(
+      response?.message ||
+        (mode === "create" ? "Failed to create holiday." : "Failed to update holiday."),
+      {
+        style: {
+          backgroundColor: "#ef4444",
+          color: "white",
+          border: "none",
+        },
       },
-    });
+    );
     setLoading(false);
   };
 
@@ -122,11 +152,12 @@ const HolidayFormDialog = ({
         <div className="border-b border-borderColor p-4 dark:border-darkBorder sm:p-6 lg:border-r lg:border-b-0">
           <DialogHeader>
             <DialogTitle className="text-headingTextColor dark:text-darkTextPrimary">
-              Add holiday manually
+              {mode === "create" ? "Add holiday manually" : "Update holiday"}
             </DialogTitle>
             <DialogDescription>
-              Create a company or public holiday entry for {selectedYear}. This form submits
-              directly to the holiday API and refreshes the holiday calendar after save.
+              {mode === "create"
+                ? `Create a company or public holiday entry for ${selectedYear}. This form submits directly to the holiday API and refreshes the holiday calendar after save.`
+                : `Refine the holiday record for ${selectedYear}. Changes are saved to the same holiday API and refresh the leave calendar immediately.`}
             </DialogDescription>
           </DialogHeader>
 
@@ -254,10 +285,10 @@ const HolidayFormDialog = ({
                   {loading ? (
                     <>
                       <Loader2 className="size-4 animate-spin" />
-                      Saving holiday
+                      {mode === "create" ? "Saving holiday" : "Updating holiday"}
                     </>
                   ) : (
-                    "Create holiday"
+                    (mode === "create" ? "Create holiday" : "Update holiday")
                   )}
                 </Button>
               </div>
@@ -265,10 +296,10 @@ const HolidayFormDialog = ({
           </Form>
         </div>
 
-        <div className="bg-[linear-gradient(180deg,rgba(248,250,252,0.95)_0%,rgba(255,255,255,1)_100%)] p-4 dark:bg-darkSecondaryBg sm:p-6">
+        <div className="bg-[linear-gradient(180deg,rgba(248,250,252,0.95)_0%,rgba(255,255,255,1)_100%)] p-4 dark:bg-[linear-gradient(180deg,rgba(33,39,51,1)_0%,rgba(50,57,71,1)_100%)] sm:p-6">
           <div className="rounded-[28px] border border-borderColor bg-white p-5 shadow-sm dark:border-darkBorder dark:bg-darkPrimaryBg">
             <div className="flex items-start gap-3">
-              <div className="rounded-2xl bg-primary/10 p-3 text-primary">
+              <div className="rounded-2xl bg-primary/10 p-3 text-primary dark:bg-primary/15">
                 <CalendarDays className="size-5" />
               </div>
               <div>
@@ -283,7 +314,7 @@ const HolidayFormDialog = ({
             </div>
 
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              <div className="rounded-[22px] bg-bgSecondary/70 p-4 dark:bg-darkSecondaryBg">
+              <div className="rounded-[22px] border border-borderColor/70 bg-bgSecondary/70 p-4 dark:border-darkBorder dark:bg-darkSecondaryBg">
                 <div className="flex items-center gap-2 text-sm font-medium text-headingTextColor dark:text-darkTextPrimary">
                   <Clock3 className="size-4 text-primary" />
                   Duration
@@ -296,7 +327,7 @@ const HolidayFormDialog = ({
                 </p>
               </div>
 
-              <div className="rounded-[22px] bg-bgSecondary/70 p-4 dark:bg-darkSecondaryBg">
+              <div className="rounded-[22px] border border-borderColor/70 bg-bgSecondary/70 p-4 dark:border-darkBorder dark:bg-darkSecondaryBg">
                 <div className="flex items-center gap-2 text-sm font-medium text-headingTextColor dark:text-darkTextPrimary">
                   <ShieldCheck className="size-4 text-primary" />
                   Source
@@ -310,12 +341,12 @@ const HolidayFormDialog = ({
               </div>
             </div>
 
-            <div className="mt-4 rounded-[22px] bg-bgSecondary/70 p-4 dark:bg-darkSecondaryBg">
+            <div className="mt-4 rounded-[22px] border border-borderColor/70 bg-bgSecondary/70 p-4 dark:border-darkBorder dark:bg-darkSecondaryBg">
               <div className="flex items-center gap-2 text-sm font-medium text-headingTextColor dark:text-darkTextPrimary">
                 <FileText className="size-4 text-primary" />
                 Description preview
               </div>
-              <p className="mt-2 text-sm leading-6 text-subTextColor">
+              <p className="mt-2 text-sm leading-6 text-subTextColor dark:text-darkTextSecondary">
                 {values.description?.trim() || "No description added yet."}
               </p>
             </div>
@@ -326,13 +357,13 @@ const HolidayFormDialog = ({
               Submission rules
             </p>
             <div className="mt-4 space-y-3 text-sm text-subTextColor">
-              <div className="rounded-2xl bg-primary/6 px-4 py-3">
+              <div className="rounded-2xl bg-primary/6 px-4 py-3 dark:bg-primary/10 dark:text-darkTextSecondary">
                 The holiday date must stay inside the active year: {selectedYear}.
               </div>
-              <div className="rounded-2xl bg-primary/6 px-4 py-3">
-                New holidays revalidate holiday, calendar, and employee leave views.
+              <div className="rounded-2xl bg-primary/6 px-4 py-3 dark:bg-primary/10 dark:text-darkTextSecondary">
+                Holiday changes revalidate the holiday, calendar, and employee leave views.
               </div>
-              <div className="rounded-2xl bg-primary/6 px-4 py-3">
+              <div className="rounded-2xl bg-primary/6 px-4 py-3 dark:bg-primary/10 dark:text-darkTextSecondary">
                 Use a short, stable source label such as <code>government</code> or{" "}
                 <code>company</code>.
               </div>

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 
 import { buildQuery } from "@/utils/buildQuery";
@@ -18,10 +17,19 @@ import {
   LeaveRequestTypeDropdownRecord,
   LeaveTypeListFilters,
   LeaveTypeRecord,
+  UpdateLeaveHolidayPayload,
   UpdateLeaveTypePayload,
   UserLeaveSummary,
 } from "@/types/type";
 import { revalidatePath, revalidateTag } from "next/cache";
+
+const revalidateHolidayViews = () => {
+  revalidateTag("leave-holidays");
+  revalidateTag("leaves");
+  revalidatePath("/leave-management/holidays");
+  revalidatePath("/leave-management/calendar");
+  revalidatePath("/leave-management/my-leaves");
+};
 
 export const getLeave = async (
   query = {},
@@ -103,11 +111,39 @@ export const createLeaveHoliday = async (
   });
 
   if (response?.success) {
-    revalidateTag("leave-holidays");
-    revalidateTag("leaves");
-    revalidatePath("/leave-management/holidays");
-    revalidatePath("/leave-management/calendar");
-    revalidatePath("/leave-management/my-leaves");
+    revalidateHolidayViews();
+  }
+
+  return response;
+};
+
+export const updateLeaveHoliday = async (
+  id: number,
+  data: UpdateLeaveHolidayPayload,
+): Promise<IResponse<LeaveHoliday>> => {
+  const response = await baseApi(`/leaves/holidays/${id}`, {
+    method: "PATCH",
+    body: data,
+    tag: "leave-holidays",
+    cache: "no-cache",
+  });
+
+  if (response?.success) {
+    revalidateHolidayViews();
+  }
+
+  return response;
+};
+
+export const deleteLeaveHoliday = async (id: number): Promise<IResponse<null>> => {
+  const response = await baseApi(`/leaves/holidays/${id}`, {
+    method: "DELETE",
+    tag: "leave-holidays",
+    cache: "no-cache",
+  });
+
+  if (response?.success) {
+    revalidateHolidayViews();
   }
 
   return response;

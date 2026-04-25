@@ -514,6 +514,14 @@ export interface CreateLeaveHolidayPayload {
   source: string;
 }
 
+export interface UpdateLeaveHolidayPayload {
+  name?: string;
+  date?: string;
+  duration?: number;
+  description?: string;
+  source?: string;
+}
+
 export type LeaveHolidayListData =
   | LeaveHoliday[]
   | {

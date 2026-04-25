@@ -6,7 +6,12 @@ import {
 } from "@/components/ui/sheet";
 import Image from "next/image";
 // import logo from '../../assets/logo.svg';
-import { othersSidebarItems, sidebarItems, sidebarItemsEmployee } from "@/utils/SidebarItems";
+import {
+    othersSidebarItems,
+    othersSidebarItemsEmployee,
+    sidebarItems,
+    sidebarItemsEmployee,
+} from "@/utils/SidebarItems";
 import { useSidebarStore } from "@/store/sidebarStore";
 import MobileSidebarItem from "./sidebar/MobileSidebarItem";
 import MobileSubItem from "./sidebar/MobileSubItem";
@@ -29,6 +34,7 @@ const MobileSidebar = () => {
         logInUserData?.role === 'project_manager';
 
     const roleBasedSidebarItems = isManagerialRole ? sidebarItems : sidebarItemsEmployee;
+    const roleBasedOtherItems = isManagerialRole ? othersSidebarItems : othersSidebarItemsEmployee;
 
     return (
         <SheetContent className=" dark:bg-darkPrimaryBg">
@@ -95,7 +101,7 @@ const MobileSidebar = () => {
 
                     <div className="pt-3 border-t-2 border-borderColor dark:border-darkBorder mt-4 pb-8">
                         <span className="text-xs uppercase text-gray-400 mb-4">Others</span>
-                        {othersSidebarItems.map((item) => (
+                        {roleBasedOtherItems.map((item) => (
                             <div key={item.key}>
                                 <MobileSidebarItem
                                     icon={item.icon}
