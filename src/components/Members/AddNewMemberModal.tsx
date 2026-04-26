@@ -40,6 +40,7 @@ import { useDebounce } from "@/hooks/use-debounce";
 import { getProjects } from "@/actions/projects/action";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { getAllSchedule } from "@/actions/schedule/action";
+import { CustomCalendarForDOB } from "../ui/customCalendarForDOB";
 
 const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
     type ProjectOption = {
@@ -56,6 +57,7 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
     const [projectLoading, setProjectLoading] = useState(false);
     const [scheduleLoading, setScheduleLoading] = useState(false);
     const manager = ["admin", "manager", "hr", "project_manager", "employee"];
+    const gender = ["male", "female", "other"];
     const [managerSearch, setManagerSearch] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const filteredManager = manager.filter(t => t.toLowerCase().includes(managerSearch.toLowerCase()));
@@ -71,8 +73,10 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
             name: "",
             email: "",
             role: "",
+            gender: "",
             time_zone: "",
             password: "",
+            birth_day: "",
         },
     })
 
@@ -137,12 +141,15 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
             phone: values.phone,
             project_id: Number(values.project),
             role: values.role,
+            gender: values.gender,
             time_zone: values.time_zone,
+            birth_day: values.birth_day,
             // schedule_id: Number(values.schedule),
             ...(values.schedule && { schedule_id: Number(values.schedule) })
         }
         setLoading(true);
         try {
+            console.log(finalData)
             const res = await addMember(finalData);
 
             if (res?.success) {
@@ -161,7 +168,6 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
                 });
             }
         } catch (error: any) {
-            console.error("failed:", error);
             toast.error(error.message || "Something went wrong!", {
                 style: {
                     backgroundColor: '#ef4444',
@@ -174,12 +180,22 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
         }
     }
     const handleNext = async () => {
-        const valid = await form.trigger(["name", "email", "phone", "role"]);
+        const valid = await form.trigger(["name", "email", "phone", "role", "gender", "birth_day"]);
 
         if (valid) {
             setStep(2);
         }
     };
+
+    const [open, setOpen] = useState(false)
+    const [date, setDate] = useState<Date | undefined>(undefined)
+    function formatDate(date: Date) {
+        const y = date.getFullYear()
+        const m = String(date.getMonth() + 1).padStart(2, "0")
+        const d = String(date.getDate()).padStart(2, "0")
+
+        return `${y}-${m}-${d}`
+    }
 
     return (
         <DialogContent className="sm:max-w-[525px] max-h-[95vh] overflow-y-auto">
@@ -285,6 +301,81 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
                                     </FormItem>
                                 )}
                             />
+                            <FormField
+                                control={form.control}
+                                name="gender"
+                                render={({ field }) => (
+                                    <FormItem className="">
+                                        <FormLabel required={true}>Gender</FormLabel>
+                                        <FormControl>
+                                            <div className="relative">
+                                                <Select
+                                                    value={field.value}
+                                                    onValueChange={field.onChange}
+                                                >
+                                                    <SelectTrigger className="w-full capitalize">
+                                                        <div className=" flex gap-1 items-center">
+                                                            <SelectValue className=" text-start" placeholder="Select Gender" />
+                                                        </div>
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        {gender.map(p => (
+                                                            <SelectItem className=" capitalize" key={p} value={p}>{p}</SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="birth_day"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Date of Birth</FormLabel>
+                                        <FormControl>
+                                            <Popover open={open} onOpenChange={setOpen}>
+                                                <PopoverTrigger asChild>
+                                                    <p
+                                                        className={cn(
+                                                            "border-input h-10 w-full rounded-lg border dark:border-darkBorder cursor-pointer bg-transparent px-3 py-1 text-base md:text-sm",
+                                                            "flex items-center justify-start font-normal",
+                                                            !field.value && "text-muted-foreground"
+                                                        )}
+                                                    >
+                                                        {field.value || "Select date"}
+                                                    </p>
+                                                </PopoverTrigger>
+
+                                                <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+                                                    <CustomCalendarForDOB
+                                                        mode="single"
+                                                        selected={date}
+                                                        defaultMonth={date}
+                                                        captionLayout="dropdown"
+                                                        onSelect={(selectedDate) => {
+                                                            if (!selectedDate) return
+
+                                                            setDate(selectedDate)
+                                                            setOpen(false)
+
+                                                            const formatted = formatDate(selectedDate)
+
+                                                            // ✅ THIS is the main fix
+                                                            field.onChange(formatted)
+                                                        }}
+                                                    />
+                                                </PopoverContent>
+                                            </Popover>
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
                             <Button
                                 type="button"
                                 className="w-full"

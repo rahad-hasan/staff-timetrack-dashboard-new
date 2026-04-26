@@ -197,6 +197,16 @@ export const addNewMemberSchema = z.object({
     )
     .optional(),
   role: z.string().min(1, "Role is required"),
+  gender: z.string().min(1, "Gender is required"),
+  birth_day: z
+    .string({ message: "Birth day must be a string" })
+    .regex(/^\d{4}-\d{2}-\d{2}$/, {
+      message: 'Birth day must be in the format YYYY-MM-DD.',
+    })
+    .refine((date) => !isNaN(Date.parse(date)), {
+      message: 'Birth day must be a valid calendar date.',
+    })
+    .optional(),
   time_zone: z.string().min(1, "Time Zone is required"),
   project: z.string().min(1, "Project is required"),
   schedule: z.string().min(1, "Schedule is required").optional(),
