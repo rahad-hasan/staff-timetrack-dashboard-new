@@ -714,3 +714,88 @@ export interface IApp {
   duration: string;
   session: number;
 }
+
+
+
+
+
+export interface LeaveType {
+  id: number;
+  title: string;
+  color_code: string;
+  is_active: boolean;
+  days_allowed: number;
+  requires_document: boolean;
+  applicable_gender: LeaveApplicableGender;
+  min_notice_days: number | null;
+  allow_past_dates: boolean;
+  company_id: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export type LeaveApplicableGender = "male" | "female" | "other" | "all";
+export type ApplicableGender = LeaveApplicableGender;
+
+export type LeaveStatus = "pending" | "approved" | "rejected";
+
+export interface LeaveTypeRecord extends LeaveType {
+  leave_requests_count: number;
+  can_delete: boolean;
+}
+
+export interface LeaveTypeSummary {
+  id: number;
+  title: string;
+  color_code: string;
+  is_active: boolean;
+  requires_document: boolean;
+  applicable_gender: LeaveApplicableGender;
+  min_notice_days: number | null;
+  allow_past_dates: boolean;
+  allowed: number;
+  taken: number;
+  remaining: number;
+  approved_hours: number;
+  approved_hours_formatted: string;
+}
+
+export interface UserScopedLeaveTypeRecord extends LeaveTypeRecord {
+  allowed: number;
+  taken: number;
+  remaining: number;
+  approved_hours: number;
+  approved_hours_formatted: string;
+}
+
+export interface LeaveCalendarLeaveItem {
+  type: "leave";
+  title: string;
+  id: number;
+  status: LeaveStatus;
+  color?: string | null;
+  reason?: string | null;
+  username?: string | null;
+}
+
+export interface LeaveCalendarHolidayItem {
+  type: "holiday";
+  title: string;
+  description?: string | null;
+  source?: string | null;
+}
+
+export type LeaveCalendarDayItem =
+  | LeaveCalendarLeaveItem
+  | LeaveCalendarHolidayItem;
+
+export interface LeaveCalendarFilters {
+  [key: string]: string | number | boolean | undefined;
+  year?: string | number;
+  month?: string | number;
+  user_id?: string | number;
+}
+
+export interface LeaveCalendarData {
+  days: Record<string, LeaveCalendarDayItem[]>;
+}
