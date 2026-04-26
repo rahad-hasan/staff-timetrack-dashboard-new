@@ -22,8 +22,8 @@ const LeaveHistoryPage = async ({ searchParams }: ISearchParamsProps) => {
     getLeaveHistory({
       page: currentPage,
       user_id: canManageUsers ? Number(params.user_id) || undefined : undefined,
-      start_date: typeof params.start_date === "string" ? params.start_date : undefined,
-      end_date: typeof params.end_date === "string" ? params.end_date : undefined,
+      start_date: typeof params.from_date === "string" ? params.from_date : undefined,
+      end_date: typeof params.to_date === "string" ? params.to_date : undefined,
       status: typeof params.status === "string" ? (params.status as LeaveStatus) : undefined,
     }),
     canManageUsers ? getMembersDashboard() : Promise.resolve(null),

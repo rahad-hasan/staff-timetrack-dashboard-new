@@ -8,7 +8,6 @@ import { Download, Eye, RotateCcw, SearchX } from "lucide-react";
 import AppPagination from "@/components/Common/AppPagination";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -21,6 +20,7 @@ import { formatTZDayMonthYear } from "@/utils";
 import { getLeaveStatusTheme, getLeaveTypeTheme } from "@/lib/leave";
 import { LeaveRecord, LeaveStatus } from "@/types/type";
 import LeaveHistoryDetailsSheet from "./LeaveHistoryDetailsSheet";
+import SelectDateRange from "@/components/Common/SelectDateRange";
 
 const LeaveHistoryReport = ({
   data,
@@ -43,8 +43,6 @@ const LeaveHistoryReport = ({
   const [selectedLeave, setSelectedLeave] = useState<LeaveRecord | null>(null);
 
   const statusFilter = searchParams.get("status");
-  const startDate = searchParams.get("start_date") ?? "";
-  const endDate = searchParams.get("end_date") ?? "";
 
   useEffect(() => {
     setSelectedLeave(null);
@@ -98,7 +96,7 @@ const LeaveHistoryReport = ({
           </Button>
         </div>
 
-        <div className="mt-5 grid gap-3 xl:grid-cols-[1fr_200px_200px_170px_auto]">
+        <div className="mt-5 grid gap-3 xl:grid-cols-[1fr_270px_170px_auto]">
           {canManageUsers ? (
             <SelectUserDropDown
               users={users}
@@ -108,7 +106,7 @@ const LeaveHistoryReport = ({
           ) : (
             <div className="hidden xl:block" />
           )}
-          <Input
+          {/* <Input
             type="date"
             value={startDate}
             onChange={(event) => updateQueryParam("start_date", event.target.value)}
@@ -119,7 +117,8 @@ const LeaveHistoryReport = ({
             value={endDate}
             onChange={(event) => updateQueryParam("end_date", event.target.value)}
             className="dark:border-darkBorder dark:bg-darkPrimaryBg"
-          />
+          /> */}
+          <SelectDateRange defaultDateShow={false}/>
           <Select
             value={statusFilter ?? "all"}
             onValueChange={(value) =>

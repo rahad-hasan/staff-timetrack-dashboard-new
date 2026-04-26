@@ -13,7 +13,7 @@ import CalendarIcon from "../Icons/CalendarIcon"
 import { useRouter, useSearchParams, usePathname } from "next/navigation"
 import { useTopLoader } from "nextjs-toploader"
 
-const SelectDateRange = () => {
+const SelectDateRange = ({defaultDateShow = true}: {defaultDateShow?:boolean}) => {
     const router = useRouter()
     const searchParams = useSearchParams()
     const pathname = usePathname()
@@ -39,10 +39,14 @@ const SelectDateRange = () => {
                 to: new Date(toParam),
             }
         }
-        return {
-            from: today,
-            to: addDays(today, 6),
+        if (defaultDateShow) {
+            return {
+                from: today,
+                to: addDays(today, 6),
+            }
         }
+
+        return undefined
     })
 
 
@@ -85,7 +89,7 @@ const SelectDateRange = () => {
                             format(date.from, "LLL dd, y")
                         )
                     ) : (
-                        <span>Pick a date</span>
+                        <span className=" font-normal">Pick a date range</span>
                     )}
                 </div>
             </PopoverTrigger>
