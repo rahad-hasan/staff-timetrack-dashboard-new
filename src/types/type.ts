@@ -799,3 +799,45 @@ export interface LeaveCalendarFilters {
 export interface LeaveCalendarData {
   days: Record<string, LeaveCalendarDayItem[]>;
 }
+
+//  leave history
+export interface LeaveUser {
+  id: number;
+  name: string;
+  image: string | null;
+  email: string;
+  gender: "male" | "female" | "other";
+}
+
+
+export interface LeaveRecord {
+  id: number;
+  company_id: number;
+  user_id: number;
+  leave_type_id: number;
+  start_date: string;
+  end_date: string;
+  leave_count: number;
+  approved_hours: number;
+  approved_hours_formatted: string;
+  reason: string;
+  hr_approved: boolean;
+  admin_approved: boolean;
+  is_rejected: boolean;
+  rejected_by: number | null;
+  reject_reason: string | null;
+  created_at: string;
+  updated_at: string;
+  status: LeaveStatus;
+  leaveType: LeaveType;
+  user?: LeaveUser;
+  company?: Company;
+}
+
+export interface AdminLeaveHistoryFilters {
+  [key: string]: string | number | boolean | undefined;
+  user_id?: number;
+  start_date?: string;
+  end_date?: string;
+  status?: LeaveStatus;
+}

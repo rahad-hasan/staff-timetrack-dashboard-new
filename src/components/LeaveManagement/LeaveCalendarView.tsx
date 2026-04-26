@@ -3,6 +3,7 @@
 import { format, isSameMonth } from "date-fns";
 import { CalendarDays, Sparkles } from "lucide-react";
 
+
 import { LeaveCalendarDayItem, LeaveCalendarLeaveItem } from "@/types/type";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import {
@@ -34,7 +35,7 @@ const LeaveCalendarView = ({
     const firstVisibleDay = new Date(start);
     firstVisibleDay.setDate(start.getDate() - startPadding);
 
-    return Array.from({ length: 35 }).map((_, index) => {
+    return Array.from({ length: 42 }).map((_, index) => {
       const date = new Date(firstVisibleDay);
       date.setDate(firstVisibleDay.getDate() + index);
       const dateKey = format(date, "yyyy-MM-dd");
@@ -68,20 +69,20 @@ const LeaveCalendarView = ({
       return (
         <div className="w-72 space-y-3 text-headingTextColor dark:text-darkTextPrimary">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-subTextColor">
+            <p className="text-xs font-semibold uppercase tracking-wide text-subTextColor dark:text-darkTextPrimary/50">
               Holiday
             </p>
             <h3 className="mt-1 text-sm font-semibold">{item.title}</h3>
           </div>
           {item.description ? (
             <div>
-              <p className="text-xs font-medium text-subTextColor">Description</p>
+              <p className="text-xs font-medium text-subTextColor dark:text-darkTextPrimary/50">Description</p>
               <p className="mt-1 text-sm leading-5">{item.description}</p>
             </div>
           ) : null}
           {item.source ? (
             <div>
-              <p className="text-xs font-medium text-subTextColor">Source</p>
+              <p className="text-xs font-medium text-subTextColor dark:text-darkTextPrimary/50">Source</p>
               <p className="mt-1 text-sm capitalize">{item.source}</p>
             </div>
           ) : null}
@@ -94,13 +95,13 @@ const LeaveCalendarView = ({
     return (
       <div className="w-72 space-y-3 text-headingTextColor dark:text-darkTextPrimary">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-subTextColor">
+          <p className="text-xs font-semibold uppercase tracking-wide text-subTextColor dark:text-darkTextPrimary/50">
             Leave request
           </p>
           <h3 className="mt-1 text-sm font-semibold">{item.title}</h3>
         </div>
         <div className="flex items-center justify-between gap-3">
-          <span className="truncate text-sm text-subTextColor">
+          <span className="truncate text-sm text-subTextColor dark:text-darkTextPrimary/50">
             {item.username ?? "Unknown user"}
           </span>
           <span
@@ -118,7 +119,7 @@ const LeaveCalendarView = ({
           </span>
         </div>
         <div>
-          <p className="text-xs font-medium text-subTextColor">Reason</p>
+          <p className="text-xs font-medium text-subTextColor dark:text-darkTextPrimary/50">Reason</p>
           <p className="mt-1 text-sm leading-5">
             {item.reason?.trim() || "No reason provided."}
           </p>
@@ -144,7 +145,7 @@ const LeaveCalendarView = ({
         <TooltipTrigger asChild>
           <button
             type="button"
-            className="block w-full rounded-2xl border px-3 py-2 text-left text-sm"
+            className="block w-full rounded-[12px] border px-3 py-2 text-left text-sm"
             style={{
               borderColor: isHoliday
                 ? "rgba(245, 158, 11, 0.28)"
@@ -167,7 +168,7 @@ const LeaveCalendarView = ({
               </span>
             </div>
             <div className="mt-1 flex items-center justify-between gap-2 text-xs">
-              <span className="truncate text-subTextColor">
+              <span className="truncate text-subTextColor dark:text-darkTextPrimary">
                 {item.type === "leave"
                   ? item.username ?? "Unknown user"
                   : item.source ?? "Holiday"}
@@ -196,7 +197,7 @@ const LeaveCalendarView = ({
         </TooltipTrigger>
         <TooltipContent
           side="top"
-          className="p-4 text-headingTextColor dark:text-darkTextPrimary"
+          className="p-4 text-headingTextColor dark:text-darkTextPrimary dark:bg-darkPrimaryBg"
         >
           {renderCalendarItemTooltip(item)}
         </TooltipContent>
@@ -206,16 +207,16 @@ const LeaveCalendarView = ({
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-col gap-4 rounded-[24px] border border-borderColor bg-white p-5 shadow-sm dark:border-darkBorder dark:bg-darkSecondaryBg">
+      <div className="flex flex-col gap-4 rounded-[12px] border border-borderColor bg-white p-3 sm:p-5 dark:border-darkBorder dark:bg-darkSecondaryBg">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
           <div>
-            <p className="text-sm uppercase tracking-[0.16em] text-subTextColor">
+            <p className="text-sm uppercase tracking-[0.16em] text-subTextColor dark:text-darkTextSecondary">
               Leave calendar
             </p>
             <h2 className="mt-2 text-2xl font-semibold text-headingTextColor dark:text-darkTextPrimary">
               {format(monthDate, "MMMM yyyy")}
             </h2>
-            <p className="mt-1 text-sm text-subTextColor">
+            <p className="mt-1 text-sm text-subTextColor dark:text-darkTextSecondary">
               Leave and holiday entries are loaded from the monthly calendar API.
             </p>
           </div>
@@ -255,7 +256,7 @@ const LeaveCalendarView = ({
             </div>
           ) : null}
           {!leaveTypeLegend.length && !hasHolidays ? (
-            <div className="inline-flex items-center gap-2 rounded-full bg-bgSecondary px-3 py-1 text-sm text-subTextColor dark:bg-darkPrimaryBg">
+            <div className="inline-flex items-center gap-2 rounded-full bg-bgSecondary px-3 py-1 text-sm text-subTextColor dark:text-darkTextSecondary dark:bg-darkPrimaryBg">
               <Sparkles className="size-4" />
               No calendar entries in this month.
             </div>
@@ -263,7 +264,7 @@ const LeaveCalendarView = ({
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-[24px] border border-borderColor bg-white shadow-sm dark:border-darkBorder dark:bg-darkSecondaryBg">
+      <div className="overflow-x-auto rounded-[12px] border border-borderColo dark:border-darkBorder dark:bg-darkSecondaryBg">
         <div className="grid min-w-[980px] grid-cols-7 border-b border-borderColor dark:border-darkBorder">
           {dayHeaders.map((day) => (
             <div
@@ -288,13 +289,13 @@ const LeaveCalendarView = ({
                   className={`text-sm font-medium ${
                     isSameMonth(date, monthDate)
                       ? "text-headingTextColor dark:text-darkTextPrimary"
-                      : "text-subTextColor/60"
+                      : "text-subTextColor/60 dark:text-darkTextSecondary/50"
                   }`}
                 >
                   {date.getDate()}
                 </span>
                 {dayItems.length ? (
-                  <span className="text-xs text-subTextColor">
+                  <span className="text-xs text-subTextColor dark:text-darkTextSecondary">
                     {dayItems.length} item{dayItems.length > 1 ? "s" : ""}
                   </span>
                 ) : null}
@@ -312,7 +313,7 @@ const LeaveCalendarView = ({
                     <TooltipTrigger asChild>
                       <button
                         type="button"
-                        className="inline-flex items-center gap-2 rounded-full bg-bgSecondary px-3 py-1 text-xs text-subTextColor dark:bg-darkPrimaryBg"
+                        className="inline-flex items-center gap-2 rounded-full bg-bgSecondary px-3 py-1 text-xs text-subTextColor dark:text-darkTextPrimary/70 dark:bg-darkPrimaryBg"
                       >
                         <CalendarDays className="size-3.5" />+{dayItems.length - 3} more
                       </button>
