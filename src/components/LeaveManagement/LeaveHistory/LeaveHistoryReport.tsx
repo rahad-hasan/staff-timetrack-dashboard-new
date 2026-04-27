@@ -142,7 +142,7 @@ const LeaveHistoryReport = ({
         </div>
       </div>
 
-      <div className="rounded-[12px] border border-borderColor bg-white p-5 shadow-sm dark:border-darkBorder dark:bg-darkSecondaryBg">
+      <div className="rounded-[12px] border border-borderColor bg-white p-5 dark:border-darkBorder dark:bg-darkSecondaryBg">
         <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-subTextColor dark:text-darkTextSecondary">
             {total ? `${total} history item${total === 1 ? "" : "s"} found` : "No history items found"}

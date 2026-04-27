@@ -219,10 +219,12 @@ export interface ILeaveRequest {
   id: number;
   company_id: number;
   user_id: number;
-  type: string;
+  leave_type_id: number;
   start_date: string;
   end_date: string;
   leave_count: number;
+  approved_hours: number;
+  approved_hours_formatted: string;
   reason: string;
   hr_approved: boolean;
   admin_approved: boolean;
@@ -231,8 +233,10 @@ export interface ILeaveRequest {
   reject_reason: string | null;
   created_at: string;
   updated_at: string;
-  user: User;
-  company: Company;
+  status: LeaveStatus;
+  leaveType: LeaveType;
+  user?: LeaveUser;
+  company?: Company;
 }
 
 export interface Project {

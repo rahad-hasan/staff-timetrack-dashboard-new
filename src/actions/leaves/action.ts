@@ -2,7 +2,8 @@
 
 import { buildQuery } from "@/utils/buildQuery";
 import { baseApi } from "../baseApi";
-import { ILeaveDetailsResponse, ILeaveRequest, IResponse, LeaveCalendarData, LeaveCalendarFilters, LeaveRecord } from "@/types/type";
+import { AdminLeaveHistoryFilters, ILeaveDetailsResponse, ILeaveRequest, IResponse, LeaveCalendarData, LeaveCalendarFilters, LeaveRecord } from "@/types/type";
+import { revalidateTag } from "next/cache";
 
 // export const getLeave = async (query = {}): Promise<IResponse<ILeaveRequest[]>> => {
 //     const queryString = buildQuery(query);
@@ -72,10 +73,42 @@ export const getLeaveCalendar = async (query: LeaveCalendarFilters = {}): Promis
     });
 };
 
-export const getLeaveHistory = async (query: AdminLeaveHistoryFilters = {}): Promise<IResponse<LeaveRecord>> => {
+export const getLeaveHistory = async (query: AdminLeaveHistoryFilters = {}): Promise<IResponse<LeaveRecord[]>> => {
     const queryString = buildQuery(query);
     return await baseApi(`/leaves/history${queryString ? `?${queryString}` : ""}`, {
         tag: "leaves",
         cache: "no-cache"
     });
+};
+
+export const getLeave = async (query={}): Promise<IResponse<ILeaveRequest[]>> => {
+    const queryString = buildQuery(query);
+    return await baseApi(`/leaves${queryString ? `?${queryString}` : ""}`, {
+        tag: "leaves",
+        cache: "no-cache"
+    });
+};
+
+export const approveRejectLeave = async ({
+  data,
+}: {
+  data: {
+    leave_id: number;
+    approved: boolean;
+    reject_reason?: string;
+  };
+}): Promise<IResponse<LeaveRecord>> => {
+  const response = await baseApi(`/leaves/update-status`, {
+    method: "PATCH",
+    body: data,
+    tag: "leaves",
+    cache: "no-cache",
+  });
+
+  if (response?.success) {
+    revalidateTag("leaves");
+    revalidateTag("leave-types");
+  }
+
+  return response;
 };
