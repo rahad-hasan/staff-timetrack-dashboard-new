@@ -435,3 +435,28 @@ export const scheduleAssignMemberSchema = z.object({
     .array(z.union([z.number(), z.string()]))
     .min(1, "At least one member is required"),
 });
+
+export const leaveTypeFormSchema = z.object({
+  title: z
+    .string()
+    .trim()
+    .min(2, "Title must be at least 2 characters")
+    .max(80, "Title must be 80 characters or less"),
+  color_code: z
+    .string()
+    .trim()
+    .regex(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/, "Enter a valid hex color"),
+  days_allowed: z
+    .number({ message: "Annual limit is required" })
+    .int("Annual limit must be a whole number")
+    .min(0, "Annual limit must be 0 or greater"),
+  requires_document: z.boolean(),
+  is_active: z.boolean(),
+  applicable_gender: z.enum(["male", "female", "other", "all"]),
+  min_notice_days: z
+    .number({ message: "Min notice must be a number" })
+    .int("Min notice must be a whole number")
+    .min(0, "Min notice must be 0 or greater")
+    .nullable(),
+  allow_past_dates: z.boolean(),
+});

@@ -321,21 +321,23 @@ export interface ILeaveDetails {
 }
 
 export interface IUserLeaveData {
-  user: User;
+  user: LeaveUser;
   year: number;
   total_allowed: number;
   total_taken: number;
   total_remaining: number;
   available: number;
-  casual: ILeaveStats;
-  sick: ILeaveStats;
-  maternity: ILeaveStats;
-  paid: ILeaveStats;
+  approved_leave_hours: number;
+  approved_leave_hours_formatted: string;
+  leave_types: LeaveTypeSummary[];
 }
 
 export interface ILeaveDetailsResponse {
   data: IUserLeaveData[];
-  details: ILeaveDetails;
+  details: {
+    year: number;
+    leave_types: LeaveType[];
+  };
 }
 
 export type ICompany = {
@@ -844,4 +846,82 @@ export interface AdminLeaveHistoryFilters {
   start_date?: string;
   end_date?: string;
   status?: LeaveStatus;
+}
+
+export interface LeaveHoliday {
+  id?: number;
+  name: string;
+  date: string;
+  duration?: number | null;
+  description?: string | null;
+  source?: string | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface MandatoryLeaveImportPayload {
+  holidays: Array<Pick<LeaveHoliday, "name" | "date" | "description" | "source">>;
+}
+
+export interface MandatoryLeaveParsePayload {
+  file_name: string;
+  file_content: string;
+  file_encoding: "text" | "base64";
+}
+
+export interface MandatoryLeaveParsedHoliday extends LeaveHoliday {
+  row: number;
+  already_exists: boolean;
+}
+
+export interface MandatoryLeaveRejectedRow {
+  row: number;
+  reason: string;
+  raw: unknown;
+}
+
+export interface MandatoryLeaveParseSummary {
+  total_rows: number;
+  parsed_count: number;
+  rejected_count: number;
+  existing_count: number;
+}
+
+export interface MandatoryLeaveParseResult {
+  parsed: MandatoryLeaveParsedHoliday[];
+  rejected: MandatoryLeaveRejectedRow[];
+  summary: MandatoryLeaveParseSummary;
+}
+
+export interface LeaveTypeListFilters {
+  [key: string]: string | number | boolean | undefined;
+  search?: string;
+  is_active?: boolean;
+}
+
+export interface LeaveTypeRecord extends LeaveType {
+  leave_requests_count: number;
+  can_delete: boolean;
+}
+
+export interface CreateLeaveTypePayload {
+  title: string;
+  color_code: string;
+  days_allowed: number;
+  requires_document?: boolean;
+  is_active?: boolean;
+  applicable_gender?: ApplicableGender;
+  min_notice_days?: number | null;
+  allow_past_dates?: boolean;
+}
+
+export interface UpdateLeaveTypePayload {
+  title?: string;
+  color_code?: string;
+  days_allowed?: number;
+  requires_document?: boolean;
+  is_active?: boolean;
+  applicable_gender?: ApplicableGender;
+  min_notice_days?: number | null;
+  allow_past_dates?: boolean;
 }
