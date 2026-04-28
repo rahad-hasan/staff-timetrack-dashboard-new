@@ -29,8 +29,6 @@ const LeaveHistoryPage = async ({ searchParams }: ISearchParamsProps) => {
     canManageUsers ? getMembersDashboard() : Promise.resolve(null),
   ]);
 
-  console.log(historyResponse.data)
-
   const users =
     membersResponse?.data?.map((member) => ({
       id: String(member.id),

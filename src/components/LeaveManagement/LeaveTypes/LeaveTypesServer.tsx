@@ -32,7 +32,6 @@ const LeaveTypesServer = async ({ searchParams }: ISearchParamsProps) => {
 
   const [leaveTypesResponse, leaveDetailsResponse] = await Promise.all([
     getLeaveTypes({
-      search: typeof params.search === "string" ? params.search : undefined,
       is_active: isActiveFilter,
     }),
     getLeaveDetails({

@@ -460,3 +460,30 @@ export const leaveTypeFormSchema = z.object({
     .nullable(),
   allow_past_dates: z.boolean(),
 });
+
+export const leaveHolidayFormSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(2, "Holiday name must be at least 2 characters")
+    .max(120, "Holiday name must be 120 characters or less"),
+  date: z
+    .string()
+    .trim()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Select a valid date"),
+  duration: z
+    .number({ message: "Duration is required" })
+    .int("Duration must be a whole number")
+    .min(1, "Duration must be at least 1 day")
+    .max(31, "Duration must be 31 days or less"),
+  description: z
+    .string()
+    .trim()
+    .max(500, "Description must be 500 characters or less")
+    .optional(),
+  source: z
+    .string()
+    .trim()
+    .min(1, "Source is required")
+    .max(60, "Source must be 60 characters or less"),
+});

@@ -106,18 +106,6 @@ const LeaveHistoryReport = ({
           ) : (
             <div className="hidden xl:block" />
           )}
-          {/* <Input
-            type="date"
-            value={startDate}
-            onChange={(event) => updateQueryParam("start_date", event.target.value)}
-            className="dark:border-darkBorder dark:bg-darkPrimaryBg"
-          />
-          <Input
-            type="date"
-            value={endDate}
-            onChange={(event) => updateQueryParam("end_date", event.target.value)}
-            className="dark:border-darkBorder dark:bg-darkPrimaryBg"
-          /> */}
           <SelectDateRange defaultDateShow={false}/>
           <Select
             value={statusFilter ?? "all"}

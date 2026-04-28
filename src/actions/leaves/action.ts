@@ -2,8 +2,8 @@
 
 import { buildQuery } from "@/utils/buildQuery";
 import { baseApi } from "../baseApi";
-import { AdminLeaveHistoryFilters, CreateLeaveTypePayload, ILeaveDetailsResponse, ILeaveRequest, IResponse, LeaveCalendarData, LeaveCalendarFilters, LeaveRecord, LeaveTypeListFilters, LeaveTypeRecord, UpdateLeaveTypePayload } from "@/types/type";
-import { revalidateTag } from "next/cache";
+import { AdminLeaveHistoryFilters, CreateLeaveHolidayPayload, CreateLeaveTypePayload, ILeaveDetailsResponse, ILeaveRequest, IResponse, LeaveCalendarData, LeaveCalendarFilters, LeaveHoliday, LeaveHolidayListData, LeaveRecord, LeaveTypeListFilters, LeaveTypeRecord, UpdateLeaveHolidayPayload, UpdateLeaveTypePayload } from "@/types/type";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 // export const getLeave = async (query = {}): Promise<IResponse<ILeaveRequest[]>> => {
 //     const queryString = buildQuery(query);
@@ -64,6 +64,14 @@ import { revalidateTag } from "next/cache";
 
 // ======== new api ==========
 // ===========================
+
+const revalidateHolidayViews = () => {
+  revalidateTag("leave-holidays");
+  revalidateTag("leaves");
+  revalidatePath("/leave-management/holidays");
+  revalidatePath("/leave-management/calendar");
+  revalidatePath("/leave-management/my-leaves");
+};
 
 export const getLeaveCalendar = async (query: LeaveCalendarFilters = {}): Promise<IResponse<LeaveCalendarData>> => {
     const queryString = buildQuery(query);
@@ -192,4 +200,66 @@ export const getLeaveType = async (
   return await baseApi(`/leaves/types/${id}`, {
     tag: "leave-types",
   });
+};
+
+// holidays
+export const createLeaveHoliday = async (
+  data: CreateLeaveHolidayPayload,
+): Promise<IResponse<LeaveHoliday>> => {
+  const response = await baseApi(`/leaves/holidays`, {
+    method: "POST",
+    body: data,
+    tag: "leave-holidays",
+    cache: "no-cache",
+  });
+
+  if (response?.success) {
+    revalidateHolidayViews();
+  }
+
+  return response;
+};
+
+export const updateLeaveHoliday = async (
+  id: number,
+  data: UpdateLeaveHolidayPayload,
+): Promise<IResponse<LeaveHoliday>> => {
+  const response = await baseApi(`/leaves/holidays/${id}`, {
+    method: "PATCH",
+    body: data,
+    tag: "leave-holidays",
+    cache: "no-cache",
+  });
+
+  if (response?.success) {
+    revalidateHolidayViews();
+  }
+
+  return response;
+};
+
+export const deleteLeaveHoliday = async (id: number): Promise<IResponse<null>> => {
+  const response = await baseApi(`/leaves/holidays/${id}`, {
+    method: "DELETE",
+    tag: "leave-holidays",
+    cache: "no-cache",
+  });
+
+  if (response?.success) {
+    revalidateHolidayViews();
+  }
+
+  return response;
+};
+
+export const getLeaveHolidays = async (
+  query: { year?: string | number } = {},
+): Promise<IResponse<LeaveHolidayListData>> => {
+  const queryString = buildQuery(query);
+  return await baseApi(
+    `/leaves/holidays${queryString ? `?${queryString}` : ""}`,
+    {
+      tag: "leave-holidays",
+    },
+  );
 };

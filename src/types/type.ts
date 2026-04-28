@@ -925,3 +925,35 @@ export interface UpdateLeaveTypePayload {
   min_notice_days?: number | null;
   allow_past_dates?: boolean;
 }
+
+export interface CreateLeaveHolidayPayload {
+  name: string;
+  date: string;
+  duration: number;
+  description?: string;
+  source: string;
+}
+export interface UpdateLeaveHolidayPayload {
+  name?: string;
+  date?: string;
+  duration?: number;
+  description?: string;
+  source?: string;
+}
+export interface LeaveHoliday {
+  id?: number;
+  name: string;
+  date: string;
+  duration?: number | null;
+  description?: string | null;
+  source?: string | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export type LeaveHolidayListData =
+  | LeaveHoliday[]
+  | {
+      holidays?: LeaveHoliday[];
+      data?: LeaveHoliday[];
+    };

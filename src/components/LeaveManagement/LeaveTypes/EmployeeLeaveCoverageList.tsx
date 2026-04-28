@@ -19,7 +19,7 @@ const EmployeeLeaveCoverageList = ({ filteredUsers }: Props) => {
                 filteredUsers.map((row) => (
                     <div
                         key={row.user.id}
-                        className="rounded-[24px] border border-borderColor bg-bgSecondary/50 p-5 dark:border-darkBorder dark:bg-darkPrimaryBg"
+                        className="rounded-[12px] border border-borderColor bg-bgSecondary/50 p-5 dark:border-darkBorder dark:bg-darkPrimaryBg"
                     >
                         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                             <Link
@@ -133,7 +133,7 @@ const EmployeeLeaveCoverageList = ({ filteredUsers }: Props) => {
                     </div>
                 ))
             ) : (
-                <div className="rounded-[24px] border border-dashed border-borderColor px-6 py-16 text-center text-subTextColor dark:border-darkBorder dark:text-darkTextSecondary">
+                <div className="rounded-[12px] border border-dashed border-borderColor px-6 py-16 text-center text-subTextColor dark:border-darkBorder dark:text-darkTextSecondary">
                     No employees matched the current search.
                 </div>
             )}

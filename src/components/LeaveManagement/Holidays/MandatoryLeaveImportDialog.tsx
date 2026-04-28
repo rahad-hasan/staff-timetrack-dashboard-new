@@ -355,10 +355,10 @@ const MandatoryLeaveImportDialog = ({
           event.preventDefault();
         }
       }}
-      className="w-full max-w-[1180px] border-borderColor p-0 dark:border-darkBorder dark:bg-darkSecondaryBg"
+      className="w-full border-borderColor px-0 pt-1 dark:border-darkBorder dark:bg-darkSecondaryBg"
     >
       <div className="max-h-[88vh] overflow-y-auto">
-        <div className="border-b border-borderColor bg-[linear-gradient(135deg,#ffffff_0%,#f8fbff_50%,#fdf2f8_100%)] p-6 dark:border-darkBorder dark:bg-[linear-gradient(135deg,rgba(50,57,71,1)_0%,rgba(33,39,51,1)_100%)]">
+        <div className="border-b border-borderColor bg-[linear-gradient(135deg,#ffffff_0%,#f8fbff_50%,#fdf2f8_100%)] p-5 dark:border-darkBorder dark:bg-[linear-gradient(135deg,rgba(50,57,71,1)_0%,rgba(33,39,51,1)_100%)]">
           <DialogHeader>
             <DialogTitle className="text-headingTextColor dark:text-darkTextPrimary">
               Mandatory leave import
@@ -371,21 +371,21 @@ const MandatoryLeaveImportDialog = ({
           </DialogHeader>
 
           <div className="mt-5 flex flex-wrap gap-3 text-sm">
-            <Badge className="bg-white px-3 py-1.5 text-headingTextColor shadow-sm dark:bg-darkPrimaryBg dark:text-darkTextPrimary">
+            <Badge className="bg-white px-3 py-1.5 text-headingTextColor dark:bg-darkPrimaryBg dark:text-darkTextPrimary">
               Import target: {selectedYear}
             </Badge>
             <Badge className="bg-primary/10 px-3 py-1.5 text-primary dark:bg-primary/15">
               Existing rows are auto-skipped
             </Badge>
-            <Badge className="bg-white px-3 py-1.5 text-subTextColor shadow-sm dark:bg-darkPrimaryBg dark:text-darkTextSecondary">
+            <Badge className="bg-white px-3 py-1.5 text-subTextColor dark:text-darkTextSecondary dark:bg-darkPrimaryBg">
               File types: CSV, TSV, TXT, PSV, PDF
             </Badge>
           </div>
         </div>
 
-        <div className="space-y-6 p-6">
-          <div className="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
-            <div className="rounded-[28px] border border-borderColor bg-bgSecondary/50 p-5 dark:border-darkBorder dark:bg-darkPrimaryBg">
+        <div className="space-y-6 p-5">
+          <div className="">
+            <div className="rounded-[12px] border border-borderColor bg-bgSecondary/50 p-5 dark:border-darkBorder dark:bg-darkPrimaryBg">
               <div className="flex items-start gap-3">
                 <div className="rounded-2xl bg-primary/10 p-3 text-primary">
                   <FileSpreadsheet className="size-5" />
@@ -394,14 +394,14 @@ const MandatoryLeaveImportDialog = ({
                   <p className="text-sm font-medium text-headingTextColor dark:text-darkTextPrimary">
                     Step 1. Choose and parse a source file
                   </p>
-                  <p className="mt-1 text-sm text-subTextColor">
+                  <p className="mt-1 text-sm text-subTextColor dark:text-darkTextSecondary">
                     Supported inputs: CSV, TSV, semicolon-delimited text, pipe-delimited text, and
                     text-based PDF.
                   </p>
                 </div>
               </div>
 
-              <div className="mt-5 rounded-[24px] border border-dashed border-borderColor bg-white p-4 dark:border-darkBorder dark:bg-darkSecondaryBg">
+              <div className="mt-5 rounded-[12px] border border-dashed border-borderColor bg-white p-4 dark:border-darkBorder dark:bg-darkSecondaryBg">
                 <Input
                   type="file"
                   accept={FILE_ACCEPT}
@@ -411,7 +411,7 @@ const MandatoryLeaveImportDialog = ({
               </div>
 
               <div className="mt-4 flex flex-wrap items-center gap-3 text-sm">
-                <Badge className="bg-white px-3 py-1.5 text-headingTextColor shadow-sm dark:bg-darkSecondaryBg dark:text-darkTextPrimary">
+                <Badge className="bg-white px-3 py-1.5 text-headingTextColor dark:bg-darkSecondaryBg dark:text-darkTextPrimary">
                   {selectedFile ? selectedFile.name : "No file selected"}
                 </Badge>
                 {selectedFile ? (
@@ -425,7 +425,7 @@ const MandatoryLeaveImportDialog = ({
                 <Button
                   onClick={handleParse}
                   disabled={!selectedFile || isParsing || isImporting}
-                  className="sm:min-w-[170px]"
+                  className="sm:min-w-[170px] text-headingTextColor"
                 >
                   {isParsing ? (
                     <>
@@ -444,7 +444,7 @@ const MandatoryLeaveImportDialog = ({
                   variant="outline2"
                   onClick={handleImport}
                   disabled={!parseResult || !importableCount || isParsing || isImporting}
-                  className="dark:bg-darkSecondaryBg sm:min-w-[220px]"
+                  className="dark:bg-darkSecondaryBg sm:min-w-[220px] dark:text-darkTextPrimary"
                 >
                   {isImporting ? (
                     <>
@@ -455,23 +455,6 @@ const MandatoryLeaveImportDialog = ({
                     `Step 2. Confirm import (${importableCount})`
                   )}
                 </Button>
-              </div>
-            </div>
-
-            <div className="rounded-[28px] border border-borderColor bg-white p-5 shadow-sm dark:border-darkBorder dark:bg-darkPrimaryBg">
-              <p className="text-sm font-semibold text-headingTextColor dark:text-darkTextPrimary">
-                Import flow
-              </p>
-              <div className="mt-4 space-y-3 text-sm text-subTextColor">
-                <div className="rounded-[20px] bg-bgSecondary/70 px-4 py-3 dark:bg-darkSecondaryBg">
-                  1. Upload a structured file for {selectedYear}.
-                </div>
-                <div className="rounded-[20px] bg-bgSecondary/70 px-4 py-3 dark:bg-darkSecondaryBg">
-                  2. Parse the dataset and review valid, duplicate, and rejected rows.
-                </div>
-                <div className="rounded-[20px] bg-bgSecondary/70 px-4 py-3 dark:bg-darkSecondaryBg">
-                  3. Import only clean rows that do not already exist in the holiday table.
-                </div>
               </div>
             </div>
           </div>
@@ -485,10 +468,10 @@ const MandatoryLeaveImportDialog = ({
                   return (
                     <div
                       key={item.label}
-                      className="rounded-[24px] border border-borderColor bg-white p-5 shadow-sm dark:border-darkBorder dark:bg-darkPrimaryBg"
+                      className="rounded-[12px] border border-borderColor bg-white p-5 dark:border-darkBorder dark:bg-darkPrimaryBg"
                     >
                       <div className="flex items-center justify-between gap-3">
-                        <p className="text-xs uppercase tracking-[0.14em] text-subTextColor">
+                        <p className="text-xs uppercase tracking-[0.14em] text-subTextColor dark:text-darkTextSecondary">
                           {item.label}
                         </p>
                         <div
@@ -506,13 +489,13 @@ const MandatoryLeaveImportDialog = ({
                 })}
               </div>
 
-              <div className="rounded-[24px] border border-borderColor bg-white p-5 shadow-sm dark:border-darkBorder dark:bg-darkPrimaryBg">
+              <div className="rounded-[12px] border border-borderColor bg-white p-5 dark:border-darkBorder dark:bg-darkPrimaryBg">
                 <div className="mb-4 flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
                   <div>
                     <h3 className="text-lg font-semibold text-headingTextColor dark:text-darkTextPrimary">
                       Parsed preview
                     </h3>
-                    <p className="text-sm text-subTextColor">
+                    <p className="text-sm text-subTextColor dark:text-darkTextSecondary">
                       Existing holidays are highlighted and excluded from the final import request.
                     </p>
                   </div>
@@ -527,14 +510,14 @@ const MandatoryLeaveImportDialog = ({
                       {parsedRows.map((row) => (
                         <div
                           key={`${row.row}-${row.name}-${row.date}`}
-                          className="rounded-[22px] border border-borderColor bg-bgSecondary/40 p-4 dark:border-darkBorder dark:bg-darkSecondaryBg"
+                          className="rounded-[12px] border border-borderColor bg-bgSecondary/40 p-4 dark:border-darkBorder dark:bg-darkSecondaryBg"
                         >
                           <div className="flex items-start justify-between gap-3">
                             <div>
                               <p className="text-base font-semibold text-headingTextColor dark:text-darkTextPrimary">
                                 Row {row.row}: {row.name}
                               </p>
-                              <p className="mt-1 text-sm text-subTextColor">{row.date}</p>
+                              <p className="mt-1 text-sm text-subTextColor dark:text-darkTextSecondary">{row.date}</p>
                             </div>
                             <Badge className={getParsedStatusClasses(row.already_exists)}>
                               {getParsedStatusLabel(row.already_exists)}
@@ -542,7 +525,7 @@ const MandatoryLeaveImportDialog = ({
                           </div>
                           <div className="mt-4 grid gap-3 sm:grid-cols-2">
                             <div className="rounded-2xl bg-white px-3 py-3 text-sm dark:bg-darkPrimaryBg">
-                              <p className="text-xs uppercase tracking-[0.14em] text-subTextColor">
+                              <p className="text-xs uppercase tracking-[0.14em] text-subTextColor dark:text-darkTextSecondary">
                                 Source
                               </p>
                               <p className="mt-1 font-medium text-headingTextColor dark:text-darkTextPrimary">
@@ -550,7 +533,7 @@ const MandatoryLeaveImportDialog = ({
                               </p>
                             </div>
                             <div className="rounded-2xl bg-white px-3 py-3 text-sm dark:bg-darkPrimaryBg">
-                              <p className="text-xs uppercase tracking-[0.14em] text-subTextColor">
+                              <p className="text-xs uppercase tracking-[0.14em] text-subTextColor dark:text-darkTextSecondary">
                                 Date
                               </p>
                               <p className="mt-1 font-medium text-headingTextColor dark:text-darkTextPrimary">
@@ -558,7 +541,7 @@ const MandatoryLeaveImportDialog = ({
                               </p>
                             </div>
                           </div>
-                          <div className="mt-3 rounded-2xl bg-white px-3 py-3 text-sm text-subTextColor dark:bg-darkPrimaryBg">
+                          <div className="mt-3 rounded-2xl bg-white px-3 py-3 text-sm text-subTextColor dark:text-darkTextSecondary dark:bg-darkPrimaryBg">
                             {row.description || "No description provided."}
                           </div>
                         </div>
@@ -583,7 +566,7 @@ const MandatoryLeaveImportDialog = ({
                               <TableCell>{row.row}</TableCell>
                               <TableCell>{row.name}</TableCell>
                               <TableCell>{row.date}</TableCell>
-                              <TableCell className="max-w-[260px] whitespace-normal text-subTextColor">
+                              <TableCell className="max-w-[260px] whitespace-normal text-subTextColor dark:text-darkTextSecondary">
                                 {row.description || "-"}
                               </TableCell>
                               <TableCell>{row.source || "-"}</TableCell>
@@ -599,19 +582,19 @@ const MandatoryLeaveImportDialog = ({
                     </div>
                   </>
                 ) : (
-                  <div className="rounded-2xl border border-dashed border-borderColor px-4 py-12 text-center text-subTextColor dark:border-darkBorder">
+                  <div className="rounded-2xl border border-dashed border-borderColor px-4 py-12 text-center text-subTextColor dark:text-darkTextSecondary dark:border-darkBorder">
                     No valid rows were parsed from the selected file.
                   </div>
                 )}
               </div>
 
-              <div className="rounded-[24px] border border-borderColor bg-white p-5 shadow-sm dark:border-darkBorder dark:bg-darkPrimaryBg">
+              <div className="rounded-[12px] border border-borderColor bg-white p-5  dark:border-darkBorder dark:bg-darkPrimaryBg">
                 <div className="mb-4 flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
                   <div>
                     <h3 className="text-lg font-semibold text-headingTextColor dark:text-darkTextPrimary">
                       Rejected rows
                     </h3>
-                    <p className="text-sm text-subTextColor">
+                    <p className="text-sm text-subTextColor dark:text-darkTextSecondary">
                       These rows are blocked from import until the source file is corrected.
                     </p>
                   </div>
@@ -627,7 +610,7 @@ const MandatoryLeaveImportDialog = ({
                       {rejectedRows.map((row, index) => (
                         <div
                           key={`${row.row}-${index}`}
-                          className="rounded-[22px] border border-red-200 bg-red-50/60 p-4 dark:border-red-900/50 dark:bg-red-950/20"
+                          className="rounded-[12px] border border-red-200 bg-red-50/60 p-4 dark:border-red-900/50 dark:bg-red-950/20"
                         >
                           <div className="flex items-start justify-between gap-3">
                             <div>
@@ -643,7 +626,7 @@ const MandatoryLeaveImportDialog = ({
                             </Badge>
                           </div>
 
-                          <div className="mt-4 rounded-2xl bg-white px-3 py-3 text-xs text-subTextColor dark:bg-darkPrimaryBg">
+                          <div className="mt-4 rounded-2xl bg-white px-3 py-3 text-xs text-subTextColor dark:text-darkTextSecondary dark:bg-darkPrimaryBg">
                             <pre className="whitespace-pre-wrap break-words font-sans">
                               {previewRawValue(row.raw)}
                             </pre>
@@ -668,7 +651,7 @@ const MandatoryLeaveImportDialog = ({
                               <TableCell className="max-w-[280px] whitespace-normal">
                                 {row.reason}
                               </TableCell>
-                              <TableCell className="max-w-[420px] whitespace-normal text-xs text-subTextColor">
+                              <TableCell className="max-w-[420px] whitespace-normal text-xs text-subTextColor dark:text-darkTextSecondary">
                                 <pre className="whitespace-pre-wrap break-words font-sans">
                                   {previewRawValue(row.raw)}
                                 </pre>
@@ -680,7 +663,7 @@ const MandatoryLeaveImportDialog = ({
                     </div>
                   </>
                 ) : (
-                  <div className="rounded-2xl border border-dashed border-borderColor px-4 py-12 text-center text-subTextColor dark:border-darkBorder">
+                  <div className="rounded-2xl border border-dashed border-borderColor px-4 py-12 text-center text-subTextColor dark:text-darkTextSecondary dark:border-darkBorder">
                     No rejected rows. The parsed dataset is clean.
                   </div>
                 )}
@@ -694,12 +677,13 @@ const MandatoryLeaveImportDialog = ({
             variant="outline2"
             onClick={() => handleOpenChange(false)}
             disabled={isParsing || isImporting}
-            className="dark:bg-darkPrimaryBg"
+            className="dark:bg-darkPrimaryBg dark:text-darkTextPrimary"
           >
             Close
           </Button>
           <Button
             onClick={handleImport}
+            className=" text-headingTextColor"
             disabled={!parseResult || !importableCount || isParsing || isImporting}
           >
             {isImporting ? (
@@ -712,6 +696,22 @@ const MandatoryLeaveImportDialog = ({
             )}
           </Button>
         </DialogFooter>
+        <div className="rounded-[12px] mx-5 p-5 border border-borderColor bg-white dark:border-darkBorder dark:bg-darkPrimaryBg">
+          <p className="text-sm font-semibold text-headingTextColor dark:text-darkTextPrimary">
+            Import flow
+          </p>
+          <div className="mt-4 space-y-3 text-sm text-subTextColor dark:text-darkTextSecondary">
+            <div className="rounded-[20px] bg-bgSecondary/70 px-4 py-3 dark:bg-darkSecondaryBg">
+              1. Upload a structured file for {selectedYear}.
+            </div>
+            <div className="rounded-[20px] bg-bgSecondary/70 px-4 py-3 dark:bg-darkSecondaryBg">
+              2. Parse the dataset and review valid, duplicate, and rejected rows.
+            </div>
+            <div className="rounded-[20px] bg-bgSecondary/70 px-4 py-3 dark:bg-darkSecondaryBg">
+              3. Import only clean rows that do not already exist in the holiday table.
+            </div>
+          </div>
+        </div>
       </div>
     </DialogContent>
   );

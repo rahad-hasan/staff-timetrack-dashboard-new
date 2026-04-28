@@ -9,13 +9,11 @@ import {
   Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
-
 import { deleteLeaveType, updateLeaveType } from "@/actions/leaves/action";
 import { YearPicker } from "@/components/Common/YearPicker";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-
 import { useLogInUserStore } from "@/store/logInUserStore";
 import { ILeaveDetailsResponse, LeaveTypeRecord } from "@/types/type";
 import LeaveTypeDetailsSheet from "./LeaveTypeDetailsSheet";
@@ -65,7 +63,6 @@ const LeaveTypesBoard = ({
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [selectedLeaveTypeId, setSelectedLeaveTypeId] = useState<number | null>(null);
   const [detailsRefreshKey, setDetailsRefreshKey] = useState(0);
-
 
   const tenantLeaveTypes = resolvedDetails.leave_types ?? [];
   const activePolicyCount = tenantLeaveTypes.filter((leaveType) => leaveType.is_active).length;
@@ -354,7 +351,6 @@ const LeaveTypesBoard = ({
             />
           </div>
         </div>
-
         <EmployeeLeaveCoverageList filteredUsers={filteredUsers} />
       </div>
     </div>

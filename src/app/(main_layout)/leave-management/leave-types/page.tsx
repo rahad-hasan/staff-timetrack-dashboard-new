@@ -4,7 +4,7 @@ import HeadingComponent from "@/components/Common/HeadingComponent";
 import LeaveTypesServer from "@/components/LeaveManagement/LeaveTypes/LeaveTypesServer";
 import LeaveDetailsSkeleton from "@/skeleton/leaveManagement/leaveDetailsSkeleton";
 import { ISearchParamsProps } from "@/types/type";
-import LeaveTypeSubNav from "@/components/LeaveManagement/LeaveTypes/LeaveTypeSubNav";
+import LeaveTypeSubNav from "@/components/LeaveManagement/LeaveTypeSubNav";
 
 export const metadata: Metadata = {
   title: "Staff Time Tracker Leave Types",

@@ -11,7 +11,6 @@ import {
   Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
-
 import { deleteLeaveType, getLeaveType, updateLeaveType } from "@/actions/leaves/action";
 import ConfirmDialog from "@/components/Common/ConfirmDialog";
 import { Button } from "@/components/ui/button";
@@ -57,8 +56,9 @@ const LeaveTypeDetailsSheet = ({
     const loadLeaveType = async () => {
       setLoading(true);
       setErrorMessage(null);
-
+      // single leave
       const response = await getLeaveType(leaveTypeId);
+      console.log(response)
 
       if (!active) return;
 

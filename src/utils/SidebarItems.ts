@@ -157,6 +157,7 @@ export const othersSidebarItems = [
         collapsible: true,
         subItems: [
             { label: 'Leave Types', key: '/leave-management/leave-types' },
+            { label: 'Holidays', key: '/leave-management/holidays' },
             { label: 'Request Queue', key: '/leave-management/request-queue' },
             { label: 'History', key: '/leave-management/history' },
             { label: 'Calendar', key: '/leave-management/calendar' },
