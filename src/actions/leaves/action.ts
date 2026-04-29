@@ -2,7 +2,7 @@
 
 import { buildQuery } from "@/utils/buildQuery";
 import { baseApi } from "../baseApi";
-import { AdminLeaveHistoryFilters, CreateLeaveHolidayPayload, CreateLeaveTypePayload, ILeaveDetailsResponse, ILeaveRequest, IResponse, LeaveCalendarData, LeaveCalendarFilters, LeaveHoliday, LeaveHolidayListData, LeaveRecord, LeaveTypeListFilters, LeaveTypeRecord, UpdateLeaveHolidayPayload, UpdateLeaveTypePayload } from "@/types/type";
+import { AdminLeaveHistoryFilters, CreateLeaveHolidayPayload, CreateLeaveTypePayload, ILeaveDetailsResponse, ILeaveRequest, IMember, IResponse, LeaveCalendarData, LeaveCalendarFilters, LeaveHoliday, LeaveHolidayListData, LeaveRecord, LeaveRequestTypeDropdownRecord, LeaveTypeListFilters, LeaveTypeRecord, UpdateLeaveHolidayPayload, UpdateLeaveTypePayload, UserLeaveSummary } from "@/types/type";
 import { revalidatePath, revalidateTag } from "next/cache";
 
 // export const getLeave = async (query = {}): Promise<IResponse<ILeaveRequest[]>> => {
@@ -263,3 +263,76 @@ export const getLeaveHolidays = async (
     },
   );
 };
+
+export const deleteLeave = async (id: number): Promise<IResponse<null>> => {
+  const response = await baseApi(`/leaves/${id}`, {
+    method: "DELETE",
+    tag: "leaves",
+    cache: "no-cache",
+  });
+
+  if (response?.success) {
+    revalidateTag("leaves");
+    revalidateTag("leave-types");
+  }
+
+  return response;
+};
+
+export const addLeave = async (data: {
+  leave_type_id: number;
+  start_date: string;
+  end_date: string;
+  reason: string;
+  document: File | null | undefined;
+}): Promise<IResponse<LeaveRecord>> => {
+  const formData = new FormData();
+  formData.append("leave_type_id", data.leave_type_id.toString());
+  formData.append("start_date", data.start_date);
+  formData.append("end_date", data.end_date);
+  formData.append("reason", data.reason);
+
+  // Append the document file if it's provided
+  if (data.document) {
+    formData.append("document", data.document);
+  }
+
+  const response = await baseApi(`/leaves`, {
+    method: "POST",
+    body: formData,
+    tag: "leaves",
+    cache: "no-cache",
+    isFormData: true,
+  });
+
+  if (response?.success) {
+    revalidateTag("leaves");
+    revalidateTag("leave-types");
+  }
+
+  return response;
+};
+
+
+export const getLeaveRequestTypeDropdown = async (): Promise<
+  IResponse<LeaveRequestTypeDropdownRecord[]>
+> => {
+  return await baseApi(`/leaves/dropdown/types`, {
+    tag: "leaves",
+    cache: "no-cache",
+    revalidate: 0,
+  });
+};
+
+export const getUserLeaveSummary = async (
+  query = {},
+): Promise<IResponse<UserLeaveSummary>> => {
+  const queryString = buildQuery(query);
+  return await baseApi(
+    `/leaves/details/user${queryString ? `?${queryString}` : ""}`,
+    {
+      tag: "leaves",
+    },
+  );
+};
+

@@ -156,6 +156,7 @@ export const othersSidebarItems = [
         key: '/leave-management',
         collapsible: true,
         subItems: [
+            { label: 'My Leaves', key: '/leave-management/my-leaves' },
             { label: 'Leave Types', key: '/leave-management/leave-types' },
             { label: 'Holidays', key: '/leave-management/holidays' },
             { label: 'Request Queue', key: '/leave-management/request-queue' },

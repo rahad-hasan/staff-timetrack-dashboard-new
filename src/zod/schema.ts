@@ -296,27 +296,6 @@ export const editEventSchema = z.object({
   end_time: z.string().min(1, "End time is required"),
 });
 
-export const leaveRequestSchema = z.object({
-  leaveType: z.string().min(1, "Leave type is required"),
-  startDate: z
-    .date()
-    .nullable()
-    .refine((date) => date !== null && !isNaN(date.getTime()), {
-      message: "Start date is required",
-    }),
-  endDate: z
-    .date()
-    .nullable()
-    .refine((date) => date !== null && !isNaN(date.getTime()), {
-      message: "End date is required",
-    }),
-  reason: z.string().min(1, "Reason is required"),
-});
-
-export const leaveRejectRequestSchema = z.object({
-  reason: z.string().min(1, "Reason is required"),
-});
-
 export const userBasicInfoSchema = z.object({
   name: z.string().min(1, "Name is required"),
   title: z.string().min(1, "Title is required"),
@@ -487,3 +466,62 @@ export const leaveHolidayFormSchema = z.object({
     .min(1, "Source is required")
     .max(60, "Source must be 60 characters or less"),
 });
+
+const leaveRequestBaseSchema = z
+  .object({
+    leaveTypeId: z.string().min(1, "Leave type is required"),
+    // supportingDocument: z.unknown().nullable().optional(),
+    supportingDocument: z
+      .instanceof(File)
+      .nullable()
+      .optional()
+      .refine((file) => !file || file instanceof File, {
+        message: "Document must be a valid file",
+      }),
+    startDate: z
+      .date()
+      .nullable()
+      .refine((date) => date !== null && !isNaN(date.getTime()), {
+        message: "Start date is required",
+      }),
+    endDate: z
+      .date()
+      .nullable()
+      .refine((date) => date !== null && !isNaN(date.getTime()), {
+        message: "End date is required",
+      }),
+    reason: z.string().min(1, "Reason is required"),
+  })
+  .superRefine((values, ctx) => {
+    if (
+      values.startDate &&
+      values.endDate &&
+      values.endDate < values.startDate
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["endDate"],
+        message: "End date cannot be before the start date",
+      });
+    }
+});
+
+export const createLeaveRequestSchema = (
+  requiredDocumentLeaveTypeIds: Iterable<string | number> = [],
+) => {
+  const requiredIds = new Set(
+    Array.from(requiredDocumentLeaveTypeIds, (id) => String(id)),
+  );
+
+  return leaveRequestBaseSchema.superRefine((values, ctx) => {
+    if (requiredIds.has(values.leaveTypeId) && !values.supportingDocument) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["supportingDocument"],
+        message: "Supporting document is required for this leave type",
+      });
+    }
+  });
+};
+
+export const leaveRequestSchema = createLeaveRequestSchema();

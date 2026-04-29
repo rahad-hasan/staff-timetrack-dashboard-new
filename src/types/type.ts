@@ -957,3 +957,73 @@ export type LeaveHolidayListData =
       holidays?: LeaveHoliday[];
       data?: LeaveHoliday[];
     };
+
+export interface LeaveRequestTypeDropdownRecord {
+  id: number;
+  title: string;
+  color_code: string;
+  requires_document: boolean;
+  applicable_gender: LeaveApplicableGender;
+  min_notice_days: number | null;
+  allow_past_dates: boolean;
+  days_allowed: number;
+  taken: number;
+  left: number;
+}
+
+
+export interface UserLeaveSummary {
+  user: LeaveUser;
+  year: number;
+  summary: {
+    total_allowed: number;
+    total_taken: number;
+    total_remaining: number;
+    available_percentage: number;
+    available_leaves: number;
+    approved_leave_hours: number;
+    approved_leave_hours_formatted: string;
+    leave_types: LeaveTypeSummary[];
+  };
+  requests: {
+    pending: LeaveRecord[];
+    approved: LeaveRecord[];
+    rejected: LeaveRecord[];
+  };
+  next_holidays: LeaveHoliday[];
+}
+
+export interface LeaveRequestTypeDropdownRecord {
+  id: number;
+  title: string;
+  color_code: string;
+  requires_document: boolean;
+  applicable_gender: LeaveApplicableGender;
+  min_notice_days: number | null;
+  allow_past_dates: boolean;
+  days_allowed: number;
+  taken: number;
+  left: number;
+}
+
+
+export interface UserLeaveSummary {
+  user: LeaveUser;
+  year: number;
+  summary: {
+    total_allowed: number;
+    total_taken: number;
+    total_remaining: number;
+    available_percentage: number;
+    available_leaves: number;
+    approved_leave_hours: number;
+    approved_leave_hours_formatted: string;
+    leave_types: LeaveTypeSummary[];
+  };
+  requests: {
+    pending: LeaveRecord[];
+    approved: LeaveRecord[];
+    rejected: LeaveRecord[];
+  };
+  next_holidays: LeaveHoliday[];
+}
