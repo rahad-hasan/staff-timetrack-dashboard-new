@@ -1,19 +1,23 @@
 "use client"
+import { deleteLeave } from "@/actions/leaves/action";
 import ConfirmDialog from "@/components/Common/ConfirmDialog";
 import { Button } from "@/components/ui/button";
 import { getLeaveStatusTheme, getLeaveTypeTheme } from "@/lib/leave";
 import { LeaveRecord, UserLeaveSummary } from "@/types/type";
 import { formatTZDayMonthYear } from "@/utils";
 import { Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
+import { toast } from "sonner";
 
 type LeaveHistoryTableProps = {
   data: UserLeaveSummary;
   currentUserId?: number;
   allowRequestLeave?: boolean;
-  handleDeleteRequest: (leaveId: number) => Promise<void> | void;
 };
-const LeaveHistoryTable = ({ data, currentUserId, allowRequestLeave, handleDeleteRequest }:LeaveHistoryTableProps) => {
+const LeaveHistoryTable = ({ data, currentUserId, allowRequestLeave }: LeaveHistoryTableProps) => {
+  const router = useRouter();
+
   type HistoryTab = "pending" | "approved" | "rejected";
 
   const tabConfig: { key: HistoryTab; label: string }[] = [
@@ -32,10 +36,8 @@ const LeaveHistoryTable = ({ data, currentUserId, allowRequestLeave, handleDelet
     [activeTab, data.requests],
   );
 
-
   const isSelfView = currentUserId === data.user.id;
   const canRequestLeave = allowRequestLeave ?? isSelfView;
-
 
   const renderRequestCard = (request: LeaveRecord) => {
     const leaveTypeTheme = getLeaveTypeTheme(request.leaveType?.color_code);
@@ -45,6 +47,24 @@ const LeaveHistoryTable = ({ data, currentUserId, allowRequestLeave, handleDelet
       request.status === "pending" &&
       currentUserId === data.user.id &&
       currentUserId === request.user_id;
+
+    const handleDeleteRequest = async (leaveId: number) => {
+      const response = await deleteLeave(leaveId);
+
+      if (response?.success) {
+        toast.success(response.message || "Leave request deleted");
+        router.refresh();
+        return;
+      }
+
+      toast.error(response?.message || "Failed to delete leave request", {
+        style: {
+          backgroundColor: "#ef4444",
+          color: "white",
+          border: "none",
+        },
+      });
+    };
 
     return (
       <div

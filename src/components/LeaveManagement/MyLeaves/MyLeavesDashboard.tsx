@@ -8,9 +8,6 @@ import {
   ArrowLeft,
   Plus,
 } from "lucide-react";
-import { toast } from "sonner";
-
-import { deleteLeave } from "@/actions/leaves/action";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import { YearPicker } from "@/components/Common/YearPicker";
@@ -98,25 +95,6 @@ const MyLeavesDashboard = ({
     setRequestOpen(true);
   };
 
-  const handleDeleteRequest = async (leaveId: number) => {
-    const response = await deleteLeave(leaveId);
-
-    if (response?.success) {
-      toast.success(response.message || "Leave request deleted");
-      router.refresh();
-      return;
-    }
-
-    toast.error(response?.message || "Failed to delete leave request", {
-      style: {
-        backgroundColor: "#ef4444",
-        color: "white",
-        border: "none",
-      },
-    });
-  };
-
-
   return (
     <div className="space-y-6">
       <Dialog open={requestOpen} onOpenChange={setRequestOpen}>
@@ -175,7 +153,6 @@ const MyLeavesDashboard = ({
         currentUserId={currentUserId}
       ></LeaveOverview>
 
-
       <LeaveBalances
         leaveTypes={leaveTypes}
         handleOpenRequest={handleOpenRequest}
@@ -187,9 +164,7 @@ const MyLeavesDashboard = ({
         data={data}
         currentUserId={currentUserId}
         allowRequestLeave={allowRequestLeave}
-        handleDeleteRequest={handleDeleteRequest}
       ></LeaveHistoryTable>
-
 
     </div>
   );

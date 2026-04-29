@@ -1,5 +1,4 @@
 import { Metadata } from "next";
-
 import {
   getLeaveRequestTypeDropdown,
   getUserLeaveSummary,
@@ -79,18 +78,18 @@ const MyLeavesPage = async ({ searchParams }: ISearchParamsProps) => {
         avatar: member.image ?? "",
       })) ?? [];
 
-  const users = Array.from(
-    new Map(
-      [
-        ...memberUsers,
-        {
-          id: String(summaryData.user.id),
-          label: summaryData.user.name,
-          avatar: summaryData.user.image ?? "",
-        },
-      ].map((user) => [user.id, user]),
-    ).values(),
-  ).sort((first, second) => first.label.localeCompare(second.label));
+  // const users = Array.from(
+  //   new Map(
+  //     [
+  //       ...memberUsers,
+  //       {
+  //         id: String(summaryData.user.id),
+  //         label: summaryData.user.name,
+  //         avatar: summaryData.user.image ?? "",
+  //       },
+  //     ].map((user) => [user.id, user]),
+  //   ).values(),
+  // ).sort((first, second) => first.label.localeCompare(second.label));
 
   return (
     <MyLeavesDashboard
@@ -98,7 +97,7 @@ const MyLeavesPage = async ({ searchParams }: ISearchParamsProps) => {
       leaveTypes={leaveTypesResponse.data}
       currentUserId={currentUser?.id}
       canManageUsers={canManageUsers}
-      users={users}
+      users={memberUsers}
       allowRequestLeave={currentUser?.id === summaryData.user.id}
     />
   );

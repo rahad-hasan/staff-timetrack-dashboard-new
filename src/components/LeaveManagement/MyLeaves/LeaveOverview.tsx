@@ -7,12 +7,12 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
 type LeaveOverviewProps = {
-  data: UserLeaveSummary;
-  headingSubtitle?: string;
-  currentUserId?: number;
+    data: UserLeaveSummary;
+    headingSubtitle?: string;
+    currentUserId?: number;
 };
 
-const LeaveOverview = ({ data, headingSubtitle, currentUserId }:LeaveOverviewProps) => {
+const LeaveOverview = ({ data, headingSubtitle, currentUserId }: LeaveOverviewProps) => {
 
     const searchParams = useSearchParams();
     const selectedYear = searchParams.get("year") || String(data.year);
