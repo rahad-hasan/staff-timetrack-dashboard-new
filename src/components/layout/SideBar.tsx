@@ -3,7 +3,7 @@ import Image from 'next/image';
 // import logo from '../../assets/logo.svg'
 // import fit from '../../assets/fit.svg'
 // import { useEffect, useState } from 'react';
-import { othersSidebarItems, sidebarItems, sidebarItemsEmployee } from '@/utils/SidebarItems';
+import { employeeOthersSidebarItems, othersSidebarItems, sidebarItems, sidebarItemsEmployee } from '@/utils/SidebarItems';
 import { useSidebarStore } from '@/store/sidebarStore';
 // import { usePathname } from 'next/navigation';
 import SidebarItem from './sidebar/SidebarItem';
@@ -36,6 +36,10 @@ const SideBar = () => {
     const roleBasedSidebarItems = (logInUserData?.role === 'admin' ||
         logInUserData?.role === 'manager' ||
         logInUserData?.role === 'hr') ? sidebarItems : sidebarItemsEmployee;
+
+    const roleBasedOthersSidebarItems = (logInUserData?.role === 'admin' ||
+        logInUserData?.role === 'manager' ||
+        logInUserData?.role === 'hr') ? othersSidebarItems : employeeOthersSidebarItems;
 
     // const sidebarRef = useRef<HTMLDivElement>(null);
 
@@ -138,7 +142,7 @@ const SideBar = () => {
                         {!isCollapsed && (
                             <h2 className="text-xs uppercase text-subTextColor dark:text-darkTextSecondary mb-2">Others</h2>
                         )}
-                        {othersSidebarItems.map((item) => (
+                        {roleBasedOthersSidebarItems.map((item) => (
                             <div key={item.key}>
                                 <SidebarItem
                                     icon={item.icon}

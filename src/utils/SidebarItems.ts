@@ -172,3 +172,31 @@ export const othersSidebarItems = [
         subItems: [],
     },
 ]
+
+export const employeeOthersSidebarItems = [
+    {
+        icon: CalendarDays,
+        label: 'Event',
+        key: '/event',
+        collapsible: false,
+        subItems: [],
+    },
+    {
+        icon: AlarmClock,
+        label: 'Leaves',
+        key: '/leave-management',
+        collapsible: true,
+        subItems: [
+            { label: 'My Leaves', key: '/leave-management/my-leaves' },
+            { label: 'History', key: '/leave-management/history' },
+            { label: 'Calendar', key: '/leave-management/calendar' },
+        ],
+    },
+    {
+        icon: Settings,
+        label: 'Settings',
+        key: '/settings',
+        collapsible: false,
+        subItems: [],
+    },
+]
