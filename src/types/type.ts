@@ -1027,3 +1027,178 @@ export interface UserLeaveSummary {
   };
   next_holidays: LeaveHoliday[];
 }
+
+/* =========================
+ * Event Management
+ * ========================= */
+export type EventConferenceProvider = "google_meet" | "microsoft_teams" | null;
+export type EventSyncTarget = "google" | "microsoft";
+export type EventSyncStatus =
+  | "not_requested"
+  | "pending_connection"
+  | "pending"
+  | "processing"
+  | "synced"
+  | "failed";
+
+export interface EventOrganizerSync {
+  user_id: number;
+  status: EventSyncStatus;
+  calendar_link: string | null;
+  meeting_link: string | null;
+  last_error: string | null;
+  synced_at: string | null;
+  updated_at: string | null;
+}
+
+export interface EventMemberSyncOverview {
+  user_id: number;
+  name: string;
+  email: string;
+  image: string | null;
+  status: EventSyncStatus;
+  is_connected: boolean;
+  is_organizer: boolean;
+  calendar_link: string | null;
+  meeting_link: string | null;
+  last_error: string | null;
+  synced_at: string | null;
+  updated_at: string | null;
+}
+
+export interface EventGoogleSyncOverview {
+  enabled: boolean;
+  counts: {
+    total_assigned: number;
+    pending_connection: number;
+    pending: number;
+    processing: number;
+    synced: number;
+    failed: number;
+  };
+  organizer: EventOrganizerSync | null;
+  members: EventMemberSyncOverview[];
+}
+
+export interface EventMicrosoftSyncOverview {
+  enabled: boolean;
+  status: EventSyncStatus;
+  calendar_link: string | null;
+  meeting_link: string | null;
+  last_error: string | null;
+  synced_at: string | null;
+  updated_at: string | null;
+}
+
+export interface EventSyncOverview {
+  google: EventGoogleSyncOverview;
+  microsoft: EventMicrosoftSyncOverview;
+}
+
+export interface EventAssignUser {
+  user: {
+    id: number;
+    name: string;
+    image: string | null;
+    email: string;
+  };
+}
+
+export interface EventCreatedBy {
+  id: number;
+  name: string;
+  image: string | null;
+  email: string;
+}
+
+export interface IEvent {
+  id: number;
+  name: string;
+  note: string;
+  start_time: string;
+  end_time: string;
+  meeting_link: string | null;
+  meeting_provider: EventConferenceProvider;
+  sync_targets: EventSyncTarget[];
+  company_id: number;
+  created_by: number;
+  createdBy: EventCreatedBy;
+  eventAssigns: EventAssignUser[];
+  eventExternalSyncs?: any[];
+  eventUserIntegrationSyncs?: any[];
+  sync_overview: EventSyncOverview;
+}
+
+export interface CreateEventPayload {
+  name: string;
+  note: string;
+  start_time: string;
+  end_time: string;
+  member_ids: number[] | "all";
+  conference_provider?: "google" | "microsoft";
+  calendar_sync_targets?: EventSyncTarget[];
+  force_create?: boolean;
+}
+
+/* =========================
+ * Google Integration
+ * ========================= */
+export type GoogleConnectionStatus =
+  | "connected"
+  | "disconnected"
+  | "expired"
+  | "revoked";
+
+export interface GoogleConnectedResponse {
+  connected: boolean;
+  provider: "google";
+  status: GoogleConnectionStatus;
+  provider_email: string | null;
+  token_expiry: string | null;
+  last_synced_at: string | null;
+}
+
+export interface GoogleStatusFullResponse {
+  id?: number;
+  provider: "google";
+  type: "calendar";
+  status: GoogleConnectionStatus;
+  connected: boolean;
+  provider_email?: string | null;
+  user?: { id: number; name: string; email: string; company_id: number };
+  token_expiry?: string | null;
+  scope?: string[];
+  metadata?: { profile_picture: string | null; calendar_id: string };
+  last_synced_at?: string | null;
+  disconnected_at?: string | null;
+}
+
+export interface GoogleCalendarMetadata {
+  id: string;
+  summary: string;
+  description: string | null;
+  primary: boolean;
+  backgroundColor: string | null;
+  foregroundColor: string | null;
+  accessRole: string | null;
+}
+
+export interface GoogleEventsListItem {
+  id: string;
+  summary?: string;
+  description?: string;
+  location?: string;
+  htmlLink?: string;
+  hangoutLink?: string;
+  start: { dateTime?: string; date?: string; timeZone?: string };
+  end: { dateTime?: string; date?: string; timeZone?: string };
+  attendees?: {
+    email: string;
+    displayName?: string;
+    responseStatus?: string;
+  }[];
+  organizer?: { email?: string; displayName?: string };
+  status?: string;
+  provider: "google";
+  calendar: GoogleCalendarMetadata;
+}

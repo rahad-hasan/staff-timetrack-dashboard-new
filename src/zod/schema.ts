@@ -242,58 +242,67 @@ export const editMemberSchema = z.object({
     .optional(),
 });
 
-export const addNewEventSchema = z.object({
-  eventName: z.string().min(1, "Event name is required"),
-  date: z.date().refine((date) => !isNaN(date.getTime()), {
-    message: "Date is required",
-  }),
-  start_time: z.string().min(1, "Start time is required"),
-  end_time: z.string().min(1, "End time is required"),
-  project: z.string().optional(),
-  meetingLink: z
-    .string()
-    .optional()
-    .or(z.literal(""))
-    .refine(
-      (value) => {
-        if (!value || value === "") return true;
-        try {
-          new URL(value);
-          return true;
-        } catch {
-          return false;
-        }
-      },
-      { message: "Meeting link must be a valid HTTP/HTTPS URL" },
-    )
-    .refine(
-      (value) => {
-        if (!value || value === "") return true;
-        return /^https?:\/\/[a-z0-9.-]*(meet|teams)[a-z0-9.-]*\/\S+/i.test(
-          value,
-        );
-      },
-      {
-        message: "Meeting link must be a valid Meet or Teams URL",
-      },
-    ),
+export const addNewEventSchema = z
+  .object({
+    eventName: z
+      .string()
+      .trim()
+      .min(2, "Event name must be at least 2 characters")
+      .max(30, "Event name must be 30 characters or less"),
+    date: z.date().refine((date) => !isNaN(date.getTime()), {
+      message: "Date is required",
+    }),
+    start_time: z.string().min(1, "Start time is required"),
+    end_time: z.string().min(1, "End time is required"),
+    members: z
+      .array(z.union([z.number(), z.string()]))
+      .min(1, "At least one member is required"),
+    description: z
+      .string()
+      .trim()
+      .min(5, "Description must be at least 5 characters")
+      .max(100, "Description must be 100 characters or less"),
+    conference_provider: z.enum(["none", "google", "microsoft"]).default("none"),
+  })
+  .superRefine((values, ctx) => {
+    if (values.start_time && values.end_time) {
+      if (values.end_time <= values.start_time) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["end_time"],
+          message: "End time must be after start time",
+        });
+      }
+    }
+  });
+
+export const editEventSchema = z
+  .object({
+    date: z
+      .date()
+      .nullable()
+      .refine((date) => date !== null, {
+        message: "Date is required",
+      }),
+    start_time: z.string().min(1, "Start time is required"),
+    end_time: z.string().min(1, "End time is required"),
+  })
+  .superRefine((values, ctx) => {
+    if (values.start_time && values.end_time) {
+      if (values.end_time <= values.start_time) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["end_time"],
+          message: "End time must be after start time",
+        });
+      }
+    }
+  });
+
+export const addEventMembersSchema = z.object({
   members: z
     .array(z.union([z.number(), z.string()]))
     .min(1, "At least one member is required"),
-  description: z
-    .string()
-    .min(5, "Event description must be at least 5 characters long"),
-});
-
-export const editEventSchema = z.object({
-  date: z
-    .date()
-    .nullable()
-    .refine((date) => date !== null, {
-      message: "Date is required",
-    }),
-  start_time: z.string().min(1, "Start time is required"),
-  end_time: z.string().min(1, "End time is required"),
 });
 
 export const userBasicInfoSchema = z.object({
