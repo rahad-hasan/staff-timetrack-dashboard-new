@@ -162,6 +162,7 @@ const MyLeavesDashboard = ({
 
       <LeaveHistoryTable
         data={data}
+        canManageUsers={canManageUsers}
         currentUserId={currentUserId}
         allowRequestLeave={allowRequestLeave}
       ></LeaveHistoryTable>

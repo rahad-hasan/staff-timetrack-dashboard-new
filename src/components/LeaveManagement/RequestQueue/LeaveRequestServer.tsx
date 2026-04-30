@@ -34,7 +34,7 @@ const LeaveRequestServer = async ({ searchParams }: ISearchParamsProps) => {
       avatar: member.image ?? "",
     })) ?? [];
 
-    console.log(leaveResponse?.data)
+    console.log(leaveResponse)
 
   return (
     <>
@@ -43,6 +43,7 @@ const LeaveRequestServer = async ({ searchParams }: ISearchParamsProps) => {
         canManageUsers={canManageUsers}
         canTakeAction={canTakeAction}
         users={users}
+        total={leaveResponse?.meta?.total}
       />
       <AppPagination
         total={(leaveResponse?.meta?.total as number) ?? 1}

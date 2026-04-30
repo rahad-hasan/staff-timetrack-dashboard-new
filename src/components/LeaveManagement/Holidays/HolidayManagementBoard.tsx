@@ -18,14 +18,16 @@ import { deleteLeaveHoliday } from "@/actions/leaves/action";
 import { YearPicker } from "@/components/Common/YearPicker";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
-import { LeaveHoliday } from "@/types/type";
+import { IMeta, LeaveHoliday } from "@/types/type";
 import MandatoryLeaveImportDialog from "./MandatoryLeaveImportDialog";
 import HolidayFormDialog from "./HolidayFormDialog";
 import HolidayTable from "./HolidayTable";
+import AppPagination from "@/components/Common/AppPagination";
 
 type HolidayManagementBoardProps = {
   holidays: LeaveHoliday[];
   canManageHolidays: boolean;
+  meta: IMeta
 };
 
 function getStatusVariant(holiday: LeaveHoliday, selectedYear: string) {
@@ -68,6 +70,7 @@ function getSourceTone(source?: string | null) {
 const HolidayManagementBoard = ({
   holidays,
   canManageHolidays,
+  meta,
 }: HolidayManagementBoardProps) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -367,6 +370,16 @@ const HolidayManagementBoard = ({
           getStatusVariant={getStatusVariant}
           getSourceTone={getSourceTone}
         />
+
+        {
+          meta?.total > 10 &&
+          <AppPagination
+            total={meta?.total}
+            currentPage={meta.page}
+            limit={meta?.limit}
+          />
+        }
+
       </div>
     </>
   );

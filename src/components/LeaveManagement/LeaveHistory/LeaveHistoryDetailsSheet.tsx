@@ -138,7 +138,7 @@ const LeaveHistoryDetailsSheet = ({
 
                   {leave.user ? (
                     <Button asChild variant="outline2" className="dark:bg-darkSecondaryBg dark:text-darkTextSecondary">
-                      <Link href={`/leave-management/user-leave-history/${leave.user.id}`}>
+                      <Link href={`/members/${leave.user.id}`}>
                         Open profile
                         <ArrowUpRight className="size-4" />
                       </Link>

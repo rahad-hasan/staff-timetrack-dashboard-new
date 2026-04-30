@@ -1,9 +1,8 @@
 "use client"
-import { Button } from "@/components/ui/button";
+import CalendarIcon from "@/components/Icons/CalendarIcon";
 import { UserLeaveSummary } from "@/types/type";
 import { format, isValid, parseISO } from "date-fns";
-import { CalendarDays, CalendarRange, ChevronRight, Sparkles } from "lucide-react";
-import Link from "next/link";
+import { Sparkles } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 
 type LeaveOverviewProps = {
@@ -169,7 +168,7 @@ const LeaveOverview = ({ data, headingSubtitle, currentUserId }: LeaveOverviewPr
                 <div className="overflow-hidden rounded-[12px] border border-borderColor dark:border-darkBorder dark:bg-darkSecondaryBg">
                     <div className="flex items-center gap-3 border-b border-borderColor px-5 py-4 dark:border-darkBorder">
                         <div className="rounded-2xl bg-amber-500/10 p-3 text-amber-600">
-                            <CalendarDays className="size-5" />
+                            <CalendarIcon size={20} />
                         </div>
                         <div>
                             <p className="text-base font-semibold text-headingTextColor dark:text-darkTextPrimary">

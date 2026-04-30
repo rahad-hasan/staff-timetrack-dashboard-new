@@ -37,6 +37,7 @@ type LeaveRequestDetailsSheetProps = {
   leave: LeaveRecord | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  canManageUsers: boolean;
   canTakeAction: boolean;
   onMutated: () => void;
 };
@@ -140,6 +141,7 @@ const LeaveRequestDetailsSheet = ({
   leave,
   open,
   onOpenChange,
+  canManageUsers,
   canTakeAction,
   onMutated,
 }: LeaveRequestDetailsSheetProps) => {
@@ -157,6 +159,8 @@ const LeaveRequestDetailsSheet = ({
   );
   const attachment = useMemo(() => extractAttachmentInfo(leave), [leave]);
   const canReviewAction = canTakeAction && leave?.status === "pending";
+
+  console.log("canTakeAction", canTakeAction)
 
   const resetActionState = () => {
     setRejectMode(false);
@@ -267,7 +271,7 @@ const LeaveRequestDetailsSheet = ({
           {leave ? (
             <>
               <div
-                className="rounded-[12px] border bg-white p-5 shadow-sm dark:bg-darkPrimaryBg"
+                className="rounded-[12px] border bg-white p-5 dark:bg-darkPrimaryBg"
                 style={{
                   borderColor: leaveTypeTheme.borderColor,
                   boxShadow: `inset 0 1px 0 ${leaveTypeTheme.backgroundColor}`,
@@ -326,9 +330,9 @@ const LeaveRequestDetailsSheet = ({
                     </div>
                   </div>
 
-                  {leave.user ? (
+                  {canManageUsers && leave.user ? (
                     <Button asChild variant="outline2" className="dark:bg-darkSecondaryBg dark:text-darkTextSecondary">
-                      <Link href={`/leave-management/user-leave-history/${leave.user.id}`}>
+                      <Link href={`/members/${leave.user.id}`}>
                         Open profile
                         <ArrowUpRight className="size-4" />
                       </Link>
@@ -428,7 +432,7 @@ const LeaveRequestDetailsSheet = ({
                 </div>
               </div>
 
-              <div className="rounded-[12px] border border-borderColor bg-white p-5 shadow-sm dark:border-darkBorder dark:bg-darkPrimaryBg">
+              <div className="rounded-[12px] border border-borderColor bg-white p-5 dark:border-darkBorder dark:bg-darkPrimaryBg">
                 <div className="flex items-center gap-2">
                   <FileText className="size-4 text-primary" />
                   <p className="text-sm font-medium text-headingTextColor dark:text-darkTextPrimary">
@@ -440,7 +444,7 @@ const LeaveRequestDetailsSheet = ({
                 </p>
               </div>
 
-              <div className="rounded-[12px] border border-borderColor bg-white p-5 shadow-sm dark:border-darkBorder dark:bg-darkPrimaryBg">
+              <div className="rounded-[12px] border border-borderColor bg-white p-5 dark:border-darkBorder dark:bg-darkPrimaryBg">
                 <div className="flex items-center gap-2">
                   <FileText className="size-4 text-primary" />
                   <p className="text-sm font-medium text-headingTextColor dark:text-darkTextPrimary">
@@ -452,7 +456,7 @@ const LeaveRequestDetailsSheet = ({
                 </p>
               </div>
 
-              <div className="rounded-[12px] border border-borderColor bg-white p-5 shadow-sm dark:border-darkBorder dark:bg-darkPrimaryBg">
+              <div className="rounded-[12px] border border-borderColor bg-white p-5 dark:border-darkBorder dark:bg-darkPrimaryBg">
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-2">
                     {isImageAttachment(attachment) ? (

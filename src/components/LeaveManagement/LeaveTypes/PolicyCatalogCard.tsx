@@ -2,8 +2,6 @@
 
 import {
   ArrowUpRight,
-  PencilLine,
-  Trash2,
   Power,
 } from "lucide-react";
 
@@ -15,6 +13,8 @@ import {
   getLeaveTypeTheme,
 } from "@/lib/leave";
 import { LeaveTypeRecord } from "@/types/type";
+import EditIcon from "@/components/Icons/FilterOptionIcon/EditIcon";
+import DeleteIcon from "@/components/Icons/DeleteIcon";
 
 type Props = {
   leaveType: LeaveTypeRecord;
@@ -129,7 +129,7 @@ const LeaveTypeCard = ({
             className="dark:bg-darkSecondaryBg dark:text-darkTextPrimary"
             onClick={() => handleEdit(leaveType)}
           >
-            <PencilLine className="size-4" />
+            <EditIcon size={20} />
             Edit
           </Button>
         ) : null}
@@ -139,7 +139,7 @@ const LeaveTypeCard = ({
             <ConfirmDialog
               trigger={
                 <Button variant="outline2" className="dark:bg-darkSecondaryBg dark:text-darkTextPrimary">
-                  <Trash2 className="size-4" />
+                  <DeleteIcon size={20} />
                   Delete
                 </Button>
               }

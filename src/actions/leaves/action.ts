@@ -253,7 +253,7 @@ export const deleteLeaveHoliday = async (id: number): Promise<IResponse<null>> =
 };
 
 export const getLeaveHolidays = async (
-  query: { year?: string | number } = {},
+  query: { year?: string | number, page?: string | number } = {},
 ): Promise<IResponse<LeaveHolidayListData>> => {
   const queryString = buildQuery(query);
   return await baseApi(

@@ -26,14 +26,20 @@ const HolidayManagementServer = async ({ searchParams }: ISearchParamsProps) => 
   const selectedYear =
     typeof params.year === "string" ? params.year : String(new Date().getFullYear());
 
+  const currentPage =
+    typeof params.page === "string" ? Number(params.page) || 1 : 1;
+
   const holidaysResponse = await getLeaveHolidays({
     year: selectedYear,
+    page: currentPage,
   });
 
   return (
     <HolidayManagementBoard
       holidays={extractHolidayRows(holidaysResponse?.data)}
       canManageHolidays={["admin", "hr"].includes(role)}
+      meta={holidaysResponse?.meta ?? { page: 1, limit: 10, total: 10, totalPages: 1 }
+      }
     />
   );
 };

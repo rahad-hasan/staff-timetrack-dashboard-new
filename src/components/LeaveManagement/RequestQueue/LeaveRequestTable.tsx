@@ -1,9 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Eye } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -14,12 +12,14 @@ import LeaveRequestDetailsSheet from "./LeaveRequestDetailsSheet";
 import LeaveRequestHeroCart from "./LeaveRequestHeroCart";
 import Image from "next/image";
 import EmptyTableLogo from "@/assets/empty_table.svg";
+import EyeIcon from "@/components/Icons/EyeIcon";
 
 type LeaveRequestTableProps = {
   data: LeaveRecord[];
   canManageUsers: boolean;
   canTakeAction: boolean;
   users?: { id: string; label: string; avatar: string }[];
+  total: number | undefined;
 };
 
 const LeaveRequestTable = ({
@@ -27,6 +27,7 @@ const LeaveRequestTable = ({
   canManageUsers,
   canTakeAction,
   users = [],
+  total,
 }: LeaveRequestTableProps) => {
   const router = useRouter();
   const [selectedLeave, setSelectedLeave] = useState<LeaveRecord | null>(null);
@@ -40,6 +41,7 @@ const LeaveRequestTable = ({
       <LeaveRequestDetailsSheet
         leave={selectedLeave}
         open={Boolean(selectedLeave)}
+        canManageUsers={canManageUsers}
         canTakeAction={canTakeAction}
         onMutated={() => router.refresh()}
         onOpenChange={(open) => {
@@ -54,7 +56,7 @@ const LeaveRequestTable = ({
       <div className="rounded-[12px] border border-borderColor bg-white p-5 dark:border-darkBorder dark:bg-darkSecondaryBg">
         <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-subTextColor dark:text-darkTextSecondary">
-            Review requests in the table, then open the side drawer for the full note, document preview, and workflow actions.
+            {total} request queue items found
           </p>
           <div className="rounded-full bg-primary/8 px-3 py-1 text-xs font-medium text-primary">
             Long reasons are trimmed here
@@ -85,12 +87,7 @@ const LeaveRequestTable = ({
                 return (
                   <TableRow key={leave.id}>
                     <TableCell>
-                      <Link
-                        href={
-                          leave.user
-                            ? `/leave-management/user-leave-history/${leave.user.id}`
-                            : "#"
-                        }
+                      <div
                         className="flex min-w-[180px] items-center gap-3"
                       >
                         <Avatar>
@@ -111,7 +108,7 @@ const LeaveRequestTable = ({
                           </p>
                           <p className="text-xs text-subTextColor dark:text-darkTextSecondary">{leave.user?.email}</p>
                         </div>
-                      </Link>
+                      </div>
                     </TableCell>
                     <TableCell>
                       <div
@@ -175,7 +172,7 @@ const LeaveRequestTable = ({
                         className="dark:bg-darkPrimaryBg dark:text-darkTextSecondary"
                         onClick={() => setSelectedLeave(leave)}
                       >
-                        <Eye className="size-4" />
+                        <EyeIcon size={20} />
                         View
                       </Button>
                     </TableCell>

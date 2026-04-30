@@ -1,12 +1,13 @@
-"use client"
+"use client";
 import { deleteLeave } from "@/actions/leaves/action";
 import ConfirmDialog from "@/components/Common/ConfirmDialog";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
+import DeleteIcon from "@/components/Icons/DeleteIcon";
 import { Button } from "@/components/ui/button";
 import { getLeaveStatusTheme, getLeaveTypeTheme } from "@/lib/leave";
 import { LeaveRecord, UserLeaveSummary } from "@/types/type";
 import { formatTZDayMonthYear } from "@/utils";
-import { Trash2 } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -14,10 +15,18 @@ import { toast } from "sonner";
 type LeaveHistoryTableProps = {
   data: UserLeaveSummary;
   currentUserId?: number;
+  canManageUsers: boolean;
   allowRequestLeave?: boolean;
 };
-const LeaveHistoryTable = ({ data, currentUserId, allowRequestLeave }: LeaveHistoryTableProps) => {
+const LeaveHistoryTable = ({
+  data,
+  currentUserId,
+  allowRequestLeave,
+  canManageUsers,
+}: LeaveHistoryTableProps) => {
   const router = useRouter();
+
+  console.log("data from leave history table", data);
 
   type HistoryTab = "pending" | "approved" | "rejected";
 
@@ -145,29 +154,43 @@ const LeaveHistoryTable = ({ data, currentUserId, allowRequestLeave }: LeaveHist
             </div>
           </div>
 
-          {canDelete ? (
-            <ConfirmDialog
-              trigger={
+          <div className="flex items-center gap-4">
+            {canDelete ? (
+              <ConfirmDialog
+                trigger={
+                  <Button
+                    variant="outline2"
+                    className="shrink-0 dark:bg-darkPrimaryBg dark:text-darkTextPrimary"
+                  >
+                    <DeleteIcon size={20}/>
+                    Cancel request
+                  </Button>
+                }
+                title="Cancel this leave request?"
+                description="Only pending requests can be deleted. This will refresh balances and request history."
+                confirmText="Delete request"
+                cancelText="Keep request"
+                onConfirm={() => handleDeleteRequest(request.id)}
+              />
+            ) : null}
+  
+            {canManageUsers && (
+              <Link
+                href={`/leave-management/history?user_id=${data?.user?.id}`}
+              >
                 <Button
                   variant="outline2"
                   className="shrink-0 dark:bg-darkPrimaryBg dark:text-darkTextPrimary"
                 >
-                  <Trash2 className="size-4" />
-                  Cancel request
+                  View History
                 </Button>
-              }
-              title="Cancel this leave request?"
-              description="Only pending requests can be deleted. This will refresh balances and request history."
-              confirmText="Delete request"
-              cancelText="Keep request"
-              onConfirm={() => handleDeleteRequest(request.id)}
-            />
-          ) : null}
+              </Link>
+            )}
+          </div>
         </div>
       </div>
     );
   };
-
 
   return (
     <div className="rounded-[12px] border border-borderColor p-5 dark:border-darkBorder dark:bg-darkSecondaryBg">
@@ -190,8 +213,8 @@ const LeaveHistoryTable = ({ data, currentUserId, allowRequestLeave }: LeaveHist
                 type="button"
                 onClick={() => setActiveTab(tab.key)}
                 className={`rounded-full px-4 py-2 text-sm font-medium transition cursor-pointer ${isActive
-                  ? "bg-primary text-white"
-                  : "bg-bgSecondary text-headingTextColor dark:bg-darkPrimaryBg dark:text-darkTextPrimary"
+                    ? "bg-primary text-white"
+                    : "bg-bgSecondary text-headingTextColor dark:bg-darkPrimaryBg dark:text-darkTextPrimary"
                   }`}
               >
                 {tab.label} ({requestCounts[tab.key]})
@@ -205,9 +228,12 @@ const LeaveHistoryTable = ({ data, currentUserId, allowRequestLeave }: LeaveHist
         {historyItems.length ? (
           historyItems.map(renderRequestCard)
         ) : (
-            <div className=" flex justify-center h-68">
-                  <EmptyTableRow columns={2} text={`No ${activeTab} leave requests found for this year.`}></EmptyTableRow>
-            </div>
+          <div className=" flex justify-center h-68">
+            <EmptyTableRow
+              columns={2}
+              text={`No ${activeTab} leave requests found for this year.`}
+            ></EmptyTableRow>
+          </div>
         )}
       </div>
     </div>

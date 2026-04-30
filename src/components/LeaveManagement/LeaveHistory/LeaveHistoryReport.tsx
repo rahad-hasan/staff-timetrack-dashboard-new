@@ -1,9 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Download, Eye, RotateCcw, SearchX } from "lucide-react";
+import { Download, RotateCcw } from "lucide-react";
 
 import AppPagination from "@/components/Common/AppPagination";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
@@ -21,9 +20,9 @@ import { getLeaveStatusTheme, getLeaveTypeTheme } from "@/lib/leave";
 import { LeaveRecord, LeaveStatus } from "@/types/type";
 import LeaveHistoryDetailsSheet from "./LeaveHistoryDetailsSheet";
 import SelectDateRange from "@/components/Common/SelectDateRange";
-import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import Image from "next/image";
 import EmptyTableLogo from "@/assets/empty_table.svg";
+import EyeIcon from "@/components/Icons/EyeIcon";
 
 const LeaveHistoryReport = ({
   data,
@@ -166,19 +165,14 @@ const LeaveHistoryReport = ({
                 return (
                   <TableRow key={leave.id}>
                     <TableCell>
-                      <Link
-                        href={
-                          leave.user
-                            ? `/leave-management/user-leave-history/${leave.user.id}`
-                            : "#"
-                        }
+                      <div
                         className="block min-w-[180px]"
                       >
                         <p className="font-medium text-headingTextColor dark:text-darkTextPrimary">
                           {leave.user?.name ?? "Unknown employee"}
                         </p>
                         <p className="text-xs text-subTextColor dark:text-darkTextSecondary">{leave.user?.email}</p>
-                      </Link>
+                      </div>
                     </TableCell>
                     <TableCell>
                       <div
@@ -225,7 +219,7 @@ const LeaveHistoryReport = ({
                         </p>
                         {leave.reject_reason ? (
                           <p
-                            className="line-clamp-2 break-words text-xs text-rose-600 dark:text-rose-300"
+                            className="line-clamp-2 break-words text-xs text-rose-600 dark:text-rose-500"
                             title={leave.reject_reason}
                           >
                             Reject reason: {leave.reject_reason}
@@ -242,7 +236,7 @@ const LeaveHistoryReport = ({
                         className="dark:bg-darkPrimaryBg dark:text-darkTextSecondary"
                         onClick={() => setSelectedLeave(leave)}
                       >
-                        <Eye className="size-4" />
+                        <EyeIcon size={20} />
                         View
                       </Button>
                     </TableCell>
