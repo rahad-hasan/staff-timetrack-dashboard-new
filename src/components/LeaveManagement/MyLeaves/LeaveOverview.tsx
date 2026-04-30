@@ -80,7 +80,7 @@ const LeaveOverview = ({ data, headingSubtitle, currentUserId }: LeaveOverviewPr
         <div className="grid gap-4 xl:grid-cols-[minmax(0,1.45fr)_360px]">
             <div className="relative overflow-hidden rounded-[12px] border border-borderColor bg-[linear-gradient(135deg,#ffffff_0%,#fff8f8_50%,#f8fbff_100%)] p-5 dark:border-darkBorder dark:bg-[linear-gradient(135deg,rgba(50,57,71,1)_0%,rgba(33,39,51,1)_100%)]">
                 <div className="absolute right-0 top-0 h-36 w-36 rounded-full bg-primary/10 blur-3xl" />
-                <div className="relative space-y-6">
+                <div className="relative flex flex-col justify-between h-full">
                     <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                         <div className="space-y-3">
                             <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-white/80 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] text-primary dark:bg-darkPrimaryBg">
@@ -119,13 +119,13 @@ const LeaveOverview = ({ data, headingSubtitle, currentUserId }: LeaveOverviewPr
                         {summaryCards.map((card) => (
                             <div
                                 key={card.label}
-                                className="rounded-[12px] border border-white/70 bg-white/80 px-4 py-4 shadow-sm backdrop-blur dark:border-darkBorder dark:bg-darkPrimaryBg"
+                                className="rounded-[12px] border border-white bg-white/80 px-4 py-6 shadow-sm backdrop-blur dark:border-darkBorder dark:bg-darkPrimaryBg"
                             >
                                 <p className="text-xs uppercase tracking-[0.16em] text-subTextColor dark:text-darkTextSecondary">
                                     {card.label}
                                 </p>
                                 <p
-                                    className="mt-3 text-2xl font-semibold"
+                                    className="mt-3 text-4xl font-black opacity-90"
                                     style={{ color: card.color }}
                                 >
                                     {card.value}
@@ -140,7 +140,7 @@ const LeaveOverview = ({ data, headingSubtitle, currentUserId }: LeaveOverviewPr
             </div>
 
             <div className="grid gap-4">
-                <div className="rounded-[12px] border border-borderColor bg-white p-5 dark:border-darkBorder dark:bg-darkSecondaryBg">
+                {/* <div className="rounded-[12px] border border-borderColor bg-white p-5 dark:border-darkBorder dark:bg-darkSecondaryBg">
                     <div className="flex items-start gap-3">
                         <div className="rounded-2xl bg-primary/10 p-3 text-primary">
                             <CalendarRange className="size-5" />
@@ -164,7 +164,7 @@ const LeaveOverview = ({ data, headingSubtitle, currentUserId }: LeaveOverviewPr
                             <ChevronRight className="size-4" />
                         </Link>
                     </Button>
-                </div>
+                </div> */}
 
                 <div className="overflow-hidden rounded-[12px] border border-borderColor dark:border-darkBorder dark:bg-darkSecondaryBg">
                     <div className="flex items-center gap-3 border-b border-borderColor px-5 py-4 dark:border-darkBorder">
@@ -186,7 +186,7 @@ const LeaveOverview = ({ data, headingSubtitle, currentUserId }: LeaveOverviewPr
                             {nextHolidays.map((holiday, index) => (
                                 <div
                                     key={`${holiday.id ?? holiday.date}-${holiday.name}-${index}`}
-                                    className={`px-5 py-4 ${index === 0 ? "bg-amber-50/70 dark:bg-amber-500/5" : ""
+                                    className={`px-5 py-3 ${index === 0 ? "bg-amber-50/70 dark:bg-amber-500/5" : ""
                                         }`}
                                 >
                                     {index === 0 ? (
