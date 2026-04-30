@@ -194,9 +194,6 @@ const HolidayFormDialog = ({
                           {...field}
                         />
                       </FormControl>
-                      <FormDescription>
-                        The selected date must fall inside the active year filter.
-                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -222,7 +219,6 @@ const HolidayFormDialog = ({
                           }
                         />
                       </FormControl>
-                      <FormDescription>Number of leave days.</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}

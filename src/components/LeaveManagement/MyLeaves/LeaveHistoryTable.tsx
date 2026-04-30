@@ -1,6 +1,7 @@
 "use client"
 import { deleteLeave } from "@/actions/leaves/action";
 import ConfirmDialog from "@/components/Common/ConfirmDialog";
+import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { Button } from "@/components/ui/button";
 import { getLeaveStatusTheme, getLeaveTypeTheme } from "@/lib/leave";
 import { LeaveRecord, UserLeaveSummary } from "@/types/type";
@@ -188,7 +189,7 @@ const LeaveHistoryTable = ({ data, currentUserId, allowRequestLeave }: LeaveHist
                 key={tab.key}
                 type="button"
                 onClick={() => setActiveTab(tab.key)}
-                className={`rounded-full px-4 py-2 text-sm font-medium transition ${isActive
+                className={`rounded-full px-4 py-2 text-sm font-medium transition cursor-pointer ${isActive
                   ? "bg-primary text-white"
                   : "bg-bgSecondary text-headingTextColor dark:bg-darkPrimaryBg dark:text-darkTextPrimary"
                   }`}
@@ -204,9 +205,9 @@ const LeaveHistoryTable = ({ data, currentUserId, allowRequestLeave }: LeaveHist
         {historyItems.length ? (
           historyItems.map(renderRequestCard)
         ) : (
-          <div className="rounded-2xl border border-dashed border-borderColor bg-bgSecondary/60 px-6 py-12 text-center text-subTextColor dark:text-darkTextSecondary dark:border-darkBorder dark:bg-darkPrimaryBg">
-            No {activeTab} leave requests found for this year.
-          </div>
+            <div className=" flex justify-center h-68">
+                  <EmptyTableRow columns={2} text={`No ${activeTab} leave requests found for this year.`}></EmptyTableRow>
+            </div>
         )}
       </div>
     </div>

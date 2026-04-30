@@ -6,13 +6,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { CalendarClock, ArrowUpRight, Users2 } from "lucide-react";
 import { getLeaveTypeTheme } from "@/lib/leave";
+import EmptyTableRow from "@/components/Common/EmptyTableRow";
 
 type Props = {
     filteredUsers: any[];
 };
 
 const EmployeeLeaveCoverageList = ({ filteredUsers }: Props) => {
-    
+
     return (
         <div className="space-y-4">
             {filteredUsers.length ? (
@@ -78,7 +79,7 @@ const EmployeeLeaveCoverageList = ({ filteredUsers }: Props) => {
 
                         <div className="mt-4 flex flex-wrap gap-2">
                             {row.leave_types.length ? (
-                                row.leave_types.map((leaveType:any) => {
+                                row.leave_types.map((leaveType: any) => {
                                     const theme = getLeaveTypeTheme(leaveType.color_code);
 
                                     return (
@@ -133,8 +134,8 @@ const EmployeeLeaveCoverageList = ({ filteredUsers }: Props) => {
                     </div>
                 ))
             ) : (
-                <div className="rounded-[12px] border border-dashed border-borderColor px-6 py-16 text-center text-subTextColor dark:border-darkBorder dark:text-darkTextSecondary">
-                    No employees matched the current search.
+                <div className=" flex justify-center h-68">
+                    <EmptyTableRow columns={2} text={`No employees matched the current search.`}></EmptyTableRow>
                 </div>
             )}
         </div>

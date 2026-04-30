@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, SearchX } from "lucide-react";
+import { Eye } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -12,6 +12,8 @@ import { getLeaveStatusTheme, getLeaveTypeTheme } from "@/lib/leave";
 import { LeaveRecord } from "@/types/type";
 import LeaveRequestDetailsSheet from "./LeaveRequestDetailsSheet";
 import LeaveRequestHeroCart from "./LeaveRequestHeroCart";
+import Image from "next/image";
+import EmptyTableLogo from "@/assets/empty_table.svg";
 
 type LeaveRequestTableProps = {
   data: LeaveRecord[];
@@ -182,10 +184,12 @@ const LeaveRequestTable = ({
               })
             ) : (
               <TableRow>
-                <TableCell colSpan={9} className="py-16 text-center text-subTextColor dark:text-darkTextSecondary">
-                  <div className="flex py-12 flex-col items-center gap-4">
-                    <SearchX className="size-6" />
-                    <span>No leave requests found for the current filters.</span>
+                <TableCell colSpan={9}>
+                  <div className="flex flex-col gap-2.5 items-center justify-center py-8">
+                    <Image src={EmptyTableLogo} alt="table empty" width={120} height={120} />
+                    <p className="sm:text-lg">
+                      No leave requests found for the current filters.
+                    </p>
                   </div>
                 </TableCell>
               </TableRow>

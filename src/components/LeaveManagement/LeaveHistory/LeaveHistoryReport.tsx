@@ -21,6 +21,9 @@ import { getLeaveStatusTheme, getLeaveTypeTheme } from "@/lib/leave";
 import { LeaveRecord, LeaveStatus } from "@/types/type";
 import LeaveHistoryDetailsSheet from "./LeaveHistoryDetailsSheet";
 import SelectDateRange from "@/components/Common/SelectDateRange";
+import EmptyTableRow from "@/components/Common/EmptyTableRow";
+import Image from "next/image";
+import EmptyTableLogo from "@/assets/empty_table.svg";
 
 const LeaveHistoryReport = ({
   data,
@@ -101,12 +104,12 @@ const LeaveHistoryReport = ({
             <SelectUserDropDown
               users={users}
               defaultSelect={false}
-              // resetPageOnChange
+            // resetPageOnChange
             />
           ) : (
             <div className="hidden xl:block" />
           )}
-          <SelectDateRange defaultDateShow={false}/>
+          <SelectDateRange defaultDateShow={false} />
           <Select
             value={statusFilter ?? "all"}
             onValueChange={(value) =>
@@ -248,10 +251,12 @@ const LeaveHistoryReport = ({
               })
             ) : (
               <TableRow>
-                <TableCell colSpan={9} className="py-16 text-center text-subTextColor">
-                  <div className="flex flex-col items-center gap-2">
-                    <SearchX className="size-6" />
-                    <span>No leave history matched the selected filters.</span>
+                <TableCell colSpan={9}>
+                  <div className="flex flex-col gap-2.5 items-center justify-center py-8">
+                    <Image src={EmptyTableLogo} alt="table empty" width={120} height={120} />
+                    <p className="sm:text-lg">
+                      No leave history matched the selected filters.
+                    </p>
                   </div>
                 </TableCell>
               </TableRow>
