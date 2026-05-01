@@ -5,6 +5,8 @@ import HeadingComponent from "@/components/Common/HeadingComponent";
 import LeaveHistoryReport from "@/components/LeaveManagement/LeaveHistory/LeaveHistoryReport";
 import { ISearchParamsProps, LeaveStatus } from "@/types/type";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
+import HistorySkeleton from "@/skeleton/leaveManagement/HistorySkeleton";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Staff Time Tracker Leave History",
@@ -42,14 +44,16 @@ const LeaveHistoryPage = async ({ searchParams }: ISearchParamsProps) => {
         heading="Leave History"
         subHeading="Audit leave decisions with employee, date range, and status filters."
       />
-      <LeaveHistoryReport
-        data={historyResponse.data ?? []}
-        canManageUsers={canManageUsers}
-        users={users}
-        total={(historyResponse.meta?.total as number) ?? 0}
-        currentPage={currentPage}
-        limit={(historyResponse.meta?.limit as number) ?? 10}
-      />
+      <Suspense fallback={<HistorySkeleton />}>
+        <LeaveHistoryReport
+          data={historyResponse.data ?? []}
+          canManageUsers={canManageUsers}
+          users={users}
+          total={(historyResponse.meta?.total as number) ?? 0}
+          currentPage={currentPage}
+          limit={(historyResponse.meta?.limit as number) ?? 10}
+        />
+      </Suspense>
     </div>
   );
 };
