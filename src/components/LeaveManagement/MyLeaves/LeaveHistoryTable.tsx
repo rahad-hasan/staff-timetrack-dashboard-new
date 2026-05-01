@@ -3,11 +3,11 @@ import { deleteLeave } from "@/actions/leaves/action";
 import ConfirmDialog from "@/components/Common/ConfirmDialog";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import DeleteIcon from "@/components/Icons/DeleteIcon";
+import EyeIcon from "@/components/Icons/EyeIcon";
 import { Button } from "@/components/ui/button";
 import { getLeaveStatusTheme, getLeaveTypeTheme } from "@/lib/leave";
 import { LeaveRecord, UserLeaveSummary } from "@/types/type";
 import { formatTZDayMonthYear } from "@/utils";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -17,16 +17,16 @@ type LeaveHistoryTableProps = {
   currentUserId?: number;
   canManageUsers: boolean;
   allowRequestLeave?: boolean;
+  setSelectedLeave: (open: LeaveRecord | null) => void;
 };
 const LeaveHistoryTable = ({
   data,
   currentUserId,
   allowRequestLeave,
   canManageUsers,
+  setSelectedLeave,
 }: LeaveHistoryTableProps) => {
   const router = useRouter();
-
-  console.log("data from leave history table", data);
 
   type HistoryTab = "pending" | "approved" | "rejected";
 
@@ -162,7 +162,7 @@ const LeaveHistoryTable = ({
                     variant="outline2"
                     className="shrink-0 dark:bg-darkPrimaryBg dark:text-darkTextPrimary"
                   >
-                    <DeleteIcon size={20}/>
+                    <DeleteIcon size={20} />
                     Cancel request
                   </Button>
                 }
@@ -173,18 +173,16 @@ const LeaveHistoryTable = ({
                 onConfirm={() => handleDeleteRequest(request.id)}
               />
             ) : null}
-  
+
             {canManageUsers && (
-              <Link
-                href={`/leave-management/history?user_id=${data?.user?.id}`}
+              <Button
+                onClick={() => setSelectedLeave(request)}
+                variant="outline2"
+                className="shrink-0 dark:bg-darkPrimaryBg dark:text-darkTextPrimary"
               >
-                <Button
-                  variant="outline2"
-                  className="shrink-0 dark:bg-darkPrimaryBg dark:text-darkTextPrimary"
-                >
-                  View History
-                </Button>
-              </Link>
+                <EyeIcon size={20} />
+                View
+              </Button>
             )}
           </div>
         </div>
@@ -213,8 +211,8 @@ const LeaveHistoryTable = ({
                 type="button"
                 onClick={() => setActiveTab(tab.key)}
                 className={`rounded-full px-4 py-2 text-sm font-medium transition cursor-pointer ${isActive
-                    ? "bg-primary text-white"
-                    : "bg-bgSecondary text-headingTextColor dark:bg-darkPrimaryBg dark:text-darkTextPrimary"
+                  ? "bg-primary text-white"
+                  : "bg-bgSecondary text-headingTextColor dark:bg-darkPrimaryBg dark:text-darkTextPrimary"
                   }`}
               >
                 {tab.label} ({requestCounts[tab.key]})

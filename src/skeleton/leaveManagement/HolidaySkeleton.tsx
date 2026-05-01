@@ -12,7 +12,7 @@ const HolidaySkeleton = () => {
         <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
           <div className="max-w-3xl space-y-4">
             <PulseBlock className="h-4 w-32" />
-            <PulseBlock className="h-9 w-80" />
+            <PulseBlock className="h-9 w-72 sm:w-80" />
             <div className="space-y-2">
                <PulseBlock className="h-4 w-full" />
                <PulseBlock className="h-4 w-5/6" />
@@ -52,7 +52,7 @@ const HolidaySkeleton = () => {
         <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="space-y-2">
             <PulseBlock className="h-6 w-40" />
-            <PulseBlock className="h-4 w-96" />
+            <PulseBlock className="h-4 w-72 sm:w-96" />
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -88,7 +88,7 @@ const HolidaySkeleton = () => {
         {/* Mobile Card View Skeleton */}
         <div className="grid gap-4 md:hidden">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="rounded-[24px] border border-borderColor p-4 space-y-4">
+            <div key={i} className="rounded-[24px] border border-borderColor dark:border-darkBorder p-4 space-y-4">
               <div className="flex justify-between">
                 <div className="space-y-2">
                   <PulseBlock className="h-5 w-32" />

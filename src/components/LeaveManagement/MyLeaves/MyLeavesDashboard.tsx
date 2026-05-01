@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTopLoader } from "nextjs-toploader";
 import {
@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import {
+  LeaveRecord,
   LeaveRequestTypeDropdownRecord,
   UserLeaveSummary,
 } from "@/types/type";
@@ -22,6 +23,7 @@ import LeaveRequestModal from "./LeaveRequestModal";
 import LeaveHistoryTable from "./LeaveHistoryTable";
 import LeaveBalances from "./LeaveBalances";
 import LeaveOverview from "./LeaveOverview";
+import MyLeaveDetailsSheet from "./MyLeaveDetailsSheet";
 
 type MyLeavesDashboardProps = {
   data: UserLeaveSummary;
@@ -59,10 +61,15 @@ const MyLeavesDashboard = ({
     canManageUsers ||
     ["admin", "manager", "hr"].includes(logInUserRole ?? "");
 
+  const [selectedLeave, setSelectedLeave] = useState<LeaveRecord | null>(null);
   const [requestOpen, setRequestOpen] = useState(false);
   const [selectedLeaveTypeId, setSelectedLeaveTypeId] = useState<number | null>(
     null,
   );
+
+  useEffect(() => {
+    setSelectedLeave(null);
+  }, [data]);
 
   const isSelfView = currentUserId === data.user.id;
   const canRequestLeave = allowRequestLeave ?? isSelfView;
@@ -97,6 +104,16 @@ const MyLeavesDashboard = ({
 
   return (
     <div className="space-y-6">
+      <MyLeaveDetailsSheet
+        leave={selectedLeave}
+        user={data?.user}
+        open={Boolean(selectedLeave)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setSelectedLeave(null);
+          }
+        }}
+      />
       <Dialog open={requestOpen} onOpenChange={setRequestOpen}>
         {requestOpen && canRequestLeave ? (
           <LeaveRequestModal
@@ -165,6 +182,7 @@ const MyLeavesDashboard = ({
         canManageUsers={canManageUsers}
         currentUserId={currentUserId}
         allowRequestLeave={allowRequestLeave}
+        setSelectedLeave={setSelectedLeave}
       ></LeaveHistoryTable>
 
     </div>
