@@ -28,6 +28,7 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
 import { popularTimeZoneList } from "@/utils/TimeZoneList";
+import { CustomCalendarForDOB } from "@/components/ui/customCalendarForDOB";
 import SearchBar from "@/components/Common/SearchBar";
 import { StatusSelector } from "@/components/Common/StatusSelector";
 import AppPagination from "@/components/Common/AppPagination";
@@ -50,6 +51,44 @@ const SingleMemberPage = ({ data, task, page }: { data: any, task: any, page: st
         multi_factor_auth: data?.multi_factor_auth,
     });
 
+    const genderOptions = ["male", "female", "other"] as const;
+    const currencyOptions = [
+        { value: "USD", label: "USD - US Dollar" },
+        { value: "EUR", label: "EUR - Euro" },
+        { value: "GBP", label: "GBP - British Pound" },
+        { value: "BDT", label: "BDT - Bangladeshi Taka" },
+        { value: "INR", label: "INR - Indian Rupee" },
+        { value: "AUD", label: "AUD - Australian Dollar" },
+        { value: "CAD", label: "CAD - Canadian Dollar" },
+        { value: "JPY", label: "JPY - Japanese Yen" },
+        { value: "CNY", label: "CNY - Chinese Yuan" },
+        { value: "AED", label: "AED - UAE Dirham" },
+    ];
+
+    const formatDateOnly = (d: Date) => {
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+        return `${y}-${m}-${day}`;
+    };
+
+    const parseBirthDay = (raw: string | Date | null | undefined): string => {
+        if (!raw) return "";
+        if (typeof raw === "string") {
+            const match = raw.match(/^(\d{4}-\d{2}-\d{2})/);
+            if (match) return match[1];
+        }
+        const d = raw instanceof Date ? raw : new Date(raw);
+        if (isNaN(d.getTime())) return "";
+        return formatDateOnly(d);
+    };
+
+    const initialBirthDay = parseBirthDay(data?.birth_day);
+    const [dobOpen, setDobOpen] = useState(false);
+    const [dobDate, setDobDate] = useState<Date | undefined>(
+        initialBirthDay ? new Date(`${initialBirthDay}T00:00:00`) : undefined,
+    );
+
     const form = useForm<z.infer<typeof singleMemberSchema>>({
         resolver: zodResolver(singleMemberSchema),
         defaultValues: {
@@ -59,6 +98,9 @@ const SingleMemberPage = ({ data, task, page }: { data: any, task: any, page: st
             pay_rate_hourly: data?.pay_rate_hourly || 0,
             role: data?.role || "",
             time_zone: data?.time_zone || "",
+            gender: (data?.gender as "male" | "female" | "other") || "male",
+            currency: data?.currency || "USD",
+            birth_day: initialBirthDay,
         },
     });
 
@@ -71,6 +113,9 @@ const SingleMemberPage = ({ data, task, page }: { data: any, task: any, page: st
             role: values.role,
             time_zone: values.time_zone,
             pay_rate_hourly: values.pay_rate_hourly,
+            gender: values.gender,
+            currency: values.currency,
+            birth_day: values.birth_day ? values.birth_day : null,
             is_active: Boolean(switches.is_active),
             is_tracking: Boolean(switches.is_tracking),
             url_tracking: Boolean(switches.url_tracking),
@@ -400,12 +445,105 @@ const SingleMemberPage = ({ data, task, page }: { data: any, task: any, page: st
                                 />
                             </div>
 
-                            <div className="flex items-center justify-between p-2 border rounded-md dark:border-darkBorder">
-                                <span className="text-sm font-medium">Enable Multi-Factor Authentication</span>
-                                <Switch
-                                    checked={switches.multi_factor_auth}
-                                    onCheckedChange={(val) => setSwitches(prev => ({ ...prev, multi_factor_auth: val }))}
+                            <div className="grid sm:grid-cols-2 gap-4 sm:gap-3 items-start">
+                                <FormField
+                                    control={form.control}
+                                    name="gender"
+                                    render={({ field }) => (
+                                        <FormItem className="w-full">
+                                            <FormLabel required={true}>Gender</FormLabel>
+                                            <Select onValueChange={field.onChange} value={field.value}>
+                                                <FormControl className="w-full">
+                                                    <SelectTrigger className="dark:bg-darkPrimaryBg dark:border-darkBorder capitalize">
+                                                        <SelectValue placeholder="Select gender" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    {genderOptions.map((g) => (
+                                                        <SelectItem key={g} value={g} className="capitalize">{g}</SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
                                 />
+
+                                <FormField
+                                    control={form.control}
+                                    name="currency"
+                                    render={({ field }) => (
+                                        <FormItem className="w-full">
+                                            <FormLabel required={true}>Currency</FormLabel>
+                                            <Select onValueChange={field.onChange} value={field.value}>
+                                                <FormControl className="w-full">
+                                                    <SelectTrigger className="dark:bg-darkPrimaryBg dark:border-darkBorder">
+                                                        <SelectValue placeholder="Select currency" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    {currencyOptions.map((c) => (
+                                                        <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+
+                            <div className="grid sm:grid-cols-2 gap-4 sm:gap-3 items-start">
+                                <FormField
+                                    control={form.control}
+                                    name="birth_day"
+                                    render={({ field }) => (
+                                        <FormItem className="flex flex-col">
+                                            <FormLabel>Date of Birth</FormLabel>
+                                            <Popover open={dobOpen} onOpenChange={setDobOpen}>
+                                                <PopoverTrigger asChild>
+                                                    <FormControl>
+                                                        <p
+                                                            className={cn(
+                                                                "border-input h-10 w-full rounded-lg border dark:border-darkBorder cursor-pointer bg-transparent px-3 py-1 text-base md:text-sm",
+                                                                "flex items-center justify-start font-normal dark:bg-darkPrimaryBg",
+                                                                !field.value && "text-muted-foreground",
+                                                            )}
+                                                        >
+                                                            {field.value || "Select date"}
+                                                        </p>
+                                                    </FormControl>
+                                                </PopoverTrigger>
+                                                <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+                                                    <CustomCalendarForDOB
+                                                        mode="single"
+                                                        selected={dobDate}
+                                                        defaultMonth={dobDate}
+                                                        captionLayout="dropdown"
+                                                        onSelect={(selectedDate) => {
+                                                            if (!selectedDate) return;
+                                                            setDobDate(selectedDate);
+                                                            setDobOpen(false);
+                                                            field.onChange(formatDateOnly(selectedDate));
+                                                        }}
+                                                    />
+                                                </PopoverContent>
+                                            </Popover>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <div className="flex flex-col">
+                                    <FormLabel className="mb-2">Multi-Factor Authentication</FormLabel>
+                                    <div className="flex items-center justify-between h-10 px-3 border rounded-lg dark:border-darkBorder">
+                                        <span className="text-sm font-medium">Enable Multi-Factor Authentication</span>
+                                        <Switch
+                                            checked={switches.multi_factor_auth}
+                                            onCheckedChange={(val) => setSwitches(prev => ({ ...prev, multi_factor_auth: val }))}
+                                        />
+                                    </div>
+                                </div>
                             </div>
 
                             <div className="flex items-center gap-3 w-full pt-4 border-t dark:border-darkBorder">

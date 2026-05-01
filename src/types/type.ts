@@ -1082,6 +1082,16 @@ export interface EventGoogleSyncOverview {
 
 export interface EventMicrosoftSyncOverview {
   enabled: boolean;
+  counts?: {
+    total_assigned: number;
+    pending_connection: number;
+    pending: number;
+    processing: number;
+    synced: number;
+    failed: number;
+  };
+  organizer?: EventOrganizerSync | null;
+  members?: EventMemberSyncOverview[];
   status: EventSyncStatus;
   calendar_link: string | null;
   meeting_link: string | null;
@@ -1201,4 +1211,58 @@ export interface GoogleEventsListItem {
   status?: string;
   provider: "google";
   calendar: GoogleCalendarMetadata;
+}
+
+/* =========================
+ * Microsoft Integration
+ * ========================= */
+export type MicrosoftConnectionStatus =
+  | "connected"
+  | "disconnected"
+  | "expired"
+  | "revoked";
+
+export interface MicrosoftConnectedResponse {
+  connected: boolean;
+  provider: "microsoft";
+  status: MicrosoftConnectionStatus;
+  provider_email: string | null;
+  token_expiry: string | null;
+  last_synced_at: string | null;
+}
+
+export interface MicrosoftStatusFullResponse {
+  id?: number;
+  provider: "microsoft";
+  type: "calendar";
+  status: MicrosoftConnectionStatus;
+  connected: boolean;
+  provider_email?: string | null;
+  user?: { id: number; name: string; email: string };
+  token_expiry?: string | null;
+  scope?: string[];
+  metadata?: {
+    display_name?: string;
+    user_principal_name?: string;
+    tenant_id?: string;
+  };
+  last_synced_at?: string | null;
+  disconnected_at?: string | null;
+}
+
+export interface MicrosoftEventsListItem {
+  id?: string;
+  subject?: string;
+  bodyPreview?: string;
+  webLink?: string;
+  onlineMeetingUrl?: string;
+  start?: { dateTime?: string; timeZone?: string };
+  end?: { dateTime?: string; timeZone?: string };
+  attendees?: Array<{
+    emailAddress?: { address?: string; name?: string };
+    status?: { response?: string };
+  }>;
+  organizer?: { emailAddress?: { address?: string; name?: string } };
+  isOnlineMeeting?: boolean;
+  provider?: "microsoft";
 }

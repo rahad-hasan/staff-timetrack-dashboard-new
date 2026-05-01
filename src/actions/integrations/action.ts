@@ -7,6 +7,9 @@ import {
     GoogleEventsListItem,
     GoogleStatusFullResponse,
     IResponse,
+    MicrosoftConnectedResponse,
+    MicrosoftEventsListItem,
+    MicrosoftStatusFullResponse,
 } from "@/types/type";
 
 export const getGoogleAuthUrl = async (): Promise<IResponse<string>> => {
@@ -76,4 +79,53 @@ export const deleteGoogleEvent = async (eventId: string) => {
         tag: "google-events",
         cache: "no-cache",
     });
+};
+
+/* ---------------- Microsoft Teams ---------------- */
+
+export const getMicrosoftAuthUrl = async (): Promise<IResponse<string>> => {
+    return await baseApi(`/microsoft/connect`, {
+        tag: "microsoft-integration",
+        cache: "no-cache",
+    });
+};
+
+export const getMicrosoftConnected = async (): Promise<
+    IResponse<MicrosoftConnectedResponse>
+> => {
+    return await baseApi(`/microsoft/connected`, {
+        tag: "microsoft-integration",
+        cache: "no-cache",
+    });
+};
+
+export const getMicrosoftStatus = async (): Promise<
+    IResponse<MicrosoftStatusFullResponse>
+> => {
+    return await baseApi(`/microsoft/status`, {
+        tag: "microsoft-integration",
+        cache: "no-cache",
+    });
+};
+
+export const disconnectMicrosoft = async () => {
+    return await baseApi(`/microsoft/disconnect`, {
+        method: "DELETE",
+        tag: "microsoft-integration",
+        cache: "no-cache",
+    });
+};
+
+export const getMicrosoftEvents = async (query: {
+    start_date: string;
+    end_date: string;
+}): Promise<IResponse<MicrosoftEventsListItem[]>> => {
+    const queryString = buildQuery(query);
+    return await baseApi(
+        `/microsoft/events${queryString ? `?${queryString}` : ""}`,
+        {
+            tag: "microsoft-events",
+            cache: "no-cache",
+        },
+    );
 };

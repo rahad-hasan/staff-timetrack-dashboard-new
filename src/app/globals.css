@@ -247,25 +247,92 @@
 
 /* thin side scroll */
 /* Styling for the thin scrollbar */
-.thin-scrollbar::-webkit-scrollbar {
-  width: 5px; /* Width of the vertical scrollbar */
-  height: 5px; /* Height of the horizontal scrollbar (for the image scroll) */
+.thin-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(15, 22, 19, 0.25) transparent;
 }
 
-/* Track background */
+.thin-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
 .thin-scrollbar::-webkit-scrollbar-track {
   background: transparent;
 }
 
-/* Handle (the part you drag) */
 .thin-scrollbar::-webkit-scrollbar-thumb {
-  background: #0f1613; /* Light grey color */
-  border-radius: 30px;
+  background: rgba(15, 22, 19, 0.22);
+  border-radius: 999px;
+  transition: background-color 0.2s ease;
 }
 
-/* Handle on hover */
 .thin-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #0f1613; /* Darker grey on hover */
+  background: rgba(15, 22, 19, 0.4);
+}
+
+.dark .thin-scrollbar {
+  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+}
+
+.dark .thin-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.dark .thin-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.32);
+}
+
+/* Modern, ultra-subtle scrollbar — hides until hover/scroll */
+.modern-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  transition: scrollbar-color 0.25s ease;
+}
+
+.modern-scrollbar:hover,
+.modern-scrollbar:focus-within {
+  scrollbar-color: rgba(15, 22, 19, 0.28) transparent;
+}
+
+.modern-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.modern-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modern-scrollbar::-webkit-scrollbar-thumb {
+  background: transparent;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  border-radius: 999px;
+  transition: background-color 0.25s ease;
+}
+
+.modern-scrollbar:hover::-webkit-scrollbar-thumb,
+.modern-scrollbar:focus-within::-webkit-scrollbar-thumb {
+  background-color: rgba(15, 22, 19, 0.22);
+}
+
+.modern-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(15, 22, 19, 0.42) !important;
+}
+
+.dark .modern-scrollbar:hover,
+.dark .modern-scrollbar:focus-within {
+  scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
+}
+
+.dark .modern-scrollbar:hover::-webkit-scrollbar-thumb,
+.dark .modern-scrollbar:focus-within::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.18);
+}
+
+.dark .modern-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.36) !important;
 }
 
 /* Remove topLoader vertical line */

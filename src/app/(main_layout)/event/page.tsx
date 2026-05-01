@@ -16,7 +16,16 @@ const CalenderPage = async ({ searchParams }: ISearchParamsProps) => {
         <div>
             <CalenderHeading></CalenderHeading>
             <Suspense fallback={null}>
-                <div className=" flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between w-full">
+                <div className="mb-5 flex flex-col gap-4 rounded-lg border border-borderColor bg-white px-4 py-4 shadow-sm dark:border-darkBorder dark:bg-darkSecondaryBg sm:flex-row sm:items-center sm:justify-between sm:px-5">
+                    <div>
+                        <p className="text-sm font-semibold text-headingTextColor dark:text-darkTextPrimary">
+                            Navigate the month
+                        </p>
+                        <p className="mt-1 text-xs leading-5 text-subTextColor dark:text-darkTextSecondary">
+                            Move through past and upcoming schedules, then open any event directly
+                            from the calendar drawer workflow.
+                        </p>
+                    </div>
                     <MonthPicker></MonthPicker>
                     {/* <SelectUserDropDown></SelectUserDropDown> */}
                 </div>

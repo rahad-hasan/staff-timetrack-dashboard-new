@@ -25,15 +25,18 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
     AlertTriangle,
     CalendarDays,
+    CalendarPlus,
     ChevronDownIcon,
+    FileText,
+    Users as UsersIcon,
     Video,
 } from "lucide-react";
-import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
+import { RichTextEditor } from "@/components/Common/RichTextEditor";
 import {
     MultiSelect,
     MultiSelectContent,
@@ -46,7 +49,10 @@ import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { getMembersDashboard } from "@/actions/members/action";
 import { addEvent } from "@/actions/calendarEvent/action";
-import { getGoogleConnected } from "@/actions/integrations/action";
+import {
+    getGoogleConnected,
+    getMicrosoftConnected,
+} from "@/actions/integrations/action";
 import ClockIcon from "../Icons/ClockIcon";
 import { cn } from "@/lib/utils";
 import {
@@ -56,6 +62,7 @@ import {
     parseConflictMessage,
 } from "./eventHelpers";
 import { useGoogleConnectFlow } from "../Integrations/useGoogleConnectFlow";
+import { useMicrosoftConnectFlow } from "../Integrations/useMicrosoftConnectFlow";
 import { Loader2 } from "lucide-react";
 
 type FormInput = z.input<typeof addNewEventSchema>;
@@ -68,6 +75,25 @@ const buildIsoFromDateAndTime = (date: Date, time: string) => {
     return dt;
 };
 
+const formatDuration = (start: string, end: string) => {
+    const [startHours = 0, startMinutes = 0] = start
+        .split(":")
+        .map((value) => Number(value) || 0);
+    const [endHours = 0, endMinutes = 0] = end
+        .split(":")
+        .map((value) => Number(value) || 0);
+
+    const totalStartMinutes = startHours * 60 + startMinutes;
+    const totalEndMinutes = endHours * 60 + endMinutes;
+    const diffMinutes = Math.max(0, totalEndMinutes - totalStartMinutes);
+    const hours = Math.floor(diffMinutes / 60);
+    const minutes = diffMinutes % 60;
+
+    if (hours && minutes) return `${hours}h ${minutes}m`;
+    if (hours) return `${hours}h`;
+    return `${minutes}m`;
+};
+
 const AddEventModal = ({ onClose }: { onClose: () => void }) => {
     const [members, setMembers] = useState<
         { id: number | string; name: string; image?: string }[]
@@ -76,6 +102,9 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
     const [openStartDate, setOpenStartDate] = useState(false);
     const [conflicts, setConflicts] = useState<string[]>([]);
     const [googleConnected, setGoogleConnected] = useState<boolean | null>(null);
+    const [microsoftConnected, setMicrosoftConnected] = useState<boolean | null>(
+        null,
+    );
 
     const form = useForm<FormInput, any, FormValues>({
         resolver: zodResolver(addNewEventSchema),
@@ -90,6 +119,9 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
     });
 
     const conferenceProvider = form.watch("conference_provider");
+    const watchedMembers = form.watch("members");
+    const startTime = form.watch("start_time");
+    const endTime = form.watch("end_time");
 
     const refreshGoogleConnected = async () => {
         try {
@@ -101,9 +133,24 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
         }
     };
 
+    const refreshMicrosoftConnected = async () => {
+        try {
+            const res: any = await getMicrosoftConnected();
+            const data = res?.data ?? res;
+            setMicrosoftConnected(!!data?.connected);
+        } catch {
+            setMicrosoftConnected(false);
+        }
+    };
+
     const { start: startGoogleConnect, busy: connectBusy } = useGoogleConnectFlow(
         () => refreshGoogleConnected(),
     );
+
+    const {
+        start: startMicrosoftConnect,
+        busy: microsoftConnectBusy,
+    } = useMicrosoftConnectFlow(() => refreshMicrosoftConnected());
 
     useEffect(() => {
         const loadMembers = async () => {
@@ -127,10 +174,34 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
         if (conferenceProvider === "google" && googleConnected === null) {
             refreshGoogleConnected();
         }
-    }, [conferenceProvider, googleConnected]);
+        if (conferenceProvider === "microsoft" && microsoftConnected === null) {
+            refreshMicrosoftConnected();
+        }
+    }, [conferenceProvider, googleConnected, microsoftConnected]);
 
     const needsGoogleConnect =
         conferenceProvider === "google" && googleConnected === false;
+    const needsMicrosoftConnect =
+        conferenceProvider === "microsoft" && microsoftConnected === false;
+
+    const attendeePreview = useMemo(() => {
+        if (watchedMembers.includes("all")) {
+            return "All members";
+        }
+
+        return watchedMembers.length === 0
+            ? "No attendees"
+            : watchedMembers.length === 1
+              ? "1 person"
+              : `${watchedMembers.length} people`;
+    }, [watchedMembers]);
+
+    const providerPreview =
+        conferenceProvider === "google"
+            ? "Google Meet"
+            : conferenceProvider === "microsoft"
+              ? "Teams"
+              : "No conference";
 
     const submitWith = async (
         values: FormValues,
@@ -214,25 +285,31 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
     return (
         <DialogContent
             onInteractOutside={(event) => event.preventDefault()}
-            className="w-full max-w-[calc(100vw-2rem)] sm:max-w-160 md:max-w-205 lg:max-w-230 max-h-[95vh] overflow-y-auto p-0 gap-0 dark:bg-darkSecondaryBg"
+            className="modern-scrollbar w-full max-w-[calc(100vw-2rem)] sm:max-w-[760px] lg:max-w-[1120px] max-h-[95vh] overflow-y-auto gap-0 border-borderColor p-0 dark:border-darkBorder dark:bg-darkSecondaryBg"
         >
-            <DialogHeader className="px-5 sm:px-6 pt-5 pb-4 border-b dark:border-darkBorder">
-                <DialogTitle className="text-headingTextColor dark:text-darkTextPrimary text-lg font-semibold">
-                    Create new event
-                </DialogTitle>
-                <DialogDescription className="text-xs text-subTextColor dark:text-darkTextSecondary">
-                    Schedule a meeting and optionally generate a Meet or Teams link.
-                    Connected attendees will be auto-synced to their Google Calendar.
-                </DialogDescription>
+            <DialogHeader className="border-b border-borderColor bg-linear-to-r from-primary/12 via-cyan-500/6 to-transparent px-5 py-4 dark:border-darkBorder dark:from-primary/14 dark:via-cyan-500/8 dark:to-transparent sm:px-6">
+                <div className="flex items-start gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/14 text-primary ring-1 ring-primary/15">
+                        <CalendarPlus className="h-4 w-4" />
+                    </div>
+                    <div className="min-w-0">
+                        <DialogTitle className="text-base font-semibold leading-tight text-headingTextColor dark:text-darkTextPrimary sm:text-lg">
+                            Create new event
+                        </DialogTitle>
+                        <DialogDescription className="mt-1 max-w-3xl text-xs leading-5 text-subTextColor dark:text-darkTextSecondary sm:text-[13px]">
+                            Schedule a meeting with optional Meet or Teams link and attendee sync.
+                        </DialogDescription>
+                    </div>
+                </div>
             </DialogHeader>
 
             <Form {...form}>
                 <form
                     onSubmit={form.handleSubmit(onSubmit)}
-                    className="px-5 sm:px-6 py-5 space-y-4"
+                    className="space-y-4 px-5 py-5 sm:px-6"
                 >
                     {conflicts.length > 0 && (
-                        <div className="rounded-xl border border-red-200 dark:border-red-500/30 bg-red-50/70 dark:bg-red-500/10 p-3 space-y-2">
+                        <div className="rounded-lg border border-red-200 dark:border-red-500/30 bg-red-50/70 dark:bg-red-500/10 p-3 space-y-2">
                             <div className="flex items-center gap-2 text-red-700 dark:text-red-300 text-sm font-semibold">
                                 <AlertTriangle className="h-4 w-4" />
                                 Schedule conflicts detected
@@ -267,9 +344,16 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
                         </div>
                     )}
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-4">
-                        {/* LEFT COLUMN */}
-                        <div className="space-y-4">
+                    <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(340px,0.8fr)]">
+                        <div className="space-y-4 rounded-lg border border-white/8 bg-white/60 p-5 shadow-[0_12px_32px_rgba(15,23,42,0.06)] backdrop-blur-md dark:border-white/6 dark:bg-darkPrimaryBg/40">
+                            <div>
+                                <p className="text-sm font-semibold text-headingTextColor dark:text-darkTextPrimary">
+                                    Schedule details
+                                </p>
+                                <p className="mt-1 text-xs leading-5 text-subTextColor dark:text-darkTextSecondary">
+                                    Event name, date, timing, and attendees.
+                                </p>
+                            </div>
                             <FormField
                                 control={form.control}
                                 name="eventName"
@@ -279,7 +363,7 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
                                         <FormControl>
                                             <Input
                                                 type="text"
-                                                className="dark:bg-darkPrimaryBg dark:border-darkBorder"
+                                                className="h-10 dark:bg-darkSecondaryBg dark:border-darkBorder"
                                                 placeholder="e.g. Sprint Planning"
                                                 maxLength={30}
                                                 {...field}
@@ -295,7 +379,9 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
                                 name="date"
                                 render={({ field }) => (
                                     <FormItem className="w-full">
-                                        <FormLabel required>Date</FormLabel>
+                                        <FormLabel required className="flex items-center gap-1.5">
+                                            <CalendarDays className="h-3.5 w-3.5" /> Date
+                                        </FormLabel>
                                         <FormControl>
                                             <Popover
                                                 open={openStartDate}
@@ -305,15 +391,20 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
                                                     <Button
                                                         variant="outline2"
                                                         type="button"
-                                                        className="w-full py-1.5 justify-between font-normal dark:text-darkTextSecondary dark:bg-darkPrimaryBg dark:border-darkBorder"
+                                                        className="h-10 w-full justify-between py-1.5 font-normal text-headingTextColor dark:bg-darkSecondaryBg dark:border-darkBorder dark:text-darkTextPrimary"
                                                     >
                                                         <div className="flex items-center gap-2">
-                                                            <CalendarDays className="h-4 w-4" />
+                                                            <CalendarDays className="h-4 w-4 text-subTextColor dark:text-darkTextSecondary" />
                                                             {field.value
-                                                                ? field.value.toLocaleDateString()
+                                                                ? field.value.toLocaleDateString(undefined, {
+                                                                      weekday: "short",
+                                                                      month: "short",
+                                                                      day: "numeric",
+                                                                      year: "numeric",
+                                                                  })
                                                                 : "Set a date"}
                                                         </div>
-                                                        <ChevronDownIcon className="h-4 w-4" />
+                                                        <ChevronDownIcon className="h-4 w-4 opacity-60" />
                                                     </Button>
                                                 </PopoverTrigger>
                                                 <PopoverContent
@@ -361,7 +452,7 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
                                                         type="time"
                                                         step="1"
                                                         {...field}
-                                                        className="peer bg-background dark:bg-darkPrimaryBg dark:border-darkBorder appearance-none pl-9 [&::-webkit-calendar-picker-indicator]:hidden"
+                                                        className="peer h-10 appearance-none bg-background pl-9 dark:bg-darkSecondaryBg dark:border-darkBorder [&::-webkit-calendar-picker-indicator]:hidden"
                                                     />
                                                 </div>
                                             </FormControl>
@@ -387,7 +478,7 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
                                                         type="time"
                                                         step="1"
                                                         {...field}
-                                                        className="peer bg-background dark:bg-darkPrimaryBg dark:border-darkBorder appearance-none pl-9 [&::-webkit-calendar-picker-indicator]:hidden"
+                                                        className="peer h-10 appearance-none bg-background pl-9 dark:bg-darkSecondaryBg dark:border-darkBorder [&::-webkit-calendar-picker-indicator]:hidden"
                                                     />
                                                 </div>
                                             </FormControl>
@@ -402,7 +493,9 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
                                 name="members"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel required>Attendees</FormLabel>
+                                        <FormLabel required className="flex items-center gap-1.5">
+                                            <UsersIcon className="h-3.5 w-3.5" /> Attendees
+                                        </FormLabel>
                                         <FormControl>
                                             <MultiSelect
                                                 values={field.value.map(String)}
@@ -417,7 +510,7 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
                                                     field.onChange(processed);
                                                 }}
                                             >
-                                                <MultiSelectTrigger className="w-full hover:bg-white py-2 dark:bg-darkPrimaryBg hover:dark:bg-darkPrimaryBg dark:border-darkBorder">
+                                                <MultiSelectTrigger className="w-full min-h-10 py-1.5 hover:bg-white dark:bg-darkSecondaryBg hover:dark:bg-darkSecondaryBg dark:border-darkBorder">
                                                     <MultiSelectValue placeholder="Select attendees..." />
                                                 </MultiSelectTrigger>
                                                 <MultiSelectContent
@@ -444,31 +537,8 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
                                                 </MultiSelectContent>
                                             </MultiSelect>
                                         </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
-
-                        {/* RIGHT COLUMN */}
-                        <div className="space-y-4">
-                            <FormField
-                                control={form.control}
-                                name="description"
-                                render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel required>Description</FormLabel>
-                                        <FormControl>
-                                            <Textarea
-                                                className="dark:bg-darkPrimaryBg dark:border-darkBorder resize-none min-h-28"
-                                                placeholder="What is this event about?"
-                                                rows={5}
-                                                maxLength={100}
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                        <p className="text-[11px] text-subTextColor dark:text-darkTextSecondary text-right">
-                                            {field.value?.length ?? 0}/100
+                                        <p className="text-xs leading-5 text-subTextColor dark:text-darkTextSecondary">
+                                            Choose specific people or use <span className="font-semibold text-headingTextColor dark:text-darkTextPrimary">All members</span> for company-wide sessions.
                                         </p>
                                         <FormMessage />
                                     </FormItem>
@@ -484,9 +554,13 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
                                             <Video className="h-3.5 w-3.5" />
                                             Conference provider
                                         </FormLabel>
-                                        <div className="grid grid-cols-3 gap-2">
+                                        <div className="mt-2 grid grid-cols-3 gap-2">
                                             {[
-                                                { v: "none", label: "None", icon: null },
+                                                {
+                                                    v: "none",
+                                                    label: "None",
+                                                    icon: null,
+                                                },
                                                 {
                                                     v: "google",
                                                     label: "Google Meet",
@@ -499,31 +573,67 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
                                                 },
                                             ].map((opt) => {
                                                 const active = field.value === opt.v;
+
                                                 return (
                                                     <button
                                                         key={opt.v}
                                                         type="button"
                                                         onClick={() => field.onChange(opt.v)}
                                                         className={cn(
-                                                            "flex flex-col items-center justify-center gap-1.5 rounded-lg border px-2 py-3 text-[11px] sm:text-xs font-medium transition cursor-pointer",
+                                                            "group flex h-11 items-center justify-center gap-2 rounded-lg border px-3 text-[13px] font-medium transition-all cursor-pointer",
                                                             active
-                                                                ? "border-primary bg-primary/10 text-primary"
-                                                                : "border-borderColor dark:border-darkBorder bg-white dark:bg-darkPrimaryBg text-subTextColor dark:text-darkTextSecondary hover:border-primary/40",
+                                                                ? "border-primary bg-primary/10 text-primary ring-1 ring-primary/25 shadow-sm"
+                                                                : "border-white/10 bg-white/40 text-subTextColor hover:border-primary/35 hover:bg-white/55 dark:border-white/6 dark:bg-darkPrimaryBg/35 dark:text-darkTextSecondary dark:hover:bg-darkPrimaryBg/55",
                                                         )}
                                                     >
-                                                        <div className="flex h-5 items-center">
-                                                            {opt.icon ?? <Video className="h-4 w-4" />}
-                                                        </div>
-                                                        {opt.label}
+                                                        {opt.icon ?? <Video className="h-4 w-4" />}
+                                                        <span className="leading-none">{opt.label}</span>
                                                     </button>
                                                 );
                                             })}
                                         </div>
-                                        <p className="text-[11px] text-subTextColor dark:text-darkTextSecondary leading-snug">
-                                            Events are automatically synced to attendees&apos; connected
-                                            Google Calendar. Unconnected attendees will appear as
-                                            <span className="font-semibold"> pending connection</span>.
-                                        </p>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg border border-dashed border-white/10 bg-white/30 px-3.5 py-2.5 backdrop-blur-sm dark:border-white/6 dark:bg-darkSecondaryBg/30">
+                                <span className="inline-flex items-center text-[11px] font-semibold uppercase leading-none tracking-[0.14em] text-subTextColor dark:text-darkTextSecondary">
+                                    Summary
+                                </span>
+                                <span className="inline-flex items-center text-sm font-semibold leading-none text-headingTextColor dark:text-darkTextPrimary">
+                                    {attendeePreview} • {formatDuration(startTime, endTime)} • {providerPreview}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className="flex h-full min-h-0 flex-col space-y-3 rounded-lg border border-white/8 bg-white/60 p-5 shadow-[0_12px_32px_rgba(15,23,42,0.06)] backdrop-blur-md dark:border-white/6 dark:bg-darkPrimaryBg/40">
+                            <div>
+                                <p className="text-sm font-semibold text-headingTextColor dark:text-darkTextPrimary">
+                                    Description
+                                </p>
+                                <p className="mt-1 text-xs leading-5 text-subTextColor dark:text-darkTextSecondary">
+                                    Optional agenda or notes attendees will see.
+                                </p>
+                            </div>
+                            <FormField
+                                control={form.control}
+                                name="description"
+                                render={({ field }) => (
+                                    <FormItem className="!flex min-h-0 flex-1 flex-col">
+                                        <FormLabel required className="flex items-center gap-1.5">
+                                            <FileText className="h-3.5 w-3.5" /> Description
+                                        </FormLabel>
+                                        <FormControl>
+                                            <RichTextEditor
+                                                value={field.value || ""}
+                                                onChange={field.onChange}
+                                                placeholder="Add an agenda, talking points, or context..."
+                                                className="h-full"
+                                                minHeightClass="min-h-[220px] modern-scrollbar"
+                                                fillHeight
+                                            />
+                                        </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
@@ -532,7 +642,7 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
                     </div>
 
                     {needsGoogleConnect && (
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-xl border border-amber-200 dark:border-amber-500/30 bg-amber-50/70 dark:bg-amber-500/10 p-3">
+                        <div className="flex flex-col gap-3 rounded-lg border border-amber-200 bg-amber-50/80 p-4 dark:border-amber-500/30 dark:bg-amber-500/10 sm:flex-row sm:items-center">
                             <div className="flex items-start gap-2 flex-1 min-w-0">
                                 <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
                                 <div className="min-w-0">
@@ -549,7 +659,7 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
                                 size="sm"
                                 onClick={startGoogleConnect}
                                 disabled={connectBusy}
-                                className="bg-amber-600 hover:bg-amber-700 text-white shrink-0"
+                                className="shrink-0 rounded-lg bg-amber-600 text-white hover:bg-amber-700"
                             >
                                 {connectBusy ? (
                                     <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -561,13 +671,60 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
                         </div>
                     )}
 
-                    <Button
-                        className="w-full mt-2"
-                        type="submit"
-                        disabled={loading || needsGoogleConnect}
-                    >
-                        {loading ? "Creating..." : "Create event"}
-                    </Button>
+                    {needsMicrosoftConnect && (
+                        <div className="flex flex-col gap-3 rounded-lg border border-amber-200 bg-amber-50/80 p-4 dark:border-amber-500/30 dark:bg-amber-500/10 sm:flex-row sm:items-center">
+                            <div className="flex items-start gap-2 flex-1 min-w-0">
+                                <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
+                                <div className="min-w-0">
+                                    <p className="text-xs font-semibold text-amber-800 dark:text-amber-200">
+                                        Connect Microsoft to host a Teams event
+                                    </p>
+                                    <p className="text-[11px] text-amber-700/80 dark:text-amber-300/80">
+                                        Authorize StaffTime-Track to access your Teams/Outlook calendar before scheduling. Your Microsoft account can differ from your app email.
+                                    </p>
+                                </div>
+                            </div>
+                            <Button
+                                type="button"
+                                size="sm"
+                                onClick={startMicrosoftConnect}
+                                disabled={microsoftConnectBusy}
+                                className="shrink-0 rounded-lg bg-amber-600 text-white hover:bg-amber-700"
+                            >
+                                {microsoftConnectBusy ? (
+                                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                ) : (
+                                    <MicrosoftIcon className="h-3.5 w-3.5" />
+                                )}
+                                Connect Microsoft
+                            </Button>
+                        </div>
+                    )}
+
+                    <div className="-mx-5 -mb-5 mt-1 flex flex-col-reverse gap-2 border-t border-borderColor bg-bgSecondary/40 px-5 py-3.5 dark:border-darkBorder dark:bg-darkPrimaryBg/30 sm:-mx-6 sm:flex-row sm:items-center sm:justify-end sm:px-6">
+                        <Button
+                            type="button"
+                            variant="outline2"
+                            onClick={onClose}
+                            disabled={loading}
+                            className="h-10 rounded-lg px-5 text-headingTextColor dark:bg-darkSecondaryBg dark:text-darkTextPrimary"
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            type="submit"
+                            disabled={loading || needsGoogleConnect || needsMicrosoftConnect}
+                            className="h-10 min-w-36 rounded-lg"
+                        >
+                            {loading ? (
+                                <>
+                                    <Loader2 className="h-3.5 w-3.5 animate-spin" /> Creating
+                                </>
+                            ) : (
+                                "Create event"
+                            )}
+                        </Button>
+                    </div>
                 </form>
             </Form>
         </DialogContent>

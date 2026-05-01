@@ -34,6 +34,9 @@ export const editSingleDetailsMember = async ({
     role: string;
     time_zone: string;
     pay_rate_hourly: number;
+    gender: "male" | "female" | "other";
+    currency: string;
+    birth_day?: string | null;
     is_active: boolean;
     is_tracking: boolean;
     url_tracking: boolean;

@@ -121,11 +121,11 @@ export const ProviderBadge = ({
     if (!provider) return null;
     const isGoogle = provider === "google_meet";
     return (
-        <span className="inline-flex items-center gap-1.5 rounded-md border border-borderColor dark:border-darkBorder bg-white dark:bg-darkPrimaryBg px-2 py-0.5 text-[11px] font-medium text-headingTextColor dark:text-darkTextPrimary">
+        <span className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border border-borderColor dark:border-darkBorder bg-white dark:bg-darkPrimaryBg px-3.5 py-2 text-sm font-semibold text-headingTextColor dark:text-darkTextPrimary shadow-sm">
             {isGoogle ? (
-                <GoogleIcon className="h-3 w-3" />
+                <GoogleIcon className="h-4 w-4" />
             ) : (
-                <MicrosoftIcon className="h-3 w-3" />
+                <MicrosoftIcon className="h-4 w-4" />
             )}
             {isGoogle ? "Google Meet" : "Microsoft Teams"}
         </span>

@@ -136,7 +136,7 @@ const EditEventModal = ({ handleCloseDialog, event }: any) => {
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                 {conflicts.length > 0 && (
-                    <div className="rounded-xl border border-red-200 dark:border-red-500/30 bg-red-50/70 dark:bg-red-500/10 p-3 space-y-2">
+                    <div className="rounded-lg border border-red-200 dark:border-red-500/30 bg-red-50/70 dark:bg-red-500/10 p-3 space-y-2">
                         <div className="flex items-center gap-2 text-red-700 dark:text-red-300 text-sm font-semibold">
                             <AlertTriangle className="h-4 w-4" />
                             Schedule conflicts detected

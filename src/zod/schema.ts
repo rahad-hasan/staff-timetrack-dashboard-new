@@ -260,8 +260,7 @@ export const addNewEventSchema = z
     description: z
       .string()
       .trim()
-      .min(5, "Description must be at least 5 characters")
-      .max(100, "Description must be 100 characters or less"),
+      .min(5, "Description must be at least 5 characters"),
     conference_provider: z.enum(["none", "google", "microsoft"]).default("none"),
   })
   .superRefine((values, ctx) => {
@@ -389,6 +388,22 @@ export const singleMemberSchema = z.object({
   pay_rate_hourly: z.number().min(0),
   role: z.string().min(2, "role is required"),
   time_zone: z.string().min(1, "Time Zone is required"),
+  gender: z.enum(["male", "female", "other"], {
+    message: "Gender is required",
+  }),
+  currency: z.string().min(1, "Currency is required"),
+  birth_day: z
+    .string()
+    .optional()
+    .or(z.literal(""))
+    .refine(
+      (val) => {
+        if (!val || val.length === 0) return true;
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(val)) return false;
+        return !isNaN(Date.parse(val));
+      },
+      { message: "Birth day must be a valid YYYY-MM-DD date." },
+    ),
 });
 
 export const ScheduleShiftSchema = z.object({
