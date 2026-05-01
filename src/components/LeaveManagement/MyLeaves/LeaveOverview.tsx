@@ -1,8 +1,8 @@
 "use client"
 import CalendarIcon from "@/components/Icons/CalendarIcon";
+import LeaveCalender from "@/components/Icons/LeaveCalender";
 import { UserLeaveSummary } from "@/types/type";
 import { format, isValid, parseISO } from "date-fns";
-import { Sparkles } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 
 type LeaveOverviewProps = {
@@ -83,7 +83,8 @@ const LeaveOverview = ({ data, headingSubtitle, currentUserId }: LeaveOverviewPr
                     <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                         <div className="space-y-3">
                             <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-white/80 px-3 py-1 text-xs font-medium uppercase tracking-[0.2em] text-primary dark:bg-darkPrimaryBg">
-                                <Sparkles className="size-3.5" />
+                                {/* <Sparkles className="size-3.5" /> */}
+                                <LeaveCalender size={14} />
                                 Leave overview
                             </div>
                             <div>

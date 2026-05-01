@@ -6,11 +6,13 @@ import {
   ArrowUpRight,
   CalendarClock,
   Clock3,
+  ExternalLink,
+  Eye,
+  FileImage,
   FileText,
   ShieldCheck,
   UserRound,
 } from "lucide-react";
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,6 +30,12 @@ type LeaveHistoryDetailsSheetProps = {
   leave: LeaveRecord | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+};
+type AttachmentInfo = {
+  url: string;
+  name?: string | null;
+  mimeType?: string | null;
+  sourceKey: string;
 };
 
 function getEmployeeInitials(name?: string) {
@@ -57,6 +65,82 @@ const LeaveHistoryDetailsSheet = ({
     () => getLeaveStatusTheme((leave?.status ?? "pending") as LeaveStatus),
     [leave?.status],
   );
+
+  function extractAttachmentInfo(leave: LeaveRecord | null): AttachmentInfo | null {
+    if (!leave) {
+      return null;
+    }
+
+    const record = leave as LeaveRecord & Record<string, unknown>;
+    const candidateKeys = [
+      "supporting_document_url",
+      "supporting_document",
+      "document_url",
+      "document",
+      "attachment_url",
+      "attachment",
+      "file_url",
+      "file",
+    ] as const;
+    const nameKeys = [
+      "supporting_document_name",
+      "document_name",
+      "attachment_name",
+      "file_name",
+    ] as const;
+    const mimeKeys = [
+      "supporting_document_mime_type",
+      "document_mime_type",
+      "attachment_mime_type",
+      "file_mime_type",
+      "mime_type",
+    ] as const;
+
+    const matchedKey = candidateKeys.find((key) => typeof record[key] === "string" && record[key]);
+
+    if (!matchedKey) {
+      return null;
+    }
+
+    const nameKey = nameKeys.find((key) => typeof record[key] === "string" && record[key]);
+    const mimeKey = mimeKeys.find((key) => typeof record[key] === "string" && record[key]);
+
+    return {
+      url: String(record[matchedKey]),
+      name: nameKey ? String(record[nameKey]) : null,
+      mimeType: mimeKey ? String(record[mimeKey]) : null,
+      sourceKey: matchedKey,
+    };
+  }
+
+  function isPdfAttachment(attachment: AttachmentInfo | null) {
+    if (!attachment) {
+      return false;
+    }
+
+    const lowerUrl = attachment.url.toLowerCase();
+    const lowerMime = attachment.mimeType?.toLowerCase() ?? "";
+
+    return lowerMime.includes("pdf") || lowerUrl.endsWith(".pdf");
+  }
+
+  const attachment = useMemo(() => extractAttachmentInfo(leave), [leave]);
+
+  function isImageAttachment(attachment: AttachmentInfo | null) {
+    if (!attachment) {
+      return false;
+    }
+
+    const lowerUrl = attachment.url.toLowerCase();
+    const lowerMime = attachment.mimeType?.toLowerCase() ?? "";
+
+    return (
+      lowerMime.startsWith("image/") ||
+      [".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp", ".svg"].some((ext) =>
+        lowerUrl.endsWith(ext),
+      )
+    );
+  }
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -260,6 +344,70 @@ const LeaveHistoryDetailsSheet = ({
                 <p className="mt-3 whitespace-pre-wrap break-words text-sm leading-6 text-subTextColor dark:text-darkTextSecondary">
                   {leave.reject_reason || "No rejection note for this request."}
                 </p>
+              </div>
+
+              <div className="rounded-[12px] border border-borderColor bg-white p-5 dark:border-darkBorder dark:bg-darkPrimaryBg">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    {isImageAttachment(attachment) ? (
+                      <FileImage className="size-4 text-primary" />
+                    ) : (
+                      <Eye className="size-4 text-primary" />
+                    )}
+                    <p className="text-sm font-medium text-headingTextColor dark:text-darkTextPrimary">
+                      Supporting document
+                    </p>
+                  </div>
+
+                  {attachment ? (
+                    <Button asChild variant="outline2" size="sm" className="dark:bg-darkSecondaryBg">
+                      <a href={attachment.url} target="_blank" rel="noreferrer">
+                        Open file
+                        <ExternalLink className="size-4" />
+                      </a>
+                    </Button>
+                  ) : null}
+                </div>
+
+                {attachment ? (
+                  <div className="mt-4 space-y-4">
+                    <div className="rounded-[12px] bg-bgSecondary/60 px-4 py-3 text-sm text-subTextColor dark:text-darkTextSecondary dark:bg-darkSecondaryBg">
+                      <p className="font-medium text-headingTextColor dark:text-darkTextPrimary">
+                        {attachment.name || "Uploaded supporting document"}
+                      </p>
+                      <p className="mt-1 break-all text-xs">
+                        Source field: <code>{attachment.sourceKey}</code>
+                      </p>
+                    </div>
+
+                    {isPdfAttachment(attachment) ? (
+                      <div className="overflow-hidden rounded-[12px] border border-borderColor dark:border-darkBorder">
+                        <iframe
+                          src={attachment.url}
+                          title={attachment.name || "Supporting document"}
+                          className="h-[420px] w-full bg-white"
+                        />
+                      </div>
+                    ) : isImageAttachment(attachment) ? (
+                      <div className="overflow-hidden rounded-[12px] border border-borderColor bg-bgSecondary/40 dark:border-darkBorder dark:bg-darkSecondaryBg">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={attachment.url}
+                          alt={attachment.name || "Supporting document"}
+                          className="max-h-[420px] w-full object-contain"
+                        />
+                      </div>
+                    ) : (
+                      <div className="rounded-[12px] border border-dashed border-borderColor px-4 py-10 text-center text-sm text-subTextColor dark:text-darkTextSecondary dark:border-darkBorder">
+                        This file type cannot be previewed inline. Use <code>Open file</code> to review it.
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="mt-4 rounded-[12px] border border-dashed border-borderColor px-4 py-10 text-center text-sm text-subTextColor dark:text-darkTextSecondary dark:border-darkBorder">
+                    No supporting document is attached to this request.
+                  </div>
+                )}
               </div>
 
               <div className="grid gap-3 sm:grid-cols-2">

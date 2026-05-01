@@ -7,6 +7,8 @@ import { getMembersDashboard } from "@/actions/members/action";
 import MyLeavesDashboard from "@/components/LeaveManagement/MyLeaves/MyLeavesDashboard";
 import { ISearchParamsProps } from "@/types/type";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
+import MyLeaveSkeleton from "@/skeleton/leaveManagement/MyLeaveSkeleton";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Staff Time Tracker My Leaves",
@@ -26,18 +28,18 @@ const MyLeavesPage = async ({ searchParams }: ISearchParamsProps) => {
       : undefined;
 
   const summaryResponse =
-     await getUserLeaveSummary({
-        year: params.year,
-        user_id: selectedUserId,
-      });
+    await getUserLeaveSummary({
+      year: params.year,
+      user_id: selectedUserId,
+    });
 
-  const [ membersResponse, leaveTypesResponse ] =
+  const [membersResponse, leaveTypesResponse] =
     await Promise.all([
       canManageUsers
         ? getMembersDashboard({
-            page: 1,
-            limit: 500,
-          })
+          page: 1,
+          limit: 500,
+        })
         : Promise.resolve(null),
       getLeaveRequestTypeDropdown(),
     ]);
@@ -92,14 +94,17 @@ const MyLeavesPage = async ({ searchParams }: ISearchParamsProps) => {
   // ).sort((first, second) => first.label.localeCompare(second.label));
 
   return (
-    <MyLeavesDashboard
-      data={summaryData}
-      leaveTypes={leaveTypesResponse.data}
-      currentUserId={currentUser?.id}
-      canManageUsers={canManageUsers}
-      users={memberUsers}
-      allowRequestLeave={currentUser?.id === summaryData.user.id}
-    />
+    <Suspense fallback={<MyLeaveSkeleton />}>
+      <MyLeavesDashboard
+        data={summaryData}
+        leaveTypes={leaveTypesResponse.data}
+        currentUserId={currentUser?.id}
+        canManageUsers={canManageUsers}
+        users={memberUsers}
+        allowRequestLeave={currentUser?.id === summaryData.user.id}
+      />
+    </Suspense>
+
   );
 };
 

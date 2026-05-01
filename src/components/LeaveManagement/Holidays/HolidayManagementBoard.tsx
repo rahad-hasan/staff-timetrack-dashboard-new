@@ -23,6 +23,7 @@ import MandatoryLeaveImportDialog from "./MandatoryLeaveImportDialog";
 import HolidayFormDialog from "./HolidayFormDialog";
 import HolidayTable from "./HolidayTable";
 import AppPagination from "@/components/Common/AppPagination";
+import CalendarIcon from "@/components/Icons/CalendarIcon";
 
 type HolidayManagementBoardProps = {
   holidays: LeaveHoliday[];
@@ -313,8 +314,8 @@ const HolidayManagementBoard = ({
           </div>
 
           <div className="mt-6 flex flex-wrap items-center gap-3 text-sm">
-            <div className="inline-flex items-center gap-2 rounded-full px-4 py-2 font-medium text-headingTextColor shadow-sm dark:bg-darkPrimaryBg dark:text-darkTextPrimary">
-              <CalendarDays className="size-4 text-primary" />
+            <div className="inline-flex items-center gap-2  rounded-full px-4 py-2 font-medium text-headingTextColor shadow-sm dark:bg-darkPrimaryBg dark:text-darkTextPrimary">
+              <CalendarIcon size={16} className="text-primary"/>
               {sortedHolidays.length} holiday{sortedHolidays.length === 1 ? "" : "s"} in {selectedYear}
             </div>
             <div className="rounded-full bg-primary/10 px-4 py-2 text-primary dark:bg-primary/15">

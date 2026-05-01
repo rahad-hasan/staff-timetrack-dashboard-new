@@ -57,7 +57,7 @@ const MyLeavesDashboard = ({
   const logInUserRole = useLogInUserStore((state) => state.logInUserData?.role);
   const resolvedCanManageUsers =
     canManageUsers ||
-    ["admin", "manager", "hr", "project_manager"].includes(logInUserRole ?? "");
+    ["admin", "manager", "hr"].includes(logInUserRole ?? "");
 
   const [requestOpen, setRequestOpen] = useState(false);
   const [selectedLeaveTypeId, setSelectedLeaveTypeId] = useState<number | null>(
