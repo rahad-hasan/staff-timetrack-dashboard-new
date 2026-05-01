@@ -3,9 +3,9 @@ import { Suspense } from "react";
 
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import HolidayManagementServer from "@/components/LeaveManagement/Holidays/HolidayManagementServer";
-import LeaveDetailsSkeleton from "@/skeleton/leaveManagement/leaveDetailsSkeleton";
 import { ISearchParamsProps } from "@/types/type";
 import LeaveTypeSubNav from "@/components/LeaveManagement/LeaveTypeSubNav";
+import HolidaySkeleton from "@/skeleton/leaveManagement/HolidaySkeleton";
 
 export const metadata: Metadata = {
   title: "Staff Time Tracker Holidays",
@@ -23,7 +23,7 @@ const HolidaysPage = ({ searchParams }: ISearchParamsProps) => {
         <LeaveTypeSubNav />
       </div>
 
-      <Suspense fallback={<LeaveDetailsSkeleton />}>
+      <Suspense fallback={<HolidaySkeleton />}>
         <HolidayManagementServer searchParams={searchParams} />
       </Suspense>
     </div>

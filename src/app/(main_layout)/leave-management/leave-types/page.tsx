@@ -2,9 +2,9 @@ import { Suspense } from "react";
 import { Metadata } from "next";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import LeaveTypesServer from "@/components/LeaveManagement/LeaveTypes/LeaveTypesServer";
-import LeaveDetailsSkeleton from "@/skeleton/leaveManagement/leaveDetailsSkeleton";
 import { ISearchParamsProps } from "@/types/type";
 import LeaveTypeSubNav from "@/components/LeaveManagement/LeaveTypeSubNav";
+import LeaveTypesSkeleton from "@/skeleton/leaveManagement/LeaveTypesSkeleton";
 
 export const metadata: Metadata = {
   title: "Staff Time Tracker Leave Types",
@@ -21,7 +21,7 @@ const LeaveTypesPage = ({ searchParams }: ISearchParamsProps) => {
         />
         <LeaveTypeSubNav/>
       </div>
-      <Suspense fallback={<LeaveDetailsSkeleton />}>
+      <Suspense fallback={<LeaveTypesSkeleton />}>
         <LeaveTypesServer searchParams={searchParams} />
       </Suspense>
     </div>
