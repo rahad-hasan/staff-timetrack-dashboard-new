@@ -24,6 +24,8 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useProjectFormStore } from "@/store/ProjectFormStore";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { IProject } from "@/types/type";
+import { useEffect, useState } from "react";
+import { getMembersDashboard } from "@/actions/members/action";
 
 interface GeneralInfoStepProps {
     setStep: (step: number) => void;
@@ -32,6 +34,7 @@ interface GeneralInfoStepProps {
 
 const EditMemberStep = ({ setStep, selectedProject }: GeneralInfoStepProps) => {
     const data = useProjectFormStore(state => state.data);;
+    const [members, setMembers] = useState<{ id: number; name: string; image?: string }[]>([]);
     const form = useForm<z.infer<typeof addMemberSchema>>({
         resolver: zodResolver(addMemberSchema),
         defaultValues: {
@@ -45,7 +48,23 @@ const EditMemberStep = ({ setStep, selectedProject }: GeneralInfoStepProps) => {
         setStep(3);
     }
 
-    const managersData = data?.members;
+    // const managersData = data?.members;
+
+        useEffect(() => {
+        const loadMembers = async () => {
+
+            try {
+                const res = await getMembersDashboard();
+                if (res?.success) {
+                    setMembers(res.data);
+                }
+            } catch (err) {
+                console.error("Failed to fetch clients", err);
+            }
+        };
+
+        loadMembers();
+    }, []);
 
     return (
         <div>
@@ -71,7 +90,7 @@ const EditMemberStep = ({ setStep, selectedProject }: GeneralInfoStepProps) => {
                                         <MultiSelectContent className="dark:bg-darkSecondaryBg">
                                             {/* Items must be wrapped in a group for proper styling */}
                                             <MultiSelectGroup className="dark:bg-darkSecondaryBg">
-                                                {managersData.map((manager: { id: number | string; image?: string | null; name: string }) => (
+                                                {members.map((manager: { id: number | string; image?: string | null; name: string }) => (
                                                     <MultiSelectItem
                                                         key={manager.id}
                                                         value={String(manager.id)}
