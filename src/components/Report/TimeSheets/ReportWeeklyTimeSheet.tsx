@@ -4,22 +4,12 @@
 import { format } from "date-fns";
 
 const ReportWeeklyTimeSheet = ({ dateBasedTimeEntry }: any) => {
-  // table data
-  type DayMeta = { name: string };
   type Row = {
     times: Array<{ [key: string]: string }>;
     weekTotal: string;
   };
 
-  const days: DayMeta[] = [
-    { name: "Monday" },
-    { name: "Tuesday" },
-    { name: "Wednesday" },
-    { name: "Thursday" },
-    { name: "Friday" },
-    { name: "Saturday" },
-    { name: "Sunday" },
-  ];
+
   const rows: Row = {
     // times: [{ time: "8h 0m" }, { time: "8h 0m" }, { time: "-" }, { time: "-" }, { time: "8h 0m" }, { time: "8h 0m" }, { time: "-" }],
     times: dateBasedTimeEntry?.data?.daily_data,
