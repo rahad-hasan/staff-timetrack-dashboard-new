@@ -359,7 +359,7 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
     return (
         <DialogContent
             onInteractOutside={(event) => event.preventDefault()}
-            className="modern-scrollbar w-full max-w-[calc(100vw-2rem)] sm:max-w-[760px] lg:max-w-[1120px] max-h-[95vh] overflow-y-auto gap-0 border-borderColor p-0 dark:border-darkBorder dark:bg-darkSecondaryBg"
+            className="w-full max-w-[calc(100vw-2rem)] sm:max-w-[760px] lg:max-w-[1120px] max-h-[95vh] grid-rows-[auto_minmax(0,1fr)] overflow-hidden gap-0 border-borderColor p-0 dark:border-darkBorder dark:bg-darkSecondaryBg"
         >
             <DialogHeader className="border-b border-borderColor bg-linear-to-r from-primary/12 via-cyan-500/6 to-transparent px-5 py-4 dark:border-darkBorder dark:from-primary/14 dark:via-cyan-500/8 dark:to-transparent sm:px-6">
                 <div className="flex items-start gap-3">
@@ -377,114 +377,50 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
                 </div>
             </DialogHeader>
 
-            <Form {...form}>
-                <form
-                    onSubmit={form.handleSubmit(onSubmit)}
-                    className="space-y-4 px-5 py-5 sm:px-6"
-                >
-                    {conflicts.length > 0 && (
-                        <div className="rounded-lg border border-red-200 dark:border-red-500/30 bg-red-50/70 dark:bg-red-500/10 p-3 space-y-2">
-                            <div className="flex items-center gap-2 text-red-700 dark:text-red-300 text-sm font-semibold">
-                                <AlertTriangle className="h-4 w-4" />
-                                Schedule conflicts detected
-                            </div>
-                            <ul className="text-[12px] leading-relaxed text-red-700 dark:text-red-300 space-y-1 list-disc pl-5">
-                                {conflicts.map((c, i) => (
-                                    <li key={i}>{c}</li>
-                                ))}
-                            </ul>
-                            <div className="flex flex-col sm:flex-row gap-2 pt-1">
-                                <Button
-                                    type="button"
-                                    size="sm"
-                                    variant="destructive"
-                                    onClick={handleScheduleAnyway}
-                                    disabled={loading}
-                                >
-                                    Schedule anyway
-                                </Button>
-                                <Button
-                                    type="button"
-                                    size="sm"
-                                    variant="outline2"
-                                    onClick={() => setConflicts([])}
-                                >
-                                    Edit details
-                                </Button>
-                            </div>
-                            <p className="text-[11px] text-red-700/70 dark:text-red-300/70">
-                                This will not cancel the conflicting events.
-                            </p>
-                        </div>
-                    )}
-
-                    {loading && visibleLoadingSteps.length > 0 && (
-                        <div className="rounded-2xl border border-primary/20 bg-linear-to-r from-primary/10 via-cyan-500/8 to-transparent p-4 shadow-[0_12px_28px_rgba(15,23,42,0.08)] dark:border-primary/25 dark:from-primary/12 dark:via-cyan-500/10 dark:to-transparent">
-                            <div className="flex items-start gap-3">
-                                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
-                                    <Sparkles className="h-4 w-4 animate-pulse" />
-                                </div>
-                                <div className="min-w-0 flex-1">
-                                    <div className="flex flex-wrap items-center gap-2">
-                                        <p className="text-sm font-semibold text-headingTextColor dark:text-darkTextPrimary">
-                                            Scheduling agent is working
-                                        </p>
-                                        <span className="inline-flex items-center rounded-full border border-primary/20 bg-white/70 px-2.5 py-0.5 text-[11px] font-medium text-primary dark:border-primary/30 dark:bg-darkPrimaryBg/60">
-                                            Running background checks
-                                        </span>
+            <div className="relative min-h-0">
+                <Form {...form}>
+                    <form
+                        onSubmit={form.handleSubmit(onSubmit)}
+                        className="modern-scrollbar h-full overflow-y-auto px-5 py-5 sm:px-6"
+                    >
+                        <div className="space-y-4">
+                            {conflicts.length > 0 && (
+                                <div className="rounded-lg border border-red-200 dark:border-red-500/30 bg-red-50/70 dark:bg-red-500/10 p-3 space-y-2">
+                                    <div className="flex items-center gap-2 text-red-700 dark:text-red-300 text-sm font-semibold">
+                                        <AlertTriangle className="h-4 w-4" />
+                                        Schedule conflicts detected
                                     </div>
-                                    <p className="mt-1 text-xs leading-5 text-subTextColor dark:text-darkTextSecondary">
-                                        We are checking attendee conflicts and connected calendar apps before confirming the event.
+                                    <ul className="text-[12px] leading-relaxed text-red-700 dark:text-red-300 space-y-1 list-disc pl-5">
+                                        {conflicts.map((c, i) => (
+                                            <li key={i}>{c}</li>
+                                        ))}
+                                    </ul>
+                                    <div className="flex flex-col sm:flex-row gap-2 pt-1">
+                                        <Button
+                                            type="button"
+                                            size="sm"
+                                            variant="destructive"
+                                            onClick={handleScheduleAnyway}
+                                            disabled={loading}
+                                        >
+                                            Schedule anyway
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            size="sm"
+                                            variant="outline2"
+                                            onClick={() => setConflicts([])}
+                                        >
+                                            Edit details
+                                        </Button>
+                                    </div>
+                                    <p className="text-[11px] text-red-700/70 dark:text-red-300/70">
+                                        This will not cancel the conflicting events.
                                     </p>
-
-                                    <div className="mt-4 space-y-2.5">
-                                        {visibleLoadingSteps.map((step, index) => {
-                                            const isActive =
-                                                index === visibleLoadingSteps.length - 1;
-                                            const isCompleted = !isActive;
-
-                                            return (
-                                                <div
-                                                    key={step.title}
-                                                    className={cn(
-                                                        "flex items-start gap-3 rounded-xl border px-3.5 py-3 backdrop-blur-sm transition-all",
-                                                        isActive
-                                                            ? "border-primary/25 bg-white/75 shadow-sm dark:border-primary/30 dark:bg-darkPrimaryBg/70"
-                                                            : "border-white/10 bg-white/45 dark:border-white/6 dark:bg-darkPrimaryBg/35",
-                                                    )}
-                                                >
-                                                    <div
-                                                        className={cn(
-                                                            "mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border",
-                                                            isActive
-                                                                ? "border-primary/20 bg-primary/10 text-primary"
-                                                                : "border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300",
-                                                        )}
-                                                    >
-                                                        {isCompleted ? (
-                                                            <CheckCircle2 className="h-3.5 w-3.5" />
-                                                        ) : (
-                                                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                                                        )}
-                                                    </div>
-                                                    <div className="min-w-0">
-                                                        <p className="text-sm font-medium text-headingTextColor dark:text-darkTextPrimary">
-                                                            {step.title}
-                                                        </p>
-                                                        <p className="mt-1 text-xs leading-5 text-subTextColor dark:text-darkTextSecondary">
-                                                            {step.description}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                    )}
+                            )}
 
-                    <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(340px,0.8fr)]">
+                            <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(340px,0.8fr)]">
                         <div className="space-y-4 rounded-lg border border-white/8 bg-white/60 p-5 shadow-[0_12px_32px_rgba(15,23,42,0.06)] backdrop-blur-md dark:border-white/6 dark:bg-darkPrimaryBg/40">
                             <div>
                                 <p className="text-sm font-semibold text-headingTextColor dark:text-darkTextPrimary">
@@ -841,32 +777,104 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
                         </div>
                     )}
 
-                    <div className="-mx-5 -mb-5 mt-1 flex flex-col-reverse gap-2 border-t border-borderColor bg-bgSecondary/40 px-5 py-3.5 dark:border-darkBorder dark:bg-darkPrimaryBg/30 sm:-mx-6 sm:flex-row sm:items-center sm:justify-end sm:px-6">
-                        <Button
-                            type="button"
-                            variant="outline2"
-                            onClick={onClose}
-                            disabled={loading}
-                            className="h-10 rounded-lg px-5 text-headingTextColor dark:bg-darkSecondaryBg dark:text-darkTextPrimary"
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            type="submit"
-                            disabled={loading || needsGoogleConnect || needsMicrosoftConnect}
-                            className="h-10 min-w-36 rounded-lg"
-                        >
-                            {loading ? (
-                                <>
-                                    <Loader2 className="h-3.5 w-3.5 animate-spin" /> Creating
-                                </>
-                            ) : (
-                                "Create event"
-                            )}
-                        </Button>
+                            <div className="-mx-5 -mb-5 mt-1 flex flex-col-reverse gap-2 border-t border-borderColor bg-bgSecondary/40 px-5 py-3.5 dark:border-darkBorder dark:bg-darkPrimaryBg/30 sm:-mx-6 sm:flex-row sm:items-center sm:justify-end sm:px-6">
+                                <Button
+                                    type="button"
+                                    variant="outline2"
+                                    onClick={onClose}
+                                    disabled={loading}
+                                    className="h-10 rounded-lg px-5 text-headingTextColor dark:bg-darkSecondaryBg dark:text-darkTextPrimary"
+                                >
+                                    Cancel
+                                </Button>
+                                <Button
+                                    type="submit"
+                                    disabled={loading || needsGoogleConnect || needsMicrosoftConnect}
+                                    className="h-10 min-w-36 rounded-lg"
+                                >
+                                    {loading ? (
+                                        <>
+                                            <Loader2 className="h-3.5 w-3.5 animate-spin" /> Creating
+                                        </>
+                                    ) : (
+                                        "Create event"
+                                    )}
+                                </Button>
+                            </div>
+                        </div>
+                    </form>
+                </Form>
+
+                {loading && visibleLoadingSteps.length > 0 && (
+                    <div className="absolute inset-0 z-20 bg-slate-950/18 backdrop-blur-sm">
+                        <div className="flex justify-center px-5 pt-5 sm:px-6 sm:pt-6">
+                            <div className="w-full max-w-5xl rounded-2xl border border-primary/20 bg-linear-to-r from-primary/12 via-cyan-500/10 to-white/35 p-4 shadow-[0_18px_48px_rgba(15,23,42,0.18)] backdrop-blur-xl dark:border-primary/25 dark:from-primary/16 dark:via-cyan-500/12 dark:to-darkPrimaryBg/55 sm:p-5">
+                                <div className="flex items-start gap-3">
+                                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
+                                        <Sparkles className="h-4 w-4 animate-pulse" />
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                        <div className="flex flex-wrap items-center gap-2">
+                                            <p className="text-sm font-semibold text-headingTextColor dark:text-darkTextPrimary">
+                                                Scheduling agent is working
+                                            </p>
+                                            <span className="inline-flex items-center rounded-full border border-primary/20 bg-white/70 px-2.5 py-0.5 text-[11px] font-medium text-primary dark:border-primary/30 dark:bg-darkPrimaryBg/60">
+                                                Running background checks
+                                            </span>
+                                        </div>
+                                        <p className="mt-1 text-xs leading-5 text-subTextColor dark:text-darkTextSecondary">
+                                            We are checking attendee conflicts and connected calendar apps before confirming the event.
+                                        </p>
+
+                                        <div className="mt-4 space-y-2.5">
+                                            {visibleLoadingSteps.map((step, index) => {
+                                                const isActive =
+                                                    index === visibleLoadingSteps.length - 1;
+                                                const isCompleted = !isActive;
+
+                                                return (
+                                                    <div
+                                                        key={step.title}
+                                                        className={cn(
+                                                            "flex items-start gap-3 rounded-xl border px-3.5 py-3 backdrop-blur-sm transition-all",
+                                                            isActive
+                                                                ? "border-primary/25 bg-white/82 shadow-sm dark:border-primary/30 dark:bg-darkPrimaryBg/76"
+                                                                : "border-white/18 bg-white/55 dark:border-white/8 dark:bg-darkPrimaryBg/44",
+                                                        )}
+                                                    >
+                                                        <div
+                                                            className={cn(
+                                                                "mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border",
+                                                                isActive
+                                                                    ? "border-primary/20 bg-primary/10 text-primary"
+                                                                    : "border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300",
+                                                            )}
+                                                        >
+                                                            {isCompleted ? (
+                                                                <CheckCircle2 className="h-3.5 w-3.5" />
+                                                            ) : (
+                                                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                                            )}
+                                                        </div>
+                                                        <div className="min-w-0">
+                                                            <p className="text-sm font-medium text-headingTextColor dark:text-darkTextPrimary">
+                                                                {step.title}
+                                                            </p>
+                                                            <p className="mt-1 text-xs leading-5 text-subTextColor dark:text-darkTextSecondary">
+                                                                {step.description}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </form>
-            </Form>
+                )}
+            </div>
         </DialogContent>
     );
 };
