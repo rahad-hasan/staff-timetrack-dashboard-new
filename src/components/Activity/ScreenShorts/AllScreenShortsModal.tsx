@@ -58,6 +58,38 @@ const AllScreenShortsModal = ({
     }
   }, [modalOpen, startIdx, api]);
 
+  useEffect(() => {
+    if (!modalOpen || !api) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.altKey || event.ctrlKey || event.metaKey) return;
+
+      const target = event.target as HTMLElement | null;
+      const tagName = target?.tagName;
+      const isTypingTarget =
+        tagName === "INPUT" ||
+        tagName === "TEXTAREA" ||
+        tagName === "SELECT" ||
+        target?.isContentEditable;
+
+      if (isTypingTarget) return;
+
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        api.scrollPrev();
+      } else if (event.key === "ArrowRight") {
+        event.preventDefault();
+        api.scrollNext();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [modalOpen, api]);
+
   // Synchronize Carousel state with activeIndex
   useEffect(() => {
     if (!api) return;
