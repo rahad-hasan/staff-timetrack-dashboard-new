@@ -20,23 +20,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { motion } from "framer-motion";
-
-interface ScreenshotDetail {
-  project_name: string;
-  task_name: string | null;
-  user_id: number;
-  company_id: number;
-  score: number;
-  mouse_activity: number;
-  keyboard_activity: number;
-  duration: number;
-  corrupted: string;
-  anomaly: any;
-  image: string;
-  display_name: string;
-  time: string;
-  format_time: string;
-}
+import { TTimelineDetail } from "@/types/type";
 
 const getSrc = (item: any) => {
   if (typeof item === "string") return item;
@@ -47,15 +31,29 @@ const ScreenShortsModal = ({
   screenShorts,
   modalOpen,
   setModalOpen,
+  selectedImage,
 }: {
-  screenShorts: ScreenshotDetail[];
+  screenShorts: TTimelineDetail[];
   modalOpen: any;
   setModalOpen: any;
+  selectedImage?: TTimelineDetail;
 }) => {
-  const [activeIndex, setActiveIndex] = useState(0);
+  const initialIndex = screenShorts.findIndex(
+    (image) => image.id === selectedImage?.id,
+  );
+  const startIdx = initialIndex !== -1 ? initialIndex : 0;
+
+  const [activeIndex, setActiveIndex] = useState(startIdx);
   const [zoom, setZoom] = useState(1);
   const [api, setApi] = useState<CarouselApi>();
   const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (modalOpen) {
+      setActiveIndex(startIdx);
+      api?.scrollTo(startIdx, true);
+    }
+  }, [modalOpen, startIdx, api]);
 
   // Synchronize Carousel state with activeIndex
   useEffect(() => {
@@ -151,7 +149,7 @@ const ScreenShortsModal = ({
           }}
         >
           <CarouselContent className=" h-full">
-            {screenShorts?.map((item: ScreenshotDetail, index: number) => (
+            {screenShorts?.map((item: TTimelineDetail, index: number) => (
               <CarouselItem
                 key={index}
                 className="flex items-start justify-center relative"
