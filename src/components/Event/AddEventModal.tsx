@@ -25,7 +25,7 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
     AlertTriangle,
     CalendarDays,
@@ -94,6 +94,29 @@ const formatDuration = (start: string, end: string) => {
     return `${minutes}m`;
 };
 
+const EVENT_CREATE_LOADING_STEPS = [
+    {
+        delayMs: 0,
+        title: "Creating event",
+        description: "Saving meeting details and preparing attendee sync.",
+    },
+    {
+        delayMs: 2000,
+        title: "Checking attendee availability",
+        description: "Looking for overlapping meetings across connected calendars.",
+    },
+    {
+        delayMs: 5000,
+        title: "Reviewing calendar integrations",
+        description: "Google Meet, Teams, and other linked apps are still responding.",
+    },
+    {
+        delayMs: 9500,
+        title: "Still working in the background",
+        description: "Final validation is running before the event is created.",
+    },
+] as const;
+
 const AddEventModal = ({ onClose }: { onClose: () => void }) => {
     const [members, setMembers] = useState<
         { id: number | string; name: string; image?: string }[]
@@ -104,6 +127,10 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
     const [googleConnected, setGoogleConnected] = useState<boolean | null>(null);
     const [microsoftConnected, setMicrosoftConnected] = useState<boolean | null>(
         null,
+    );
+    const loadingToastIdsRef = useRef<string[]>([]);
+    const loadingToastTimersRef = useRef<ReturnType<typeof window.setTimeout>[]>(
+        [],
     );
 
     const form = useForm<FormInput, any, FormValues>({
@@ -179,6 +206,15 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
         }
     }, [conferenceProvider, googleConnected, microsoftConnected]);
 
+    useEffect(() => {
+        return () => {
+            loadingToastTimersRef.current.forEach((timer) => window.clearTimeout(timer));
+            loadingToastTimersRef.current = [];
+            loadingToastIdsRef.current.forEach((id) => toast.dismiss(id));
+            loadingToastIdsRef.current = [];
+        };
+    }, []);
+
     const needsGoogleConnect =
         conferenceProvider === "google" && googleConnected === false;
     const needsMicrosoftConnect =
@@ -231,29 +267,67 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
         return { ok: !!res?.success, res };
     };
 
+    const stopLoadingToasts = () => {
+        loadingToastTimersRef.current.forEach((timer) => window.clearTimeout(timer));
+        loadingToastTimersRef.current = [];
+        loadingToastIdsRef.current.forEach((id) => toast.dismiss(id));
+        loadingToastIdsRef.current = [];
+    };
+
+    const startLoadingToasts = () => {
+        stopLoadingToasts();
+
+        EVENT_CREATE_LOADING_STEPS.forEach((step, index) => {
+            const id = `event-create-loading-${index}`;
+
+            const showToast = () => {
+                loadingToastIdsRef.current.push(id);
+                toast.loading(step.title, {
+                    id,
+                    description: step.description,
+                    duration: Infinity,
+                });
+            };
+
+            if (step.delayMs === 0) {
+                showToast();
+                return;
+            }
+
+            const timer = window.setTimeout(showToast, step.delayMs);
+            loadingToastTimersRef.current.push(timer);
+        });
+    };
+
     async function onSubmit(values: FormValues) {
         setLoading(true);
         setConflicts([]);
+        startLoadingToasts();
         try {
             const { ok, res } = await submitWith(values, false);
             if (ok) {
+                stopLoadingToasts();
                 toast.success(res?.message || "Event created successfully");
                 form.reset();
                 setTimeout(() => onClose(), 0);
                 return;
             }
             if (isConflictResponse(res)) {
+                stopLoadingToasts();
                 setConflicts(parseConflictMessage(res?.message));
                 return;
             }
+            stopLoadingToasts();
             toast.error(res?.message || "Failed to create event", {
                 style: { backgroundColor: "#ef4444", color: "white", border: "none" },
             });
         } catch (error: any) {
+            stopLoadingToasts();
             toast.error(error?.message || "Something went wrong!", {
                 style: { backgroundColor: "#ef4444", color: "white", border: "none" },
             });
         } finally {
+            stopLoadingToasts();
             setLoading(false);
         }
     }
@@ -265,19 +339,28 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
             conference_provider: raw.conference_provider ?? "none",
         };
         setLoading(true);
+        startLoadingToasts();
         try {
             const { ok, res } = await submitWith(values, true);
             if (ok) {
+                stopLoadingToasts();
                 toast.success(res?.message || "Event created successfully");
                 form.reset();
                 setConflicts([]);
                 setTimeout(() => onClose(), 0);
                 return;
             }
+            stopLoadingToasts();
             toast.error(res?.message || "Failed to create event", {
                 style: { backgroundColor: "#ef4444", color: "white", border: "none" },
             });
+        } catch (error: any) {
+            stopLoadingToasts();
+            toast.error(error?.message || "Something went wrong!", {
+                style: { backgroundColor: "#ef4444", color: "white", border: "none" },
+            });
         } finally {
+            stopLoadingToasts();
             setLoading(false);
         }
     }
