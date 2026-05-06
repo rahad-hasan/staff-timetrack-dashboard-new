@@ -30,10 +30,13 @@ import {
     AlertTriangle,
     CalendarDays,
     CalendarPlus,
+    CheckCircle2,
     ChevronDownIcon,
     FileText,
+    Sparkles,
     Users as UsersIcon,
     Video,
+    Loader2,
 } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { RichTextEditor } from "@/components/Common/RichTextEditor";
@@ -63,7 +66,6 @@ import {
 } from "./eventHelpers";
 import { useGoogleConnectFlow } from "../Integrations/useGoogleConnectFlow";
 import { useMicrosoftConnectFlow } from "../Integrations/useMicrosoftConnectFlow";
-import { Loader2 } from "lucide-react";
 
 type FormInput = z.input<typeof addNewEventSchema>;
 type FormValues = z.output<typeof addNewEventSchema>;
@@ -101,17 +103,17 @@ const EVENT_CREATE_LOADING_STEPS = [
         description: "Saving meeting details and preparing attendee sync.",
     },
     {
-        delayMs: 2000,
+        delayMs: 1800,
         title: "Checking attendee availability",
         description: "Looking for overlapping meetings across connected calendars.",
     },
     {
-        delayMs: 5000,
+        delayMs: 3600,
         title: "Reviewing calendar integrations",
         description: "Google Meet, Teams, and other linked apps are still responding.",
     },
     {
-        delayMs: 9500,
+        delayMs: 6200,
         title: "Still working in the background",
         description: "Final validation is running before the event is created.",
     },
@@ -128,8 +130,8 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
     const [microsoftConnected, setMicrosoftConnected] = useState<boolean | null>(
         null,
     );
-    const loadingToastIdsRef = useRef<string[]>([]);
-    const loadingToastTimersRef = useRef<ReturnType<typeof window.setTimeout>[]>(
+    const [visibleLoadingStepCount, setVisibleLoadingStepCount] = useState(0);
+    const loadingStepTimersRef = useRef<ReturnType<typeof window.setTimeout>[]>(
         [],
     );
 
@@ -208,10 +210,8 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
 
     useEffect(() => {
         return () => {
-            loadingToastTimersRef.current.forEach((timer) => window.clearTimeout(timer));
-            loadingToastTimersRef.current = [];
-            loadingToastIdsRef.current.forEach((id) => toast.dismiss(id));
-            loadingToastIdsRef.current = [];
+            loadingStepTimersRef.current.forEach((timer) => window.clearTimeout(timer));
+            loadingStepTimersRef.current = [];
         };
     }, []);
 
@@ -238,6 +238,11 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
             : conferenceProvider === "microsoft"
               ? "Teams"
               : "No conference";
+
+    const visibleLoadingSteps = EVENT_CREATE_LOADING_STEPS.slice(
+        0,
+        visibleLoadingStepCount,
+    );
 
     const submitWith = async (
         values: FormValues,
@@ -267,67 +272,53 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
         return { ok: !!res?.success, res };
     };
 
-    const stopLoadingToasts = () => {
-        loadingToastTimersRef.current.forEach((timer) => window.clearTimeout(timer));
-        loadingToastTimersRef.current = [];
-        loadingToastIdsRef.current.forEach((id) => toast.dismiss(id));
-        loadingToastIdsRef.current = [];
+    const stopLoadingProgress = () => {
+        loadingStepTimersRef.current.forEach((timer) => window.clearTimeout(timer));
+        loadingStepTimersRef.current = [];
+        setVisibleLoadingStepCount(0);
     };
 
-    const startLoadingToasts = () => {
-        stopLoadingToasts();
+    const startLoadingProgress = () => {
+        stopLoadingProgress();
+        setVisibleLoadingStepCount(1);
 
-        EVENT_CREATE_LOADING_STEPS.forEach((step, index) => {
-            const id = `event-create-loading-${index}`;
-
-            const showToast = () => {
-                loadingToastIdsRef.current.push(id);
-                toast.loading(step.title, {
-                    id,
-                    description: step.description,
-                    duration: Infinity,
-                });
-            };
-
-            if (step.delayMs === 0) {
-                showToast();
-                return;
-            }
-
-            const timer = window.setTimeout(showToast, step.delayMs);
-            loadingToastTimersRef.current.push(timer);
+        EVENT_CREATE_LOADING_STEPS.slice(1).forEach((step, index) => {
+            const timer = window.setTimeout(() => {
+                setVisibleLoadingStepCount(index + 2);
+            }, step.delayMs);
+            loadingStepTimersRef.current.push(timer);
         });
     };
 
     async function onSubmit(values: FormValues) {
         setLoading(true);
         setConflicts([]);
-        startLoadingToasts();
+        startLoadingProgress();
         try {
             const { ok, res } = await submitWith(values, false);
             if (ok) {
-                stopLoadingToasts();
+                stopLoadingProgress();
                 toast.success(res?.message || "Event created successfully");
                 form.reset();
                 setTimeout(() => onClose(), 0);
                 return;
             }
             if (isConflictResponse(res)) {
-                stopLoadingToasts();
+                stopLoadingProgress();
                 setConflicts(parseConflictMessage(res?.message));
                 return;
             }
-            stopLoadingToasts();
+            stopLoadingProgress();
             toast.error(res?.message || "Failed to create event", {
                 style: { backgroundColor: "#ef4444", color: "white", border: "none" },
             });
         } catch (error: any) {
-            stopLoadingToasts();
+            stopLoadingProgress();
             toast.error(error?.message || "Something went wrong!", {
                 style: { backgroundColor: "#ef4444", color: "white", border: "none" },
             });
         } finally {
-            stopLoadingToasts();
+            stopLoadingProgress();
             setLoading(false);
         }
     }
@@ -339,28 +330,28 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
             conference_provider: raw.conference_provider ?? "none",
         };
         setLoading(true);
-        startLoadingToasts();
+        startLoadingProgress();
         try {
             const { ok, res } = await submitWith(values, true);
             if (ok) {
-                stopLoadingToasts();
+                stopLoadingProgress();
                 toast.success(res?.message || "Event created successfully");
                 form.reset();
                 setConflicts([]);
                 setTimeout(() => onClose(), 0);
                 return;
             }
-            stopLoadingToasts();
+            stopLoadingProgress();
             toast.error(res?.message || "Failed to create event", {
                 style: { backgroundColor: "#ef4444", color: "white", border: "none" },
             });
         } catch (error: any) {
-            stopLoadingToasts();
+            stopLoadingProgress();
             toast.error(error?.message || "Something went wrong!", {
                 style: { backgroundColor: "#ef4444", color: "white", border: "none" },
             });
         } finally {
-            stopLoadingToasts();
+            stopLoadingProgress();
             setLoading(false);
         }
     }
@@ -424,6 +415,72 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
                             <p className="text-[11px] text-red-700/70 dark:text-red-300/70">
                                 This will not cancel the conflicting events.
                             </p>
+                        </div>
+                    )}
+
+                    {loading && visibleLoadingSteps.length > 0 && (
+                        <div className="rounded-2xl border border-primary/20 bg-linear-to-r from-primary/10 via-cyan-500/8 to-transparent p-4 shadow-[0_12px_28px_rgba(15,23,42,0.08)] dark:border-primary/25 dark:from-primary/12 dark:via-cyan-500/10 dark:to-transparent">
+                            <div className="flex items-start gap-3">
+                                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
+                                    <Sparkles className="h-4 w-4 animate-pulse" />
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                    <div className="flex flex-wrap items-center gap-2">
+                                        <p className="text-sm font-semibold text-headingTextColor dark:text-darkTextPrimary">
+                                            Scheduling agent is working
+                                        </p>
+                                        <span className="inline-flex items-center rounded-full border border-primary/20 bg-white/70 px-2.5 py-0.5 text-[11px] font-medium text-primary dark:border-primary/30 dark:bg-darkPrimaryBg/60">
+                                            Running background checks
+                                        </span>
+                                    </div>
+                                    <p className="mt-1 text-xs leading-5 text-subTextColor dark:text-darkTextSecondary">
+                                        We are checking attendee conflicts and connected calendar apps before confirming the event.
+                                    </p>
+
+                                    <div className="mt-4 space-y-2.5">
+                                        {visibleLoadingSteps.map((step, index) => {
+                                            const isActive =
+                                                index === visibleLoadingSteps.length - 1;
+                                            const isCompleted = !isActive;
+
+                                            return (
+                                                <div
+                                                    key={step.title}
+                                                    className={cn(
+                                                        "flex items-start gap-3 rounded-xl border px-3.5 py-3 backdrop-blur-sm transition-all",
+                                                        isActive
+                                                            ? "border-primary/25 bg-white/75 shadow-sm dark:border-primary/30 dark:bg-darkPrimaryBg/70"
+                                                            : "border-white/10 bg-white/45 dark:border-white/6 dark:bg-darkPrimaryBg/35",
+                                                    )}
+                                                >
+                                                    <div
+                                                        className={cn(
+                                                            "mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border",
+                                                            isActive
+                                                                ? "border-primary/20 bg-primary/10 text-primary"
+                                                                : "border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300",
+                                                        )}
+                                                    >
+                                                        {isCompleted ? (
+                                                            <CheckCircle2 className="h-3.5 w-3.5" />
+                                                        ) : (
+                                                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                                                        )}
+                                                    </div>
+                                                    <div className="min-w-0">
+                                                        <p className="text-sm font-medium text-headingTextColor dark:text-darkTextPrimary">
+                                                            {step.title}
+                                                        </p>
+                                                        <p className="mt-1 text-xs leading-5 text-subTextColor dark:text-darkTextSecondary">
+                                                            {step.description}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     )}
 
