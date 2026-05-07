@@ -12,6 +12,7 @@ const nextConfig: NextConfig = {
       "https://picsum.photos",
       "picsum.photos",
       "https://staff-time-tracker-screenshot.lon1.digitaloceanspaces.com",
+      "lh3.googleusercontent.com",
     ],
   },
   async redirects() {
