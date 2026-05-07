@@ -32,6 +32,7 @@ const HolidayManagementServer = async ({ searchParams }: ISearchParamsProps) => 
   const holidaysResponse = await getLeaveHolidays({
     year: selectedYear,
     page: currentPage,
+    limit: 30,
   });
 
   return (

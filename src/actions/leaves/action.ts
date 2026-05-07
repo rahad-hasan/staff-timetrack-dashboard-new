@@ -2,7 +2,7 @@
 
 import { buildQuery } from "@/utils/buildQuery";
 import { baseApi } from "../baseApi";
-import { AdminLeaveHistoryFilters, CreateLeaveHolidayPayload, CreateLeaveTypePayload, ILeaveDetailsResponse, ILeaveRequest, IResponse, LeaveCalendarData, LeaveCalendarFilters, LeaveHoliday, LeaveHolidayListData, LeaveRecord, LeaveRequestTypeDropdownRecord, LeaveTypeListFilters, LeaveTypeRecord, UpdateLeaveHolidayPayload, UpdateLeaveTypePayload, UserLeaveSummary } from "@/types/type";
+import { AdminLeaveHistoryFilters, CreateLeaveHolidayPayload, CreateLeaveTypePayload, ILeaveDetailsResponse, ILeaveRequest, IResponse, LeaveCalendarData, LeaveCalendarFilters, LeaveHoliday, LeaveHolidayListData, LeaveRecord, LeaveRequestTypeDropdownRecord, LeaveTypeListFilters, LeaveTypeRecord, MandatoryLeaveImportPayload, MandatoryLeaveParsePayload, MandatoryLeaveParseResult, UpdateLeaveHolidayPayload, UpdateLeaveTypePayload, UserLeaveSummary } from "@/types/type";
 import { revalidatePath, revalidateTag } from "next/cache";
 
 // export const getLeave = async (query = {}): Promise<IResponse<ILeaveRequest[]>> => {
@@ -253,7 +253,7 @@ export const deleteLeaveHoliday = async (id: number): Promise<IResponse<null>> =
 };
 
 export const getLeaveHolidays = async (
-  query: { year?: string | number, page?: string | number } = {},
+  query: { year?: string | number, page?: string | number, limit?: string | number } = {},
 ): Promise<IResponse<LeaveHolidayListData>> => {
   const queryString = buildQuery(query);
   return await baseApi(
@@ -334,5 +334,35 @@ export const getUserLeaveSummary = async (
       tag: "leaves",
     },
   );
+};
+
+export const insertParsedHolidays = async (
+  data: MandatoryLeaveImportPayload,
+) => {
+  const response = (await baseApi(`/leaves/holidays/import`, {
+    method: "POST",
+    body: data,
+    cache: "no-cache",
+  })) as IResponse<{
+    total_submitted: number;
+    imported_count: number;
+    skipped_count: number;
+  }>;
+
+  if (response.success) {
+    revalidateHolidayViews();
+  }
+
+  return response;
+};
+
+export const parseLeaveHolidayImport = async (
+  data: MandatoryLeaveParsePayload,
+): Promise<IResponse<MandatoryLeaveParseResult>> => {
+  return await baseApi(`/leaves/holidays/import/parse`, {
+    method: "POST",
+    body: data,
+    cache: "no-cache",
+  });
 };
 

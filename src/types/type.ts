@@ -1027,3 +1027,19 @@ export interface UserLeaveSummary {
   };
   next_holidays: LeaveHoliday[];
 }
+
+export interface MandatoryLeaveImportPayload {
+  holidays: Array<Pick<LeaveHoliday, "name" | "date" | "description" | "source">>;
+}
+
+export interface MandatoryLeaveParsePayload {
+  file_name: string;
+  file_content: string;
+  file_encoding: "text" | "base64";
+}
+
+export interface MandatoryLeaveParseResult {
+  parsed: MandatoryLeaveParsedHoliday[];
+  rejected: MandatoryLeaveRejectedRow[];
+  summary: MandatoryLeaveParseSummary;
+}
