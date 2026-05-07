@@ -41,6 +41,7 @@ import { getProjects } from "@/actions/projects/action";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { getAllSchedule } from "@/actions/schedule/action";
 import { CustomCalendarForDOB } from "../ui/customCalendarForDOB";
+import { currencies } from "@/utils/CurrencyList";
 
 const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
     type ProjectOption = {
@@ -62,9 +63,11 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
     const [showPassword, setShowPassword] = useState(false);
     const filteredManager = manager.filter(t => t.toLowerCase().includes(managerSearch.toLowerCase()));
     const [searchInput, setSearchInput] = useState("");
+    const [searchCurrencyInput, setSearchCurrencyInput] = useState("");
     const [searchScheduleInput, setSearchScheduleInput] = useState("");
     const [projects, setProjects] = useState<ProjectOption[]>([]);
     const [schedules, setSchedules] = useState<ScheduleOption[]>([]);
+
 
     const form = useForm<z.infer<typeof addNewMemberSchema>>({
         resolver: zodResolver(addNewMemberSchema),
@@ -133,6 +136,7 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
         setShowPassword((prev) => !prev);
     };
     async function onSubmit(values: z.infer<typeof addNewMemberSchema>) {
+
         const finalData = {
             email: values.email,
             name: values.name,
@@ -144,9 +148,11 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
             gender: values.gender,
             time_zone: values.time_zone,
             birth_day: values.birth_day,
+            currency: values.currency,
             // schedule_id: Number(values.schedule),
             ...(values.schedule && { schedule_id: Number(values.schedule) })
         }
+        console.log(finalData)
         setLoading(true);
         try {
             console.log(finalData)
@@ -196,6 +202,11 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
 
         return `${y}-${m}-${d}`
     }
+
+    const filteredCurrencies = currencies.filter((c) =>
+        c.label.toLowerCase().includes(searchCurrencyInput.toLowerCase()) ||
+        c.value.toLowerCase().includes(searchCurrencyInput.toLowerCase())
+    );
 
     return (
         <DialogContent className="sm:max-w-[525px] max-h-[95vh] overflow-y-auto">
@@ -592,6 +603,57 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
                                                 )}
                                             </SelectContent>
                                         </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="currency"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Currency</FormLabel>
+
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            value={field.value}
+                                        >
+                                            <FormControl>
+                                                <SelectTrigger className="w-full dark:bg-darkSecondaryBg">
+                                                    <SelectValue placeholder="Select currency" />
+                                                </SelectTrigger>
+                                            </FormControl>
+
+                                            <SelectContent className="dark:bg-darkSecondaryBg">
+                                                {/* Search box */}
+                                                <div className="flex items-center px-2 pb-2 pt-1">
+                                                    <Search className="mr-2 h-4 w-4 opacity-50" />
+                                                    <Input
+                                                        placeholder="Search currency..."
+                                                        className="h-8 border-none focus-visible:ring-0"
+                                                        value={searchCurrencyInput}
+                                                        onKeyDown={(e) => e.stopPropagation()}
+                                                        onChange={(e) => setSearchCurrencyInput(e.target.value)}
+                                                    />
+                                                </div>
+
+                                                {/* List */}
+                                                {filteredCurrencies.length === 0 ? (
+                                                    <p className="text-sm text-center py-2">
+                                                        No currency found.
+                                                    </p>
+                                                ) : (
+                                                    filteredCurrencies.map((c) => (
+                                                        <SelectItem key={c.value} value={c.value}>
+                                                            <div className="flex items-center gap-2">
+                                                                {c.label}
+                                                            </div>
+                                                        </SelectItem>
+                                                    ))
+                                                )}
+                                            </SelectContent>
+                                        </Select>
+
                                         <FormMessage />
                                     </FormItem>
                                 )}

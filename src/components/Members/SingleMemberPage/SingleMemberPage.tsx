@@ -24,7 +24,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { singleMemberSchema } from "@/zod/schema";
 import { editSingleDetailsMember } from "@/actions/members/action";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, Eye, EyeOff, Search } from "lucide-react";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
 import { popularTimeZoneList } from "@/utils/TimeZoneList";
@@ -32,12 +32,20 @@ import SearchBar from "@/components/Common/SearchBar";
 import { StatusSelector } from "@/components/Common/StatusSelector";
 import AppPagination from "@/components/Common/AppPagination";
 import { useLogInUserStore } from "@/store/logInUserStore";
+import { currencies } from "@/utils/CurrencyList";
+import { CustomCalendarForDOB } from "@/components/ui/customCalendarForDOB";
 
 const SingleMemberPage = ({ data, task, page }: { data: any, task: any, page: string | number | string[] | undefined }) => {
+    console.log('getting data from single page', data)
     const [loading, setLoading] = useState(false);
+    const [open, setOpen] = useState(false);
+    const [date, setDate] = useState<Date | undefined>(undefined);
+    const [showPassword, setShowPassword] = useState(true);
     const logInUserData = useLogInUserStore((state) => state.logInUserData);
+    const gender = ["male", "female", "other"];
     const [activeTab, setActiveTab] = useState<"Projects" | "Tasks">("Projects");
     const [searchTerm, setSearchTerm] = useState("");
+    const [searchCurrencyInput, setSearchCurrencyInput] = useState("");
     const handleTabClick = (tab: "Projects" | "Tasks") => {
         setActiveTab(tab);
     };
@@ -59,6 +67,11 @@ const SingleMemberPage = ({ data, task, page }: { data: any, task: any, page: st
             pay_rate_hourly: data?.pay_rate_hourly || 0,
             role: data?.role || "",
             time_zone: data?.time_zone || "",
+            gender: data?.gender || "",
+            currency: data?.currency || "",
+            birth_day: data?.birth_day
+                ? new Date(data.birth_day).toISOString().split("T")[0]
+                : "",
         },
     });
 
@@ -70,6 +83,10 @@ const SingleMemberPage = ({ data, task, page }: { data: any, task: any, page: st
             phone: values.phone ?? "",
             role: values.role,
             time_zone: values.time_zone,
+            gender: values.gender,
+            birth_day: values.birth_day,
+            currency: values.currency,
+            password: values.password,
             pay_rate_hourly: values.pay_rate_hourly,
             is_active: Boolean(switches.is_active),
             is_tracking: Boolean(switches.is_tracking),
@@ -105,6 +122,19 @@ const SingleMemberPage = ({ data, task, page }: { data: any, task: any, page: st
             setLoading(false);
         }
     }
+
+    function formatDate(date: Date) {
+        const y = date.getFullYear()
+        const m = String(date.getMonth() + 1).padStart(2, "0")
+        const d = String(date.getDate()).padStart(2, "0")
+
+        return `${y}-${m}-${d}`
+    }
+
+    const filteredCurrencies = currencies.filter((c) =>
+        c.label.toLowerCase().includes(searchCurrencyInput.toLowerCase()) ||
+        c.value.toLowerCase().includes(searchCurrencyInput.toLowerCase())
+    );
 
     return (
         <div>
@@ -399,14 +429,181 @@ const SingleMemberPage = ({ data, task, page }: { data: any, task: any, page: st
                                     )}
                                 />
                             </div>
+                            <div className="grid sm:grid-cols-2 gap-4 sm:gap-3 items-start">
+                                <FormField
+                                    control={form.control}
+                                    name="gender"
+                                    render={({ field }) => (
+                                        <FormItem className="">
+                                            <FormLabel required={true}>Gender</FormLabel>
+                                            <FormControl>
+                                                <div className="relative">
+                                                    <Select
+                                                        value={field.value}
+                                                        onValueChange={field.onChange}
+                                                    >
+                                                        <SelectTrigger className="w-full capitalize">
+                                                            <div className=" flex gap-1 items-center">
+                                                                <SelectValue className=" text-start" placeholder="Select Gender" />
+                                                            </div>
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            {gender.map(p => (
+                                                                <SelectItem className=" capitalize" key={p} value={p}>{p}</SelectItem>
+                                                            ))}
+                                                        </SelectContent>
+                                                    </Select>
+                                                </div>
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="currency"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Currency</FormLabel>
 
-                            <div className="flex items-center justify-between p-2 border rounded-md dark:border-darkBorder">
-                                <span className="text-sm font-medium">Enable Multi-Factor Authentication</span>
-                                <Switch
-                                    checked={switches.multi_factor_auth}
-                                    onCheckedChange={(val) => setSwitches(prev => ({ ...prev, multi_factor_auth: val }))}
+                                            <Select
+                                                onValueChange={field.onChange}
+                                                value={field.value}
+                                            >
+                                                <FormControl>
+                                                    <SelectTrigger className="w-full dark:bg-darkSecondaryBg">
+                                                        <SelectValue placeholder="Select currency" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+
+                                                <SelectContent className="dark:bg-darkSecondaryBg">
+                                                    {/* Search box */}
+                                                    <div className="flex items-center px-2 pb-2 pt-1">
+                                                        <Search className="mr-2 h-4 w-4 opacity-50" />
+                                                        <Input
+                                                            placeholder="Search currency..."
+                                                            className="h-8 border-none focus-visible:ring-0"
+                                                            value={searchCurrencyInput}
+                                                            onKeyDown={(e) => e.stopPropagation()}
+                                                            onChange={(e) => setSearchCurrencyInput(e.target.value)}
+                                                        />
+                                                    </div>
+
+                                                    {/* List */}
+                                                    {filteredCurrencies.length === 0 ? (
+                                                        <p className="text-sm text-center py-2">
+                                                            No currency found.
+                                                        </p>
+                                                    ) : (
+                                                        filteredCurrencies.map((c) => (
+                                                            <SelectItem key={c.value} value={c.value}>
+                                                                <div className="flex items-center gap-2">
+                                                                    {c.label}
+                                                                </div>
+                                                            </SelectItem>
+                                                        ))
+                                                    )}
+                                                </SelectContent>
+                                            </Select>
+
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
                                 />
                             </div>
+                            <div className="grid sm:grid-cols-2 gap-4 sm:gap-3 items-start">
+                                <FormField
+                                    control={form.control}
+                                    name="birth_day"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Date of Birth</FormLabel>
+                                            <FormControl>
+                                                <Popover open={open} onOpenChange={setOpen}>
+                                                    <PopoverTrigger asChild>
+                                                        <p
+                                                            className={cn(
+                                                                "border-input h-10 w-full rounded-lg border dark:border-darkBorder cursor-pointer bg-transparent px-3 py-1 text-base md:text-sm",
+                                                                "flex items-center justify-start font-normal",
+                                                                !field.value && "text-muted-foreground"
+                                                            )}
+                                                        >
+                                                            {field.value || "Select date"}
+                                                        </p>
+                                                    </PopoverTrigger>
+
+                                                    <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+                                                        <CustomCalendarForDOB
+                                                            mode="single"
+                                                            selected={field.value ? new Date(field.value) : undefined}
+                                                            defaultMonth={field.value ? new Date(field.value) : undefined}
+                                                            captionLayout="dropdown"
+                                                            onSelect={(selectedDate) => {
+                                                                if (!selectedDate) return
+                                                                setDate(selectedDate)
+                                                                setOpen(false)
+
+                                                                const formatted = formatDate(selectedDate)
+
+                                                                field.onChange(formatted)
+                                                            }}
+                                                        />
+                                                    </PopoverContent>
+                                                </Popover>
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <FormField
+                                    control={form.control}
+                                    name="password"
+                                    render={({ field }) => (
+                                        <FormItem className="w-full">
+                                            <FormLabel required={true}>New Password</FormLabel>
+                                            <FormControl>
+                                                <div className="relative">
+                                                    <Input
+                                                        type={showPassword ? "password" : "text"}
+                                                        placeholder="New Password"
+                                                        className="dark:bg-darkPrimaryBg dark:border-darkBorder"
+                                                        {...field}
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setShowPassword(!showPassword)}
+                                                        className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500 hover:text-gray-700 dark:text-gray-400"
+                                                    >
+                                                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                                    </button>
+                                                </div>
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                            </div>
+
+                            <FormField
+                                control={form.control}
+                                name="multi_auth"
+                                render={() => (
+                                    <FormItem>
+                                        <FormLabel>Multi-Factor Authentication</FormLabel>
+                                        <FormControl>
+                                            <div className="flex items-center justify-between p-2 border rounded-md dark:border-darkBorder">
+                                                <span className="text-sm ">Enable Multi-Factor Authentication</span>
+                                                <Switch
+                                                    checked={switches.multi_factor_auth}
+                                                    onCheckedChange={(val) => setSwitches(prev => ({ ...prev, multi_factor_auth: val }))}
+                                                />
+                                            </div>
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
 
                             <div className="flex items-center gap-3 w-full pt-4 border-t dark:border-darkBorder">
                                 <Button type="submit" disabled={loading}>

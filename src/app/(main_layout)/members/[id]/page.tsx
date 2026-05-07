@@ -18,9 +18,7 @@ const MemberDetailsServer = async ({ params, searchParams }: PageProps) => {
         status: resolvedSearchParams.status
     });
     return (
-        <div>
-            <SingleMemberPage data={result?.data} task={projectBasedTask} page={resolvedSearchParams.page}></SingleMemberPage>
-        </div>
+        <SingleMemberPage data={result?.data} task={projectBasedTask} page={resolvedSearchParams.page}></SingleMemberPage>
     );
 };
 
