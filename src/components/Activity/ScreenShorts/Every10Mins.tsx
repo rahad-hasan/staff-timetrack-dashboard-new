@@ -18,13 +18,25 @@ import ConfirmDialog from "@/components/Common/ConfirmDialog";
 import { deleteScreenshot } from "@/actions/screenshots/action";
 import { toast } from "sonner";
 import { useLogInUserStore } from "@/store/logInUserStore";
-import { TTimelineDataSlot, TTimelineHourBlock } from "@/types/type";
+import {
+  TTimelineDataSlot,
+  TTimelineDetail,
+  TTimelineHourBlock,
+} from "@/types/type";
 // import emptyActivity from "../../../assets/empty_activity.png";
 
 const Every10Mins = ({ data }: { data: TTimelineHourBlock[] }) => {
   const logInUserData = useLogInUserStore((state) => state.logInUserData);
-  const [selectedImage, setSelectedImage] = useState<any>();
+  const [selectedImages, setSelectedImages] = useState<TTimelineDetail[]>([]);
+  const [selectedImage, setSelectedImage] = useState<TTimelineDetail>();
   const [modalOpen, setModalOpen] = useState<boolean>(false);
+
+  const getDayScreenshots = () =>
+    data.flatMap((hourGroup) =>
+      hourGroup.slots.flatMap((slot) =>
+        slot.type === "data" ? slot.details : [],
+      ),
+    );
 
   const handleDeleteScreenShot = async (data: TTimelineDataSlot) => {
     const finalData = {
@@ -110,7 +122,8 @@ const Every10Mins = ({ data }: { data: TTimelineHourBlock[] }) => {
                         fill
                         sizes="(max-width: 768px) 20vw, (max-width: 1200px) 18vw, 15vw"
                         onClick={() => {
-                          setSelectedImage(block?.details);
+                          setSelectedImages(getDayScreenshots());
+                          setSelectedImage(block?.details?.[0]);
                           setModalOpen(true);
                         }}
                         className="object-cover transition-transform duration-300 hover:scale-[1.05] cursor-pointer"
@@ -248,7 +261,7 @@ const Every10Mins = ({ data }: { data: TTimelineHourBlock[] }) => {
       {data?.length === 0 && (
         <div className=" 2xl:h-24 text-center">
           <div
-            className={` flex flex-col gap-2.5 items-center justify-center py-8 2xl:py-16 `}
+            className={`flex flex-col gap-2.5 items-center justify-center py-8 2xl:py-16`}
           >
             <Image
               src={EmptyTableLogo}
@@ -264,9 +277,10 @@ const Every10Mins = ({ data }: { data: TTimelineHourBlock[] }) => {
       <AnimatePresence>
         {modalOpen && (
           <ScreenShortsModal
-            screenShorts={selectedImage}
+            screenShorts={selectedImages}
             modalOpen={modalOpen}
             setModalOpen={setModalOpen}
+            selectedImage={selectedImage}
           ></ScreenShortsModal>
         )}
       </AnimatePresence>

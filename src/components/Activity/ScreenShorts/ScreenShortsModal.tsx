@@ -20,23 +20,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { motion } from "framer-motion";
-
-interface ScreenshotDetail {
-  project_name: string;
-  task_name: string | null;
-  user_id: number;
-  company_id: number;
-  score: number;
-  mouse_activity: number;
-  keyboard_activity: number;
-  duration: number;
-  corrupted: string;
-  anomaly: any;
-  image: string;
-  display_name: string;
-  time: string;
-  format_time: string;
-}
+import { TTimelineDetail } from "@/types/type";
 
 const getSrc = (item: any) => {
   if (typeof item === "string") return item;
@@ -47,15 +31,61 @@ const ScreenShortsModal = ({
   screenShorts,
   modalOpen,
   setModalOpen,
+  selectedImage,
 }: {
-  screenShorts: ScreenshotDetail[];
+  screenShorts: TTimelineDetail[];
   modalOpen: any;
   setModalOpen: any;
+  selectedImage?: TTimelineDetail;
 }) => {
-  const [activeIndex, setActiveIndex] = useState(0);
+  const initialIndex = screenShorts.findIndex(
+    (image) => image.id === selectedImage?.id,
+  );
+  const startIdx = initialIndex !== -1 ? initialIndex : 0;
+
+  const [activeIndex, setActiveIndex] = useState(startIdx);
   const [zoom, setZoom] = useState(1);
   const [api, setApi] = useState<CarouselApi>();
   const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (modalOpen) {
+      setActiveIndex(startIdx);
+      api?.scrollTo(startIdx, true);
+    }
+  }, [modalOpen, startIdx, api]);
+
+  useEffect(() => {
+    if (!modalOpen || !api) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.altKey || event.ctrlKey || event.metaKey) return;
+
+      const target = event.target as HTMLElement | null;
+      const tagName = target?.tagName;
+      const isTypingTarget =
+        tagName === "INPUT" ||
+        tagName === "TEXTAREA" ||
+        tagName === "SELECT" ||
+        target?.isContentEditable;
+
+      if (isTypingTarget) return;
+
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        api.scrollPrev();
+      } else if (event.key === "ArrowRight") {
+        event.preventDefault();
+        api.scrollNext();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [modalOpen, api]);
 
   // Synchronize Carousel state with activeIndex
   useEffect(() => {
@@ -151,7 +181,7 @@ const ScreenShortsModal = ({
           }}
         >
           <CarouselContent className=" h-full">
-            {screenShorts?.map((item: ScreenshotDetail, index: number) => (
+            {screenShorts?.map((item: TTimelineDetail, index: number) => (
               <CarouselItem
                 key={index}
                 className="flex items-start justify-center relative"
@@ -187,7 +217,7 @@ const ScreenShortsModal = ({
                 key={`thumb-${realIndex}`}
                 onClick={() => api?.scrollTo(realIndex)}
                 className={`cursor-pointer rounded-md overflow-hidden border-2 transition-all duration-200 
-                                    ${realIndex === activeIndex ? "border-primary scale-110 z-10" : "border-transparent opacity-50 hover:opacity-100"}`}
+                ${realIndex === activeIndex ? "border-primary scale-110 z-10" : "border-transparent opacity-50 hover:opacity-100"}`}
               >
                 <Image
                   src={getSrc(item?.image)}
