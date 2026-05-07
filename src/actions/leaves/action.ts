@@ -2,7 +2,29 @@
 
 import { buildQuery } from "@/utils/buildQuery";
 import { baseApi } from "../baseApi";
-import { AdminLeaveHistoryFilters, CreateLeaveHolidayPayload, CreateLeaveTypePayload, ILeaveDetailsResponse, ILeaveRequest, IResponse, LeaveCalendarData, LeaveCalendarFilters, LeaveHoliday, LeaveHolidayListData, LeaveRecord, LeaveRequestTypeDropdownRecord, LeaveTypeListFilters, LeaveTypeRecord, MandatoryLeaveParsePayload, MandatoryLeaveParseResult, UpdateLeaveHolidayPayload, UpdateLeaveTypePayload, UserLeaveSummary } from "@/types/type";
+import {
+  AdminLeaveHistoryFilters,
+  CreateLeaveHolidayPayload,
+  CreateLeaveTypePayload,
+  ILeaveDetailsResponse,
+  ILeaveRequest,
+  IResponse,
+  LeaveCalendarData,
+  LeaveCalendarFilters,
+  LeaveHoliday,
+  LeaveHolidayListData,
+  LeaveRecord,
+  LeaveRequestTypeDropdownRecord,
+  LeaveTypeListFilters,
+  LeaveTypeRecord,
+  MandatoryLeaveImportPayload,
+  MandatoryLeaveParsedHoliday,
+  MandatoryLeaveParsePayload,
+  MandatoryLeaveParseResult,
+  UpdateLeaveHolidayPayload,
+  UpdateLeaveTypePayload,
+  UserLeaveSummary,
+} from "@/types/type";
 import { revalidatePath, revalidateTag } from "next/cache";
 
 // export const getLeave = async (query = {}): Promise<IResponse<ILeaveRequest[]>> => {
@@ -61,7 +83,6 @@ import { revalidatePath, revalidateTag } from "next/cache";
 //     });
 // };
 
-
 // ======== new api ==========
 // ===========================
 
@@ -73,28 +94,40 @@ const revalidateHolidayViews = () => {
   revalidatePath("/leave-management/my-leaves");
 };
 
-export const getLeaveCalendar = async (query: LeaveCalendarFilters = {}): Promise<IResponse<LeaveCalendarData>> => {
-    const queryString = buildQuery(query);
-    return await baseApi(`/leaves/calendar${queryString ? `?${queryString}` : ""}`, {
-        tag: "leaves",
-        cache: "no-cache"
-    });
+export const getLeaveCalendar = async (
+  query: LeaveCalendarFilters = {},
+): Promise<IResponse<LeaveCalendarData>> => {
+  const queryString = buildQuery(query);
+  return await baseApi(
+    `/leaves/calendar${queryString ? `?${queryString}` : ""}`,
+    {
+      tag: "leaves",
+      cache: "no-cache",
+    },
+  );
 };
 
-export const getLeaveHistory = async (query: AdminLeaveHistoryFilters = {}): Promise<IResponse<LeaveRecord[]>> => {
-    const queryString = buildQuery(query);
-    return await baseApi(`/leaves/history${queryString ? `?${queryString}` : ""}`, {
-        tag: "leaves",
-        cache: "no-cache"
-    });
+export const getLeaveHistory = async (
+  query: AdminLeaveHistoryFilters = {},
+): Promise<IResponse<LeaveRecord[]>> => {
+  const queryString = buildQuery(query);
+  return await baseApi(
+    `/leaves/history${queryString ? `?${queryString}` : ""}`,
+    {
+      tag: "leaves",
+      cache: "no-cache",
+    },
+  );
 };
 
-export const getLeave = async (query={}): Promise<IResponse<ILeaveRequest[]>> => {
-    const queryString = buildQuery(query);
-    return await baseApi(`/leaves${queryString ? `?${queryString}` : ""}`, {
-        tag: "leaves",
-        cache: "no-cache"
-    });
+export const getLeave = async (
+  query = {},
+): Promise<IResponse<ILeaveRequest[]>> => {
+  const queryString = buildQuery(query);
+  return await baseApi(`/leaves${queryString ? `?${queryString}` : ""}`, {
+    tag: "leaves",
+    cache: "no-cache",
+  });
 };
 
 export const approveRejectLeave = async ({
@@ -238,7 +271,9 @@ export const updateLeaveHoliday = async (
   return response;
 };
 
-export const deleteLeaveHoliday = async (id: number): Promise<IResponse<null>> => {
+export const deleteLeaveHoliday = async (
+  id: number,
+): Promise<IResponse<null>> => {
   const response = await baseApi(`/leaves/holidays/${id}`, {
     method: "DELETE",
     tag: "leave-holidays",
@@ -272,6 +307,26 @@ export const parseLeaveHolidayImport = async (
     body: data,
     cache: "no-cache",
   });
+};
+
+export const insertParsedHolidays = async (
+  data: MandatoryLeaveImportPayload,
+) => {
+  const response = (await baseApi(`/leaves/holidays/import`, {
+    method: "POST",
+    body: data,
+    cache: "no-cache",
+  })) as IResponse<{
+    total_submitted: number;
+    imported_count: number;
+    skipped_count: number;
+  }>;
+
+  if (response.success) {
+    revalidateHolidayViews();
+  }
+
+  return response;
 };
 
 export const deleteLeave = async (id: number): Promise<IResponse<null>> => {
@@ -322,7 +377,6 @@ export const addLeave = async (data: {
 
   return response;
 };
-
 
 export const getLeaveRequestTypeDropdown = async (): Promise<
   IResponse<LeaveRequestTypeDropdownRecord[]>

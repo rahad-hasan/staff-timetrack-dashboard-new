@@ -1,7 +1,10 @@
 "use client";
 
 import axios from "axios";
-import { parseLeaveHolidayImport } from "@/actions/leaves/action";
+import {
+  insertParsedHolidays,
+  parseLeaveHolidayImport,
+} from "@/actions/leaves/action";
 import {
   CheckCircle2,
   FileSpreadsheet,
@@ -52,11 +55,12 @@ const SUPPORTED_TEXT_MIME_TYPES = new Set([
   "text/plain",
   "text/tab-separated-values",
 ]);
-const FILE_ACCEPT = ".csv,.tsv,.txt,.text,.psv,.pdf,text/csv,text/plain,application/pdf";
+const FILE_ACCEPT =
+  ".csv,.tsv,.txt,.text,.psv,.pdf,text/csv,text/plain,application/pdf";
 
 function getFileExtension(fileName: string) {
   const parts = fileName.toLowerCase().split(".");
-  return parts.length > 1 ? parts.at(-1) ?? "" : "";
+  return parts.length > 1 ? (parts.at(-1) ?? "") : "";
 }
 
 function formatFileSize(bytes: number) {
@@ -73,7 +77,8 @@ function formatFileSize(bytes: number) {
     unitIndex += 1;
   }
 
-  const formattedSize = size >= 10 || unitIndex === 0 ? Math.round(size) : Number(size.toFixed(1));
+  const formattedSize =
+    size >= 10 || unitIndex === 0 ? Math.round(size) : Number(size.toFixed(1));
   return `${formattedSize} ${units[unitIndex]}`;
 }
 
@@ -101,12 +106,15 @@ function readFileAsDataUrl(file: File) {
     const reader = new FileReader();
 
     reader.onload = () => resolve(String(reader.result ?? ""));
-    reader.onerror = () => reject(new Error("Failed to read the selected file."));
+    reader.onerror = () =>
+      reject(new Error("Failed to read the selected file."));
     reader.readAsDataURL(file);
   });
 }
 
-async function buildParsePayload(file: File): Promise<MandatoryLeaveParsePayload> {
+async function buildParsePayload(
+  file: File,
+): Promise<MandatoryLeaveParsePayload> {
   const fileKind = getFileKind(file);
 
   if (!fileKind) {
@@ -181,7 +189,9 @@ function getParsedStatusLabel(alreadyExists: boolean) {
   return alreadyExists ? "Already exists" : "Ready to import";
 }
 
-function normalizeParseResult(data: Partial<MandatoryLeaveParseResult> | null | undefined) {
+function normalizeParseResult(
+  data: Partial<MandatoryLeaveParseResult> | null | undefined,
+) {
   return {
     parsed: Array.isArray(data?.parsed) ? data.parsed : [],
     rejected: Array.isArray(data?.rejected) ? data.rejected : [],
@@ -200,7 +210,8 @@ const MandatoryLeaveImportDialog = ({
   onImported,
 }: MandatoryLeaveImportDialogProps) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [parseResult, setParseResult] = useState<MandatoryLeaveParseResult | null>(null);
+  const [parseResult, setParseResult] =
+    useState<MandatoryLeaveParseResult | null>(null);
   const [isParsing, setIsParsing] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
 
@@ -230,7 +241,10 @@ const MandatoryLeaveImportDialog = ({
   };
 
   const parsedRows = useMemo(() => parseResult?.parsed ?? [], [parseResult]);
-  const rejectedRows = useMemo(() => parseResult?.rejected ?? [], [parseResult]);
+  const rejectedRows = useMemo(
+    () => parseResult?.rejected ?? [],
+    [parseResult],
+  );
 
   const importPayload = useMemo<MandatoryLeaveImportPayload>(
     () => ({
@@ -376,7 +390,9 @@ const MandatoryLeaveImportDialog = ({
 
       if (!response?.success) {
         setParseResult(null);
-        showErrorToast(response?.message || "Failed to parse the uploaded file.");
+        showErrorToast(
+          response?.message || "Failed to parse the uploaded file.",
+        );
         return;
       }
 
@@ -386,7 +402,9 @@ const MandatoryLeaveImportDialog = ({
       toast.success(response.message || "File parsed successfully.");
     } catch (error) {
       setParseResult(null);
-      showErrorToast(getErrorMessage(error, "Failed to parse the uploaded file."));
+      showErrorToast(
+        getErrorMessage(error, "Failed to parse the uploaded file."),
+      );
     } finally {
       setIsParsing(false);
     }
@@ -401,21 +419,24 @@ const MandatoryLeaveImportDialog = ({
     let shouldClose = false;
 
     try {
-      const response = await axios.post(
-        "/api/leave-management/mandatory-leaves/import",
-        importPayload,
-      );
+      const response = await insertParsedHolidays(importPayload);
 
-      if (!response.data?.success) {
-        showErrorToast(response.data?.message || "Failed to import mandatory leave data.");
+      if (!response.success) {
+        showErrorToast(
+          response?.message || "Failed to import mandatory leave data.",
+        );
         return;
       }
 
-      toast.success(response.data.message || "Mandatory leave imported successfully.");
+      toast.success(
+        response.message || "Mandatory leave imported successfully.",
+      );
       await onImported();
       shouldClose = true;
     } catch (error) {
-      showErrorToast(getErrorMessage(error, "Failed to import mandatory leave data."));
+      showErrorToast(
+        getErrorMessage(error, "Failed to import mandatory leave data."),
+      );
     } finally {
       setIsImporting(false);
       if (shouldClose) {
@@ -453,9 +474,10 @@ const MandatoryLeaveImportDialog = ({
                     Mandatory leave import
                   </DialogTitle>
                   <DialogDescription className="max-w-3xl text-sm leading-6 text-subTextColor dark:text-darkTextSecondary">
-                    Upload CSV, TSV, TXT, PSV, or text-based PDF files for {selectedYear}. The
-                    parser previews valid, duplicate, and rejected rows before anything is written
-                    to the holiday registry.
+                    Upload CSV, TSV, TXT, PSV, or text-based PDF files for{" "}
+                    {selectedYear}. The parser previews valid, duplicate, and
+                    rejected rows before anything is written to the holiday
+                    registry.
                   </DialogDescription>
                 </DialogHeader>
 
@@ -490,7 +512,9 @@ const MandatoryLeaveImportDialog = ({
                   </div>
                 </div>
                 <div className="mt-4 flex flex-wrap gap-2">
-                  <Badge className={importReadiness.badgeClass}>{selectedYear} workspace</Badge>
+                  <Badge className={importReadiness.badgeClass}>
+                    {selectedYear} workspace
+                  </Badge>
                   {selectedFile ? (
                     <Badge className="border border-white/70 bg-white/90 dark:border-white/8 dark:bg-darkSecondaryBg dark:text-darkTextPrimary">
                       {formatFileSize(selectedFile.size)}
@@ -516,8 +540,9 @@ const MandatoryLeaveImportDialog = ({
                         Choose and parse a source file
                       </p>
                       <p className="mt-1 max-w-2xl text-sm leading-6 text-subTextColor dark:text-darkTextSecondary">
-                        Upload a structured holiday export, run the parser, then review the preview
-                        before import. Scanned image-only PDFs may still be rejected by the backend.
+                        Upload a structured holiday export, run the parser, then
+                        review the preview before import. Scanned image-only
+                        PDFs may still be rejected by the backend.
                       </p>
                     </div>
                   </div>
@@ -538,8 +563,8 @@ const MandatoryLeaveImportDialog = ({
                       Source upload
                     </p>
                     <p className="mt-1 text-sm leading-6 text-subTextColor dark:text-darkTextSecondary">
-                      Prefer text-based exports for the cleanest parse results. PDFs are encoded as
-                      base64 before the request is sent.
+                      Prefer text-based exports for the cleanest parse results.
+                      PDFs are encoded as base64 before the request is sent.
                     </p>
 
                     <Input
@@ -552,12 +577,16 @@ const MandatoryLeaveImportDialog = ({
                     <div className="mt-4 flex flex-wrap items-center gap-3 text-sm">
                       <Badge className="max-w-full truncate border border-white/70 bg-white px-3 py-1.5 text-headingTextColor dark:border-white/8 dark:bg-darkSecondaryBg dark:text-darkTextPrimary">
                         <span className="block max-w-[420px] truncate">
-                          {selectedFile ? selectedFile.name : "No file selected"}
+                          {selectedFile
+                            ? selectedFile.name
+                            : "No file selected"}
                         </span>
                       </Badge>
                       {selectedFileKind ? (
                         <Badge className="border border-primary/15 bg-primary/10 px-3 py-1.5 text-primary dark:bg-primary/15">
-                          {selectedFileKind === "pdf" ? "PDF / base64" : "Text / raw content"}
+                          {selectedFileKind === "pdf"
+                            ? "PDF / base64"
+                            : "Text / raw content"}
                         </Badge>
                       ) : null}
                       {selectedFile ? (
@@ -577,10 +606,12 @@ const MandatoryLeaveImportDialog = ({
                         CSV, TSV, TXT, and PSV files are read as plain text.
                       </div>
                       <div className="rounded-[18px] bg-white px-4 py-3 dark:bg-darkPrimaryBg">
-                        Duplicate holidays remain visible in the preview but are excluded from import.
+                        Duplicate holidays remain visible in the preview but are
+                        excluded from import.
                       </div>
                       <div className="rounded-[18px] bg-white px-4 py-3 dark:bg-darkPrimaryBg">
-                        Rejected rows stay blocked until the source file is corrected and re-parsed.
+                        Rejected rows stay blocked until the source file is
+                        corrected and re-parsed.
                       </div>
                     </div>
                   </div>
@@ -608,7 +639,12 @@ const MandatoryLeaveImportDialog = ({
                   <Button
                     variant="outline2"
                     onClick={handleImport}
-                    disabled={!parseResult || !importableCount || isParsing || isImporting}
+                    disabled={
+                      !parseResult ||
+                      !importableCount ||
+                      isParsing ||
+                      isImporting
+                    }
                     className="h-11 rounded-2xl border-borderColor px-5 dark:border-darkBorder dark:bg-darkSecondaryBg dark:text-darkTextPrimary sm:min-w-[250px]"
                   >
                     {isImporting ? (
@@ -675,7 +711,9 @@ const MandatoryLeaveImportDialog = ({
                     <p className="text-sm font-semibold text-headingTextColor dark:text-darkTextPrimary">
                       Session snapshot
                     </p>
-                    <Badge className={importReadiness.badgeClass}>{importReadiness.label}</Badge>
+                    <Badge className={importReadiness.badgeClass}>
+                      {importReadiness.label}
+                    </Badge>
                   </div>
 
                   <div className="mt-4 space-y-3">
@@ -744,12 +782,18 @@ const MandatoryLeaveImportDialog = ({
                           </p>
                           <div
                             className="rounded-2xl p-2"
-                            style={{ backgroundColor: `${item.color}14`, color: item.color }}
+                            style={{
+                              backgroundColor: `${item.color}14`,
+                              color: item.color,
+                            }}
                           >
                             <Icon className="size-4" />
                           </div>
                         </div>
-                        <p className="mt-3 text-3xl font-semibold" style={{ color: item.color }}>
+                        <p
+                          className="mt-3 text-3xl font-semibold"
+                          style={{ color: item.color }}
+                        >
                           {item.value}
                         </p>
                       </div>
@@ -765,8 +809,8 @@ const MandatoryLeaveImportDialog = ({
                           Parsed preview
                         </h3>
                         <p className="text-sm text-subTextColor dark:text-darkTextSecondary">
-                          Existing holidays remain visible for review and are excluded from the
-                          final import request.
+                          Existing holidays remain visible for review and are
+                          excluded from the final import request.
                         </p>
                       </div>
                       <div className="rounded-full bg-primary/8 px-3 py-1 text-xs font-medium text-primary dark:bg-primary/15">
@@ -791,7 +835,11 @@ const MandatoryLeaveImportDialog = ({
                                     {row.date}
                                   </p>
                                 </div>
-                                <Badge className={getParsedStatusClasses(row.already_exists)}>
+                                <Badge
+                                  className={getParsedStatusClasses(
+                                    row.already_exists,
+                                  )}
+                                >
                                   {getParsedStatusLabel(row.already_exists)}
                                 </Badge>
                               </div>
@@ -834,7 +882,9 @@ const MandatoryLeaveImportDialog = ({
                             </TableHeader>
                             <TableBody>
                               {parsedRows.map((row) => (
-                                <TableRow key={`${row.row}-${row.name}-${row.date}`}>
+                                <TableRow
+                                  key={`${row.row}-${row.name}-${row.date}`}
+                                >
                                   <TableCell>{row.row}</TableCell>
                                   <TableCell>{row.name}</TableCell>
                                   <TableCell>{row.date}</TableCell>
@@ -843,7 +893,11 @@ const MandatoryLeaveImportDialog = ({
                                   </TableCell>
                                   <TableCell>{row.source || "-"}</TableCell>
                                   <TableCell>
-                                    <Badge className={getParsedStatusClasses(row.already_exists)}>
+                                    <Badge
+                                      className={getParsedStatusClasses(
+                                        row.already_exists,
+                                      )}
+                                    >
                                       {getParsedStatusLabel(row.already_exists)}
                                     </Badge>
                                   </TableCell>
@@ -867,7 +921,8 @@ const MandatoryLeaveImportDialog = ({
                           Rejected rows
                         </h3>
                         <p className="text-sm text-subTextColor dark:text-darkTextSecondary">
-                          These rows are blocked from import until the source file is corrected.
+                          These rows are blocked from import until the source
+                          file is corrected.
                         </p>
                       </div>
                       <div className="inline-flex items-center gap-2 rounded-full bg-red-50 px-3 py-1 text-xs font-medium text-red-700 dark:bg-red-500/12 dark:text-red-200">
@@ -948,8 +1003,9 @@ const MandatoryLeaveImportDialog = ({
                   Parse a source file to unlock the review workspace
                 </p>
                 <p className="mx-auto mt-2 max-w-2xl text-sm leading-6 text-subTextColor dark:text-darkTextSecondary">
-                  After parsing, this modal will show summary metrics, duplicate detection, and
-                  rejected-row diagnostics in a wider review layout.
+                  After parsing, this modal will show summary metrics, duplicate
+                  detection, and rejected-row diagnostics in a wider review
+                  layout.
                 </p>
               </div>
             )}
@@ -968,7 +1024,9 @@ const MandatoryLeaveImportDialog = ({
           <Button
             onClick={handleImport}
             className="h-11 rounded-2xl px-5 text-headingTextColor"
-            disabled={!parseResult || !importableCount || isParsing || isImporting}
+            disabled={
+              !parseResult || !importableCount || isParsing || isImporting
+            }
           >
             {isImporting ? (
               <>
