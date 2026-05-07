@@ -25,7 +25,9 @@ export const sidebarItems = [
         key: 'timesheets',
         collapsible: true,
         subItems: [
-            { label: 'All timesheets', key: '/timesheets/all-timesheets' },
+            { label: 'Daily', key: '/timesheets/daily' },
+            { label: 'Weekly', key: '/timesheets/weekly' },
+            { label: 'Monthly', key: '/timesheets/monthly' },
             { label: 'Manual requests', key: '/timesheets/manual-requests' },
         ],
     },
@@ -105,7 +107,9 @@ export const sidebarItemsEmployee = [
         key: 'timesheets',
         collapsible: true,
         subItems: [
-            { label: 'All timesheets', key: '/timesheets/all-timesheets' },
+            { label: 'Daily', key: '/timesheets/daily' },
+            { label: 'Weekly', key: '/timesheets/weekly' },
+            { label: 'Monthly', key: '/timesheets/monthly' },
             { label: 'Manual requests', key: '/timesheets/manual-requests' },
         ],
     },
