@@ -216,6 +216,67 @@
 }
 /* custom css */
 
+:root {
+  --scrollbar-size: 10px;
+  --scrollbar-track: rgba(15, 22, 19, 0.08);
+  --scrollbar-track-hover: rgba(15, 22, 19, 0.12);
+  --scrollbar-thumb: rgba(15, 22, 19, 0.24);
+  --scrollbar-thumb-hover: rgba(15, 22, 19, 0.4);
+  --scrollbar-thumb-active: rgba(18, 205, 105, 0.55);
+}
+
+.dark {
+  --scrollbar-track: rgba(255, 255, 255, 0.06);
+  --scrollbar-track-hover: rgba(255, 255, 255, 0.1);
+  --scrollbar-thumb: rgba(255, 255, 255, 0.2);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.34);
+  --scrollbar-thumb-active: rgba(18, 205, 105, 0.65);
+}
+
+html,
+body,
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+*::-webkit-scrollbar {
+  width: var(--scrollbar-size);
+  height: var(--scrollbar-size);
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-radius: 999px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  border-radius: 999px;
+  min-height: 40px;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-thumb-hover);
+}
+
+*::-webkit-scrollbar-thumb:active {
+  background-color: var(--scrollbar-thumb-active);
+}
+
+*::-webkit-scrollbar-track:hover {
+  background: var(--scrollbar-track-hover);
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
 /* css for otp input */
 /* styles.css */
 /* .responsive-otp-input {
@@ -249,12 +310,12 @@
 /* Styling for the thin scrollbar */
 .thin-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: rgba(15, 22, 19, 0.25) transparent;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
 }
 
 .thin-scrollbar::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
 }
 
 .thin-scrollbar::-webkit-scrollbar-track {
@@ -262,25 +323,15 @@
 }
 
 .thin-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(15, 22, 19, 0.22);
+  background: var(--scrollbar-thumb);
+  border: 1px solid transparent;
+  background-clip: padding-box;
   border-radius: 999px;
   transition: background-color 0.2s ease;
 }
 
 .thin-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(15, 22, 19, 0.4);
-}
-
-.dark .thin-scrollbar {
-  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
-}
-
-.dark .thin-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.16);
-}
-
-.dark .thin-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.32);
+  background: var(--scrollbar-thumb-hover);
 }
 
 /* Modern, ultra-subtle scrollbar — hides until hover/scroll */
@@ -292,12 +343,12 @@
 
 .modern-scrollbar:hover,
 .modern-scrollbar:focus-within {
-  scrollbar-color: rgba(15, 22, 19, 0.28) transparent;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
 }
 
 .modern-scrollbar::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 9px;
+  height: 9px;
 }
 
 .modern-scrollbar::-webkit-scrollbar-track {
@@ -314,25 +365,11 @@
 
 .modern-scrollbar:hover::-webkit-scrollbar-thumb,
 .modern-scrollbar:focus-within::-webkit-scrollbar-thumb {
-  background-color: rgba(15, 22, 19, 0.22);
+  background-color: var(--scrollbar-thumb);
 }
 
 .modern-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(15, 22, 19, 0.42) !important;
-}
-
-.dark .modern-scrollbar:hover,
-.dark .modern-scrollbar:focus-within {
-  scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
-}
-
-.dark .modern-scrollbar:hover::-webkit-scrollbar-thumb,
-.dark .modern-scrollbar:focus-within::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.18);
-}
-
-.dark .modern-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: rgba(255, 255, 255, 0.36) !important;
+  background-color: var(--scrollbar-thumb-hover) !important;
 }
 
 /* Remove topLoader vertical line */

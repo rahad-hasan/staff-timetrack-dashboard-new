@@ -2,7 +2,7 @@
 
 import { buildQuery } from "@/utils/buildQuery";
 import { baseApi } from "../baseApi";
-import { AdminLeaveHistoryFilters, CreateLeaveHolidayPayload, CreateLeaveTypePayload, ILeaveDetailsResponse, ILeaveRequest, IResponse, LeaveCalendarData, LeaveCalendarFilters, LeaveHoliday, LeaveHolidayListData, LeaveRecord, LeaveRequestTypeDropdownRecord, LeaveTypeListFilters, LeaveTypeRecord, UpdateLeaveHolidayPayload, UpdateLeaveTypePayload, UserLeaveSummary } from "@/types/type";
+import { AdminLeaveHistoryFilters, CreateLeaveHolidayPayload, CreateLeaveTypePayload, ILeaveDetailsResponse, ILeaveRequest, IResponse, LeaveCalendarData, LeaveCalendarFilters, LeaveHoliday, LeaveHolidayListData, LeaveRecord, LeaveRequestTypeDropdownRecord, LeaveTypeListFilters, LeaveTypeRecord, MandatoryLeaveParsePayload, MandatoryLeaveParseResult, UpdateLeaveHolidayPayload, UpdateLeaveTypePayload, UserLeaveSummary } from "@/types/type";
 import { revalidatePath, revalidateTag } from "next/cache";
 
 // export const getLeave = async (query = {}): Promise<IResponse<ILeaveRequest[]>> => {
@@ -264,6 +264,16 @@ export const getLeaveHolidays = async (
   );
 };
 
+export const parseLeaveHolidayImport = async (
+  data: MandatoryLeaveParsePayload,
+): Promise<IResponse<MandatoryLeaveParseResult>> => {
+  return await baseApi(`/leaves/holidays/import/parse`, {
+    method: "POST",
+    body: data,
+    cache: "no-cache",
+  });
+};
+
 export const deleteLeave = async (id: number): Promise<IResponse<null>> => {
   const response = await baseApi(`/leaves/${id}`, {
     method: "DELETE",
@@ -335,4 +345,3 @@ export const getUserLeaveSummary = async (
     },
   );
 };
-
