@@ -3,7 +3,7 @@ const WeeklyTimeSheetsSkeleton = () => {
     const NUM_ROWS = 5;
 
     return (
-        <div className="pt-4">
+        <div className="">
             <div className="overflow-x-auto rounded-2xl border border-borderColor dark:border-darkBorder">
                 <table className="min-w-full divide-y divide-gray-200 dark:divide-darkBorder">
                     <thead className=" ">

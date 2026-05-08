@@ -70,7 +70,7 @@ export const sidebarItems = [
         key: 'report',
         collapsible: true,
         subItems: [
-            { label: 'Timesheet', key: '/report/timesheets' },
+            // { label: 'Timesheet', key: '/report/timesheets' },
             // { label: 'Time & activities', key: '/report/time-and-activities' },
             { label: 'Attendance', key: '/report/attendance' },
             { label: 'Work Report', key: '/report/work-report' },
@@ -140,7 +140,7 @@ export const sidebarItemsEmployee = [
         key: 'report',
         collapsible: true,
         subItems: [
-            { label: 'Timesheet', key: '/report/timesheets' },
+            // { label: 'Timesheet', key: '/report/timesheets' },
             { label: 'Attendance', key: '/report/attendance' },
         ],
     }

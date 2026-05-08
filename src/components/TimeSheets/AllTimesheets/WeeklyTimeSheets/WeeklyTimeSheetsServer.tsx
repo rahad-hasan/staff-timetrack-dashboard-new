@@ -19,13 +19,11 @@ const WeeklyTimeSheetsServer = async ({ searchParams }: ISearchParamsProps) => {
   });
 
   return (
-    <div>
       <WeeklyTimeSheetsTable
         items={result.data.items}
         dayKeys={result.data.day_keys}
         totals={result.data.totals}
       />
-    </div>
   );
 };
 
