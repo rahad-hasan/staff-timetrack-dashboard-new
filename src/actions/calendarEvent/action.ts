@@ -38,3 +38,33 @@ export const rescheduleEvent = async ({ id, data }: { id: number, data: any }) =
     });
 };
 
+export const refreshEvents = async (
+  query = {},
+): Promise<IResponse<any[]>> => {
+  const queryString = buildQuery(query);
+  return await baseApi(`/events${queryString ? `?${queryString}` : ""}`, {
+    tag: "events",
+    cache: "no-cache",
+  });
+};
+
+export const addEventMembers = async (data: {
+  event_id: number;
+  member_ids: number[];
+  force_create?: boolean;
+}) => {
+  return await baseApi(`/events`, {
+    method: "PATCH",
+    body: data,
+    tag: "events",
+    cache: "no-cache",
+  });
+};
+
+export const cancelEvent = async (id: number) => {
+  return await baseApi(`/events/${id}`, {
+    method: "DELETE",
+    tag: "events",
+    cache: "no-cache",
+  });
+};

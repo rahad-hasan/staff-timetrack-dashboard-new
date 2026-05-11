@@ -2,10 +2,10 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import {
-  // DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { addNewEventSchema } from "@/zod/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,9 +25,19 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Input } from "@/components/ui/input";
-import { useEffect, useState } from "react";
-import { CalendarDays, ChevronDownIcon } from "lucide-react";
-import { Textarea } from "@/components/ui/textarea";
+import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  AlertTriangle,
+  CalendarDays,
+  CalendarPlus,
+  CheckCircle2,
+  ChevronDownIcon,
+  FileText,
+  Sparkles,
+  Users as UsersIcon,
+  Video,
+  Loader2,
+} from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import {
   MultiSelect,
@@ -41,108 +51,306 @@ import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { getMembersDashboard } from "@/actions/members/action";
 import { addEvent } from "@/actions/calendarEvent/action";
+import {
+  getGoogleConnected,
+  getMicrosoftConnected,
+} from "@/actions/integrations/action";
 import ClockIcon from "../Icons/ClockIcon";
-import { Checkbox } from "../ui/checkbox";
+import { cn } from "@/lib/utils";
+import { useGoogleConnectFlow } from "../Integrations/useGoogleConnectFlow";
+import { useMicrosoftConnectFlow } from "../Integrations/useMicrosoftConnectFlow";
+import RichTextEditor from "../Common/RichTextEditor";
+import { isConflictResponse, parseConflictMessage } from "./eventHelpers";
+import Image from "next/image";
+import googleMeetIcon from '../../assets/events/google_meet.svg'
+import microsoftTeamsIcon from '../../assets/events/microsoft-teams.svg'
+
+type FormInput = z.input<typeof addNewEventSchema>;
+type FormValues = z.output<typeof addNewEventSchema>;
+
+const buildIsoFromDateAndTime = (date: Date, time: string) => {
+  const [h, m, s] = time.split(":").map((v) => Number(v) || 0);
+  const dt = new Date(date);
+  dt.setHours(h, m, s ?? 0, 0);
+  return dt;
+};
+
+const formatDuration = (start: string, end: string) => {
+  const [startHours = 0, startMinutes = 0] = start
+    .split(":")
+    .map((value) => Number(value) || 0);
+  const [endHours = 0, endMinutes = 0] = end
+    .split(":")
+    .map((value) => Number(value) || 0);
+
+  const totalStartMinutes = startHours * 60 + startMinutes;
+  const totalEndMinutes = endHours * 60 + endMinutes;
+  const diffMinutes = Math.max(0, totalEndMinutes - totalStartMinutes);
+  const hours = Math.floor(diffMinutes / 60);
+  const minutes = diffMinutes % 60;
+
+  if (hours && minutes) return `${hours}h ${minutes}m`;
+  if (hours) return `${hours}h`;
+  return `${minutes}m`;
+};
+
+const EVENT_CREATE_LOADING_STEPS = [
+  {
+    delayMs: 0,
+    title: "Creating event",
+    description: "Saving meeting details and preparing attendee sync.",
+  },
+  {
+    delayMs: 1800,
+    title: "Checking attendee availability",
+    description: "Looking for overlapping meetings across connected calendars.",
+  },
+  {
+    delayMs: 3600,
+    title: "Reviewing calendar integrations",
+    description:
+      "Google Meet, Teams, and other linked apps are still responding.",
+  },
+  {
+    delayMs: 6200,
+    title: "Still working in the background",
+    description: "Final validation is running before the event is created.",
+  },
+] as const;
 
 const AddEventModal = ({ onClose }: { onClose: () => void }) => {
   const [members, setMembers] = useState<
     { id: number | string; name: string; image?: string }[]
   >([]);
   const [loading, setLoading] = useState(false);
-
   const [openStartDate, setOpenStartDate] = useState(false);
-  const [dateStartDate, setStartDate] = useState<Date | undefined>(undefined);
-  const [isForceCreate, setIsForceCreate] = useState(false);
+  const [conflicts, setConflicts] = useState<string[]>([]);
+  const [googleConnected, setGoogleConnected] = useState<boolean | null>(null);
+  const [microsoftConnected, setMicrosoftConnected] = useState<boolean | null>(
+    null,
+  );
+  const [visibleLoadingStepCount, setVisibleLoadingStepCount] = useState(0);
+  const loadingStepTimersRef = useRef<ReturnType<typeof window.setTimeout>[]>(
+    [],
+  );
 
-  const form = useForm<z.infer<typeof addNewEventSchema>>({
+  const form = useForm<FormInput, any, FormValues>({
     resolver: zodResolver(addNewEventSchema),
     defaultValues: {
       eventName: "",
-      project: "",
-      start_time: "01:00:00",
-      end_time: "01:30:00",
+      start_time: "09:00:00",
+      end_time: "09:30:00",
       members: [],
-      meetingLink: "",
       description: "",
+      conference_provider: "google",
     },
   });
 
+  const conferenceProvider = form.watch("conference_provider");
+  const watchedMembers = form.watch("members");
+  const startTime = form.watch("start_time");
+  const endTime = form.watch("end_time");
+
+  const refreshGoogleConnected = async () => {
+    try {
+      const res: any = await getGoogleConnected();
+      const data = res?.data ?? res;
+      setGoogleConnected(!!data?.connected);
+    } catch {
+      setGoogleConnected(false);
+    }
+  };
+
+  const refreshMicrosoftConnected = async () => {
+    try {
+      const res: any = await getMicrosoftConnected();
+      const data = res?.data ?? res;
+      setMicrosoftConnected(!!data?.connected);
+    } catch {
+      setMicrosoftConnected(false);
+    }
+  };
+
+  const { start: startGoogleConnect, busy: connectBusy } = useGoogleConnectFlow(
+    () => refreshGoogleConnected(),
+  );
+
+  const { start: startMicrosoftConnect, busy: microsoftConnectBusy } =
+    useMicrosoftConnectFlow(() => refreshMicrosoftConnected());
+
   useEffect(() => {
     const loadMembers = async () => {
-      setLoading(true);
       try {
         const res = await getMembersDashboard();
         if (res?.success) {
           const apiMembers = res.data;
-          setMembers([{ id: "all", name: "All", image: "" }, ...apiMembers]);
+          setMembers([
+            { id: "all", name: "All members", image: "" },
+            ...apiMembers,
+          ]);
         }
       } catch (err) {
-        console.error("Failed to fetch clients", err);
-      } finally {
-        setLoading(false);
+        console.error("Failed to fetch members", err);
       }
     };
-
     loadMembers();
   }, []);
 
-  async function onSubmit(values: z.infer<typeof addNewEventSchema>) {
-    const combinedStartTime = new Date(values.date);
-    const [startHours, startMinutes, startSeconds] = values.start_time
-      .split(":")
-      .map(Number);
-    combinedStartTime.setHours(startHours || 0);
-    combinedStartTime.setMinutes(startMinutes || 0);
-    combinedStartTime.setSeconds(startSeconds || 0);
+  useEffect(() => {
+    if (conferenceProvider === "google" && googleConnected === null) {
+      refreshGoogleConnected();
+    }
+    if (conferenceProvider === "microsoft" && microsoftConnected === null) {
+      refreshMicrosoftConnected();
+    }
+  }, [conferenceProvider, googleConnected, microsoftConnected]);
 
-    const combinedEndTime = new Date(values.date);
-    const [endHours, endMinutes, endSeconds] = values.end_time
-      .split(":")
-      .map(Number);
-    combinedEndTime.setHours(endHours || 0);
-    combinedEndTime.setMinutes(endMinutes || 0);
-    combinedEndTime.setSeconds(endSeconds || 0);
+  useEffect(() => {
+    return () => {
+      loadingStepTimersRef.current.forEach((timer) =>
+        window.clearTimeout(timer),
+      );
+      loadingStepTimersRef.current = [];
+    };
+  }, []);
 
-    const finalData = {
-      name: values?.eventName,
-      note: values?.description,
-      start_time: combinedStartTime.toISOString(),
-      end_time: combinedEndTime.toISOString(),
-      force_create: isForceCreate ? true : false,
-      member_ids: values?.members.includes("all") ? "all" : values?.members,
-      ...(values?.meetingLink && { meeting_link: values.meetingLink }),
+  const needsGoogleConnect =
+    conferenceProvider === "google" && googleConnected === false;
+  const needsMicrosoftConnect =
+    conferenceProvider === "microsoft" && microsoftConnected === false;
+
+  const attendeePreview = useMemo(() => {
+    if (watchedMembers.includes("all")) {
+      return "All members";
+    }
+
+    return watchedMembers.length === 0
+      ? "No attendees"
+      : watchedMembers.length === 1
+        ? "1 person"
+        : `${watchedMembers.length} people`;
+  }, [watchedMembers]);
+
+  const providerPreview =
+    conferenceProvider === "google"
+      ? "Google Meet"
+      : conferenceProvider === "microsoft"
+        ? "Teams"
+        : "No conference";
+
+  const visibleLoadingSteps = EVENT_CREATE_LOADING_STEPS.slice(
+    0,
+    visibleLoadingStepCount,
+  );
+
+  const submitWith = async (
+    values: FormValues,
+    force: boolean,
+  ): Promise<{ ok: boolean; res: any }> => {
+    const startDt = buildIsoFromDateAndTime(values.date, values.start_time);
+    const endDt = buildIsoFromDateAndTime(values.date, values.end_time);
+
+    const memberIds = values.members.includes("all")
+      ? "all"
+      : (values.members.map((v) => Number(v)) as number[]);
+
+    const payload: Record<string, any> = {
+      name: values.eventName,
+      note: values.description,
+      start_time: startDt.toISOString(),
+      end_time: endDt.toISOString(),
+      member_ids: memberIds,
+      force_create: force,
     };
 
-    setLoading(true);
-    try {
-      const res = await addEvent(finalData);
+    if (values.conference_provider && values.conference_provider !== "none") {
+      payload.conference_provider = values.conference_provider;
+    }
 
-      if (res?.success) {
-        toast.success(res?.message || "Event added successfully");
+    const res = await addEvent(payload);
+    return { ok: !!res?.success, res };
+  };
+
+  const stopLoadingProgress = () => {
+    loadingStepTimersRef.current.forEach((timer) => window.clearTimeout(timer));
+    loadingStepTimersRef.current = [];
+    setVisibleLoadingStepCount(0);
+  };
+
+  const startLoadingProgress = () => {
+    stopLoadingProgress();
+    setVisibleLoadingStepCount(1);
+
+    EVENT_CREATE_LOADING_STEPS.slice(1).forEach((step, index) => {
+      const timer = window.setTimeout(() => {
+        setVisibleLoadingStepCount(index + 2);
+      }, step.delayMs);
+      loadingStepTimersRef.current.push(timer as any);
+    });
+  };
+
+  async function onSubmit(values: FormValues) {
+    setLoading(true);
+    setConflicts([]);
+    startLoadingProgress();
+    try {
+      const { ok, res } = await submitWith(values, false);
+      if (ok) {
+        stopLoadingProgress();
+        toast.success(res?.message || "Event created successfully");
         form.reset();
-        setStartDate(undefined);
-        setTimeout(() => {
-          onClose();
-        }, 0);
-      } else {
-        toast.error(res?.message || "Failed to add event", {
-          style: {
-            backgroundColor: "#ef4444",
-            color: "white",
-            border: "none",
-          },
-        });
+        setTimeout(() => onClose(), 0);
+        return;
       }
+      if (isConflictResponse(res)) {
+        stopLoadingProgress();
+        setConflicts(parseConflictMessage(res?.message));
+        return;
+      }
+      stopLoadingProgress();
+      toast.error(res?.message || "Failed to create event", {
+        style: { backgroundColor: "#ef4444", color: "white", border: "none" },
+      });
     } catch (error: any) {
-      console.error("failed:", error);
-      toast.error(error.message || "Something went wrong!", {
-        style: {
-          backgroundColor: "#ef4444",
-          color: "white",
-          border: "none",
-        },
+      stopLoadingProgress();
+      toast.error(error?.message || "Something went wrong!", {
+        style: { backgroundColor: "#ef4444", color: "white", border: "none" },
       });
     } finally {
+      stopLoadingProgress();
+      setLoading(false);
+    }
+  }
+
+  async function handleScheduleAnyway() {
+    const raw = form.getValues();
+    const values: FormValues = {
+      ...raw,
+      conference_provider: raw.conference_provider ?? "none",
+    };
+    setLoading(true);
+    startLoadingProgress();
+    try {
+      const { ok, res } = await submitWith(values, true);
+      if (ok) {
+        stopLoadingProgress();
+        toast.success(res?.message || "Event created successfully");
+        form.reset();
+        setConflicts([]);
+        setTimeout(() => onClose(), 0);
+        return;
+      }
+      stopLoadingProgress();
+      toast.error(res?.message || "Failed to create event", {
+        style: { backgroundColor: "#ef4444", color: "white", border: "none" },
+      });
+    } catch (error: any) {
+      stopLoadingProgress();
+      toast.error(error?.message || "Something went wrong!", {
+        style: { backgroundColor: "#ef4444", color: "white", border: "none" },
+      });
+    } finally {
+      stopLoadingProgress();
       setLoading(false);
     }
   }
@@ -150,317 +358,548 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
   return (
     <DialogContent
       onInteractOutside={(event) => event.preventDefault()}
-      className=" w-full sm:max-w-[525px] max-h-[95vh] overflow-y-auto"
+      className="w-full max-w-[calc(100vw-2rem)] sm:max-w-[760px] lg:max-w-[1120px] max-h-[95vh] grid-rows-[auto_minmax(0,1fr)] overflow-hidden gap-0 border-borderColor p-0 dark:border-darkBorder dark:bg-darkSecondaryBg"
     >
-      <DialogHeader>
-        <DialogTitle className=" mb-4 text-headingTextColor dark:text-darkTextPrimary">
-          Add Event
-        </DialogTitle>
+      <DialogHeader className="border-b border-borderColor bg-linear-to-r from-primary/12 via-cyan-500/6 to-transparent px-5 py-4 dark:border-darkBorder dark:from-primary/14 dark:via-cyan-500/8 dark:to-transparent sm:px-6">
+        <div className="flex items-start gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/14 text-primary ring-1 ring-primary/15">
+            <CalendarPlus className="h-4 w-4" />
+          </div>
+          <div className="min-w-0">
+            <DialogTitle className="text-base font-semibold leading-tight text-headingTextColor dark:text-darkTextPrimary sm:text-lg">
+              Create new event
+            </DialogTitle>
+            <DialogDescription className="mt-1 max-w-3xl text-xs leading-5 text-subTextColor dark:text-darkTextSecondary sm:text-[13px]">
+              Schedule a meeting with optional Meet or Teams link and attendee
+              sync.
+            </DialogDescription>
+          </div>
+        </div>
       </DialogHeader>
 
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 ">
-          <FormField
-            control={form.control}
-            name="eventName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel required={true}>Event name</FormLabel>
-                <FormControl>
-                  <Input
-                    type="text"
-                    className="dark:bg-darkPrimaryBg dark:border-darkBorder"
-                    placeholder="Event name"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="date"
-            render={({ field }) => (
-              <FormItem className="w-full">
-                <FormLabel required={true}>Event Date</FormLabel>
-                <FormControl>
-                  <Popover open={openStartDate} onOpenChange={setOpenStartDate}>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline2"
-                        id="startDate"
-                        className="py-1.5 justify-between font-normal dark:text-darkTextSecondary dark:bg-darkPrimaryBg dark:border-darkBorder"
-                      >
-                        <div className=" flex items-center gap-2">
-                          <CalendarDays />
-                          {dateStartDate
-                            ? dateStartDate.toLocaleDateString()
-                            : "Set a date"}
-                        </div>
-
-                        <ChevronDownIcon />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent
-                      className="w-auto overflow-hidden p-0"
-                      align="start"
+      <div className="relative min-h-0">
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="modern-scrollbar h-full overflow-y-auto px-5 py-5 sm:px-6"
+          >
+            <div className="space-y-4">
+              {conflicts.length > 0 && (
+                <div className="rounded-lg border border-red-200 dark:border-red-500/30 bg-red-50/70 dark:bg-red-500/10 p-3 space-y-2">
+                  <div className="flex items-center gap-2 text-red-700 dark:text-red-300 text-sm font-semibold">
+                    <AlertTriangle className="h-4 w-4" />
+                    Schedule conflicts detected
+                  </div>
+                  <ul className="text-[12px] leading-relaxed text-red-700 dark:text-red-300 space-y-1 list-disc pl-5">
+                    {conflicts.map((c, i) => (
+                      <li key={i}>{c}</li>
+                    ))}
+                  </ul>
+                  <div className="flex flex-col sm:flex-row gap-2 pt-1">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="destructive"
+                      onClick={handleScheduleAnyway}
+                      disabled={loading}
                     >
-                      <Calendar
-                        mode="single"
-                        selected={dateStartDate}
-                        captionLayout="dropdown"
-                        onSelect={(date) => {
-                          setStartDate(date);
-                          field.onChange(date); // Update the form state
-                          setOpenStartDate(false);
-                        }}
-                      />
-                    </PopoverContent>
-                  </Popover>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <div className="flex gap-2 items-center">
-            <Checkbox
-              id="force_create"
-              className="cursor-pointer border-primary"
-              checked={isForceCreate}
-              onCheckedChange={(checked) => setIsForceCreate(!!checked)}
-            />
-            <label
-              htmlFor="force_create"
-              className="cursor-pointer text-sm font-medium"
-            >
-              Force Create
-            </label>
-          </div>
-
-          <div className=" flex items-center gap-3">
-            <FormField
-              control={form.control}
-              name="start_time"
-              render={({ field }) => (
-                <FormItem className=" w-full">
-                  <FormLabel required={true}>Start Time</FormLabel>
-                  <FormControl className="">
-                    <div className="relative ">
-                      <div className="text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 peer-disabled:opacity-50">
-                        <ClockIcon
-                          size={16}
-                          className=" text-headingTextColor dark:text-darkTextPrimary"
-                        />
-                      </div>
-                      <Input
-                        type="time"
-                        id="time-picker"
-                        step="1"
-                        {...field}
-                        className="peer bg-background dark:bg-darkPrimaryBg dark:border-darkBorder appearance-none pl-9 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+                      Schedule anyway
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline2"
+                      onClick={() => setConflicts([])}
+                    >
+                      Edit details
+                    </Button>
+                  </div>
+                  <p className="text-[11px] text-red-700/70 dark:text-red-300/70">
+                    This will not cancel the conflicting events.
+                  </p>
+                </div>
               )}
-            />
-            <FormField
-              control={form.control}
-              name="end_time"
-              render={({ field }) => (
-                <FormItem className=" w-full">
-                  <FormLabel required={true}>End Time</FormLabel>
-                  <FormControl className="">
-                    <div className="relative ">
-                      <div className="text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 peer-disabled:opacity-50">
-                        <ClockIcon
-                          size={16}
-                          className=" text-headingTextColor dark:text-darkTextPrimary"
-                        />
-                      </div>
-                      <Input
-                        type="time"
-                        id="time-picker"
-                        step="1"
-                        {...field}
-                        className="peer bg-background dark:bg-darkPrimaryBg dark:border-darkBorder appearance-none pl-9 [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
-                      />
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
 
-          {/* <FormField
-                        control={form.control}
-                        name="project"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel required={true}>Add Project (optional)</FormLabel>
-                                <FormControl>
-                                    <div className="relative">
-                                        <Select
-                                            value={field.value}
-                                            onValueChange={field.onChange}
-                                        >
-                                            <SelectTrigger className="w-full">
-                                                <div className=" flex gap-1 items-center">
-                                                    <SelectValue className=" text-start" placeholder="Select Project" />
-                                                </div>
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <Input
-                                                    type="text"
-                                                    placeholder="Select Project"
-                                                    className="flex-1 border-none focus:ring-0 focus:outline-none"
-                                                    value={managerSearch}
-                                                    onChange={(e) => setManagerSearch(e.target.value)}
-                                                />
-                                                {filteredManager.map(p => (
-                                                    <SelectItem key={p} value={p}>{p}</SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    /> */}
-          {/* <FormField
-                        control={form.control}
-                        name="members"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel required={true}>Members</FormLabel>
-                                <FormControl>
-                                    <MultiSelect
-                                        values={field.value}
-                                        onValuesChange={field.onChange}
-                                    >
-                                        <MultiSelectTrigger className=" w-full hover:bg-white dark:bg-darkPrimaryBg hover:dark:bg-darkPrimaryBg dark:border-darkBorder py-2">
-                                            <MultiSelectValue placeholder="Select Team Members..." />
-                                        </MultiSelectTrigger>
-                                        <MultiSelectContent className="dark:bg-darkSecondaryBg">
-                                            <MultiSelectGroup className="dark:bg-darkSecondaryBg">
-                                                {
-                                                    memberData?.map((member, i) => (
+              <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.2fr)_minmax(340px,0.8fr)]">
+                <div className="space-y-4 rounded-lg border border-white/8 bg-white/60 p-5 shadow-[0_12px_32px_rgba(15,23,42,0.06)] backdrop-blur-md dark:border-white/6 dark:bg-darkPrimaryBg/40">
+                  <div>
+                    <p className="text-sm font-semibold text-headingTextColor dark:text-darkTextPrimary">
+                      Schedule details
+                    </p>
+                    <p className="mt-1 text-xs leading-5 text-subTextColor dark:text-darkTextSecondary">
+                      Event name, date, timing, and attendees.
+                    </p>
+                  </div>
+                  <FormField
+                    control={form.control}
+                    name="eventName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel required>Event name</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="text"
+                            className="h-10 dark:bg-darkSecondaryBg dark:border-darkBorder"
+                            placeholder="e.g. Sprint Planning"
+                            maxLength={30}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                                                        <MultiSelectItem className=" px-0 cursor-pointer" key={i} value={member?.name}>
-                                                            <Image src={member?.image} className=" w-8" width={200} height={200} alt="profile_image" />
-                                                            <p>{member?.name}</p>
-                                                        </MultiSelectItem>
-                                                    ))
-                                                }
-
-                                            </MultiSelectGroup>
-                                        </MultiSelectContent>
-                                    </MultiSelect>
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    /> */}
-
-          <FormField
-            control={form.control}
-            name="members"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel required={true}>Members</FormLabel>
-                <FormControl>
-                  <MultiSelect
-                    // values={selectedMemberIds}
-                    values={field.value.map(String)}
-                    onValuesChange={(vals) => {
-                      let processedValues: (string | number)[];
-                      const lastSelected = vals[vals.length - 1];
-
-                      if (lastSelected === "all") {
-                        processedValues = ["all"];
-                      } else {
-                        const filtered = vals.filter((v) => v !== "all");
-                        processedValues = filtered.map((v) => Number(v));
-                      }
-
-                      field.onChange(processedValues);
-                    }}
-                  >
-                    <MultiSelectTrigger className=" w-full hover:bg-white py-2 dark:bg-darkSecondaryBg hover:dark:bg-darkSecondaryBg">
-                      <MultiSelectValue placeholder="Select members..." />
-                    </MultiSelectTrigger>
-
-                    <MultiSelectContent onWheel={(e) => e.stopPropagation()} className="dark:bg-darkSecondaryBg">
-                      <MultiSelectGroup className="dark:bg-darkSecondaryBg">
-                        {members.map((member) => (
-                          <MultiSelectItem
-                            key={member.id}
-                            value={String(member.id)}
-                            className=" px-0 cursor-pointer hover:dark:bg-darkPrimaryBg"
+                  <FormField
+                    control={form.control}
+                    name="date"
+                    render={({ field }) => (
+                      <FormItem className="w-full">
+                        <FormLabel
+                          required
+                          className="flex items-center gap-1.5"
+                        >
+                          <CalendarDays className="h-3.5 w-3.5" /> Date
+                        </FormLabel>
+                        <FormControl>
+                          <Popover
+                            open={openStartDate}
+                            onOpenChange={setOpenStartDate}
                           >
-                            <Avatar>
-                              <AvatarImage src={member.image || ""} />
-                              <AvatarFallback>
-                                {member.name.charAt(0)}
-                              </AvatarFallback>
-                            </Avatar>
-                            <p>{member.name}</p>
-                          </MultiSelectItem>
-                        ))}
-                      </MultiSelectGroup>
-                    </MultiSelectContent>
-                  </MultiSelect>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="meetingLink"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Meeting Link</FormLabel>
-                <FormControl>
-                  <Input
-                    type="url"
-                    className="dark:bg-darkPrimaryBg dark:border-darkBorder"
-                    placeholder="Meeting Link (Optional)"
-                    {...field}
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant="outline2"
+                                type="button"
+                                className="h-10 w-full justify-between py-1.5 font-normal text-headingTextColor dark:bg-darkSecondaryBg dark:border-darkBorder dark:text-darkTextPrimary"
+                              >
+                                <div className="flex items-center gap-2">
+                                  <CalendarDays className="h-4 w-4 text-subTextColor dark:text-darkTextSecondary" />
+                                  {field.value
+                                    ? field.value.toLocaleDateString(
+                                        undefined,
+                                        {
+                                          weekday: "short",
+                                          month: "short",
+                                          day: "numeric",
+                                          year: "numeric",
+                                        },
+                                      )
+                                    : "Set a date"}
+                                </div>
+                                <ChevronDownIcon className="h-4 w-4 opacity-60" />
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent
+                              className="w-auto overflow-hidden p-0"
+                              align="start"
+                            >
+                              <Calendar
+                                mode="single"
+                                selected={field.value}
+                                captionLayout="dropdown"
+                                disabled={(d) => {
+                                  const today = new Date();
+                                  today.setHours(0, 0, 0, 0);
+                                  return d < today;
+                                }}
+                                onSelect={(date) => {
+                                  field.onChange(date);
+                                  setOpenStartDate(false);
+                                }}
+                              />
+                            </PopoverContent>
+                          </Popover>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="description"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel required={true}>Description</FormLabel>
-                <FormControl>
-                  <Textarea
-                    className="dark:border-darkBorder"
-                    placeholder="Enter description"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
 
-          <Button className=" w-full" type="submit" disabled={loading}>
-            {loading ? "Loading..." : "Create Event"}
-          </Button>
-        </form>
-      </Form>
+                  <div className="grid grid-cols-2 gap-3">
+                    <FormField
+                      control={form.control}
+                      name="start_time"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel required>Start</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <div className="text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                <ClockIcon
+                                  size={16}
+                                  className="text-headingTextColor dark:text-darkTextPrimary"
+                                />
+                              </div>
+                              <Input
+                                type="time"
+                                step="1"
+                                {...field}
+                                className="peer h-10 appearance-none bg-background pl-9 dark:bg-darkSecondaryBg dark:border-darkBorder [&::-webkit-calendar-picker-indicator]:hidden"
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="end_time"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel required>End</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <div className="text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                <ClockIcon
+                                  size={16}
+                                  className="text-headingTextColor dark:text-darkTextPrimary"
+                                />
+                              </div>
+                              <Input
+                                type="time"
+                                step="1"
+                                {...field}
+                                className="peer h-10 appearance-none bg-background pl-9 dark:bg-darkSecondaryBg dark:border-darkBorder [&::-webkit-calendar-picker-indicator]:hidden"
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="members"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel
+                          required
+                          className="flex items-center gap-1.5"
+                        >
+                          <UsersIcon className="h-3.5 w-3.5" /> Attendees
+                        </FormLabel>
+                        <FormControl>
+                          <MultiSelect
+                            values={field.value.map(String)}
+                            onValuesChange={(vals) => {
+                              const lastSelected = vals[vals.length - 1];
+                              const processed: (string | number)[] =
+                                lastSelected === "all"
+                                  ? ["all"]
+                                  : vals
+                                      .filter((v) => v !== "all")
+                                      .map((v) => Number(v));
+                              field.onChange(processed);
+                            }}
+                          >
+                            <MultiSelectTrigger className="w-full min-h-10 py-1.5 hover:bg-white dark:bg-darkSecondaryBg hover:dark:bg-darkSecondaryBg dark:border-darkBorder">
+                              <MultiSelectValue placeholder="Select attendees..." />
+                            </MultiSelectTrigger>
+                            <MultiSelectContent
+                              onWheel={(e) => e.stopPropagation()}
+                              className="dark:bg-darkSecondaryBg"
+                            >
+                              <MultiSelectGroup className="dark:bg-darkSecondaryBg">
+                                {members.map((member) => (
+                                  <MultiSelectItem
+                                    key={member.id}
+                                    value={String(member.id)}
+                                    className="px-0 cursor-pointer hover:dark:bg-darkPrimaryBg"
+                                  >
+                                    <Avatar className="h-6 w-6">
+                                      <AvatarImage src={member.image || ""} />
+                                      <AvatarFallback>
+                                        {member.name.charAt(0)}
+                                      </AvatarFallback>
+                                    </Avatar>
+                                    <p>{member.name}</p>
+                                  </MultiSelectItem>
+                                ))}
+                              </MultiSelectGroup>
+                            </MultiSelectContent>
+                          </MultiSelect>
+                        </FormControl>
+                        <p className="text-xs leading-5 text-subTextColor dark:text-darkTextSecondary">
+                          Choose specific people or use{" "}
+                          <span className="font-semibold text-headingTextColor dark:text-darkTextPrimary">
+                            All members
+                          </span>{" "}
+                          for company-wide sessions.
+                        </p>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="conference_provider"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-1.5">
+                          <Video className="h-3.5 w-3.5" />
+                          Conference provider
+                        </FormLabel>
+                        <div className="mt-2 grid grid-cols-3 gap-2">
+                          {[
+                            {
+                              v: "none",
+                              label: "None",
+                              icon: null,
+                            },
+                            {
+                              v: "google",
+                              label: "Google Meet",
+                              icon: <Image src={googleMeetIcon} width={50} height={50} className="w-5" alt="" />,
+                            },
+                            {
+                              v: "microsoft",
+                              label: "Teams",
+                              icon: <Image src={microsoftTeamsIcon} width={50} height={50} className="w-5" alt="" />,
+                            },
+                          ].map((opt) => {
+                            const active = field.value === opt.v;
+
+                            return (
+                              <button
+                                key={opt.v}
+                                type="button"
+                                onClick={() => field.onChange(opt.v)}
+                                className={cn(
+                                  "group flex h-11 items-center justify-center gap-2 rounded-lg border px-3 text-[13px] font-medium transition-all cursor-pointer",
+                                  active
+                                    ? "border-primary bg-primary/10 text-primary ring-1 ring-primary/25 shadow-sm"
+                                    : "border-white/10 bg-white/40 text-subTextColor hover:border-primary/35 hover:bg-white/55 dark:border-white/6 dark:bg-darkPrimaryBg/35 dark:text-darkTextSecondary dark:hover:bg-darkPrimaryBg/55",
+                                )}
+                              >
+                                {opt.icon ?? <Video className="h-4 w-4" />}
+                                <span className="leading-none">
+                                  {opt.label}
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg border border-dashed border-white/10 bg-white/30 px-3.5 py-2.5 backdrop-blur-sm dark:border-white/6 dark:bg-darkSecondaryBg/30">
+                    <span className="inline-flex items-center text-[11px] font-semibold uppercase leading-none tracking-[0.14em] text-subTextColor dark:text-darkTextSecondary">
+                      Summary
+                    </span>
+                    <span className="inline-flex items-center text-sm font-semibold leading-none text-headingTextColor dark:text-darkTextPrimary">
+                      {attendeePreview} • {formatDuration(startTime, endTime)} •{" "}
+                      {providerPreview}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex h-full min-h-0 flex-col space-y-3 rounded-lg border border-white/8 bg-white/60 p-5 shadow-[0_12px_32px_rgba(15,23,42,0.06)] backdrop-blur-md dark:border-white/6 dark:bg-darkPrimaryBg/40">
+                  <div>
+                    <p className="text-sm font-semibold text-headingTextColor dark:text-darkTextPrimary">
+                      Description
+                    </p>
+                    <p className="mt-1 text-xs leading-5 text-subTextColor dark:text-darkTextSecondary">
+                      Optional agenda or notes attendees will see.
+                    </p>
+                  </div>
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem className="!flex min-h-0 flex-1 flex-col">
+                        <FormLabel
+                          required
+                          className="flex items-center gap-1.5"
+                        >
+                          <FileText className="h-3.5 w-3.5" /> Description
+                        </FormLabel>
+                        <FormControl>
+                          <RichTextEditor
+                            value={field.value || ""}
+                            onChange={field.onChange}
+                            placeholder="Add an agenda, talking points, or context..."
+                            className="h-full"
+                            minHeightClass="min-h-[220px] modern-scrollbar"
+                            fillHeight
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+
+              {needsGoogleConnect && (
+                <div className="flex flex-col gap-3 rounded-lg border border-amber-200 bg-amber-50/80 p-4 dark:border-amber-500/30 dark:bg-amber-500/10 sm:flex-row sm:items-center">
+                  <div className="flex items-start gap-2 flex-1 min-w-0">
+                    <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold text-amber-800 dark:text-amber-200">
+                        Connect Google to host a Google Meet event
+                      </p>
+                      <p className="text-[11px] text-amber-700/80 dark:text-amber-300/80">
+                        Authorize StaffTime-Track to access your Google Calendar
+                        before scheduling.
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={startGoogleConnect}
+                    disabled={connectBusy}
+                    className="shrink-0 rounded-lg bg-amber-600 text-white hover:bg-amber-700"
+                  >
+                    {connectBusy ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Image src={googleMeetIcon} width={50} height={50} className="w-5" alt="" />
+                    )}
+                    Connect Google
+                  </Button>
+                </div>
+              )}
+
+              {needsMicrosoftConnect && (
+                <div className="flex flex-col gap-3 rounded-lg border border-amber-200 bg-amber-50/80 p-4 dark:border-amber-500/30 dark:bg-amber-500/10 sm:flex-row sm:items-center">
+                  <div className="flex items-start gap-2 flex-1 min-w-0">
+                    <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold text-amber-800 dark:text-amber-200">
+                        Connect Microsoft to host a Teams event
+                      </p>
+                      <p className="text-[11px] text-amber-700/80 dark:text-amber-300/80">
+                        Authorize StaffTime-Track to access your Teams/Outlook
+                        calendar before scheduling. Your Microsoft account can
+                        differ from your app email.
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={startMicrosoftConnect}
+                    disabled={microsoftConnectBusy}
+                    className="shrink-0 rounded-lg bg-amber-600 text-white hover:bg-amber-700"
+                  >
+                    {microsoftConnectBusy ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <Image src={microsoftTeamsIcon} width={50} height={50} className="w-5" alt="" />
+                    )}
+                    Connect Microsoft
+                  </Button>
+                </div>
+              )}
+
+              <div className="-mx-5 -mb-5 mt-1 flex flex-col-reverse gap-2 border-t border-borderColor bg-bgSecondary/40 px-5 py-3.5 dark:border-darkBorder dark:bg-darkPrimaryBg/30 sm:-mx-6 sm:flex-row sm:items-center sm:justify-end sm:px-6">
+                <Button
+                  type="button"
+                  variant="outline2"
+                  onClick={onClose}
+                  disabled={loading}
+                  className="h-10 rounded-lg px-5 text-headingTextColor dark:bg-darkSecondaryBg dark:text-darkTextPrimary"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={
+                    loading || needsGoogleConnect || needsMicrosoftConnect
+                  }
+                  className="h-10 min-w-36 rounded-lg"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" /> Creating
+                    </>
+                  ) : (
+                    "Create event"
+                  )}
+                </Button>
+              </div>
+            </div>
+          </form>
+        </Form>
+
+        {loading && visibleLoadingSteps.length > 0 && (
+          <div className="absolute inset-0 z-20 bg-slate-950/18 backdrop-blur-sm">
+            <div className="flex justify-center px-5 pt-5 sm:px-6 sm:pt-6">
+              <div className="w-full max-w-5xl rounded-2xl border border-primary/20 bg-linear-to-r from-primary/12 via-cyan-500/10 to-white/35 p-4 shadow-[0_18px_48px_rgba(15,23,42,0.18)] backdrop-blur-xl dark:border-primary/25 dark:from-primary/16 dark:via-cyan-500/12 dark:to-darkPrimaryBg/55 sm:p-5">
+                <div className="flex items-start gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
+                    <Sparkles className="h-4 w-4 animate-pulse" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="text-sm font-semibold text-headingTextColor dark:text-darkTextPrimary">
+                        Scheduling agent is working
+                      </p>
+                      <span className="inline-flex items-center rounded-full border border-primary/20 bg-white/70 px-2.5 py-0.5 text-[11px] font-medium text-primary dark:border-primary/30 dark:bg-darkPrimaryBg/60">
+                        Running background checks
+                      </span>
+                    </div>
+                    <p className="mt-1 text-xs leading-5 text-subTextColor dark:text-darkTextSecondary">
+                      We are checking attendee conflicts and connected calendar
+                      apps before confirming the event.
+                    </p>
+
+                    <div className="mt-4 space-y-2.5">
+                      {visibleLoadingSteps.map((step, index) => {
+                        const isActive =
+                          index === visibleLoadingSteps.length - 1;
+                        const isCompleted = !isActive;
+
+                        return (
+                          <div
+                            key={step.title}
+                            className={cn(
+                              "flex items-start gap-3 rounded-xl border px-3.5 py-3 backdrop-blur-sm transition-all",
+                              isActive
+                                ? "border-primary/25 bg-white/82 shadow-sm dark:border-primary/30 dark:bg-darkPrimaryBg/76"
+                                : "border-white/18 bg-white/55 dark:border-white/8 dark:bg-darkPrimaryBg/44",
+                            )}
+                          >
+                            <div
+                              className={cn(
+                                "mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border",
+                                isActive
+                                  ? "border-primary/20 bg-primary/10 text-primary"
+                                  : "border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-300",
+                              )}
+                            >
+                              {isCompleted ? (
+                                <CheckCircle2 className="h-3.5 w-3.5" />
+                              ) : (
+                                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                              )}
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium text-headingTextColor dark:text-darkTextPrimary">
+                                {step.title}
+                              </p>
+                              <p className="mt-1 text-xs leading-5 text-subTextColor dark:text-darkTextSecondary">
+                                {step.description}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </DialogContent>
   );
 };

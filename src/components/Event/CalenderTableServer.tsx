@@ -19,11 +19,7 @@ const CalenderTableServer = async ({ searchParams }: ISearchParamsProps) => {
     });
 
     return (
-        <div>
-
-            <CalenderTable startMonth={startMonth} endMonth={endMonth} eventData={result?.data}></CalenderTable>
-
-        </div>
+        <CalenderTable startMonth={startMonth} endMonth={endMonth} eventData={result?.data}></CalenderTable>
     );
 };
 
