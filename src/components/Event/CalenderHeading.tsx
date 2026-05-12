@@ -1,5 +1,5 @@
 "use client";
-import { Plus, Sparkles, Video } from "lucide-react";
+import { Plus, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import AddEventModal from "@/components/Event/AddEventModal";
@@ -8,6 +8,7 @@ import { useLogInUserStore } from "@/store/logInUserStore";
 import GoogleConnectButton from "./GoogleConnectButton";
 import TeamsConnectButton from "./TeamsConnectButton";
 import CalendarIcon from "../Icons/CalendarIcon";
+import VideoIcon from "../Icons/VideoIcon";
 
 const CalenderHeading = () => {
     const [open, setOpen] = useState(false);
@@ -25,8 +26,8 @@ const CalenderHeading = () => {
 
             <div className="relative flex flex-col gap-6 px-5 py-6 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
                 <div className="space-y-4">
-                    <span className="inline-flex w-fit items-center gap-2 rounded-full border border-primary/15 bg-primary/8 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-                        <Sparkles className="size-3.5" />
+                    <span className="inline-flex w-fit items-center gap-2 rounded-full border border-primary/15 bg-primary/8 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+                        <CalendarIcon size={16} />
                         Calendar workspace
                     </span>
 
@@ -46,7 +47,7 @@ const CalenderHeading = () => {
                             Monthly planning
                         </div>
                         <div className="inline-flex items-center gap-2 rounded-lg border border-borderColor bg-bgSecondary/60 px-3 py-2 text-xs font-medium text-headingTextColor  dark:border-darkBorder dark:bg-darkPrimaryBg dark:text-darkTextPrimary">
-                            <Video className="size-4 text-primary" />
+                            <VideoIcon size={14} className="text-primary"/>
                             Meeting link sync
                         </div>
                     </div>

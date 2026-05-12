@@ -25,7 +25,6 @@ import { refreshEvents } from "@/actions/calendarEvent/action";
 import {
     AlertCircle,
     ArrowLeft,
-    Calendar as CalendarIcon,
     CalendarClock,
     Check,
     CheckCircle2,
@@ -67,6 +66,8 @@ import MicrosoftSyncCard from "./EventDetailsModalComponent/MicrosoftSyncCard";
 import GoogleSyncCard from "./EventDetailsModalComponent/GoogleSyncCard";
 import SectionCard from "./EventDetailsModalComponent/SectionCard";
 import EventMetricCard from "./EventDetailsModalComponent/EventMetricCard";
+import CalendarIcon from "../Icons/CalendarIcon";
+import TeamsIcon from "../Icons/TeamsIcon";
 
 type Mode = "view" | "edit" | "add-members";
 
@@ -365,7 +366,7 @@ const EventDetailsModal = ({
 
             <div className="space-y-5 px-6 py-5">
                 <div className="relative overflow-hidden rounded-lg border border-borderColor bg-white p-5 dark:border-darkBorder dark:bg-darkPrimaryBg">
-                    <div className="absolute inset-x-0 top-0 h-24 bg-linear-to-r from-primary/12 via-cyan-500/8 to-transparent dark:from-primary/15 dark:via-cyan-500/10 dark:to-transparent" />
+                    <div className="absolute inset-x-0 top-0 h-28 bg-linear-to-r from-primary/12 via-cyan-500/8 to-transparent dark:from-primary/15 dark:via-cyan-500/10 dark:to-transparent" />
 
                     <div className="relative">
                         <div className="flex flex-wrap items-start justify-between gap-4">
@@ -390,7 +391,7 @@ const EventDetailsModal = ({
                                 <h2 className="mt-4 text-2xl font-semibold text-headingTextColor dark:text-darkTextPrimary">
                                     {event?.name}
                                 </h2>
-                                <p className="mt-2 max-w-2xl text-sm leading-6 text-subTextColor dark:text-darkTextSecondary">
+                                <p className="mt-8 max-w-2xl text-sm leading-6 text-subTextColor dark:text-darkTextSecondary">
                                     Scheduled for {formatTZFullDate(event?.start_time)} from{" "}
                                     {formatTZTime(event?.start_time)} to{" "}
                                     {formatTZTime(event?.end_time)}.
@@ -424,7 +425,7 @@ const EventDetailsModal = ({
                     <>
                         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                             <EventMetricCard
-                                icon={<CalendarIcon className="h-4 w-4" />}
+                                icon={<CalendarIcon size={16} />}
                                 label="Date"
                                 value={formatTZFullDate(event?.start_time)}
                             />
@@ -441,7 +442,7 @@ const EventDetailsModal = ({
                                 value={formatDuration(event?.start_time, event?.end_time)}
                             />
                             <EventMetricCard
-                                icon={<Users className="h-4 w-4" />}
+                                icon={<TeamsIcon size={16} />}
                                 label="Attendees"
                                 value={attendeeCount}
                                 helper={attendeeCount === 1 ? "1 invite" : "Total invites"}

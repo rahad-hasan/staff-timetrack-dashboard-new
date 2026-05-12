@@ -17,6 +17,10 @@ import { CalendarClock, CalendarRange, Users, Video } from "lucide-react";
 import googleMeetIcon from "../../assets/events/google_meet.svg"
 import microsoftTeamsIcon from "../../assets/events/microsoft-teams.svg"
 import Image from "next/image";
+import CalendarIcon from "../Icons/CalendarIcon";
+import TeamMemberIcon from "../Icons/TeamMemberIcon";
+import TeamsIcon from "../Icons/TeamsIcon";
+import VideoIcon from "../Icons/VideoIcon";
 
 const providerChip = (provider: string | null | undefined) => {
     if (provider === "google_meet") {
@@ -137,7 +141,7 @@ const CalenderTable = ({
                     <div className="rounded-lg border border-borderColor bg-white px-4 py-4 dark:border-darkBorder dark:bg-darkSecondaryBg">
                         <div className="flex items-center gap-3">
                             <div className="rounded-md bg-primary/10 p-2.5 text-primary">
-                                <CalendarRange className="size-4" />
+                                <CalendarIcon size={16} />
                             </div>
                             <div>
                                 <p className="text-xs uppercase tracking-[0.16em] text-subTextColor dark:text-darkTextSecondary">
@@ -153,7 +157,7 @@ const CalenderTable = ({
                     <div className="rounded-lg border border-borderColor bg-white px-4 py-4 dark:border-darkBorder dark:bg-darkSecondaryBg">
                         <div className="flex items-center gap-3">
                             <div className="rounded-md bg-primary/10 p-2.5 text-primary">
-                                <Video className="size-4" />
+                                <VideoIcon size={16}/>
                             </div>
                             <div>
                                 <p className="text-xs uppercase tracking-[0.16em] text-subTextColor dark:text-darkTextSecondary">
@@ -169,7 +173,7 @@ const CalenderTable = ({
                     <div className="rounded-lg border border-borderColor bg-white px-4 py-4 dark:border-darkBorder dark:bg-darkSecondaryBg">
                         <div className="flex items-center gap-3">
                             <div className="rounded-md bg-primary/10 p-2.5 text-primary">
-                                <Users className="size-4" />
+                                <TeamsIcon size={18} />
                             </div>
                             <div>
                                 <p className="text-xs uppercase tracking-[0.16em] text-subTextColor dark:text-darkTextSecondary">
