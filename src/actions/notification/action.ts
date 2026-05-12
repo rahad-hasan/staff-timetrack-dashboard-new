@@ -10,6 +10,7 @@ export const getNotifications = async (query = {}): Promise<IResponse<any>> => {
     return await baseApi(`/notifications${queryString ? `?${queryString}` : ""}`, {
         tag: "notifications",
         revalidate: 15,
+        cache: "no-cache",
     });
 };
 

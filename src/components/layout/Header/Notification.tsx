@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { INotificationItem } from "@/types/type";
 import { Check, FileText, Calendar, RefreshCcw, ChevronRight, AlertTriangle } from "lucide-react";
 import BellIcon from "@/components/Icons/BellIcon";
+import { getPlainText } from "@/utils/getPlainText";
 
 const CATEGORY_MAP: Record<string, string> = {
     leave: "LEAVE REQUEST",
@@ -85,13 +86,13 @@ const Notification = ({ unreadCount, notificationsList }: any) => {
                 </div>
             </PopoverTrigger>
 
-            
+
             <PopoverContent side={'bottom'} align={'center'} className="w-80 sm:w-[400px] p-0 mt-2 dark:border-darkBorder overflow-hidden">
                 {/* Header Styling aligned with Image */}
                 <div className="p-4 flex justify-between items-center bg-white dark:bg-darkSecondaryBg border-b dark:border-darkBorder">
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-gray-50 dark:bg-darkPrimaryBg rounded-lg">
-                            <BellIcon size={20}/>
+                            <BellIcon size={20} />
                         </div>
                         <div>
                             <h2 className="text-base font-bold text-slate-800 dark:text-darkTextPrimary">Notifications</h2>
@@ -101,7 +102,7 @@ const Notification = ({ unreadCount, notificationsList }: any) => {
                             </p>
                         </div>
                     </div>
-                    <button 
+                    <button
                         onClick={onSubmit}
                         className="text-gray-500 dark:text-darkTextSecondary dark:hover:text-darkTextPrimary/80 hover:text-headingTextColor/70 text-xs font-semibold cursor-pointer flex items-center gap-1 transition-colors"
                     >
@@ -139,9 +140,9 @@ const Notification = ({ unreadCount, notificationsList }: any) => {
                                                 {formatDistanceToNow(parseISO(notification?.created_at), { addSuffix: true })}
                                             </span>
                                         </div>
-                                        
+
                                         <div className="flex items-center gap-2">
-                                             {/* Conditional Static Warning Icon like in Image */}
+                                            {/* Conditional Static Warning Icon like in Image */}
                                             {notification.reason === 'work_report' && <AlertTriangle className="w-4 h-4 text-yellow-500" />}
                                             <h3 className="text-sm font-bold text-slate-700 dark:text-darkTextPrimary leading-tight">
                                                 {notification?.message}
@@ -150,7 +151,7 @@ const Notification = ({ unreadCount, notificationsList }: any) => {
 
                                         <p className="text-xs text-slate-500 dark:text-darkTextSecondary line-clamp-2">
                                             {/* Logic for content snippet from 'data' object */}
-                                            {notification.data?.note ? `Note: ${notification.data.note}` : `ID: ${notification.data.id} for ${notification.data.name}`}
+                                            {notification.data?.note ? `Note: ${getPlainText(notification.data.note)}` : `ID: ${notification.data.id} for ${notification.data.name}`}
                                         </p>
                                     </div>
 

@@ -7,21 +7,9 @@ import { Check, Bell, Calendar, Clock, AlertTriangle, LucideIcon, Briefcase, Che
 import { useState } from "react";
 import { toast } from "sonner";
 import BellIcon from "../Icons/BellIcon";
-
-const TABS = [
-    { label: "All", key: "all", count: 45 },
-    { label: "Unread", key: "unread", count: 30 },
-    { label: "Read", key: "read", count: 15 },
-];
-
-const SUBJECT_FILTERS = [
-    { label: "All Types", count: 45 },
-    { label: "Task Assignment", count: 3 },
-    { label: "Change Logs", count: 3 },
-    { label: "Task Overdue", count: 1 },
-    { label: "Meetings", count: 17 },
-    { label: "Work Reports", count: 21 },
-];
+import NotificationTabs from "./NotificationTabs";
+import NotificationSubjectSelection from "./NotificationSubjectSelection";
+import { getPlainText } from "@/utils/getPlainText";
 
 const REASON_CONFIG: Record<string, { label: string, icon: LucideIcon, colorClass: string }> = {
     event: {
@@ -104,7 +92,7 @@ const NotificationItem = ({ notification }: { notification: INotificationItem })
                 </div>
 
                 <p className="text-sm text-subTextColor dark:text-darkTextSecondary mb-2 line-clamp-2">
-                    {notification?.data?.note || "Click to view details about this notification."}
+                    {getPlainText(notification?.data?.note) || "Click to view details about this notification."}
                 </p>
 
                 <div className="flex items-center gap-2 text-subTextColor dark:text-darkTextSecondary opacity-70">
@@ -129,10 +117,10 @@ const NotificationItem = ({ notification }: { notification: INotificationItem })
     );
 };
 
-const AllNotification = ({ data }: { data: any }) => {
+const AllNotification = ({ data, canSeeUnusualActivity }: { data: any, canSeeUnusualActivity:boolean }) => {
+    console.log(canSeeUnusualActivity)
     const notifications = data?.data || [];
     console.log(notifications)
-    const [activeTab, setActiveTab] = useState("all");
 
     return (
         <div className="w-full mx-auto min-h-screen">
@@ -152,48 +140,13 @@ const AllNotification = ({ data }: { data: any }) => {
                 </button>
             </div>
 
-            <div className="flex items-center gap-8 border-b dark:border-darkBorder mb-6">
-                {TABS.map((tab) => (
-                    <button
-                        key={tab.key}
-                        onClick={() => setActiveTab(tab.key)}
-                        className={`pb-3 text-sm font-bold transition-all relative whitespace-nowrap cursor-pointer ${activeTab === tab.key ? "text-primary" : "text-subTextColor dark:text-darkTextSecondary"
-                            }`}
-                    >
-                        <div className=" flex items-center gap-2">
-                            {tab.label}
-                            <span className={` px-2 py-0.5 rounded-md text-[10px] ${activeTab === tab.key ? 'bg-primary/10 text-primary' : 'bg-gray-100 dark:bg-darkBorder'}`}>
-                                {tab.count}
-                            </span>
-                        </div>
-                        {activeTab === tab.key && (
-                            <div className="absolute bottom-0 left-0 w-full h-[3px] bg-primary rounded-t-full" />
-                        )}
-                    </button>
-                ))}
-            </div>
+            <NotificationTabs></NotificationTabs>
 
-            <div className="flex items-center gap-3 mb-6 py-2">
+            <div className="flex items-center gap-3 mb-6">
                 <span className="text-xs font-bold text-subTextColor dark:text-darkTextSecondary uppercase tracking-widest mr-2 whitespace-nowrap">
                     Subject:
                 </span>
-                {SUBJECT_FILTERS.map((filter) => (
-                    <button
-                        key={filter.label}
-                        className={`flex items-center justify-center gap-2 px-4 py-1.5 rounded-3xl cursor-pointer border text-[11px] font-bold transition-all whitespace-nowrap leading-none ${filter.label === "All Types"
-                            ? "bg-primary text-white border-transparent shadow-md shadow-primary/10"
-                            : "bg-white dark:bg-[#2D333F] text-subTextColor dark:text-[#A0AEC0] border-gray-100 dark:border-[#3E4757] hover:border-primary/40"
-                            }`}
-                    >
-                        <span className="flex items-center justify-center">{filter.label}</span>
-                        <span className={`flex items-center justify-center px-2 py-[5px] rounded-full text-[10px] min-w-[20px] ${filter.label === "All Types"
-                            ? "bg-white/20"
-                            : "bg-bgSecondary/20 dark:bg-[#3E4757] text-[#718096] dark:text-gray-400"
-                            }`}>
-                            {filter.count}
-                        </span>
-                    </button>
-                ))}
+                <NotificationSubjectSelection canSeeUnusualActivity={canSeeUnusualActivity}></NotificationSubjectSelection>
             </div>
 
             {notifications.length > 0 ? (

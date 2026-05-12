@@ -1,7 +1,6 @@
 "use client";
 
 import {
-    ReactNode,
     useEffect,
     useMemo,
     useState,
@@ -26,7 +25,6 @@ import { refreshEvents } from "@/actions/calendarEvent/action";
 import {
     AlertCircle,
     ArrowLeft,
-    ArrowRight,
     Calendar as CalendarIcon,
     CalendarClock,
     Check,
@@ -49,22 +47,13 @@ import { toast } from "sonner";
 import { formatTZFullDate, formatTZTime } from "@/utils";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import {
-    EventGoogleSyncOverview,
     EventMemberSyncOverview,
-    EventMicrosoftSyncOverview,
     EventSyncStatus,
     IEvent,
 } from "@/types/type";
 import {
     ProviderBadge,
-    SyncStatusPill,
 } from "./eventHelpers";
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from "../ui/tooltip";
 import { RichTextViewer } from "@/components/Common/RichTextEditor";
 import { cn } from "@/lib/utils";
 import AddMembersModal from "./AddMembersModal";
@@ -72,6 +61,12 @@ import CancelEventDialog from "./CancelEventDialog";
 import googleMeetIcon from "../../assets/events/google_meet.svg";
 import microsoftTeamsIcon from "../../assets/events/microsoft-teams.svg";
 import Image from "next/image";
+import AttendeeRow from "./EventDetailsModalComponent/AttendeeRow";
+import AttendeeStatBlock from "./EventDetailsModalComponent/AttendeeStatBlock";
+import MicrosoftSyncCard from "./EventDetailsModalComponent/MicrosoftSyncCard";
+import GoogleSyncCard from "./EventDetailsModalComponent/GoogleSyncCard";
+import SectionCard from "./EventDetailsModalComponent/SectionCard";
+import EventMetricCard from "./EventDetailsModalComponent/EventMetricCard";
 
 type Mode = "view" | "edit" | "add-members";
 
@@ -126,296 +121,6 @@ const getEventTimingMeta = (event: IEvent | null | undefined) => {
     };
 };
 
-const GoogleSyncMemberRow = ({
-    member,
-}: {
-    member: EventGoogleSyncOverview["members"][number];
-}) => (
-    <div className="flex items-center justify-between gap-3 px-4 py-3 transition-colors hover:bg-bgSecondary/35 dark:hover:bg-darkSecondaryBg/40">
-        <div className="flex min-w-0 items-center gap-2.5">
-            <Avatar className="h-8 w-8 shrink-0">
-                <AvatarImage src={member.image || ""} />
-                <AvatarFallback className="text-[10px]">
-                    {member.name?.charAt(0)}
-                </AvatarFallback>
-            </Avatar>
-            <div className="min-w-0">
-                <div className="flex items-center gap-1.5">
-                    <p className="truncate text-xs font-medium text-headingTextColor dark:text-darkTextPrimary">
-                        {member.name}
-                    </p>
-                    {member.is_organizer && (
-                        <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.12em] text-primary">
-                            Organizer
-                        </span>
-                    )}
-                </div>
-                <p className="truncate text-[11px] text-subTextColor dark:text-darkTextSecondary">
-                    {member.email}
-                </p>
-            </div>
-        </div>
-
-        <div className="flex shrink-0 items-center gap-2">
-            {member.last_error ? (
-                <TooltipProvider>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <span>
-                                <SyncStatusPill status={member.status} />
-                            </span>
-                        </TooltipTrigger>
-                        <TooltipContent className="max-w-xs dark:border-darkBorder dark:bg-darkPrimaryBg">
-                            <p className="text-xs">{member.last_error}</p>
-                        </TooltipContent>
-                    </Tooltip>
-                </TooltipProvider>
-            ) : (
-                <SyncStatusPill status={member.status} />
-            )}
-
-            {member.calendar_link && (
-                <a
-                    href={member.calendar_link}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-borderColor text-primary transition hover:bg-primary/5 dark:border-darkBorder"
-                >
-                    <ExternalLink className="h-3.5 w-3.5" />
-                </a>
-            )}
-        </div>
-    </div>
-);
-
-const GoogleSyncCard = ({
-    overview,
-    limit,
-    onViewAll,
-}: {
-    overview: EventGoogleSyncOverview;
-    limit?: number;
-    onViewAll?: () => void;
-}) => {
-    if (!overview?.enabled) return null;
-
-    const { counts } = overview;
-    const total = counts?.total_assigned ?? 0;
-    const synced = counts?.synced ?? 0;
-    const members = overview.members ?? [];
-    const visibleMembers =
-        typeof limit === "number" ? members.slice(0, limit) : members;
-    const hiddenCount = members.length - visibleMembers.length;
-
-    const progress = total > 0 ? Math.min(100, Math.round((synced / total) * 100)) : 0;
-
-    return (
-        <div className="overflow-hidden rounded-lg border border-borderColor bg-white dark:border-darkBorder dark:bg-darkPrimaryBg">
-            <div className="border-b border-borderColor bg-bgSecondary/45 px-4 py-3 dark:border-darkBorder dark:bg-darkSecondaryBg/60">
-                <div className="flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-2">
-                        <span className="flex h-9 w-9 items-center justify-center rounded-md bg-white shadow-sm dark:bg-darkPrimaryBg">
-                            <Image src={googleMeetIcon} width={50} height={50} className="w-5" alt="" />
-                        </span>
-                        <div>
-                            <p className="text-sm font-semibold text-headingTextColor dark:text-darkTextPrimary">
-                                Synced via Google Calendar
-                            </p>
-                            <p className="text-[11px] text-subTextColor dark:text-darkTextSecondary">
-                                <span className="font-semibold text-emerald-600 dark:text-emerald-400">
-                                    {synced}
-                                </span>{" "}
-                                of {total} invite{total === 1 ? "" : "s"} delivered
-                            </p>
-                        </div>
-                    </div>
-                    {overview.organizer && (
-                        <SyncStatusPill status={overview.organizer.status} />
-                    )}
-                </div>
-                {total > 0 && (
-                    <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-borderColor/60 dark:bg-darkBorder/60">
-                        <div
-                            className="h-full rounded-full bg-emerald-500 transition-all duration-500"
-                            style={{ width: `${progress}%` }}
-                        />
-                    </div>
-                )}
-            </div>
-
-            {visibleMembers.length > 0 && (
-                <div className="divide-y divide-borderColor dark:divide-darkBorder">
-                    {visibleMembers.map((member) => (
-                        <GoogleSyncMemberRow key={member.user_id} member={member} />
-                    ))}
-                </div>
-            )}
-
-            {hiddenCount > 0 && onViewAll && (
-                <button
-                    type="button"
-                    onClick={onViewAll}
-                    className="group flex w-full items-center justify-between gap-3 border-t border-borderColor bg-bgSecondary/30 px-4 py-3 text-xs font-semibold text-primary transition hover:bg-primary/5 dark:border-darkBorder dark:bg-darkSecondaryBg/40"
-                >
-                    <span className="inline-flex items-center gap-2">
-                        <Users className="h-3.5 w-3.5" />
-                        View all {members.length} attendees
-                    </span>
-                    <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-                </button>
-            )}
-        </div>
-    );
-};
-
-const MicrosoftSyncMemberRow = ({
-    member,
-}: {
-    member: EventMemberSyncOverview;
-}) => (
-    <div className="flex items-center justify-between gap-3 px-4 py-3 transition-colors hover:bg-bgSecondary/35 dark:hover:bg-darkSecondaryBg/40">
-        <div className="flex min-w-0 items-center gap-2.5">
-            <Avatar className="h-8 w-8 shrink-0">
-                <AvatarImage src={member.image || ""} />
-                <AvatarFallback className="text-[10px]">
-                    {member.name?.charAt(0)}
-                </AvatarFallback>
-            </Avatar>
-            <div className="min-w-0">
-                <div className="flex items-center gap-1.5">
-                    <p className="truncate text-xs font-medium text-headingTextColor dark:text-darkTextPrimary">
-                        {member.name}
-                    </p>
-                    {member.is_organizer && (
-                        <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.12em] text-primary">
-                            Organizer
-                        </span>
-                    )}
-                </div>
-                <p className="truncate text-[11px] text-subTextColor dark:text-darkTextSecondary">
-                    {member.email}
-                </p>
-            </div>
-        </div>
-
-        <div className="flex shrink-0 items-center gap-2">
-            {member.last_error ? (
-                <TooltipProvider>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <span>
-                                <SyncStatusPill status={member.status} />
-                            </span>
-                        </TooltipTrigger>
-                        <TooltipContent className="max-w-xs dark:border-darkBorder dark:bg-darkPrimaryBg">
-                            <p className="text-xs">{member.last_error}</p>
-                        </TooltipContent>
-                    </Tooltip>
-                </TooltipProvider>
-            ) : (
-                <SyncStatusPill status={member.status} />
-            )}
-
-            {member.calendar_link && (
-                <a
-                    href={member.calendar_link}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-borderColor text-primary transition hover:bg-primary/5 dark:border-darkBorder"
-                    title="Open in Outlook"
-                >
-                    <ExternalLink className="h-3.5 w-3.5" />
-                </a>
-            )}
-        </div>
-    </div>
-);
-
-const MicrosoftSyncCard = ({
-    overview,
-}: {
-    overview: EventMicrosoftSyncOverview;
-}) => {
-    if (!overview?.enabled) return null;
-
-    const counts = overview.counts;
-    const total = counts?.total_assigned ?? overview.members?.length ?? 0;
-    const synced = counts?.synced ?? 0;
-    const members = overview.members ?? [];
-    const progress =
-        total > 0 ? Math.min(100, Math.round((synced / total) * 100)) : 0;
-
-    return (
-        <div className="overflow-hidden rounded-lg border border-borderColor bg-white dark:border-darkBorder dark:bg-darkPrimaryBg">
-            <div className="border-b border-borderColor bg-bgSecondary/45 px-4 py-3 dark:border-darkBorder dark:bg-darkSecondaryBg/60">
-                <div className="flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-2">
-                        <span className="flex h-9 w-9 items-center justify-center rounded-md bg-white shadow-sm dark:bg-darkPrimaryBg">
-                            <Image src={microsoftTeamsIcon} width={50} height={50} className="w-5" alt="" />
-                        </span>
-                        <div>
-                            <p className="text-sm font-semibold text-headingTextColor dark:text-darkTextPrimary">
-                                Synced via Microsoft Teams
-                            </p>
-                            {total > 0 ? (
-                                <p className="text-[11px] text-subTextColor dark:text-darkTextSecondary">
-                                    <span className="font-semibold text-emerald-600 dark:text-emerald-400">
-                                        {synced}
-                                    </span>{" "}
-                                    of {total} invite{total === 1 ? "" : "s"} delivered
-                                </p>
-                            ) : (
-                                <p className="text-[11px] text-subTextColor dark:text-darkTextSecondary">
-                                    Per-user Teams calendar sync
-                                </p>
-                            )}
-                        </div>
-                    </div>
-                    <SyncStatusPill status={overview.status} />
-                </div>
-
-                {total > 0 && (
-                    <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-borderColor/60 dark:bg-darkBorder/60">
-                        <div
-                            className="h-full rounded-full bg-emerald-500 transition-all duration-500"
-                            style={{ width: `${progress}%` }}
-                        />
-                    </div>
-                )}
-            </div>
-
-            {members.length > 0 && (
-                <div className="divide-y divide-borderColor dark:divide-darkBorder">
-                    {members.map((member) => (
-                        <MicrosoftSyncMemberRow
-                            key={`ms-${member.user_id}`}
-                            member={member}
-                        />
-                    ))}
-                </div>
-            )}
-
-            {overview.last_error && (
-                <p className="border-t border-borderColor px-4 py-3 text-[11px] text-red-600 dark:border-darkBorder dark:text-red-400">
-                    {overview.last_error}
-                </p>
-            )}
-
-            {overview.calendar_link && members.length === 0 && (
-                <div className="border-t border-borderColor px-4 py-3 dark:border-darkBorder">
-                    <a
-                        href={overview.calendar_link}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
-                    >
-                        Open in Outlook <ExternalLink className="h-3 w-3" />
-                    </a>
-                </div>
-            )}
-        </div>
-    );
-};
 
 const isEventLive = (event: IEvent | null | undefined): boolean => {
     if (!event) return false;
@@ -438,76 +143,6 @@ const isEventLive = (event: IEvent | null | undefined): boolean => {
     return false;
 };
 
-const SectionCard = ({
-    title,
-    description,
-    action,
-    children,
-    className,
-}: {
-    title?: string;
-    description?: string;
-    action?: ReactNode;
-    children: ReactNode;
-    className?: string;
-}) => (
-    <div
-        className={cn(
-            "rounded-lg border border-borderColor bg-white p-5 shadow-sm dark:border-darkBorder dark:bg-darkPrimaryBg",
-            className,
-        )}
-    >
-        {(title || description || action) && (
-            <div className="mb-4 flex items-start justify-between gap-3">
-                <div>
-                    {title && (
-                        <p className="text-sm font-semibold text-headingTextColor dark:text-darkTextPrimary">
-                            {title}
-                        </p>
-                    )}
-                    {description && (
-                        <p className="mt-1 text-xs leading-5 text-subTextColor dark:text-darkTextSecondary">
-                            {description}
-                        </p>
-                    )}
-                </div>
-                {action}
-            </div>
-        )}
-        {children}
-    </div>
-);
-
-const EventMetricCard = ({
-    icon,
-    label,
-    value,
-    helper,
-}: {
-    icon: ReactNode;
-    label: string;
-    value: string | number;
-    helper?: string;
-}) => (
-    <div className="rounded-lg border border-borderColor bg-white px-4 py-3.5 shadow-sm dark:border-darkBorder dark:bg-darkPrimaryBg">
-        <div className="flex items-center gap-2">
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
-                {icon}
-            </span>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-subTextColor dark:text-darkTextSecondary">
-                {label}
-            </p>
-        </div>
-        <p className="mt-2.5 text-sm font-semibold leading-snug text-headingTextColor dark:text-darkTextPrimary">
-            {value}
-        </p>
-        {helper && (
-            <p className="mt-1 text-[11px] text-subTextColor dark:text-darkTextSecondary">
-                {helper}
-            </p>
-        )}
-    </div>
-);
 
 type AttendeeFilter = "all" | "synced" | "pending" | "pending_connection" | "failed";
 
@@ -539,105 +174,6 @@ const ATTENDEE_FILTERS: {
     },
 ];
 
-const AttendeeStatBlock = ({
-    icon,
-    label,
-    value,
-    tone,
-}: {
-    icon: ReactNode;
-    label: string;
-    value: number;
-    tone: "emerald" | "blue" | "amber" | "red" | "slate";
-}) => {
-    const tones: Record<typeof tone, string> = {
-        emerald:
-            "border-emerald-200 bg-emerald-50/70 text-emerald-700 dark:border-emerald-500/25 dark:bg-emerald-500/8 dark:text-emerald-300",
-        blue: "border-blue-200 bg-blue-50/70 text-blue-700 dark:border-blue-500/25 dark:bg-blue-500/8 dark:text-blue-300",
-        amber: "border-amber-200 bg-amber-50/70 text-amber-700 dark:border-amber-500/25 dark:bg-amber-500/8 dark:text-amber-300",
-        red: "border-red-200 bg-red-50/70 text-red-700 dark:border-red-500/25 dark:bg-red-500/8 dark:text-red-300",
-        slate: "border-slate-200 bg-slate-50 text-slate-700 dark:border-slate-500/25 dark:bg-slate-500/8 dark:text-slate-300",
-    };
-
-    return (
-        <div className={cn("rounded-lg border px-3 py-2.5", tones[tone])}>
-            <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] opacity-90">
-                {icon}
-                {label}
-            </div>
-            <p className="mt-1.5 text-lg font-semibold leading-none">{value}</p>
-        </div>
-    );
-};
-
-const AttendeeRow = ({
-    member,
-    organizerId,
-}: {
-    member: EventMemberSyncOverview;
-    organizerId?: number | null;
-}) => {
-    const isOrganizer = member.is_organizer || member.user_id === organizerId;
-
-    return (
-        <div className="group flex items-center justify-between gap-3 px-4 py-3 transition-colors hover:bg-bgSecondary/40 dark:hover:bg-darkSecondaryBg/50">
-            <div className="flex min-w-0 items-center gap-3">
-                <Avatar className="h-9 w-9 shrink-0 ring-1 ring-borderColor/70 dark:ring-darkBorder">
-                    <AvatarImage src={member.image || ""} />
-                    <AvatarFallback className="bg-primary/10 text-[11px] font-semibold text-primary">
-                        {member.name?.charAt(0)?.toUpperCase()}
-                    </AvatarFallback>
-                </Avatar>
-                <div className="min-w-0">
-                    <div className="flex items-center gap-1.5">
-                        <p className="truncate text-sm font-medium text-headingTextColor dark:text-darkTextPrimary">
-                            {member.name}
-                        </p>
-                        {isOrganizer && (
-                            <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.12em] text-primary">
-                                Organizer
-                            </span>
-                        )}
-                    </div>
-                    <p className="truncate text-xs text-subTextColor dark:text-darkTextSecondary">
-                        {member.email}
-                    </p>
-                </div>
-            </div>
-
-            <div className="flex shrink-0 items-center gap-2">
-                {member.last_error ? (
-                    <TooltipProvider>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <span>
-                                    <SyncStatusPill status={member.status} />
-                                </span>
-                            </TooltipTrigger>
-                            <TooltipContent className="max-w-xs dark:border-darkBorder dark:bg-darkPrimaryBg">
-                                <p className="text-xs">{member.last_error}</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
-                ) : (
-                    <SyncStatusPill status={member.status} />
-                )}
-
-                {member.calendar_link && (
-                    <a
-                        href={member.calendar_link}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-borderColor text-subTextColor opacity-0 transition hover:border-primary/40 hover:bg-primary/5 hover:text-primary group-hover:opacity-100 dark:border-darkBorder dark:text-darkTextSecondary"
-                        title="Open in Google Calendar"
-                    >
-                        <ExternalLink className="h-3.5 w-3.5" />
-                    </a>
-                )}
-            </div>
-        </div>
-    );
-};
 
 const EventDetailsModal = ({
     handleCloseDialog,
@@ -828,7 +364,7 @@ const EventDetailsModal = ({
             </SheetHeader>
 
             <div className="space-y-5 px-6 py-5">
-                <div className="relative overflow-hidden rounded-lg border border-borderColor bg-white p-5 shadow-sm dark:border-darkBorder dark:bg-darkPrimaryBg">
+                <div className="relative overflow-hidden rounded-lg border border-borderColor bg-white p-5 dark:border-darkBorder dark:bg-darkPrimaryBg">
                     <div className="absolute inset-x-0 top-0 h-24 bg-linear-to-r from-primary/12 via-cyan-500/8 to-transparent dark:from-primary/15 dark:via-cyan-500/10 dark:to-transparent" />
 
                     <div className="relative">
@@ -861,7 +397,7 @@ const EventDetailsModal = ({
                                 </p>
                             </div>
 
-                            <div className="flex items-center gap-3 rounded-md border border-borderColor bg-white/85 px-3 py-2 shadow-sm dark:border-darkBorder dark:bg-darkSecondaryBg/80">
+                            <div className="flex items-center gap-3 rounded-md border border-borderColor bg-white/85 px-3 py-2 dark:border-darkBorder dark:bg-darkSecondaryBg/80">
                                 <Avatar className="h-10 w-10">
                                     <AvatarImage src={event?.createdBy?.image || ""} />
                                     <AvatarFallback className="bg-primary text-white">
@@ -963,7 +499,7 @@ const EventDetailsModal = ({
                                 <div className="rounded-lg border border-borderColor bg-bgSecondary/55 p-3 dark:border-darkBorder dark:bg-darkSecondaryBg">
                                     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                                         <div className="flex min-w-0 items-center gap-3">
-                                            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-white shadow-sm dark:bg-darkPrimaryBg">
+                                            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-white dark:bg-darkPrimaryBg">
                                                 {event.meeting_provider === "google_meet" ? (
                                                     <Image src={googleMeetIcon} width={50} height={50} className="w-5" alt="" />
                                                 ) : event.meeting_provider ===
@@ -1237,7 +773,7 @@ const EventDetailsModal = ({
 
                     <div className="flex-1 overflow-y-auto bg-bgSecondary/30 px-6 py-5 dark:bg-darkSecondaryBg/30">
                         {googleSync?.enabled && filteredMembers.length > 0 ? (
-                            <div className="overflow-hidden rounded-lg border border-borderColor bg-white shadow-sm dark:border-darkBorder dark:bg-darkPrimaryBg">
+                            <div className="overflow-hidden rounded-lg border border-borderColor bg-white dark:border-darkBorder dark:bg-darkPrimaryBg">
                                 <div className="flex items-center justify-between border-b border-borderColor bg-bgSecondary/40 px-4 py-2 dark:border-darkBorder dark:bg-darkSecondaryBg/50">
                                     <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-subTextColor dark:text-darkTextSecondary">
                                         Showing {filteredMembers.length} of{" "}
