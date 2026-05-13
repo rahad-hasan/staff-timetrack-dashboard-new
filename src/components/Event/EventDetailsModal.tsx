@@ -34,7 +34,6 @@ import {
     Link2,
     Link2Off,
     Loader2,
-    Pencil,
     Search,
     Trash2,
     UserPlus,
@@ -68,6 +67,8 @@ import SectionCard from "./EventDetailsModalComponent/SectionCard";
 import EventMetricCard from "./EventDetailsModalComponent/EventMetricCard";
 import CalendarIcon from "../Icons/CalendarIcon";
 import TeamsIcon from "../Icons/TeamsIcon";
+import EditIcon from "../Icons/FilterOptionIcon/EditIcon";
+import DeleteIcon from "../Icons/DeleteIcon";
 
 type Mode = "view" | "edit" | "add-members";
 
@@ -463,7 +464,7 @@ const EventDetailsModal = ({
                                                 onClick={() => setMode("edit")}
                                                 className="dark:bg-darkSecondaryBg dark:text-darkTextPrimary"
                                             >
-                                                <Pencil className="h-3.5 w-3.5" />
+                                                <EditIcon size={16} />
                                                 Reschedule
                                             </Button>
                                             <Button
@@ -472,7 +473,7 @@ const EventDetailsModal = ({
                                                 onClick={() => setMode("add-members")}
                                                 className="dark:bg-darkSecondaryBg dark:text-darkTextPrimary"
                                             >
-                                                <UserPlus className="h-3.5 w-3.5" />
+                                                <UserPlus className="h-4 w-4" />
                                                 Add members
                                             </Button>
                                         </>
@@ -484,7 +485,7 @@ const EventDetailsModal = ({
                                             className="sm:ml-auto"
                                             onClick={() => setConfirmCancel(true)}
                                         >
-                                            <Trash2 className="h-3.5 w-3.5" />
+                                            <DeleteIcon size={20}/>
                                             Cancel event
                                         </Button>
                                     )}

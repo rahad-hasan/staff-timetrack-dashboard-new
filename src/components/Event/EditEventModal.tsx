@@ -28,6 +28,7 @@ import { useLogInUserStore } from "@/store/logInUserStore";
 import ClockIcon from "../Icons/ClockIcon";
 import { Input } from "../ui/input";
 import { isConflictResponse, parseConflictMessage } from "./eventHelpers";
+import CalendarIcon from "../Icons/CalendarIcon";
 
 const formatToTimeString = (date: Date) => {
     const hours = String(date.getHours()).padStart(2, "0");
@@ -183,7 +184,7 @@ const EditEventModal = ({ handleCloseDialog, event }: any) => {
                                             className="w-full py-1.5 justify-between font-normal dark:text-darkTextSecondary dark:bg-darkPrimaryBg dark:border-darkBorder"
                                         >
                                             <div className="flex items-center gap-2">
-                                                <CalendarDays className="h-4 w-4" />
+                                                <CalendarIcon size={16}/>
                                                 {field.value ? field.value.toLocaleDateString() : "Set a date"}
                                             </div>
                                             <ChevronDownIcon className="h-4 w-4" />

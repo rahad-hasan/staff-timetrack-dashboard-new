@@ -133,7 +133,7 @@ const CalenderTable = ({
     const handleCloseDialog = () => {
         setOpen(false);
     };
-
+    console.log('weeks,', weeks)
     return (
         <TooltipProvider>
             <div className="mt-5 space-y-4">
@@ -157,7 +157,7 @@ const CalenderTable = ({
                     <div className="rounded-lg border border-borderColor bg-white px-4 py-4 dark:border-darkBorder dark:bg-darkSecondaryBg">
                         <div className="flex items-center gap-3">
                             <div className="rounded-md bg-primary/10 p-2.5 text-primary">
-                                <VideoIcon size={16}/>
+                                <VideoIcon size={16} />
                             </div>
                             <div>
                                 <p className="text-xs uppercase tracking-[0.16em] text-subTextColor dark:text-darkTextSecondary">
@@ -263,7 +263,7 @@ const CalenderTable = ({
                                             className={cn(
                                                 "px-3 py-3 text-left text-[11px] font-semibold tracking-[0.18em] uppercase text-subTextColor dark:text-darkTextSecondary border-b border-borderColor/80 dark:border-darkBorder",
                                                 index < days.length - 1 &&
-                                                    "border-r border-borderColor/80 dark:border-darkBorder",
+                                                "border-r border-borderColor/80 dark:border-darkBorder",
                                             )}
                                         >
                                             {day}
@@ -282,15 +282,15 @@ const CalenderTable = ({
                                                     className={cn(
                                                         "w-[14.285%] p-2 align-top transition-colors",
                                                         weekIndex < weeks.length - 1 &&
-                                                            "border-b border-borderColor/80 dark:border-darkBorder",
+                                                        "border-b border-borderColor/80 dark:border-darkBorder",
                                                         cellIndex < week.length - 1 &&
-                                                            "border-r border-borderColor/80 dark:border-darkBorder",
+                                                        "border-r border-borderColor/80 dark:border-darkBorder",
                                                         !cell.isCurrentMonth &&
-                                                            "bg-bgSecondary/20 dark:bg-darkPrimaryBg/25",
+                                                        "bg-bgSecondary/20 dark:bg-darkPrimaryBg/25",
                                                         cell.isCurrentMonth &&
-                                                            "hover:bg-bgSecondary/35 dark:hover:bg-darkPrimaryBg/35",
+                                                        "hover:bg-bgSecondary/35 dark:hover:bg-darkPrimaryBg/35",
                                                         isToday &&
-                                                            "bg-primary/5 dark:bg-primary/8",
+                                                        "bg-primary/5 dark:bg-primary/8",
                                                     )}
                                                 >
                                                     <div className="flex min-h-[168px] flex-col gap-2 rounded-lg p-1.5">
@@ -301,8 +301,8 @@ const CalenderTable = ({
                                                                     isToday
                                                                         ? "bg-primary text-white "
                                                                         : cell.isCurrentMonth
-                                                                          ? "text-headingTextColor dark:text-darkTextPrimary"
-                                                                          : "text-subTextColor/45 dark:text-darkTextSecondary/45",
+                                                                            ? "text-headingTextColor dark:text-darkTextPrimary"
+                                                                            : "text-subTextColor/45 dark:text-darkTextSecondary/45",
                                                                 )}
                                                             >
                                                                 {cell.date}
@@ -340,10 +340,10 @@ const CalenderTable = ({
                                                                                 <div className="flex items-start gap-2">
                                                                                     <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-white/70 dark:bg-white/10">
                                                                                         {event.meeting_provider ===
-                                                                                        "google_meet" ? (
+                                                                                            "google_meet" ? (
                                                                                             <Image src={googleMeetIcon} alt="" />
                                                                                         ) : event.meeting_provider ===
-                                                                                          "microsoft_teams" ? (
+                                                                                            "microsoft_teams" ? (
                                                                                             <Image src={microsoftTeamsIcon} alt="" />
                                                                                         ) : (
                                                                                             <span className="size-2 rounded-full bg-current/60" />
@@ -401,41 +401,64 @@ const CalenderTable = ({
                                                                                 )}
                                                                             </p>
 
-                                                                            <div className="mt-3 flex items-center">
-                                                                                {event.eventAssigns
-                                                                                    ?.slice(0, 4)
-                                                                                    .map(
-                                                                                        (
-                                                                                            assign,
-                                                                                            idx,
-                                                                                        ) => (
-                                                                                            <Avatar
-                                                                                                key={`${event.id}-${assign.user?.id}-${idx}`}
-                                                                                                className="first:ml-0 -ml-2 h-6 w-6 border-2 border-white dark:border-darkPrimaryBg"
-                                                                                            >
-                                                                                                <AvatarImage
-                                                                                                    src={
-                                                                                                        assign
-                                                                                                            ?.user
-                                                                                                            ?.image ||
-                                                                                                        ""
-                                                                                                    }
-                                                                                                />
-                                                                                                <AvatarFallback className="text-[9px]">
-                                                                                                    {assign?.user?.name?.charAt(
-                                                                                                        0,
-                                                                                                    )}
-                                                                                                </AvatarFallback>
-                                                                                            </Avatar>
-                                                                                        ),
+                                                                            <div className=" mt-3 flex items-center gap-2">
+                                                                                <div className="flex items-center">
+                                                                                    {event.createdBy &&
+                                                                                        <Avatar
+                                                                                            key={`${event.createdBy.id}`}
+                                                                                            className="first:ml-0 -ml-2 h-6 w-6 border-2 border-white dark:border-darkPrimaryBg"
+                                                                                        >
+                                                                                            <AvatarImage
+                                                                                                src={
+                                                                                                    event.createdBy.image ||
+                                                                                                    ""
+                                                                                                }
+                                                                                            />
+                                                                                            <AvatarFallback className="text-[9px] text-headingTextColor dark:text-darkTextPrimary">
+                                                                                                {event.createdBy.name?.charAt(
+                                                                                                    0,
+                                                                                                )}
+                                                                                            </AvatarFallback>
+                                                                                        </Avatar>
+                                                                                    }
+                                                                                </div>
+
+                                                                                <div className="flex items-center">
+                                                                                    {event.eventAssigns
+                                                                                        ?.slice(0, 4)
+                                                                                        .map(
+                                                                                            (
+                                                                                                assign,
+                                                                                                idx,
+                                                                                            ) => (
+                                                                                                <Avatar
+                                                                                                    key={`${event.id}-${assign.user?.id}-${idx}`}
+                                                                                                    className="first:ml-0 -ml-2 h-6 w-6 border-2 border-white dark:border-darkPrimaryBg"
+                                                                                                >
+                                                                                                    <AvatarImage
+                                                                                                        src={
+                                                                                                            assign
+                                                                                                                ?.user
+                                                                                                                ?.image ||
+                                                                                                            ""
+                                                                                                        }
+                                                                                                    />
+                                                                                                    <AvatarFallback className="text-[9px] text-headingTextColor dark:text-darkTextPrimary">
+                                                                                                        {assign?.user?.name?.charAt(
+                                                                                                            0,
+                                                                                                        )}
+                                                                                                    </AvatarFallback>
+                                                                                                </Avatar>
+                                                                                            ),
+                                                                                        )}
+                                                                                    {attendeeCount > 4 && (
+                                                                                        <span className="-ml-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-bgSecondary text-[10px] font-semibold text-headingTextColor border-2 border-white dark:border-darkPrimaryBg dark:bg-darkSecondaryBg dark:text-darkTextPrimary">
+                                                                                            +
+                                                                                            {attendeeCount -
+                                                                                                4}
+                                                                                        </span>
                                                                                     )}
-                                                                                {attendeeCount > 4 && (
-                                                                                    <span className="-ml-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-bgSecondary text-[10px] font-semibold text-headingTextColor border-2 border-white dark:border-darkPrimaryBg dark:bg-darkSecondaryBg dark:text-darkTextPrimary">
-                                                                                        +
-                                                                                        {attendeeCount -
-                                                                                            4}
-                                                                                    </span>
-                                                                                )}
+                                                                                </div>
                                                                             </div>
                                                                         </TooltipContent>
                                                                     </Tooltip>
