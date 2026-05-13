@@ -4,20 +4,14 @@ import Link from "next/link";
 import { useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTopLoader } from "nextjs-toploader";
-import {
-  ArrowLeft,
-  Plus,
-} from "lucide-react";
+import { ArrowLeft, Plus } from "lucide-react";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import { YearPicker } from "@/components/Common/YearPicker";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { useLogInUserStore } from "@/store/logInUserStore";
-import {
-  LeaveRequestTypeDropdownRecord,
-  UserLeaveSummary,
-} from "@/types/type";
+import { LeaveRequestTypeDropdownRecord, UserLeaveSummary } from "@/types/type";
 import LeaveRequestModal from "./LeaveRequestModal";
 import LeaveHistoryTable from "./LeaveHistoryTable";
 import LeaveBalances from "./LeaveBalances";
@@ -154,18 +148,16 @@ const MyLeavesDashboard = ({
       ></LeaveOverview>
 
       <LeaveBalances
-        leaveTypes={leaveTypes}
+        leaveTypes={data.summary.leave_types}
         handleOpenRequest={handleOpenRequest}
         canRequestLeave={canRequestLeave}
-      >
-      </LeaveBalances>
+      ></LeaveBalances>
 
       <LeaveHistoryTable
         data={data}
         currentUserId={currentUserId}
         allowRequestLeave={allowRequestLeave}
       ></LeaveHistoryTable>
-
     </div>
   );
 };
