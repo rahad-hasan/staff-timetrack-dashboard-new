@@ -5,6 +5,11 @@ const nextConfig: NextConfig = {
   // compiler: {
   //   removeConsole: { exclude: ["error"] },
   // },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "2mb",
+    },
+  },
   images: {
     domains: [
       "staff-time-tracker-screenshot.lon1.digitaloceanspaces.com",

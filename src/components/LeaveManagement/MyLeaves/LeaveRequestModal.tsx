@@ -121,13 +121,23 @@ const LeaveRequestModal = ({
   async function onSubmit(values: LeaveRequestFormValues) {
     setLoading(true);
 
-    const response = await addLeave({
-      leave_type_id: Number(values.leaveTypeId),
-      start_date: format(new Date(values.startDate!), "yyyy-MM-dd"),
-      end_date: format(new Date(values.endDate!), "yyyy-MM-dd"),
-      reason: values.reason,
-      document: values.supportingDocument,
-    });
+    const formData = new FormData();
+    formData.append("leave_type_id", String(Number(values.leaveTypeId)));
+    formData.append(
+      "start_date",
+      format(new Date(values.startDate!), "yyyy-MM-dd"),
+    );
+    formData.append(
+      "end_date",
+      format(new Date(values.endDate!), "yyyy-MM-dd"),
+    );
+    formData.append("reason", values.reason);
+
+    if (values.supportingDocument) {
+      formData.append("document", values.supportingDocument as File);
+    }
+
+    const response = await addLeave(formData);
 
     if (response?.success) {
       toast.success(response.message || "Leave request submitted");

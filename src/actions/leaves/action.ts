@@ -344,24 +344,9 @@ export const deleteLeave = async (id: number): Promise<IResponse<null>> => {
   return response;
 };
 
-export const addLeave = async (data: {
-  leave_type_id: number;
-  start_date: string;
-  end_date: string;
-  reason: string;
-  document: File | null | undefined;
-}): Promise<IResponse<LeaveRecord>> => {
-  const formData = new FormData();
-  formData.append("leave_type_id", data.leave_type_id.toString());
-  formData.append("start_date", data.start_date);
-  formData.append("end_date", data.end_date);
-  formData.append("reason", data.reason);
-
-  // Append the document file if it's provided
-  if (data.document) {
-    formData.append("document", data.document);
-  }
-
+export const addLeave = async (
+  formData: FormData,
+): Promise<IResponse<LeaveRecord>> => {
   const response = await baseApi(`/leaves`, {
     method: "POST",
     body: formData,
