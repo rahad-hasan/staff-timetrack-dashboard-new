@@ -23,7 +23,6 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { GoogleConnectedResponse } from "@/types/type";
 import { useGoogleConnectFlow } from "../Integrations/useGoogleConnectFlow";
-import googleMeetIcon from "../../assets/events/google_meet.svg";
 import googleIcon from "../../assets/events/google_logo.svg";
 import { disconnectGoogle, getGoogleConnected } from "@/actions/integrations/action";
 import Image from "next/image";
@@ -148,10 +147,10 @@ const GoogleConnectButton = () => {
                 <Button
                     variant="outline2"
                     size="sm"
-                    className="h-11 gap-3 rounded-lg border border-emerald-200 bg-white px-3 text-headingTextColor shadow-sm hover:bg-emerald-50 dark:border-emerald-500/25 dark:bg-darkPrimaryBg dark:text-darkTextPrimary dark:hover:bg-darkPrimaryBg"
+                    className="h-[45px] gap-3 rounded-lg border border-emerald-200 bg-white px-3 text-headingTextColor hover:bg-emerald-50 dark:border-emerald-500/25 dark:bg-darkPrimaryBg dark:text-darkTextPrimary dark:hover:bg-darkPrimaryBg"
                 >
                     <span className="flex h-8 w-8 items-center justify-center rounded-md bg-emerald-500/10">
-                        <Image src={googleMeetIcon} alt="" />
+                        <Image src={googleIcon} alt="" className="w-5" />
                     </span>
                     <span className="hidden min-w-0 flex-col items-start text-left md:flex">
                         <span className="max-w-[180px] truncate text-sm font-medium leading-none text-headingTextColor dark:text-darkTextPrimary">
@@ -174,7 +173,7 @@ const GoogleConnectButton = () => {
                 className="w-64 dark:bg-darkSecondaryBg dark:border-darkBorder"
             >
                 <DropdownMenuLabel className="flex items-center gap-2 py-3">
-                    <Image src={googleMeetIcon} alt="" />
+                    <Image src={googleIcon} alt="" className="w-5" />
                     <div className="min-w-0">
                         <p className="text-xs font-semibold text-headingTextColor dark:text-darkTextPrimary truncate">
                             {status.provider_email || "Google account"}

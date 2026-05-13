@@ -35,7 +35,6 @@ import {
     Link2Off,
     Loader2,
     Search,
-    Trash2,
     UserPlus,
     Users,
     X,

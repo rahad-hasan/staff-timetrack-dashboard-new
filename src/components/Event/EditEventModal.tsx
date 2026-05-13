@@ -19,7 +19,7 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover";
 import { useState } from "react";
-import { AlertTriangle, CalendarDays, ChevronDownIcon } from "lucide-react";
+import { AlertTriangle, ChevronDownIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { rescheduleEvent } from "@/actions/calendarEvent/action";
 import { toast } from "sonner";

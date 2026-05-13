@@ -13,12 +13,11 @@ import { formatTZDate, formatTZFullDate, formatTZTime } from "@/utils";
 import EventDetailsModal from "./EventDetailsModal";
 import { cn } from "@/lib/utils";
 import { IEvent } from "@/types/type";
-import { CalendarClock, CalendarRange, Users, Video } from "lucide-react";
+import { CalendarClock, } from "lucide-react";
 import googleMeetIcon from "../../assets/events/google_meet.svg"
 import microsoftTeamsIcon from "../../assets/events/microsoft-teams.svg"
 import Image from "next/image";
 import CalendarIcon from "../Icons/CalendarIcon";
-import TeamMemberIcon from "../Icons/TeamMemberIcon";
 import TeamsIcon from "../Icons/TeamsIcon";
 import VideoIcon from "../Icons/VideoIcon";
 
@@ -331,7 +330,7 @@ const CalenderTable = ({
                                                                                     handleEventClick(event)
                                                                                 }
                                                                                 className={cn(
-                                                                                    "w-full rounded-md border px-2.5 py-2 text-left  transition hover:-translate-y-0.5 hover:shadow-md",
+                                                                                    "w-full rounded-md border px-2.5 py-2 cursor-pointer text-left  transition hover:-translate-y-0.5 hover:shadow-md",
                                                                                     providerChip(
                                                                                         event.meeting_provider,
                                                                                     ),

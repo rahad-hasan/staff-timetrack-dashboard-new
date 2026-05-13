@@ -1,5 +1,5 @@
 "use client";
-import { Plus, Video } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import AddEventModal from "@/components/Event/AddEventModal";
