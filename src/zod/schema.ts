@@ -501,6 +501,9 @@ const leaveRequestBaseSchema = z
       .optional()
       .refine((file) => !file || file instanceof File, {
         message: "Document must be a valid file",
+      })
+      .refine((file) => !file || file.size <= 2 * 1024 * 1024, {
+        message: "Supporting document must be 2MB or smaller",
       }),
     startDate: z
       .date()
