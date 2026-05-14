@@ -533,8 +533,14 @@ const leaveRequestBaseSchema = z
     }
 });
 
+export type LeaveRequestRuleEntry = {
+  minNoticeDays?: number | null;
+  allowPastDates?: boolean;
+};
+
 export const createLeaveRequestSchema = (
   requiredDocumentLeaveTypeIds: Iterable<string | number> = [],
+  leaveTypeRules: Map<string, LeaveRequestRuleEntry> = new Map(),
 ) => {
   const requiredIds = new Set(
     Array.from(requiredDocumentLeaveTypeIds, (id) => String(id)),
@@ -546,6 +552,45 @@ export const createLeaveRequestSchema = (
         code: z.ZodIssueCode.custom,
         path: ["supportingDocument"],
         message: "Supporting document is required for this leave type",
+      });
+    }
+
+    const rule = leaveTypeRules.get(String(values.leaveTypeId));
+    if (!rule || !values.startDate) return;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const noticeDays = rule.minNoticeDays ?? 0;
+    let earliest: Date | null = null;
+    if (noticeDays > 0) {
+      earliest = new Date(today);
+      earliest.setDate(earliest.getDate() + noticeDays);
+    } else if (!rule.allowPastDates) {
+      earliest = today;
+    }
+
+    if (!earliest) return;
+
+    if (values.startDate < earliest) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["startDate"],
+        message:
+          noticeDays > 0
+            ? `Start date must be at least ${noticeDays} day(s) from today`
+            : "Back-dated requests are not allowed for this leave type",
+      });
+    }
+
+    if (values.endDate && values.endDate < earliest) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["endDate"],
+        message:
+          noticeDays > 0
+            ? `End date must be at least ${noticeDays} day(s) from today`
+            : "Back-dated requests are not allowed for this leave type",
       });
     }
   });

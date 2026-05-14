@@ -9,7 +9,11 @@ import { ChevronDownIcon, FileText, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { addLeave } from "@/actions/leaves/action";
 import { LeaveRequestTypeDropdownRecord } from "@/types/type";
-import { createLeaveRequestSchema, leaveRequestSchema } from "@/zod/schema";
+import {
+  createLeaveRequestSchema,
+  leaveRequestSchema,
+  type LeaveRequestRuleEntry,
+} from "@/zod/schema";
 import {
   getLeaveTypeTheme,
   formatApplicableGender,
@@ -74,6 +78,20 @@ const LeaveRequestModal = ({
     [leaveTypes],
   );
 
+  const leaveTypeRuleMap = useMemo(
+    () =>
+      new Map<string, LeaveRequestRuleEntry>(
+        leaveTypes.map((leaveType) => [
+          String(leaveType.id),
+          {
+            minNoticeDays: leaveType.min_notice_days,
+            allowPastDates: leaveType.allow_past_dates,
+          },
+        ]),
+      ),
+    [leaveTypes],
+  );
+
   const defaultFormValues = useMemo<LeaveRequestFormValues>(
     () => ({
       leaveTypeId: defaultLeaveTypeId ? String(defaultLeaveTypeId) : "",
@@ -87,7 +105,7 @@ const LeaveRequestModal = ({
 
   const form = useForm<LeaveRequestFormValues>({
     resolver: zodResolver(
-      createLeaveRequestSchema(requiredDocumentLeaveTypeIds),
+      createLeaveRequestSchema(requiredDocumentLeaveTypeIds, leaveTypeRuleMap),
     ),
     defaultValues: defaultFormValues,
   });
@@ -112,11 +130,55 @@ const LeaveRequestModal = ({
   const isFormSubmitted = form.formState.isSubmitted;
   const hasDocumentError = Boolean(form.formState.errors.supportingDocument);
 
+  const minSelectableDate = useMemo(() => {
+    if (!selectedLeaveType) return null;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const noticeDays = selectedLeaveType.min_notice_days ?? 0;
+    if (noticeDays > 0) {
+      const earliest = new Date(today);
+      earliest.setDate(earliest.getDate() + noticeDays);
+      return earliest;
+    }
+
+    if (!selectedLeaveType.allow_past_dates) {
+      return today;
+    }
+
+    return null;
+  }, [selectedLeaveType]);
+
+  const isStartDateDisabled = useMemo(() => {
+    if (!minSelectableDate) return undefined;
+    return (date: Date) => date < minSelectableDate;
+  }, [minSelectableDate]);
+
+  const isEndDateDisabled = useMemo(() => {
+    const lowerBound = startDate ?? minSelectableDate;
+    if (!lowerBound) return undefined;
+    const bound = new Date(lowerBound);
+    bound.setHours(0, 0, 0, 0);
+    return (date: Date) => date < bound;
+  }, [startDate, minSelectableDate]);
+
   useEffect(() => {
     if (isFormSubmitted || hasDocumentError) {
       void form.trigger("supportingDocument");
     }
   }, [selectedLeaveTypeId, hasDocumentError, isFormSubmitted, form]);
+
+  useEffect(() => {
+    if (!minSelectableDate) return;
+
+    if (startDate && startDate < minSelectableDate) {
+      form.setValue("startDate", null, { shouldValidate: isFormSubmitted });
+    }
+    if (endDate && endDate < minSelectableDate) {
+      form.setValue("endDate", null, { shouldValidate: isFormSubmitted });
+    }
+  }, [minSelectableDate, startDate, endDate, form, isFormSubmitted]);
 
   async function onSubmit(values: LeaveRequestFormValues) {
     setLoading(true);
@@ -328,6 +390,7 @@ const LeaveRequestModal = ({
                           mode="single"
                           selected={startDate ?? undefined}
                           captionLayout="dropdown"
+                          disabled={isStartDateDisabled}
                           onSelect={(date) => {
                             field.onChange(date);
                             setOpenStartDate(false);
@@ -368,6 +431,7 @@ const LeaveRequestModal = ({
                           mode="single"
                           selected={endDate ?? undefined}
                           captionLayout="dropdown"
+                          disabled={isEndDateDisabled}
                           onSelect={(date) => {
                             field.onChange(date);
                             setOpenEndDate(false);
