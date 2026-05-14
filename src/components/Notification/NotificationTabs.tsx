@@ -4,25 +4,30 @@ import { cn } from "@/lib/utils";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTopLoader } from "nextjs-toploader";
 
-const TABS = [
-  { label: "All", key: "all" },
-  { label: "Unread", key: "unread" },
-  { label: "Read", key: "read" },
-] as const;
+interface ISummary {
+  all: number;
+  read: number;
+  unread: number;
+}
 
-type TabKey = (typeof TABS)[number]["key"];
-
-const NotificationTabs = () => {
+const NotificationTabs = ({ summary }: { summary: ISummary }) => {
   const loader = useTopLoader();
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const activeTab = (searchParams.get("read") as TabKey) ?? "all";
+  const TABS = [
+    { label: "All", key: "all", count: summary.all },
+    { label: "Unread", key: "unread", count: summary.unread },
+    { label: "Read", key: "read", count: summary.read },
+  ] as const;
+  type TabKey = (typeof TABS)[number]["key"];
 
-  const setTab = (read: TabKey) => {
+  const activeTab = (searchParams.get("summary") as TabKey) ?? "all";
+
+  const setTab = (tab: TabKey) => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set("read", read);
-    
+    params.set("summary", tab);
+
     loader.start();
     router.push(`?${params.toString()}`);
   };
@@ -38,8 +43,8 @@ const NotificationTabs = () => {
             onClick={() => setTab(read.key)}
             className={cn(
               "pb-3 text-sm font-bold transition-all relative whitespace-nowrap cursor-pointer",
-              isActive 
-                ? "text-primary" 
+              isActive
+                ? "text-primary"
                 : "text-subTextColor dark:text-darkTextSecondary"
             )}
           >
@@ -53,10 +58,10 @@ const NotificationTabs = () => {
                     : "bg-gray-100 dark:bg-darkBorder"
                 )}
               >
-                0
+                {read.count}
               </span>
             </div>
-            
+
             {isActive && (
               <div className="absolute bottom-0 left-0 w-full h-[3px] bg-primary rounded-t-full" />
             )}

@@ -49,8 +49,7 @@ import {
 } from "@/components/ui/multi-select";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { getMembersDashboard } from "@/actions/members/action";
-import { addEvent } from "@/actions/calendarEvent/action";
+import { addEvent, getMembersEventDropdown } from "@/actions/calendarEvent/action";
 import {
   getGoogleConnected,
   getMicrosoftConnected,
@@ -120,7 +119,7 @@ const EVENT_CREATE_LOADING_STEPS = [
 
 const AddEventModal = ({ onClose }: { onClose: () => void }) => {
   const [members, setMembers] = useState<
-    { id: number | string; name: string; image?: string }[]
+    { id: number | string; name: string; email: string; image?: string }[]
   >([]);
   const [loading, setLoading] = useState(false);
   const [openStartDate, setOpenStartDate] = useState(false);
@@ -181,11 +180,12 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
   useEffect(() => {
     const loadMembers = async () => {
       try {
-        const res = await getMembersDashboard();
+        const res = await getMembersEventDropdown();
+        console.log("getMembersEventDropdown",res)
         if (res?.success) {
           const apiMembers = res.data;
           setMembers([
-            { id: "all", name: "All members", image: "" },
+            { id: "all", name: "All members", email: "", image: "" },
             ...apiMembers,
           ]);
         }

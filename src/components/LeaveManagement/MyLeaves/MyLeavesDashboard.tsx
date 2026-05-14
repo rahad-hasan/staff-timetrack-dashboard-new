@@ -171,7 +171,7 @@ const MyLeavesDashboard = ({
       ></LeaveOverview>
 
       <LeaveBalances
-        leaveTypes={leaveTypes}
+        leaveTypes={data?.summary?.leave_types}
         handleOpenRequest={handleOpenRequest}
         canRequestLeave={canRequestLeave}
       >

@@ -1270,3 +1270,18 @@ export interface IEvent {
   eventUserIntegrationSyncs?: any[];
   sync_overview: EventSyncOverview;
 }
+
+export interface INotificationCount {
+  by_reason: {
+    event: number;
+    leave: number;
+    project: number;
+    task: number;
+    unusual_activity: number;
+  };
+  summary: {
+    all: number;
+    read: number;
+    unread: number;
+  };
+};

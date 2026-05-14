@@ -14,6 +14,15 @@ export const getNotifications = async (query = {}): Promise<IResponse<any>> => {
     });
 };
 
+export const getNotificationsCount = async (query = {}): Promise<IResponse<any>> => {
+    const queryString = buildQuery(query);
+    return await baseApi(`/notifications/counts${queryString ? `?${queryString}` : ""}`, {
+        tag: "notifications",
+        revalidate: 15,
+        cache: "no-cache",
+    });
+};
+
 export const readNotifications = async ({ data }: any) => {
     return await baseApi(`/notifications/update-read-status`, {
         method: "PATCH",
@@ -22,4 +31,3 @@ export const readNotifications = async ({ data }: any) => {
         cache: "no-cache",
     });
 };
-

@@ -109,9 +109,9 @@ const LeaveTypeFormDialog = ({
     if (response?.success) {
       toast.success(
         response.message ||
-          (mode === "create"
-            ? "Leave type created successfully"
-            : "Leave type updated successfully"),
+        (mode === "create"
+          ? "Leave type created successfully"
+          : "Leave type updated successfully"),
       );
       onSuccess();
       onClose();
@@ -306,19 +306,29 @@ const LeaveTypeFormDialog = ({
                 <FormField
                   control={form.control}
                   name="allow_past_dates"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col gap-4 rounded-2xl border border-borderColor bg-bgSecondary/60 px-4 py-4 dark:border-darkBorder dark:bg-darkPrimaryBg sm:flex-row sm:items-center sm:justify-between">
-                      <div>
-                        <FormLabel>Allow back-dated requests</FormLabel>
-                        <p className="mt-1 text-sm text-subTextColor dark:text-darkTextSecondary">
-                          Toggle whether users can request leave for past dates.
-                        </p>
-                      </div>
-                      <FormControl>
-                        <Switch checked={field.value} onCheckedChange={field.onChange} />
-                      </FormControl>
-                    </FormItem>
-                  )}
+                  render={({ field }) => {
+                    const noticeBlocksPastDates =
+                      (values.min_notice_days ?? 0) > 0;
+                    return (
+                      <FormItem className="flex flex-col gap-4 rounded-2xl border border-borderColor bg-bgSecondary/60 px-4 py-4 dark:border-darkBorder dark:bg-darkPrimaryBg sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                          <FormLabel>Allow back-dated requests</FormLabel>
+                          <p className="mt-1 text-sm text-subTextColor dark:text-darkTextSecondary">
+                            {noticeBlocksPastDates
+                              ? "Disabled because a minimum notice period is required."
+                              : "Toggle whether users can request leave for past dates."}
+                          </p>
+                        </div>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            disabled={noticeBlocksPastDates}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    );
+                  }}
                 />
 
                 <FormField

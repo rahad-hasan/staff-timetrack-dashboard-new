@@ -5,6 +5,11 @@ const nextConfig: NextConfig = {
   // compiler: {
   //   removeConsole: { exclude: ["error"] },
   // },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "2mb",
+    },
+  },
   images: {
     domains: [
       "staff-time-tracker-screenshot.lon1.digitaloceanspaces.com",
@@ -12,6 +17,7 @@ const nextConfig: NextConfig = {
       "https://picsum.photos",
       "picsum.photos",
       "https://staff-time-tracker-screenshot.lon1.digitaloceanspaces.com",
+      "lh3.googleusercontent.com",
     ],
   },
   async redirects() {

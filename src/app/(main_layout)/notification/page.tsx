@@ -1,4 +1,4 @@
-import { getNotifications } from "@/actions/notification/action";
+import { getNotifications, getNotificationsCount } from "@/actions/notification/action";
 import AppPagination from "@/components/Common/AppPagination";
 import AllNotification from "@/components/Notification/AllNotification";
 import { ISearchParamsProps } from "@/types/type";
@@ -11,15 +11,14 @@ const NotificationPage = async ({ searchParams }: ISearchParamsProps) => {
     const result = await getNotifications({
         page: params.page,
         limit: 10,
-        read: params.read ?? undefined,
-        reason: params.reasonType ?? undefined,
+        read: params.summary ?? null,
+        by_reason: params.reasonType ?? null,
     });
-
-    console.log("result page.....",result)
+    const notificationCount = await getNotificationsCount();
 
     return (
         <div>
-            <AllNotification data={result?.data} canSeeUnusualActivity={canSeeUnusualActivity}></AllNotification>
+            <AllNotification data={result?.data} canSeeUnusualActivity={canSeeUnusualActivity} notificationCount={notificationCount?.data}></AllNotification>
             <AppPagination
                 total={result?.data?.meta?.total ?? 1}
                 currentPage={params.page as number}

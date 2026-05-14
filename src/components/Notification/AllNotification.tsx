@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import { readNotifications } from "@/actions/notification/action";
-import { INotificationItem } from "@/types/type";
+import { INotificationCount, INotificationItem } from "@/types/type";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { Check, Bell, Calendar, Clock, AlertTriangle, LucideIcon, Briefcase, CheckSquare } from "lucide-react";
 import { useState } from "react";
@@ -117,10 +117,8 @@ const NotificationItem = ({ notification }: { notification: INotificationItem })
     );
 };
 
-const AllNotification = ({ data, canSeeUnusualActivity }: { data: any, canSeeUnusualActivity:boolean }) => {
-    console.log(canSeeUnusualActivity)
+const AllNotification = ({ data, canSeeUnusualActivity, notificationCount }: { data: any, canSeeUnusualActivity:boolean; notificationCount: INotificationCount }) => {
     const notifications = data?.data || [];
-    console.log(notifications)
 
     return (
         <div className="w-full mx-auto min-h-screen">
@@ -140,13 +138,13 @@ const AllNotification = ({ data, canSeeUnusualActivity }: { data: any, canSeeUnu
                 </button>
             </div>
 
-            <NotificationTabs></NotificationTabs>
+            <NotificationTabs summary={notificationCount?.summary}></NotificationTabs>
 
             <div className="flex items-center gap-3 mb-6">
                 <span className="text-xs font-bold text-subTextColor dark:text-darkTextSecondary uppercase tracking-widest mr-2 whitespace-nowrap">
                     Subject:
                 </span>
-                <NotificationSubjectSelection canSeeUnusualActivity={canSeeUnusualActivity}></NotificationSubjectSelection>
+                <NotificationSubjectSelection canSeeUnusualActivity={canSeeUnusualActivity} by_reason={notificationCount?.by_reason} total={notificationCount.summary.all}></NotificationSubjectSelection>
             </div>
 
             {notifications.length > 0 ? (

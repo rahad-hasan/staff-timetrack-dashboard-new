@@ -1,10 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { formatApplicableGender, formatNoticeDays, getLeaveTypeTheme } from "@/lib/leave";
-import { LeaveRequestTypeDropdownRecord } from "@/types/type";
+import { LeaveTypeSummary } from "@/types/type";
 import { FileWarning, ShieldCheck } from "lucide-react";
 
 type LeaveBalancesProps = {
-  leaveTypes: LeaveRequestTypeDropdownRecord[];
+  leaveTypes: LeaveTypeSummary[];
   handleOpenRequest: (leaveTypeId?: number) => void;
   canRequestLeave: boolean;
 };
@@ -25,9 +25,9 @@ const LeaveBalances = ({ leaveTypes, handleOpenRequest, canRequestLeave }: Leave
                 {leaveTypes.length ? (
                     leaveTypes.map((leaveType) => {
                         const theme = getLeaveTypeTheme(leaveType.color_code);
-                        const usedPercentage = leaveType.days_allowed
+                        const usedPercentage = leaveType.allowed
                             ? Math.min(
-                                (leaveType.taken / leaveType.days_allowed) * 100,
+                                (leaveType.taken / leaveType.allowed) * 100,
                                 100,
                             )
                             : 0;
@@ -59,7 +59,7 @@ const LeaveBalances = ({ leaveTypes, handleOpenRequest, canRequestLeave }: Leave
                                                     color: theme.textColor,
                                                 }}
                                             >
-                                                {leaveType.days_allowed} days / year
+                                                {leaveType.allowed} days / year
                                             </span>
                                         </div>
                                     </div>
@@ -69,7 +69,7 @@ const LeaveBalances = ({ leaveTypes, handleOpenRequest, canRequestLeave }: Leave
                                             Left
                                         </p>
                                         <p className="mt-1 text-2xl font-semibold text-headingTextColor dark:text-darkTextPrimary">
-                                            {leaveType.left}
+                                            {leaveType.remaining}
                                         </p>
                                     </div>
                                 </div>
@@ -106,7 +106,7 @@ const LeaveBalances = ({ leaveTypes, handleOpenRequest, canRequestLeave }: Leave
                                                 Used
                                             </p>
                                             <p className="mt-1 font-medium text-headingTextColor dark:text-darkTextPrimary">
-                                                {leaveType.taken} of {leaveType.days_allowed}
+                                                {leaveType.taken} of {leaveType.allowed}
                                             </p>
                                         </div>
                                     </div>
@@ -132,8 +132,8 @@ const LeaveBalances = ({ leaveTypes, handleOpenRequest, canRequestLeave }: Leave
                                         />
                                     </div>
                                     <div className="mt-2 flex items-center justify-between text-sm text-subTextColor dark:text-darkTextSecondary">
-                                        <span>{leaveType.left} left</span>
-                                        <span>{leaveType.days_allowed} total</span>
+                                        <span>{leaveType.remaining} left</span>
+                                        <span>{leaveType.allowed} total</span>
                                     </div>
                                 </div>
 

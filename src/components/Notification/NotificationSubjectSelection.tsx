@@ -4,23 +4,30 @@ import { cn } from "@/lib/utils";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTopLoader } from "nextjs-toploader";
 
+interface IBy_reason {
+    event: number;
+    leave: number;
+    project: number;
+    task: number;
+    unusual_activity: number;
+  }
 
-const NotificationSubjectSelection = ({ canSeeUnusualActivity }: { canSeeUnusualActivity: boolean }) => {
+const NotificationSubjectSelection = ({ canSeeUnusualActivity, by_reason, total }: { canSeeUnusualActivity: boolean, by_reason: IBy_reason, total: number }) => {
   const loader = useTopLoader();
   const searchParams = useSearchParams();
   const router = useRouter();
 
   const SUBJECT_FILTERS = [
-    { label: "All", key: "all" },
-    { label: "Event", key: "event" },
-    { label: "Leave", key: "leave" },
+    { label: "All", key: "all", count: total },
+    { label: "Event", key: "event", count: by_reason.event },
+    { label: "Leave", key: "leave", count: by_reason.leave },
 
     ...(canSeeUnusualActivity
-    ? [{ label: "Unusual", key: "unusual_activity" }]
+    ? [{ label: "Unusual", key: "unusual_activity", count: by_reason.unusual_activity }]
     : []),
 
-    { label: "Project", key: "project" },
-    { label: "Task", key: "task" },
+    { label: "Project", key: "project", count: by_reason.project },
+    { label: "Task", key: "task", count: by_reason.task },
   ] as const;
 
   type FilterKey = (typeof SUBJECT_FILTERS)[number]["key"];
@@ -64,7 +71,7 @@ const NotificationSubjectSelection = ({ canSeeUnusualActivity }: { canSeeUnusual
                   : "bg-bgSecondary/20 dark:bg-[#3E4757] text-[#718096] dark:text-gray-400"
               )}
             >
-              0
+              {reasonType.count}
             </span>
           </button>
         );

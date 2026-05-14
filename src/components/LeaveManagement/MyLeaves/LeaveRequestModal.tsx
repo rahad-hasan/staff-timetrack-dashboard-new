@@ -112,6 +112,40 @@ const LeaveRequestModal = ({
   const isFormSubmitted = form.formState.isSubmitted;
   const hasDocumentError = Boolean(form.formState.errors.supportingDocument);
 
+
+  const minSelectableDate = useMemo(() => {
+    if (!selectedLeaveType) return null;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const noticeDays = selectedLeaveType.min_notice_days ?? 0;
+    if (noticeDays > 0) {
+      const earliest = new Date(today);
+      earliest.setDate(earliest.getDate() + noticeDays);
+      return earliest;
+    }
+
+    if (!selectedLeaveType.allow_past_dates) {
+      return today;
+    }
+
+    return null;
+  }, [selectedLeaveType]);
+  
+  const isStartDateDisabled = useMemo(() => {
+    if (!minSelectableDate) return undefined;
+    return (date: Date) => date < minSelectableDate;
+  }, [minSelectableDate]);
+
+  const isEndDateDisabled = useMemo(() => {
+    const lowerBound = startDate ?? minSelectableDate;
+    if (!lowerBound) return undefined;
+    const bound = new Date(lowerBound);
+    bound.setHours(0, 0, 0, 0);
+    return (date: Date) => date < bound;
+  }, [startDate, minSelectableDate]);
+
   useEffect(() => {
     if (isFormSubmitted || hasDocumentError) {
       void form.trigger("supportingDocument");
@@ -318,6 +352,7 @@ const LeaveRequestModal = ({
                           mode="single"
                           selected={startDate ?? undefined}
                           captionLayout="dropdown"
+                          disabled={isStartDateDisabled}
                           onSelect={(date) => {
                             field.onChange(date);
                             setOpenStartDate(false);
@@ -358,6 +393,7 @@ const LeaveRequestModal = ({
                           mode="single"
                           selected={endDate ?? undefined}
                           captionLayout="dropdown"
+                          disabled={isEndDateDisabled}
                           onSelect={(date) => {
                             field.onChange(date);
                             setOpenEndDate(false);

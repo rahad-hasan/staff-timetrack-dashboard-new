@@ -68,3 +68,9 @@ export const cancelEvent = async (id: number) => {
     cache: "no-cache",
   });
 };
+
+export const getMembersEventDropdown = async (query = {}): Promise<
+  IResponse<{ id: number; name: string; email: string; image: string }[]>> => {
+  const queryString = buildQuery(query);
+  return await baseApi(`/events/dropdown/users${queryString ? `?${queryString}` : ""}`);
+};

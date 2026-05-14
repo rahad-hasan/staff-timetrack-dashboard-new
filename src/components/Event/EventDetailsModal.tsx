@@ -639,6 +639,9 @@ const EventDetailsModal = ({
                 onCancelled={handleCloseDialog}
             />
 
+
+
+            {/* I will make it separate component */}
             <Dialog open={syncDrawerOpen} onOpenChange={setSyncDrawerOpen}>
                 <DialogContent className="flex max-h-[88vh] w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-[640px]">
                     <DialogHeader className="shrink-0 border-b border-borderColor px-6 pb-5 pt-6 dark:border-darkBorder">
