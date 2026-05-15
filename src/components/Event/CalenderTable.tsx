@@ -132,7 +132,7 @@ const CalenderTable = ({
     const handleCloseDialog = () => {
         setOpen(false);
     };
-    console.log('weeks,', weeks)
+
     return (
         <TooltipProvider>
             <div className="mt-5 space-y-4">

@@ -28,17 +28,17 @@ export const editSingleDetailsMember = async ({
   id,
 }: {
   data: {
-    name: string;
-    email: string;
-    phone: string;
-    role: string;
-    time_zone: string;
-    pay_rate_hourly: number;
-    is_active: boolean;
-    is_tracking: boolean;
-    url_tracking: boolean;
-    cam_tracking: boolean;
-    multi_factor_auth: boolean;
+    name?: string;
+    email?: string;
+    phone?: string;
+    role?: string;
+    time_zone?: string;
+    pay_rate_hourly?: number;
+    is_active?: boolean;
+    is_tracking?: boolean;
+    url_tracking?: boolean;
+    cam_tracking?: boolean;
+    multi_factor_auth?: boolean;
   };
   id: number | undefined;
 }) => {

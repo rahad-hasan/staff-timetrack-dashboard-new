@@ -181,7 +181,6 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
     const loadMembers = async () => {
       try {
         const res = await getMembersEventDropdown();
-        console.log("getMembersEventDropdown",res)
         if (res?.success) {
           const apiMembers = res.data;
           setMembers([
@@ -853,7 +852,7 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
 
                     <div className="mt-4 space-y-2.5">
                       {visibleLoadingSteps.map((step, index) => {
-                        const isActive =
+                        const isActive = // last step -> Only the LAST visible step is ACTIVE
                           index === visibleLoadingSteps.length - 1;
                         const isCompleted = !isActive;
 

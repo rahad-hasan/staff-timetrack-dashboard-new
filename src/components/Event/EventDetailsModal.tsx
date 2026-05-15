@@ -54,7 +54,7 @@ import {
 import { RichTextViewer } from "@/components/Common/RichTextEditor";
 import { cn } from "@/lib/utils";
 import AddMembersModal from "./AddMembersModal";
-import CancelEventDialog from "./CancelEventDialog";
+import CancelEventDialog from "./EventDetailsModalComponent/CancelEventDialog";
 import googleMeetIcon from "../../assets/events/google_meet.svg";
 import microsoftTeamsIcon from "../../assets/events/microsoft-teams.svg";
 import Image from "next/image";
@@ -70,9 +70,6 @@ import EditIcon from "../Icons/FilterOptionIcon/EditIcon";
 import DeleteIcon from "../Icons/DeleteIcon";
 
 type Mode = "view" | "edit" | "add-members";
-
-const isLiveStatus = (status: EventSyncStatus | undefined) =>
-    status === "pending" || status === "processing";
 
 const formatDuration = (start?: string, end?: string) => {
     if (!start || !end) return "0m";
@@ -121,6 +118,9 @@ const getEventTimingMeta = (event: IEvent | null | undefined) => {
             "border-primary/20 bg-primary/8 text-primary dark:border-primary/30 dark:bg-primary/10",
     };
 };
+
+const isLiveStatus = (status: EventSyncStatus | undefined) =>
+    status === "pending" || status === "processing";
 
 
 const isEventLive = (event: IEvent | null | undefined): boolean => {
@@ -608,6 +608,7 @@ const EventDetailsModal = ({
                             </div>
                         </SectionCard>
                     </>
+                    // end of view mood
                 ) : (
                     <SectionCard
                         title={mode === "edit" ? "Update schedule" : "Invite more people"}
@@ -639,9 +640,8 @@ const EventDetailsModal = ({
                 onCancelled={handleCloseDialog}
             />
 
-
-
             {/* I will make it separate component */}
+            {/* All attendees Modal */}
             <Dialog open={syncDrawerOpen} onOpenChange={setSyncDrawerOpen}>
                 <DialogContent className="flex max-h-[88vh] w-full flex-col gap-0 overflow-hidden p-0 sm:max-w-[640px]">
                     <DialogHeader className="shrink-0 border-b border-borderColor px-6 pb-5 pt-6 dark:border-darkBorder">

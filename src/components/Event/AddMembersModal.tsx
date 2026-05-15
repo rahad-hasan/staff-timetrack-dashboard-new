@@ -24,8 +24,7 @@ import { useForm } from "react-hook-form";
 import z from "zod";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { addEventMembers } from "@/actions/calendarEvent/action";
-import { getMembersDashboard } from "@/actions/members/action";
+import { addEventMembers, getMembersEventDropdown } from "@/actions/calendarEvent/action";
 import { AlertTriangle } from "lucide-react";
 import { isConflictResponse, parseConflictMessage } from "./eventHelpers";
 
@@ -52,7 +51,7 @@ const AddMembersModal = ({
     useEffect(() => {
         const load = async () => {
             try {
-                const res = await getMembersDashboard();
+                const res = await getMembersEventDropdown();
                 if (res?.success) {
                     const assigned = new Set(
                         (event?.eventAssigns ?? []).map((a: any) => a?.user?.id),

@@ -400,7 +400,8 @@ export const singleMemberSchema = z.object({
     .regex(/[a-z]/, "At least one lowercase letter")
     .regex(/[A-Z]/, "At least one uppercase letter")
     .regex(/\d/, "At least one number")
-    .regex(/[!@#$%^&*(),.?":{}|<>]/, "At least one special character"),
+    .regex(/[!@#$%^&*(),.?":{}|<>]/, "At least one special character")
+    .optional(),
   birth_day: z
     .string({ message: "Birth day must be a string" })
     .regex(/^\d{4}-\d{2}-\d{2}$/, {

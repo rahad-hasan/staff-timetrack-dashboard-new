@@ -36,7 +36,6 @@ import { currencies } from "@/utils/CurrencyList";
 import { CustomCalendarForDOB } from "@/components/ui/customCalendarForDOB";
 
 const SingleMemberPage = ({ data, task, page }: { data: any, task: any, page: string | number | string[] | undefined }) => {
-    console.log('getting data from single page', data)
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
     const [date, setDate] = useState<Date | undefined>(undefined);
@@ -75,53 +74,127 @@ const SingleMemberPage = ({ data, task, page }: { data: any, task: any, page: st
         },
     });
 
+
     async function onSubmit(values: z.infer<typeof singleMemberSchema>) {
         setLoading(true);
-        const payload = {
-            name: values.name,
-            email: values.email,
-            phone: values.phone ?? "",
-            role: values.role,
-            time_zone: values.time_zone,
-            gender: values.gender,
-            birth_day: values.birth_day,
-            currency: values.currency,
-            password: values.password,
-            pay_rate_hourly: values.pay_rate_hourly,
-            is_active: Boolean(switches.is_active),
-            is_tracking: Boolean(switches.is_tracking),
-            url_tracking: Boolean(switches.url_tracking),
-            cam_tracking: Boolean(switches.cam_tracking),
-            multi_factor_auth: Boolean(switches.multi_factor_auth),
-        };
 
         try {
-            const res = await editSingleDetailsMember({ data: payload, id: data?.id });
+            const dirtyFields = form.formState.dirtyFields;
+
+            const payload: Record<string, any> = {};
+
+            // Form fields
+            Object.keys(dirtyFields).forEach((key) => {
+                payload[key] = values[key as keyof typeof values];
+            });
+
+            // Switch fields
+            if (switches.is_active !== data?.is_active) {
+                payload.is_active = Boolean(switches.is_active);
+            }
+
+            if (switches.is_tracking !== data?.is_tracking) {
+                payload.is_tracking = Boolean(switches.is_tracking);
+            }
+
+            if (switches.url_tracking !== data?.url_tracking) {
+                payload.url_tracking = Boolean(switches.url_tracking);
+            }
+
+            if (switches.cam_tracking !== data?.cam_tracking) {
+                payload.cam_tracking = Boolean(switches.cam_tracking);
+            }
+
+            if (switches.multi_factor_auth !== data?.multi_factor_auth) {
+                payload.multi_factor_auth = Boolean(
+                    switches.multi_factor_auth
+                );
+            }
+
+            // If nothing changed
+            if (Object.keys(payload).length === 0) {
+                toast.info("No changes detected");
+                return;
+            }
+
+            console.log("Sending payload:", payload);
+
+            const res = await editSingleDetailsMember({
+                data: payload,
+                id: data?.id,
+            });
 
             if (res?.success) {
                 toast.success(res?.message || "Member edited successfully");
             } else {
                 toast.error(res?.message || "Failed to edit member", {
                     style: {
-                        backgroundColor: '#ef4444',
-                        color: 'white',
-                        border: 'none'
+                        backgroundColor: "#ef4444",
+                        color: "white",
+                        border: "none",
                     },
                 });
             }
         } catch (error: any) {
-            // console.error("failed:", error);
             toast.error(error?.message || "Something went wrong!", {
                 style: {
-                    backgroundColor: '#ef4444',
-                    color: 'white',
-                    border: 'none'
+                    backgroundColor: "#ef4444",
+                    color: "white",
+                    border: "none",
                 },
             });
         } finally {
             setLoading(false);
         }
     }
+
+    // async function onSubmit(values: z.infer<typeof singleMemberSchema>) {
+    //     setLoading(true);
+    //     const payload = {
+    //         name: values.name,
+    //         email: values.email,
+    //         phone: values.phone ?? "",
+    //         role: values.role,
+    //         time_zone: values.time_zone,
+    //         gender: values.gender,
+    //         birth_day: values.birth_day,
+    //         currency: values.currency,
+    //         password: values.password,
+    //         pay_rate_hourly: values.pay_rate_hourly,
+    //         is_active: Boolean(switches.is_active),
+    //         is_tracking: Boolean(switches.is_tracking),
+    //         url_tracking: Boolean(switches.url_tracking),
+    //         cam_tracking: Boolean(switches.cam_tracking),
+    //         multi_factor_auth: Boolean(switches.multi_factor_auth),
+    //     };
+
+    //     try {
+    //         const res = await editSingleDetailsMember({ data: payload, id: data?.id });
+
+    //         if (res?.success) {
+    //             toast.success(res?.message || "Member edited successfully");
+    //         } else {
+    //             toast.error(res?.message || "Failed to edit member", {
+    //                 style: {
+    //                     backgroundColor: '#ef4444',
+    //                     color: 'white',
+    //                     border: 'none'
+    //                 },
+    //             });
+    //         }
+    //     } catch (error: any) {
+    //         // console.error("failed:", error);
+    //         toast.error(error?.message || "Something went wrong!", {
+    //             style: {
+    //                 backgroundColor: '#ef4444',
+    //                 color: 'white',
+    //                 border: 'none'
+    //             },
+    //         });
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // }
 
     function formatDate(date: Date) {
         const y = date.getFullYear()
