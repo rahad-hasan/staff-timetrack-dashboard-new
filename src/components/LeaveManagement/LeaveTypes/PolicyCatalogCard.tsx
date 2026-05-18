@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import ConfirmDialog from "@/components/Common/ConfirmDialog";
 import {
+  formatApplicableFor,
   formatApplicableGender,
   formatNoticeDays,
   getLeaveTypeTheme,
@@ -83,6 +84,13 @@ const LeaveTypeCard = ({
       </div>
 
       <div className="mt-5 space-y-3 text-sm text-subTextColor dark:text-darkTextSecondary">
+        <div className="flex items-center justify-between rounded-[12px] bg-bgSecondary px-4 py-3 dark:bg-darkSecondaryBg">
+          <span>Applicable for</span>
+          <span className="font-medium text-headingTextColor dark:text-darkTextPrimary">
+            {formatApplicableFor(leaveType.applicable_for)}
+          </span>
+        </div>
+
         <div className="flex items-center justify-between rounded-[12px] bg-bgSecondary px-4 py-3 dark:bg-darkSecondaryBg">
           <span>Applicable gender</span>
           <span className="font-medium text-headingTextColor dark:text-darkTextPrimary">

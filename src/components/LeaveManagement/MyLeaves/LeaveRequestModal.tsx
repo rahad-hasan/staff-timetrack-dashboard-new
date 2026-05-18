@@ -16,6 +16,7 @@ import {
 } from "@/zod/schema";
 import {
   getLeaveTypeTheme,
+  formatApplicableFor,
   formatApplicableGender,
   formatNoticeDays,
 } from "@/lib/leave";
@@ -305,20 +306,22 @@ const LeaveRequestModal = ({
                     </h3>
                   </div>
                   <div className="flex flex-wrap gap-2">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-white/80 px-2.5 py-1 text-xs font-medium text-headingTextColor dark:bg-darkPrimaryBg dark:text-darkTextPrimary">
+                      <ShieldCheck className="size-3.5" />
+                      {formatApplicableFor(selectedLeaveType.applicable_for)}
+                    </span>
                     {selectedLeaveType.requires_document ? (
                       <span className="inline-flex items-center gap-1 rounded-full bg-white/80 px-2.5 py-1 text-xs font-medium text-headingTextColor dark:bg-darkPrimaryBg dark:text-darkTextPrimary">
                         <FileText className="size-3.5" />
                         Requires document
                       </span>
                     ) : null}
-                    {selectedLeaveType.applicable_gender !== "all" ? (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-white/80 px-2.5 py-1 text-xs font-medium text-headingTextColor dark:bg-darkPrimaryBg dark:text-darkTextPrimary">
-                        <ShieldCheck className="size-3.5" />
-                        {formatApplicableGender(
-                          selectedLeaveType.applicable_gender,
-                        )}
-                      </span>
-                    ) : null}
+                    <span className="inline-flex items-center gap-1 rounded-full bg-white/80 px-2.5 py-1 text-xs font-medium text-headingTextColor dark:bg-darkPrimaryBg dark:text-darkTextPrimary">
+                      <ShieldCheck className="size-3.5" />
+                      {formatApplicableGender(
+                        selectedLeaveType.applicable_gender,
+                      )}
+                    </span>
                   </div>
                 </div>
 

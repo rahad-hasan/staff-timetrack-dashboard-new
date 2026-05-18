@@ -51,6 +51,12 @@ const applicableGenderOptions = [
   { value: "other", label: "Other only" },
 ] as const;
 
+const applicableForOptions = [
+  { value: "all", label: "All Employees" },
+  { value: "probation", label: "Probation Employees" },
+  { value: "permanent", label: "Permanent Employees" },
+] as const;
+
 const getDefaultValues = (
   initialData?: LeaveTypeRecord | null,
 ): z.infer<typeof leaveTypeFormSchema> => ({
@@ -60,6 +66,7 @@ const getDefaultValues = (
   requires_document: initialData?.requires_document ?? false,
   is_active: initialData?.is_active ?? true,
   applicable_gender: initialData?.applicable_gender ?? "all",
+  applicable_for: initialData?.applicable_for ?? "all",
   min_notice_days: initialData?.min_notice_days ?? null,
   allow_past_dates: initialData?.allow_past_dates ?? false,
 });
@@ -97,6 +104,7 @@ const LeaveTypeFormDialog = ({
       requires_document: values.requires_document,
       is_active: values.is_active,
       applicable_gender: values.applicable_gender,
+      applicable_for: values.applicable_for,
       min_notice_days: values.min_notice_days,
       allow_past_dates: values.allow_past_dates,
     };
@@ -264,30 +272,57 @@ const LeaveTypeFormDialog = ({
                 />
               </div>
 
-              <FormField
-                control={form.control}
-                name="applicable_gender"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel required>Applicable gender</FormLabel>
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <FormControl>
-                        <SelectTrigger className="dark:border-darkBorder dark:bg-darkPrimaryBg">
-                          <SelectValue placeholder="Select gender rule" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent className="dark:bg-darkSecondaryBg">
-                        {applicableGenderOptions.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="grid gap-4 md:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="applicable_for"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel required>Applicable For</FormLabel>
+                      <Select value={field.value} onValueChange={field.onChange}>
+                        <FormControl>
+                          <SelectTrigger className="dark:border-darkBorder dark:bg-darkPrimaryBg">
+                            <SelectValue placeholder="Select employment status rule" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="dark:bg-darkSecondaryBg">
+                          {applicableForOptions.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="applicable_gender"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel required>Applicable gender</FormLabel>
+                      <Select value={field.value} onValueChange={field.onChange}>
+                        <FormControl>
+                          <SelectTrigger className="dark:border-darkBorder dark:bg-darkPrimaryBg">
+                            <SelectValue placeholder="Select gender rule" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="dark:bg-darkSecondaryBg">
+                          {applicableGenderOptions.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
               <div className="grid gap-4">
                 <FormField
@@ -429,7 +464,20 @@ const LeaveTypeFormDialog = ({
               <div className="flex flex-col gap-2 rounded-[12px] bg-bgSecondary px-4 py-3 text-sm dark:bg-darkPrimaryBg sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-2">
                   <ShieldCheck className="size-4 text-primary" />
-                  <span className="text-subTextColor dark:text-darkTextSecondary">Applicable to</span>
+                  <span className="text-subTextColor dark:text-darkTextSecondary">Applicable for</span>
+                </div>
+                <span className="font-medium text-headingTextColor dark:text-darkTextPrimary">
+                  {
+                    applicableForOptions.find(
+                      (option) => option.value === values.applicable_for,
+                    )?.label
+                  }
+                </span>
+              </div>
+              <div className="flex flex-col gap-2 rounded-[12px] bg-bgSecondary px-4 py-3 text-sm dark:bg-darkPrimaryBg sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="size-4 text-primary" />
+                  <span className="text-subTextColor dark:text-darkTextSecondary">Applicable gender</span>
                 </div>
                 <span className="font-medium text-headingTextColor dark:text-darkTextPrimary">
                   {

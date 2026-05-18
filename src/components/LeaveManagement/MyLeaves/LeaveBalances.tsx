@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import {
+  formatApplicableFor,
   formatApplicableGender,
   formatNoticeDays,
   getLeaveTypeTheme,
@@ -114,13 +115,15 @@ const LeaveBalances = ({
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between text-xs text-subTextColor dark:text-darkTextSecondary">
-                    {leaveType.applicable_gender !== "all" ? (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-sky-500/10 px-2.5 py-1 text-[11px] font-medium text-sky-700 dark:text-sky-200">
-                        <ShieldCheck className="size-3.5" />
-                        {formatApplicableGender(leaveType.applicable_gender)}
-                      </span>
-                    ) : null}
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-subTextColor dark:text-darkTextSecondary">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-sky-500/10 px-2.5 py-1 text-[11px] font-medium text-sky-700 dark:text-sky-200">
+                      <ShieldCheck className="size-3.5" />
+                      {formatApplicableFor(leaveType.applicable_for)}
+                    </span>
+                    <span className="inline-flex items-center gap-1 rounded-full bg-sky-500/10 px-2.5 py-1 text-[11px] font-medium text-sky-700 dark:text-sky-200">
+                      <ShieldCheck className="size-3.5" />
+                      {formatApplicableGender(leaveType.applicable_gender)}
+                    </span>
                   </div>
                 </div>
 

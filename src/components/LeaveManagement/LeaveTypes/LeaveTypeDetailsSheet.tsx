@@ -21,7 +21,12 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { formatApplicableGender, formatNoticeDays, getLeaveTypeTheme } from "@/lib/leave";
+import {
+  formatApplicableFor,
+  formatApplicableGender,
+  formatNoticeDays,
+  getLeaveTypeTheme,
+} from "@/lib/leave";
 import { LeaveTypeRecord } from "@/types/type";
 import { formatTZDayMonthYear } from "@/utils";
 
@@ -209,6 +214,23 @@ const LeaveTypeDetailsSheet = ({
               </div>
 
               <div className="grid gap-3">
+                <div className="flex items-center justify-between rounded-[12px] border border-borderColor bg-white px-4 py-4 dark:border-darkBorder dark:bg-darkPrimaryBg">
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-2xl bg-primary/10 p-2 text-primary">
+                      <ShieldCheck className="size-4" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-headingTextColor dark:text-darkTextPrimary">
+                        Applicable for
+                      </p>
+                      <p className="text-xs text-subTextColor dark:text-darkTextSecondary">Employment status rule</p>
+                    </div>
+                  </div>
+                  <span className="text-sm font-medium text-headingTextColor dark:text-darkTextPrimary">
+                    {formatApplicableFor(leaveType.applicable_for)}
+                  </span>
+                </div>
+
                 <div className="flex items-center justify-between rounded-[12px] border border-borderColor bg-white px-4 py-4 dark:border-darkBorder dark:bg-darkPrimaryBg">
                   <div className="flex items-center gap-3">
                     <div className="rounded-2xl bg-primary/10 p-2 text-primary">

@@ -1,4 +1,5 @@
 import {
+  LeaveApplicableFor,
   LeaveApplicableGender,
   LeaveStatus,
   LeaveTypeRecord,
@@ -75,6 +76,17 @@ export function getLeaveStatusTheme(status: LeaveStatus) {
 export function formatApplicableGender(gender: LeaveApplicableGender) {
   if (gender === "all") return "All employees";
   return `${gender.charAt(0).toUpperCase()}${gender.slice(1)} only`;
+}
+
+export function formatApplicableFor(applicableFor: LeaveApplicableFor) {
+  switch (applicableFor) {
+    case "probation":
+      return "Probation Employees";
+    case "permanent":
+      return "Permanent Employees";
+    default:
+      return "All Employees";
+  }
 }
 
 export function formatNoticeDays(days: number | null) {

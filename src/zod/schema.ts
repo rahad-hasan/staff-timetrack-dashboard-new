@@ -387,6 +387,7 @@ export const singleMemberSchema = z.object({
     ),
   pay_rate_hourly: z.number().min(0),
   role: z.string().min(2, "role is required"),
+  status: z.enum(["probation", "permanent"]).optional(),
   time_zone: z.string().min(1, "Time Zone is required"),
   gender: z.enum(["male", "female", "other"], {
     message: "Gender is required",
@@ -456,6 +457,7 @@ export const leaveTypeFormSchema = z.object({
   requires_document: z.boolean(),
   is_active: z.boolean(),
   applicable_gender: z.enum(["male", "female", "other", "all"]),
+  applicable_for: z.enum(["all", "probation", "permanent"]),
   min_notice_days: z
     .number({ message: "Min notice must be a number" })
     .int("Min notice must be a whole number")
