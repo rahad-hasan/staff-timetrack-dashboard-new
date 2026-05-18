@@ -76,14 +76,6 @@ export interface IMutation<T> {
   id: number | undefined;
 }
 
-export interface ProjectAssign {
-  user: User;
-  assignedBy: {
-    id: number;
-    name: string;
-  };
-  assigned_at: string;
-}
 
 export interface ProjectManagerAssign {
   user: User;
@@ -456,7 +448,11 @@ export interface Client {
 }
 
 export interface ProjectAssign {
-  user: User;
+  id: number;
+  name: string;
+  email: string;
+  image: string | null;
+  duration: string;
   assignedBy: {
     id: number;
     name: string;
@@ -728,10 +724,6 @@ export interface IApp {
   session: number;
 }
 
-
-
-
-
 export interface LeaveType {
   id: number;
   title: string;
@@ -826,7 +818,6 @@ export interface LeaveUser {
   gender: "male" | "female" | "other";
 }
 
-
 export interface LeaveRecord {
   id: number;
   company_id: number;
@@ -871,7 +862,9 @@ export interface LeaveHoliday {
 }
 
 export interface MandatoryLeaveImportPayload {
-  holidays: Array<Pick<LeaveHoliday, "name" | "date" | "description" | "source">>;
+  holidays: Array<
+    Pick<LeaveHoliday, "name" | "date" | "description" | "source">
+  >;
 }
 
 export interface MandatoryLeaveParsePayload {
@@ -985,7 +978,6 @@ export interface LeaveRequestTypeDropdownRecord {
   left: number;
 }
 
-
 export interface UserLeaveSummary {
   user: LeaveUser;
   year: number;
@@ -1020,7 +1012,6 @@ export interface LeaveRequestTypeDropdownRecord {
   taken: number;
   left: number;
 }
-
 
 export interface UserLeaveSummary {
   user: LeaveUser;

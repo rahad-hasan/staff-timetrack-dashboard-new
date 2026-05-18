@@ -40,6 +40,18 @@ import { useLogInUserStore } from "@/store/logInUserStore";
 import { formatTZDayMonthYear } from "@/utils";
 import Link from "next/link";
 
+const getInitials = (name?: string | null) => {
+    if (!name) return "NA";
+
+    return name
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean)
+        .map((part) => part.charAt(0))
+        .join("")
+        .slice(0, 2)
+        .toUpperCase();
+};
 
 const ProjectTable = ({ data }: { data: IProject[] }) => {
 
@@ -178,14 +190,10 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                             <Avatar key={index} className={index !== 0 ? "-ml-3" : ""}>
                                 <AvatarImage
                                     src={item?.user?.image ?? ""}
-                                    alt={item.user.name}
+                                    alt={item?.user?.name ?? "manager"}
                                 />
                                 <AvatarFallback>
-                                    {item.user.name
-                                        .split(" ")
-                                        .map((n) => n[0])
-                                        .join("")
-                                        .slice(0, 2)}
+                                    {getInitials(item?.user?.name)}
                                 </AvatarFallback>
                             </Avatar>
                         ))}
@@ -226,15 +234,11 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                         {visibleAssignee.map((item, index) => (
                             <Avatar key={index} className={index !== 0 ? "-ml-3" : ""}>
                                 <AvatarImage
-                                    src={item?.user?.image ?? ""}
-                                    alt={item.user.name}
+                                    src={item?.image ?? ""}
+                                    alt={item?.name ?? "assignee"}
                                 />
                                 <AvatarFallback>
-                                    {item.user.name
-                                        .split(" ")
-                                        .map((n) => n[0])
-                                        .join("")
-                                        .slice(0, 2)}
+                                    {getInitials(item?.name)}
                                 </AvatarFallback>
                             </Avatar>
                         ))}

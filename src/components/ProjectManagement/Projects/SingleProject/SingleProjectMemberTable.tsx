@@ -1,7 +1,21 @@
-"use client"
+"use client";
 
-import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable,
+} from "@tanstack/react-table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { useMemo, useState } from "react";
 import { ArrowUpDown } from "lucide-react";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
@@ -9,172 +23,195 @@ import { ProjectAssign } from "@/types/type";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatTZDateDMY, formatTZTime } from "@/utils";
 
-const SingleProjectMemberTable = ({ data, searchTerm }: { data: ProjectAssign[], searchTerm: string }) => {
-    const [sorting, setSorting] = useState<SortingState>([])
-    const [rowSelection, setRowSelection] = useState({})
+const SingleProjectMemberTable = ({
+  data,
+  searchTerm,
+}: {
+  data: ProjectAssign[];
+  searchTerm: string;
+}) => {
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [rowSelection, setRowSelection] = useState({});
 
-    const filteredData = useMemo(() => {
-        if (!searchTerm) return data;
+  const filteredData = useMemo(() => {
+    if (!searchTerm) return data;
 
-        return data.filter((row: ProjectAssign) => {
-            return (
-                row.user.name.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-        });
-    }, [data, searchTerm]);
-
-    const columns: ColumnDef<ProjectAssign>[] = [
-        {
-            accessorKey: "name",
-            header: ({ column }) => {
-                return (
-                    <div>
-                        <span
-                            className=" cursor-pointer flex items-center gap-1"
-                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        >
-                            Name
-                            <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </span>
-                    </div>
-                )
-            },
-            cell: ({ row }) => {
-                const name = row?.original?.user?.name
-                const image = row?.original?.user?.image ? row?.original?.user?.image : ""
-                return (
-                    <div className="flex items-center gap-2 min-w-[180px]">
-                        <Avatar>
-                            <AvatarImage src={image} alt={name} />
-                            <AvatarFallback>{name?.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <span>{name}</span>
-                    </div>
-                )
-            }
-        },
-        {
-            accessorKey: "assignedBy",
-            header: ({ column }) => {
-                return (
-                    <div>
-                        <span
-                            className=" cursor-pointer flex items-center gap-1"
-                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        >
-                            Assigned By
-                            <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </span>
-                    </div>
-                )
-            },
-            cell: ({ row }) => {
-                const name = row?.original?.assignedBy?.name
-                const image = ""
-                return (
-                    <div className="flex items-center gap-2 min-w-[180px]">
-                        <Avatar>
-                            <AvatarImage src={image} alt={name} />
-                            <AvatarFallback>{name?.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <span>{name}</span>
-                    </div>
-                )
-            }
-        },
-        {
-            accessorKey: "assigned_at",
-            header: ({ column }) => {
-                return (
-                    <div>
-                        <span
-                            className=" cursor-pointer flex items-center gap-1"
-                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        >
-                            Assigned Date
-                            <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </span>
-                    </div>
-                )
-            },
-            cell: ({ row }) => {
-                return <div className="">{row?.original?.assigned_at ? formatTZDateDMY(row?.original?.assigned_at) : "N/A"}</div>;
-            },
-        },
-        {
-            accessorKey: "assigned_time",
-            header: ({ column }) => {
-                return (
-                    <div>
-                        <span
-                            className=" cursor-pointer flex items-center gap-1"
-                            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                        >
-                            Assigned Time
-                            <ArrowUpDown className="ml-2 h-4 w-4" />
-                        </span>
-                    </div>
-                )
-            },
-            cell: ({ row }) => {
-                return <div className="">{formatTZTime(row?.original?.assigned_at)}</div>;
-            },
-        },
-    ];
-
-
-    const table = useReactTable({
-        data: filteredData,
-        columns,
-        getCoreRowModel: getCoreRowModel(),
-        onSortingChange: setSorting,
-        getSortedRowModel: getSortedRowModel(),
-        onRowSelectionChange: setRowSelection,
-        state: {
-            sorting,
-            rowSelection,
-        },
+    return data.filter((row: ProjectAssign) => {
+      return row.name.toLowerCase().includes(searchTerm.toLowerCase());
     });
+  }, [data, searchTerm]);
 
-    return (
-        <div className="mt-5 border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">
-            <div className=" mb-5">
-                <h2 className=" text-base sm:text-lg">PROJECT MEMBER LIST</h2>
-            </div>
-            <Table>
-                <TableHeader>
-                    {table.getHeaderGroups().map(headerGroup => (
-                        <TableRow key={headerGroup.id}>
-                            {headerGroup.headers.map(header => (
-                                <TableHead key={header?.id}>
-                                    {header.isPlaceholder
-                                        ? null
-                                        : flexRender(header.column.columnDef.header, header.getContext())}
-                                </TableHead>
-                            ))}
-                        </TableRow>
-                    ))}
-                </TableHeader>
-                <TableBody>
-                    {table.getRowModel().rows?.length ? (
-                        table.getRowModel().rows.map(row => (
-                            <TableRow key={row.id}>
-                                {row.getVisibleCells().map(cell => (
-                                    <TableCell key={cell.id}>
-                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                    </TableCell>
-                                ))}
-                            </TableRow>
-                        ))
-                    ) : (
-                        <TableRow>
-                            <EmptyTableRow columns={columns} text="No member found."></EmptyTableRow>
-                        </TableRow>
-                    )}
-                </TableBody>
-            </Table>
-        </div>
-    );
+  const columns: ColumnDef<ProjectAssign>[] = [
+    {
+      accessorKey: "name",
+      header: ({ column }) => {
+        return (
+          <div>
+            <span
+              className=" cursor-pointer flex items-center gap-1"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+            >
+              Name
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            </span>
+          </div>
+        );
+      },
+      cell: ({ row }) => {
+        const name = row?.original?.name;
+        const image = row?.original?.image ? row?.original?.image : "";
+        return (
+          <div className="flex items-center gap-2 min-w-[180px]">
+            <Avatar>
+              <AvatarImage src={image} alt={name} />
+              <AvatarFallback>{name?.charAt(0)}</AvatarFallback>
+            </Avatar>
+            <span>{name}</span>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "assignedBy",
+      header: ({ column }) => {
+        return (
+          <div>
+            <span
+              className=" cursor-pointer flex items-center gap-1"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+            >
+              Assigned By
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            </span>
+          </div>
+        );
+      },
+      cell: ({ row }) => {
+        const name = row?.original?.assignedBy?.name;
+        const image = "";
+        return (
+          <div className="flex items-center gap-2 min-w-[180px]">
+            <Avatar>
+              <AvatarImage src={image} alt={name} />
+              <AvatarFallback>{name?.charAt(0)}</AvatarFallback>
+            </Avatar>
+            <span>{name}</span>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "duration",
+      header: ({ column }) => {
+        return (
+          <div>
+            <span
+              className="cursor-pointer flex items-center gap-1"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+            >
+              Duration
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            </span>
+          </div>
+        );
+      },
+      cell: ({ row }) => {
+        return <div className="">{row?.original?.duration}</div>;
+      },
+    },
+    {
+      accessorKey: "assigned_at",
+      header: ({ column }) => {
+        return (
+          <div>
+            <span
+              className=" cursor-pointer flex items-center gap-1"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+            >
+              Assigned Date
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            </span>
+          </div>
+        );
+      },
+      cell: ({ row }) => {
+        return (
+          <div className="">
+            {row?.original?.assigned_at
+              ? formatTZDateDMY(row?.original?.assigned_at)
+              : "N/A"}
+          </div>
+        );
+      },
+    },
+  ];
+
+  const table = useReactTable({
+    data: filteredData,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
+    onRowSelectionChange: setRowSelection,
+    state: {
+      sorting,
+      rowSelection,
+    },
+  });
+
+  return (
+    <div className="mt-5 border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg p-4 2xl:p-5 rounded-[12px]">
+      <div className=" mb-5">
+        <h2 className=" text-base sm:text-lg">PROJECT MEMBER LIST</h2>
+      </div>
+      <Table>
+        <TableHeader>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <TableHead key={header?.id}>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext(),
+                      )}
+                </TableHead>
+              ))}
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows?.length ? (
+            table.getRowModel().rows.map((row) => (
+              <TableRow key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <EmptyTableRow
+                columns={columns}
+                text="No member found."
+              ></EmptyTableRow>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </div>
+  );
 };
 
 export default SingleProjectMemberTable;

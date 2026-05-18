@@ -101,7 +101,7 @@ const EditGeneralInfoStep = ({ setStep, selectedProject }: GeneralInfoStepProps)
         defaultValues: {
             projectName: data.projectName ? data.projectName : selectedProject?.name,
             client: data.client ? data.client : selectedProject?.client_id,
-            members: data.members ? data.members : selectedProject?.projectAssigns?.map(p => ({ id: p?.user?.id, name: p?.user?.name })),
+            members: data.members ? data.members : selectedProject?.projectAssigns?.map(p => ({ id: p?.id, name: p?.name })),
             description: data.description ? data?.description : selectedProject?.description,
             startDate: data.startDate ? data.startDate : selectedProject?.start_date ? new Date(selectedProject?.start_date) : null,
             deadline: data.deadline ? data.deadline : selectedProject?.deadline ? new Date(selectedProject?.deadline) : null,
