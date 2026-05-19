@@ -175,12 +175,10 @@ const UrlsTable = ({ data }: { data: IUrl[] }) => {
               </TableRow>
             ))
           ) : (
-            <TableRow>
-              <EmptyTableRow
-                columns={columns}
-                text="No urls activity found."
-              ></EmptyTableRow>
-            </TableRow>
+            <EmptyTableRow
+              columns={columns}
+              text="No urls activity found."
+            ></EmptyTableRow>
           )}
         </TableBody>
       </Table>

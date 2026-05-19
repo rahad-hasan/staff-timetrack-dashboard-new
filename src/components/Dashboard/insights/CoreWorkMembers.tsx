@@ -200,9 +200,7 @@ const CoreWorkMembers = ({ data = [] }: { data: ICoreMember[] }) => {
 
             {/* 3. Render "No results" only if data is empty AND we weren't trying to fill up to 4 */}
             {actualRows.length === 0 && (
-              <TableRow>
-                <EmptyTableRow columns={columns} text="No core members available." padding={2}></EmptyTableRow>
-              </TableRow>
+              <EmptyTableRow columns={columns} text="No core members available." padding={2}></EmptyTableRow>
             )}
           </TableBody>
         </Table>

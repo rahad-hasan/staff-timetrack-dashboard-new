@@ -72,6 +72,7 @@ export const sidebarItems = [
             // { label: 'Time & activities', key: '/report/time-and-activities' },
             { label: 'Attendance', key: '/report/attendance' },
             { label: 'Work Report', key: '/report/work-report' },
+            { label: 'Monthly Report', key: '/report/monthly-report' },
         ],
     },
     {
@@ -138,6 +139,8 @@ export const sidebarItemsEmployee = [
         subItems: [
             { label: 'Timesheet', key: '/report/timesheets' },
             { label: 'Attendance', key: '/report/attendance' },
+            { label: 'Work Report', key: '/report/work-report' },
+            { label: 'Monthly Report', key: '/report/monthly-report' },
         ],
     }
 ];

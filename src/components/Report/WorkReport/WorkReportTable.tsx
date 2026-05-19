@@ -314,9 +314,7 @@ const WorkReportTable = ({ data }: {
                             );
                         })
                     ) : (
-                        <TableRow>
-                            <EmptyTableRow columns={columns} text="No schedules found." />
-                        </TableRow>
+                        <EmptyTableRow columns={columns} text="No schedules found." />
                     )}
                 </TableBody>
             </Table>

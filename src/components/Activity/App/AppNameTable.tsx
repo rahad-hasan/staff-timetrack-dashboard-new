@@ -235,12 +235,10 @@ const AppNameTable = ({ data }: { data: IApp[] }) => {
               </TableRow>
             ))
           ) : (
-            <TableRow>
-              <EmptyTableRow
-                columns={columns}
-                text="No App Activity found."
-              ></EmptyTableRow>
-            </TableRow>
+            <EmptyTableRow
+              columns={columns}
+              text="No App Activity found."
+            ></EmptyTableRow>
           )}
         </TableBody>
       </Table>

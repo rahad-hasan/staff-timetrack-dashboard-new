@@ -273,9 +273,7 @@ const SingleMemberTaskTable = ({ data }: { data: TTask[] }) => {
                             </TableRow>
                         ))
                     ) : (
-                        <TableRow>
-                            <EmptyTableRow columns={columns} text="No task found."></EmptyTableRow>
-                        </TableRow>
+                        <EmptyTableRow columns={columns} text="No task found."></EmptyTableRow>
                     )}
                 </TableBody>
             </Table>

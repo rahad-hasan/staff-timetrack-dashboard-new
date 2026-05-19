@@ -331,9 +331,7 @@ const DashboardTaskTable = ({ data }: { data: ITask[] }) => {
                             </TableRow>
                         ))
                     ) : (
-                        <TableRow>
-                            <EmptyTableRow columns={columns} text="No tasks found."></EmptyTableRow>
-                        </TableRow>
+                        <EmptyTableRow columns={columns} text="No tasks found."></EmptyTableRow>
                     )}
                 </TableBody>
             </Table>

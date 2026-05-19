@@ -192,9 +192,7 @@ const TimeAndActivitiesTable = () => {
                             </TableRow>
                         ))
                     ) : (
-                        <TableRow>
-                            <EmptyTableRow columns={columns} text="No data found."></EmptyTableRow>
-                        </TableRow>
+                        <EmptyTableRow columns={columns} text="No data found."></EmptyTableRow>
                     )}
                 </TableBody>
             </Table>

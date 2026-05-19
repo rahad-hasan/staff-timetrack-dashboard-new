@@ -204,12 +204,10 @@ const DailyTimeSheetsTable = ({ data }: { data: IDailyTimeEntryItem[] }) => {
               </TableRow>
             ))
           ) : (
-            <TableRow>
-              <EmptyTableRow
-                columns={columns}
-                text="No time entry found."
-              ></EmptyTableRow>
-            </TableRow>
+            <EmptyTableRow
+              columns={columns}
+              text="No time entry found."
+            ></EmptyTableRow>
           )}
         </TableBody>
       </Table>

@@ -69,13 +69,9 @@ import { cn } from "@/lib/utils";
 import { popularTimeZoneList } from "@/utils/TimeZoneList";
 import { CustomCalendarForDOB } from "@/components/ui/customCalendarForDOB";
 import { useLogInUserStore } from "@/store/logInUserStore";
-import { EmploymentStatus } from "@/types/type";
+import { EmploymentStatus, IMember } from "@/types/type";
 
-const SingleMemberPage = ({
-  data,
-}: {
-  data: any;
-}) => {
+const SingleMemberPage = ({ data }: { data: IMember }) => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const logInUserData = useLogInUserStore((state) => state.logInUserData);
@@ -160,11 +156,11 @@ const SingleMemberPage = ({
     },
   });
 
-  const totalProjects = data?.total_projects ?? data?.projects?.length ?? 0;
+  const totalProjects = data?.total_projects ?? 0;
   const pendingTasks = data?.pending_tasks ?? 0;
   const assignedSchedule = useMemo(
     () =>
-      data?.scheduleAssigns?.find((item: any) => item?.schedule)?.schedule ?? null,
+      data?.scheduleAssigns?.find((item) => item?.schedule)?.schedule ?? null,
     [data?.scheduleAssigns],
   );
 
@@ -236,7 +232,10 @@ const SingleMemberPage = ({
     };
 
     try {
-      const res = await editSingleDetailsMember({ data: payload, id: data?.id });
+      const res = await editSingleDetailsMember({
+        data: payload,
+        id: data?.id,
+      });
 
       if (res?.success) {
         toast.success(res?.message || "Member edited successfully");
@@ -278,13 +277,15 @@ const SingleMemberPage = ({
                 <ArrowLeft className="size-4" />
               </Button>
               <div>
-                <p className="text-sm text-slate-500 dark:text-white/65">Employees</p>
+                <p className="text-sm text-slate-500 dark:text-white/65">
+                  Employees
+                </p>
                 <h1 className="mt-1 text-2xl font-semibold tracking-tight text-slate-900 sm:text-4xl dark:text-white">
                   Update Employee
                 </h1>
                 <p className="mt-2 max-w-2xl text-sm text-slate-600 sm:text-base dark:text-white/70">
-                  Update employee information, permissions, payroll context,
-                  and workspace preferences.
+                  Update employee information, permissions, payroll context, and
+                  workspace preferences.
                 </p>
               </div>
             </div>
@@ -337,7 +338,9 @@ const SingleMemberPage = ({
                   <div className="mt-3 space-y-2 text-sm text-slate-600 dark:text-white/72">
                     <div className="flex items-center gap-2">
                       <Mail className="size-4 text-emerald-300" />
-                      <span className="truncate">{data?.email || "No email"}</span>
+                      <span className="truncate">
+                        {data?.email || "No email"}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Globe2 className="size-4 text-emerald-300" />
@@ -367,7 +370,9 @@ const SingleMemberPage = ({
                       Total Projects
                     </span>
                   </div>
-                  <p className="mt-3 text-lg font-semibold text-slate-900 dark:text-white">{totalProjects}</p>
+                  <p className="mt-3 text-lg font-semibold text-slate-900 dark:text-white">
+                    {totalProjects}
+                  </p>
                 </div>
 
                 <div className="rounded-[24px] border border-white/70 bg-white/70 px-4 py-4 dark:border-white/10 dark:bg-black/10">
@@ -377,7 +382,9 @@ const SingleMemberPage = ({
                       Pending Tasks
                     </span>
                   </div>
-                  <p className="mt-3 text-lg font-semibold text-slate-900 dark:text-white">{pendingTasks}</p>
+                  <p className="mt-3 text-lg font-semibold text-slate-900 dark:text-white">
+                    {pendingTasks}
+                  </p>
                 </div>
 
                 <div className="rounded-[24px] border border-white/70 bg-white/70 px-4 py-4 dark:border-white/10 dark:bg-black/10">
@@ -408,8 +415,8 @@ const SingleMemberPage = ({
               Account Controls
             </h3>
             <p className="text-sm text-subTextColor dark:text-darkTextSecondary">
-              Manage access, tracking, and security settings from the top layer of
-              the employee profile.
+              Manage access, tracking, and security settings from the top layer
+              of the employee profile.
             </p>
           </div>
           <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">
@@ -473,345 +480,392 @@ const SingleMemberPage = ({
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="space-y-5"
               >
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <FormField
-                      control={form.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem className="w-full min-w-0">
-                          <FormLabel required>Full Name</FormLabel>
-                          <FormControl>
-                            <div className="relative">
-                              <UserRound className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-subTextColor dark:text-darkTextSecondary" />
-                              <Input
-                                {...field}
-                                className="!h-[52px] min-h-[52px] pl-9 dark:border-darkBorder dark:bg-darkPrimaryBg"
-                              />
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem className="w-full min-w-0">
-                          <FormLabel required>Email Address</FormLabel>
-                          <FormControl>
-                            <div className="relative">
-                              <Mail className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-subTextColor dark:text-darkTextSecondary" />
-                              <Input
-                                {...field}
-                                className="!h-[52px] min-h-[52px] pl-9 dark:border-darkBorder dark:bg-darkPrimaryBg"
-                              />
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <FormField
-                      control={form.control}
-                      name="phone"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Phone Number</FormLabel>
-                          <FormControl>
-                            <div className="relative">
-                              <Phone className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-subTextColor dark:text-darkTextSecondary" />
-                              <Input
-                                {...field}
-                                value={field.value || ""}
-                                placeholder="Phone Number"
-                                className="!h-[52px] min-h-[52px] pl-9 dark:border-darkBorder dark:bg-darkPrimaryBg"
-                              />
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="birth_day"
-                      render={({ field }) => (
-                        <FormItem className="flex w-full min-w-0 flex-col">
-                          <FormLabel>Date of Birth</FormLabel>
-                          <Popover open={dobOpen} onOpenChange={setDobOpen}>
-                            <PopoverTrigger asChild>
-                              <FormControl>
-                                <button
-                                  type="button"
-                                  className={cn(
-                                    "flex h-10 w-full items-center justify-between rounded-lg border border-input bg-transparent px-3 py-2 text-left text-sm dark:border-darkBorder dark:bg-darkPrimaryBg",
-                                    "!h-[52px] min-h-[52px] py-0",
-                                    !field.value &&
-                                      "text-muted-foreground dark:text-darkTextSecondary",
-                                  )}
-                                >
-                                  <span>{field.value || "Select date"}</span>
-                                  <CalendarDays className="size-4 text-subTextColor dark:text-darkTextSecondary" />
-                                </button>
-                              </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto overflow-hidden p-0" align="start">
-                              <CustomCalendarForDOB
-                                mode="single"
-                                selected={dobDate}
-                                defaultMonth={dobDate}
-                                captionLayout="dropdown"
-                                onSelect={(selectedDate) => {
-                                  if (!selectedDate) return;
-                                  setDobDate(selectedDate);
-                                  setDobOpen(false);
-                                  field.onChange(formatDateOnly(selectedDate));
-                                }}
-                              />
-                            </PopoverContent>
-                          </Popover>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <FormField
-                      control={form.control}
-                      name="role"
-                      render={({ field }) => (
-                        <FormItem className="w-full min-w-0">
-                          <FormLabel required>User Role</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
-                            <FormControl>
-                              <SelectTrigger className="!h-[52px] min-h-[52px] w-full py-0 dark:border-darkBorder dark:bg-darkPrimaryBg">
-                                <SelectValue placeholder="Select a role" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {logInUserData?.role === "admin" ? (
-                                <SelectItem className="min-h-[52px]" value="admin">Admin</SelectItem>
-                              ) : null}
-                              <SelectItem className="min-h-[52px]" value="manager">Manager</SelectItem>
-                              <SelectItem className="min-h-[52px]" value="hr">HR</SelectItem>
-                              <SelectItem className="min-h-[52px]" value="project_manager">
-                                Project Manager
-                              </SelectItem>
-                              <SelectItem className="min-h-[52px]" value="employee">Employee</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="status"
-                      render={({ field }) => (
-                        <FormItem className="w-full min-w-0">
-                          <FormLabel>Employment Status</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
-                            <FormControl>
-                              <SelectTrigger className="!h-[52px] min-h-[52px] w-full py-0 dark:border-darkBorder dark:bg-darkPrimaryBg">
-                                <SelectValue placeholder="Select employment status" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {employmentStatusOptions.map((status) => (
-                                <SelectItem className="min-h-[52px]" key={status.value} value={status.value}>
-                                  {status.label}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div className="grid gap-4 md:grid-cols-3">
-                    <FormField
-                      control={form.control}
-                      name="gender"
-                      render={({ field }) => (
-                        <FormItem className="w-full min-w-0">
-                          <FormLabel required>Gender</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
-                            <FormControl>
-                              <SelectTrigger className="!h-[52px] min-h-[52px] w-full py-0 capitalize dark:border-darkBorder dark:bg-darkPrimaryBg">
-                                <SelectValue placeholder="Select gender" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {genderOptions.map((g) => (
-                                <SelectItem key={g} value={g} className="min-h-[52px] capitalize">
-                                  {g}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="time_zone"
-                      render={({ field }) => (
-                        <FormItem className="flex w-full min-w-0 flex-col">
-                          <FormLabel required>Time Zone</FormLabel>
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <FormControl>
-                                <Button
-                                  variant="outline2"
-                                  role="combobox"
-                                  className="!h-[52px] min-h-[52px] w-full justify-between py-0 dark:border-darkBorder dark:bg-darkPrimaryBg dark:text-darkTextPrimary hover:dark:bg-darkPrimaryBg"
-                                >
-                                  <span className="truncate">
-                                    {field.value
-                                      ? popularTimeZoneList.find(
-                                          (tz) => tz.value === field.value,
-                                        )?.label
-                                      : "Select time zone"}
-                                  </span>
-                                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                </Button>
-                              </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-[--radix-popover-trigger-width] p-0 dark:border-darkBorder dark:bg-darkSecondaryBg">
-                              <Command className="dark:bg-darkSecondaryBg">
-                                <CommandInput placeholder="Search time zone..." />
-                                <CommandList className="no-scrollbar overflow-y-scroll scroll-smooth">
-                                  <CommandEmpty>No time zone found.</CommandEmpty>
-                                  <CommandGroup>
-                                    {popularTimeZoneList.map((tz) => (
-                                      <CommandItem
-                                        key={tz.value}
-                                        value={tz.label}
-                                        onSelect={() => {
-                                          form.setValue("time_zone", tz.value);
-                                          document.dispatchEvent(
-                                            new KeyboardEvent("keydown", {
-                                              key: "Escape",
-                                            }),
-                                          );
-                                        }}
-                                        className="min-h-[52px] cursor-pointer hover:dark:bg-darkPrimaryBg"
-                                      >
-                                        <Check
-                                          className={cn(
-                                            "mr-2 h-4 w-4",
-                                            tz.value === field.value
-                                              ? "opacity-100"
-                                              : "opacity-0",
-                                          )}
-                                        />
-                                        {tz.label}
-                                      </CommandItem>
-                                    ))}
-                                  </CommandGroup>
-                                </CommandList>
-                              </Command>
-                            </PopoverContent>
-                          </Popover>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="currency"
-                      render={({ field }) => (
-                        <FormItem className="w-full min-w-0">
-                          <FormLabel required>Currency</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
-                            <FormControl>
-                              <SelectTrigger className="!h-[52px] min-h-[52px] w-full py-0 dark:border-darkBorder dark:bg-darkPrimaryBg">
-                                <SelectValue placeholder="Select currency" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {currencyOptions.map((c) => (
-                                <SelectItem className="min-h-[52px]" key={c.value} value={c.value}>
-                                  {c.label}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <FormField
-                      control={form.control}
-                      name="pay_rate_hourly"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel required>Hourly Pay Rate ($)</FormLabel>
-                          <FormControl>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem className="w-full min-w-0">
+                        <FormLabel required>Full Name</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <UserRound className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-subTextColor dark:text-darkTextSecondary" />
                             <Input
-                              type="number"
                               {...field}
-                              onChange={(e) =>
-                                field.onChange(e.target.valueAsNumber)
-                              }
-                              className="!h-[52px] min-h-[52px] dark:border-darkBorder dark:bg-darkPrimaryBg"
+                              className="!h-[52px] min-h-[52px] pl-9 dark:border-darkBorder dark:bg-darkPrimaryBg"
                             />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                    <div className="rounded-[24px] border border-borderColor bg-bgSecondary/50 p-4 dark:border-darkBorder dark:bg-darkPrimaryBg">
-                      <div className="flex items-start gap-3">
-                        <div className="rounded-2xl bg-primary/10 p-2 text-primary">
-                          <MapPin className="size-4" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-headingTextColor dark:text-darkTextPrimary">
-                            Workspace Snapshot
-                          </p>
-                          <p className="mt-1 text-sm text-subTextColor dark:text-darkTextSecondary">
-                            {data?.time_zone || "UTC"} timezone,{" "}
-                            {data?.currency || "USD"} payroll currency, and{" "}
-                            {switches.is_active ? "active" : "inactive"} account
-                            access.
-                          </p>
-                        </div>
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem className="w-full min-w-0">
+                        <FormLabel required>Email Address</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Mail className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-subTextColor dark:text-darkTextSecondary" />
+                            <Input
+                              {...field}
+                              className="!h-[52px] min-h-[52px] pl-9 dark:border-darkBorder dark:bg-darkPrimaryBg"
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone Number</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Phone className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-subTextColor dark:text-darkTextSecondary" />
+                            <Input
+                              {...field}
+                              value={field.value || ""}
+                              placeholder="Phone Number"
+                              className="!h-[52px] min-h-[52px] pl-9 dark:border-darkBorder dark:bg-darkPrimaryBg"
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="birth_day"
+                    render={({ field }) => (
+                      <FormItem className="flex w-full min-w-0 flex-col">
+                        <FormLabel>Date of Birth</FormLabel>
+                        <Popover open={dobOpen} onOpenChange={setDobOpen}>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <button
+                                type="button"
+                                className={cn(
+                                  "flex h-10 w-full items-center justify-between rounded-lg border border-input bg-transparent px-3 py-2 text-left text-sm dark:border-darkBorder dark:bg-darkPrimaryBg",
+                                  "!h-[52px] min-h-[52px] py-0",
+                                  !field.value &&
+                                    "text-muted-foreground dark:text-darkTextSecondary",
+                                )}
+                              >
+                                <span>{field.value || "Select date"}</span>
+                                <CalendarDays className="size-4 text-subTextColor dark:text-darkTextSecondary" />
+                              </button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent
+                            className="w-auto overflow-hidden p-0"
+                            align="start"
+                          >
+                            <CustomCalendarForDOB
+                              mode="single"
+                              selected={dobDate}
+                              defaultMonth={dobDate}
+                              captionLayout="dropdown"
+                              onSelect={(selectedDate) => {
+                                if (!selectedDate) return;
+                                setDobDate(selectedDate);
+                                setDobOpen(false);
+                                field.onChange(formatDateOnly(selectedDate));
+                              }}
+                            />
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                  <FormField
+                    control={form.control}
+                    name="role"
+                    render={({ field }) => (
+                      <FormItem className="w-full min-w-0">
+                        <FormLabel required>User Role</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="!h-[52px] min-h-[52px] w-full py-0 dark:border-darkBorder dark:bg-darkPrimaryBg">
+                              <SelectValue placeholder="Select a role" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {logInUserData?.role === "admin" ? (
+                              <SelectItem
+                                className="min-h-[52px]"
+                                value="admin"
+                              >
+                                Admin
+                              </SelectItem>
+                            ) : null}
+                            <SelectItem
+                              className="min-h-[52px]"
+                              value="manager"
+                            >
+                              Manager
+                            </SelectItem>
+                            <SelectItem className="min-h-[52px]" value="hr">
+                              HR
+                            </SelectItem>
+                            <SelectItem
+                              className="min-h-[52px]"
+                              value="project_manager"
+                            >
+                              Project Manager
+                            </SelectItem>
+                            <SelectItem
+                              className="min-h-[52px]"
+                              value="employee"
+                            >
+                              Employee
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="status"
+                    render={({ field }) => (
+                      <FormItem className="w-full min-w-0">
+                        <FormLabel>Employment Status</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="!h-[52px] min-h-[52px] w-full py-0 dark:border-darkBorder dark:bg-darkPrimaryBg">
+                              <SelectValue placeholder="Select employment status" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {employmentStatusOptions.map((status) => (
+                              <SelectItem
+                                className="min-h-[52px]"
+                                key={status.value}
+                                value={status.value}
+                              >
+                                {status.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-3">
+                  <FormField
+                    control={form.control}
+                    name="gender"
+                    render={({ field }) => (
+                      <FormItem className="w-full min-w-0">
+                        <FormLabel required>Gender</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="!h-[52px] min-h-[52px] w-full py-0 capitalize dark:border-darkBorder dark:bg-darkPrimaryBg">
+                              <SelectValue placeholder="Select gender" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {genderOptions.map((g) => (
+                              <SelectItem
+                                key={g}
+                                value={g}
+                                className="min-h-[52px] capitalize"
+                              >
+                                {g}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="time_zone"
+                    render={({ field }) => (
+                      <FormItem className="flex w-full min-w-0 flex-col">
+                        <FormLabel required>Time Zone</FormLabel>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant="outline2"
+                                role="combobox"
+                                className="!h-[52px] min-h-[52px] w-full justify-between py-0 dark:border-darkBorder dark:bg-darkPrimaryBg dark:text-darkTextPrimary hover:dark:bg-darkPrimaryBg"
+                              >
+                                <span className="truncate">
+                                  {field.value
+                                    ? popularTimeZoneList.find(
+                                        (tz) => tz.value === field.value,
+                                      )?.label
+                                    : "Select time zone"}
+                                </span>
+                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-[--radix-popover-trigger-width] p-0 dark:border-darkBorder dark:bg-darkSecondaryBg">
+                            <Command className="dark:bg-darkSecondaryBg">
+                              <CommandInput placeholder="Search time zone..." />
+                              <CommandList className="no-scrollbar overflow-y-scroll scroll-smooth">
+                                <CommandEmpty>No time zone found.</CommandEmpty>
+                                <CommandGroup>
+                                  {popularTimeZoneList.map((tz) => (
+                                    <CommandItem
+                                      key={tz.value}
+                                      value={tz.label}
+                                      onSelect={() => {
+                                        form.setValue("time_zone", tz.value);
+                                        document.dispatchEvent(
+                                          new KeyboardEvent("keydown", {
+                                            key: "Escape",
+                                          }),
+                                        );
+                                      }}
+                                      className="min-h-[52px] cursor-pointer hover:dark:bg-darkPrimaryBg"
+                                    >
+                                      <Check
+                                        className={cn(
+                                          "mr-2 h-4 w-4",
+                                          tz.value === field.value
+                                            ? "opacity-100"
+                                            : "opacity-0",
+                                        )}
+                                      />
+                                      {tz.label}
+                                    </CommandItem>
+                                  ))}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="currency"
+                    render={({ field }) => (
+                      <FormItem className="w-full min-w-0">
+                        <FormLabel required>Currency</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="!h-[52px] min-h-[52px] w-full py-0 dark:border-darkBorder dark:bg-darkPrimaryBg">
+                              <SelectValue placeholder="Select currency" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {currencyOptions.map((c) => (
+                              <SelectItem
+                                className="min-h-[52px]"
+                                key={c.value}
+                                value={c.value}
+                              >
+                                {c.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                  <FormField
+                    control={form.control}
+                    name="pay_rate_hourly"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel required>Hourly Pay Rate ($)</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            {...field}
+                            onChange={(e) =>
+                              field.onChange(e.target.valueAsNumber)
+                            }
+                            className="!h-[52px] min-h-[52px] dark:border-darkBorder dark:bg-darkPrimaryBg"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="rounded-[24px] border border-borderColor bg-bgSecondary/50 p-4 dark:border-darkBorder dark:bg-darkPrimaryBg">
+                    <div className="flex items-start gap-3">
+                      <div className="rounded-2xl bg-primary/10 p-2 text-primary">
+                        <MapPin className="size-4" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-headingTextColor dark:text-darkTextPrimary">
+                          Workspace Snapshot
+                        </p>
+                        <p className="mt-1 text-sm text-subTextColor dark:text-darkTextSecondary">
+                          {data?.time_zone || "UTC"} timezone,{" "}
+                          {data?.currency || "USD"} payroll currency, and{" "}
+                          {switches.is_active ? "active" : "inactive"} account
+                          access.
+                        </p>
                       </div>
                     </div>
                   </div>
+                </div>
 
-                  <div className="flex flex-wrap items-center gap-3 border-t border-borderColor pt-4 dark:border-darkBorder">
-                    <Button type="submit" disabled={loading}>
-                      <Save className="size-4" />
-                      {loading ? "Saving..." : "Save Profile"}
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline2"
-                      className="dark:border-darkBorder dark:bg-darkPrimaryBg dark:text-darkTextPrimary"
-                      onClick={() => router.back()}
-                    >
-                      Cancel
-                    </Button>
-                  </div>
+                <div className="flex flex-wrap items-center gap-3 border-t border-borderColor pt-4 dark:border-darkBorder">
+                  <Button type="submit" disabled={loading}>
+                    <Save className="size-4" />
+                    {loading ? "Saving..." : "Save Profile"}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline2"
+                    className="dark:border-darkBorder dark:bg-darkPrimaryBg dark:text-darkTextPrimary"
+                    onClick={() => router.back()}
+                  >
+                    Cancel
+                  </Button>
+                </div>
               </form>
             </Form>
           </div>
@@ -848,7 +902,7 @@ const SingleMemberPage = ({
                         Start Time
                       </p>
                       <p className="mt-1 text-sm font-semibold text-headingTextColor dark:text-darkTextPrimary">
-                        {formatScheduleTime(assignedSchedule.start_time)}
+                        {assignedSchedule.start_time_local}
                       </p>
                     </div>
                     <div className="rounded-2xl bg-white px-3 py-3 dark:bg-darkSecondaryBg">
@@ -856,7 +910,7 @@ const SingleMemberPage = ({
                         End Time
                       </p>
                       <p className="mt-1 text-sm font-semibold text-headingTextColor dark:text-darkTextPrimary">
-                        {formatScheduleTime(assignedSchedule.end_time)}
+                        {assignedSchedule.end_time_local}
                       </p>
                     </div>
                   </div>
@@ -868,8 +922,8 @@ const SingleMemberPage = ({
                   No schedule assigned
                 </p>
                 <p className="mt-1 text-sm text-subTextColor dark:text-darkTextSecondary">
-                  This employee does not currently have a shift schedule linked to
-                  the profile.
+                  This employee does not currently have a shift schedule linked
+                  to the profile.
                 </p>
               </div>
             )}

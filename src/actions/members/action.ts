@@ -17,9 +17,9 @@ export const getMembers = async (query = {}): Promise<IResponse<IMember[]>> => {
 
 export const getSingleDetailsMember = async (
   id: string,
-): Promise<IResponse<IMember[]>> => {
+): Promise<IResponse<IMember>> => {
   return await baseApi(`/auth/employees/${id}`, {
-    tag: "members",
+    tag: "member",
   });
 };
 
@@ -56,10 +56,13 @@ export const editSingleDetailsMember = async ({
   });
 };
 
-export const getMembersDashboard = async (query = {}): Promise<
-  IResponse<{ id: number; name: string; image: string }[]>> => {
+export const getMembersDashboard = async (
+  query = {},
+): Promise<IResponse<{ id: number; name: string; image: string }[]>> => {
   const queryString = buildQuery(query);
-  return await baseApi(`/dashboard/members${queryString ? `?${queryString}` : ""}`);
+  return await baseApi(
+    `/dashboard/members${queryString ? `?${queryString}` : ""}`,
+  );
 };
 
 export const addMember = async (data: {

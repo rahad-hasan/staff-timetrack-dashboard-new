@@ -250,9 +250,7 @@ const ClientsTable = ({ data }: any) => {
                             </TableRow>
                         ))
                     ) : (
-                        <TableRow>
-                            <EmptyTableRow columns={columns} text="No clients found."></EmptyTableRow>
-                        </TableRow>
+                        <EmptyTableRow columns={columns} text="No clients found."></EmptyTableRow>
                     )}
                 </TableBody>
             </Table>

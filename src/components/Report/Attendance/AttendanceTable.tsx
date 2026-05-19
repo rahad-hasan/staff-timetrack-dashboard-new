@@ -264,12 +264,10 @@ const AttendanceTable = ({ attendanceListData, searchTerm }: any) => {
               </TableRow>
             ))
           ) : (
-            <TableRow>
-              <EmptyTableRow
-                columns={columns}
-                text="No attendance found."
-              ></EmptyTableRow>
-            </TableRow>
+            <EmptyTableRow
+              columns={columns}
+              text="No attendance found."
+            ></EmptyTableRow>
           )}
         </TableBody>
       </Table>

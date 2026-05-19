@@ -347,12 +347,10 @@ const ScheduleTable = ({ data }: { data: ISchedules[] }) => {
                             </TableRow>
                         ))
                     ) : (
-                        <TableRow>
-                            <EmptyTableRow
-                                columns={columns}
-                                text="No schedules found."
-                            ></EmptyTableRow>
-                        </TableRow>
+                        <EmptyTableRow
+                            columns={columns}
+                            text="No schedules found."
+                        ></EmptyTableRow>
                     )}
                 </TableBody>
             </Table>

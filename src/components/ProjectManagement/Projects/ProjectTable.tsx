@@ -575,9 +575,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                             // </Link>
                         ))
                     ) : (
-                        <TableRow>
-                            <EmptyTableRow columns={columns} text="No project found."></EmptyTableRow>
-                        </TableRow>
+                        <EmptyTableRow columns={columns} text="No project found."></EmptyTableRow>
                     )}
                 </TableBody>
             </Table>

@@ -273,9 +273,7 @@ const ArchivedProjectTable = () => {
                             </TableRow>
                         ))
                     ) : (
-                        <TableRow>
-                            <EmptyTableRow columns={columns} text="No archive projects."></EmptyTableRow>
-                        </TableRow>
+                        <EmptyTableRow columns={columns} text="No archive projects."></EmptyTableRow>
                     )}
                 </TableBody>
             </Table>

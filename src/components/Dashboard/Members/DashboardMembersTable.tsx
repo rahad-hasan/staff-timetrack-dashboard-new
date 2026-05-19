@@ -163,9 +163,7 @@ const DashboardMembersTable = ({ data = [] }: { data: IMembersStatsDashboard[] }
                         }
 
                         {actualRows.length === 0 && (
-                            <TableRow>
-                                <EmptyTableRow columns={columns} text="No members found." padding={10} />
-                            </TableRow>
+                            <EmptyTableRow columns={columns} text="No members found." padding={10} />
                         )}
                     </TableBody>
                 </Table>

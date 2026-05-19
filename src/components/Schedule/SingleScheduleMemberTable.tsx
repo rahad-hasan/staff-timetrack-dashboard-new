@@ -210,9 +210,7 @@ const SingleScheduleMemberTable = ({ id, data }: { id: number | undefined, data:
                             </TableRow>
                         ))
                     ) : (
-                        <TableRow>
-                            <EmptyTableRow columns={columns} text="No member found."></EmptyTableRow>
-                        </TableRow>
+                        <EmptyTableRow columns={columns} text="No member found."></EmptyTableRow>
                     )}
                 </TableBody>
             </Table>

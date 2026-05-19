@@ -439,12 +439,10 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
               </TableRow>
             ))
           ) : (
-            <TableRow className="">
-              <EmptyTableRow
-                columns={columns}
-                text="No manual request found."
-              ></EmptyTableRow>
-            </TableRow>
+            <EmptyTableRow
+              columns={columns}
+              text="No manual request found."
+            ></EmptyTableRow>
           )}
         </TableBody>
       </Table>

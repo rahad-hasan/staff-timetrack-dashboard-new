@@ -198,9 +198,7 @@ const SingleMemberProjectTable = ({ data, searchTerm }: { data: IProjectMember[]
                             </TableRow>
                         ))
                     ) : (
-                        <TableRow>
-                            <EmptyTableRow columns={columns} text="No project found."></EmptyTableRow>
-                        </TableRow>
+                        <EmptyTableRow columns={columns} text="No project found."></EmptyTableRow>
                     )}
                 </TableBody>
             </Table>

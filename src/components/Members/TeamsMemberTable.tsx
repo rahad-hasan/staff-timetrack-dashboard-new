@@ -389,12 +389,10 @@ const TeamsMemberTable = ({ data }: any) => {
               </TableRow>
             ))
           ) : (
-            <TableRow>
-              <EmptyTableRow
-                columns={columns}
-                text="No members found."
-              ></EmptyTableRow>
-            </TableRow>
+            <EmptyTableRow
+              columns={columns}
+              text="No members found."
+            ></EmptyTableRow>
           )}
         </TableBody>
       </Table>

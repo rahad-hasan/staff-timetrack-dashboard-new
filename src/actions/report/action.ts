@@ -6,7 +6,7 @@ import {
   IDailyReportResponse,
   IResponse,
   ITimeSheetEntry,
-  IUserWorkReport,
+  IMonthlyWorkReport,
 } from "@/types/type";
 import { revalidateTag } from "next/cache";
 
@@ -56,14 +56,14 @@ export const getAttendance = async (
   });
 };
 
-export const getWorkReport = async (
+export const getMonthlyWorkReport = async (
   query = {},
-): Promise<IResponse<IUserWorkReport>> => {
+): Promise<IResponse<IMonthlyWorkReport>> => {
   const queryString = buildQuery(query);
   return await baseApi(
-    `/check-in-out/monthly-report${queryString ? `?${queryString}` : ""}`,
+    `/activities/monthly-report${queryString ? `?${queryString}` : ""}`,
     {
-      tag: "schedules", // this is related to schedule because it is used in schedule report page
+      tag: "monthly-report",
     },
   );
 };

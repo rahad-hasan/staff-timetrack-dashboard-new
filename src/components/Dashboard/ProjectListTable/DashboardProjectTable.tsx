@@ -511,12 +511,10 @@ const DashboardProjectTable = ({ data }: { data: IProject[] }) => {
               </TableRow>
             ))
           ) : (
-            <TableRow>
-              <EmptyTableRow
-                columns={columns}
-                text="No project found."
-              ></EmptyTableRow>
-            </TableRow>
+            <EmptyTableRow
+              columns={columns}
+              text="No project found."
+            ></EmptyTableRow>
           )}
         </TableBody>
       </Table>

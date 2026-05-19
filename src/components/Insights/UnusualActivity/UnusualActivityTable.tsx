@@ -255,9 +255,7 @@ const UnusualActivityTable = () => {
                             </TableRow>
                         ))
                     ) : (
-                        <TableRow>
-                            <EmptyTableRow columns={columns} text="No unusual activity found."></EmptyTableRow>
-                        </TableRow>
+                        <EmptyTableRow columns={columns} text="No unusual activity found."></EmptyTableRow>
                     )}
                 </TableBody>
             </Table>

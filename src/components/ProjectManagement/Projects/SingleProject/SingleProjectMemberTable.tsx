@@ -21,7 +21,7 @@ import { ArrowUpDown } from "lucide-react";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { ProjectAssign } from "@/types/type";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { formatTZDateDMY, formatTZTime } from "@/utils";
+import { formatTZDateDMY } from "@/utils";
 
 const SingleProjectMemberTable = ({
   data,
@@ -201,12 +201,10 @@ const SingleProjectMemberTable = ({
               </TableRow>
             ))
           ) : (
-            <TableRow>
-              <EmptyTableRow
-                columns={columns}
-                text="No member found."
-              ></EmptyTableRow>
-            </TableRow>
+            <EmptyTableRow
+              columns={columns}
+              text="No member found."
+            ></EmptyTableRow>
           )}
         </TableBody>
       </Table>

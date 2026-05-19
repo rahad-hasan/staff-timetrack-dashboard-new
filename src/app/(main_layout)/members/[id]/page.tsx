@@ -10,6 +10,7 @@ const MemberDetailsServer = async ({ params, searchParams }: PageProps) => {
     await searchParams;
 
     const result = await getSingleDetailsMember(id);
+    
     return (
         <div>
             <SingleMemberPage data={result?.data}></SingleMemberPage>
