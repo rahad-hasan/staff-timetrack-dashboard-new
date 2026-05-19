@@ -15,6 +15,7 @@ export interface IResponse<T> {
 }
 
 type TRole = "project_manager" | "admin" | "hr" | "manager" | "employee";
+export type EmploymentStatus = "probation" | "permanent";
 
 export interface ISigninResponse {
   id: number;
@@ -449,7 +450,11 @@ export interface Client {
 }
 
 export interface ProjectAssign {
-  user: User;
+  id: number;
+  name: string;
+  email: string;
+  image: string | null;
+  duration: string;
   assignedBy: {
     id: number;
     name: string;

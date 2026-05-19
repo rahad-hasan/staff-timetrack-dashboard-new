@@ -2,7 +2,7 @@
 
 import { buildQuery } from "@/utils/buildQuery";
 import { baseApi } from "../baseApi";
-import { IMember, IResponse } from "@/types/type";
+import { EmploymentStatus, IMember, IResponse } from "@/types/type";
 import { revalidatePath } from "next/cache";
 
 export const getMembers = async (query = {}): Promise<IResponse<IMember[]>> => {
@@ -32,8 +32,12 @@ export const editSingleDetailsMember = async ({
     email?: string;
     phone?: string;
     role?: string;
+    status?: EmploymentStatus;
     time_zone?: string;
     pay_rate_hourly?: number;
+    gender?: "male" | "female" | "other";
+    currency?: string;
+    birth_day?: string | null;
     is_active?: boolean;
     is_tracking?: boolean;
     url_tracking?: boolean;

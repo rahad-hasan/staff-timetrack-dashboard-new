@@ -22,9 +22,7 @@ const SingleProjectServer = async ({ params, searchParams }: PageProps) => {
     });
 
     return (
-        <div>
-            <SingleProject data={result?.data} task={projectBasedTask} page={resolvedSearchParams.page}></SingleProject>
-        </div>
+        <SingleProject data={result?.data} task={projectBasedTask} page={resolvedSearchParams.page}></SingleProject>
     );
 };
 

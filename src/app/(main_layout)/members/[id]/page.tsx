@@ -1,5 +1,5 @@
 import { getSingleDetailsMember } from "@/actions/members/action";
-import { getTasks } from "@/actions/task/action";
+// import { getTasks } from "@/actions/task/action";
 import SingleMemberPage from "@/components/Members/SingleMemberPage/SingleMemberPage";
 import { ISearchParams } from "@/types/type";
 interface PageProps {
@@ -11,15 +11,18 @@ const MemberDetailsServer = async ({ params, searchParams }: PageProps) => {
     const resolvedSearchParams = await searchParams;
 
     const result = await getSingleDetailsMember(id);
-    const projectBasedTask = await getTasks({
-        user_id: id,
-        limit: 10,
-        page: resolvedSearchParams.page,
-        status: resolvedSearchParams.status
-    });
-
+    console.log('result...........', result)
+    // console.log('result', result)
+    // const projectBasedTask = await getTasks({
+    //     user_id: id,
+    //     limit: 10,
+    //     page: resolvedSearchParams.page,
+    //     status: resolvedSearchParams.status
+    // });
+    
     return (
-        <SingleMemberPage data={result?.data} task={projectBasedTask} page={resolvedSearchParams.page}></SingleMemberPage>
+        <SingleMemberPage data={result?.data}></SingleMemberPage>
+        // <SingleMemberPage data={data} task={task} page={page}></SingleMemberPage>
     );
 };
 

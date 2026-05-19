@@ -40,8 +40,8 @@ const SingleProjectMemberTable = ({ data, searchTerm }: { data: ProjectAssign[],
                 )
             },
             cell: ({ row }) => {
-                const name = row?.original?.user?.name
-                const image = row?.original?.user?.image ? row?.original?.user?.image : ""
+                const name = row?.original?.name
+                const image = row?.original?.image ? row?.original?.image : ""
                 return (
                     <div className="flex items-center gap-2 min-w-[180px]">
                         <Avatar>

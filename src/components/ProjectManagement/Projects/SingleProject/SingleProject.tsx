@@ -3,7 +3,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ISingleProjectData } from "@/types/type";
-import { ChevronLeft, Pencil } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import SingleProjectMemberTable from "./SingleProjectMemberTable";
@@ -15,6 +15,7 @@ import { useLogInUserStore } from "@/store/logInUserStore";
 import AppPagination from "@/components/Common/AppPagination";
 import { StatusSelector } from "@/components/Common/StatusSelector";
 import SearchBar from "@/components/Common/SearchBar";
+import EditIcon from "@/components/Icons/FilterOptionIcon/EditIcon";
 
 const SingleProject = ({ data, task, page }: { data: ISingleProjectData, task: any, page: string | number | string[] | undefined }) => {
     const logInUserData = useLogInUserStore(state => state.logInUserData);
@@ -54,7 +55,7 @@ const SingleProject = ({ data, task, page }: { data: ISingleProjectData, task: a
                         (logInUserData?.role === 'admin' ||
                             logInUserData?.role === 'manager' ||
                             logInUserData?.role === 'hr') &&
-                        <Button className=" text-sm md:text-base dark:text-darkTextPrimary" onClick={() => setOpen(true)} variant={'outline2'}><Pencil /> Edit Project</Button>
+                        <Button className=" text-sm md:text-base dark:text-darkTextPrimary" onClick={() => setOpen(true)} variant={'outline2'}><EditIcon size={20} /> Edit Project</Button>
                     }
                 </div>
             </div>

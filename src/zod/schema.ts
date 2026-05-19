@@ -383,38 +383,26 @@ export const singleMemberSchema = z.object({
         message: "Phone number must be a valid international format",
       },
     ),
-  gender: z.string().min(1, "Gender is required"),
-  currency: z
-    .string({
-      error: 'Currency must be a string.',
-    })
-    .trim()
-    .toUpperCase()
-    .regex(/^[A-Z]{3}$/, {
-      message: 'Currency must be a valid 3-letter ISO code (e.g., USD, GBP, EUR).',
-    })
-    .optional(),
-  password: z
-    .string()
-    .min(8, "Minimum 8 characters")
-    .regex(/[a-z]/, "At least one lowercase letter")
-    .regex(/[A-Z]/, "At least one uppercase letter")
-    .regex(/\d/, "At least one number")
-    .regex(/[!@#$%^&*(),.?":{}|<>]/, "At least one special character")
-    .optional(),
-  birth_day: z
-    .string({ message: "Birth day must be a string" })
-    .regex(/^\d{4}-\d{2}-\d{2}$/, {
-      message: 'Birth day must be in the format YYYY-MM-DD.',
-    })
-    .refine((date) => !isNaN(Date.parse(date)), {
-      message: 'Birth day must be a valid calendar date.',
-    })
-    .optional(),
   pay_rate_hourly: z.number().min(0),
   role: z.string().min(2, "role is required"),
+  status: z.enum(["probation", "permanent"]).optional(),
   time_zone: z.string().min(1, "Time Zone is required"),
-  multi_auth: z.boolean().optional(),
+  gender: z.enum(["male", "female", "other"], {
+    message: "Gender is required",
+  }),
+  currency: z.string().min(1, "Currency is required"),
+  birth_day: z
+    .string()
+    .optional()
+    .or(z.literal(""))
+    .refine(
+      (val) => {
+        if (!val || val.length === 0) return true;
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(val)) return false;
+        return !isNaN(Date.parse(val));
+      },
+      { message: "Birth day must be a valid YYYY-MM-DD date." },
+    ),
 });
 
 export const ScheduleShiftSchema = z.object({

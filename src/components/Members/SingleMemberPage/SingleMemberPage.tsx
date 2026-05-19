@@ -1,11 +1,36 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import {
+    ArrowLeft,
+    BadgeCheck,
+    BriefcaseBusiness,
+    CalendarDays,
+    Camera,
+    Check,
+    ChevronsUpDown,
+    Clock3,
+    FolderKanban,
+    Globe2,
+    Link2,
+    LockKeyhole,
+    Mail,
+    MapPin,
+    Phone,
+    Save,
+    Shield,
+    ShieldCheck,
+    Sparkles,
+    TimerReset,
+    UserRound,
+} from "lucide-react";
+
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,36 +43,43 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import SingleMemberProjectTable from "./SingleMemberProjectTable";
-import SingleMemberTaskTable from "./SingleMemberTaskTable";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 import { singleMemberSchema } from "@/zod/schema";
 import { editSingleDetailsMember } from "@/actions/members/action";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Check, ChevronsUpDown, Eye, EyeOff, Search } from "lucide-react";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from "@/components/ui/command";
 import { cn } from "@/lib/utils";
 import { popularTimeZoneList } from "@/utils/TimeZoneList";
-import SearchBar from "@/components/Common/SearchBar";
-import { StatusSelector } from "@/components/Common/StatusSelector";
-import AppPagination from "@/components/Common/AppPagination";
-import { useLogInUserStore } from "@/store/logInUserStore";
-import { currencies } from "@/utils/CurrencyList";
 import { CustomCalendarForDOB } from "@/components/ui/customCalendarForDOB";
+import { useLogInUserStore } from "@/store/logInUserStore";
+import { EmploymentStatus } from "@/types/type";
+import { currencies } from "@/utils/CurrencyList";
 
-const SingleMemberPage = ({ data, task, page }: { data: any, task: any, page: string | number | string[] | undefined }) => {
+const SingleMemberPage = ({
+    data,
+}: {
+    data: any;
+}) => {
+    const router = useRouter();
     const [loading, setLoading] = useState(false);
-    const [open, setOpen] = useState(false);
-    const [date, setDate] = useState<Date | undefined>(undefined);
-    const [showPassword, setShowPassword] = useState(true);
     const logInUserData = useLogInUserStore((state) => state.logInUserData);
-    const gender = ["male", "female", "other"];
-    const [activeTab, setActiveTab] = useState<"Projects" | "Tasks">("Projects");
-    const [searchTerm, setSearchTerm] = useState("");
-    const [searchCurrencyInput, setSearchCurrencyInput] = useState("");
-    const handleTabClick = (tab: "Projects" | "Tasks") => {
-        setActiveTab(tab);
-    };
 
     const [switches, setSwitches] = useState({
         is_active: data?.is_active,
@@ -57,6 +89,50 @@ const SingleMemberPage = ({ data, task, page }: { data: any, task: any, page: st
         multi_factor_auth: data?.multi_factor_auth,
     });
 
+    const genderOptions = ["male", "female", "other"] as const;
+    const employmentStatusOptions: Array<{
+        value: EmploymentStatus;
+        label: string;
+    }> = [
+            { value: "probation", label: "Probation" },
+            { value: "permanent", label: "Permanent" },
+        ];
+
+    const formatDateOnly = (d: Date) => {
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+        return `${y}-${m}-${day}`;
+    };
+
+    const parseBirthDay = (raw: string | Date | null | undefined): string => {
+        if (!raw) return "";
+        if (typeof raw === "string") {
+            const match = raw.match(/^(\d{4}-\d{2}-\d{2})/);
+            if (match) return match[1];
+        }
+        const d = raw instanceof Date ? raw : new Date(raw);
+        if (isNaN(d.getTime())) return "";
+        return formatDateOnly(d);
+    };
+
+    const formatDateLabel = (raw?: string | null) => {
+        if (!raw) return "N/A";
+        const d = new Date(raw);
+        if (isNaN(d.getTime())) return "N/A";
+        return d.toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+        });
+    };
+
+    const initialBirthDay = parseBirthDay(data?.birth_day);
+    const [dobOpen, setDobOpen] = useState(false);
+    const [dobDate, setDobDate] = useState<Date | undefined>(
+        initialBirthDay ? new Date(`${initialBirthDay}T00:00:00`) : undefined,
+    );
+
     const form = useForm<z.infer<typeof singleMemberSchema>>({
         resolver: zodResolver(singleMemberSchema),
         defaultValues: {
@@ -65,15 +141,67 @@ const SingleMemberPage = ({ data, task, page }: { data: any, task: any, page: st
             phone: data?.phone || "",
             pay_rate_hourly: data?.pay_rate_hourly || 0,
             role: data?.role || "",
+            status: (data?.status as EmploymentStatus | undefined) ?? undefined,
             time_zone: data?.time_zone || "",
-            gender: data?.gender || "",
-            currency: data?.currency || "",
-            birth_day: data?.birth_day
-                ? new Date(data.birth_day).toISOString().split("T")[0]
-                : "",
+            gender: (data?.gender as "male" | "female" | "other") || "male",
+            currency: data?.currency || "USD",
+            birth_day: initialBirthDay,
         },
     });
 
+    const totalProjects = data?.total_projects ?? data?.projects?.length ?? 0;
+    const pendingTasks = data?.pending_tasks ?? 0;
+    const assignedSchedule = useMemo(
+        () =>
+            data?.scheduleAssigns?.find((item: any) => item?.schedule)?.schedule ?? null,
+        [data?.scheduleAssigns],
+    );
+
+    const formatScheduleTime = (raw?: string | null) => {
+        if (!raw) return "N/A";
+        const match = raw.match(/T(\d{2}):(\d{2})/);
+        if (!match) return "N/A";
+
+        const hour = Number(match[1]);
+        const minute = Number(match[2]);
+        const period = hour >= 12 ? "PM" : "AM";
+        const formattedHour = hour % 12 === 0 ? 12 : hour % 12;
+
+        return `${formattedHour}:${String(minute).padStart(2, "0")} ${period}`;
+    };
+
+    const controlItems = [
+        {
+            key: "is_active" as const,
+            label: "Active Account",
+            hint: "Login and system access",
+            icon: BadgeCheck,
+        },
+        {
+            key: "is_tracking" as const,
+            label: "Time Tracking",
+            hint: "Desktop tracking permissions",
+            icon: TimerReset,
+        },
+        {
+            key: "url_tracking" as const,
+            label: "URL and Apps",
+            hint: "Website and app usage tracking",
+            icon: Link2,
+        },
+        {
+            key: "cam_tracking" as const,
+            label: "Webcam Screenshots",
+            hint: "Periodic work snapshots",
+            icon: Camera,
+        },
+        {
+            key: "multi_factor_auth" as const,
+            label: "Multi-Factor Auth",
+            hint: "Additional account verification",
+            icon: LockKeyhole,
+        },
+    ];
 
     async function onSubmit(values: z.infer<typeof singleMemberSchema>) {
         setLoading(true);
@@ -148,585 +276,718 @@ const SingleMemberPage = ({ data, task, page }: { data: any, task: any, page: st
         }
     }
 
-    // async function onSubmit(values: z.infer<typeof singleMemberSchema>) {
-    //     setLoading(true);
-    //     const payload = {
-    //         name: values.name,
-    //         email: values.email,
-    //         phone: values.phone ?? "",
-    //         role: values.role,
-    //         time_zone: values.time_zone,
-    //         gender: values.gender,
-    //         birth_day: values.birth_day,
-    //         currency: values.currency,
-    //         password: values.password,
-    //         pay_rate_hourly: values.pay_rate_hourly,
-    //         is_active: Boolean(switches.is_active),
-    //         is_tracking: Boolean(switches.is_tracking),
-    //         url_tracking: Boolean(switches.url_tracking),
-    //         cam_tracking: Boolean(switches.cam_tracking),
-    //         multi_factor_auth: Boolean(switches.multi_factor_auth),
-    //     };
-
-    //     try {
-    //         const res = await editSingleDetailsMember({ data: payload, id: data?.id });
-
-    //         if (res?.success) {
-    //             toast.success(res?.message || "Member edited successfully");
-    //         } else {
-    //             toast.error(res?.message || "Failed to edit member", {
-    //                 style: {
-    //                     backgroundColor: '#ef4444',
-    //                     color: 'white',
-    //                     border: 'none'
-    //                 },
-    //             });
-    //         }
-    //     } catch (error: any) {
-    //         // console.error("failed:", error);
-    //         toast.error(error?.message || "Something went wrong!", {
-    //             style: {
-    //                 backgroundColor: '#ef4444',
-    //                 color: 'white',
-    //                 border: 'none'
-    //             },
-    //         });
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // }
-
-    function formatDate(date: Date) {
-        const y = date.getFullYear()
-        const m = String(date.getMonth() + 1).padStart(2, "0")
-        const d = String(date.getDate()).padStart(2, "0")
-
-        return `${y}-${m}-${d}`
-    }
-
-    const filteredCurrencies = currencies.filter((c) =>
-        c.label.toLowerCase().includes(searchCurrencyInput.toLowerCase()) ||
-        c.value.toLowerCase().includes(searchCurrencyInput.toLowerCase())
-    );
-
     return (
-        <div>
-            <div className="flex flex-col xl:flex-row gap-4 mb-6 xl:w-[80%]">
-                <div className="flex-1 flex items-center gap-5 bg-white dark:bg-darkSecondaryBg p-4 rounded-2xl shadow-md border-t border-[#0505050c]">
-                    <div className="relative">
-                        <Avatar className="w-16 h-16 md:w-20 md:h-20 bg-white dark:bg-darkSecondaryBg">
-                            <AvatarImage
-                                src={data?.image}
-                                alt={data?.name}
-                                className="object-cover rounded-full"
-                            />
-                            <AvatarFallback className="text-2xl font-bold dark:bg-primary/10 text-subTextColor dark:text-darkTextPrimary">
-                                {data?.name?.charAt(0)}
-                            </AvatarFallback>
-                        </Avatar>
+        <div className="space-y-6">
+            <section className="overflow-hidden rounded-[12px] border border-emerald-100 bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.18),_transparent_30%),linear-gradient(135deg,#f8fffc_0%,#eefbf5_42%,#e5f7ef_100%)] p-4 text-slate-900 shadow-[0_24px_60px_rgba(15,23,42,0.08)] dark:border-darkBorder dark:bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.12),_transparent_28%),linear-gradient(180deg,#0c1524_0%,#111b2d_100%)] dark:text-white dark:shadow-[0_30px_80px_rgba(2,6,23,0.35)] sm:p-6">
+                <div className="flex flex-col gap-6">
+                    <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                        <div className="flex items-start gap-3">
+                            <Button
+                                type="button"
+                                variant="outline2"
+                                size="icon"
+                                className="border-emerald-200 bg-white/80 text-slate-700 hover:bg-white hover:text-slate-900 dark:border-white/15 dark:bg-white/5 dark:text-white dark:hover:bg-white/10 dark:hover:text-white"
+                                onClick={() => router.back()}
+                            >
+                                <ArrowLeft className="size-4" />
+                            </Button>
+                            <div>
+                                <p className="text-sm text-slate-500 dark:text-white/65">Employees</p>
+                                <h1 className="mt-1 text-2xl font-semibold tracking-tight text-slate-900 sm:text-4xl dark:text-white">
+                                    Update Employee
+                                </h1>
+                                <p className="mt-2 max-w-2xl text-sm text-slate-600 sm:text-base dark:text-white/70">
+                                    Update employee information, permissions, payroll context,
+                                    and workspace preferences.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col gap-3 sm:flex-row">
+                            <Button
+                                type="button"
+                                variant="outline2"
+                                className="border-emerald-200 bg-white/80 text-slate-700 hover:bg-white hover:text-slate-900 dark:border-white/15 dark:bg-white/5 dark:text-white dark:hover:bg-white/10 dark:hover:text-white"
+                                onClick={() => router.back()}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                type="submit"
+                                form="member-details-form"
+                                disabled={loading}
+                                className=""
+                            >
+                                <Save className="size-4" />
+                                {loading ? "Saving..." : "Save Changes"}
+                            </Button>
+                        </div>
                     </div>
 
-                    <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                            <h1 className=" text-xl md:text-2xl 2xl:text-3xl font-bold text-headingTextColor dark:text-darkTextPrimary tracking-tight">
-                                {data?.name}
-                            </h1>
-                            <span className="px-2 py-0.5 rounded text-[12px] font-bold uppercase bg-primary/10 text-primary border border-primary/20">
-                                {data?.role}
+                    <div className="rounded-[12px] border border-white/60 bg-white/72 p-4 backdrop-blur-md dark:border-white/10 dark:bg-white/5 sm:p-6">
+                        <div className="grid gap-6 xl:grid-cols-[1.2fr_2fr] xl:items-center">
+                            <div className="flex items-start gap-4 sm:gap-5">
+                                <Avatar className="size-20 border border-primary/60 dark:border-primary/60 bg-white shadow-[0_0_0_8px_rgba(16,185,129,0.08)] sm:size-28 dark:bg-white/10">
+                                    <AvatarImage
+                                        src={data?.image}
+                                        alt={data?.name}
+                                        className="object-cover"
+                                    />
+                                    <AvatarFallback className="bg-transparent text-3xl font-semibold text-slate-900 dark:text-white">
+                                        {data?.name?.charAt(0) || "U"}
+                                    </AvatarFallback>
+                                </Avatar>
+
+                                <div className="min-w-0 flex-1">
+                                    <div className="flex flex-wrap items-center gap-3">
+                                        <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">
+                                            {data?.name || "Unknown Employee"}
+                                        </h2>
+                                        <span className="rounded-full border border-primary bg-emerald-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700 dark:border-emerald-400/30 dark:bg-emerald-500/15 dark:text-primary">
+                                            {data?.role || "Employee"}
+                                        </span>
+                                    </div>
+
+                                    <div className="mt-3 space-y-2 text-sm text-slate-600 dark:text-white/72">
+                                        <div className="flex items-center gap-2">
+                                            <Mail className="size-4 text-primary" />
+                                            <span className="truncate">{data?.email || "No email"}</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Globe2 className="size-4 text-primary" />
+                                            <span>{data?.time_zone || "UTC"}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="grid gap-4 sm:grid-cols-2 2xl:grid-cols-4">
+                                <div className="rounded-[12px] border border-white/70 bg-white/70 px-4 py-4 dark:border-white/10 dark:bg-black/10">
+                                    <div className="flex items-center gap-2 text-slate-500 dark:text-white/65">
+                                        <CalendarDays className="size-4 text-primary dark:text-primary" />
+                                        <span className="text-xs uppercase tracking-[0.16em]">
+                                            Member Since
+                                        </span>
+                                    </div>
+                                    <p className="mt-3 text-lg font-semibold text-slate-900 dark:text-white">
+                                        {formatDateLabel(data?.created_at)}
+                                    </p>
+                                </div>
+
+                                <div className="rounded-[12px] border border-white/70 bg-white/70 px-4 py-4 dark:border-white/10 dark:bg-black/10">
+                                    <div className="flex items-center gap-2 text-slate-500 dark:text-white/65">
+                                        <FolderKanban className="size-4 text-primary dark:text-primary" />
+                                        <span className="text-xs uppercase tracking-[0.16em]">
+                                            Total Projects
+                                        </span>
+                                    </div>
+                                    <p className="mt-3 text-lg font-semibold text-slate-900 dark:text-white">{totalProjects}</p>
+                                </div>
+
+                                <div className="rounded-[12px] border border-white/70 bg-white/70 px-4 py-4 dark:border-white/10 dark:bg-black/10">
+                                    <div className="flex items-center gap-2 text-slate-500 dark:text-white/65">
+                                        <Clock3 className="size-4 text-primary dark:text-primary" />
+                                        <span className="text-xs uppercase tracking-[0.16em]">
+                                            Pending Tasks
+                                        </span>
+                                    </div>
+                                    <p className="mt-3 text-lg font-semibold text-slate-900 dark:text-white">{pendingTasks}</p>
+                                </div>
+
+                                <div className="rounded-[12px] border border-white/70 bg-white/70 px-4 py-4 dark:border-white/10 dark:bg-black/10">
+                                    <div className="flex items-center gap-2 text-slate-500 dark:text-white/65">
+                                        <ShieldCheck className="size-4 text-primary dark:text-primary" />
+                                        <span className="text-xs uppercase tracking-[0.16em]">
+                                            Employment Status
+                                        </span>
+                                    </div>
+                                    <p className="mt-3 text-lg font-semibold text-slate-900 dark:text-white">
+                                        {data?.status === "probation"
+                                            ? "Probation"
+                                            : data?.status === "permanent"
+                                                ? "Permanent"
+                                                : "Not Set"}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section className="rounded-[12px] border border-borderColor bg-white/95 p-5 backdrop-blur dark:border-darkBorder dark:bg-darkSecondaryBg/95 sm:p-6">
+                <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h3 className="text-xl font-semibold text-headingTextColor dark:text-darkTextPrimary">
+                            Account Controls
+                        </h3>
+                        <p className="text-sm text-subTextColor dark:text-darkTextSecondary">
+                            Manage access, tracking, and security settings from the top layer of
+                            the employee profile.
+                        </p>
+                    </div>
+                    <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700 dark:bg-emerald-500/10 dark:text-primary">
+                        <Sparkles className="size-3.5" />
+                        HR Workspace Controls
+                    </div>
+                </div>
+
+                <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+                    {controlItems.map((item) => {
+                        const Icon = item.icon;
+                        return (
+                            <div
+                                key={item.key}
+                                className="rounded-[12px] border border-borderColor bg-[#f7fafc] px-4 py-3 dark:border-darkBorder dark:bg-darkPrimaryBg"
+                            >
+                                <div className="flex items-start justify-between gap-3">
+                                    <div className="rounded-xl bg-primary/10 p-2 text-primary">
+                                        <Icon className="size-3.5" />
+                                    </div>
+                                    <Switch
+                                        checked={Boolean(switches[item.key])}
+                                        onCheckedChange={(val) =>
+                                            setSwitches((prev) => ({ ...prev, [item.key]: val }))
+                                        }
+                                    />
+                                </div>
+                                <p className="mt-3 text-sm font-semibold leading-none text-headingTextColor dark:text-darkTextPrimary">
+                                    {item.label}
+                                </p>
+                                <p className="mt-1 text-xs leading-4 text-subTextColor dark:text-darkTextSecondary">
+                                    {item.hint}
+                                </p>
+                            </div>
+                        );
+                    })}
+                </div>
+            </section>
+
+            <div className="grid gap-6 xl:grid-cols-[minmax(0,1.65fr)_380px]">
+                <div className="space-y-6">
+                    <div className="rounded-[12px] border border-borderColor bg-white p-5 dark:border-darkBorder dark:bg-darkSecondaryBg sm:p-6">
+                        <div className="mb-6 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                                <h3 className="text-xl font-semibold text-headingTextColor dark:text-darkTextPrimary">
+                                    Employee Information
+                                </h3>
+                                <p className="text-sm text-subTextColor dark:text-darkTextSecondary">
+                                    Keep this profile accurate for payroll, permissions, and leave
+                                    eligibility.
+                                </p>
+                            </div>
+                            <span className="rounded-full bg-bgSecondary px-3 py-1 text-xs font-medium text-subTextColor dark:bg-darkPrimaryBg dark:text-darkTextSecondary">
+                                Last updated {formatDateLabel(data?.updated_at)}
                             </span>
                         </div>
-                        <p className="text-sm text-subTextColor dark:text-darkTextSecondary flex items-center gap-1">
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-                            {data?.email}
-                        </p>
-                        <div className="flex items-center gap-2 mt-1">
-                            <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
-                            <p className="text-sm font-bold text-headingTextColor dark:text-darkTextPrimary truncate">
-                                {data?.time_zone || "UTC"}
-                            </p>
-                        </div>
-                    </div>
-                </div>
 
-                <div className="grid grid-cols-1 gap-4">
-                    <div className="bg-gradient-to-br from-primary/80 to-[#01a07de1]/80 p-4 rounded-2xl text-white sm:min-w-[260px] shadow-md flex flex-col justify-center">
-                        <span className="text-[12px] font-bold uppercase opacity-90 dark:text-darkTextPrimary">Member Since</span>
-                        <p className="text-lg font-bold mt-1 dark:text-darkTextPrimary">
-                            {data?.created_at ? new Date(data.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A'}
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <div className="xl:w-[80%] rounded-lg border border-borderColor p-3 md:p-4 mt-4 bg-white dark:bg-darkSecondaryBg dark:border-darkBorder">
-
-                <div className="rounded-xl border border-borderColor dark:border-darkBorder p-5 mb-6 bg-white dark:bg-darkSecondaryBg ">
-                    <div className="flex justify-between items-end pb-4 mb-6 border-b border-borderColor dark:border-darkBorder">
-                        <div className="space-y-1">
-                            <h3 className="text-lg font-semibold text-headingTextColor dark:text-darkTextPrimary">Account & Permissions</h3>
-                            <p className="text-sm text-subTextColor dark:text-darkTextSecondary">Manage system access and monitoring preferences</p>
-                        </div>
-                        <div className="flex flex-col items-end">
-                            <span className="text-[10px] font-bold uppercase tracking-wider text-subTextColor opacity-70 dark:text-darkTextSecondary mb-1">Account Status</span>
-                            <span className={`px-2 py-1 rounded-md text-[11px] font-bold uppercase ${switches.is_active ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}`}>
-                                {switches.is_active ? "Active" : "Inactive"}
-                            </span>
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className={`flex items-center justify-between p-4 rounded-lg border transition-all ${switches.is_active ? 'border-primary/20 bg-primary/[0.02]' : 'border-borderColor dark:border-darkBorder'}`}>
-                            <div className="flex gap-3 items-center">
-                                <div className="p-2 rounded-full bg-gray-100 dark:bg-darkPrimaryBg">
-                                    <svg className="w-5 h-5 text-subTextColor dark:text-darkTextSecondary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-                                </div>
-                                <div className="flex flex-col">
-                                    <span className="text-sm font-semibold">Active Account</span>
-                                    <span className="text-xs text-subTextColor dark:text-darkTextSecondary ">Login & system access</span>
-                                </div>
-                            </div>
-                            <Switch
-                                checked={switches.is_active}
-                                onCheckedChange={(val) => setSwitches(prev => ({ ...prev, is_active: val }))}
-                            />
-                        </div>
-
-                        <div className={`flex items-center justify-between p-4 rounded-lg border transition-all ${switches.is_tracking ? 'border-primary/20 bg-primary/[0.02]' : 'border-borderColor dark:border-darkBorder'}`}>
-                            <div className="flex gap-3 items-center">
-                                <div className="p-2 rounded-full bg-gray-100 dark:bg-darkPrimaryBg">
-                                    <svg className="w-5 h-5 text-subTextColor dark:text-darkTextSecondary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                </div>
-                                <div className="flex flex-col">
-                                    <span className="text-sm font-semibold">Time Tracking</span>
-                                    <span className="text-xs text-subTextColor dark:text-darkTextSecondary ">Desktop app recording</span>
-                                </div>
-                            </div>
-                            <Switch
-                                checked={switches.is_tracking}
-                                onCheckedChange={(val) => setSwitches(prev => ({ ...prev, is_tracking: val }))}
-                            />
-                        </div>
-
-                        <div className={`flex items-center justify-between p-4 rounded-lg border transition-all ${switches.url_tracking ? 'border-primary/20 bg-primary/[0.02]' : 'border-borderColor dark:border-darkBorder'}`}>
-                            <div className="flex gap-3 items-center">
-                                <div className="p-2 rounded-full bg-gray-100 dark:bg-darkPrimaryBg">
-                                    <svg className="w-5 h-5 text-subTextColor dark:text-darkTextSecondary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
-                                </div>
-                                <div className="flex flex-col">
-                                    <span className="text-sm font-semibold">URL & Apps</span>
-                                    <span className="text-xs text-subTextColor dark:text-darkTextSecondary ">Website usage tracking</span>
-                                </div>
-                            </div>
-                            <Switch
-                                checked={switches.url_tracking}
-                                onCheckedChange={(val) => setSwitches(prev => ({ ...prev, url_tracking: val }))}
-                            />
-                        </div>
-
-                        <div className={`flex items-center justify-between p-4 rounded-lg border transition-all ${switches.cam_tracking ? 'border-primary/20 bg-primary/[0.02]' : 'border-borderColor dark:border-darkBorder'}`}>
-                            <div className="flex gap-3 items-center">
-                                <div className="p-2 rounded-full bg-gray-100 dark:bg-darkPrimaryBg">
-                                    <svg className="w-5 h-5 text-subTextColor dark:text-darkTextSecondary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                                </div>
-                                <div className="flex flex-col">
-                                    <span className="text-sm font-semibold">Webcam Screenshots</span>
-                                    <span className="text-xs text-subTextColor dark:text-darkTextSecondary ">Periodic work snapshots</span>
-                                </div>
-                            </div>
-                            <Switch
-                                checked={switches.cam_tracking}
-                                onCheckedChange={(val) => setSwitches(prev => ({ ...prev, cam_tracking: val }))}
-                            />
-                        </div>
-
-                    </div>
-                </div>
-
-                <div className="rounded-md border border-borderColor dark:border-darkBorder p-3 md:p-4 mb-4">
-                    <span className="text-subTextColor dark:text-darkTextPrimary text-sm font-medium">Member Details</span>
-
-                    <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
-                            <div className="grid sm:grid-cols-2 gap-4 sm:gap-3 items-start">
-                                <FormField
-                                    control={form.control}
-                                    name="name"
-                                    render={({ field }) => (
-                                        <FormItem className="w-full">
-                                            <FormLabel required={true}>Full Name</FormLabel>
-                                            <FormControl>
-                                                <Input {...field} className="dark:bg-darkPrimaryBg dark:border-darkBorder" />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="email"
-                                    render={({ field }) => (
-                                        <FormItem className="w-full">
-                                            <FormLabel required={true}>Email Address</FormLabel>
-                                            <FormControl>
-                                                <Input {...field} className="opacity-70 dark:bg-darkPrimaryBg dark:border-darkBorder" />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
-
-                            <div className="grid sm:grid-cols-2 gap-4 sm:gap-3 items-start">
-                                <FormField
-                                    control={form.control}
-                                    name="pay_rate_hourly"
-                                    render={({ field }) => (
-                                        <FormItem className="w-full">
-                                            <FormLabel required={true} className="text-sm">Hourly Pay Rate ($)</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    type="number"
-                                                    {...field}
-                                                    onChange={(e) => field.onChange(e.target.valueAsNumber)}
-                                                    className="dark:bg-darkPrimaryBg dark:border-darkBorder py-2 px-3"
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-
-                                <FormField
-                                    control={form.control}
-                                    name="phone"
-                                    render={({ field }) => (
-                                        <FormItem className="w-full">
-                                            <FormLabel className="text-sm">Phone Number</FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    {...field}
-                                                    value={field.value || ""}
-                                                    placeholder="Phone Number"
-                                                    className="dark:bg-darkPrimaryBg dark:border-darkBorder "
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
-                            <div className="grid sm:grid-cols-2 gap-4 sm:gap-3 items-start">
-                                <FormField
-                                    control={form.control}
-                                    name="role"
-                                    render={({ field }) => (
-                                        <FormItem className=" w-full">
-                                            <FormLabel required={true}>User Role</FormLabel>
-                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                <FormControl className=" w-full">
-                                                    <SelectTrigger className="dark:bg-darkPrimaryBg dark:border-darkBorder">
-                                                        <SelectValue placeholder="Select a role" />
-                                                    </SelectTrigger>
-                                                </FormControl>
-                                                <SelectContent>
-                                                    {
-                                                        logInUserData?.role === "admin" &&
-                                                        <SelectItem value="admin">Admin</SelectItem>
-                                                    }
-                                                    <SelectItem value="manager">Manager</SelectItem>
-                                                    <SelectItem value="hr">HR</SelectItem>
-                                                    <SelectItem value="project_manager">Project Manager</SelectItem>
-                                                    <SelectItem value="employee">Employee</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="time_zone"
-                                    render={({ field }) => (
-                                        <FormItem className="flex flex-col">
-                                            <FormLabel required={true}>Time Zone</FormLabel>
-                                            <Popover>
-                                                <PopoverTrigger asChild>
-                                                    <FormControl>
-                                                        <Button
-                                                            variant="outline2"
-                                                            role="combobox"
-                                                            className=" flex justify-between dark:text-darkTextPrimary hover:dark:bg-darkPrimaryBg"
-                                                        >
-                                                            <span className="truncate">
-                                                                {field.value
-                                                                    ? popularTimeZoneList.find((tz) => tz.value === field.value)?.label
-                                                                    : "Select time zone"}
-                                                            </span>
-                                                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                                        </Button>
-                                                    </FormControl>
-                                                </PopoverTrigger>
-                                                <PopoverContent className="w-[--radix-popover-trigger-width] p-0 dark:bg-darkSecondaryBg dark:border-darkBorder ">
-                                                    <Command className="dark:bg-darkSecondaryBg">
-                                                        <CommandInput placeholder="Search time zone..." className="" />
-                                                        <CommandList className="overflow-y-scroll no-scrollbar scroll-smooth">
-                                                            <CommandEmpty>No time zone found.</CommandEmpty>
-                                                            <CommandGroup>
-                                                                {popularTimeZoneList.map((tz) => (
-                                                                    <CommandItem
-                                                                        key={tz.value}
-                                                                        value={tz.label}
-                                                                        onSelect={() => {
-                                                                            form.setValue("time_zone", tz.value);
-                                                                            document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
-                                                                        }}
-                                                                        className="cursor-pointer hover:dark:bg-darkPrimaryBg"
-                                                                    >
-                                                                        <Check
-                                                                            className={cn(
-                                                                                "mr-2 h-4 w-4",
-                                                                                tz.value === field.value ? "opacity-100" : "opacity-0"
-                                                                            )}
-                                                                        />
-                                                                        {tz.label}
-                                                                    </CommandItem>
-                                                                ))}
-                                                            </CommandGroup>
-                                                        </CommandList>
-                                                    </Command>
-                                                </PopoverContent>
-                                            </Popover>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
-                            <div className="grid sm:grid-cols-2 gap-4 sm:gap-3 items-start">
-                                <FormField
-                                    control={form.control}
-                                    name="gender"
-                                    render={({ field }) => (
-                                        <FormItem className="">
-                                            <FormLabel required={true}>Gender</FormLabel>
-                                            <FormControl>
-                                                <div className="relative">
-                                                    <Select
-                                                        value={field.value}
-                                                        onValueChange={field.onChange}
-                                                    >
-                                                        <SelectTrigger className="w-full capitalize">
-                                                            <div className=" flex gap-1 items-center">
-                                                                <SelectValue className=" text-start" placeholder="Select Gender" />
-                                                            </div>
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            {gender.map(p => (
-                                                                <SelectItem className=" capitalize" key={p} value={p}>{p}</SelectItem>
-                                                            ))}
-                                                        </SelectContent>
-                                                    </Select>
-                                                </div>
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                                <FormField
-                                    control={form.control}
-                                    name="currency"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Currency</FormLabel>
-
-                                            <Select
-                                                onValueChange={field.onChange}
-                                                value={field.value}
-                                            >
+                        <Form {...form}>
+                            <form
+                                id="member-details-form"
+                                onSubmit={form.handleSubmit(onSubmit)}
+                                className="space-y-5"
+                            >
+                                <div className="grid gap-4 md:grid-cols-2">
+                                    <FormField
+                                        control={form.control}
+                                        name="name"
+                                        render={({ field }) => (
+                                            <FormItem className="w-full min-w-0">
+                                                <FormLabel required>Full Name</FormLabel>
                                                 <FormControl>
-                                                    <SelectTrigger className="w-full dark:bg-darkSecondaryBg">
-                                                        <SelectValue placeholder="Select currency" />
-                                                    </SelectTrigger>
-                                                </FormControl>
-
-                                                <SelectContent className="dark:bg-darkSecondaryBg">
-                                                    {/* Search box */}
-                                                    <div className="flex items-center px-2 pb-2 pt-1">
-                                                        <Search className="mr-2 h-4 w-4 opacity-50" />
+                                                    <div className="relative">
+                                                        <UserRound className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-subTextColor dark:text-darkTextSecondary" />
                                                         <Input
-                                                            placeholder="Search currency..."
-                                                            className="h-8 border-none focus-visible:ring-0"
-                                                            value={searchCurrencyInput}
-                                                            onKeyDown={(e) => e.stopPropagation()}
-                                                            onChange={(e) => setSearchCurrencyInput(e.target.value)}
+                                                            {...field}
+                                                            className="!h-[52px] min-h-[52px] pl-9 dark:border-darkBorder dark:bg-darkPrimaryBg"
                                                         />
                                                     </div>
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
 
-                                                    {/* List */}
-                                                    {filteredCurrencies.length === 0 ? (
-                                                        <p className="text-sm text-center py-2">
-                                                            No currency found.
-                                                        </p>
-                                                    ) : (
-                                                        filteredCurrencies.map((c) => (
-                                                            <SelectItem key={c.value} value={c.value}>
-                                                                <div className="flex items-center gap-2">
-                                                                    {c.label}
-                                                                </div>
-                                                            </SelectItem>
-                                                        ))
-                                                    )}
-                                                </SelectContent>
-                                            </Select>
+                                    <FormField
+                                        control={form.control}
+                                        name="email"
+                                        render={({ field }) => (
+                                            <FormItem className="w-full min-w-0">
+                                                <FormLabel required>Email Address</FormLabel>
+                                                <FormControl>
+                                                    <div className="relative">
+                                                        <Mail className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-subTextColor dark:text-darkTextSecondary" />
+                                                        <Input
+                                                            {...field}
+                                                            className="!h-[52px] min-h-[52px] pl-9 dark:border-darkBorder dark:bg-darkPrimaryBg"
+                                                        />
+                                                    </div>
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
 
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
-                            <div className="grid sm:grid-cols-2 gap-4 sm:gap-3 items-start">
-                                <FormField
-                                    control={form.control}
-                                    name="birth_day"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Date of Birth</FormLabel>
-                                            <FormControl>
-                                                <Popover open={open} onOpenChange={setOpen}>
+                                <div className="grid gap-4 md:grid-cols-2">
+                                    <FormField
+                                        control={form.control}
+                                        name="phone"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Phone Number</FormLabel>
+                                                <FormControl>
+                                                    <div className="relative">
+                                                        <Phone className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-subTextColor dark:text-darkTextSecondary" />
+                                                        <Input
+                                                            {...field}
+                                                            value={field.value || ""}
+                                                            placeholder="Phone Number"
+                                                            className="!h-[52px] min-h-[52px] pl-9 dark:border-darkBorder dark:bg-darkPrimaryBg"
+                                                        />
+                                                    </div>
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={form.control}
+                                        name="birth_day"
+                                        render={({ field }) => (
+                                            <FormItem className="flex w-full min-w-0 flex-col">
+                                                <FormLabel>Date of Birth</FormLabel>
+                                                <Popover open={dobOpen} onOpenChange={setDobOpen}>
                                                     <PopoverTrigger asChild>
-                                                        <p
-                                                            className={cn(
-                                                                "border-input h-10 w-full rounded-lg border dark:border-darkBorder cursor-pointer bg-transparent px-3 py-1 text-base md:text-sm",
-                                                                "flex items-center justify-start font-normal",
-                                                                !field.value && "text-muted-foreground"
-                                                            )}
-                                                        >
-                                                            {field.value || "Select date"}
-                                                        </p>
+                                                        <FormControl>
+                                                            <button
+                                                                type="button"
+                                                                className={cn(
+                                                                    "flex h-10 w-full items-center justify-between rounded-lg border border-input bg-transparent px-3 py-2 text-left text-sm dark:border-darkBorder dark:bg-darkPrimaryBg",
+                                                                    "!h-[52px] min-h-[52px] py-0",
+                                                                    !field.value &&
+                                                                    "text-muted-foreground dark:text-darkTextSecondary",
+                                                                )}
+                                                            >
+                                                                <span>{field.value || "Select date"}</span>
+                                                                <CalendarDays className="size-4 text-subTextColor dark:text-darkTextSecondary" />
+                                                            </button>
+                                                        </FormControl>
                                                     </PopoverTrigger>
-
                                                     <PopoverContent className="w-auto overflow-hidden p-0" align="start">
                                                         <CustomCalendarForDOB
                                                             mode="single"
-                                                            selected={field.value ? new Date(field.value) : undefined}
-                                                            defaultMonth={field.value ? new Date(field.value) : undefined}
+                                                            selected={dobDate}
+                                                            defaultMonth={dobDate}
                                                             captionLayout="dropdown"
                                                             onSelect={(selectedDate) => {
-                                                                if (!selectedDate) return
-                                                                setDate(selectedDate)
-                                                                setOpen(false)
-
-                                                                const formatted = formatDate(selectedDate)
-
-                                                                field.onChange(formatted)
+                                                                if (!selectedDate) return;
+                                                                setDobDate(selectedDate);
+                                                                setDobOpen(false);
+                                                                field.onChange(formatDateOnly(selectedDate));
                                                             }}
                                                         />
                                                     </PopoverContent>
                                                 </Popover>
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
 
-                                <FormField
-                                    control={form.control}
-                                    name="password"
-                                    render={({ field }) => (
-                                        <FormItem className="w-full">
-                                            <FormLabel required={true}>New Password</FormLabel>
-                                            <FormControl>
-                                                <div className="relative">
-                                                    <Input
-                                                        type={showPassword ? "password" : "text"}
-                                                        placeholder="New Password"
-                                                        className="dark:bg-darkPrimaryBg dark:border-darkBorder"
-                                                        {...field}
-                                                    />
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setShowPassword(!showPassword)}
-                                                        className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500 hover:text-gray-700 dark:text-gray-400"
+                                <div className="grid gap-4 md:grid-cols-2">
+                                    <FormField
+                                        control={form.control}
+                                        name="role"
+                                        render={({ field }) => (
+                                            <FormItem className="w-full min-w-0">
+                                                <FormLabel required>User Role</FormLabel>
+                                                <Select onValueChange={field.onChange} value={field.value}>
+                                                    <FormControl>
+                                                        <SelectTrigger className="!h-[52px] min-h-[52px] w-full py-0 dark:border-darkBorder dark:bg-darkPrimaryBg">
+                                                            <SelectValue placeholder="Select a role" />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        {logInUserData?.role === "admin" ? (
+                                                            <SelectItem className="min-h-[52px]" value="admin">Admin</SelectItem>
+                                                        ) : null}
+                                                        <SelectItem className="min-h-[52px]" value="manager">Manager</SelectItem>
+                                                        <SelectItem className="min-h-[52px]" value="hr">HR</SelectItem>
+                                                        <SelectItem className="min-h-[52px]" value="project_manager">
+                                                            Project Manager
+                                                        </SelectItem>
+                                                        <SelectItem className="min-h-[52px]" value="employee">Employee</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={form.control}
+                                        name="status"
+                                        render={({ field }) => (
+                                            <FormItem className="w-full min-w-0">
+                                                <FormLabel>Employment Status</FormLabel>
+                                                <Select onValueChange={field.onChange} value={field.value}>
+                                                    <FormControl>
+                                                        <SelectTrigger className="!h-[52px] min-h-[52px] w-full py-0 dark:border-darkBorder dark:bg-darkPrimaryBg">
+                                                            <SelectValue placeholder="Select employment status" />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        {employmentStatusOptions.map((status) => (
+                                                            <SelectItem className="min-h-[52px]" key={status.value} value={status.value}>
+                                                                {status.label}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+
+                                <div className="grid gap-4 md:grid-cols-3">
+                                    <FormField
+                                        control={form.control}
+                                        name="gender"
+                                        render={({ field }) => (
+                                            <FormItem className="w-full min-w-0">
+                                                <FormLabel required>Gender</FormLabel>
+                                                <Select onValueChange={field.onChange} value={field.value}>
+                                                    <FormControl>
+                                                        <SelectTrigger className="!h-[52px] min-h-[52px] w-full py-0 capitalize dark:border-darkBorder dark:bg-darkPrimaryBg">
+                                                            <SelectValue placeholder="Select gender" />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        {genderOptions.map((g) => (
+                                                            <SelectItem key={g} value={g} className="min-h-[52px] capitalize">
+                                                                {g}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={form.control}
+                                        name="time_zone"
+                                        render={({ field }) => (
+                                            <FormItem className="flex w-full min-w-0 flex-col">
+                                                <FormLabel required>Time Zone</FormLabel>
+                                                <Popover>
+                                                    <PopoverTrigger asChild>
+                                                        <FormControl>
+                                                            <Button
+                                                                variant="outline2"
+                                                                role="combobox"
+                                                                className="!h-[52px] min-h-[52px] w-full justify-between py-0 dark:border-darkBorder dark:bg-darkPrimaryBg dark:text-darkTextPrimary hover:dark:bg-darkPrimaryBg"
+                                                            >
+                                                                <span className="truncate">
+                                                                    {field.value
+                                                                        ? popularTimeZoneList.find(
+                                                                            (tz) => tz.value === field.value,
+                                                                        )?.label
+                                                                        : "Select time zone"}
+                                                                </span>
+                                                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                                            </Button>
+                                                        </FormControl>
+                                                    </PopoverTrigger>
+                                                    <PopoverContent className="w-[--radix-popover-trigger-width] p-0 dark:border-darkBorder dark:bg-darkSecondaryBg">
+                                                        <Command className="dark:bg-darkSecondaryBg">
+                                                            <CommandInput placeholder="Search time zone..." />
+                                                            <CommandList className="no-scrollbar overflow-y-scroll scroll-smooth">
+                                                                <CommandEmpty>No time zone found.</CommandEmpty>
+                                                                <CommandGroup>
+                                                                    {popularTimeZoneList.map((tz) => (
+                                                                        <CommandItem
+                                                                            key={tz.value}
+                                                                            value={tz.label}
+                                                                            onSelect={() => {
+                                                                                form.setValue("time_zone", tz.value);
+                                                                                document.dispatchEvent(
+                                                                                    new KeyboardEvent("keydown", {
+                                                                                        key: "Escape",
+                                                                                    }),
+                                                                                );
+                                                                            }}
+                                                                            className="min-h-[52px] cursor-pointer hover:dark:bg-darkPrimaryBg"
+                                                                        >
+                                                                            <Check
+                                                                                className={cn(
+                                                                                    "mr-2 h-4 w-4",
+                                                                                    tz.value === field.value
+                                                                                        ? "opacity-100"
+                                                                                        : "opacity-0",
+                                                                                )}
+                                                                            />
+                                                                            {tz.label}
+                                                                        </CommandItem>
+                                                                    ))}
+                                                                </CommandGroup>
+                                                            </CommandList>
+                                                        </Command>
+                                                    </PopoverContent>
+                                                </Popover>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <FormField
+                                        control={form.control}
+                                        name="currency"
+                                        render={({ field }) => (
+                                            <FormItem className="flex flex-col">
+                                                <FormLabel required>Currency</FormLabel>
+                                                <Popover>
+                                                    <PopoverTrigger asChild>
+                                                        <FormControl>
+                                                            <Button
+                                                                variant="outline2"
+                                                                role="combobox"
+                                                                className="!h-[52px] min-h-[52px] w-full justify-between py-0 dark:border-darkBorder dark:bg-darkPrimaryBg dark:text-darkTextPrimary hover:dark:bg-darkPrimaryBg"
+                                                            >
+                                                                <span className="truncate">
+                                                                    {field.value
+                                                                        ? currencies.find(
+                                                                            (currency) =>
+                                                                                currency.value === field.value
+                                                                        )?.label
+                                                                        : "Select currency"}
+                                                                </span>
+                                                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                                            </Button>
+                                                        </FormControl>
+                                                    </PopoverTrigger>
+                                                    <PopoverContent
+                                                        className="w-[--radix-popover-trigger-width] p-0 dark:border-darkBorder dark:bg-darkSecondaryBg"
                                                     >
-                                                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                                                    </button>
-                                                </div>
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
-                            </div>
+                                                        <Command className="dark:bg-darkSecondaryBg">
+                                                            <CommandInput placeholder="Search currency..." />
+                                                            <CommandList className="max-h-[300px] overflow-y-auto">
+                                                                <CommandEmpty>
+                                                                    No currency found.
+                                                                </CommandEmpty>
+                                                                <CommandGroup>
+                                                                    {currencies.map((currency) => (
+                                                                        <CommandItem
+                                                                            key={currency.value}
+                                                                            value={`${currency.label} ${currency.value}`}
+                                                                            onSelect={() => {
+                                                                                form.setValue(
+                                                                                    "currency",
+                                                                                    currency.value
+                                                                                );
 
-                            <FormField
-                                control={form.control}
-                                name="multi_auth"
-                                render={() => (
-                                    <FormItem>
-                                        <FormLabel>Multi-Factor Authentication</FormLabel>
-                                        <FormControl>
-                                            <div className="flex items-center justify-between p-2 border rounded-md dark:border-darkBorder">
-                                                <span className="text-sm ">Enable Multi-Factor Authentication</span>
-                                                <Switch
-                                                    checked={switches.multi_factor_auth}
-                                                    onCheckedChange={(val) => setSwitches(prev => ({ ...prev, multi_factor_auth: val }))}
-                                                />
+                                                                                document.dispatchEvent(
+                                                                                    new KeyboardEvent("keydown", {
+                                                                                        key: "Escape",
+                                                                                    })
+                                                                                );
+                                                                            }}
+                                                                            className="min-h-[48px] cursor-pointer hover:dark:bg-darkPrimaryBg"
+                                                                        >
+                                                                            <Check
+                                                                                className={cn(
+                                                                                    "mr-2 h-4 w-4",
+                                                                                    currency.value === field.value
+                                                                                        ? "opacity-100"
+                                                                                        : "opacity-0"
+                                                                                )}
+                                                                            />
+                                                                            {currency.label}
+                                                                        </CommandItem>
+                                                                    ))}
+                                                                </CommandGroup>
+                                                            </CommandList>
+                                                        </Command>
+                                                    </PopoverContent>
+                                                </Popover>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                </div>
+
+                                <div className="grid gap-4 md:grid-cols-2">
+                                    <FormField
+                                        control={form.control}
+                                        name="pay_rate_hourly"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel required>Hourly Pay Rate ($)</FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        type="number"
+                                                        {...field}
+                                                        onChange={(e) =>
+                                                            field.onChange(e.target.valueAsNumber)
+                                                        }
+                                                        className="!h-[52px] min-h-[52px] dark:border-darkBorder dark:bg-darkPrimaryBg"
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <div className="rounded-[12px] border border-borderColor bg-bgSecondary/50 p-4 dark:border-darkBorder dark:bg-darkPrimaryBg">
+                                        <div className="flex items-start gap-3">
+                                            <div className="rounded-2xl bg-primary/10 p-2 text-primary">
+                                                <MapPin className="size-4" />
                                             </div>
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
+                                            <div>
+                                                <p className="text-sm font-medium text-headingTextColor dark:text-darkTextPrimary">
+                                                    Workspace Snapshot
+                                                </p>
+                                                <p className="mt-1 text-sm text-subTextColor dark:text-darkTextSecondary">
+                                                    {data?.time_zone || "UTC"} timezone,{" "}
+                                                    {data?.currency || "USD"} payroll currency, and{" "}
+                                                    {switches.is_active ? "active" : "inactive"} account
+                                                    access.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
-                            <div className="flex items-center gap-3 w-full pt-4 border-t dark:border-darkBorder">
-                                <Button type="submit" disabled={loading}>
-                                    {loading ? "Saving..." : "Update Member"}
-                                </Button>
-                            </div>
-                        </form>
-                    </Form>
-                </div>
-            </div>
-
-            <div className=" flex flex-col sm:flex-row items-start gap-3 sm:items-center sm:justify-between mt-5">
-                <div className="flex gap-3">
-                    <div className="grid grid-cols-2 gap-1 lg:flex mt-3 sm:mt-0 bg-bgSecondary dark:bg-darkSecondaryBg rounded-lg box-border ">
-                        {["Projects", "Tasks"].map((tab) => (
-                            <button
-                                key={tab}
-                                onClick={() => handleTabClick(tab as "Projects" | "Tasks")}
-                                className={`px-3.5 h-10 text-sm font-medium transition-all cursor-pointer rounded-lg min-w-[70px] text-center
-                                ${activeTab === tab
-                                        ? "bg-bgPrimary dark:bg-darkPrimaryBg dark:text-darkTextPrimary text-headingTextColor outline-1 outline-borderColor dark:outline-darkBorder"
-                                        : " text-headingTextColor dark:text-darkTextPrimary hover:text-gray-800"
-                                    }`}
-                            >
-                                {tab}
-                            </button>
-                        ))}
+                                <div className="flex flex-wrap items-center gap-3 border-t border-borderColor pt-4 dark:border-darkBorder">
+                                    <Button type="submit" disabled={loading}>
+                                        <Save className="size-4" />
+                                        {loading ? "Saving..." : "Save Profile"}
+                                    </Button>
+                                    <Button
+                                        type="button"
+                                        variant="outline2"
+                                        className="dark:border-darkBorder dark:bg-darkPrimaryBg dark:text-darkTextPrimary"
+                                        onClick={() => router.back()}
+                                    >
+                                        Cancel
+                                    </Button>
+                                </div>
+                            </form>
+                        </Form>
                     </div>
                 </div>
-                {
-                    activeTab === "Projects" ?
-                        <SearchBar onSearch={setSearchTerm} />
-                        :
-                        <StatusSelector></StatusSelector>
-                }
-            </div>
 
-            {
-                activeTab === "Projects" ?
-                    <SingleMemberProjectTable data={data?.projects} searchTerm={searchTerm}></SingleMemberProjectTable>
-                    :
-                    <>
-                        <SingleMemberTaskTable data={task?.data}></SingleMemberTaskTable>
-                        <AppPagination
-                            total={task?.meta?.total}
-                            currentPage={Number(page)}
-                            limit={task?.meta?.limit ?? 10}
-                        />
-                    </>
-            }
+                <aside className="space-y-6">
+                    <div className="rounded-[12px] border border-borderColor bg-white p-5 dark:border-darkBorder dark:bg-darkSecondaryBg">
+                        <div className="flex items-start justify-between gap-3">
+                            <div>
+                                <h3 className="text-lg font-semibold text-headingTextColor dark:text-darkTextPrimary">
+                                    Work Schedule
+                                </h3>
+                                <p className="mt-1 text-sm text-subTextColor dark:text-darkTextSecondary">
+                                    Assigned shift details and attendance rules.
+                                </p>
+                            </div>
+                            <div className="rounded-2xl bg-primary/10 p-2 text-primary">
+                                <CalendarDays className="size-4" />
+                            </div>
+                        </div>
+
+                        {assignedSchedule ? (
+                            <div className="mt-5 space-y-4">
+                                <div className="rounded-[12px] border border-borderColor bg-bgSecondary/70 p-4 dark:border-darkBorder dark:bg-darkPrimaryBg">
+                                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-subTextColor dark:text-darkTextSecondary">
+                                        Schedule Name
+                                    </p>
+                                    <p className="mt-2 text-base font-semibold text-headingTextColor dark:text-darkTextPrimary">
+                                        {assignedSchedule.name}
+                                    </p>
+                                    <div className="mt-4 grid grid-cols-2 gap-3">
+                                        <div className="rounded-[12px] bg-white px-3 py-3 dark:bg-darkSecondaryBg">
+                                            <p className="text-xs text-subTextColor dark:text-darkTextSecondary">
+                                                Start Time
+                                            </p>
+                                            <p className="mt-1 text-sm font-semibold text-headingTextColor dark:text-darkTextPrimary">
+                                                {formatScheduleTime(assignedSchedule.start_time)}
+                                            </p>
+                                        </div>
+                                        <div className="rounded-[12px] bg-white px-3 py-3 dark:bg-darkSecondaryBg">
+                                            <p className="text-xs text-subTextColor dark:text-darkTextSecondary">
+                                                End Time
+                                            </p>
+                                            <p className="mt-1 text-sm font-semibold text-headingTextColor dark:text-darkTextPrimary">
+                                                {formatScheduleTime(assignedSchedule.end_time)}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="mt-5 rounded-[12px] border border-dashed border-borderColor bg-bgSecondary/60 p-5 dark:border-darkBorder dark:bg-darkPrimaryBg">
+                                <p className="text-sm font-medium text-headingTextColor dark:text-darkTextPrimary">
+                                    No schedule assigned
+                                </p>
+                                <p className="mt-1 text-sm text-subTextColor dark:text-darkTextSecondary">
+                                    This employee does not currently have a shift schedule linked to
+                                    the profile.
+                                </p>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="rounded-[12px] border border-borderColor bg-white p-5 dark:border-darkBorder dark:bg-darkSecondaryBg">
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-lg font-semibold text-headingTextColor dark:text-darkTextPrimary">
+                                Quick Insights
+                            </h3>
+                        </div>
+
+                        <div className="mt-5 space-y-3 text-sm">
+                            <div className="flex items-center justify-between rounded-[12px] bg-bgSecondary px-4 py-3 dark:bg-darkPrimaryBg">
+                                <span className="flex items-center gap-2 text-subTextColor dark:text-darkTextSecondary">
+                                    <Clock3 className="size-4" />
+                                    Last Updated
+                                </span>
+                                <span className="font-medium text-headingTextColor dark:text-darkTextPrimary">
+                                    {formatDateLabel(data?.updated_at)}
+                                </span>
+                            </div>
+                            <div className="flex items-center justify-between rounded-[12px] bg-bgSecondary px-4 py-3 dark:bg-darkPrimaryBg">
+                                <span className="flex items-center gap-2 text-subTextColor dark:text-darkTextSecondary">
+                                    <BriefcaseBusiness className="size-4" />
+                                    Total Projects
+                                </span>
+                                <span className="font-medium text-headingTextColor dark:text-darkTextPrimary">
+                                    {totalProjects}
+                                </span>
+                            </div>
+                            <div className="flex items-center justify-between rounded-[12px] bg-bgSecondary px-4 py-3 dark:bg-darkPrimaryBg">
+                                <span className="flex items-center gap-2 text-subTextColor dark:text-darkTextSecondary">
+                                    <Check className="size-4" />
+                                    Pending Tasks
+                                </span>
+                                <span className="font-medium text-headingTextColor dark:text-darkTextPrimary">
+                                    {pendingTasks}
+                                </span>
+                            </div>
+                            <div className="flex items-center justify-between rounded-[12px] bg-bgSecondary px-4 py-3 dark:bg-darkPrimaryBg">
+                                <span className="flex items-center gap-2 text-subTextColor dark:text-darkTextSecondary">
+                                    <Shield className="size-4" />
+                                    User Role
+                                </span>
+                                <span className="font-medium capitalize text-headingTextColor dark:text-darkTextPrimary">
+                                    {String(data?.role || "employee").replaceAll("_", " ")}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
         </div>
     );
 };
