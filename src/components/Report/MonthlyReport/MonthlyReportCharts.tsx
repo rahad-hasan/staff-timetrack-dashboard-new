@@ -116,6 +116,7 @@ const MonthlyReportCharts = ({ data }: { data: IMonthlyWorkReport }) => {
   const palette = {
     primary: color || "#12cd69",
     primarySoft: hexToRgba(color || "#12cd69", isDark ? 0.42 : 0.22),
+    screenshot: "#0DA5E9",
     mutedFill: isDark ? "#8F98A8" : "#D4DAE3",
     surfaceStroke: isDark ? "#4a5263" : "#dce3e3",
     text: isDark ? "#F3F4F6" : "#0f1613",
@@ -298,6 +299,9 @@ const MonthlyReportCharts = ({ data }: { data: IMonthlyWorkReport }) => {
   };
 
   const axisStyle = { fill: palette.subText, fontSize: 12 };
+  const legendFormatter = (value: string) => (
+    <span style={{ color: palette.text }}>{value}</span>
+  );
   const showChart = (_section?: string) => true;
 
   return (
@@ -867,11 +871,12 @@ const MonthlyReportCharts = ({ data }: { data: IMonthlyWorkReport }) => {
                         labelStyle={tooltipLabelStyle}
                         itemStyle={tooltipItemStyle}
                       />
-                      <Legend />
+                      <Legend formatter={legendFormatter} />
                       <Bar
                         dataKey="screenshots"
                         name="Screenshots"
-                        fill={palette.primarySoft}
+                        fill={palette.screenshot}
+                        stroke={palette.screenshot}
                         radius={[8, 8, 0, 0]}
                       />
                       <Bar

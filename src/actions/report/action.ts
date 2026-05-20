@@ -7,6 +7,7 @@ import {
   IResponse,
   ITimeSheetEntry,
   IMonthlyWorkReport,
+  IUserWorkReport,
 } from "@/types/type";
 import { revalidateTag } from "next/cache";
 
@@ -54,6 +55,18 @@ export const getAttendance = async (
     tag: "attendance",
     cache: "no-cache",
   });
+};
+
+export const getAttendanceReport = async (
+  query = {},
+): Promise<IResponse<IUserWorkReport>> => {
+  const queryString = buildQuery(query);
+  return await baseApi(
+    `/check-in-out/monthly-report${queryString ? `?${queryString}` : ""}`,
+    {
+      tag: "schedules",
+    },
+  );
 };
 
 export const getMonthlyWorkReport = async (
