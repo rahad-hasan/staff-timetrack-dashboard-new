@@ -154,7 +154,7 @@ const AllNotification = ({ data, canSeeUnusualActivity, notificationCount }: { d
                     ))}
                 </div>
             ) : (
-                <div className="text-center py-24 bg-white dark:bg-darkSecondaryBg rounded-3xl border border-dashed border-gray-200 dark:border-darkBorder">
+                <div className="text-center py-24 bg-white dark:bg-darkSecondaryBg rounded-[12px] border border-dashed border-gray-200 dark:border-darkBorder">
                     <p className="text-subTextColor dark:text-darkTextSecondary font-medium">You don&apos;t have any notifications right now.</p>
                 </div>
             )}

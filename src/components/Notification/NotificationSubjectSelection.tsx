@@ -32,12 +32,11 @@ const NotificationSubjectSelection = ({ canSeeUnusualActivity, by_reason, total 
 
   type FilterKey = (typeof SUBJECT_FILTERS)[number]["key"];
 
-  // Get active reasonType from URL, defaulting to 'all'
-  const activeFilter = (searchParams.get("reasonType") as FilterKey) ?? "all";
+  const activeFilter = (searchParams.get("type") as FilterKey) ?? "all";
 
   const setFilter = (key: FilterKey) => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set("reasonType", key);
+    params.set("type", key);
 
     loader.start();
     router.push(`?${params.toString()}`);

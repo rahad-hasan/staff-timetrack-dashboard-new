@@ -11,8 +11,13 @@ const NotificationPage = async ({ searchParams }: ISearchParamsProps) => {
     const result = await getNotifications({
         page: params.page,
         limit: 10,
-        read: params.summary ?? null,
-        by_reason: params.reasonType ?? null,
+        ...(params.read && params.read !== "all" && {
+            read: params.read === "read",
+        }),
+
+        ...(params.type && params.type !== "all" && {
+            type: params.type,
+        }),
     });
     const notificationCount = await getNotificationsCount();
 

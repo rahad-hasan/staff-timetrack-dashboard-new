@@ -22,11 +22,11 @@ const NotificationTabs = ({ summary }: { summary: ISummary }) => {
   ] as const;
   type TabKey = (typeof TABS)[number]["key"];
 
-  const activeTab = (searchParams.get("summary") as TabKey) ?? "all";
+  const activeTab = (searchParams.get("read") as TabKey) ?? "all";
 
   const setTab = (tab: TabKey) => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set("summary", tab);
+    params.set("read", tab);
 
     loader.start();
     router.push(`?${params.toString()}`);
