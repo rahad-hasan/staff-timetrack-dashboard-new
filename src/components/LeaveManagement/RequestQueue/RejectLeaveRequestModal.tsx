@@ -8,7 +8,7 @@ import { toast } from "sonner";
 
 import { approveRejectLeave } from "@/actions/leaves/action";
 import { LeaveRecord } from "@/types/type";
-import { leaveRejectRequestSchema } from "@/zod/schema";
+import { leaveRequestSchema } from "@/zod/schema";
 import { Button } from "@/components/ui/button";
 import {
   DialogClose,
@@ -36,14 +36,14 @@ const RejectLeaveRequestModal = ({
   onSuccess: () => void;
 }) => {
   const [loading, setLoading] = useState(false);
-  const form = useForm<z.infer<typeof leaveRejectRequestSchema>>({
-    resolver: zodResolver(leaveRejectRequestSchema),
+  const form = useForm<z.infer<typeof leaveRequestSchema>>({
+    resolver: zodResolver(leaveRequestSchema),
     defaultValues: {
       reason: "",
     },
   });
 
-  async function onSubmit(values: z.infer<typeof leaveRejectRequestSchema>) {
+  async function onSubmit(values: z.infer<typeof leaveRequestSchema>) {
     setLoading(true);
 
     const response = await approveRejectLeave({

@@ -114,3 +114,7 @@
 // };
 
 // export default ReportTimeSheets;
+
+export default function Page() {
+  return null;
+}
