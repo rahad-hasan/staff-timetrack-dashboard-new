@@ -1,78 +1,106 @@
-import { Bell, Settings } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
-import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
-import { Suspense } from "react";
-import CoreWork from "@/components/Insights/Performance/CoreWork";
-import Utilization from "@/components/Insights/Performance/Utilization";
-import DailyFocus from "@/components/Insights/Performance/DailyFocus";
-import Activity from "@/components/Insights/Performance/Activity";
-import HeadingComponent from "@/components/Common/HeadingComponent";
-import SelectUserWrapper from "@/components/Common/SelectUserWrapper";
 
-const Performance = async () => {
+import { getMonthlyWorkReport } from "@/actions/insights/action";
+import MonthPicker from "@/components/Common/MonthPicker";
+import SelectUserWrapper from "@/components/Common/SelectUserWrapper";
+import PerformanceCharts from "@/components/Insights/Performance/PerformanceCharts";
+import { ISearchParamsProps } from "@/types/type";
+import { getDecodedUser } from "@/utils/decodedLogInUser";
+import { format } from "date-fns";
+import { CalendarRange, Users } from "lucide-react";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Staff Time Tracker Monthly Report",
+  description: "Staff Time Tracker Monthly Report",
+};
+
+const resolveTargetMonth = async (
+  searchParams: ISearchParamsProps["searchParams"],
+) => {
+  const params = await searchParams;
+  const today = new Date();
+  const startMonth =
+    typeof params.start_month === "string" ? params.start_month : undefined;
+  const directMonth =
+    typeof params.month === "string" ? params.month : undefined;
+  const directYear = typeof params.year === "string" ? params.year : undefined;
+
+  console.log("startMonth", startMonth)
+  console.log("directMonth", directMonth)
+
+  if (startMonth) {
+    const parsed = new Date(startMonth);
+
+    if (!Number.isNaN(parsed.getTime())) {
+      return {
+        params,
+        month: format(parsed, "MM"),
+        year: format(parsed, "yyyy"),
+      };
+    }
+  }
+
+  return {
+    params,
+    month: directMonth || format(today, "MM"),
+    year: directYear || format(today, "yyyy"),
+  };
+};
+
+const MonthlyReportPage = async ({ searchParams }: ISearchParamsProps) => {
+  const user = await getDecodedUser();
+  const { params, month, year } = await resolveTargetMonth(searchParams);
+  const targetUserId = params.user_id ?? String(user?.id ?? "");
+
+  const response = await getMonthlyWorkReport({
+    user_id: targetUserId,
+    month,
+    year,
+  });
+
+  const report = response?.data;
 
   return (
-    <div>
-      <div className="flex items-center justify-between gap-3 mb-5">
-        <HeadingComponent
-          heading="Performance"
-          subHeading="All the Performance during the working hour by team member is here"
-        ></HeadingComponent>
+    <div className="space-y-6">
+      <div className="rounded-[12px] border border-borderColor/70 bg-white px-4 py-4 dark:border-darkBorder dark:bg-darkSecondaryBg sm:px-5">
+        <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/8 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+              <CalendarRange className="size-3.5" />
+              Monthly reporting
+            </div>
+            <p className="mt-3 text-sm leading-6 text-subTextColor dark:text-darkTextSecondary">
+              Review one user’s full-month attendance, tracked work, project
+              distribution, leave, holidays, and anomaly signals from the
+              consolidated monthly report endpoint.
+            </p>
+          </div>
 
-        <div className=" flex items-center gap-1.5 sm:gap-3">
-          <button
-            className={`px-3 sm:px-4 py-2 sm:py-[7px] flex items-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 bg-bgSecondary dark:bg-darkPrimaryBg text-gray-600 hover:text-textGray dark:text-darkTextSecondary border border-borderColor"
-                                `}
-          >
-            <Bell size={20} />{" "}
-            <span className=" hidden sm:block text-headingTextColor dark:text-darkTextPrimary ">
-              Smart Notification{" "}
-            </span>
-          </button>
-          <button
-            className={`px-2.5 py-2 flex items-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 text-gray-600 dark:border-darkBorder hover:text-textGray dark:bg-darkPrimaryBg border border-borderColor "
-                                `}
-          >
-            <Settings className=" text-primary" size={20} />
-          </button>
-        </div>
-      </div>
-      <Suspense fallback={null}>
-        <div className=" mb-5 flex flex-col gap-4 sm:gap-0 sm:flex-row justify-between">
-          <div className=" flex flex-col md:flex-row gap-4 md:gap-3">
-            <SpecificDatePicker></SpecificDatePicker>
-          </div>
-          <div className=" flex items-center gap-3">
-            <SelectUserWrapper />
+          <div className="flex flex-col gap-3 xl:items-end">
+            <div className="flex flex-wrap gap-3">
+              <MonthPicker />
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="inline-flex h-10 items-center gap-2 rounded-[8px] border border-borderColor bg-bgSecondary/70 px-4 text-sm font-medium text-headingTextColor dark:border-darkBorder dark:bg-darkPrimaryBg dark:text-darkTextPrimary">
+                <Users className="size-4 text-primary" />
+                Member
+              </div>
+              <SelectUserWrapper defaultSelect />
+            </div>
           </div>
         </div>
-      </Suspense>
-      <div className="flex items-center gap-3">
-        <Switch id="benchmarks" />
-        <label
-          htmlFor="benchmarks"
-          className="flex items-center gap-2 text-sm font-medium text-gray-700  cursor-pointer"
-        >
-          <span className=" text-headingTextColor dark:text-darkTextPrimary">
-            Benchmarks
-          </span>
-          <span className="flex items-center gap-1 dark:text-darkTextPrimary">
-            <span className="w-2.5 h-2.5 rounded-full bg-green-500 "></span>
-            Other Industry average
-          </span>
-        </label>
       </div>
-      {/* performance */}
-      <div className="flex flex-col lg:flex-row gap-5 my-5">
-        <Utilization></Utilization>
-        <CoreWork></CoreWork>
-      </div>
-      <div className="flex flex-col lg:flex-row gap-5 my-5">
-        <DailyFocus></DailyFocus>
-        <Activity></Activity>
-      </div>
+
+      {report ? (
+        <PerformanceCharts data={report} />
+      ) : (
+        <div className="rounded-[12px] border border-dashed border-borderColor bg-white p-8 text-center text-sm text-subTextColor  dark:border-darkBorder dark:bg-darkSecondaryBg dark:text-darkTextSecondary">
+          {response?.message ||
+            "Monthly report data is not available for the selected user and month."}
+        </div>
+      )}
     </div>
   );
 };
 
-export default Performance;
+export default MonthlyReportPage;

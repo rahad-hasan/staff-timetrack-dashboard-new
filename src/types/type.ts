@@ -726,7 +726,161 @@ export interface IApp {
   session: number;
 }
 
+// insight
+export interface IMonthlyWorkReportSummary {
+  total_worked_duration: string;
+  total_active_time: string;
+  total_idle_time: string;
+  total_deleted_time: string;
+  avg_activity: number;
+  avg_mouse_activity: number;
+  avg_keyboard_activity: number;
+  total_screenshots: number;
+  total_anomalies: number;
+  total_projects: number;
+  total_tasks: number;
+  total_notes: number;
+  total_suspensions: number;
+  total_suspension_duration: string;
+  attended_days: number;
+  late_days: number;
+  early_days: number;
+  total_late_minutes?: number;
+  total_early_minutes?: number;
+  total_late_hm: string;
+  total_early_hm: string;
+  total_leave_days: number;
+  total_holidays: number;
+  earnings: number;
+}
 
+export interface IMonthlyWorkReportUser {
+  name: string;
+  image: string | null;
+  currency?: string | null;
+  time_zone: string;
+}
+
+export interface IMonthlyWorkReportProjectTask {
+  task_id: number | null;
+  name: string;
+  duration: string;
+  activity: number;
+  screenshot_count: number;
+  anomaly_count: number;
+}
+
+export interface IMonthlyWorkReportProject {
+  project_id: number;
+  name: string;
+  status: string;
+  duration: string;
+  active_time: string;
+  idle_time: string;
+  deleted_time: string;
+  activity: number;
+  screenshot_count: number;
+  anomaly_count: number;
+  tasks: IMonthlyWorkReportProjectTask[];
+}
+
+export interface IMonthlyWorkReportDay {
+  date: string;
+  weekday: string;
+  worked_duration: string;
+  active_time: string;
+  idle_time: string;
+  deleted_time: string;
+  activity: number;
+  screenshot_count: number;
+  anomaly_count: number;
+  leave_type: string | null;
+  holiday: string | null;
+  check_in: string | null;
+  check_out: string | null;
+  late_minutes: number;
+  early_minutes: number;
+}
+
+export interface IMonthlyWorkReportAttendanceDay {
+  date: string;
+  check_in: string;
+  check_out: string;
+  late_minutes: number;
+  early_minutes: number;
+}
+
+export interface IMonthlyWorkReportLeave {
+  id: number;
+  start_date: string;
+  end_date: string;
+  leave_count: number;
+  approved_hours: number;
+  reason: string | null;
+  leave_type: {
+    id: number;
+    title: string;
+    color_code: string;
+  };
+}
+
+export interface IMonthlyWorkReportHoliday {
+  id: number;
+  name: string;
+  date: string;
+  description: string | null;
+}
+
+export interface IMonthlyWorkReportAnomaly {
+  id: number;
+  time: string;
+  image: string;
+  display_name: string | null;
+  score: number;
+  project: {
+    id: number;
+    name: string;
+  } | null;
+  task: {
+    id: number;
+    name: string;
+  } | null;
+  anomaly: {
+    type: string;
+    reason: string;
+    detected: boolean;
+    severity: string;
+  };
+}
+
+export interface IMonthlyWorkReport {
+  user: IMonthlyWorkReportUser;
+  period: {
+    year: number;
+    month: number;
+    from_date: string;
+    to_date: string;
+  };
+  schedule?: {
+    id: number;
+    name: string;
+    start_time: string;
+    end_time: string;
+    grace_in_min: number;
+    grace_out_min: number;
+    allow_overtime: boolean;
+    break_in_min: number;
+  };
+  summary: IMonthlyWorkReportSummary;
+  projects: IMonthlyWorkReportProject[];
+  daily_breakdown: IMonthlyWorkReportDay[];
+  attendance: IMonthlyWorkReportAttendanceDay[];
+  leaves?: IMonthlyWorkReportLeave[];
+  holidays?: IMonthlyWorkReportHoliday[];
+  notes?: unknown[];
+  anomalies: IMonthlyWorkReportAnomaly[];
+  tracking_suspensions?: unknown[];
+}
 
 
 

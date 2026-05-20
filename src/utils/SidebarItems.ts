@@ -1,7 +1,7 @@
 import {
     SquareActivity,
     BarChart,
-    // Lightbulb,
+    Lightbulb,
     BriefcaseBusiness,
     LayoutDashboard,
     Clock4,
@@ -42,17 +42,17 @@ export const sidebarItems = [
             { label: 'URLs', key: '/activity/urls' },
         ],
     },
-    // {
-    //     icon: Lightbulb,
-    //     label: 'Insights',
-    //     key: '/insights',
-    //     collapsible: true,
-    //     subItems: [
-    //         // { label: 'Highlight', key: '/insights/highlight' },
-    //         { label: 'Performance', key: '/insights/performance' },
-    //         { label: 'Unusual Activity', key: '/insights/unusual-activity' },
-    //     ],
-    // },
+    {
+        icon: Lightbulb,
+        label: 'Insights',
+        key: '/insights',
+        collapsible: true,
+        subItems: [
+            // { label: 'Highlight', key: '/insights/highlight' },
+            { label: 'Performance', key: '/insights/performance' },
+            { label: 'Unusual Activity', key: '/insights/unusual-activity' },
+        ],
+    },
     {
         icon: BriefcaseBusiness,
         label: 'Projects',
