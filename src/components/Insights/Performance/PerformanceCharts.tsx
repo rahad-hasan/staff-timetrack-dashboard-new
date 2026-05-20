@@ -290,7 +290,7 @@ const PerformanceCharts = ({ data }: { data: IMonthlyWorkReport }) => {
     <>
       <div className="text-center lg:text-left">
         <h2 className="text-xl md:text-2xl xl:text-3xl font-semibold tracking-tight text-headingTextColor dark:text-darkTextPrimary sm:text-4xl">
-          Monthly Work Report Metrics
+          Performance Metrics
         </h2>
         <p className="mt-3 text-sm text-subTextColor dark:text-darkTextSecondary sm:text-base">
           {data.user.name} • {format(parseISO(data.period.from_date), "dd MMM")} to{" "}
