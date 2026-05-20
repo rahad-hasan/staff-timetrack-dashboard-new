@@ -207,13 +207,36 @@ const SingleMemberPage = ({
         setLoading(true);
 
         try {
-            const dirtyFields = form.formState.dirtyFields;
+            // const dirtyFields = form.formState.dirtyFields;
+
+            // const payload: Record<string, any> = {};
+
+            // // Form fields
+            // Object.keys(dirtyFields).forEach((key) => {
+            //     payload[key] = values[key as keyof typeof values];
+            // });
 
             const payload: Record<string, any> = {};
 
-            // Form fields
-            Object.keys(dirtyFields).forEach((key) => {
-                payload[key] = values[key as keyof typeof values];
+            // Compare form values manually
+            Object.entries(values).forEach(([key, value]) => {
+                const originalValue = data?.[key];
+
+                // normalize null/undefined
+                const normalizedOriginal =
+                    originalValue === null || originalValue === undefined
+                        ? ""
+                        : originalValue;
+
+                const normalizedNew =
+                    value === null || value === undefined
+                        ? ""
+                        : value;
+
+                // compare values
+                if (normalizedOriginal !== normalizedNew) {
+                    payload[key] = value;
+                }
             });
 
             // Switch fields
