@@ -362,7 +362,7 @@ const MyLeaveDetailsSheet = ({
                                     </div>
 
                                     {attachment ? (
-                                        <Button asChild variant="outline2" size="sm" className="dark:bg-darkSecondaryBg">
+                                        <Button asChild variant="outline2" size="sm" className="dark:bg-darkSecondaryBg dark:text-darkTextPrimary">
                                             <a href={attachment.url} target="_blank" rel="noreferrer">
                                                 Open file
                                                 <ExternalLink className="size-4" />
