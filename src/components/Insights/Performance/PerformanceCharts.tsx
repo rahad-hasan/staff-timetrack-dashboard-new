@@ -284,7 +284,6 @@ const PerformanceCharts = ({ data }: { data: IMonthlyWorkReport }) => {
   const legendFormatter = (value: string) => (
     <span style={{ color: palette.text }}>{value}</span>
   );
-  const showChart = (section?: string) => true;
 
   return (
     <>
@@ -321,338 +320,314 @@ const PerformanceCharts = ({ data }: { data: IMonthlyWorkReport }) => {
         />
       </div>
 
-      {
-        showChart("workload_mix") ||
-          showChart("daily_work_activity") ||
-          showChart("attendance_exceptions") ? (
-          <div className="mt-6 grid grid-cols-1 gap-4 xl:grid-cols-[1.05fr_1.5fr_1.1fr]">
-            {showChart("workload_mix") ? (
-              <ChartCard title="Workload Mix">
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-[1fr_auto] md:items-center">
-                  <div className="h-[240px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={workloadMix}
-                          dataKey="value"
-                          nameKey="name"
-                          innerRadius={68}
-                          outerRadius={96}
-                          stroke="none"
-                          paddingAngle={3}
-                        >
-                          {workloadMix.map((entry) => (
-                            <Cell key={entry.name} fill={entry.fill} />
-                          ))}
-                        </Pie>
-                        <Tooltip
-                          contentStyle={tooltipStyle}
-                          labelStyle={tooltipLabelStyle}
-                          itemStyle={tooltipItemStyle}
-                          formatter={(value: number) => `${round(value)}h`}
-                        />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="text-center md:text-left">
-                      <p className="text-4xl font-semibold text-headingTextColor dark:text-darkTextPrimary">
-                        {round(
-                          durationToHours(data.summary.total_worked_duration),
-                        )}
-                      </p>
-                      <p className="text-sm text-subTextColor dark:text-darkTextSecondary">
-                        Total worked hours
-                      </p>
-                    </div>
-                    {workloadMix.map((item) => (
-                      <div
-                        key={item.name}
-                        className="flex items-center gap-2 text-sm"
-                      >
-                        <span
-                          className="size-3 rounded-full"
-                          style={{ backgroundColor: item.fill }}
-                        />
-                        <span className="text-headingTextColor dark:text-darkTextPrimary">
-                          {item.name}
-                        </span>
-                        <span className="ml-auto text-subTextColor dark:text-darkTextSecondary">
-                          {round(item.value)}h
-                        </span>
-                      </div>
+      <div className="mt-6 grid grid-cols-1 gap-4 xl:grid-cols-[1.05fr_1.5fr_1.1fr]">
+        <ChartCard title="Workload Mix">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-[1fr_auto] md:items-center">
+            <div className="h-[240px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={workloadMix}
+                    dataKey="value"
+                    nameKey="name"
+                    innerRadius={56}
+                    outerRadius={92}
+                    stroke="none"
+                    paddingAngle={4}
+                  >
+                    {workloadMix.map((entry) => (
+                      <Cell key={entry.name} fill={entry.fill} />
                     ))}
-                  </div>
-                </div>
-              </ChartCard>
-            ) : null}
-
-            {showChart("daily_work_activity") ? (
-              <ChartCard title="Daily Worked vs Activity">
-                <div className="h-[240px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <ComposedChart data={dailyTrend}>
-                      <CartesianGrid
-                        vertical={false}
-                        strokeDasharray="3 3"
-                        stroke={palette.surfaceStroke}
-                      />
-                      <XAxis
-                        dataKey="label"
-                        tickLine={false}
-                        axisLine={false}
-                        tick={axisStyle}
-                      />
-                      <YAxis
-                        yAxisId="hours"
-                        tickLine={false}
-                        axisLine={false}
-                        tick={axisStyle}
-                      />
-                      <YAxis
-                        yAxisId="activity"
-                        orientation="right"
-                        tickLine={false}
-                        axisLine={false}
-                        tick={axisStyle}
-                        domain={[0, 100]}
-                      />
-                      <Tooltip
-                        contentStyle={tooltipStyle}
-                        labelStyle={tooltipLabelStyle}
-                        itemStyle={tooltipItemStyle}
-                      />
-                      <Legend />
-                      <Bar
-                        yAxisId="hours"
-                        dataKey="worked"
-                        name="Worked Hours"
-                        fill={palette.mutedFill}
-                        radius={[8, 8, 0, 0]}
-                      />
-                      <Line
-                        yAxisId="activity"
-                        type="monotone"
-                        dataKey="activity"
-                        name="Activity %"
-                        stroke={palette.primary}
-                        strokeWidth={2.5}
-                        dot={false}
-                      />
-                    </ComposedChart>
-                  </ResponsiveContainer>
-                </div>
-              </ChartCard>
-            ) : null}
-
-            {showChart("attendance_exceptions") ? (
-              <ChartCard title="Attendance Exceptions">
-                <div className="h-[240px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={exceptionTrend}>
-                      <CartesianGrid
-                        vertical={false}
-                        strokeDasharray="3 3"
-                        stroke={palette.surfaceStroke}
-                      />
-                      <XAxis
-                        dataKey="label"
-                        tickLine={false}
-                        axisLine={false}
-                        tick={axisStyle}
-                      />
-                      <YAxis
-                        tickLine={false}
-                        axisLine={false}
-                        tick={axisStyle}
-                      />
-                      <Tooltip
-                        contentStyle={tooltipStyle}
-                        labelStyle={tooltipLabelStyle}
-                        itemStyle={tooltipItemStyle}
-                      />
-                      <Legend />
-                      <Bar
-                        dataKey="late"
-                        name="Late Minutes"
-                        stackId="a"
-                        fill={palette.danger}
-                        radius={[8, 8, 0, 0]}
-                      />
-                      <Bar
-                        dataKey="early"
-                        name="Early Minutes"
-                        stackId="a"
-                        fill={palette.warning}
-                        radius={[8, 8, 0, 0]}
-                      />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </ChartCard>
-            ) : null}
-          </div>
-        ) : null
-      }
-
-      {
-        showChart("top_task_hours") || showChart("monthly_summary") ? (
-          <div className="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-[1.7fr_0.9fr]">
-            {showChart("top_task_hours") ? (
-              <ChartCard title="Top Task Hours">
-                <div className="h-[290px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
-                      data={topTasks}
-                      layout="vertical"
-                      margin={{ left: 16, right: 12 }}
-                    >
-                      <CartesianGrid
-                        horizontal={false}
-                        strokeDasharray="3 3"
-                        stroke={palette.surfaceStroke}
-                      />
-                      <XAxis
-                        type="number"
-                        tickLine={false}
-                        axisLine={false}
-                        tick={axisStyle}
-                      />
-                      <YAxis
-                        dataKey="name"
-                        type="category"
-                        tickLine={false}
-                        axisLine={false}
-                        width={160}
-                        tick={axisStyle}
-                      />
-                      <Tooltip
-                        contentStyle={tooltipStyle}
-                        labelStyle={tooltipLabelStyle}
-                        itemStyle={tooltipItemStyle}
-                      />
-                      <Legend />
-                      <Bar
-                        dataKey="hours"
-                        name="Hours"
-                        fill={palette.primary}
-                        radius={[0, 10, 10, 0]}
-                      />
-                      <Bar
-                        dataKey="activity"
-                        name="Activity %"
-                        fill={palette.primarySoft}
-                        radius={[0, 10, 10, 0]}
-                      />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </ChartCard>
-            ) : null}
-
-            {showChart("monthly_summary") ? (
-              <div className="grid gap-4">
-                <KpiTile
-                  label="Task Count"
-                  value={`${taskCount}`}
-                  helper={`${data.summary.total_projects} projects • ${data.summary.total_tasks} reported tasks`}
-                />
-                <KpiTile
-                  label="Late / Early"
-                  value={`${data.summary.late_days}/${data.summary.early_days}`}
-                  helper={`${data.summary.total_late_hm} late • ${data.summary.total_early_hm} early`}
-                />
-                <KpiTile
-                  label="Earnings"
-                  value={`${data.user.currency || "USD"} ${data.summary.earnings}`}
-                  helper={`${data.summary.total_leave_days} leave days • ${data.summary.total_holidays} holidays`}
-                />
+                  </Pie>
+                  <Tooltip
+                    contentStyle={tooltipStyle}
+                    labelStyle={tooltipLabelStyle}
+                    itemStyle={tooltipItemStyle}
+                    formatter={(value: number) => `${round(value)}h`}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="space-y-3">
+              <div className="text-center md:text-left">
+                <p className="text-4xl font-semibold text-headingTextColor dark:text-darkTextPrimary">
+                  {round(
+                    durationToHours(data.summary.total_worked_duration),
+                  )}
+                </p>
+                <p className="text-sm text-subTextColor dark:text-darkTextSecondary">
+                  Total worked hours
+                </p>
               </div>
-            ) : null}
-          </div>
-        ) : null
-      }
-
-      {
-        showChart("weekly_output_trend") || showChart("monthly_summary") ? (
-          <div className="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-[1.15fr_0.85fr]">
-            {showChart("weekly_output_trend") ? (
-              <ChartCard title="Weekly Output Trend">
-                <div className="h-[240px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={weeklyBuckets}>
-                      <CartesianGrid
-                        vertical={false}
-                        strokeDasharray="3 3"
-                        stroke={palette.surfaceStroke}
-                      />
-                      <XAxis
-                        dataKey="label"
-                        tickLine={false}
-                        axisLine={false}
-                        tick={axisStyle}
-                      />
-                      <YAxis
-                        tickLine={false}
-                        axisLine={false}
-                        tick={axisStyle}
-                      />
-                      <Tooltip
-                        contentStyle={tooltipStyle}
-                        labelStyle={tooltipLabelStyle}
-                        itemStyle={tooltipItemStyle}
-                      />
-                      <Legend />
-                      <Area
-                        type="monotone"
-                        dataKey="worked"
-                        name="Worked"
-                        stroke={palette.primary}
-                        fill={palette.primarySoft}
-                        fillOpacity={1}
-                        strokeWidth={2.5}
-                      />
-                      <Area
-                        type="monotone"
-                        dataKey="active"
-                        name="Active"
-                        stroke={palette.warning}
-                        fill={hexToRgba(palette.warning, isDark ? 0.25 : 0.15)}
-                        fillOpacity={1}
-                        strokeWidth={2.5}
-                      />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </div>
-              </ChartCard>
-            ) : null}
-
-            {showChart("monthly_summary") ? (
-              <ChartCard title="Tracker Summary">
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <KpiTile
-                    label="Total Notes"
-                    value={`${data.summary.total_notes}`}
-                    helper="Notes captured during the month"
+              {workloadMix.map((item) => (
+                <div
+                  key={item.name}
+                  className="flex items-center gap-2 text-sm"
+                >
+                  <span
+                    className="size-3 rounded-full"
+                    style={{ backgroundColor: item.fill }}
                   />
-                  <KpiTile
-                    label="Suspensions"
-                    value={`${data.summary.total_suspensions}`}
-                    helper={`Duration ${formatHoursAndMinutes(data.summary.total_suspension_duration)}`}
-                  />
-                  <div className="sm:col-span-2">
-                    <KpiTile
-                      label="Captures"
-                      value={`${data.summary.total_screenshots}`}
-                      helper={`${data.summary.total_anomalies} anomalies across the month`}
-                    />
-                  </div>
+                  <span className="text-headingTextColor dark:text-darkTextPrimary">
+                    {item.name}
+                  </span>
+                  <span className="ml-auto text-subTextColor dark:text-darkTextSecondary">
+                    {round(item.value)}h
+                  </span>
                 </div>
-              </ChartCard>
-            ) : null}
+              ))}
+            </div>
           </div>
-        ) : null
-      }
+        </ChartCard>
+
+        <ChartCard title="Daily Worked vs Activity">
+          <div className="h-[240px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart data={dailyTrend}>
+                <CartesianGrid
+                  vertical={false}
+                  strokeDasharray="3 3"
+                  stroke={palette.surfaceStroke}
+                />
+                <XAxis
+                  dataKey="label"
+                  tickLine={false}
+                  axisLine={false}
+                  tick={axisStyle}
+                />
+                <YAxis
+                  yAxisId="hours"
+                  tickLine={false}
+                  axisLine={false}
+                  tick={axisStyle}
+                />
+                <YAxis
+                  yAxisId="activity"
+                  orientation="right"
+                  tickLine={false}
+                  axisLine={false}
+                  tick={axisStyle}
+                  domain={[0, 100]}
+                />
+                <Tooltip
+                  contentStyle={tooltipStyle}
+                  labelStyle={tooltipLabelStyle}
+                  itemStyle={tooltipItemStyle}
+                />
+                <Legend />
+                <Bar
+                  yAxisId="hours"
+                  dataKey="worked"
+                  name="Worked Hours"
+                  fill={palette.mutedFill}
+                  radius={[8, 8, 0, 0]}
+                />
+                <Line
+                  yAxisId="activity"
+                  type="monotone"
+                  dataKey="activity"
+                  name="Activity %"
+                  stroke={palette.primary}
+                  strokeWidth={2.5}
+                  dot={false}
+                />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
+        </ChartCard>
+
+        <ChartCard title="Attendance Exceptions">
+          <div className="h-[240px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={exceptionTrend}>
+                <CartesianGrid
+                  vertical={false}
+                  strokeDasharray="3 3"
+                  stroke={palette.surfaceStroke}
+                />
+                <XAxis
+                  dataKey="label"
+                  tickLine={false}
+                  axisLine={false}
+                  tick={axisStyle}
+                />
+                <YAxis
+                  tickLine={false}
+                  axisLine={false}
+                  tick={axisStyle}
+                />
+                <Tooltip
+                  contentStyle={tooltipStyle}
+                  labelStyle={tooltipLabelStyle}
+                  itemStyle={tooltipItemStyle}
+                />
+                <Legend />
+                <Bar
+                  dataKey="late"
+                  name="Late Minutes"
+                  stackId="a"
+                  fill={palette.danger}
+                  radius={[8, 8, 0, 0]}
+                />
+                <Bar
+                  dataKey="early"
+                  name="Early Minutes"
+                  stackId="a"
+                  fill={palette.warning}
+                  radius={[8, 8, 0, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </ChartCard>
+      </div>
+
+
+      <div className="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-[1.7fr_0.9fr]">
+        <ChartCard title="Top Task Hours">
+          <div className="h-[290px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={topTasks}
+                layout="vertical"
+                margin={{ left: 16, right: 12 }}
+              >
+                <CartesianGrid
+                  horizontal={false}
+                  strokeDasharray="3 3"
+                  stroke={palette.surfaceStroke}
+                />
+                <XAxis
+                  type="number"
+                  tickLine={false}
+                  axisLine={false}
+                  tick={axisStyle}
+                />
+                <YAxis
+                  dataKey="name"
+                  type="category"
+                  tickLine={false}
+                  axisLine={false}
+                  width={160}
+                  tick={axisStyle}
+                />
+                <Tooltip
+                  contentStyle={tooltipStyle}
+                  labelStyle={tooltipLabelStyle}
+                  itemStyle={tooltipItemStyle}
+                />
+                <Legend />
+                <Bar
+                  dataKey="hours"
+                  name="Hours"
+                  fill={palette.primary}
+                  radius={[0, 10, 10, 0]}
+                />
+                <Bar
+                  dataKey="activity"
+                  name="Activity %"
+                  fill={palette.primarySoft}
+                  radius={[0, 10, 10, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </ChartCard>
+
+        <div className="grid gap-4">
+          <KpiTile
+            label="Task Count"
+            value={`${taskCount}`}
+            helper={`${data.summary.total_projects} projects • ${data.summary.total_tasks} reported tasks`}
+          />
+          <KpiTile
+            label="Late / Early"
+            value={`${data.summary.late_days}/${data.summary.early_days}`}
+            helper={`${data.summary.total_late_hm} late • ${data.summary.total_early_hm} early`}
+          />
+          <KpiTile
+            label="Earnings"
+            value={`${data.user.currency || "USD"} ${data.summary.earnings}`}
+            helper={`${data.summary.total_leave_days} leave days • ${data.summary.total_holidays} holidays`}
+          />
+        </div>
+      </div>
+
+
+
+      <div className="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-[1.15fr_0.85fr]">
+        <ChartCard title="Weekly Output Trend">
+          <div className="h-[240px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={weeklyBuckets}>
+                <CartesianGrid
+                  vertical={false}
+                  strokeDasharray="3 3"
+                  stroke={palette.surfaceStroke}
+                />
+                <XAxis
+                  dataKey="label"
+                  tickLine={false}
+                  axisLine={false}
+                  tick={axisStyle}
+                />
+                <YAxis
+                  tickLine={false}
+                  axisLine={false}
+                  tick={axisStyle}
+                />
+                <Tooltip
+                  contentStyle={tooltipStyle}
+                  labelStyle={tooltipLabelStyle}
+                  itemStyle={tooltipItemStyle}
+                />
+                <Legend />
+                <Area
+                  type="monotone"
+                  dataKey="worked"
+                  name="Worked"
+                  stroke={palette.primary}
+                  fill={palette.primarySoft}
+                  fillOpacity={1}
+                  strokeWidth={2.5}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="active"
+                  name="Active"
+                  stroke={palette.warning}
+                  fill={hexToRgba(palette.warning, isDark ? 0.25 : 0.15)}
+                  fillOpacity={1}
+                  strokeWidth={2.5}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </ChartCard>
+
+        <ChartCard title="Tracker Summary">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <KpiTile
+              label="Total Notes"
+              value={`${data.summary.total_notes}`}
+              helper="Notes captured during the month"
+            />
+            <KpiTile
+              label="Suspensions"
+              value={`${data.summary.total_suspensions}`}
+              helper={`Duration ${formatHoursAndMinutes(data.summary.total_suspension_duration)}`}
+            />
+            <div className="sm:col-span-2">
+              <KpiTile
+                label="Captures"
+                value={`${data.summary.total_screenshots}`}
+                helper={`${data.summary.total_anomalies} anomalies across the month`}
+              />
+            </div>
+          </div>
+        </ChartCard>
+      </div>
+
 
       <div>
         <div className="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-[1.3fr_0.9fr]">
@@ -721,15 +696,15 @@ const PerformanceCharts = ({ data }: { data: IMonthlyWorkReport }) => {
 
           <ChartCard title="Anomaly Severity Mix">
             {hasAnomalySeverityData ? (
-              <div className="h-[320px]">
+              <div className="h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
                       data={anomalyBySeverity}
                       dataKey="value"
                       nameKey="name"
-                      innerRadius={60}
-                      outerRadius={104}
+                      innerRadius={56}
+                      outerRadius={92}
                       stroke="none"
                       paddingAngle={4}
                     >

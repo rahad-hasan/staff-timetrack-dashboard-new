@@ -80,13 +80,7 @@ const MonthlyReportPage = async ({ searchParams }: ISearchParamsProps) => {
             <div className="flex flex-wrap gap-3">
               <MonthPicker />
             </div>
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="inline-flex h-10 items-center gap-2 rounded-[8px] border border-borderColor bg-bgSecondary/70 px-4 text-sm font-medium text-headingTextColor dark:border-darkBorder dark:bg-darkPrimaryBg dark:text-darkTextPrimary">
-                <Users className="size-4 text-primary" />
-                Member
-              </div>
-              <SelectUserWrapper defaultSelect />
-            </div>
+            <SelectUserWrapper defaultSelect />
           </div>
         </div>
       </div>
