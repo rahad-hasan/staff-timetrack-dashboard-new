@@ -16,7 +16,9 @@ export const metadata: Metadata = {
 const LeaveHistoryPage = async ({ searchParams }: ISearchParamsProps) => {
   const params = await searchParams;
   const currentUser = await getDecodedUser();
-  const canManageUsers = ["admin", "manager", "hr"].includes(currentUser?.role ?? "");
+  const canManageUsers = ["admin", "manager", "hr"].includes(
+    currentUser?.role ?? "",
+  );
   const currentPage =
     typeof params.page === "string" ? Number(params.page) || 1 : 1;
 
@@ -24,9 +26,13 @@ const LeaveHistoryPage = async ({ searchParams }: ISearchParamsProps) => {
     getLeaveHistory({
       page: currentPage,
       user_id: canManageUsers ? Number(params.user_id) || undefined : undefined,
-      start_date: typeof params.from_date === "string" ? params.from_date : undefined,
+      start_date:
+        typeof params.from_date === "string" ? params.from_date : undefined,
       end_date: typeof params.to_date === "string" ? params.to_date : undefined,
-      status: typeof params.status === "string" ? (params.status as LeaveStatus) : undefined,
+      status:
+        typeof params.status === "string"
+          ? (params.status as LeaveStatus)
+          : undefined,
     }),
     canManageUsers ? getMembersDashboard() : Promise.resolve(null),
   ]);
@@ -44,7 +50,7 @@ const LeaveHistoryPage = async ({ searchParams }: ISearchParamsProps) => {
         heading="Leave History"
         subHeading="Audit leave decisions with employee, date range, and status filters."
       />
-      <Suspense fallback={<HistorySkeleton />}>
+      <Suspense fallback={<HistorySkeleton />} key={JSON.stringify(params)}>
         <LeaveHistoryReport
           data={historyResponse.data ?? []}
           canManageUsers={canManageUsers}
