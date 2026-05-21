@@ -1,6 +1,7 @@
 import {
   LeaveApplicableGender,
   LeaveStatus,
+  LeaveTypeApplicableFor,
   LeaveTypeRecord,
   LeaveTypeSummary,
   UserScopedLeaveTypeRecord,
@@ -75,6 +76,14 @@ export function getLeaveStatusTheme(status: LeaveStatus) {
 export function formatApplicableGender(gender: LeaveApplicableGender) {
   if (gender === "all") return "All employees";
   return `${gender.charAt(0).toUpperCase()}${gender.slice(1)} only`;
+}
+
+export function formatApplicableFor(
+  applicableFor?: LeaveTypeApplicableFor | null,
+) {
+  if (applicableFor === "all") return "All employees";
+  if (!applicableFor) return "All employees";
+  return `${applicableFor.charAt(0).toUpperCase()}${applicableFor.slice(1)} only`;
 }
 
 export function formatNoticeDays(days: number | null) {

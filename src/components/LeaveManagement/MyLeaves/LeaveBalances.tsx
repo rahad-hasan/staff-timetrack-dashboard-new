@@ -1,7 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { formatApplicableGender, formatNoticeDays, getLeaveTypeTheme } from "@/lib/leave";
+import {
+  formatApplicableFor,
+  formatApplicableGender,
+  formatNoticeDays,
+  getLeaveTypeTheme,
+} from "@/lib/leave";
 import { LeaveTypeSummary } from "@/types/type";
-import { FileWarning, ShieldCheck } from "lucide-react";
+import { BriefcaseBusiness, FileWarning, ShieldCheck } from "lucide-react";
 
 type LeaveBalancesProps = {
   leaveTypes: LeaveTypeSummary[];
@@ -116,6 +121,12 @@ const LeaveBalances = ({ leaveTypes, handleOpenRequest, canRequestLeave }: Leave
                                             <span className="inline-flex items-center gap-1 rounded-full bg-sky-500/10 px-2.5 py-1 text-[11px] font-medium text-sky-700 dark:text-sky-200">
                                                 <ShieldCheck className="size-3.5" />
                                                 {formatApplicableGender(leaveType.applicable_gender)}
+                                            </span>
+                                        ) : null}
+                                        {leaveType.applicable_for && leaveType.applicable_for !== "all" ? (
+                                            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-1 text-[11px] font-medium text-emerald-700 dark:text-emerald-200">
+                                                <BriefcaseBusiness className="size-3.5" />
+                                                {formatApplicableFor(leaveType.applicable_for)}
                                             </span>
                                         ) : null}
                                     </div>

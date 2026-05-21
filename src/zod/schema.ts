@@ -1,5 +1,6 @@
 import { z } from "zod";
 import parsePhoneNumberFromString from "libphonenumber-js";
+import { LeaveTypeApplicableFor } from "@/types/type";
 
 export const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -455,6 +456,11 @@ export const leaveTypeFormSchema = z.object({
   requires_document: z.boolean(),
   is_active: z.boolean(),
   applicable_gender: z.enum(["male", "female", "other", "all"]),
+  applicable_for: z
+    .nativeEnum(LeaveTypeApplicableFor, {
+      message: "Applicable employment status is invalid",
+    })
+    .optional(),
   min_notice_days: z
     .number({ message: "Min notice must be a number" })
     .int("Min notice must be a whole number")

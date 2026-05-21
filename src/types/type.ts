@@ -17,6 +17,12 @@ export interface IResponse<T> {
 type TRole = "project_manager" | "admin" | "hr" | "manager" | "employee";
 export type EmploymentStatus = "probation" | "permanent";
 
+export const LeaveTypeApplicableFor = {
+  all: "all",
+  probation: "probation",
+  permanent: "permanent",
+} as const;
+
 export interface ISigninResponse {
   id: number;
   company_id: number;
@@ -892,6 +898,7 @@ export interface LeaveType {
   days_allowed: number;
   requires_document: boolean;
   applicable_gender: LeaveApplicableGender;
+  applicable_for: LeaveTypeApplicableFor;
   min_notice_days: number | null;
   allow_past_dates: boolean;
   company_id: number;
@@ -901,6 +908,9 @@ export interface LeaveType {
 
 export type LeaveApplicableGender = "male" | "female" | "other" | "all";
 export type ApplicableGender = LeaveApplicableGender;
+export type LeaveTypeApplicableFor =
+  (typeof LeaveTypeApplicableFor)[keyof typeof LeaveTypeApplicableFor];
+export type ApplicableFor = LeaveTypeApplicableFor;
 
 export type LeaveStatus = "pending" | "approved" | "rejected";
 
@@ -916,6 +926,7 @@ export interface LeaveTypeSummary {
   is_active: boolean;
   requires_document: boolean;
   applicable_gender: LeaveApplicableGender;
+  applicable_for: LeaveTypeApplicableFor;
   min_notice_days: number | null;
   allow_past_dates: boolean;
   allowed: number;
@@ -1070,6 +1081,7 @@ export interface CreateLeaveTypePayload {
   requires_document?: boolean;
   is_active?: boolean;
   applicable_gender?: ApplicableGender;
+  applicable_for?: ApplicableFor;
   min_notice_days?: number | null;
   allow_past_dates?: boolean;
 }
@@ -1081,6 +1093,7 @@ export interface UpdateLeaveTypePayload {
   requires_document?: boolean;
   is_active?: boolean;
   applicable_gender?: ApplicableGender;
+  applicable_for?: ApplicableFor;
   min_notice_days?: number | null;
   allow_past_dates?: boolean;
 }
@@ -1123,6 +1136,7 @@ export interface LeaveRequestTypeDropdownRecord {
   color_code: string;
   requires_document: boolean;
   applicable_gender: LeaveApplicableGender;
+  applicable_for: LeaveTypeApplicableFor;
   min_notice_days: number | null;
   allow_past_dates: boolean;
   days_allowed: number;
@@ -1158,6 +1172,7 @@ export interface LeaveRequestTypeDropdownRecord {
   color_code: string;
   requires_document: boolean;
   applicable_gender: LeaveApplicableGender;
+  applicable_for: LeaveTypeApplicableFor;
   min_notice_days: number | null;
   allow_past_dates: boolean;
   days_allowed: number;

@@ -5,12 +5,18 @@ import { format } from "date-fns";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import z from "zod";
-import { ChevronDownIcon, FileText, ShieldCheck } from "lucide-react";
+import {
+  BriefcaseBusiness,
+  ChevronDownIcon,
+  FileText,
+  ShieldCheck,
+} from "lucide-react";
 import { toast } from "sonner";
 import { addLeave } from "@/actions/leaves/action";
 import { LeaveRequestTypeDropdownRecord } from "@/types/type";
 import { createLeaveRequestSchema, leaveRequestSchema } from "@/zod/schema";
 import {
+  formatApplicableFor,
   getLeaveTypeTheme,
   formatApplicableGender,
   formatNoticeDays,
@@ -279,6 +285,12 @@ const LeaveRequestModal = ({
                         {formatApplicableGender(
                           selectedLeaveType.applicable_gender,
                         )}
+                      </span>
+                    ) : null}
+                    {selectedLeaveType.applicable_for && selectedLeaveType.applicable_for !== "all" ? (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-white/80 px-2.5 py-1 text-xs font-medium text-headingTextColor dark:bg-darkPrimaryBg dark:text-darkTextPrimary">
+                        <BriefcaseBusiness className="size-3.5" />
+                        {formatApplicableFor(selectedLeaveType.applicable_for)}
                       </span>
                     ) : null}
                   </div>
