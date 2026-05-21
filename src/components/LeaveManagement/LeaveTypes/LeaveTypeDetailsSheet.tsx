@@ -58,7 +58,6 @@ const LeaveTypeDetailsSheet = ({
       setErrorMessage(null);
       // single leave
       const response = await getLeaveType(leaveTypeId);
-      console.log(response)
 
       if (!active) return;
 

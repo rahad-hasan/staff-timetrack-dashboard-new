@@ -25,8 +25,6 @@ const resolveTargetMonth = async (
     typeof params.month === "string" ? params.month : undefined;
   const directYear = typeof params.year === "string" ? params.year : undefined;
 
-  console.log("startMonth", startMonth)
-  console.log("directMonth", directMonth)
 
   if (startMonth) {
     const parsed = new Date(startMonth);

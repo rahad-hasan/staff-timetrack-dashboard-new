@@ -25,7 +25,6 @@ const CATEGORY_MAP: Record<string, string> = {
 };
 
 const Notification = ({ unreadCount, notificationsList }: any) => {
-    console.log(notificationsList)
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const scrollContainerRef = useRef<HTMLDivElement>(null);

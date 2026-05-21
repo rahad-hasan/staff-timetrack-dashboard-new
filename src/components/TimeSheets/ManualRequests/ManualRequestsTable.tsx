@@ -403,8 +403,6 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
     },
   });
 
-  console.log(data);
-
   return (
     <div className="border border-borderColor dark:border-darkBorder dark:bg-darkPrimaryBg pb-4.5 rounded-[12px] overflow-hidden">
       <Table>

@@ -157,9 +157,7 @@ const LeaveRequestDetailsSheet = ({
     () => getLeaveStatusTheme((leave?.status ?? "pending") as LeaveStatus),
     [leave?.status],
   );
-  console.log("leave", leave)
   const attachment = useMemo(() => extractAttachmentInfo(leave), [leave]);
-  console.log("attachment", attachment)
   const canReviewAction = canTakeAction && leave?.status === "pending";
 
   const resetActionState = () => {

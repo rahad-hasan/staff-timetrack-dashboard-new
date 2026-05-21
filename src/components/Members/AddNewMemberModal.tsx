@@ -152,10 +152,8 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
             // schedule_id: Number(values.schedule),
             ...(values.schedule && { schedule_id: Number(values.schedule) })
         }
-        console.log(finalData)
         setLoading(true);
         try {
-            console.log(finalData)
             const res = await addMember(finalData);
 
             if (res?.success) {

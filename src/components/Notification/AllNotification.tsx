@@ -45,7 +45,6 @@ const REASON_CONFIG: Record<string, { label: string, icon: LucideIcon, colorClas
 };
 
 const NotificationItem = ({ notification }: { notification: INotificationItem }) => {
-    console.log(notification)
     const createdAt = parseISO(notification?.created_at);
     const [loading, setLoading] = useState(false);
 

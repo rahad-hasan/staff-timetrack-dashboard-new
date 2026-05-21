@@ -268,8 +268,6 @@ const SingleMemberPage = ({
                 return;
             }
 
-            console.log("Sending payload:", payload);
-
             const res = await editSingleDetailsMember({
                 data: payload,
                 id: data?.id,

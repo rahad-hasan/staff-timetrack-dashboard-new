@@ -34,8 +34,6 @@ const LeaveRequestServer = async ({ searchParams }: ISearchParamsProps) => {
       avatar: member.image ?? "",
     })) ?? [];
 
-    console.log(leaveResponse)
-
   return (
     <>
       <LeaveRequestTable
