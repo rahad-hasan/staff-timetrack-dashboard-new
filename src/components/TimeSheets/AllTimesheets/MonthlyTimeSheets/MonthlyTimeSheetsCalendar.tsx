@@ -124,7 +124,7 @@ const MonthlyTimeSheetsCalendar = ({
       content
     ) : (
       <Link
-        href={`/timesheets/all-timesheets?tab=daily&user_id=${userId || String(logInUserId)}&date=${dateString}`}
+        href={`/timesheets/daily?user_id=${userId || String(logInUserId)}&date=${dateString}`}
       >
         {content}
       </Link>
