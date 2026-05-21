@@ -14,6 +14,7 @@ import {
   CheckSquare,
 } from "lucide-react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import BellIcon from "../Icons/BellIcon";
 import NotificationTabs from "./NotificationTabs";
@@ -58,8 +59,10 @@ const REASON_CONFIG: Record<
 
 const NotificationItem = ({
   notification,
+  onReadSuccess,
 }: {
   notification: INotificationItem;
+  onReadSuccess?: () => void;
 }) => {
   const createdAt = parseISO(notification?.created_at);
   const [loading, setLoading] = useState(false);
@@ -75,7 +78,10 @@ const NotificationItem = ({
     setLoading(true);
     try {
       const res = await readNotifications({ data: { ids: [id] } });
-      if (res?.success) toast.success("Marked as read");
+      if (res?.success) {
+        toast.success("Marked as read");
+        onReadSuccess?.();
+      }
     } catch (error: any) {
       toast.error("Something went wrong!");
     } finally {
@@ -160,7 +166,29 @@ const AllNotification = ({
   notificationCount: INotificationCount;
   category: "all" | "read" | "unread";
 }) => {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
   const notifications = data?.data || [];
+  const unreadNotificationIds = notifications
+    .filter((notification: INotificationItem) => !notification.is_read)
+    .map((notification: INotificationItem) => notification.id);
+
+  async function handleReadAllNotifications() {
+    if (unreadNotificationIds.length === 0) return;
+
+    setLoading(true);
+    try {
+      const res = await readNotifications({ data: { ids: unreadNotificationIds } });
+      if (res?.success) {
+        toast.success("Marked all as read");
+        router.refresh();
+      }
+    } catch (error: any) {
+      toast.error("Something went wrong!");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <div className="w-full mx-auto min-h-screen">
@@ -179,8 +207,12 @@ const AllNotification = ({
             </p>
           </div>
         </div>
-        <button className="flex items-center gap-2 px-5 py-2.5 bg-primary hover:opacity-90 text-white rounded-xl text-sm font-bold transition-all shadow-lg shadow-primary/20">
-          <Check size={18} /> Mark all as read
+        <button
+          disabled={loading || unreadNotificationIds.length === 0}
+          onClick={handleReadAllNotifications}
+          className="flex items-center gap-2 px-5 py-2.5 bg-primary hover:opacity-90 text-white rounded-xl text-sm font-bold transition-all shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <Check size={18} /> {loading ? "Loading..." : "Mark all as read"}
         </button>
       </div>
 
@@ -203,6 +235,7 @@ const AllNotification = ({
             <NotificationItem
               key={notification.id}
               notification={notification}
+              onReadSuccess={() => router.refresh()}
             />
           ))}
         </div>

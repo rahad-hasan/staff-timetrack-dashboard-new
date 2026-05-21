@@ -11,7 +11,6 @@ const MemberDetailsServer = async ({ params, searchParams }: PageProps) => {
     const resolvedSearchParams = await searchParams;
 
     const result = await getSingleDetailsMember(id);
-    console.log('result...........', result)
     // console.log('result', result)
     // const projectBasedTask = await getTasks({
     //     user_id: id,
