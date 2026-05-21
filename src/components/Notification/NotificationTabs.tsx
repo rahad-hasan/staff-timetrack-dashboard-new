@@ -27,9 +27,10 @@ const NotificationTabs = ({ summary }: { summary: ISummary }) => {
   const setTab = (tab: TabKey) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("read", tab);
+    params.set("page", "1");
 
     loader.start();
-    router.push(`?${params.toString()}`);
+    router.push(`?${params.toString()}`, { scroll: false });
   };
 
   return (

@@ -37,9 +37,10 @@ const NotificationSubjectSelection = ({ canSeeUnusualActivity, by_reason, total 
   const setFilter = (key: FilterKey) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("type", key);
+    params.set("page", "1");
 
     loader.start();
-    router.push(`?${params.toString()}`);
+    router.push(`?${params.toString()}`, { scroll: false });
   };
 
   return (
