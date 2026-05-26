@@ -51,8 +51,14 @@ const durationToHours = (value: string) => {
 };
 
 const formatHoursAndMinutes = (value: string) => {
-  const [hours = "0", minutes = "0"] = value.split(":");
-  return `${Number(hours)}h ${String(Number(minutes)).padStart(2, "0")}m`;
+  const [hours = "0", minutes = "0", seconds = "0"] = value.split(":");
+  const totalMinutes = Math.round(
+    Number(hours) * 60 + Number(minutes) + Number(seconds) / 60,
+  );
+  const formattedHours = Math.floor(totalMinutes / 60);
+  const formattedMinutes = totalMinutes % 60;
+
+  return `${formattedHours}h ${formattedMinutes}m`;
 };
 
 const round = (value: number) => Number(value.toFixed(2));
@@ -129,16 +135,19 @@ const PerformanceCharts = ({ data }: { data: IMonthlyWorkReport }) => {
     {
       name: "Active",
       value: durationToHours(data.summary.total_active_time),
+      displayValue: formatHoursAndMinutes(data.summary.total_active_time),
       fill: palette.primary,
     },
     {
       name: "Idle",
       value: durationToHours(data.summary.total_idle_time),
+      displayValue: formatHoursAndMinutes(data.summary.total_idle_time),
       fill: palette.warning,
     },
     {
       name: "Deleted",
       value: durationToHours(data.summary.total_deleted_time),
+      displayValue: formatHoursAndMinutes(data.summary.total_deleted_time),
       fill: palette.mutedFill,
     },
   ];
@@ -284,6 +293,9 @@ const PerformanceCharts = ({ data }: { data: IMonthlyWorkReport }) => {
   const legendFormatter = (value: string) => (
     <span style={{ color: palette.text }}>{value}</span>
   );
+  const totalWorkedDisplay = formatHoursAndMinutes(
+    data.summary.total_worked_duration,
+  );
 
   return (
     <>
@@ -343,20 +355,18 @@ const PerformanceCharts = ({ data }: { data: IMonthlyWorkReport }) => {
                     contentStyle={tooltipStyle}
                     labelStyle={tooltipLabelStyle}
                     itemStyle={tooltipItemStyle}
-                    formatter={(value: number) => `${round(value)}h`}
+                    formatter={(_value, _name, item) => item.payload.displayValue}
                   />
                 </PieChart>
               </ResponsiveContainer>
             </div>
             <div className="space-y-3">
               <div className="text-center md:text-left">
-                <p className="text-4xl font-semibold text-headingTextColor dark:text-darkTextPrimary">
-                  {round(
-                    durationToHours(data.summary.total_worked_duration),
-                  )}
+                <p className="text-3xl font-semibold text-headingTextColor dark:text-darkTextPrimary sm:text-4xl">
+                  {totalWorkedDisplay}
                 </p>
                 <p className="text-sm text-subTextColor dark:text-darkTextSecondary">
-                  Total worked hours
+                  Total worked time
                 </p>
               </div>
               {workloadMix.map((item) => (
@@ -372,7 +382,7 @@ const PerformanceCharts = ({ data }: { data: IMonthlyWorkReport }) => {
                     {item.name}
                   </span>
                   <span className="ml-auto text-subTextColor dark:text-darkTextSecondary">
-                    {round(item.value)}h
+                    {item.displayValue}
                   </span>
                 </div>
               ))}
