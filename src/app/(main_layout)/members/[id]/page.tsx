@@ -6,9 +6,9 @@ interface PageProps {
     params: Promise<{ id: string }>;
     searchParams: ISearchParams
 }
-const MemberDetailsServer = async ({ params, searchParams }: PageProps) => {
+const MemberDetailsServer = async ({ params }: PageProps) => {
     const { id } = await params;
-    const resolvedSearchParams = await searchParams;
+    // const resolvedSearchParams = await searchParams;
 
     const result = await getSingleDetailsMember(id);
     // console.log('result', result)

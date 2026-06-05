@@ -19,7 +19,7 @@ const DailyTimeSheets = async ({ searchParams }: ISearchParamsProps) => {
   const timezones = await getTimezones();
 
   return (
-    <div className=" space-y-5">
+    <div className="space-y-5">
       <HeadingComponent
         heading="All Timesheets"
         subHeading="All the timesheet by team member who completed is displayed here"
@@ -36,7 +36,6 @@ const DailyTimeSheets = async ({ searchParams }: ISearchParamsProps) => {
       </div>
 
       <Suspense
-        // key={`daily-${params.date}`}
         key={JSON.stringify(params)}
         fallback={<DailyTimeSheetsSkeleton />}
       >

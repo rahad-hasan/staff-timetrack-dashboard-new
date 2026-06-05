@@ -1459,3 +1459,12 @@ export interface INotificationCount {
     unread: number;
   };
 };
+
+export interface AddTimeEntryPayload {
+  project_id: number;
+  start_time: string;
+  end_time: string;
+  task_id?: number;
+  note?: string;
+  user_id: number;
+}

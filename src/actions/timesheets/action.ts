@@ -4,10 +4,12 @@
 import { buildQuery } from "@/utils/buildQuery";
 import { baseApi } from "../baseApi";
 import {
+  AddTimeEntryPayload,
   IDailyTimeTrackerData,
   IManualTimeEntry,
   IResponse,
 } from "@/types/type";
+import { getDecodedUser } from "@/utils/decodedLogInUser";
 
 export const getManualTimeEntry = async (
   query = {},
@@ -23,7 +25,7 @@ export const getManualTimeEntry = async (
 
 export const addManualTimeEntry = async (data: {
   project_id: number;
-  task_id: number;
+  task_id?: number;
   start_time: string;
   end_time: string;
   note?: string;
@@ -42,7 +44,7 @@ export const editManualTimeEntry = async ({
 }: {
   data: {
     project_id: number;
-    task_id: number;
+    task_id?: number;
     start_time: string;
     end_time: string;
     note?: string;
@@ -97,4 +99,26 @@ export const getWeeklyAndMonthlyTimeEntry = async (
       cache: "no-store",
     },
   );
+};
+
+export const addTimeEntry = async (
+  data: AddTimeEntryPayload,
+): Promise<IResponse<unknown>> => {
+  const currentUser = await getDecodedUser();
+
+  if (currentUser?.role !== "admin") {
+    return {
+      statusCode: 403,
+      data: null,
+      message: "Only admin can add time directly.",
+      success: false,
+    };
+  }
+
+  return await baseApi(`/time-entries/add-time`, {
+    method: "POST",
+    body: data,
+    tag: "manualTimeEntry",
+    cache: "no-cache",
+  });
 };

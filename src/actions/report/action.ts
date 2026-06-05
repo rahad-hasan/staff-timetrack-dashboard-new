@@ -16,7 +16,7 @@ export const getTimeEntry = async (
   const queryString = buildQuery(query);
   return await baseApi(`/time-entries${queryString ? `?${queryString}` : ""}`, {
     // tag: "timeEntry",
-    tag: "manualTimeEntry", // this is related with manual time request accepting and rejecting, so I put the same tag as manual time entry
+    tag: "manualTimeEntry",
   });
 };
 
@@ -29,6 +29,7 @@ export const deleteTimeEntry = async (id: number): Promise<IResponse<null>> => {
 
   if (res?.success) {
     revalidateTag("DailyTimeEntry");
+    revalidateTag("manualTimeEntry");
   }
 
   return res;

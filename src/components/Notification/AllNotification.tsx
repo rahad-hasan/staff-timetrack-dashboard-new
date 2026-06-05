@@ -12,6 +12,7 @@ import {
   LucideIcon,
   Briefcase,
   CheckSquare,
+  Loader2,
 } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -82,7 +83,7 @@ const NotificationItem = ({
         toast.success("Marked as read");
         onReadSuccess?.();
       }
-    } catch (error: any) {
+    } catch {
       toast.error("Something went wrong!");
     } finally {
       setLoading(false);
@@ -178,12 +179,14 @@ const AllNotification = ({
 
     setLoading(true);
     try {
-      const res = await readNotifications({ data: { ids: unreadNotificationIds } });
+      const res = await readNotifications({
+        data: { ids: unreadNotificationIds },
+      });
       if (res?.success) {
         toast.success("Marked all as read");
         router.refresh();
       }
-    } catch (error: any) {
+    } catch {
       toast.error("Something went wrong!");
     } finally {
       setLoading(false);
@@ -212,7 +215,17 @@ const AllNotification = ({
           onClick={handleReadAllNotifications}
           className="flex items-center gap-2 px-5 py-2.5 bg-primary hover:opacity-90 text-white rounded-xl text-sm font-bold transition-all shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <Check size={18} /> {loading ? "Loading..." : "Mark all as read"}
+          {loading ? (
+            <>
+              <Loader2 className="animate-spin" size={18} />
+              Marking...
+            </>
+          ) : (
+            <>
+              <Check size={18} />
+              Mark all read
+            </>
+          )}
         </button>
       </div>
 

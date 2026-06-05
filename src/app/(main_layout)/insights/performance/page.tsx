@@ -6,7 +6,7 @@ import PerformanceCharts from "@/components/Insights/Performance/PerformanceChar
 import { ISearchParamsProps } from "@/types/type";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
 import { format } from "date-fns";
-import { CalendarRange, Users } from "lucide-react";
+import { CalendarRange } from "lucide-react";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

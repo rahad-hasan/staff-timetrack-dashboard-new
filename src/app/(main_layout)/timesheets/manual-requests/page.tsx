@@ -6,6 +6,7 @@ import { Suspense } from "react";
 import { Metadata } from "next";
 import SelectProjectWrapper from "@/components/Common/SelectProjectWrapper";
 import SelectUserWrapper from "@/components/Common/SelectUserWrapper";
+import { getDecodedUser } from "@/utils/decodedLogInUser";
 
 export const metadata: Metadata = {
   title: "Staff Time Tracker Manual Requests",
@@ -13,6 +14,8 @@ export const metadata: Metadata = {
 };
 
 const ManualRequests = async ({ searchParams }: ISearchParamsProps) => {
+  const currentUser = await getDecodedUser();
+  const isAdmin = currentUser?.role === "admin";
 
   return (
     <div>
@@ -21,7 +24,7 @@ const ManualRequests = async ({ searchParams }: ISearchParamsProps) => {
           heading="Manual Requests"
           subHeading="All the timesheet by team member who completed is displayed here"
         ></HeadingComponent>
-        <ManualRequestsHeroSection></ManualRequestsHeroSection>
+        <ManualRequestsHeroSection isAdmin={isAdmin} />
       </div>
       <Suspense fallback={null}>
         <div className=" flex flex-col sm:flex-row justify-between items-center gap-4 md:gap-3 mb-5">

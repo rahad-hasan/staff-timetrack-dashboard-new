@@ -5,7 +5,6 @@ import { useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTopLoader } from "nextjs-toploader";
 import {
-  CalendarDays,
   CalendarRange,
   Clock3,
   Plus,

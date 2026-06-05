@@ -20,6 +20,7 @@ import {
   RefreshCcw,
   ChevronRight,
   AlertTriangle,
+  Loader2,
 } from "lucide-react";
 import BellIcon from "@/components/Icons/BellIcon";
 import { getPlainText } from "@/utils/getPlainText";
@@ -79,7 +80,7 @@ const Notification = ({ unreadCount, notificationsList }: any) => {
       if (res?.success) {
         toast.success(res?.message || "Notifications marked as read");
       }
-    } catch (error: any) {
+    } catch {
       toast.error("Something went wrong!");
     } finally {
       setLoading(false);
@@ -127,9 +128,21 @@ const Notification = ({ unreadCount, notificationsList }: any) => {
           </div>
           <button
             onClick={onSubmit}
+            disabled={loading}
             className="text-gray-500 dark:text-darkTextSecondary dark:hover:text-darkTextPrimary/80 hover:text-headingTextColor/70 text-xs font-semibold cursor-pointer flex items-center gap-1 transition-colors"
           >
-            <Check className="w-4 h-4" /> Mark all read
+            {/* <Check className="w-4 h-4" /> Mark all read */}
+            {loading ? (
+              <>
+                <Loader2 className="animate-spin" size={12} />
+                Marking...
+              </>
+            ) : (
+              <>
+                <Check className="w-4 h-4" />
+                Mark all read
+              </>
+            )}
           </button>
         </div>
 
@@ -142,8 +155,9 @@ const Notification = ({ unreadCount, notificationsList }: any) => {
               {notificationsList?.map((notification: INotificationItem) => (
                 <div
                   key={notification?.id}
-                  className={`relative flex items-start gap-4 px-3 py-5 border-l-2 transition-all hover:bg-white dark:bg-darkSecondaryBg ${!notification.is_read ? "border-primary bg-gray-50" : "border-transparent opacity-80"}`}
+                  className={`relative flex items-start gap-4 px-3 py-5 transition-all hover:bg-white dark:bg-darkSecondaryBg ${!notification.is_read ? "border-primary bg-gray-50" : "border-transparent opacity-80"}`}
                 >
+                  <div className="absolute left-0 top-0 h-full w-[2px] bg-gradient-to-b from-primary to-lime-800" />
                   {/* Icon Circle */}
                   <div className="relative flex-shrink-0">
                     <div className="w-10 h-10 rounded-2xl bg-white dark:bg-darkPrimaryBg border border-gray-100 dark:border-darkBorder flex items-center justify-center shadow-sm">
@@ -151,7 +165,7 @@ const Notification = ({ unreadCount, notificationsList }: any) => {
                     </div>
                     {!notification.is_read && (
                       <span
-                        className={`absolute -top-1 -right-1 w-3 h-3 bg-green-500 border-2 border-white rounded-full`}
+                        className={`absolute -top-1 -right-1 w-3 h-3 bg-green-500 border-1 border-white rounded-full`}
                       ></span>
                     )}
                   </div>
