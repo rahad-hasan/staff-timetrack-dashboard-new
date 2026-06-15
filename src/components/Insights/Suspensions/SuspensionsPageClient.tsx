@@ -49,6 +49,19 @@ function getBrowserTimezone() {
   }
 }
 
+function formatDateToISO(date: Date) {
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, "0");
+  const dd = String(date.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+function getCurrentMonthRange() {
+  const now = new Date();
+  const from = new Date(now.getFullYear(), now.getMonth(), 1);
+  return { from, to: now };
+}
+
 interface UrlState {
   page: number;
   limit: number;
@@ -66,7 +79,12 @@ interface UrlState {
   expanded_event: number | null;
 }
 
-function readUrlState(params: URLSearchParams, defaultTz: string): UrlState {
+function readUrlState(
+  params: URLSearchParams,
+  defaultTz: string,
+  defaultFrom: string,
+  defaultTo: string,
+): UrlState {
   const page = Math.max(1, Number(params.get("page")) || 1);
   const limit = Math.min(
     100,
@@ -81,8 +99,8 @@ function readUrlState(params: URLSearchParams, defaultTz: string): UrlState {
     limit,
     search: params.get("search")?.slice(0, 120) ?? "",
     project_id: params.get("project_id") ?? "",
-    from_date: params.get("from_date") ?? "",
-    to_date: params.get("to_date") ?? "",
+    from_date: params.get("from_date") ?? defaultFrom,
+    to_date: params.get("to_date") ?? defaultTo,
     reason: params.get("reason") ?? "",
     severity: (sevRaw as TSeverity) || "all",
     status: (statusRaw as TSuspensionStatusFilter) || "all",
@@ -99,9 +117,24 @@ export default function SuspensionsPageClient() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const defaultTz = useMemo(() => getBrowserTimezone(), []);
+  const defaultRange = useMemo(() => getCurrentMonthRange(), []);
+  const defaultFromIso = useMemo(
+    () => formatDateToISO(defaultRange.from),
+    [defaultRange.from],
+  );
+  const defaultToIso = useMemo(
+    () => formatDateToISO(defaultRange.to),
+    [defaultRange.to],
+  );
   const state = useMemo(
-    () => readUrlState(new URLSearchParams(searchParams.toString()), defaultTz),
-    [searchParams, defaultTz],
+    () =>
+      readUrlState(
+        new URLSearchParams(searchParams.toString()),
+        defaultTz,
+        defaultFromIso,
+        defaultToIso,
+      ),
+    [searchParams, defaultTz, defaultFromIso, defaultToIso],
   );
 
   const [summary, setSummary] = useState<ISuspensionSummary | null>(null);
@@ -125,6 +158,17 @@ export default function SuspensionsPageClient() {
     },
     [pathname, router, searchParams],
   );
+
+  // Seed default date range into URL on first mount when not present,
+  // so the picker label and shareable URL reflect the active filter.
+  useEffect(() => {
+    const current = new URLSearchParams(searchParams.toString());
+    if (current.get("from_date") || current.get("to_date")) return;
+    current.set("from_date", defaultFromIso);
+    current.set("to_date", defaultToIso);
+    router.replace(`${pathname}?${current.toString()}`, { scroll: false });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Fetch reasons once (cached for the session).
   useEffect(() => {
@@ -153,6 +197,7 @@ export default function SuspensionsPageClient() {
       project_id: state.project_id || undefined,
       from_date: state.from_date || undefined,
       to_date: state.to_date || undefined,
+      reason: state.reason || undefined,
       sort: state.sort as ISuspensionSummaryQuery["sort"],
       order: state.order,
       timezone: state.timezone,
@@ -164,6 +209,7 @@ export default function SuspensionsPageClient() {
       state.project_id,
       state.from_date,
       state.to_date,
+      state.reason,
       state.sort,
       state.order,
       state.timezone,
@@ -254,8 +300,11 @@ export default function SuspensionsPageClient() {
   );
 
   const handleReset = useCallback(() => {
-    router.replace(pathname, { scroll: false });
-  }, [pathname, router]);
+    const next = new URLSearchParams();
+    next.set("from_date", defaultFromIso);
+    next.set("to_date", defaultToIso);
+    router.replace(`${pathname}?${next.toString()}`, { scroll: false });
+  }, [pathname, router, defaultFromIso, defaultToIso]);
 
   const handleView = useCallback(
     (userId: number) => {
@@ -298,7 +347,10 @@ export default function SuspensionsPageClient() {
         />
         <div className="flex items-center gap-3">
           <Suspense fallback={null}>
-            <SelectDateRange defaultDateShow={false} />
+            <SelectDateRange
+              defaultDateShow={false}
+              defaultRange={defaultRange}
+            />
           </Suspense>
         </div>
       </div>

@@ -164,6 +164,7 @@ export interface ISuspensionSummaryQuery {
   from_date?: string;
   to_date?: string;
   search?: string;
+  reason?: TSuspensionReason | string;
   sort?: "total_duration_sec" | "event_count" | "last_suspended_at" | "name";
   order?: "asc" | "desc";
   timezone?: string;

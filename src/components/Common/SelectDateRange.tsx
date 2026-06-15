@@ -13,7 +13,13 @@ import CalendarIcon from "../Icons/CalendarIcon"
 import { useRouter, useSearchParams, usePathname } from "next/navigation"
 import { useTopLoader } from "nextjs-toploader"
 
-const SelectDateRange = ({defaultDateShow = true}: {defaultDateShow?:boolean}) => {
+const SelectDateRange = ({
+    defaultDateShow = true,
+    defaultRange,
+}: {
+    defaultDateShow?: boolean
+    defaultRange?: DateRange
+}) => {
     const router = useRouter()
     const searchParams = useSearchParams()
     const pathname = usePathname()
@@ -38,6 +44,9 @@ const SelectDateRange = ({defaultDateShow = true}: {defaultDateShow?:boolean}) =
                 from: new Date(fromParam),
                 to: new Date(toParam),
             }
+        }
+        if (defaultRange) {
+            return defaultRange
         }
         if (defaultDateShow) {
             return {
