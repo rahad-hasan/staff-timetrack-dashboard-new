@@ -51,6 +51,7 @@ export const sidebarItems = [
       // { label: 'Highlight', key: '/insights/highlight' },
       { label: "Performance", key: "/insights/performance" },
       // { label: 'Unusual Activity', key: '/insights/unusual-activity' },
+      { label: "Suspicious Activity", key: "/insights/suspensions" },
     ],
   },
   {
