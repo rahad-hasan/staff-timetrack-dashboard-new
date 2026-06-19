@@ -19,7 +19,7 @@ const buttonVariants = cva(
         outlinePagi:
           "border border-primary bg-[#e9f8f0] text-primary hover:bg-[#e9f8f0] hover:text-primary dark:bg-input/30 dark:border-input dark:border-darkBorder",
         outline2:
-          "border border-borderColor  text-headingTextColor hover:text-headingTextColor dark:bg-darkPrimaryBg dark:border-darkBorder dark:hover:bg-input/50",
+          "border border-borderColor text-slate-700 dark:text-slate-200 hover:text-headingTextColor dark:bg-darkPrimaryBg dark:border-darkBorder dark:hover:text-slate-100",
         filter:
           "border border-borderColor h-10 text-headingTextColor hover:text-headingTextColor dark:bg-darkPrimaryBg dark:border-input dark:hover:bg-input/50",
         secondary:
