@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Download as DownloadIcon } from "lucide-react";
 
 const DownloadPage = () => {
-  //   const LINUX_DOWNLOAD_URL = "/apps/linux/staff-time-tracker_0.0.1.deb";
-  //   const MACOS_DOWNLOAD_URL = "/apps/macos/staff-time-tracker_0.0.1.exe";
-  //   const WINDOWS_DOWNLOAD_URL = "/apps/windows/staff-time-tracker_0.0.1.dmg";
+    const LINUX_DOWNLOAD_URL = "https://drive.google.com/file/d/1XLUSzTIoUNrrFDBEchJJRl4ULxbwXvxk/view?usp=sharing";
+    const MACOS_DOWNLOAD_URL = "https://drive.google.com/file/d/1b_zi4YNzKO7OPovNFE2kzBGamai61ImH/view?usp=sharing";
+    const WINDOWS_DOWNLOAD_URL = "https://drive.google.com/file/d/1V5fhVy5tjL-bVrCpi_QcRnD2Tq32Uzlq/view?usp=sharing";
 
   return (
     <div className="container mx-auto py-4 sm:py-8 lg:py-12">
@@ -29,7 +29,7 @@ const DownloadPage = () => {
           <Image src={windows} width={120} height={120} alt="Windows OS icon" />
           <div className="text-lg font-medium">Windows</div>
           <a
-            href={`https://drive.google.com/file/d/1cuq3R40FqQg1OZnsYRuJJGfxh6z9ASpj/view?usp=sharing`}
+            href={WINDOWS_DOWNLOAD_URL}
             // download="staff-time-tracker_0.0.1.exe"
             target="_blank"
             // rel="noopener"
@@ -50,7 +50,7 @@ const DownloadPage = () => {
           />
           <div className="text-lg font-medium">Linux</div>
           <a
-            href={`https://drive.google.com/file/d/1CYeOdQUSuDl3dLRAhCgu9y_wY3xazVnN/view?usp=sharing`}
+            href={LINUX_DOWNLOAD_URL}
             // download="staff-time-tracker_0.0.1.deb"
             target="_blank"
             // rel="noopener"
@@ -71,7 +71,7 @@ const DownloadPage = () => {
           />
           <div className="text-lg font-medium">macOS</div>
           <a
-            href={`https://drive.google.com/file/d/1b_zi4YNzKO7OPovNFE2kzBGamai61ImH/view?usp=sharing`}
+            href={MACOS_DOWNLOAD_URL}
             // download="staff-time-tracker_0.0.1.exe"
             target="_blank"
             // rel="noopener"
