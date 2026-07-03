@@ -23,6 +23,11 @@ import { ArrowUpDown } from "lucide-react";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { IUrl } from "@/types/type";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 const UrlsTable = ({ data }: { data: IUrl[] }) => {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -33,7 +38,7 @@ const UrlsTable = ({ data }: { data: IUrl[] }) => {
       accessorKey: "url",
       header: ({ column }) => {
         return (
-          <div className=" min-w-[120px]">
+          <div className=" min-w-[150px] max-w-[500px]">
             <span
               className=" cursor-pointer flex items-center gap-1"
               onClick={() =>
@@ -50,7 +55,7 @@ const UrlsTable = ({ data }: { data: IUrl[] }) => {
         const url = row.getValue("url") as string;
         // const image = row.original.image;
         return (
-          <div className="flex items-center gap-2 min-w-[150px]">
+          <div className="flex items-center gap-2 min-w-[150px] max-w-[500px]">
             <Avatar className="w-9 h-9 shrink-0">
               <AvatarImage src={""} />
               <AvatarFallback>
@@ -58,10 +63,25 @@ const UrlsTable = ({ data }: { data: IUrl[] }) => {
                 Ur
               </AvatarFallback>
             </Avatar>
-            <div className="">
-              <p className=" text-sm font-bold text-headingTextColor dark:text-darkTextPrimary break-words whitespace-normal">
-                {url}
-              </p>
+            <div className="min-w-0 flex-1">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    title={url}
+                    className="block max-w-full truncate text-left text-sm font-bold text-headingTextColor dark:text-darkTextPrimary cursor-pointer hover:underline"
+                  >
+                    {url}
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent
+                  side="bottom"
+                  align="start"
+                  className="w-auto max-w-md max-h-[300px] overflow-y-auto break-all text-xs text-headingTextColor dark:text-darkTextPrimary"
+                >
+                  {url}
+                </PopoverContent>
+              </Popover>
               <span className=" font-normal text-subTextColor dark:text-darkTextSecondary">
                 Site
               </span>
