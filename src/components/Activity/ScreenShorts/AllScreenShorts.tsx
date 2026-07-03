@@ -6,6 +6,7 @@ import { AnimatePresence } from "framer-motion";
 import { IAllScreenshot } from "@/types/type";
 import AllScreenShortsModal from "./AllScreenShortsModal";
 import EmptyTableLogo from "@/assets/empty_table.svg";
+import ScreenshotImage from "./ScreenshotImage";
 
 const AllScreenShorts = ({ data }: { data: IAllScreenshot[] | undefined }) => {
   const [selectedImage, setSelectedImage] = useState<IAllScreenshot>();
@@ -25,17 +26,19 @@ const AllScreenShorts = ({ data }: { data: IAllScreenshot[] | undefined }) => {
               </p>
             </div>
             <div className="relative flex-nowrap rounded-lg dark:bg-darkSecondaryBg ">
-              <div className="relative w-full aspect-[4/2.3] overflow-hidden rounded-t-lg bg-gray-100 dark:bg-darkSecondaryBg">
-                <Image
+              <div
+                className="relative w-full aspect-[4/2.3] overflow-hidden rounded-t-lg bg-gray-100 dark:bg-darkSecondaryBg cursor-pointer"
+                onClick={() => {
+                  setSelectedImage(screenShort);
+                  setModalOpen(true);
+                }}
+              >
+                <ScreenshotImage
                   src={screenShort?.image}
                   alt="screenshot"
                   fill
                   sizes="(max-width: 768px) 20vw, (max-width: 1200px) 18vw, 15vw"
-                  className="object-cover cursor-pointer transition-transform duration-300 hover:scale-[1.01]"
-                  onClick={() => {
-                    setSelectedImage(screenShort);
-                    setModalOpen(true);
-                  }}
+                  className="object-cover transition-transform duration-300 hover:scale-[1.01]"
                 />
               </div>
 

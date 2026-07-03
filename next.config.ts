@@ -1,23 +1,32 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  // compiler: {
-  //   removeConsole: { exclude: ["error"] },
-  // },
   experimental: {
     serverActions: {
       bodySizeLimit: "2mb",
     },
   },
   images: {
-    domains: [
-      "staff-time-tracker-screenshot.lon1.digitaloceanspaces.com",
-      "avatar.iran.liara.run",
-      "https://picsum.photos",
-      "picsum.photos",
-      "https://staff-time-tracker-screenshot.lon1.digitaloceanspaces.com",
-      "lh3.googleusercontent.com",
+    remotePatterns: [
+      // ✅ নতুন SGP1 private bucket — CDN (এটা সবচেয়ে important)
+      {
+        protocol: "https",
+        hostname: "staff-time-tracker.sgp1.cdn.digitaloceanspaces.com",
+      },
+      // ✅ নতুন SGP1 private bucket — origin (fallback)
+      {
+        protocol: "https",
+        hostname: "staff-time-tracker.sgp1.digitaloceanspaces.com",
+      },
+      // ✅ পুরোনো LON1 public bucket — backward compat
+      {
+        protocol: "https",
+        hostname: "staff-time-tracker-screenshot.lon1.digitaloceanspaces.com",
+      },
+      // External services
+      { protocol: "https", hostname: "lh3.googleusercontent.com" },
+      { protocol: "https", hostname: "avatar.iran.liara.run" },
+      { protocol: "https", hostname: "picsum.photos" },
     ],
   },
   async redirects() {
@@ -25,7 +34,7 @@ const nextConfig: NextConfig = {
       {
         source: "/",
         destination: "/dashboard",
-        permanent: true, // Use false if this might change in the future
+        permanent: true,
       },
     ];
   },

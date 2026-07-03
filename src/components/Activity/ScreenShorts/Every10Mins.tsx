@@ -18,6 +18,7 @@ import ConfirmDialog from "@/components/Common/ConfirmDialog";
 import { deleteScreenshot } from "@/actions/screenshots/action";
 import { toast } from "sonner";
 import { useLogInUserStore } from "@/store/logInUserStore";
+import ScreenshotImage from "./ScreenshotImage";
 import {
   TTimelineDataSlot,
   TTimelineDetail,
@@ -115,18 +116,20 @@ const Every10Mins = ({ data }: { data: TTimelineHourBlock[] }) => {
                     </p>
                   </div>
                   <div className="relative dark:bg-darkSecondaryBg overflow-hidden rounded-lg">
-                    <div className="relative w-full aspect-[4/2.2] ">
-                      <Image
+                    <div
+                      className="relative w-full aspect-[4/2.2] cursor-pointer"
+                      onClick={() => {
+                        setSelectedImages(getDayScreenshots());
+                        setSelectedImage(block?.details?.[0]);
+                        setModalOpen(true);
+                      }}
+                    >
+                      <ScreenshotImage
                         src={block?.details?.[0]?.image}
                         alt="screenshot"
                         fill
                         sizes="(max-width: 768px) 20vw, (max-width: 1200px) 18vw, 15vw"
-                        onClick={() => {
-                          setSelectedImages(getDayScreenshots());
-                          setSelectedImage(block?.details?.[0]);
-                          setModalOpen(true);
-                        }}
-                        className="object-cover transition-transform duration-300 hover:scale-[1.05] cursor-pointer"
+                        className="object-cover transition-transform duration-300 hover:scale-[1.05]"
                       />
                     </div>
                     {block?.details?.[0]?.anomaly?.type && (
