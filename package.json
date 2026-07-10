@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "start:standalone": "node .next/standalone/server.js"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
