@@ -299,7 +299,7 @@ const ScheduleTable = ({ data }: { data: ISchedules[] }) => {
     ];
 
     const table = useReactTable({
-        data: data,
+        data: data ?? [],
         columns,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,

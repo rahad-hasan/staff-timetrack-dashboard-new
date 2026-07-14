@@ -230,7 +230,7 @@ const ArchivedProjectTable = () => {
 
 
     const table = useReactTable({
-        data: projectList,
+        data: projectList ?? [],
         columns,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,

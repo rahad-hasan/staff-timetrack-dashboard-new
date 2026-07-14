@@ -393,7 +393,7 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
   ];
 
   const table = useReactTable({
-    data: data,
+    data: data ?? [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,

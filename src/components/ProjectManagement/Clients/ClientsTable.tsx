@@ -207,7 +207,7 @@ const ClientsTable = ({ data }: any) => {
 
 
     const table = useReactTable({
-        data: data,
+        data: data ?? [],
         columns,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,

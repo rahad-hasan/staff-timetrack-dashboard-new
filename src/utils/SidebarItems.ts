@@ -8,6 +8,7 @@ import {
   Users,
   CalendarDays,
   AlarmClock,
+  Handshake,
   Settings,
 } from "lucide-react";
 
@@ -169,6 +170,13 @@ export const othersSidebarItems = [
     ],
   },
   {
+    icon: Handshake,
+    label: "Support",
+    key: "/support/tickets",
+    collapsible: false,
+    subItems: [],
+  },
+  {
     icon: Settings,
     label: "Settings",
     key: "/settings",
@@ -195,6 +203,13 @@ export const employeeOthersSidebarItems = [
       { label: "Request Queue", key: "/leave-management/request-queue" },
       { label: "Calendar", key: "/leave-management/calendar" },
     ],
+  },
+  {
+    icon: Handshake,
+    label: "Support",
+    key: "/support/tickets",
+    collapsible: false,
+    subItems: [],
   },
   {
     icon: Settings,

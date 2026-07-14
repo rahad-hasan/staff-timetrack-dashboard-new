@@ -166,7 +166,7 @@ const SingleScheduleMemberTable = ({ id, data }: { id: number | undefined, data:
     ];
 
     const table = useReactTable({
-        data: filteredData!,
+        data: filteredData ?? [],
         columns,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,

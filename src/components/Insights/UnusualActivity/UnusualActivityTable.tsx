@@ -211,7 +211,7 @@ const UnusualActivityTable = () => {
     ];
 
     const table = useReactTable({
-        data: unusualActivities,
+        data: unusualActivities ?? [],
         columns,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,

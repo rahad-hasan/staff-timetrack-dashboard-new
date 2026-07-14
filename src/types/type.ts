@@ -12,6 +12,7 @@ export interface IResponse<T> {
   message: string;
   success: boolean;
   meta?: IMeta | null;
+  errorMessages?: { path: string; message: string }[];
 }
 
 type TRole = "project_manager" | "admin" | "hr" | "manager" | "employee";

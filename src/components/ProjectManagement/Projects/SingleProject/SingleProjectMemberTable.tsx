@@ -124,7 +124,7 @@ const SingleProjectMemberTable = ({ data, searchTerm }: { data: ProjectAssign[],
 
 
     const table = useReactTable({
-        data: filteredData,
+        data: filteredData ?? [],
         columns,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,

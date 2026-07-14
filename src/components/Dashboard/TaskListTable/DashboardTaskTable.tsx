@@ -281,7 +281,7 @@ const DashboardTaskTable = ({ data }: { data: ITask[] }) => {
     ];
 
     const table = useReactTable({
-        data: data,
+        data: data ?? [],
         columns,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,

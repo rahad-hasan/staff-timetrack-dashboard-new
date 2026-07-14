@@ -117,7 +117,7 @@ const AppsAndUrl = ({ data }: { data: IRowAppsUrls[] }) => {
     ]
 
     const table = useReactTable({
-        data: data,
+        data: data ?? [],
         columns,
         getCoreRowModel: getCoreRowModel(),
     })

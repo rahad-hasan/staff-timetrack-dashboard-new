@@ -204,7 +204,7 @@ const TeamsTable = () => {
 
 
     const table = useReactTable({
-        data: taskList,
+        data: taskList ?? [],
         columns,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,

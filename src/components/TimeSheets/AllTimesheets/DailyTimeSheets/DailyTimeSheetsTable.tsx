@@ -160,7 +160,7 @@ const DailyTimeSheetsTable = ({ data }: { data: IDailyTimeEntryItem[] }) => {
   ];
 
   const table = useReactTable({
-    data: data,
+    data: data ?? [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,

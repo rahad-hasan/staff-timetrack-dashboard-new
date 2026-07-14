@@ -230,7 +230,7 @@ const SingleMemberTaskTable = ({ data }: { data: TTask[] }) => {
     ];
 
     const table = useReactTable({
-        data: data,
+        data: data ?? [],
         columns,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,

@@ -269,7 +269,7 @@ const ProjectMemberTable = () => {
 
 
     const table = useReactTable({
-        data: memberList,
+        data: memberList ?? [],
         columns,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,

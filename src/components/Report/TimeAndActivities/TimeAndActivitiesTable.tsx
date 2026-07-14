@@ -149,7 +149,7 @@ const TimeAndActivitiesTable = () => {
 
 
     const table = useReactTable({
-        data: timeActivityList,
+        data: timeActivityList ?? [],
         columns,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,

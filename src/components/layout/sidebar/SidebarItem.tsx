@@ -22,6 +22,7 @@ import TeamsColoredIcon from "@/components/ColoredIcon/SidebarIcon/TeamsColoredI
 import CalendarColoredIcon from "@/components/ColoredIcon/SidebarIcon/CalendarColoredIcon";
 import LeaveManagementColoredIcon from "@/components/ColoredIcon/SidebarIcon/LeaveManagementColoredIcon";
 import SettingsColoredIcon from "@/components/ColoredIcon/SidebarIcon/SettingsColoredIcon";
+import SupportColoredIcon from "@/components/ColoredIcon/SidebarIcon/SupportColoredIcon";
 
 // const iconMapping = {
 //   Dashboard: DashboardIcon,
@@ -47,6 +48,7 @@ const coloredIconMapping = {
   Members: TeamsColoredIcon,
   Event: CalendarColoredIcon,
   Leaves: LeaveManagementColoredIcon,
+  Support: SupportColoredIcon,
   Settings: SettingsColoredIcon,
 }
 

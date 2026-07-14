@@ -86,7 +86,7 @@ const DashboardMembersTable = ({ data = [] }: { data: IMembersStatsDashboard[] }
     ]
 
     const table = useReactTable({
-        data: data,
+        data: data ?? [],
         columns,
         getCoreRowModel: getCoreRowModel(),
     })

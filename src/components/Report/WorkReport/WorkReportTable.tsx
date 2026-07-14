@@ -228,7 +228,7 @@ const WorkReportTable = ({ data }: {
     ];
 
     const table = useReactTable({
-        data: data,
+        data: data ?? [],
         columns,
         getCoreRowModel: getCoreRowModel(),
         onSortingChange: setSorting,
