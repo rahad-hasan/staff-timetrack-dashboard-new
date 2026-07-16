@@ -345,6 +345,12 @@ export const leaveSettingsSchema = z.object({
     .max(60, "Limit cannot exceed 1 hours"),
 
   week_start: z.string().min(1, "Please select a starting day of the week"),
+
+  weekly_leave_count: z
+    .number({ message: "Weekend length is required" })
+    .int("Weekend length must be a whole number")
+    .min(0, "Weekend length must be 0 or greater")
+    .max(7, "Weekend length cannot exceed 7"),
 });
 
 export const changePasswordSchema = z.object({
@@ -494,6 +500,99 @@ export const leaveHolidayFormSchema = z.object({
     .trim()
     .min(1, "Source is required")
     .max(60, "Source must be 60 characters or less"),
+});
+
+export const payrollProfileFormSchema = z
+  .object({
+    user_id: z
+      .number({ message: "Employee is required" })
+      .int()
+      .positive("Employee is required"),
+    salary_type: z.enum(["monthly_fixed", "hourly"], {
+      message: "Salary type is required",
+    }),
+    monthly_salary: z
+      .number({ message: "Monthly salary must be a number" })
+      .min(0, "Monthly salary cannot be negative"),
+    hourly_rate: z
+      .number({ message: "Hourly rate must be a number" })
+      .min(0, "Hourly rate cannot be negative"),
+    overtime_allow: z.boolean(),
+    overtime_multiplier: z
+      .number({ message: "Overtime multiplier is required" })
+      .min(1, "Overtime multiplier must be at least 1")
+      .max(10, "Overtime multiplier must be 10 or less"),
+    is_deduct_salary: z.boolean(),
+    effective_from: z
+      .string()
+      .trim()
+      .regex(/^\d{4}-\d{2}-\d{2}$/, "Select a valid start date"),
+    effective_to: z
+      .string()
+      .trim()
+      .regex(/^\d{4}-\d{2}-\d{2}$/, "Select a valid end date")
+      .nullable(),
+    currency: z
+      .string()
+      .trim()
+      .min(3, "Currency is required")
+      .max(3, "Currency must be a 3-letter code"),
+  })
+  .superRefine((values, ctx) => {
+    if (values.salary_type === "monthly_fixed") {
+      if (values.monthly_salary <= 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["monthly_salary"],
+          message: "Monthly salary must be greater than zero",
+        });
+      }
+    } else if (values.salary_type === "hourly") {
+      if (values.hourly_rate <= 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["hourly_rate"],
+          message: "Hourly rate must be greater than zero",
+        });
+      }
+      if (values.is_deduct_salary) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["is_deduct_salary"],
+          message: "Salary deduction only applies to monthly fixed employees",
+        });
+      }
+    }
+
+    if (
+      values.effective_to &&
+      values.effective_to < values.effective_from
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["effective_to"],
+        message: "End date cannot be before the start date",
+      });
+    }
+  });
+
+export const generatePayrollSchema = z.object({
+  month: z
+    .number({ message: "Month is required" })
+    .int()
+    .min(1, "Month must be between 1 and 12")
+    .max(12, "Month must be between 1 and 12"),
+  year: z
+    .number({ message: "Year is required" })
+    .int()
+    .min(2000, "Year must be 2000 or later")
+    .max(2100, "Year must be 2100 or earlier"),
+  notes: z
+    .string()
+    .trim()
+    .max(2000, "Notes must be 2000 characters or less")
+    .optional()
+    .or(z.literal("")),
 });
 
 const leaveRequestBaseSchema = z

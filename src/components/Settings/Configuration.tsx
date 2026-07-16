@@ -41,9 +41,10 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, Info } from "lucide-react";
 import { popularTimeZoneList } from "@/utils/TimeZoneList";
 import { useLogInUserStore } from "@/store/logInUserStore";
+import { weekendPreview } from "@/lib/payroll";
 
 const Configuration = ({ data }: { data: ICompany }) => {
     const [loading, setLoading] = useState(false);
@@ -68,8 +69,16 @@ const Configuration = ({ data }: { data: ICompany }) => {
             time_zone: data?.time_zone || "",
             idle_minutes_limit: data?.idle_minutes_limit || 10,
             week_start: data?.week_start || "Monday",
+            weekly_leave_count: data?.weekly_leave_count ?? 2,
         },
     });
+
+    const watchWeekStart = form.watch("week_start");
+    const watchWeeklyLeaveCount = form.watch("weekly_leave_count");
+    const weekendLabel = weekendPreview(
+        watchWeekStart || "Monday",
+        Number.isFinite(watchWeeklyLeaveCount) ? watchWeeklyLeaveCount : 2,
+    );
 
 
     async function onSubmit(values: z.infer<typeof leaveSettingsSchema>) {
@@ -395,6 +404,52 @@ const Configuration = ({ data }: { data: ICompany }) => {
                                     )}
                                 />
                             </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-3 items-start">
+                            <FormField
+                                control={form.control}
+                                name="weekly_leave_count"
+                                render={({ field }) => (
+                                    <FormItem className="w-full">
+                                        <FormLabel required={true}>Weekend Length (days)</FormLabel>
+                                        <Select
+                                            onValueChange={(value) => field.onChange(Number(value))}
+                                            value={String(field.value ?? 2)}
+                                        >
+                                            <FormControl className="w-full">
+                                                <SelectTrigger className="dark:bg-darkPrimaryBg dark:border-darkBorder">
+                                                    <SelectValue placeholder="Select weekend length" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent className="dark:border-darkBorder">
+                                                {[0, 1, 2, 3, 4, 5, 6, 7].map((count) => (
+                                                    <SelectItem key={count} value={String(count)}>
+                                                        {count} day{count === 1 ? "" : "s"}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <div className="flex flex-col justify-end">
+                                <p className="text-xs uppercase tracking-wide text-subTextColor dark:text-darkTextSecondary">
+                                    Preview
+                                </p>
+                                <div className="mt-1 rounded-md border border-borderColor bg-bgSecondary/60 px-3 py-2 text-sm text-headingTextColor dark:border-darkBorder dark:bg-darkPrimaryBg dark:text-darkTextPrimary">
+                                    Weekly weekends are <span className="font-semibold">{weekendLabel}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-200">
+                            <Info className="mt-0.5 size-3.5" />
+                            <span>
+                                Changing weekend settings affects <span className="font-semibold">future</span> payroll runs only. Already-generated runs keep their original target hours.
+                            </span>
                         </div>
 
                         <div className="flex items-center gap-3 w-full pt-3 border-t dark:border-darkBorder">

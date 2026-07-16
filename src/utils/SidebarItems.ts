@@ -10,6 +10,7 @@ import {
   AlarmClock,
   Handshake,
   Settings,
+  Wallet,
 } from "lucide-react";
 
 export const sidebarItems = [
@@ -170,6 +171,18 @@ export const othersSidebarItems = [
     ],
   },
   {
+    icon: Wallet,
+    label: "Payroll",
+    key: "payroll",
+    collapsible: true,
+    subItems: [
+      { label: "Settings", key: "/payroll/settings" },
+      { label: "Generate", key: "/payroll/generate" },
+      { label: "Runs", key: "/payroll/runs" },
+      { label: "My Payslips", key: "/payroll/my-payslips" },
+    ],
+  },
+  {
     icon: Handshake,
     label: "Support",
     key: "/support/tickets",
@@ -203,6 +216,13 @@ export const employeeOthersSidebarItems = [
       { label: "Request Queue", key: "/leave-management/request-queue" },
       { label: "Calendar", key: "/leave-management/calendar" },
     ],
+  },
+  {
+    icon: Wallet,
+    label: "My Payslips",
+    key: "/payroll/my-payslips",
+    collapsible: false,
+    subItems: [],
   },
   {
     icon: Handshake,

@@ -360,6 +360,7 @@ export type ICompany = {
   idle_minutes_limit: number;
   url_tracking_enabled: boolean;
   week_start: string;
+  weekly_leave_count: number;
   paid_leave: number;
   casual_leave: number;
   sick_leave: number;

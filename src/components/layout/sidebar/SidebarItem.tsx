@@ -23,6 +23,7 @@ import CalendarColoredIcon from "@/components/ColoredIcon/SidebarIcon/CalendarCo
 import LeaveManagementColoredIcon from "@/components/ColoredIcon/SidebarIcon/LeaveManagementColoredIcon";
 import SettingsColoredIcon from "@/components/ColoredIcon/SidebarIcon/SettingsColoredIcon";
 import SupportColoredIcon from "@/components/ColoredIcon/SidebarIcon/SupportColoredIcon";
+import PayrollColoredIcon from "@/components/ColoredIcon/SidebarIcon/PayrollColoredIcon";
 
 // const iconMapping = {
 //   Dashboard: DashboardIcon,
@@ -48,6 +49,8 @@ const coloredIconMapping = {
   Members: TeamsColoredIcon,
   Event: CalendarColoredIcon,
   Leaves: LeaveManagementColoredIcon,
+  Payroll: PayrollColoredIcon,
+  "My Payslips": PayrollColoredIcon,
   Support: SupportColoredIcon,
   Settings: SettingsColoredIcon,
 }
