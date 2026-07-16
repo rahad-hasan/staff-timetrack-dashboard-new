@@ -352,11 +352,6 @@ export const leaveSettingsSchema = z.object({
       { message: "Phone number must be a valid international format" },
     ),
 
-  paid_leave: z.number().min(1, "Paid Leave is required"),
-  casual_leave: z.number().min(1, "Casual Leave is required"),
-  sick_leave: z.number().min(1, "Sick Leave is required"),
-  maternity_leave: z.number().min(1, "Maternity Leave is required"),
-
   address: z
     .string()
     .trim()
