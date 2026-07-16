@@ -10,7 +10,6 @@ import {
 } from "date-fns";
 import { useTheme } from "next-themes";
 import { memo, useCallback, useMemo, type ReactNode } from "react";
-import type { Payload as TooltipPayload } from "recharts/types/component/DefaultTooltipContent";
 import {
   Area,
   AreaChart,
@@ -25,6 +24,8 @@ import {
   PieChart,
   ResponsiveContainer,
   Tooltip,
+  type TooltipProps,
+  type TooltipValueType,
   XAxis,
   YAxis,
 } from "recharts";
@@ -113,8 +114,6 @@ type CalendarBarItem = {
 type PerformanceChartsProps = {
   data: IMonthlyWorkReport;
 };
-
-type CalendarTooltipPayload = TooltipPayload<string | number, string>;
 
 const hexToRgba = (hex: string, alpha: number) => {
   const normalized = hex.replace("#", "");
@@ -522,47 +521,45 @@ const PerformanceCharts = ({ data }: PerformanceChartsProps) => {
     [tooltipTextStyle],
   );
 
-  const workloadMixTooltipFormatter = useCallback(
-    (
-      _value: number | string,
-      _name: string,
-      item: { payload?: WorkloadMixItem },
-    ) => item.payload?.displayValue ?? "",
-    [],
-  );
+  const workloadMixTooltipFormatter = useCallback<
+    NonNullable<TooltipProps<TooltipValueType, string | number>["formatter"]>
+  >((_value, _name, item) => {
+    const payload = item.payload as WorkloadMixItem | undefined;
 
-  const calendarTooltipFormatter = useCallback(
-    (value: number | string) => [`${value}h`, "Worked"],
-    [],
-  );
+    return payload?.displayValue ?? "";
+  }, []);
 
-  const calendarTooltipLabelFormatter = useCallback(
-    (
-      _label: unknown,
-      payload: ReadonlyArray<CalendarTooltipPayload>,
-    ) => {
-      const item = payload[0]?.payload as CalendarBarItem | undefined;
+  const calendarTooltipFormatter = useCallback<
+    NonNullable<TooltipProps<TooltipValueType, string | number>["formatter"]>
+  >((value) => {
+    const displayValue = Array.isArray(value) ? value.join(", ") : value ?? "";
 
-      if (!item) {
-        return "";
-      }
+    return [`${displayValue}h`, "Worked"];
+  }, []);
 
-      return [
-        item.fullLabel,
-        `${item.activity}% activity`,
-        item.checkIn ? `Check-in ${item.checkIn}` : "",
-        item.late > 0 ? `Late ${item.late}m` : "",
-        item.early > 0 ? `Early ${item.early}m` : "",
-        item.leaveType || "",
-        item.holiday || "",
-        item.anomalies > 0 ? `${item.anomalies} anomalies` : "",
-        item.screenshots > 0 ? `${item.screenshots} screenshots` : "",
-      ]
-        .filter(Boolean)
-        .join(" • ");
-    },
-    [],
-  );
+  const calendarTooltipLabelFormatter = useCallback<
+    NonNullable<TooltipProps<TooltipValueType, string | number>["labelFormatter"]>
+  >((_label, payload) => {
+    const item = payload[0]?.payload as CalendarBarItem | undefined;
+
+    if (!item) {
+      return "";
+    }
+
+    return [
+      item.fullLabel,
+      `${item.activity}% activity`,
+      item.checkIn ? `Check-in ${item.checkIn}` : "",
+      item.late > 0 ? `Late ${item.late}m` : "",
+      item.early > 0 ? `Early ${item.early}m` : "",
+      item.leaveType || "",
+      item.holiday || "",
+      item.anomalies > 0 ? `${item.anomalies} anomalies` : "",
+      item.screenshots > 0 ? `${item.screenshots} screenshots` : "",
+    ]
+      .filter(Boolean)
+      .join(" • ");
+  }, []);
 
   return (
     <>
