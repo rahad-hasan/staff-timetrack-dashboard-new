@@ -303,7 +303,7 @@ const PayrollRunDetailView = ({
             }
           />
         ) : (
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto pb-3">
             <Table>
               <TableHeader>
                 <TableRow>

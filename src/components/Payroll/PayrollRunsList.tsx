@@ -158,7 +158,7 @@ const PayrollRunsList = ({ runs, meta, filters }: PayrollRunsListProps) => {
           <PayrollEmptyState text="No payroll runs match the selected filters." />
         ) : (
           <>
-            <div className="hidden md:block">
+            <div className="hidden pb-3 md:block">
               <Table>
                 <TableHeader>
                   <TableRow>
