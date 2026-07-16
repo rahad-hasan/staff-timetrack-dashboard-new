@@ -328,16 +328,51 @@ export const screenDeleteReasonSchema = z.object({
 });
 
 export const leaveSettingsSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(2, "Name must be at least 2 characters long")
+    .max(50, "Name must not exceed 50 characters"),
+
+  email: z
+    .string()
+    .trim()
+    .min(1, "Email is required")
+    .email("Invalid email format"),
+
+  phone: z
+    .string()
+    .trim()
+    .min(1, "Phone number is required")
+    .refine(
+      (val) => {
+        const parsed = parsePhoneNumberFromString(val);
+        return parsed?.isValid();
+      },
+      { message: "Phone number must be a valid international format" },
+    ),
+
   paid_leave: z.number().min(1, "Paid Leave is required"),
   casual_leave: z.number().min(1, "Casual Leave is required"),
   sick_leave: z.number().min(1, "Sick Leave is required"),
   maternity_leave: z.number().min(1, "Maternity Leave is required"),
+
   address: z
     .string()
-    .min(1, "Address is required")
-    .max(255, "Address is too long"),
+    .trim()
+    .min(5, "Address must be at least 5 characters long")
+    .max(100, "Address must not exceed 100 characters"),
 
   time_zone: z.string().min(1, "Time Zone is required"),
+
+  currency: z
+    .string()
+    .trim()
+    .regex(
+      /^[A-Za-z]{3}$/,
+      "Currency must be a 3-letter ISO 4217 code (e.g. USD, BDT, EUR)",
+    )
+    .transform((v) => v.toUpperCase()),
 
   idle_minutes_limit: z
     .number()

@@ -367,6 +367,7 @@ export type ICompany = {
   maternity_leave: number;
   app_notify: boolean;
   email_notify: boolean;
+  currency: string;
   updated_at: string;
   created_at: string;
 };
