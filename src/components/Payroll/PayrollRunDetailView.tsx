@@ -13,6 +13,7 @@ import {
   ChevronUp,
   Coins,
   FileDown,
+  FileText,
   Loader2,
   RefreshCcw,
   Search,
@@ -53,6 +54,7 @@ import PayrollEmptyState from "./PayrollEmptyState";
 import PayrollSubNav from "./PayrollSubNav";
 import { PayrollRunStatusBadge, SalaryTypeBadge } from "./PayrollBadges";
 import { downloadPayrollExport } from "./payrollExport";
+import { downloadPayrollPdf } from "./payrollPdfExport";
 
 interface PayrollRunDetailViewProps {
   run: PayrollRun;
@@ -86,6 +88,7 @@ const PayrollRunDetailView = ({
   const [approving, setApproving] = useState(false);
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
   const [exporting, setExporting] = useState(false);
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
 
   const locked = isRunLocked(run.status);
   const canApprove = run.status === "generated";
@@ -123,6 +126,12 @@ const PayrollRunDetailView = ({
     setExporting(true);
     await downloadPayrollExport(run.id);
     setExporting(false);
+  };
+
+  const handleDownloadPdf = async () => {
+    setDownloadingPdf(true);
+    await downloadPayrollPdf(run.id);
+    setDownloadingPdf(false);
   };
 
   const skipped = run.failed_count;
@@ -183,13 +192,29 @@ const PayrollRunDetailView = ({
                 </Link>
               </Button>
             )}
-            <Button variant="outline2" onClick={handleExport} disabled={exporting}>
+            <Button
+              variant="outline2"
+              onClick={handleExport}
+              disabled={exporting}
+            >
               {exporting ? (
                 <Loader2 className="size-4 animate-spin" />
               ) : (
                 <FileDown className="size-4" />
               )}
               Export CSV
+            </Button>
+            <Button
+              onClick={handleDownloadPdf}
+              disabled={downloadingPdf}
+              variant="outline2"
+            >
+              {downloadingPdf ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <FileText className="size-4" />
+              )}
+              Download PDF
             </Button>
           </div>
         </div>
@@ -237,12 +262,19 @@ const PayrollRunDetailView = ({
           <AlertTriangle className="mt-0.5 size-4 text-amber-600 dark:text-amber-300" />
           <div className="text-amber-800 dark:text-amber-200">
             <p className="font-medium">
-              {skipped} employee{skipped === 1 ? "" : "s"} skipped due to missing payroll profiles.
+              {skipped} employee{skipped === 1 ? "" : "s"} skipped due to
+              missing payroll profiles.
             </p>
             <p className="mt-1 text-xs">
-              Configure their profiles from the payroll settings page and regenerate this run.
+              Configure their profiles from the payroll settings page and
+              regenerate this run.
             </p>
-            <Button asChild variant="ghost" size="sm" className="mt-2 h-auto px-0 text-amber-800 dark:text-amber-200">
+            <Button
+              asChild
+              variant="ghost"
+              size="sm"
+              className="mt-2 h-auto px-0 text-amber-800 dark:text-amber-200"
+            >
               <Link href="/payroll/settings">Configure now →</Link>
             </Button>
           </div>
@@ -256,7 +288,8 @@ const PayrollRunDetailView = ({
               Employee payslips
             </p>
             <p className="text-xs text-subTextColor dark:text-darkTextSecondary">
-              {meta.total} rows total · page {meta.page} of {meta.totalPages || 1}
+              {meta.total} rows total · page {meta.page} of{" "}
+              {meta.totalPages || 1}
             </p>
           </div>
           <form
@@ -375,11 +408,17 @@ const PayrollRunDetailView = ({
                           {formatPayrollMoney(item.basic_salary, item.currency)}
                         </TableCell>
                         <TableCell className="text-sm">
-                          {formatPayrollMoney(item.overtime_amount, item.currency)}
+                          {formatPayrollMoney(
+                            item.overtime_amount,
+                            item.currency,
+                          )}
                         </TableCell>
                         <TableCell className="text-sm text-red-600">
                           {item.deduction_amount > 0 ? "-" : ""}
-                          {formatPayrollMoney(item.deduction_amount, item.currency)}
+                          {formatPayrollMoney(
+                            item.deduction_amount,
+                            item.currency,
+                          )}
                         </TableCell>
                         <TableCell className="text-right font-semibold text-headingTextColor dark:text-darkTextPrimary">
                           {formatPayrollMoney(item.final_salary, item.currency)}
@@ -387,13 +426,20 @@ const PayrollRunDetailView = ({
                       </TableRow>
                       {isExpanded ? (
                         <TableRow>
-                          <TableCell colSpan={13} className="bg-bgSecondary/50 dark:bg-darkPrimaryBg">
+                          <TableCell
+                            colSpan={13}
+                            className="bg-bgSecondary/50 dark:bg-darkPrimaryBg"
+                          >
                             <div className="p-4">
                               <p className="mb-3 text-sm font-semibold text-headingTextColor dark:text-darkTextPrimary">
                                 Calculation snapshot
                               </p>
                               <pre className="max-h-[280px] overflow-auto rounded-[8px] border border-borderColor bg-white p-3 text-xs text-subTextColor dark:border-darkBorder dark:bg-darkSecondaryBg dark:text-darkTextSecondary">
-                                {JSON.stringify(item.calculation_snapshot, null, 2)}
+                                {JSON.stringify(
+                                  item.calculation_snapshot,
+                                  null,
+                                  2,
+                                )}
                               </pre>
                               {item.notes ? (
                                 <p className="mt-3 rounded-[8px] border border-borderColor bg-white p-3 text-xs text-subTextColor dark:border-darkBorder dark:bg-darkSecondaryBg dark:text-darkTextSecondary">
@@ -486,7 +532,13 @@ interface SummaryStatProps {
   icon?: React.ReactNode;
 }
 
-const SummaryStat = ({ label, value, helper, accent, icon }: SummaryStatProps) => (
+const SummaryStat = ({
+  label,
+  value,
+  helper,
+  accent,
+  icon,
+}: SummaryStatProps) => (
   <div className="rounded-[12px] border border-borderColor p-4 dark:border-darkBorder">
     <div className="flex items-center justify-between gap-3">
       <p className="text-xs uppercase tracking-[0.16em] text-subTextColor dark:text-darkTextSecondary">
