@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { Loader2 } from "lucide-react";
@@ -58,6 +58,15 @@ interface PayrollProfileFormDialogProps {
 
 const today = () => format(new Date(), "yyyy-MM-dd");
 
+const toDateInputValue = (value?: string | null) => {
+  if (!value) return null;
+  try {
+    return format(parseISO(value), "yyyy-MM-dd");
+  } catch {
+    return value.slice(0, 10);
+  }
+};
+
 const buildDefaultValues = (
   mode: "create" | "edit",
   profile: EmployeePayrollProfile | null,
@@ -73,8 +82,8 @@ const buildDefaultValues = (
       overtime_allow: profile.overtime_allow,
       overtime_multiplier: profile.overtime_multiplier,
       is_deduct_salary: profile.is_deduct_salary,
-      effective_from: profile.effective_from,
-      effective_to: profile.effective_to,
+      effective_from: toDateInputValue(profile.effective_from) ?? today(),
+      effective_to: toDateInputValue(profile.effective_to),
       currency: profile.currency,
     };
   }

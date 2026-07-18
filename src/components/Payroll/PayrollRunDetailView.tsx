@@ -50,6 +50,7 @@ import {
 } from "@/lib/payroll";
 import { EmployeePayroll, PayrollRun } from "@/types/payroll";
 import { IMeta } from "@/types/type";
+import PayrollCalculationBreakdown from "./PayrollCalculationBreakdown";
 import PayrollEmptyState from "./PayrollEmptyState";
 import PayrollSubNav from "./PayrollSubNav";
 import { PayrollRunStatusBadge, SalaryTypeBadge } from "./PayrollBadges";
@@ -428,26 +429,9 @@ const PayrollRunDetailView = ({
                         <TableRow>
                           <TableCell
                             colSpan={13}
-                            className="bg-bgSecondary/50 dark:bg-darkPrimaryBg"
+                            className="bg-bgSecondary/50 p-0 dark:bg-darkPrimaryBg"
                           >
-                            <div className="p-4">
-                              <p className="mb-3 text-sm font-semibold text-headingTextColor dark:text-darkTextPrimary">
-                                Calculation snapshot
-                              </p>
-                              <pre className="max-h-[280px] overflow-auto rounded-[8px] border border-borderColor bg-white p-3 text-xs text-subTextColor dark:border-darkBorder dark:bg-darkSecondaryBg dark:text-darkTextSecondary">
-                                {JSON.stringify(
-                                  item.calculation_snapshot,
-                                  null,
-                                  2,
-                                )}
-                              </pre>
-                              {item.notes ? (
-                                <p className="mt-3 rounded-[8px] border border-borderColor bg-white p-3 text-xs text-subTextColor dark:border-darkBorder dark:bg-darkSecondaryBg dark:text-darkTextSecondary">
-                                  <span className="font-semibold">Notes: </span>
-                                  {item.notes}
-                                </p>
-                              ) : null}
-                            </div>
+                            <PayrollCalculationBreakdown item={item} />
                           </TableCell>
                         </TableRow>
                       ) : null}
