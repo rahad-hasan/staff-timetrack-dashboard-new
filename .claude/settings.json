@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C /home/naim/Work/OrbitTechnology/dashboard grep -n \"getMembers\" -- src/actions/members/action.ts)",
+      "Bash(git -C /home/naim/Work/OrbitTechnology/dashboard show HEAD:src/actions/members/action.ts)",
+      "Bash(git -C /home/naim/Work/OrbitTechnology/dashboard diff -- src/actions/payroll/action.ts src/types/payroll.ts)"
+    ]
+  }
+}

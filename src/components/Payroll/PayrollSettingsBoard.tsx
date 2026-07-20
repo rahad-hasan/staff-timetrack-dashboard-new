@@ -6,8 +6,8 @@ import { useMemo, useState } from "react";
 import { format, parseISO } from "date-fns";
 import {
   AlertTriangle,
-  BadgeCheck,
   Calendar,
+  CalendarX2,
   Coins,
   PencilLine,
   Plus,
@@ -34,8 +34,12 @@ import {
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
 import { formatPayrollMoney } from "@/lib/payroll";
-import { EmployeePayrollProfile } from "@/types/payroll";
-import { IMember, IMeta } from "@/types/type";
+import {
+  EligibleUser,
+  EmployeePayrollProfile,
+  PayrollSummary,
+} from "@/types/payroll";
+import { IMeta } from "@/types/type";
 import PayrollEmptyState from "./PayrollEmptyState";
 import PayrollProfileFormDialog from "./PayrollProfileFormDialog";
 import { ProfileActiveBadge, SalaryTypeBadge } from "./PayrollBadges";
@@ -44,7 +48,10 @@ type Tab = "all" | "active" | "inactive" | "not-configured";
 
 interface PayrollSettingsBoardProps {
   profiles: EmployeePayrollProfile[];
-  members: IMember[];
+  summary: PayrollSummary | null;
+  eligibleUsers: EligibleUser[];
+  eligibleMeta: IMeta;
+  setupRoster: EligibleUser[];
   meta: IMeta;
   tab: string;
   currency: string;
@@ -73,7 +80,10 @@ const TABS: Array<{ id: Tab; label: string }> = [
 
 const PayrollSettingsBoard = ({
   profiles,
-  members,
+  summary,
+  eligibleUsers,
+  eligibleMeta,
+  setupRoster,
   meta,
   tab,
   currency,
@@ -86,7 +96,7 @@ const PayrollSettingsBoard = ({
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingProfile, setEditingProfile] =
     useState<EmployeePayrollProfile | null>(null);
-  const [presetUser, setPresetUser] = useState<IMember | null>(null);
+  const [presetUser, setPresetUser] = useState<EligibleUser | null>(null);
 
   const activeTab: Tab = (TABS.find((t) => t.id === tab)?.id ?? "all") as Tab;
 
@@ -102,16 +112,6 @@ const PayrollSettingsBoard = ({
     router.push(query ? `${pathname}?${query}` : pathname, { scroll: false });
   };
 
-  const configuredIds = useMemo(
-    () => new Set(profiles.map((profile) => profile.user_id)),
-    [profiles],
-  );
-
-  const notConfigured = useMemo(
-    () => members.filter((member) => !configuredIds.has(member.id)),
-    [configuredIds, members],
-  );
-
   const normalizedSearch = search.trim().toLowerCase();
 
   const filteredProfiles = useMemo(() => {
@@ -124,44 +124,44 @@ const PayrollSettingsBoard = ({
   }, [normalizedSearch, profiles]);
 
   const filteredNotConfigured = useMemo(() => {
-    if (!normalizedSearch) return notConfigured;
-    return notConfigured.filter((member) =>
+    if (!normalizedSearch) return eligibleUsers;
+    return eligibleUsers.filter((member) =>
       `${member.name} ${member.email}`.toLowerCase().includes(normalizedSearch),
     );
-  }, [normalizedSearch, notConfigured]);
+  }, [normalizedSearch, eligibleUsers]);
 
   const stats = [
     {
       label: "Total profiles",
-      value: meta.total,
-      helper: "Payroll profiles in this workspace",
+      value: summary?.with_active_profile ?? meta.total,
+      helper: "Active payroll profiles in this workspace",
       accent: "#2563eb",
       icon: Users,
     },
     {
-      label: "Active profiles",
-      value: profiles.filter((p) => p.is_active).length,
-      helper: `Active on the current page`,
-      accent: "#059669",
-      icon: BadgeCheck,
+      label: "Without schedule",
+      value: summary?.without_schedule ?? 0,
+      helper: "Active employees with no schedule assigned",
+      accent: "#d97706",
+      icon: CalendarX2,
     },
     {
       label: "Not configured",
-      value: notConfigured.length,
-      helper: "Employees without a payroll profile",
+      value: summary?.without_active_profile ?? eligibleMeta.total,
+      helper: "Active employees without a payroll profile",
       accent: "#dc2626",
       icon: UserPlus,
     },
     {
       label: "Members loaded",
-      value: members.length,
-      helper: "Employees available for setup",
+      value: summary?.total_active_employees ?? 0,
+      helper: "Active employees available for setup",
       accent: "#7c3aed",
       icon: Coins,
     },
   ];
 
-  const handleOpenCreate = (member?: IMember) => {
+  const handleOpenCreate = (member?: EligibleUser) => {
     setEditingProfile(null);
     setPresetUser(member ?? null);
     setDialogOpen(true);
@@ -219,7 +219,7 @@ const PayrollSettingsBoard = ({
         mode={editingProfile ? "edit" : "create"}
         profile={editingProfile}
         presetUser={presetUser}
-        members={members}
+        members={setupRoster}
         defaultCurrency={currency}
       />
 
@@ -327,6 +327,7 @@ const PayrollSettingsBoard = ({
                       <TableHead>Employee</TableHead>
                       <TableHead>Email</TableHead>
                       <TableHead>Role</TableHead>
+                      <TableHead>Schedule</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -341,6 +342,22 @@ const PayrollSettingsBoard = ({
                         </TableCell>
                         <TableCell className="capitalize text-subTextColor dark:text-darkTextSecondary">
                           {member.role}
+                        </TableCell>
+                        <TableCell>
+                          {member.has_schedule ? (
+                            <span className="text-sm text-subTextColor dark:text-darkTextSecondary">
+                              Assigned
+                            </span>
+                          ) : (
+                            <Link
+                              href="/schedule"
+                              title="This employee has no assigned Schedule. Payroll will use the default 8h/day. Click to assign."
+                              className="inline-flex items-center gap-1 text-sm text-amber-600 hover:text-amber-500 dark:text-amber-300"
+                            >
+                              <AlertTriangle className="size-3.5" />
+                              Assign schedule
+                            </Link>
+                          )}
                         </TableCell>
                         <TableCell className="text-right">
                           <Button
@@ -361,7 +378,7 @@ const PayrollSettingsBoard = ({
                   text={
                     normalizedSearch
                       ? `No employees matched "${search.trim()}".`
-                      : "Every employee already has a payroll profile."
+                      : "Every active employee already has a payroll profile."
                   }
                 />
               )
@@ -646,13 +663,21 @@ const PayrollSettingsBoard = ({
           </div>
         </div>
 
-        {activeTab !== "not-configured" && meta?.total > meta?.limit && (
-          <AppPagination
-            total={meta.total}
-            currentPage={meta.page}
-            limit={meta.limit}
-          />
-        )}
+        {activeTab === "not-configured"
+          ? eligibleMeta?.total > eligibleMeta?.limit && (
+              <AppPagination
+                total={eligibleMeta.total}
+                currentPage={eligibleMeta.page}
+                limit={eligibleMeta.limit}
+              />
+            )
+          : meta?.total > meta?.limit && (
+              <AppPagination
+                total={meta.total}
+                currentPage={meta.page}
+                limit={meta.limit}
+              />
+            )}
       </div>
     </>
   );

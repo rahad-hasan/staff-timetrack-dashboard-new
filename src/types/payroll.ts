@@ -183,9 +183,39 @@ export interface PayrollRunDetail {
   items: EmployeePayroll[];
 }
 
+export interface PayrollSummary {
+  total_active_employees: number;
+  with_active_profile: number;
+  without_active_profile: number;
+  with_schedule: number;
+  without_schedule: number;
+}
+
+export interface EligibleUser {
+  id: number;
+  name: string;
+  email: string;
+  image: string | null;
+  role: string;
+  currency: string | null;
+  created_at: string;
+  status: "probation" | "permanent";
+  has_profile: boolean;
+  has_schedule: boolean;
+}
+
+export interface EligibleUsersParams {
+  search?: string;
+  has_profile?: boolean;
+  has_schedule?: boolean;
+  page?: number;
+  limit?: number;
+}
+
 export interface ListProfilesParams {
   user_id?: number;
   is_active?: boolean;
+  include_inactive_users?: boolean;
   page?: number;
   limit?: number;
 }

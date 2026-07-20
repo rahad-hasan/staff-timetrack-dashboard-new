@@ -1,5 +1,8 @@
-import { listPayrollProfiles } from "@/actions/payroll/action";
-import { getMembers } from "@/actions/members/action";
+import {
+  getPayrollSummary,
+  listEligibleUsers,
+  listPayrollProfiles,
+} from "@/actions/payroll/action";
 import { ISearchParamsProps } from "@/types/type";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
 import { canManagePayroll } from "@/lib/payroll";
@@ -25,30 +28,58 @@ const PayrollSettingsServer = async ({ searchParams }: ISearchParamsProps) => {
   const isActiveParam = parseBool(params.is_active);
   const tab = typeof params.tab === "string" ? params.tab : "all";
 
-  const [profilesResponse, membersResponse] = await Promise.all([
-    listPayrollProfiles({
-      page: currentPage,
-      limit: 25,
-      is_active:
-        tab === "active" ? true : tab === "inactive" ? false : isActiveParam,
-    }),
-    getMembers({ limit: 500 }),
-  ]);
+  const [profilesResponse, summaryResponse, eligibleResponse, rosterResponse] =
+    await Promise.all([
+      listPayrollProfiles({
+        page: currentPage,
+        limit: 25,
+        is_active:
+          tab === "active" ? true : tab === "inactive" ? false : isActiveParam,
+      }),
+      getPayrollSummary(),
+      // Setup queue for the "Not configured" tab — active users only,
+      // paginated server-side with an accurate meta.total.
+      listEligibleUsers({
+        has_profile: false,
+        page: tab === "not-configured" ? currentPage : 1,
+        limit: 25,
+      }),
+      // Roster for the "Add payroll profile" dialog: every active user still
+      // without an active profile, independent of the tab's pagination.
+      listEligibleUsers({ has_profile: false, limit: 200 }),
+    ]);
 
   const profiles =
     profilesResponse?.success && Array.isArray(profilesResponse.data)
       ? profilesResponse.data
       : [];
 
-  const members =
-    membersResponse?.success && Array.isArray(membersResponse.data)
-      ? membersResponse.data
+  const summary = summaryResponse?.success ? summaryResponse.data : null;
+
+  const eligibleUsers =
+    eligibleResponse?.success && Array.isArray(eligibleResponse.data)
+      ? eligibleResponse.data
+      : [];
+
+  const setupRoster =
+    rosterResponse?.success && Array.isArray(rosterResponse.data)
+      ? rosterResponse.data
       : [];
 
   return (
     <PayrollSettingsBoard
       profiles={profiles}
-      members={members}
+      summary={summary}
+      eligibleUsers={eligibleUsers}
+      eligibleMeta={
+        eligibleResponse?.meta ?? {
+          page: 1,
+          limit: 25,
+          total: eligibleUsers.length,
+          totalPages: 1,
+        }
+      }
+      setupRoster={setupRoster}
       meta={
         profilesResponse?.meta ?? {
           page: 1,

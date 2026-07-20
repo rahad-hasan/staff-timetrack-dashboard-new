@@ -6,6 +6,8 @@ import { buildQuery } from "@/utils/buildQuery";
 import { IResponse } from "@/types/type";
 import {
   CreatePayrollProfilePayload,
+  EligibleUser,
+  EligibleUsersParams,
   EmployeePayroll,
   EmployeePayrollProfile,
   GeneratePayrollPayload,
@@ -15,11 +17,14 @@ import {
   PayrollHistoryParams,
   PayrollRun,
   PayrollRunDetail,
+  PayrollSummary,
   RunDetailParams,
   UpdatePayrollProfilePayload,
 } from "@/types/payroll";
 
 const PROFILES_TAG = "payroll-profiles";
+const SUMMARY_TAG = "payroll-summary";
+const ELIGIBLE_USERS_TAG = "payroll-eligible-users";
 const RUNS_TAG = "payroll-runs";
 const HISTORY_TAG = "payroll-history";
 const runTag = (id: number | string) => `payroll-run-${id}`;
@@ -27,6 +32,8 @@ const userProfileTag = (id: number | string) => `payroll-profile-user-${id}`;
 
 const invalidateProfileCaches = (userId?: number) => {
   revalidateTag(PROFILES_TAG);
+  revalidateTag(SUMMARY_TAG);
+  revalidateTag(ELIGIBLE_USERS_TAG);
   if (userId != null) {
     revalidateTag(userProfileTag(userId));
   }
@@ -70,6 +77,30 @@ export const listPayrollProfiles = async (
     `/payroll/profile${queryString ? `?${queryString}` : ""}`,
     {
       tag: PROFILES_TAG,
+      cache: "no-cache",
+    },
+  );
+};
+
+export const getPayrollSummary = async (): Promise<
+  IResponse<PayrollSummary>
+> => {
+  return await baseApi<IResponse<PayrollSummary>>(`/payroll/summary`, {
+    tag: SUMMARY_TAG,
+    cache: "no-cache",
+  });
+};
+
+export const listEligibleUsers = async (
+  query: EligibleUsersParams = {},
+): Promise<IResponse<EligibleUser[]>> => {
+  const queryString = buildQuery(
+    query as Record<string, string | number | boolean | undefined>,
+  );
+  return await baseApi<IResponse<EligibleUser[]>>(
+    `/payroll/eligible-users${queryString ? `?${queryString}` : ""}`,
+    {
+      tag: ELIGIBLE_USERS_TAG,
       cache: "no-cache",
     },
   );

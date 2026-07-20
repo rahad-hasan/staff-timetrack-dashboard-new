@@ -38,8 +38,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { EmployeePayrollProfile } from "@/types/payroll";
-import { IMember } from "@/types/type";
+import { EligibleUser, EmployeePayrollProfile } from "@/types/payroll";
 import { currencies } from "@/utils/CurrencyList";
 import { payrollProfileFormSchema } from "@/zod/schema";
 
@@ -51,8 +50,8 @@ interface PayrollProfileFormDialogProps {
   onSuccess: () => void;
   mode: "create" | "edit";
   profile: EmployeePayrollProfile | null;
-  presetUser: IMember | null;
-  members: IMember[];
+  presetUser: EligibleUser | null;
+  members: EligibleUser[];
   defaultCurrency: string;
 }
 
@@ -70,7 +69,7 @@ const toDateInputValue = (value?: string | null) => {
 const buildDefaultValues = (
   mode: "create" | "edit",
   profile: EmployeePayrollProfile | null,
-  presetUser: IMember | null,
+  presetUser: EligibleUser | null,
   defaultCurrency: string,
 ): FormValues => {
   if (mode === "edit" && profile) {
