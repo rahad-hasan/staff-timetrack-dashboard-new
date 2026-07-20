@@ -28,6 +28,71 @@ const STATUS_COLOR: Record<string, [number, number, number]> = {
   paid: [139, 92, 246],
 };
 
+/**
+ * Single source of truth for the payslip table: header, cell and column style
+ * travel together so inserting a column can't leave the styles pointing at the
+ * wrong index.
+ */
+const PDF_COLUMNS: Array<{
+  header: string;
+  cell: (item: EmployeePayroll, runCurrency: string) => string;
+  style?: Record<string, unknown>;
+}> = [
+  {
+    header: "Employee",
+    cell: (it) => `${it.user?.name ?? "—"}\n${it.user?.email ?? ""}`,
+    style: { cellWidth: 130 },
+  },
+  {
+    header: "Type",
+    cell: (it) => SALARY_TYPE_LABELS[it.salary_type] ?? it.salary_type,
+    style: { cellWidth: 60 },
+  },
+  { header: "Target", cell: (it) => formatPayrollHours(it.target_hours) },
+  { header: "Worked", cell: (it) => formatPayrollHours(it.worked_hours) },
+  { header: "Leave", cell: (it) => formatPayrollHours(it.leave_hours) },
+  { header: "Holiday", cell: (it) => formatPayrollHours(it.holiday_hours) },
+  { header: "Overtime", cell: (it) => formatPayrollHours(it.overtime_hours) },
+  { header: "Payable", cell: (it) => formatPayrollHours(it.payable_hours) },
+  {
+    header: "Basic",
+    cell: (it, currency) => formatPayrollMoney(it.basic_salary, currency),
+    style: { halign: "right" },
+  },
+  {
+    header: "OT amount",
+    cell: (it, currency) => formatPayrollMoney(it.overtime_amount, currency),
+    style: { halign: "right" },
+  },
+  {
+    header: "Deduction",
+    cell: (it, currency) => formatPayrollMoney(it.deduction_amount, currency),
+    style: { halign: "right" },
+  },
+  {
+    // Waived and Bonus are in the employee's own currency, not the run's.
+    header: "Waived",
+    cell: (it) =>
+      it.deduction_waived
+        ? formatPayrollMoney(it.waived_amount, it.currency)
+        : "—",
+    style: { halign: "right" },
+  },
+  {
+    header: "Bonus",
+    cell: (it) =>
+      Number(it.adjustment_total || 0) > 0
+        ? formatPayrollMoney(it.adjustment_total, it.currency)
+        : "—",
+    style: { halign: "right" },
+  },
+  {
+    header: "Final",
+    cell: (it, currency) => formatPayrollMoney(it.final_salary, currency),
+    style: { fontStyle: "bold", halign: "right" },
+  },
+];
+
 const safeDate = (value?: string | null) => {
   if (!value) return "—";
   try {
@@ -279,34 +344,10 @@ export const downloadPayrollPdf = async (runId: number) => {
 
     autoTable(doc, {
       startY: tableStartY,
-      head: [[
-        "Employee",
-        "Type",
-        "Target",
-        "Worked",
-        "Leave",
-        "Holiday",
-        "Overtime",
-        "Payable",
-        "Basic",
-        "OT amount",
-        "Deduction",
-        "Final",
-      ]],
-      body: items.map((it) => [
-        `${it.user?.name ?? "—"}\n${it.user?.email ?? ""}`,
-        SALARY_TYPE_LABELS[it.salary_type] ?? it.salary_type,
-        formatPayrollHours(it.target_hours),
-        formatPayrollHours(it.worked_hours),
-        formatPayrollHours(it.leave_hours),
-        formatPayrollHours(it.holiday_hours),
-        formatPayrollHours(it.overtime_hours),
-        formatPayrollHours(it.payable_hours),
-        formatPayrollMoney(it.basic_salary, currency),
-        formatPayrollMoney(it.overtime_amount, currency),
-        formatPayrollMoney(it.deduction_amount, currency),
-        formatPayrollMoney(it.final_salary, currency),
-      ]),
+      head: [PDF_COLUMNS.map((column) => column.header)],
+      body: items.map((it) =>
+        PDF_COLUMNS.map((column) => column.cell(it, currency)),
+      ),
       margin: { left: 40, right: 40 },
       styles: {
         font: "helvetica",
@@ -326,14 +367,11 @@ export const downloadPayrollPdf = async (runId: number) => {
       },
       bodyStyles: { fillColor: [255, 255, 255] },
       alternateRowStyles: { fillColor: SOFT_BG },
-      columnStyles: {
-        0: { cellWidth: 130 },
-        1: { cellWidth: 60 },
-        11: { fontStyle: "bold", halign: "right" },
-        8: { halign: "right" },
-        9: { halign: "right" },
-        10: { halign: "right" },
-      },
+      columnStyles: Object.fromEntries(
+        PDF_COLUMNS.flatMap((column, index) =>
+          column.style ? [[index, column.style]] : [],
+        ),
+      ),
       didDrawPage: () => {
         // header only drawn once on page 1; keep pages clean
       },

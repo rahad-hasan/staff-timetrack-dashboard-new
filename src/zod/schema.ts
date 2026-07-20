@@ -683,3 +683,37 @@ export const createLeaveRequestSchema = (
 };
 
 export const leaveRequestSchema = createLeaveRequestSchema();
+
+/**
+ * Payroll manual adjustments — REPLACE editor.
+ *
+ * `amount` is validated as a string and converted to a number by the caller on
+ * purpose. With a numeric field, typing "2500.50" breaks: after the "."
+ * keystroke Number("2500.") is 2500, React rewrites the input and the decimal
+ * point is discarded. The regex rejects NaN/Infinity/exponents/negatives
+ * structurally, so no isFinite refinement is needed.
+ */
+export const payrollAdjustmentsFormSchema = z.object({
+  waive_deduction: z.boolean(),
+  bonuses: z
+    .array(
+      z.object({
+        title: z
+          .string()
+          .trim()
+          .min(1, "Title is required")
+          .max(100, "Title must be 100 characters or less"),
+        amount: z
+          .string()
+          .trim()
+          .min(1, "Amount is required")
+          .regex(/^\d+(\.\d{1,2})?$/, "Enter a valid amount (up to 2 decimals)")
+          .refine((value) => Number(value) > 0, "Amount must be greater than zero")
+          .refine(
+            (value) => Number(value) <= 100000000,
+            "Amount must be 100,000,000 or less",
+          ),
+      }),
+    )
+    .max(20, "You can add up to 20 bonus lines"),
+});

@@ -43,6 +43,45 @@ export interface PayrollUserSummary {
   role: string;
 }
 
+export type PayrollAdjustmentType = "bonus" | "deduction_waiver";
+
+export interface PayrollAdjustment {
+  id: number;
+  type: PayrollAdjustmentType;
+  title: string;
+  /**
+   * Bonus lines: the bonus amount.
+   * `deduction_waiver` lines: always 0 from the backend — the real figure lives
+   * on `EmployeePayroll.waived_amount`. Never render this field for a waiver.
+   */
+  amount: number;
+  /** The employee's payroll currency, not the run currency. */
+  currency: string;
+  /**
+   * Read endpoints only. `false` means the line was skipped on the last
+   * regenerate (its currency no longer matches the employee's) and is NOT
+   * included in `final_salary`.
+   */
+  applied?: boolean;
+  created_by?: number;
+  created_at?: string;
+}
+
+export interface PayrollBonusInput {
+  title: string;
+  amount: number;
+}
+
+export interface SaveAdjustmentsPayload {
+  waive_deduction: boolean;
+  bonuses: PayrollBonusInput[];
+}
+
+export interface SaveAdjustmentsResult {
+  item: EmployeePayroll;
+  adjustments: PayrollAdjustment[];
+}
+
 export interface EmployeePayrollProfile {
   id: number;
   company_id: number;
@@ -115,6 +154,16 @@ export interface EmployeePayroll {
   gross_salary: number;
   final_salary: number;
 
+  /** Sum of the bonus lines. Server-authoritative — never recompute it. */
+  adjustment_total: number;
+  deduction_waived: boolean;
+  /** The deduction added back: 0 when not waived, or when there was no deduction. */
+  waived_amount: number;
+
+  /** Run-currency conversion of `final_salary`, using the snapshotted rate. */
+  exchange_rate?: number;
+  final_salary_converted?: number;
+
   calculation_snapshot: Record<string, unknown>;
   notes: string | null;
   created_at: string;
@@ -132,6 +181,14 @@ export interface EmployeePayroll {
     | "approved_at"
     | "paid_at"
   >;
+
+  /**
+   * Absent (not `[]`) when the backend withheld the line items — an employee
+   * viewing their own not-yet-approved run. Distinguish absent from empty
+   * before opening the REPLACE editor, or saving silently deletes lines the
+   * UI never displayed.
+   */
+  adjustments?: PayrollAdjustment[];
 }
 
 export interface CreatePayrollProfilePayload {

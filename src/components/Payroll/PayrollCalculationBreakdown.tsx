@@ -10,11 +10,17 @@ import {
   ReceiptText,
 } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import { formatPayrollHours, formatPayrollMoney } from "@/lib/payroll";
 import { EmployeePayroll } from "@/types/payroll";
+import PayrollAdjustmentLines, {
+  PayrollAmountRow,
+} from "./PayrollAdjustmentLines";
 
 interface PayrollCalculationBreakdownProps {
   item: EmployeePayroll;
+  /** Provided only when the viewer may edit adjustments on this run. */
+  onAdjust?: () => void;
 }
 
 type HourKey =
@@ -36,6 +42,7 @@ const HOUR_SEGMENTS: Array<{
 
 const PayrollCalculationBreakdown = ({
   item,
+  onAdjust,
 }: PayrollCalculationBreakdownProps) => {
   const [showRaw, setShowRaw] = useState(false);
 
@@ -147,43 +154,55 @@ const PayrollCalculationBreakdown = ({
         </section>
 
         <section className="rounded-[10px] border border-borderColor bg-white p-4 dark:border-darkBorder dark:bg-darkSecondaryBg">
-          <header className="mb-4 flex items-start gap-2.5">
-            <div className="rounded-md bg-primary/10 p-1.5 text-primary">
-              <ReceiptText className="size-4" />
+          <header className="mb-4 flex items-start justify-between gap-3">
+            <div className="flex items-start gap-2.5">
+              <div className="rounded-md bg-primary/10 p-1.5 text-primary">
+                <ReceiptText className="size-4" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-headingTextColor dark:text-darkTextPrimary">
+                  Salary formula
+                </p>
+                <p className="text-xs text-subTextColor dark:text-darkTextSecondary">
+                  {basicHint}
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="text-sm font-semibold text-headingTextColor dark:text-darkTextPrimary">
-                Salary formula
-              </p>
-              <p className="text-xs text-subTextColor dark:text-darkTextSecondary">
-                {basicHint}
-              </p>
-            </div>
+            {onAdjust ? (
+              <Button variant="outline2" size="sm" onClick={onAdjust}>
+                Adjust
+              </Button>
+            ) : null}
           </header>
 
           <div className="space-y-2 text-sm">
-            <FormulaRow
+            <PayrollAmountRow
               label="Basic salary"
               value={formatPayrollMoney(item.basic_salary, item.currency)}
               tone="neutral"
             />
-            <FormulaRow
+            <PayrollAmountRow
               label="Overtime"
               value={`+ ${formatPayrollMoney(item.overtime_amount, item.currency)}`}
               tone={item.overtime_amount > 0 ? "positive" : "muted"}
               hint={overtimeHint}
             />
-            <div className="my-2 border-t border-dashed border-borderColor dark:border-darkBorder" />
-            <FormulaRow
-              label="Gross salary"
-              value={formatPayrollMoney(item.gross_salary, item.currency)}
-              tone="subtotal"
-            />
-            <FormulaRow
+            {/* Above the subtotal: gross_salary is already net of the
+                deduction, so subtracting it after Gross never balanced. */}
+            <PayrollAmountRow
               label="Deduction"
               value={`− ${formatPayrollMoney(item.deduction_amount, item.currency)}`}
               tone={item.deduction_amount > 0 ? "negative" : "muted"}
             />
+            <div className="my-2 border-t border-dashed border-borderColor dark:border-darkBorder" />
+            <PayrollAmountRow
+              label="Gross salary"
+              value={formatPayrollMoney(item.gross_salary, item.currency)}
+              tone="subtotal"
+            />
+
+            <PayrollAdjustmentLines item={item} />
+
             <div className="my-2 border-t border-borderColor dark:border-darkBorder" />
             <div className="flex items-center justify-between">
               <span className="text-sm font-semibold text-headingTextColor dark:text-darkTextPrimary">
@@ -263,40 +282,6 @@ const PayrollCalculationBreakdown = ({
           </pre>
         ) : null}
       </div>
-    </div>
-  );
-};
-
-interface FormulaRowProps {
-  label: string;
-  value: string;
-  tone: "neutral" | "muted" | "positive" | "negative" | "subtotal";
-  hint?: string;
-}
-
-const FormulaRow = ({ label, value, tone, hint }: FormulaRowProps) => {
-  const valueClass =
-    tone === "positive"
-      ? "text-emerald-600 dark:text-emerald-400 font-medium"
-      : tone === "negative"
-        ? "text-red-600 dark:text-red-400 font-medium"
-        : tone === "subtotal"
-          ? "font-semibold text-headingTextColor dark:text-darkTextPrimary"
-          : tone === "muted"
-            ? "text-subTextColor dark:text-darkTextSecondary"
-            : "text-headingTextColor dark:text-darkTextPrimary";
-
-  return (
-    <div className="flex items-start justify-between gap-3">
-      <div>
-        <p className="text-subTextColor dark:text-darkTextSecondary">{label}</p>
-        {hint ? (
-          <p className="mt-0.5 text-[11px] text-subTextColor/80 dark:text-darkTextSecondary/80">
-            {hint}
-          </p>
-        ) : null}
-      </div>
-      <span className={valueClass}>{value}</span>
     </div>
   );
 };

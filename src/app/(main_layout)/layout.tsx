@@ -24,7 +24,10 @@ export default async function RootLayout({
         <div className="hidden lg:block">
           <SideBar></SideBar>
         </div>
-        <div className=" bg-bgPrimary w-full lg:border border-borderColor dark:bg-darkPrimaryBg dark:border-darkBorder lg:rounded-[8px] lg:my-3 lg:mr-3 min-h-[100vh] lg:min-h-auto">
+        {/* min-w-0: a flex item defaults to min-width:auto, so wide content
+            (e.g. a nowrap table) would stretch this panel past the viewport and
+            scroll the whole page instead of scrolling inside its own container. */}
+        <div className=" bg-bgPrimary w-full min-w-0 lg:border border-borderColor dark:bg-darkPrimaryBg dark:border-darkBorder lg:rounded-[8px] lg:my-3 lg:mr-3 min-h-[100vh] lg:min-h-auto">
           <Header data={result?.data}></Header>
           <div className="p-3 lg:p-5 w-full dark:bg-darkPrimaryBg lg:rounded-b-[12px]">
             {children}

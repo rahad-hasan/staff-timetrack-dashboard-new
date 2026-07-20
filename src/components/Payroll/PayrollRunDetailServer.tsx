@@ -5,6 +5,8 @@ import { getPayrollRun } from "@/actions/payroll/action";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import PayrollSubNav from "@/components/Payroll/PayrollSubNav";
 import { Button } from "@/components/ui/button";
+import { canManagePayroll } from "@/lib/payroll";
+import { getDecodedUser } from "@/utils/decodedLogInUser";
 import PayrollRunDetailView from "./PayrollRunDetailView";
 
 interface PayrollRunDetailServerProps {
@@ -27,11 +29,15 @@ const PayrollRunDetailServer = async ({
   const page = parseNumber(params.page, 1);
   const limit = parseNumber(params.limit, 50);
 
-  const response = await getPayrollRun(runId, {
-    search: search || undefined,
-    page,
-    limit,
-  });
+  const [response, currentUser] = await Promise.all([
+    getPayrollRun(runId, {
+      search: search || undefined,
+      page,
+      limit,
+    }),
+    getDecodedUser(),
+  ]);
+  const canAdjust = canManagePayroll(currentUser?.role);
 
   if (!response?.success || !response.data) {
     return (
@@ -66,6 +72,7 @@ const PayrollRunDetailServer = async ({
         response.meta ?? { page, limit, total: response.data.items.length, totalPages: 1 }
       }
       search={search}
+      canAdjust={canAdjust}
     />
   );
 };

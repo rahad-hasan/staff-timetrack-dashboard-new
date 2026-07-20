@@ -16,8 +16,12 @@ import {
   formatPayrollHours,
   formatPayrollMoney,
   monthName,
+  splitAdjustments,
 } from "@/lib/payroll";
 import { EmployeePayroll } from "@/types/payroll";
+import PayrollAdjustmentLines, {
+  PayrollAmountRow,
+} from "./PayrollAdjustmentLines";
 import { PayrollRunStatusBadge, SalaryTypeBadge } from "./PayrollBadges";
 
 interface MyPayslipsViewProps {
@@ -53,6 +57,18 @@ const MyPayslipsView = ({ items, selectedYear }: MyPayslipsViewProps) => {
     const currency = filtered[0]?.currency ?? "USD";
     return { totalNet, totalGross, currency };
   }, [filtered]);
+
+  // final_salary can now legitimately exceed gross_salary, which reads as a bug
+  // without saying why.
+  const hasAnyAdjustment = useMemo(
+    () =>
+      filtered.some(
+        (item) =>
+          item.deduction_waived ||
+          splitAdjustments(item).appliedBonuses.length > 0,
+      ),
+    [filtered],
+  );
 
   const pushYear = (year: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -131,35 +147,38 @@ const MyPayslipsView = ({ items, selectedYear }: MyPayslipsViewProps) => {
                 </div>
 
                 <div className="space-y-2 rounded-[8px] border border-borderColor p-3 text-sm dark:border-darkBorder">
-                  <Row
+                  <PayrollAmountRow
                     label="Basic salary"
                     value={formatPayrollMoney(
                       activeItem.basic_salary,
                       activeItem.currency,
                     )}
                   />
-                  <Row
+                  <PayrollAmountRow
                     label="Hourly rate"
                     value={`${formatPayrollMoney(
                       activeItem.hourly_rate,
                       activeItem.currency,
                     )} / hr`}
                   />
-                  <Row
+                  <PayrollAmountRow
                     label="Overtime amount"
                     value={formatPayrollMoney(
                       activeItem.overtime_amount,
                       activeItem.currency,
                     )}
                   />
-                  <Row
+                  <PayrollAmountRow
                     label="Deduction"
                     value={`- ${formatPayrollMoney(
                       activeItem.deduction_amount,
                       activeItem.currency,
                     )}`}
-                    negative
+                    tone="negative"
                   />
+
+                  <PayrollAdjustmentLines item={activeItem} />
+
                   <div className="mt-2 flex items-center justify-between border-t border-borderColor pt-2 dark:border-darkBorder">
                     <span className="font-semibold text-headingTextColor dark:text-darkTextPrimary">
                       Final salary
@@ -196,6 +215,9 @@ const MyPayslipsView = ({ items, selectedYear }: MyPayslipsViewProps) => {
             <p className="text-xs text-subTextColor dark:text-darkTextSecondary">
               Gross: {formatPayrollMoney(stats.totalGross, stats.currency)} ·{" "}
               {filtered.length} payslip{filtered.length === 1 ? "" : "s"}
+              {hasAnyAdjustment
+                ? " · net includes bonuses & waived deductions"
+                : ""}
             </p>
           </div>
           <YearPicker
@@ -311,28 +333,5 @@ const describeHolidays = (item: EmployeePayroll): string => {
     Math.max(1, Math.round(item.holiday_hours / perDay));
   return `${holidayCount} weekday holiday${holidayCount === 1 ? "" : "s"} → +${formatPayrollHours(item.holiday_hours)}`;
 };
-
-const Row = ({
-  label,
-  value,
-  negative,
-}: {
-  label: string;
-  value: string;
-  negative?: boolean;
-}) => (
-  <div className="flex items-center justify-between">
-    <span className="text-subTextColor dark:text-darkTextSecondary">{label}</span>
-    <span
-      className={
-        negative
-          ? "text-red-600"
-          : "text-headingTextColor dark:text-darkTextPrimary"
-      }
-    >
-      {value}
-    </span>
-  </div>
-);
 
 export default MyPayslipsView;

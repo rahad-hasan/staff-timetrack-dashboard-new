@@ -47,9 +47,11 @@ import {
   formatPayrollMoney,
   formatPayrollPeriod,
   isRunLocked,
+  splitAdjustments,
 } from "@/lib/payroll";
 import { EmployeePayroll, PayrollRun } from "@/types/payroll";
 import { IMeta } from "@/types/type";
+import PayrollAdjustmentsDialog from "./PayrollAdjustmentsDialog";
 import PayrollCalculationBreakdown from "./PayrollCalculationBreakdown";
 import PayrollEmptyState from "./PayrollEmptyState";
 import PayrollSubNav from "./PayrollSubNav";
@@ -62,7 +64,11 @@ interface PayrollRunDetailViewProps {
   items: EmployeePayroll[];
   meta: IMeta;
   search: string;
+  canAdjust: boolean;
 }
+
+/** Keep in step with the <TableHead> count below. */
+const RUN_TABLE_COL_SPAN = 14;
 
 const tryDate = (value?: string | null) => {
   if (!value) return null;
@@ -78,6 +84,7 @@ const PayrollRunDetailView = ({
   items,
   meta,
   search: initialSearch,
+  canAdjust,
 }: PayrollRunDetailViewProps) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -90,8 +97,12 @@ const PayrollRunDetailView = ({
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
   const [exporting, setExporting] = useState(false);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
+  const [adjustTarget, setAdjustTarget] = useState<EmployeePayroll | null>(null);
 
   const locked = isRunLocked(run.status);
+  // PayrollRunStatus is a closed union and isRunLocked covers approved|paid, so
+  // !locked is exactly {draft, generated} — the states the API accepts edits in.
+  const canEditAdjustments = canAdjust && !locked;
   const canApprove = run.status === "generated";
   const canRegenerate = run.status === "draft" || run.status === "generated";
 
@@ -337,7 +348,9 @@ const PayrollRunDetailView = ({
             }
           />
         ) : (
-          <div className="overflow-x-auto pb-3">
+          // Table renders its own overflow-x-auto scroller; this wrapper only
+          // spaces the scrollbar off the card edge.
+          <div className="pb-3">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -353,12 +366,23 @@ const PayrollRunDetailView = ({
                   <TableHead>Basic</TableHead>
                   <TableHead>OT amount</TableHead>
                   <TableHead>Deduction</TableHead>
+                  <TableHead>Bonus</TableHead>
                   <TableHead className="text-right">Final</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {items.map((item) => {
                   const isExpanded = expandedRow === item.id;
+                  const { hasLineItems, appliedBonuses, staleBonuses } =
+                    splitAdjustments(item);
+                  // The editor REPLACEs the whole set, so it must never open
+                  // against a row whose line items the API withheld.
+                  const adjustmentsUnavailable =
+                    !hasLineItems &&
+                    (Number(item.adjustment_total || 0) > 0 ||
+                      item.deduction_waived);
+                  const canAdjustRow =
+                    canEditAdjustments && !adjustmentsUnavailable;
                   return (
                     <Fragment key={item.id}>
                       <TableRow
@@ -414,12 +438,75 @@ const PayrollRunDetailView = ({
                             item.currency,
                           )}
                         </TableCell>
-                        <TableCell className="text-sm text-red-600">
-                          {item.deduction_amount > 0 ? "-" : ""}
-                          {formatPayrollMoney(
-                            item.deduction_amount,
-                            item.currency,
-                          )}
+                        <TableCell className="text-sm">
+                          <span
+                            className={
+                              item.deduction_waived
+                                ? "text-subTextColor line-through dark:text-darkTextSecondary"
+                                : "text-red-600"
+                            }
+                          >
+                            {item.deduction_amount > 0 ? "-" : ""}
+                            {formatPayrollMoney(
+                              item.deduction_amount,
+                              item.currency,
+                            )}
+                          </span>
+                          {item.deduction_waived ? (
+                            <span className="ml-2 inline-flex items-center rounded-full border border-emerald-200 bg-emerald-100 px-2 py-0.5 text-[11px] font-medium text-emerald-700 dark:border-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300">
+                              Waived
+                            </span>
+                          ) : null}
+                        </TableCell>
+                        <TableCell className="text-sm">
+                          <div className="flex items-center gap-2">
+                            <span
+                              className={
+                                item.adjustment_total > 0
+                                  ? "font-medium text-emerald-600 dark:text-emerald-400"
+                                  : "text-subTextColor dark:text-darkTextSecondary"
+                              }
+                            >
+                              {item.adjustment_total > 0 ? "+" : ""}
+                              {formatPayrollMoney(
+                                item.adjustment_total,
+                                item.currency,
+                              )}
+                            </span>
+
+                            {appliedBonuses.length > 0 ? (
+                              <span className="whitespace-nowrap rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary">
+                                {appliedBonuses.length} line
+                                {appliedBonuses.length === 1 ? "" : "s"}
+                              </span>
+                            ) : null}
+
+                            {staleBonuses.length > 0 ? (
+                              <span className="whitespace-nowrap rounded-full border border-amber-200 bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-700 dark:border-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
+                                {staleBonuses.length} not applied
+                              </span>
+                            ) : null}
+
+                            {canEditAdjustments ? (
+                              <Button
+                                variant="outline2"
+                                size="sm"
+                                disabled={adjustmentsUnavailable}
+                                title={
+                                  adjustmentsUnavailable
+                                    ? "Adjustment details unavailable — reload the page."
+                                    : undefined
+                                }
+                                onClick={(event) => {
+                                  // The row itself toggles the expander.
+                                  event.stopPropagation();
+                                  setAdjustTarget(item);
+                                }}
+                              >
+                                Adjust
+                              </Button>
+                            ) : null}
+                          </div>
                         </TableCell>
                         <TableCell className="text-right font-semibold text-headingTextColor dark:text-darkTextPrimary">
                           {formatPayrollMoney(item.final_salary, item.currency)}
@@ -428,10 +515,17 @@ const PayrollRunDetailView = ({
                       {isExpanded ? (
                         <TableRow>
                           <TableCell
-                            colSpan={13}
+                            colSpan={RUN_TABLE_COL_SPAN}
                             className="bg-bgSecondary/50 p-0 dark:bg-darkPrimaryBg"
                           >
-                            <PayrollCalculationBreakdown item={item} />
+                            <PayrollCalculationBreakdown
+                              item={item}
+                              onAdjust={
+                                canAdjustRow
+                                  ? () => setAdjustTarget(item)
+                                  : undefined
+                              }
+                            />
                           </TableCell>
                         </TableRow>
                       ) : null}
@@ -451,6 +545,20 @@ const PayrollRunDetailView = ({
           limit={meta.limit}
         />
       )}
+
+      <PayrollAdjustmentsDialog
+        open={!!adjustTarget}
+        onOpenChange={(open) => {
+          if (!open) setAdjustTarget(null);
+        }}
+        runId={run.id}
+        item={adjustTarget}
+        onSaved={() => router.refresh()}
+        onRunStale={() => {
+          setAdjustTarget(null);
+          router.refresh();
+        }}
+      />
 
       <Dialog
         open={approveOpen}

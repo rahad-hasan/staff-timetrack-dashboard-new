@@ -19,6 +19,8 @@ import {
   PayrollRunDetail,
   PayrollSummary,
   RunDetailParams,
+  SaveAdjustmentsPayload,
+  SaveAdjustmentsResult,
   UpdatePayrollProfilePayload,
 } from "@/types/payroll";
 
@@ -41,6 +43,10 @@ const invalidateProfileCaches = (userId?: number) => {
 
 const invalidateRunCaches = (runId?: number) => {
   revalidateTag(RUNS_TAG);
+  // Payslip history reads from HISTORY_TAG and nothing revalidated it, so
+  // employee payslips went stale after every run mutation. Adjustments must
+  // surface there, so the tag is refreshed alongside the run.
+  revalidateTag(HISTORY_TAG);
   if (runId != null) {
     revalidateTag(runTag(runId));
   }
@@ -206,6 +212,59 @@ export const approvePayrollRun = async (
 
   if (response?.success) {
     invalidateRunCaches(id);
+  }
+
+  return response;
+};
+
+/* ---------------- Manual adjustments ---------------- */
+
+/** next/navigation's redirect() signals by throwing — never swallow it. */
+const isNextRedirectError = (error: unknown): boolean => {
+  const digest = (error as { digest?: unknown } | null)?.digest;
+  return typeof digest === "string" && digest.startsWith("NEXT_REDIRECT");
+};
+
+/**
+ * REPLACE the full adjustment set for one employee on one run. The body is the
+ * complete set to persist — not a patch — so both keys are always sent.
+ */
+export const savePayrollAdjustments = async (
+  runId: number,
+  userId: number,
+  payload: SaveAdjustmentsPayload,
+): Promise<IResponse<SaveAdjustmentsResult>> => {
+  let response: IResponse<SaveAdjustmentsResult>;
+
+  try {
+    response = await baseApi<IResponse<SaveAdjustmentsResult>>(
+      `/payroll/run/${runId}/employee/${userId}/adjustments`,
+      {
+        method: "PUT",
+        body: {
+          waive_deduction: payload.waive_deduction,
+          bonuses: payload.bonuses.map((bonus) => ({
+            title: bonus.title.trim(),
+            amount: bonus.amount,
+          })),
+        },
+        cache: "no-cache",
+      },
+    );
+  } catch (error) {
+    // baseApi parses the non-GET error body without a guard, so an HTML 502 or
+    // an empty response rejects out of it. A session expiry redirect throws
+    // through the same path and must survive.
+    if (isNextRedirectError(error)) throw error;
+    return {
+      statusCode: 0,
+      success: false,
+      message: "Couldn't reach the payroll service. Please try again.",
+    } as IResponse<SaveAdjustmentsResult>;
+  }
+
+  if (response?.success) {
+    invalidateRunCaches(runId);
   }
 
   return response;

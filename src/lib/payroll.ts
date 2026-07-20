@@ -1,4 +1,10 @@
-import { PayrollRunStatus, PayrollSalaryType } from "@/types/payroll";
+import {
+  EmployeePayroll,
+  PayrollAdjustment,
+  PayrollRunStatus,
+  PayrollSalaryType,
+} from "@/types/payroll";
+import { IResponse } from "@/types/type";
 
 export const formatPayrollHours = (hours: number | null | undefined) => {
   if (!hours || hours <= 0) return "0h 0m";
@@ -45,6 +51,112 @@ export const isRunLocked = (status: PayrollRunStatus) =>
   status === "approved" || status === "paid";
 
 export const salaryTypeIsHourly = (type: PayrollSalaryType) => type === "hourly";
+
+/* ---------------- Manual adjustments ---------------- */
+
+export const PAYROLL_ADJUSTMENT_LIMITS = {
+  MAX_BONUSES: 20,
+  MAX_TITLE: 100,
+  MAX_AMOUNT: 100000000,
+} as const;
+
+/**
+ * Splits an item's adjustment lines into what the UI can render.
+ *
+ * `deduction_waiver` entries are dropped from every list — their `amount` is
+ * always 0 and the waiver is rendered from `item.waived_amount` instead.
+ * `hasLineItems` distinguishes "no adjustments" from "line items withheld",
+ * which the REPLACE editor must not confuse.
+ */
+export const splitAdjustments = (
+  item: Pick<EmployeePayroll, "adjustments">,
+): {
+  hasLineItems: boolean;
+  appliedBonuses: PayrollAdjustment[];
+  staleBonuses: PayrollAdjustment[];
+} => {
+  const lines = item.adjustments;
+  const bonuses = (lines ?? []).filter((line) => line.type === "bonus");
+  return {
+    hasLineItems: Array.isArray(lines),
+    // `applied` is absent on the PUT response, so undefined counts as applied.
+    appliedBonuses: bonuses.filter((line) => line.applied !== false),
+    staleBonuses: bonuses.filter((line) => line.applied === false),
+  };
+};
+
+export type AdjustmentErrorKind =
+  | "locked"
+  | "not_found"
+  | "conflict"
+  | "forbidden"
+  | "validation"
+  | "network"
+  | "unknown";
+
+const LOCKED_HINT = /(approved|locked|paid|frozen)/i;
+// Deliberately excludes a bare "lock": it would also match "locked" and, being
+// tested first, would shadow LOCKED_HINT below.
+const CONFLICT_HINT = /(regenerat|in progress|try again)/i;
+
+/**
+ * Maps a failed adjustments response onto the UI reaction the API guide
+ * prescribes. Falls back to message sniffing because only the 200 envelope is
+ * documented — if the backend does send `statusCode` on errors the fallbacks
+ * never fire.
+ */
+export const resolveAdjustmentError = <T,>(
+  response: IResponse<T> | null | undefined,
+): { kind: AdjustmentErrorKind; message: string } => {
+  // `statusCode` is typed required on IResponse but is genuinely absent on
+  // baseApi's network-failure path, and 0 on our synthetic envelope.
+  const status = (response as { statusCode?: number } | null | undefined)
+    ?.statusCode;
+  const message = response?.message ?? "";
+
+  if (status === 403) {
+    return {
+      kind: "forbidden",
+      message: "You don't have permission to adjust this payroll.",
+    };
+  }
+  if (status === 404) {
+    return {
+      kind: "not_found",
+      message: "This employee is no longer on this payroll run.",
+    };
+  }
+  if (status === 409) {
+    return {
+      kind: "conflict",
+      message: "Payroll is regenerating. Please retry in a moment.",
+    };
+  }
+  if (status === 400) {
+    // 400 is overloaded: the guide documents "run is locked", but a backend
+    // validation rejection is also 400. Treating both as locked would close
+    // the dialog and destroy unsaved rows while showing a false reason.
+    return LOCKED_HINT.test(message)
+      ? {
+          kind: "locked",
+          message:
+            "This run is approved and locked. Adjustments can't be changed.",
+        }
+      : {
+          kind: "validation",
+          message: message || "Some values were rejected. Please check the form.",
+        };
+  }
+  if (status == null || status === 0) {
+    if (CONFLICT_HINT.test(message)) return { kind: "conflict", message };
+    if (LOCKED_HINT.test(message)) return { kind: "locked", message };
+    return {
+      kind: "network",
+      message: message || "Couldn't reach the payroll service.",
+    };
+  }
+  return { kind: "unknown", message: message || "Failed to save adjustments." };
+};
 
 const WEEKDAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const WEEK_START_ISO: Record<string, number> = {
