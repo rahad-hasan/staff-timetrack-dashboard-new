@@ -2,7 +2,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import ClockIcon from "@/components/Icons/ClockIcon";
@@ -136,8 +136,9 @@ const AddManualTimeModal = ({
     undefined,
   );
   const [totalTime, setTotalTime] = useState<string>("1:00:00");
+  const projectSearchRef = useRef<HTMLInputElement>(null);
+  const userSearchRef = useRef<HTMLInputElement>(null);
 
-  const debouncedProjectSearch = useDebounce(projectSearch, 500);
   const debouncedTaskSearch = useDebounce(taskSearch, 500);
   const selectedProject = form.watch("project");
   const selectedUserId = form.watch("userId");
@@ -156,6 +157,18 @@ const AddManualTimeModal = ({
     );
   }, [members, userSearch]);
 
+  const filteredProjects = useMemo(() => {
+    const normalizedSearch = projectSearch.trim().toLowerCase();
+
+    if (!normalizedSearch) {
+      return projects;
+    }
+
+    return projects.filter((project) =>
+      project.name.toLowerCase().includes(normalizedSearch),
+    );
+  }, [projects, projectSearch]);
+
   const timeToDecimal = (time: string): number => {
     const [hours = "0", minutes = "0"] = time.split(":");
     return Number(hours) + Number(minutes) / 60;
@@ -172,7 +185,10 @@ const AddManualTimeModal = ({
       setProjectLoading(true);
 
       try {
-        const res = await getProjects({ search: debouncedProjectSearch });
+        const res = await getProjects({
+          user_id: selectedUserId,
+          dropdown: true,
+        });
         setProjects(res?.success ? res.data : []);
       } catch (err) {
         console.error("Failed to fetch projects", err);
@@ -183,7 +199,7 @@ const AddManualTimeModal = ({
     };
 
     loadProjects();
-  }, [debouncedProjectSearch]);
+  }, [selectedUserId]);
 
   useEffect(() => {
     if (!selectedProject) {
@@ -370,6 +386,18 @@ const AddManualTimeModal = ({
                             onValueChange={(value) =>
                               field.onChange(Number(value))
                             }
+                            onOpenChange={(isOpen) => {
+                              if (!isOpen) {
+                                return;
+                              }
+
+                              // Radix focuses the selected/first item once the
+                              // dropdown is positioned; defer so the search input
+                              // keeps the cursor when it opens.
+                              window.setTimeout(() => {
+                                projectSearchRef.current?.focus();
+                              }, 0);
+                            }}
                           >
                             <SelectTrigger className="w-full">
                               <div className="flex gap-2 items-center">
@@ -382,6 +410,7 @@ const AddManualTimeModal = ({
                             </SelectTrigger>
                             <SelectContent>
                               <Input
+                                ref={projectSearchRef}
                                 type="text"
                                 placeholder="Search project..."
                                 className="flex-1 border-none focus:ring-0 focus:outline-none"
@@ -395,8 +424,8 @@ const AddManualTimeModal = ({
                                 <div className="p-2 text-sm text-muted-foreground">
                                   Loading...
                                 </div>
-                              ) : projects.length > 0 ? (
-                                projects.map((project) => (
+                              ) : filteredProjects.length > 0 ? (
+                                filteredProjects.map((project) => (
                                   <SelectItem
                                     key={project.id}
                                     value={project.id.toString()}
@@ -508,6 +537,18 @@ const AddManualTimeModal = ({
                               onValueChange={(value) =>
                                 field.onChange(Number(value))
                               }
+                              onOpenChange={(isOpen) => {
+                                if (!isOpen) {
+                                  return;
+                                }
+
+                                // Radix focuses the selected/first item once the
+                                // dropdown is positioned; defer so the search input
+                                // keeps the cursor when it opens.
+                                window.setTimeout(() => {
+                                  userSearchRef.current?.focus();
+                                }, 0);
+                              }}
                             >
                               <SelectTrigger className="w-full">
                                 <div className="flex gap-2 items-center">
@@ -519,6 +560,7 @@ const AddManualTimeModal = ({
                               </SelectTrigger>
                               <SelectContent>
                                 <Input
+                                  ref={userSearchRef}
                                   type="text"
                                   placeholder="Search user..."
                                   className="flex-1 border-none focus:ring-0 focus:outline-none"
