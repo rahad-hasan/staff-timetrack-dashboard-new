@@ -18,6 +18,7 @@ import {
   Users,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useTopLoader } from "nextjs-toploader";
 
 import { updatePayrollProfile } from "@/actions/payroll/action";
 import AppPagination from "@/components/Common/AppPagination";
@@ -94,6 +95,7 @@ const PayrollSettingsBoard = ({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const loader = useTopLoader();
 
   const [search, setSearch] = useState(initialSearch);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -112,6 +114,7 @@ const PayrollSettingsBoard = ({
     }
     params.delete("page");
     const query = params.toString();
+    loader.start();
     router.push(query ? `${pathname}?${query}` : pathname, { scroll: false });
   };
 
@@ -133,8 +136,9 @@ const PayrollSettingsBoard = ({
     }
     params.delete("page");
     const query = params.toString();
+    loader.start();
     router.push(query ? `${pathname}?${query}` : pathname, { scroll: false });
-  }, [debouncedSearch, pathname, router, searchParams]);
+  }, [debouncedSearch, loader, pathname, router, searchParams]);
 
   const stats = [
     {
