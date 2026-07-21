@@ -136,9 +136,9 @@ const PayrollSettingsBoard = ({
     }
     params.delete("page");
     const query = params.toString();
-    loader.start();
+    // loader.start();
     router.push(query ? `${pathname}?${query}` : pathname, { scroll: false });
-  }, [debouncedSearch, loader, pathname, router, searchParams]);
+  }, [debouncedSearch, pathname, router, searchParams]);
 
   const stats = [
     {
