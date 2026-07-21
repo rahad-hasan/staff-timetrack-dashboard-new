@@ -301,7 +301,7 @@ const PayrollSettingsBoard = ({
                     type="button"
                     onClick={() => setTab(item.id)}
                     className={cn(
-                      "rounded-full border px-4 py-1.5 text-sm font-medium transition-colors",
+                      "rounded-full border px-4 py-1.5 text-sm font-medium transition-colors cursor-pointer",
                       isActive
                         ? "border-primary bg-primary text-primary-foreground"
                         : "border-borderColor text-subTextColor hover:border-primary/40 hover:text-primary dark:border-darkBorder dark:text-darkTextSecondary",
