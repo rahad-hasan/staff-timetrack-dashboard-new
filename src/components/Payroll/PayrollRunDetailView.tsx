@@ -317,7 +317,7 @@ const PayrollRunDetailView = ({
                 value={searchDraft}
                 onChange={(event) => setSearchDraft(event.target.value)}
                 placeholder="Search by name or email"
-                className="w-full min-w-[240px] pl-9 dark:border-darkBorder dark:bg-darkPrimaryBg"
+                className="w-full min-w-60 pl-9 dark:border-darkBorder dark:bg-darkPrimaryBg"
               />
             </div>
             <Button type="submit" size="sm">

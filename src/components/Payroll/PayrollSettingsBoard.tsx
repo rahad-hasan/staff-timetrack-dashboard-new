@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { format, parseISO } from "date-fns";
 import {
   AlertTriangle,
@@ -32,6 +32,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useDebounce } from "@/hooks/use-debounce";
 import { cn } from "@/lib/utils";
 import { formatPayrollMoney } from "@/lib/payroll";
 import {
@@ -54,6 +55,7 @@ interface PayrollSettingsBoardProps {
   setupRoster: EligibleUser[];
   meta: IMeta;
   tab: string;
+  search: string;
   currency: string;
 }
 
@@ -86,13 +88,14 @@ const PayrollSettingsBoard = ({
   setupRoster,
   meta,
   tab,
+  search: initialSearch,
   currency,
 }: PayrollSettingsBoardProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(initialSearch);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingProfile, setEditingProfile] =
     useState<EmployeePayrollProfile | null>(null);
@@ -112,23 +115,26 @@ const PayrollSettingsBoard = ({
     router.push(query ? `${pathname}?${query}` : pathname, { scroll: false });
   };
 
-  const normalizedSearch = search.trim().toLowerCase();
+  // Debounce the raw input, then reflect it into the URL as `?search=` so the
+  // server component refetches profiles / eligible users filtered by the backend.
+  // Comparing against the current URL value keeps this from pushing on mount or
+  // looping once our own navigation lands.
+  const debouncedSearch = useDebounce(search.trim(), 400);
 
-  const filteredProfiles = useMemo(() => {
-    if (!normalizedSearch) return profiles;
-    return profiles.filter((profile) => {
-      const haystack =
-        `${profile.user?.name ?? ""} ${profile.user?.email ?? ""}`.toLowerCase();
-      return haystack.includes(normalizedSearch);
-    });
-  }, [normalizedSearch, profiles]);
+  useEffect(() => {
+    const current = searchParams.get("search") ?? "";
+    if (debouncedSearch === current) return;
 
-  const filteredNotConfigured = useMemo(() => {
-    if (!normalizedSearch) return eligibleUsers;
-    return eligibleUsers.filter((member) =>
-      `${member.name} ${member.email}`.toLowerCase().includes(normalizedSearch),
-    );
-  }, [normalizedSearch, eligibleUsers]);
+    const params = new URLSearchParams(searchParams.toString());
+    if (debouncedSearch) {
+      params.set("search", debouncedSearch);
+    } else {
+      params.delete("search");
+    }
+    params.delete("page");
+    const query = params.toString();
+    router.push(query ? `${pathname}?${query}` : pathname, { scroll: false });
+  }, [debouncedSearch, pathname, router, searchParams]);
 
   const stats = [
     {
@@ -320,7 +326,7 @@ const PayrollSettingsBoard = ({
 
           <div className="mt-5">
             {activeTab === "not-configured" ? (
-              filteredNotConfigured.length ? (
+              eligibleUsers.length ? (
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -332,7 +338,7 @@ const PayrollSettingsBoard = ({
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredNotConfigured.map((member) => (
+                    {eligibleUsers.map((member) => (
                       <TableRow key={member.id}>
                         <TableCell className="font-medium text-headingTextColor dark:text-darkTextPrimary">
                           {member.name}
@@ -376,13 +382,13 @@ const PayrollSettingsBoard = ({
               ) : (
                 <PayrollEmptyState
                   text={
-                    normalizedSearch
-                      ? `No employees matched "${search.trim()}".`
+                    initialSearch
+                      ? `No employees matched "${initialSearch}".`
                       : "Every active employee already has a payroll profile."
                   }
                 />
               )
-            ) : filteredProfiles.length ? (
+            ) : profiles.length ? (
               <>
                 <div className="hidden md:block">
                   <Table>
@@ -399,7 +405,7 @@ const PayrollSettingsBoard = ({
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {filteredProfiles.map((profile) => {
+                      {profiles.map((profile) => {
                         return (
                           <TableRow key={profile.id}>
                             <TableCell>
@@ -533,7 +539,7 @@ const PayrollSettingsBoard = ({
                 </div>
 
                 <ul className="space-y-3 md:hidden">
-                  {filteredProfiles.map((profile) => {
+                  {profiles.map((profile) => {
                     return (
                       <li
                         key={profile.id}
@@ -654,8 +660,8 @@ const PayrollSettingsBoard = ({
             ) : (
               <PayrollEmptyState
                 text={
-                  normalizedSearch
-                    ? `No profiles matched "${search.trim()}".`
+                  initialSearch
+                    ? `No profiles matched "${initialSearch}".`
                     : "No payroll profiles yet. Add the first one to get started."
                 }
               />

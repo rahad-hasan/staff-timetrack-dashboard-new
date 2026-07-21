@@ -271,6 +271,7 @@ export interface EligibleUsersParams {
 
 export interface ListProfilesParams {
   user_id?: number;
+  search?: string;
   is_active?: boolean;
   include_inactive_users?: boolean;
   page?: number;

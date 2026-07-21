@@ -27,12 +27,14 @@ const PayrollSettingsServer = async ({ searchParams }: ISearchParamsProps) => {
     typeof params.page === "string" ? Number(params.page) || 1 : 1;
   const isActiveParam = parseBool(params.is_active);
   const tab = typeof params.tab === "string" ? params.tab : "all";
+  const search = typeof params.search === "string" ? params.search.trim() : "";
 
   const [profilesResponse, summaryResponse, eligibleResponse, rosterResponse] =
     await Promise.all([
       listPayrollProfiles({
         page: currentPage,
         limit: 25,
+        search: search || undefined,
         is_active:
           tab === "active" ? true : tab === "inactive" ? false : isActiveParam,
       }),
@@ -43,6 +45,7 @@ const PayrollSettingsServer = async ({ searchParams }: ISearchParamsProps) => {
         has_profile: false,
         page: tab === "not-configured" ? currentPage : 1,
         limit: 25,
+        search: search || undefined,
       }),
       // Roster for the "Add payroll profile" dialog: every active user still
       // without an active profile, independent of the tab's pagination.
@@ -89,6 +92,7 @@ const PayrollSettingsServer = async ({ searchParams }: ISearchParamsProps) => {
         }
       }
       tab={tab}
+      search={search}
       currency={currentUser?.email ? "USD" : "USD"}
     />
   );
