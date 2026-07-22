@@ -760,7 +760,6 @@ export interface IMonthlyWorkReportSummary {
   total_early_hm: string;
   total_leave_days: number;
   total_holidays: number;
-  earnings: number;
 }
 
 export interface IMonthlyWorkReportUser {
@@ -891,8 +890,6 @@ export interface IMonthlyWorkReport {
   tracking_suspensions?: unknown[];
 }
 
-
-
 export interface LeaveType {
   id: number;
   title: string;
@@ -988,7 +985,6 @@ export interface LeaveUser {
   gender: "male" | "female" | "other";
 }
 
-
 export interface LeaveRecord {
   id: number;
   company_id: number;
@@ -1033,7 +1029,9 @@ export interface LeaveHoliday {
 }
 
 export interface MandatoryLeaveImportPayload {
-  holidays: Array<Pick<LeaveHoliday, "name" | "date" | "description" | "source">>;
+  holidays: Array<
+    Pick<LeaveHoliday, "name" | "date" | "description" | "source">
+  >;
 }
 
 export interface MandatoryLeaveParsePayload {
@@ -1147,7 +1145,6 @@ export interface LeaveRequestTypeDropdownRecord {
   left: number;
 }
 
-
 export interface UserLeaveSummary {
   user: LeaveUser;
   year: number;
@@ -1183,7 +1180,6 @@ export interface LeaveRequestTypeDropdownRecord {
   left: number;
 }
 
-
 export interface UserLeaveSummary {
   user: LeaveUser;
   year: number;
@@ -1206,7 +1202,9 @@ export interface UserLeaveSummary {
 }
 
 export interface MandatoryLeaveImportPayload {
-  holidays: Array<Pick<LeaveHoliday, "name" | "date" | "description" | "source">>;
+  holidays: Array<
+    Pick<LeaveHoliday, "name" | "date" | "description" | "source">
+  >;
 }
 
 export interface MandatoryLeaveParsePayload {
@@ -1461,7 +1459,7 @@ export interface INotificationCount {
     read: number;
     unread: number;
   };
-};
+}
 
 export interface AddTimeEntryPayload {
   project_id: number;

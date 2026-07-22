@@ -120,9 +120,9 @@ const hexToRgba = (hex: string, alpha: number) => {
   const valid =
     normalized.length === 3
       ? normalized
-        .split("")
-        .map((char) => char + char)
-        .join("")
+          .split("")
+          .map((char) => char + char)
+          .join("")
       : normalized;
 
   const value = Number.parseInt(valid, 16);
@@ -148,16 +148,12 @@ const parseDuration = (value: string) => {
 
 const durationToHours = (value: string) => {
   const parsed = parseDuration(value);
-  return (
-    parsed.hours + parsed.minutes / 60 + parsed.seconds / 3600
-  );
+  return parsed.hours + parsed.minutes / 60 + parsed.seconds / 3600;
 };
 
 const formatHoursAndMinutes = (value: string) => {
   const { hours, minutes, seconds } = parseDuration(value);
-  const totalMinutes = Math.round(
-    hours * 60 + minutes + seconds / 60,
-  );
+  const totalMinutes = Math.round(hours * 60 + minutes + seconds / 60);
   const formattedHours = Math.floor(totalMinutes / 60);
   const formattedMinutes = totalMinutes % 60;
 
@@ -387,25 +383,27 @@ const ChartCard = ({
   </section>
 );
 
-const KpiTile = memo(({
-  label,
-  value,
-  helper,
-}: {
-  label: string;
-  value: string;
-  helper: string;
-}) => (
-  <div className="rounded-[12px] border border-borderColor/70 bg-bgSecondary/60 p-4 dark:border-darkBorder dark:bg-darkPrimaryBg/60">
-    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-subTextColor dark:text-darkTextSecondary">
-      {label}
-    </p>
-    <p className="mt-3 text-3xl font-semibold text-primary">{value}</p>
-    <p className="mt-2 text-sm text-subTextColor dark:text-darkTextSecondary">
-      {helper}
-    </p>
-  </div>
-));
+const KpiTile = memo(
+  ({
+    label,
+    value,
+    helper,
+  }: {
+    label: string;
+    value: string;
+    helper: string;
+  }) => (
+    <div className="rounded-[12px] border border-borderColor/70 bg-bgSecondary/60 p-4 dark:border-darkBorder dark:bg-darkPrimaryBg/60">
+      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-subTextColor dark:text-darkTextSecondary">
+        {label}
+      </p>
+      <p className="mt-3 text-3xl font-semibold text-primary">{value}</p>
+      <p className="mt-2 text-sm text-subTextColor dark:text-darkTextSecondary">
+        {helper}
+      </p>
+    </div>
+  ),
+);
 KpiTile.displayName = "KpiTile";
 
 const EmptyChartState = memo(({ message }: { message: string }) => (
@@ -457,7 +455,9 @@ const PerformanceCharts = ({ data }: PerformanceChartsProps) => {
 
     return {
       periodLabel: `${data.user.name} • ${format(parseISO(data.period.from_date), "dd MMM")} to ${format(parseISO(data.period.to_date), "dd MMM yyyy")} • ${data.user.time_zone}`,
-      totalWorkedDisplay: formatHoursAndMinutes(data.summary.total_worked_duration),
+      totalWorkedDisplay: formatHoursAndMinutes(
+        data.summary.total_worked_duration,
+      ),
       totalActiveDisplay: formatHoursAndMinutes(data.summary.total_active_time),
       totalIdleDisplay: formatHoursAndMinutes(data.summary.total_idle_time),
       suspensionDurationDisplay: formatHoursAndMinutes(
@@ -488,7 +488,8 @@ const PerformanceCharts = ({ data }: PerformanceChartsProps) => {
   );
 
   const calendarBarData = useMemo(
-    () => buildCalendarBarData(data.daily_breakdown, data.period, palette.primary),
+    () =>
+      buildCalendarBarData(data.daily_breakdown, data.period, palette.primary),
     [data.daily_breakdown, data.period, palette.primary],
   );
 
@@ -532,13 +533,17 @@ const PerformanceCharts = ({ data }: PerformanceChartsProps) => {
   const calendarTooltipFormatter = useCallback<
     NonNullable<TooltipProps<TooltipValueType, string | number>["formatter"]>
   >((value) => {
-    const displayValue = Array.isArray(value) ? value.join(", ") : value ?? "";
+    const displayValue = Array.isArray(value)
+      ? value.join(", ")
+      : (value ?? "");
 
     return [`${displayValue}h`, "Worked"];
   }, []);
 
   const calendarTooltipLabelFormatter = useCallback<
-    NonNullable<TooltipProps<TooltipValueType, string | number>["labelFormatter"]>
+    NonNullable<
+      TooltipProps<TooltipValueType, string | number>["labelFormatter"]
+    >
   >((_label, payload) => {
     const item = payload[0]?.payload as CalendarBarItem | undefined;
 
@@ -598,7 +603,7 @@ const PerformanceCharts = ({ data }: PerformanceChartsProps) => {
       <div className="mt-6 grid grid-cols-1 gap-4 xl:grid-cols-[1.05fr_1.5fr_1.1fr]">
         <ChartCard title="Workload Mix">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-[1fr_auto] md:items-center">
-            <div className="h-[240px]">
+            <div className="h-60">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -654,7 +659,7 @@ const PerformanceCharts = ({ data }: PerformanceChartsProps) => {
         </ChartCard>
 
         <ChartCard title="Daily Worked vs Activity">
-          <div className="h-[240px]">
+          <div className="h-60">
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart data={dailyTrend}>
                 <CartesianGrid
@@ -710,7 +715,7 @@ const PerformanceCharts = ({ data }: PerformanceChartsProps) => {
         </ChartCard>
 
         <ChartCard title="Attendance Exceptions">
-          <div className="h-[240px]">
+          <div className="h-60">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={exceptionTrend}>
                 <CartesianGrid
@@ -724,11 +729,7 @@ const PerformanceCharts = ({ data }: PerformanceChartsProps) => {
                   axisLine={false}
                   tick={axisStyle}
                 />
-                <YAxis
-                  tickLine={false}
-                  axisLine={false}
-                  tick={axisStyle}
-                />
+                <YAxis tickLine={false} axisLine={false} tick={axisStyle} />
                 <Tooltip
                   contentStyle={tooltipStyle}
                   labelStyle={tooltipTextStyle}
@@ -755,10 +756,9 @@ const PerformanceCharts = ({ data }: PerformanceChartsProps) => {
         </ChartCard>
       </div>
 
-
       <div className="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-[1.7fr_0.9fr]">
         <ChartCard title="Top Task Hours">
-          <div className="h-[290px]">
+          <div className="h-72.5">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
                 data={topTasks}
@@ -818,19 +818,18 @@ const PerformanceCharts = ({ data }: PerformanceChartsProps) => {
             value={`${data.summary.late_days}/${data.summary.early_days}`}
             helper={`${data.summary.total_late_hm} late • ${data.summary.total_early_hm} early`}
           />
+
           <KpiTile
-            label="Earnings"
-            value={`${data.user.currency || "USD"} ${data.summary.earnings}`}
+            label="Attended"
+            value={`${data.summary.attended_days || "0"}`}
             helper={`${data.summary.total_leave_days} leave days • ${data.summary.total_holidays} holidays`}
           />
         </div>
       </div>
 
-
-
       <div className="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-[1.15fr_0.85fr]">
         <ChartCard title="Weekly Output Trend">
-          <div className="h-[240px]">
+          <div className="h-60">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={weeklyBuckets}>
                 <CartesianGrid
@@ -844,11 +843,7 @@ const PerformanceCharts = ({ data }: PerformanceChartsProps) => {
                   axisLine={false}
                   tick={axisStyle}
                 />
-                <YAxis
-                  tickLine={false}
-                  axisLine={false}
-                  tick={axisStyle}
-                />
+                <YAxis tickLine={false} axisLine={false} tick={axisStyle} />
                 <Tooltip
                   contentStyle={tooltipStyle}
                   labelStyle={tooltipTextStyle}
@@ -901,11 +896,10 @@ const PerformanceCharts = ({ data }: PerformanceChartsProps) => {
         </ChartCard>
       </div>
 
-
       <div>
         <div className="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-[1.3fr_0.9fr]">
           <ChartCard title="Daily Breakdown Trend">
-            <div className="h-[320px]">
+            <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <ComposedChart data={dailyTrend}>
                   <CartesianGrid
@@ -969,7 +963,7 @@ const PerformanceCharts = ({ data }: PerformanceChartsProps) => {
 
           <ChartCard title="Anomaly Severity Mix">
             {hasAnomalySeverityData ? (
-              <div className="h-[300px]">
+              <div className="h-75">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
@@ -1002,25 +996,25 @@ const PerformanceCharts = ({ data }: PerformanceChartsProps) => {
 
         <ChartCard title="Month Calendar Heatmap" className="mt-4">
           <div className="mb-4 grid grid-cols-2 gap-2 text-xs text-subTextColor dark:text-darkTextSecondary sm:grid-cols-4">
-            <div className="rounded-[8px] border border-borderColor/70 bg-bgSecondary/50 px-3 py-2 dark:border-darkBorder dark:bg-darkPrimaryBg/50">
+            <div className="rounded-xl border border-borderColor/70 bg-bgSecondary/50 px-3 py-2 dark:border-darkBorder dark:bg-darkPrimaryBg/50">
               <span className="inline-block size-2 rounded-full bg-primary" />
               <span className="ml-2">Normal workday</span>
             </div>
-            <div className="rounded-[8px] border border-borderColor/70 bg-bgSecondary/50 px-3 py-2 dark:border-darkBorder dark:bg-darkPrimaryBg/50">
+            <div className="rounded-xl border border-borderColor/70 bg-bgSecondary/50 px-3 py-2 dark:border-darkBorder dark:bg-darkPrimaryBg/50">
               <span className="inline-block size-2 rounded-full bg-rose-500" />
               <span className="ml-2">Leave</span>
             </div>
-            <div className="rounded-[8px] border border-borderColor/70 bg-bgSecondary/50 px-3 py-2 dark:border-darkBorder dark:bg-darkPrimaryBg/50">
+            <div className="rounded-xl border border-borderColor/70 bg-bgSecondary/50 px-3 py-2 dark:border-darkBorder dark:bg-darkPrimaryBg/50">
               <span className="inline-block size-2 rounded-full bg-sky-500" />
               <span className="ml-2">Holiday</span>
             </div>
-            <div className="rounded-[8px] border border-borderColor/70 bg-bgSecondary/50 px-3 py-2 dark:border-darkBorder dark:bg-darkPrimaryBg/50">
+            <div className="rounded-xl border border-borderColor/70 bg-bgSecondary/50 px-3 py-2 dark:border-darkBorder dark:bg-darkPrimaryBg/50">
               <span className="inline-block size-2 rounded-full bg-amber-500" />
               <span className="ml-2">Late / Early</span>
             </div>
           </div>
 
-          <div className="h-[340px]">
+          <div className="h-85">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={calendarBarData}>
                 <CartesianGrid
@@ -1059,7 +1053,7 @@ const PerformanceCharts = ({ data }: PerformanceChartsProps) => {
 
         <div className="mt-4 grid grid-cols-1 gap-4 2xl:grid-cols-[1.35fr_0.9fr]">
           <ChartCard title="Anomaly and Screenshot Trend">
-            <div className="h-[300px]">
+            <div className="h-75">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={dailyTrend}>
                   <CartesianGrid
@@ -1073,11 +1067,7 @@ const PerformanceCharts = ({ data }: PerformanceChartsProps) => {
                     axisLine={false}
                     tick={axisStyle}
                   />
-                  <YAxis
-                    tickLine={false}
-                    axisLine={false}
-                    tick={axisStyle}
-                  />
+                  <YAxis tickLine={false} axisLine={false} tick={axisStyle} />
                   <Tooltip
                     contentStyle={tooltipStyle}
                     labelStyle={tooltipTextStyle}
@@ -1103,7 +1093,7 @@ const PerformanceCharts = ({ data }: PerformanceChartsProps) => {
           </ChartCard>
 
           <ChartCard title="Leave, Holiday, Attendance Mix">
-            <div className="h-[300px]">
+            <div className="h-75">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
