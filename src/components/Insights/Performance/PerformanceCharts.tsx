@@ -11,6 +11,7 @@ import {
 import { ArrowUpRight } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { memo, useCallback, useMemo, type ReactNode } from "react";
 import {
   Area,
@@ -22,10 +23,12 @@ import {
   ComposedChart,
   Legend,
   Line,
+  type MouseHandlerDataParam,
   Pie,
   PieChart,
   ResponsiveContainer,
   Tooltip,
+  type TooltipContentProps,
   type TooltipProps,
   type TooltipValueType,
   XAxis,
@@ -65,6 +68,8 @@ type WorkloadMixItem = {
 
 type DailyTrendItem = {
   label: string;
+  fullLabel: string;
+  date: string;
   worked: number;
   active: number;
   idle: number;
@@ -213,6 +218,8 @@ const buildDailyTrendAndWeeklyBuckets = (
 
     dailyTrend.push({
       label: format(parseISO(day.date), "dd"),
+      fullLabel: format(parseISO(day.date), "EEE, MMM d"),
+      date: day.date,
       worked: round(worked),
       active: round(active),
       idle: round(idle),
@@ -415,6 +422,59 @@ const KpiTile = memo(
 );
 KpiTile.displayName = "KpiTile";
 
+const AnomalyScreenshotTooltip = ({
+  active,
+  payload,
+  isDark,
+  palette,
+}: Partial<TooltipContentProps<TooltipValueType, string | number>> & {
+  isDark?: boolean;
+  palette?: Palette;
+}) => {
+  const item = payload?.[0]?.payload as DailyTrendItem | undefined;
+
+  if (!active || !item || !palette) {
+    return null;
+  }
+
+  return (
+    <div
+      className="pointer-events-none min-w-48 rounded-2xl border p-3 shadow-xl duration-200 animate-in fade-in zoom-in-95"
+      style={{
+        backgroundColor: isDark ? "#323947" : "#ffffff",
+        borderColor: palette.surfaceStroke,
+        color: palette.text,
+      }}
+    >
+      <div className="flex items-center justify-between gap-6">
+        <span className="text-sm font-semibold">{item.fullLabel}</span>
+        <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+          <ArrowUpRight className="size-3.5" />
+        </span>
+      </div>
+      <div className="mt-2 space-y-1.5 text-sm">
+        {payload?.map((entry) => (
+          <div key={`${entry.name}`} className="flex items-center gap-2">
+            <span
+              className="size-2.5 rounded-full"
+              style={{ backgroundColor: entry.color }}
+            />
+            <span style={{ color: palette.subText }}>{entry.name}</span>
+            <span className="ml-auto font-semibold">{`${entry.value}`}</span>
+          </div>
+        ))}
+      </div>
+      <p
+        className="mt-2.5 flex items-center gap-1 border-t pt-2 text-xs"
+        style={{ borderColor: palette.surfaceStroke, color: palette.subText }}
+      >
+        Click to view screenshots
+        <ArrowUpRight className="size-3" />
+      </p>
+    </div>
+  );
+};
+
 const EmptyChartState = memo(({ message }: { message: string }) => (
   <div className="flex h-80 items-center justify-center rounded-[12px] border border-dashed border-borderColor/70 bg-bgSecondary/40 px-6 text-center text-sm text-subTextColor dark:border-darkBorder dark:bg-darkPrimaryBg/40 dark:text-darkTextSecondary">
     {message}
@@ -424,6 +484,7 @@ EmptyChartState.displayName = "EmptyChartState";
 
 const PerformanceCharts = ({ data }: PerformanceChartsProps) => {
   const color = useColorStore((state) => state.color);
+  const router = useRouter();
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
 
@@ -548,6 +609,23 @@ const PerformanceCharts = ({ data }: PerformanceChartsProps) => {
 
     return [`${displayValue}h`, "Worked"];
   }, []);
+
+  const handleAnomalyTrendClick = useCallback(
+    (state: MouseHandlerDataParam) => {
+      if (state.activeIndex == null) {
+        return;
+      }
+
+      const day = dailyTrend[Number(state.activeIndex)];
+
+      if (day) {
+        router.push(
+          `/activity/screenshots?user_id=${data.user.id}&date=${day.date}`,
+        );
+      }
+    },
+    [dailyTrend, router, data.user.id],
+  );
 
   const calendarTooltipLabelFormatter = useCallback<
     NonNullable<
@@ -1095,9 +1173,9 @@ const PerformanceCharts = ({ data }: PerformanceChartsProps) => {
 
         <div className="mt-4 grid grid-cols-1 gap-4 2xl:grid-cols-[1.35fr_0.9fr]">
           <ChartCard title="Anomaly and Screenshot Trend">
-            <div className="h-75">
+            <div className="h-75 cursor-pointer">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={dailyTrend}>
+                <BarChart data={dailyTrend} onClick={handleAnomalyTrendClick}>
                   <CartesianGrid
                     vertical={false}
                     strokeDasharray={GRID_DASH_ARRAY}
@@ -1111,9 +1189,12 @@ const PerformanceCharts = ({ data }: PerformanceChartsProps) => {
                   />
                   <YAxis tickLine={false} axisLine={false} tick={axisStyle} />
                   <Tooltip
-                    contentStyle={tooltipStyle}
-                    labelStyle={tooltipTextStyle}
-                    itemStyle={tooltipTextStyle}
+                    content={
+                      <AnomalyScreenshotTooltip
+                        isDark={isDark}
+                        palette={palette}
+                      />
+                    }
                   />
                   <Legend formatter={legendFormatter} />
                   <Bar

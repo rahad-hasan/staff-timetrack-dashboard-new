@@ -272,3 +272,14 @@
 #nprogress .peg {
   display: none !important;
 }
+
+/* Remove the focus outline box recharts draws after clicking a chart.
+   Covers the wrapper div, the root svg, and inner tabIndex="-1" layers
+   (recharts-zIndex-layer_N groups, tooltip bounding box) that receive
+   focus when a bar is clicked. */
+.recharts-wrapper:focus,
+.recharts-wrapper:focus-visible,
+.recharts-wrapper :focus,
+.recharts-wrapper :focus-visible {
+  outline: none !important;
+}
