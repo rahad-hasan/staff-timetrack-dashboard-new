@@ -763,6 +763,7 @@ export interface IMonthlyWorkReportSummary {
 }
 
 export interface IMonthlyWorkReportUser {
+  id: number;
   name: string;
   image: string | null;
   currency?: string | null;

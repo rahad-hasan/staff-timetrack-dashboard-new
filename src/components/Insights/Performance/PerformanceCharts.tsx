@@ -9,6 +9,7 @@ import {
   startOfMonth,
 } from "date-fns";
 import { useTheme } from "next-themes";
+import Link from "next/link";
 import { memo, useCallback, useMemo, type ReactNode } from "react";
 import {
   Area,
@@ -407,7 +408,7 @@ const KpiTile = memo(
 KpiTile.displayName = "KpiTile";
 
 const EmptyChartState = memo(({ message }: { message: string }) => (
-  <div className="flex h-[320px] items-center justify-center rounded-[12px] border border-dashed border-borderColor/70 bg-bgSecondary/40 px-6 text-center text-sm text-subTextColor dark:border-darkBorder dark:bg-darkPrimaryBg/40 dark:text-darkTextSecondary">
+  <div className="flex h-80 items-center justify-center rounded-[12px] border border-dashed border-borderColor/70 bg-bgSecondary/40 px-6 text-center text-sm text-subTextColor dark:border-darkBorder dark:bg-darkPrimaryBg/40 dark:text-darkTextSecondary">
     {message}
   </div>
 ));
@@ -813,17 +814,27 @@ const PerformanceCharts = ({ data }: PerformanceChartsProps) => {
             value={`${taskCount}`}
             helper={`${data.summary.total_projects} projects • ${data.summary.total_tasks} reported tasks`}
           />
-          <KpiTile
-            label="Late / Early"
-            value={`${data.summary.late_days}/${data.summary.early_days}`}
-            helper={`${data.summary.total_late_hm} late • ${data.summary.total_early_hm} early`}
-          />
+          <Link
+            href={`/report/work-report?user_id=${data?.user?.id}&start_month=${data.period.from_date}&end_month=${data.period.to_date}`}
+            className="block transition-opacity hover:opacity-80"
+          >
+            <KpiTile
+              label="Late / Early"
+              value={`${data.summary.late_days}/${data.summary.early_days}`}
+              helper={`${data.summary.total_late_hm} late • ${data.summary.total_early_hm} early`}
+            />
+          </Link>
 
-          <KpiTile
-            label="Attended"
-            value={`${data.summary.attended_days || "0"}`}
-            helper={`${data.summary.total_leave_days} leave days • ${data.summary.total_holidays} holidays`}
-          />
+          <Link
+            href={`/report/work-report?user_id=${data?.user?.id}&start_month=${data.period.from_date}&end_month=${data.period.to_date}`}
+            className="block transition-opacity hover:opacity-80"
+          >
+            <KpiTile
+              label="Attended"
+              value={`${data.summary.attended_days || "0"}`}
+              helper={`${data.summary.total_leave_days} leave days • ${data.summary.total_holidays} holidays`}
+            />
+          </Link>
         </div>
       </div>
 
