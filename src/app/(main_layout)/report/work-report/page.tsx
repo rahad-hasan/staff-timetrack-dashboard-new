@@ -134,14 +134,8 @@ const WorkReport = async ({ searchParams }: ISearchParamsProps) => {
               {data.to_date}
             </span>
           </p>
-          <div className="mt-2 flex gap-2">
-            <span className="text-[14px] bg-slate-100 dark:bg-darkPrimaryBg/70 px-2 py-1 rounded">
-              Earnings:{" "}
-              <span className="font-black">$ {data.summary.earnings}</span>
-            </span>
-            <button disabled className="text-[14px] bg-slate-100 dark:bg-darkPrimaryBg/70 px-2 py-1 rounded border border-primary/40 cursor-not-allowed disabled:opacity-50">
-              Make payment
-            </button>
+          <div className="mt-2 text-[14px] bg-slate-100 dark:bg-darkPrimaryBg/70 px-2 py-1 rounded w-fit">
+            Attended: {data?.days?.length} days
           </div>
         </div>
 
