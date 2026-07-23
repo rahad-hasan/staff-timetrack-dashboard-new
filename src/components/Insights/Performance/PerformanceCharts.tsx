@@ -8,6 +8,7 @@ import {
   parseISO,
   startOfMonth,
 } from "date-fns";
+import { ArrowUpRight } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { memo, useCallback, useMemo, type ReactNode } from "react";
@@ -389,12 +390,19 @@ const KpiTile = memo(
     label,
     value,
     helper,
+    showLinkArrow = false,
   }: {
     label: string;
     value: string;
     helper: string;
+    showLinkArrow?: boolean;
   }) => (
-    <div className="rounded-[12px] border border-borderColor/70 bg-bgSecondary/60 p-4 dark:border-darkBorder dark:bg-darkPrimaryBg/60">
+    <div className="relative rounded-[12px] border border-borderColor/70 bg-bgSecondary/60 p-4 transition-colors duration-200 group-hover:border-primary/50 dark:border-darkBorder dark:bg-darkPrimaryBg/60">
+      {showLinkArrow && (
+        <span className="absolute right-4 top-4 flex size-7 -translate-x-1 translate-y-1 items-center justify-center rounded-full bg-primary/10 text-primary opacity-0 transition-all duration-200 group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100">
+          <ArrowUpRight className="size-4" />
+        </span>
+      )}
       <p className="text-xs font-semibold uppercase tracking-[0.16em] text-subTextColor dark:text-darkTextSecondary">
         {label}
       </p>
@@ -816,23 +824,25 @@ const PerformanceCharts = ({ data }: PerformanceChartsProps) => {
           />
           <Link
             href={`/report/work-report?user_id=${data?.user?.id}&start_month=${data.period.from_date}&end_month=${data.period.to_date}`}
-            className="block transition-opacity hover:opacity-80"
+            className="group block"
           >
             <KpiTile
               label="Late / Early"
               value={`${data.summary.late_days}/${data.summary.early_days}`}
               helper={`${data.summary.total_late_hm} late • ${data.summary.total_early_hm} early`}
+              showLinkArrow
             />
           </Link>
 
           <Link
             href={`/report/work-report?user_id=${data?.user?.id}&start_month=${data.period.from_date}&end_month=${data.period.to_date}`}
-            className="block transition-opacity hover:opacity-80"
+            className="group block"
           >
             <KpiTile
               label="Attended"
               value={`${data.summary.attended_days || "0"}`}
               helper={`${data.summary.total_leave_days} leave days • ${data.summary.total_holidays} holidays`}
+              showLinkArrow
             />
           </Link>
         </div>
@@ -891,11 +901,32 @@ const PerformanceCharts = ({ data }: PerformanceChartsProps) => {
               value={`${data.summary.total_notes}`}
               helper="Notes captured during the month"
             />
-            <KpiTile
-              label="Suspensions"
-              value={`${data.summary.total_suspensions}`}
-              helper={`Duration ${suspensionDurationDisplay}`}
-            />
+            {data.summary.total_suspensions > 0 ? (
+              <Link
+                href={`/insights/suspensions?from_date=${data.period.from_date}&to_date=${data.period.to_date}&selected_user=${data.user.id}`}
+                className="group block"
+              >
+                <KpiTile
+                  label="Suspensions"
+                  value={`${data.summary.total_suspensions}`}
+                  helper={`Duration ${suspensionDurationDisplay}`}
+                  showLinkArrow
+                />
+              </Link>
+            ) : (
+              <Link
+                href={`/insights/suspensions?from_date=${data.period.from_date}&to_date=${data.period.to_date}&selected_user=${data.user.id}`}
+                className="group block"
+              >
+                <KpiTile
+                  label="Suspensions"
+                  value={`${data.summary.total_suspensions}`}
+                  helper={`Duration ${suspensionDurationDisplay}`}
+                  showLinkArrow
+                />
+              </Link>
+            )}
+
             <div className="sm:col-span-2">
               <KpiTile
                 label="Captures"
