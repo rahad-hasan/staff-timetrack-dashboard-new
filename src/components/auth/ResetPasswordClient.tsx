@@ -23,7 +23,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { resetPassword } from "@/actions/auth/action";
 import { useLogInUserStore } from "@/store/logInUserStore";
-import timerLogo from "../../assets/NewLogo.png";
+import logoWithSlogan from "../../assets/logo-with-text.webp";
 
 const ResetPasswordClient = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -106,14 +106,7 @@ const ResetPasswordClient = () => {
                     <h2 className="text-2xl font-bold">Tracker</h2>
                 </div> */}
         <div className={`flex items-center gap-1.5 px-8 py-5 `}>
-          <Image
-            src={timerLogo}
-            alt="Logo"
-            width={0}
-            height={0}
-            className={`w-12`}
-          />
-          <h2 className="text-2xl font-bold">Tracker</h2>
+          <Image src={logoWithSlogan} alt="Logo" width={120} height={60} />
         </div>
       </div>
       <div className=" h-[80vh] flex items-center justify-center">

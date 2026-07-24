@@ -27,7 +27,7 @@ import { toast } from "sonner";
 import { logIn } from "@/actions/auth/action";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import { useSidebarStore } from "@/store/sidebarStore";
-import timerLogo from '../../assets/NewLogo.png'
+import logoWithSlogan from '../../assets/logo-with-text.webp'
 
 const LoginClientComponent = () => {
   const [loading, setLoading] = useState(false);
@@ -133,7 +133,7 @@ const LoginClientComponent = () => {
 
   const currentItem = sliderContent[currentSlide];
   return (
-    <div className=" h-auto lg:h-screen w-full flex flex-col lg:flex-row bg-gradient-to-b from-[#12cd6918] from-5% to-[#f6f7f9] dark:to-darkSecondaryBg to-20%">
+    <div className=" h-auto lg:h-screen w-full flex flex-col lg:flex-row bg-linear-to-b from-[#12cd6918] from-5% to-bgSecondary dark:to-darkSecondaryBg to-20%">
       <div className=" lg:w-1/2 h-screen lg:h-full">
         {/* <div className={`flex items-center gap-1.5 px-8 py-5 `}>
           <Image
@@ -147,13 +147,11 @@ const LoginClientComponent = () => {
         </div> */}
         <div className={`flex items-center gap-1.5 px-8 py-5 `}>
           <Image
-            src={timerLogo}
+            src={logoWithSlogan}
             alt="Logo"
-            width={0}
-            height={0}
-            className={`w-12`}
+            width={120}
+            height={35}
           />
-          <h2 className="text-2xl font-bold">Tracker</h2>
         </div>
         <div className="  flex justify-center items-center h-[80%]">
           <div>
@@ -182,7 +180,7 @@ const LoginClientComponent = () => {
                       <FormControl>
                         <Input
                           type="email"
-                          className="w-[300px] sm:w-[400px] md:h-12 dark:border-darkBorder"
+                          className="w-75 sm:w-100 md:h-12 dark:border-darkBorder"
                           placeholder="Email"
                           {...field}
                         />
@@ -209,7 +207,7 @@ const LoginClientComponent = () => {
                         <div className="relative">
                           <Input
                             type={showPassword ? "text" : "password"}
-                            className="w-[300px] sm:w-[400px] md:h-12 dark:border-darkBorder"
+                            className="w-75 sm:w-100 md:h-12 dark:border-darkBorder"
                             placeholder="Password"
                             {...field}
                           />

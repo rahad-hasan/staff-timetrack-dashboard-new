@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useRouter, useSearchParams } from "next/navigation";
 import { resetOtp, verifyOtp } from "@/actions/auth/action";
-import timerLogo from '../../assets/NewLogo.png'
+import logoWithSlogan from '../../assets/logo-with-text.webp'
 
 const VerificationCode = () => {
     const [loading, setLoading] = useState(false);
@@ -119,13 +119,11 @@ const VerificationCode = () => {
                 </div> */}
                 <div className={`flex items-center gap-1.5 px-8 py-5 `}>
                     <Image
-                        src={timerLogo}
+                        src={logoWithSlogan}
                         alt="Logo"
-                        width={0}
-                        height={0}
-                        className={`w-12`}
+                        width={120}
+                        height={60}
                     />
-                    <h2 className="text-2xl font-bold">Tracker</h2>
                 </div>
             </div>
             <div className=" h-[80vh] flex items-center justify-center">
