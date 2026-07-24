@@ -28,6 +28,7 @@ import { logIn } from "@/actions/auth/action";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import { useSidebarStore } from "@/store/sidebarStore";
 import logoWithSlogan from '../../assets/logo-with-text.webp'
+import logoForDark from '../../assets/logo-with-text-dark.png'
 
 const LoginClientComponent = () => {
   const [loading, setLoading] = useState(false);
@@ -151,6 +152,14 @@ const LoginClientComponent = () => {
             alt="Logo"
             width={120}
             height={35}
+            className="hidden dark:block"
+          />
+          <Image
+            src={logoForDark}
+            alt="Logo"
+            width={120}
+            height={35}
+            className="dark:hidden"
           />
         </div>
         <div className="  flex justify-center items-center h-[80%]">

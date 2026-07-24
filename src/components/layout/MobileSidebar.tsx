@@ -10,6 +10,7 @@ import { useSidebarStore } from "@/store/sidebarStore";
 import MobileSidebarItem from "./sidebar/MobileSidebarItem";
 import MobileSubItem from "./sidebar/MobileSubItem";
 import logoWithSlogan from '../../assets/logo-with-text.webp'
+import logoForDark from '../../assets/logo-with-text-dark.png'
 import { useLogInUserStore } from "@/store/logInUserStore";
 
 const MobileSidebar = () => {
@@ -37,6 +38,14 @@ const MobileSidebar = () => {
                             alt="Brand logo"
                             width={120}
                             height={60}
+                            className="hidden dark:block"
+                        />
+                        <Image
+                            src={logoForDark}
+                            alt="Brand logo"
+                            width={120}
+                            height={60}
+                            className="dark:hidden"
                         />
                     </div>
                 </SheetTitle>

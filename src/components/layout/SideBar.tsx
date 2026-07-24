@@ -88,7 +88,22 @@ const SideBar = () => {
             {isCollapsed ? (
               <Image src={logo} alt="Logo" width={30} height={30} />
             ) : (
-              <Image src={logoWithText} alt="Logo" width={120} height={60} />
+              <>
+                <Image
+                  src={logoWithText}
+                  alt="Logo"
+                  width={120}
+                  height={60}
+                  className="hidden dark:block"
+                />
+                <Image
+                  src={logoForDark}
+                  alt="Logo"
+                  width={120}
+                  height={60}
+                  className="dark:hidden"
+                />
+              </>
             )}
 
             <button

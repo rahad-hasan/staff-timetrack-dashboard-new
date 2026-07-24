@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { forgetPassword } from "@/actions/auth/action";
 import { useRouter } from "next/navigation";
 import logoWithSlogan from '../../../assets/logo-with-text.webp';
+import logoForDark from '../../../assets/logo-with-text-dark.png';
 
 const ForgotPassword = () => {
     const [loading, setLoading] = useState(false);
@@ -78,6 +79,14 @@ const ForgotPassword = () => {
                         alt="Logo"
                         width={120}
                         height={60}
+                        className="hidden dark:block"
+                    />
+                    <Image
+                        src={logoForDark}
+                        alt="Logo"
+                        width={120}
+                        height={60}
+                        className="dark:hidden"
                     />
                 </div>
             </div>

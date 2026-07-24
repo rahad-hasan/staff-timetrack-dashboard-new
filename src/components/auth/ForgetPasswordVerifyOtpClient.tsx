@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { useRouter, useSearchParams } from "next/navigation";
 import { resetOtp, verifyOtp } from "@/actions/auth/action";
 import logoWithSlogan from '../../assets/logo-with-text.webp'
+import logoForDark from '../../assets/logo-with-text-dark.png'
 
 const VerificationCode = () => {
     const [loading, setLoading] = useState(false);
@@ -123,6 +124,14 @@ const VerificationCode = () => {
                         alt="Logo"
                         width={120}
                         height={60}
+                        className="hidden dark:block"
+                    />
+                    <Image
+                        src={logoForDark}
+                        alt="Logo"
+                        width={120}
+                        height={60}
+                        className="dark:hidden"
                     />
                 </div>
             </div>

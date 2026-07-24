@@ -24,6 +24,7 @@ import { toast } from "sonner";
 import { resetPassword } from "@/actions/auth/action";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import logoWithSlogan from "../../assets/logo-with-text.webp";
+import logoForDark from "../../assets/logo-with-text-dark.png";
 
 const ResetPasswordClient = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -106,7 +107,20 @@ const ResetPasswordClient = () => {
                     <h2 className="text-2xl font-bold">Tracker</h2>
                 </div> */}
         <div className={`flex items-center gap-1.5 px-8 py-5 `}>
-          <Image src={logoWithSlogan} alt="Logo" width={120} height={60} />
+          <Image
+            src={logoWithSlogan}
+            alt="Logo"
+            width={120}
+            height={60}
+            className="hidden dark:block"
+          />
+          <Image
+            src={logoForDark}
+            alt="Logo"
+            width={120}
+            height={60}
+            className="dark:hidden"
+          />
         </div>
       </div>
       <div className=" h-[80vh] flex items-center justify-center">
