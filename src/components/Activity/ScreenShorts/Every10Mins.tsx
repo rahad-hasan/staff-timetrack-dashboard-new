@@ -17,7 +17,6 @@ import EmptyTableLogo from "@/assets/empty_table.svg";
 import ConfirmDialog from "@/components/Common/ConfirmDialog";
 import { deleteScreenshot } from "@/actions/screenshots/action";
 import { toast } from "sonner";
-import { useLogInUserStore } from "@/store/logInUserStore";
 import ScreenshotImage from "./ScreenshotImage";
 import {
   TTimelineDataSlot,
@@ -27,7 +26,6 @@ import {
 // import emptyActivity from "../../../assets/empty_activity.png";
 
 const Every10Mins = ({ data }: { data: TTimelineHourBlock[] }) => {
-  const logInUserData = useLogInUserStore((state) => state.logInUserData);
   const [selectedImages, setSelectedImages] = useState<TTimelineDetail[]>([]);
   const [selectedImage, setSelectedImage] = useState<TTimelineDetail>();
   const [modalOpen, setModalOpen] = useState<boolean>(false);
@@ -146,22 +144,18 @@ const Every10Mins = ({ data }: { data: TTimelineHourBlock[] }) => {
                         <p className="text-xs sm:text-sm font-normal text-subTextColor dark:text-slate-200">
                           {block?.format_from_time} - {block?.format_to_time}
                         </p>
-                        {(logInUserData?.role === "admin" ||
-                          logInUserData?.role === "manager" ||
-                          logInUserData?.role === "hr") && (
-                          <ConfirmDialog
-                            trigger={
-                              <div className="text-rose-600 dark:text-rose-500 cursor-pointer">
-                                <DeleteIcon size={16} />
-                              </div>
-                            }
-                            title="Delete the screenshot entry"
-                            description="Are you sure you want to delete? This action cannot be undone."
-                            confirmText="Confirm"
-                            cancelText="Cancel"
-                            onConfirm={() => handleDeleteScreenShot(block)}
-                          />
-                        )}
+                        <ConfirmDialog
+                          trigger={
+                            <div className="text-rose-600 dark:text-rose-500 cursor-pointer">
+                              <DeleteIcon size={16} />
+                            </div>
+                          }
+                          title="Delete the screenshot entry"
+                          description="Are you sure you want to delete? This action cannot be undone."
+                          confirmText="Confirm"
+                          cancelText="Cancel"
+                          onConfirm={() => handleDeleteScreenShot(block)}
+                        />
                       </div>
 
                       <div className="h-1.5 bg-borderColor dark:bg-darkPrimaryBg rounded-full">
