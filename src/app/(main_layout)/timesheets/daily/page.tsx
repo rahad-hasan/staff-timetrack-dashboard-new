@@ -4,7 +4,7 @@ import SelectProjectWrapper from "@/components/Common/SelectProjectWrapper";
 import SelectTimezoneDropDown from "@/components/Common/SelectTimezoneDropDown";
 import SelectUserWrapper from "@/components/Common/SelectUserWrapper";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
-import DailyTimeSheetsServer from "@/components/TimeSheets/AllTimesheets/DailyTimeSheets/DailyTimeSheetsServer";
+import DailyTimeSheetsServer from "@/app/(main_layout)/timesheets/daily/_components/DailyTimeSheetsServer";
 import DailyTimeSheetsSkeleton from "@/skeleton/timesheets/allTimesheets/DailyTimeSheetsSkeleton";
 import { ISearchParamsProps } from "@/types/type";
 import { Metadata } from "next";

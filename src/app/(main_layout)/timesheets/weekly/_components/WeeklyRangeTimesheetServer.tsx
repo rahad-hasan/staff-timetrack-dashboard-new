@@ -3,7 +3,7 @@ import { getDateBaseTimeEntry } from "@/actions/report/action";
 import SelectDateRange from "@/components/Common/SelectDateRange";
 import SelectTimezoneDropDown from "@/components/Common/SelectTimezoneDropDown";
 import SelectUserWrapper from "@/components/Common/SelectUserWrapper";
-import ReportWeeklyTimeSheet from "@/components/Report/TimeSheets/ReportWeeklyTimeSheet";
+import ReportWeeklyTimeSheet from "@/app/(main_layout)/timesheets/weekly/_components/ReportWeeklyTimeSheet";
 import { ISearchParamsProps } from "@/types/type";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
 import { addDays, format } from "date-fns";

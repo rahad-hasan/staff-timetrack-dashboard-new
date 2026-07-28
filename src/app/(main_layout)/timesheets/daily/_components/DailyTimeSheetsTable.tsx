@@ -16,7 +16,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../../../ui/table";
+} from "../../../../../components/ui/table";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import FilterButton from "@/components/Common/FilterButton";
 import CheckIcon from "@/components/Icons/CheckIcon";

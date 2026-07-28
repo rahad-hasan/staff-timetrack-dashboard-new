@@ -1,7 +1,7 @@
 import HeadingComponent from "@/components/Common/HeadingComponent";
-import ManualRequestTableServer from "@/components/TimeSheets/ManualRequests/ManualRequestTableServer";
+import ManualRequestTableServer from "@/app/(main_layout)/timesheets/manual-requests/_components/ManualRequestTableServer";
 import { ISearchParamsProps } from "@/types/type";
-import ManualRequestsHeroSection from "@/components/TimeSheets/ManualRequests/ManualRequestsHeroSection";
+import ManualRequestsHeroSection from "@/app/(main_layout)/timesheets/manual-requests/_components/ManualRequestsHeroSection";
 import { Suspense } from "react";
 import { Metadata } from "next";
 import SelectProjectWrapper from "@/components/Common/SelectProjectWrapper";

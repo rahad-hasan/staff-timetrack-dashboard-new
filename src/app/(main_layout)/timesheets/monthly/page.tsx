@@ -4,7 +4,7 @@ import MonthPicker from "@/components/Common/MonthPicker";
 import SelectProjectWrapper from "@/components/Common/SelectProjectWrapper";
 import SelectTimezoneDropDown from "@/components/Common/SelectTimezoneDropDown";
 import SelectUserWrapper from "@/components/Common/SelectUserWrapper";
-import MonthlyTimeSheetsServer from "@/components/TimeSheets/AllTimesheets/MonthlyTimeSheets/MonthlyTimeSheetsServer";
+import MonthlyTimeSheetsServer from "@/app/(main_layout)/timesheets/monthly/_components/MonthlyTimeSheetsServer";
 import MonthlyTimeSheetsCalendarSkeleton from "@/skeleton/timesheets/allTimesheets/MonthlyTimeSheetsCalendarSkeleton";
 import { ISearchParamsProps } from "@/types/type";
 import { Metadata } from "next";

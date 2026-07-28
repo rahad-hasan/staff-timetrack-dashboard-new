@@ -21,9 +21,7 @@ const MonthlyTimeSheetsServer = async ({
   });
 
   return (
-    <div>
-      <MonthlyTimeSheetsCalendar logInUserId={user?.id} data={result?.data} />
-    </div>
+    <MonthlyTimeSheetsCalendar logInUserId={user?.id} data={result?.data} />
   );
 };
 

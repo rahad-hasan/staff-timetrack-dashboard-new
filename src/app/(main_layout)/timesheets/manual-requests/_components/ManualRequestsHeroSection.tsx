@@ -4,7 +4,7 @@ import { Plus } from "lucide-react";
 import {
     Dialog,
 } from "@/components/ui/dialog";
-import AddManualTimeModal from "@/components/TimeSheets/ManualRequests/AddManualTimeModal";
+import AddManualTimeModal from "@/app/(main_layout)/timesheets/manual-requests/_components/AddManualTimeModal";
 import { useState } from "react";
 
 const ManualRequestsHeroSection = ({ isAdmin }: { isAdmin: boolean }) => {
