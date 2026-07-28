@@ -1,7 +1,7 @@
 import { getSingleProject } from "@/actions/projects/action";
 import { getTasks } from "@/actions/task/action";
-import SingleProject from "@/components/ProjectManagement/Projects/SingleProject/SingleProject";
 import { ISearchParams } from "@/types/type";
+import SingleProject from "./_components/SingleProject";
 interface PageProps {
     params: Promise<{ id: string }>;
     searchParams: ISearchParams

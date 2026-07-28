@@ -32,13 +32,13 @@ import EditIcon from "@/components/Icons/FilterOptionIcon/EditIcon";
 // import ArchiveIcon from "@/components/Icons/FilterOptionIcon/ArchiveIcon";
 // import MemberIcon from "@/components/Icons/FilterOptionIcon/MemberIcon";
 // import DeleteIcon from "@/components/Icons/DeleteIcon";
-import EditProjectModal from "./EditProjectModal";
 import { toast } from "sonner";
 import { editProject } from "@/actions/projects/action";
 import { useProjectFormStore } from "@/store/ProjectFormStore";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import { formatTZDayMonthYear } from "@/utils";
 import Link from "next/link";
+import EditProjectModal from "./EditProjectModal";
 
 
 const ProjectTable = ({ data }: { data: IProject[] }) => {

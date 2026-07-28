@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { getProjects } from "@/actions/projects/action";
 import AppPagination from "@/components/Common/AppPagination";
-import ProjectsPage from "@/components/ProjectManagement/Projects/ProjectsPage";
+import ProjectsPage from "@/app/(main_layout)/project-management/projects/_components/ProjectsPage";
 
 const ProjectsTableServer = async ({ searchParams }: any) => {
   const params = await searchParams;

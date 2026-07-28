@@ -9,7 +9,7 @@ import { useState } from "react";
 import SingleProjectMemberTable from "./SingleProjectMemberTable";
 import SingleProjectTask from "./SingleProjectTask";
 import { Dialog } from "@/components/ui/dialog";
-import EditProjectModal from "@/components/ProjectManagement/Projects/EditProjectModal";
+import EditProjectModal from "@/app/(main_layout)/project-management/projects/_components/EditProjectModal";
 import { formatTZDateDMY } from "@/utils";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import AppPagination from "@/components/Common/AppPagination";

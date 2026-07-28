@@ -6,7 +6,7 @@ import {
     Dialog,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import AddProjectModal from "@/components/ProjectManagement/Projects/AddProjectModal";
+import AddProjectModal from "@/app/(main_layout)/project-management/projects/_components/AddProjectModal";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";

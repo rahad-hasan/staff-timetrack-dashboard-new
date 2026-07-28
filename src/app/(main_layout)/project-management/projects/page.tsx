@@ -1,5 +1,5 @@
-import ProjectHeroSection from "@/components/ProjectManagement/Projects/ProjectHeroSection";
-import ProjectsTableServer from "@/components/ProjectManagement/Projects/ProjectsTableServer";
+import ProjectHeroSection from "@/app/(main_layout)/project-management/projects/_components/ProjectHeroSection";
+import ProjectsTableServer from "@/app/(main_layout)/project-management/projects/_components/ProjectsTableServer";
 import ProjectTableSkeleton from "@/skeleton/projectManagement/project/ProjectTableSkeleton";
 import { ISearchParamsProps } from "@/types/type";
 import { Metadata } from "next";
