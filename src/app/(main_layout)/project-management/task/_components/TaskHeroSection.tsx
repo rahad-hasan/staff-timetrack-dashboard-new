@@ -4,7 +4,7 @@ import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import SearchBar from "@/components/Common/SearchBar";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
-import CreateTaskModal from "@/components/ProjectManagement/Task/CreateTaskModal";
+import CreateTaskModal from "@/app/(main_layout)/project-management/task/_components/CreateTaskModal";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useLogInUserStore } from "@/store/logInUserStore";

@@ -13,9 +13,9 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 import { ArrowUpDown, Check, ChevronDown } from "lucide-react";
-import lowFlag from '../../../assets/dashboard/lowFlag.svg'
-import mediumFlag from '../../../assets/dashboard/mediumFlag.svg'
-import highFlag from '../../../assets/dashboard/highFlag.svg'
+import lowFlag from '../../../../../assets/dashboard/lowFlag.svg'
+import mediumFlag from '../../../../../assets/dashboard/mediumFlag.svg'
+import highFlag from '../../../../../assets/dashboard/highFlag.svg'
 // import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";

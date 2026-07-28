@@ -2,9 +2,9 @@
 import { Slider } from '@/components/ui/slider';
 import { Clock9, FileArchive, MessageSquareText } from 'lucide-react';
 import Image from 'next/image';
-import lowFlag from '../../../../assets/dashboard/lowFlag.svg'
-import mediumFlag from '../../../../assets/dashboard/mediumFlag.svg'
-import urgentFlag from '../../../../assets/dashboard/urgentFlag.svg'
+import lowFlag from '../../../../../../assets/dashboard/lowFlag.svg'
+import mediumFlag from '../../../../../../assets/dashboard/mediumFlag.svg'
+import urgentFlag from '../../../../../../assets/dashboard/urgentFlag.svg'
 
 const TaskCart = ({ task }: { task: any }) => {
 

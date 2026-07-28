@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import ClientsTableSkeleton from "@/skeleton/projectManagement/clients/ClientsTableSkeleton";
-import ClientTableServer from "@/components/ProjectManagement/Clients/ClientTableServer";
+import ClientTableServer from "@/app/(main_layout)/project-management/clients/_components/ClientTableServer";
 import { Suspense } from "react";
-import ClientHereSection from "@/components/ProjectManagement/Clients/ClientHereSection";
+import ClientHereSection from "@/app/(main_layout)/project-management/clients/_components/ClientHereSection";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

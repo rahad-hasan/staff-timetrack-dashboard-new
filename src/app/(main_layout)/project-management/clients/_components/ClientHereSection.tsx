@@ -10,7 +10,7 @@ import {
     Dialog,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import AddClientModal from "@/components/ProjectManagement/Clients/AddClientModal";;
+import AddClientModal from "@/app/(main_layout)/project-management/clients/_components/AddClientModal";;
 
 const ClientHereSection = () => {
     const [open, setOpen] = useState(false)

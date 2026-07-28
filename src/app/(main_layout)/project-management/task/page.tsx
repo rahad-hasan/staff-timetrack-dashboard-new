@@ -1,7 +1,7 @@
-import TaskHeroSection from "@/components/ProjectManagement/Task/TaskHeroSection";
+import TaskHeroSection from "@/app/(main_layout)/project-management/task/_components/TaskHeroSection";
 import { ISearchParamsProps } from "@/types/type";
 import { Suspense } from "react";
-import TaskServer from "@/components/ProjectManagement/Task/TaskServer";
+import TaskServer from "@/app/(main_layout)/project-management/task/_components/TaskServer";
 import KanbanDndListSkeleton from "@/skeleton/projectManagement/task/KanbanDndListSkeleton";
 import TaskTableSkeleton from "@/skeleton/projectManagement/task/TaskTableSkeleton";
 import { Metadata } from "next";
