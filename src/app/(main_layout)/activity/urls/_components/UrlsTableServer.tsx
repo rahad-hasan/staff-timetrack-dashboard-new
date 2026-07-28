@@ -15,9 +15,7 @@ const UrlsTableServer = async ({ searchParams }: ISearchParamsProps) => {
   });
 
   return (
-    <>
-      <UrlsTable data={result?.data?.urls} />
-    </>
+    <UrlsTable data={result?.data?.urls} />
   );
 };
 

@@ -1,7 +1,7 @@
 import { Settings } from "lucide-react";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import HeadingComponent from "@/components/Common/HeadingComponent";
-import UrlsTableServer from "@/components/Activity/Urls/UrlsTableServer";
+import UrlsTableServer from "@/app/(main_layout)/activity/urls/_components/UrlsTableServer";
 import UrlsTableSkeleton from "@/skeleton/activity/url/UrlsTableSkeleton";
 import { Suspense } from "react";
 import { ISearchParamsProps } from "@/types/type";

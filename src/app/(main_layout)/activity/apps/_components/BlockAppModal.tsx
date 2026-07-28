@@ -1,5 +1,5 @@
 import { DialogClose, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import BlockLogo from '../../../assets/activity/blockAppUrl.svg'
+import BlockLogo from '../../../../../assets/activity/blockAppUrl.svg'
 import Image from "next/image";
 const BlockAppModal = () => {
     return (

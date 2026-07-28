@@ -1,7 +1,7 @@
 import { Settings } from "lucide-react";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import HeadingComponent from "@/components/Common/HeadingComponent";
-import AppTableServer from "@/components/Activity/App/AppTableServer";
+import AppTableServer from "@/app/(main_layout)/activity/apps/_components/AppTableServer";
 import { ISearchParamsProps } from "@/types/type";
 import { Suspense } from "react";
 import AppNameTableSkeleton from "@/skeleton/activity/app/AppNameTableSkeleton";
@@ -31,9 +31,7 @@ const App = async ({ searchParams }: ISearchParamsProps) => {
                     </button> 
                 */}
           <button
-            className={`px-2.5 py-2 flex items-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 text-gray-600 dark:border-darkBorder hover:text-textGray border border-borderColor "
-                                `}
-          >
+            className={`px-2.5 py-2 flex items-center gap-2 font-medium transition-all cursor-pointer rounded-lg m-0.5 text-gray-600 dark:border-darkBorder hover:text-textGray border border-borderColor`}>
             <Settings className=" text-primary" size={20} />
           </button>
         </div>

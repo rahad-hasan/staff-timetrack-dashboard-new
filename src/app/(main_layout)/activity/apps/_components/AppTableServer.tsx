@@ -15,9 +15,7 @@ const AppTableServer = async ({ searchParams }: ISearchParamsProps) => {
         project_id: params.project_id,
     });
     return (
-        <>
-            <AppNameTable data={result?.data?.apps} />
-        </>
+        <AppNameTable data={result?.data?.apps} />
     );
 };
 
