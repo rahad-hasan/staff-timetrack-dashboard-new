@@ -5,8 +5,8 @@ import { format } from "date-fns";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
 
 const AllScreenShortsServer = async ({ searchParams }: ISearchParamsProps) => {
-    const user = await getDecodedUser();
-    const userId = user?.id;
+  const user = await getDecodedUser();
+  const userId = user?.id;
   const currentDate = format(new Date(), "yyyy-MM-dd");
   const params = await searchParams;
 
@@ -20,11 +20,7 @@ const AllScreenShortsServer = async ({ searchParams }: ISearchParamsProps) => {
   // console.log("All screenshots loaded", result);
 
   return (
-    <div>
-
-        {<AllScreenShorts data={result?.data}></AllScreenShorts>}
-
-    </div>
+    <AllScreenShorts data={result?.data}></AllScreenShorts>
   );
 };
 
