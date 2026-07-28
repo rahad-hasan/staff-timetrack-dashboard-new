@@ -1337,6 +1337,78 @@ export interface MicrosoftEventsListItem {
 }
 
 /* =========================
+ * App Integrations (monday.com — ClickUp/Jira/Asana/Slack will follow)
+ * ========================= */
+export type IntegrationConnectionStatus =
+  | "connected"
+  | "disconnected"
+  | "expired"
+  | "revoked";
+
+export interface IntegrationStatusResponse {
+  id?: number;
+  provider: string;
+  type: string;
+  status: IntegrationConnectionStatus;
+  connected: boolean;
+  provider_email?: string | null;
+  external_account_id?: string | null;
+  metadata?: {
+    account_user_id?: string | null;
+    account_user_name?: string | null;
+  } | null;
+  scope?: string[];
+  last_synced_at?: string | null;
+  disconnected_at?: string | null;
+}
+
+export interface MondayBoard {
+  id: string;
+  name: string;
+  description: string | null;
+  items_count: number;
+  workspace: { id: string; name: string } | null;
+  already_imported: boolean;
+  project_id: number | null;
+}
+
+export interface MondayImportPayload {
+  board_ids: string[];
+  start_date?: string;
+  deadline?: string;
+}
+
+export interface MondayImportedBoard {
+  board_id: string;
+  board_name: string;
+  project_id: number;
+  created: boolean;
+  tasks_created: number;
+  tasks_updated: number;
+  tasks_skipped: number;
+  items_truncated: boolean;
+  webhooks_registered: boolean;
+}
+
+export interface MondaySkippedBoard {
+  board_id: string;
+  reason: string;
+}
+
+export interface MondayUnmatchedUser {
+  id: string;
+  name: string;
+  email: string;
+}
+
+export interface MondayImportResult {
+  imported: MondayImportedBoard[];
+  skipped_boards: MondaySkippedBoard[];
+  unmatched_monday_users: MondayUnmatchedUser[];
+  remaining_board_ids?: string[];
+}
+
+/* =========================
  * Event Management
  * ========================= */
 export type EventConferenceProvider = "google_meet" | "microsoft_teams" | null;

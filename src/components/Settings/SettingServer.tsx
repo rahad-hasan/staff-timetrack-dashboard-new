@@ -3,12 +3,16 @@ import Configuration from "@/components/Settings/Configuration";
 import Profile from "@/components/Settings/Profile";
 // import Subscription from "@/components/Settings/Subscription";
 import { getCompanyInfo } from "@/actions/settings/action";
+import { getDecodedUser } from "@/utils/decodedLogInUser";
+import AppIntegrations from "./AppIntegrations";
 import ChangePassword from "./ChangePassword";
 
 const SettingServer = async ({ searchParams }: ISearchParamsProps) => {
     const params = await searchParams
     const activeTab = params.tab ?? "Profile";
     const result = await getCompanyInfo();
+    const currentUser = await getDecodedUser();
+    const isAdmin = currentUser?.role === "admin";
 
     return (
         <div>
@@ -19,6 +23,10 @@ const SettingServer = async ({ searchParams }: ISearchParamsProps) => {
             {
                 activeTab === "Configuration" &&
                 <Configuration data={result?.data}></Configuration>
+            }
+            {
+                activeTab === "App Integrations" && isAdmin &&
+                <AppIntegrations app={typeof params.app === "string" ? params.app : undefined}></AppIntegrations>
             }
             {
                 activeTab === "Change Password" &&

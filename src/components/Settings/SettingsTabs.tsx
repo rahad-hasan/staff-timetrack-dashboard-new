@@ -3,20 +3,23 @@ import NotificationIcon from "@/components/Icons/NotificationIcon";
 import ProfilePlusIcon from "@/components/Icons/ProfilePlusIcon";
 import { useLogInUserStore } from "@/store/logInUserStore";
 // import SubscriptionManagementIcon from "@/components/Icons/SubscriptionManagementIcon"
-import { Lock } from "lucide-react";
+import { Blocks, Lock } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 const SettingsTabs = () => {
     const logInUserData = useLogInUserStore(state => state.logInUserData);
-    type Tab = "Profile" | "Configuration" | "Change Password"
-    
-    const roleBasedTabs = (logInUserData?.role === 'admin') ? ["Profile", "Configuration", "Change Password"] : ["Profile", "Change Password"]
+    type Tab = "Profile" | "Configuration" | "App Integrations" | "Change Password"
+
+    const roleBasedTabs = (logInUserData?.role === 'admin') ? ["Profile", "Configuration", "App Integrations", "Change Password"] : ["Profile", "Change Password"]
 
     const searchParams = useSearchParams();
     const router = useRouter();
     const activeTab = (searchParams.get("tab") as Tab) ?? "Profile";
     const setTab = (tab: Tab) => {
         const params = new URLSearchParams(searchParams.toString());
+        // `app` (open integration detail) only makes sense inside the
+        // App Integrations tab — drop it so re-entering shows the hub
+        params.delete("app");
         params.set("tab", tab);
         router.push(`?${params.toString()}`);
     };
@@ -27,7 +30,7 @@ const SettingsTabs = () => {
                 // {["Profile", "Configuration", "User Role", "Tracking", "Subscription Management"].map((tab) => (
                 <button
                     key={tab}
-                    onClick={() => setTab(tab as "Profile" | "Configuration" | "Change Password")}
+                    onClick={() => setTab(tab as Tab)}
                     className={`flex items-center gap-1.5 px-2 md:px-4 py-2 h-10 text-xs md:text-sm font-medium outline outline-borderColor dark:outline-darkBorder transition-all cursor-pointer rounded-lg m-0.5 ${activeTab === tab
                         ? "bg-primary/7 dark:bg-darkSecondaryBg text-primary outline-none"
                         : "text-subTextColor hover:text-gray-800 dark:text-darkTextPrimary "
@@ -40,6 +43,10 @@ const SettingsTabs = () => {
                     {
                         tab === "Configuration" &&
                         <NotificationIcon size={16}></NotificationIcon>
+                    }
+                    {
+                        tab === "App Integrations" &&
+                        <Blocks size={16}></Blocks>
                     }
                     {
                         tab === "Change Password" &&

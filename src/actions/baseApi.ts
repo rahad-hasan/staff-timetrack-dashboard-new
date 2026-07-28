@@ -15,6 +15,13 @@ interface BaseApiOptions {
   headers?: HeadersInit;
   cache?: RequestCache;
   revalidate?: number;
+  /**
+   * Integration endpoints (e.g. /monday/*) answer 401 when the *provider*
+   * revokes the company token — that is not a session expiry. When the 401
+   * body's message starts with this prefix the error envelope is returned
+   * to the caller instead of redirecting to /session-expired.
+   */
+  providerAuthPrefix?: string;
 }
 
 /* ---------------- helpers ---------------- */
@@ -57,6 +64,7 @@ export async function baseApi<T = any>(
     cache = "force-cache",
     // cache = "no-cache",
     revalidate = 60,
+    providerAuthPrefix,
   } = options;
 
   const fullUrl = url.startsWith("http")
@@ -108,6 +116,25 @@ export async function baseApi<T = any>(
   //     redirect(`/api/auth/refresh?redirect=${encodeURIComponent(currentPath)}`);
   // }
   if (res.status === 401) {
+    if (providerAuthPrefix) {
+      let body401: any = null;
+      try {
+        body401 = await res.clone().json();
+      } catch {
+        body401 = null;
+      }
+      if (
+        typeof body401?.message === "string" &&
+        body401.message.startsWith(providerAuthPrefix)
+      ) {
+        return {
+          success: false,
+          statusCode: 401,
+          message: body401.message,
+          errorMessages: body401?.errorMessages,
+        } as T;
+      }
+    }
     // const cookieStore = await cookies();
     // cookieStore.delete("accessToken");
     redirect("/session-expired");
