@@ -1,11 +1,11 @@
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import { ISearchParamsProps } from "@/types/type";
-import AttendanceServer from "@/components/Report/Attendance/AttendanceServer";
 import { Suspense } from "react";
 import { Metadata } from "next";
 import { format } from "date-fns";
 import { getAttendance } from "@/actions/report/action";
 import AttendanceTableSkeleton from "@/skeleton/report/Attendance/AttendanceTableSkeleton";
+import AttendanceServer from "./_components/AttendanceServer";
 
 export const metadata: Metadata = {
   title: "Staff Time Tracker Attendance",

@@ -1,9 +1,9 @@
 "use client"
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import AttendanceTable from "@/components/Report/Attendance/AttendanceTable";
 import { useState } from "react";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import AttendanceHeroSearch from "./AttendanceHeroSearch";
+import AttendanceTable from "./AttendanceTable";
 
 const AttendanceServer = ({ attendanceListData }: any) => {
     const [searchTerm, setSearchTerm] = useState("");

@@ -1,8 +1,8 @@
 "use client"
 import { Suspense } from "react";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
-import TotalHoursPerDayChart from "@/components/Report/TimeAndActivities/TotalHoursPerDayChart";
-import TimeAndActivitiesTable from "@/components/Report/TimeAndActivities/TimeAndActivitiesTable";
+import TotalHoursPerDayChart from "@/app/(main_layout)/report/time-and-activities/_components/TotalHoursPerDayChart";
+import TimeAndActivitiesTable from "@/app/(main_layout)/report/time-and-activities/_components/TimeAndActivitiesTable";
 import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 // import TimeAndActivitiesTableSkeleton from "@/skeleton/report/timeAndActivities/TimeAndActivitiesTableSkeleton";

@@ -1,8 +1,8 @@
 import { getWorkReport } from "@/actions/report/action";
 import SelectUserWrapper from "@/components/Common/SelectUserWrapper";
 import CalendarIcon from "@/components/Icons/CalendarIcon";
-import AllowOvertimeCheckbox from "@/components/Report/WorkReport/AllowOvertimeCheckbox";
-import WorkReportTable from "@/components/Report/WorkReport/WorkReportTable";
+import AllowOvertimeCheckbox from "@/app/(main_layout)/report/work-report/_components/AllowOvertimeCheckbox";
+import WorkReportTable from "@/app/(main_layout)/report/work-report/_components/WorkReportTable";
 import { ISearchParamsProps, IUserWorkReport } from "@/types/type";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
 import { Clock, AlertCircle } from "lucide-react";
