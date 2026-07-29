@@ -2,8 +2,8 @@
 import HeadingComponent from "@/components/Common/HeadingComponent";
 // import TimeTrackingIcon from "@/components/Icons/TimeTrackingIcon";
 // import UserRoleIcon from "@/components/Icons/UserRoleIcon";
-import SettingServer from "@/components/Settings/SettingServer";
-import SettingsTabs from "@/components/Settings/SettingsTabs";
+import SettingServer from "@/app/(main_layout)/settings/_components/SettingServer";
+import SettingsTabs from "@/app/(main_layout)/settings/_components/SettingsTabs";
 import { ISearchParamsProps } from "@/types/type";
 import { Metadata } from "next";
 import { Suspense } from "react";

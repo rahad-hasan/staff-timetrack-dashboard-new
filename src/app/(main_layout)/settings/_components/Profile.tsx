@@ -18,11 +18,11 @@ import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Check, ChevronsUpDown, Phone, Upload } from "lucide-react";
-import profileAvatar from '../../assets/profile_image_avatar.webp';
+import profileAvatar from '../../../../assets/profile_image_avatar.webp';
 import { Label } from "@/components/ui/label";
-import UserIcon from "../Icons/UserIcon";
-import JobIcon from "../Icons/JobIcon";
-import EmailIcon from "../Icons/EmailIcon";
+import UserIcon from "../../../../components/Icons/UserIcon";
+import JobIcon from "../../../../components/Icons/JobIcon";
+import EmailIcon from "../../../../components/Icons/EmailIcon";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import { uploadProfileInfo, uploadProfileImage } from "@/actions/auth/action";
 import { toast } from "sonner";
@@ -34,7 +34,7 @@ import {
     CommandItem,
     CommandList,
 } from "@/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "../../../../components/ui/popover";
 import { popularTimeZoneList } from "@/utils/TimeZoneList";
 import { cn } from "@/lib/utils";
 

@@ -12,10 +12,10 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
-import { Input } from "../ui/input";
+import { Input } from "../../../../components/ui/input";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Button } from "../ui/button";
+import { Button } from "../../../../components/ui/button";
 import { changePassword } from "@/actions/auth/action";
 import { Eye, EyeOff } from "lucide-react";
 

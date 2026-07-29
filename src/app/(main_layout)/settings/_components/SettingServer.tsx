@@ -1,6 +1,6 @@
 import { ISearchParamsProps } from "@/types/type";
-import Configuration from "@/components/Settings/Configuration";
-import Profile from "@/components/Settings/Profile";
+import Configuration from "@/app/(main_layout)/settings/_components/Configuration";
+import Profile from "@/app/(main_layout)/settings/_components/Profile";
 // import Subscription from "@/components/Settings/Subscription";
 import { getCompanyInfo } from "@/actions/settings/action";
 import ChangePassword from "./ChangePassword";
