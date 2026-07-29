@@ -37,7 +37,7 @@ import {
   monthName,
 } from "@/lib/payroll";
 import { PayrollRun } from "@/types/payroll";
-import { PayrollRunStatusBadge } from "./PayrollBadges";
+import { PayrollRunStatusBadge } from "../../_components/PayrollBadges";
 import { generatePayrollSchema } from "@/zod/schema";
 
 type FormValues = z.infer<typeof generatePayrollSchema>;

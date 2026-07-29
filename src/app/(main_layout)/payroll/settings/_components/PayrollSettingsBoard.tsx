@@ -42,9 +42,9 @@ import {
   PayrollSummary,
 } from "@/types/payroll";
 import { IMeta } from "@/types/type";
-import PayrollEmptyState from "./PayrollEmptyState";
+import PayrollEmptyState from "../../_components/PayrollEmptyState";
 import PayrollProfileFormDialog from "./PayrollProfileFormDialog";
-import { ProfileActiveBadge, SalaryTypeBadge } from "./PayrollBadges";
+import { ProfileActiveBadge, SalaryTypeBadge } from "../../_components/PayrollBadges";
 
 type Tab = "all" | "active" | "inactive" | "not-configured";
 

@@ -34,9 +34,9 @@ import {
   RUN_STATUS_LABELS,
 } from "@/types/payroll";
 import { IMeta } from "@/types/type";
+import PayrollEmptyState from "../../_components/PayrollEmptyState";
+import { PayrollRunStatusBadge } from "../../_components/PayrollBadges";
 import { downloadPayrollExport } from "./payrollExport";
-import PayrollEmptyState from "./PayrollEmptyState";
-import { PayrollRunStatusBadge } from "./PayrollBadges";
 
 interface PayrollRunsListProps {
   runs: PayrollRun[];

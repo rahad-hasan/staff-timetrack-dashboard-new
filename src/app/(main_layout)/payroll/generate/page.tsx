@@ -1,9 +1,9 @@
 import { Metadata } from "next";
 
 import HeadingComponent from "@/components/Common/HeadingComponent";
-import PayrollAccessDenied from "@/components/Payroll/PayrollAccessDenied";
-import PayrollGenerateForm from "@/components/Payroll/PayrollGenerateForm";
-import PayrollSubNav from "@/components/Payroll/PayrollSubNav";
+import PayrollAccessDenied from "@/app/(main_layout)/payroll/_components/PayrollAccessDenied";
+import PayrollGenerateForm from "@/app/(main_layout)/payroll/generate/_components/PayrollGenerateForm";
+import PayrollSubNav from "@/app/(main_layout)/payroll/_components/PayrollSubNav";
 import { canManagePayroll } from "@/lib/payroll";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
 

@@ -15,7 +15,7 @@ import { formatPayrollHours, formatPayrollMoney } from "@/lib/payroll";
 import { EmployeePayroll } from "@/types/payroll";
 import PayrollAdjustmentLines, {
   PayrollAmountRow,
-} from "./PayrollAdjustmentLines";
+} from "../../../my-payslips/_components/PayrollAdjustmentLines";
 
 interface PayrollCalculationBreakdownProps {
   item: EmployeePayroll;

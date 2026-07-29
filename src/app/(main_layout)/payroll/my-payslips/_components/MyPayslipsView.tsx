@@ -30,8 +30,8 @@ import { EmployeePayroll } from "@/types/payroll";
 import PayrollAdjustmentLines, {
   PayrollAmountRow,
 } from "./PayrollAdjustmentLines";
-import { PayrollRunStatusBadge, SalaryTypeBadge } from "./PayrollBadges";
-import { downloadPayslipPdf } from "./payslipPdfExport";
+import { PayrollRunStatusBadge, SalaryTypeBadge } from "../../_components/PayrollBadges";
+import { downloadPayslipPdf } from "../../_components/payslipPdfExport";
 
 interface MyPayslipsViewProps {
   items: EmployeePayroll[];

@@ -2,9 +2,9 @@ import { Metadata } from "next";
 import { Suspense } from "react";
 
 import HeadingComponent from "@/components/Common/HeadingComponent";
-import PayrollAccessDenied from "@/components/Payroll/PayrollAccessDenied";
-import PayrollRunsServer from "@/components/Payroll/PayrollRunsServer";
-import PayrollSubNav from "@/components/Payroll/PayrollSubNav";
+import PayrollAccessDenied from "@/app/(main_layout)/payroll/_components/PayrollAccessDenied";
+import PayrollRunsServer from "@/app/(main_layout)/payroll/runs/_components/PayrollRunsServer";
+import PayrollSubNav from "@/app/(main_layout)/payroll/_components/PayrollSubNav";
 import PayrollSkeleton from "@/skeleton/payroll/PayrollSkeleton";
 import { ISearchParamsProps } from "@/types/type";
 import { canManagePayroll } from "@/lib/payroll";

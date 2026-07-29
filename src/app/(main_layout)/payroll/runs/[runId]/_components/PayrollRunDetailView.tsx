@@ -53,11 +53,11 @@ import { EmployeePayroll, PayrollRun } from "@/types/payroll";
 import { IMeta } from "@/types/type";
 import PayrollAdjustmentsDialog from "./PayrollAdjustmentsDialog";
 import PayrollCalculationBreakdown from "./PayrollCalculationBreakdown";
-import PayrollEmptyState from "./PayrollEmptyState";
-import PayrollSubNav from "./PayrollSubNav";
-import { PayrollRunStatusBadge, SalaryTypeBadge } from "./PayrollBadges";
-import { downloadPayrollExport } from "./payrollExport";
-import { downloadPayrollPdf } from "./payrollPdfExport";
+import PayrollEmptyState from "../../../_components/PayrollEmptyState";
+import PayrollSubNav from "../../../_components/PayrollSubNav";
+import { PayrollRunStatusBadge, SalaryTypeBadge } from "../../../_components/PayrollBadges";
+import { downloadPayrollPdf } from "../../../_components/payrollPdfExport";
+import { downloadPayrollExport } from "../../_components/payrollExport";
 
 interface PayrollRunDetailViewProps {
   run: PayrollRun;

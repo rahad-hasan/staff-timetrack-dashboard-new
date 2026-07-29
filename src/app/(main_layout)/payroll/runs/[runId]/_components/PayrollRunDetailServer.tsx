@@ -3,7 +3,7 @@ import { ChevronLeft } from "lucide-react";
 
 import { getPayrollRun } from "@/actions/payroll/action";
 import HeadingComponent from "@/components/Common/HeadingComponent";
-import PayrollSubNav from "@/components/Payroll/PayrollSubNav";
+import PayrollSubNav from "@/app/(main_layout)/payroll/_components/PayrollSubNav";
 import { Button } from "@/components/ui/button";
 import { canManagePayroll } from "@/lib/payroll";
 import { getDecodedUser } from "@/utils/decodedLogInUser";

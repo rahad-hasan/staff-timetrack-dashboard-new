@@ -6,7 +6,7 @@ import {
 import { ISearchParamsProps } from "@/types/type";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
 import { canManagePayroll } from "@/lib/payroll";
-import PayrollAccessDenied from "./PayrollAccessDenied";
+import PayrollAccessDenied from "../../_components/PayrollAccessDenied";
 import PayrollSettingsBoard from "./PayrollSettingsBoard";
 
 const parseBool = (value: unknown): boolean | undefined => {

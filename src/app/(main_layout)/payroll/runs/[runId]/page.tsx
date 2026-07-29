@@ -2,8 +2,8 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
-import PayrollAccessDenied from "@/components/Payroll/PayrollAccessDenied";
-import PayrollRunDetailServer from "@/components/Payroll/PayrollRunDetailServer";
+import PayrollAccessDenied from "@/app/(main_layout)/payroll/_components/PayrollAccessDenied";
+import PayrollRunDetailServer from "@/app/(main_layout)/payroll/runs/[runId]/_components/PayrollRunDetailServer";
 import PayrollSkeleton from "@/skeleton/payroll/PayrollSkeleton";
 import { canManagePayroll } from "@/lib/payroll";
 import { getDecodedUser } from "@/utils/decodedLogInUser";

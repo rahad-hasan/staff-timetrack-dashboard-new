@@ -6,11 +6,11 @@ import { ChevronLeft, Clock, User } from "lucide-react";
 
 import { getPayrollProfileForUser } from "@/actions/payroll/action";
 import HeadingComponent from "@/components/Common/HeadingComponent";
-import PayrollAccessDenied from "@/components/Payroll/PayrollAccessDenied";
+import PayrollAccessDenied from "@/app/(main_layout)/payroll/_components/PayrollAccessDenied";
 import {
   ProfileActiveBadge,
   SalaryTypeBadge,
-} from "@/components/Payroll/PayrollBadges";
+} from "@/app/(main_layout)/payroll/_components/PayrollBadges";
 import { Button } from "@/components/ui/button";
 import { canManagePayroll, formatPayrollMoney } from "@/lib/payroll";
 import { getDecodedUser } from "@/utils/decodedLogInUser";

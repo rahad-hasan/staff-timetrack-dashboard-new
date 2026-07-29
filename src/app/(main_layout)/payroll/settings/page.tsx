@@ -2,8 +2,8 @@ import { Metadata } from "next";
 import { Suspense } from "react";
 
 import HeadingComponent from "@/components/Common/HeadingComponent";
-import PayrollSubNav from "@/components/Payroll/PayrollSubNav";
-import PayrollSettingsServer from "@/components/Payroll/PayrollSettingsServer";
+import PayrollSubNav from "@/app/(main_layout)/payroll/_components/PayrollSubNav";
+import PayrollSettingsServer from "@/app/(main_layout)/payroll/settings/_components/PayrollSettingsServer";
 import PayrollSkeleton from "@/skeleton/payroll/PayrollSkeleton";
 import { ISearchParamsProps } from "@/types/type";
 
