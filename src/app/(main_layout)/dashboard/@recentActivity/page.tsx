@@ -95,7 +95,7 @@
 // export default RecentActivity;
 
 import { getCoreMembers } from "@/actions/dashboard/action";
-import CoreWorkMembers from "@/components/Dashboard/insights/CoreWorkMembers";
+import CoreWorkMembers from "@/app/(main_layout)/dashboard/@recentActivity/_components/CoreWorkMembers";
 import { ISearchParamsProps } from "@/types/type";
 
 const CoreWorkMember = async ({ searchParams }: ISearchParamsProps) => {
@@ -106,9 +106,7 @@ const CoreWorkMember = async ({ searchParams }: ISearchParamsProps) => {
     limit: 3,
   });
   return (
-    <div>
-      <CoreWorkMembers data={result?.data?.members}></CoreWorkMembers>
-    </div>
+    <CoreWorkMembers data={result?.data?.members}></CoreWorkMembers>
   );
 };
 

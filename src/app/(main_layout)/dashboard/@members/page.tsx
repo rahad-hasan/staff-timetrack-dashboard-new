@@ -1,5 +1,5 @@
 import { getDashboardMembersStats } from "@/actions/dashboard/action";
-import DashboardMembersTable from "@/components/Dashboard/Members/DashboardMembersTable";
+import DashboardMembersTable from "@/app/(main_layout)/dashboard/@members/_components/DashboardMembersTable";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
 
 const DashboardMembersTableServer = async () => {
@@ -17,9 +17,7 @@ const DashboardMembersTableServer = async () => {
     });
 
     return (
-        <div>
-            <DashboardMembersTable data={result?.data?.members}></DashboardMembersTable>
-        </div>
+        <DashboardMembersTable data={result?.data?.members}></DashboardMembersTable>
     );
 };
 

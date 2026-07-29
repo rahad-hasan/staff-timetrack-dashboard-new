@@ -1,5 +1,5 @@
 import { getTasks } from "@/actions/task/action";
-import DashboardTaskTable from "@/components/Dashboard/TaskListTable/DashboardTaskTable";
+import DashboardTaskTable from "@/app/(main_layout)/dashboard/@taskListTable/_components/DashboardTaskTable";
 
 const DashboardTaskTableServer = async () => {
     const result = await getTasks({
@@ -7,9 +7,7 @@ const DashboardTaskTableServer = async () => {
     });
 
     return (
-        <div>
-            <DashboardTaskTable data={result.data}></DashboardTaskTable>
-        </div>
+        <DashboardTaskTable data={result.data}></DashboardTaskTable>
     );
 };
 

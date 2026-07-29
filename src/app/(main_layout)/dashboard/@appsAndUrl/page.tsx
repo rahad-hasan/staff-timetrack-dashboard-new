@@ -1,5 +1,5 @@
 import { getDashboardAppsAndUrls } from "@/actions/dashboard/action";
-import AppsAndUrl from "@/components/Dashboard/AppAndUrl/AppsAndUrl";
+import AppsAndUrl from "@/app/(main_layout)/dashboard/@appsAndUrl/_components/AppsAndUrl";
 import { ISearchParamsProps } from "@/types/type";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
 
@@ -21,9 +21,7 @@ const AppsAndUrlServer = async ({ searchParams }: ISearchParamsProps) => {
     const finalData = result?.data?.row ? result?.data?.row : result?.data
 
     return (
-        <div>
-            <AppsAndUrl data={finalData}></AppsAndUrl>
-        </div>
+        <AppsAndUrl data={finalData}></AppsAndUrl>
     );
 };
 

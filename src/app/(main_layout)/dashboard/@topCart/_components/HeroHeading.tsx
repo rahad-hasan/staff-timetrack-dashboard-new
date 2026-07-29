@@ -1,6 +1,6 @@
 import { ISearchParamsProps } from "@/types/type";
-import HeadingComponent from '../Common/HeadingComponent';
-import DayWeekMonthSelection from '../Common/DayWeekMonthSelection';
+import HeadingComponent from '../../../../../components/Common/HeadingComponent';
+import DayWeekMonthSelection from '../../../../../components/Common/DayWeekMonthSelection';
 
 const HeroHeading = async ({ searchParams }: ISearchParamsProps) => {
     const params = await searchParams;

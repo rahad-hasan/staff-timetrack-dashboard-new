@@ -1,5 +1,5 @@
 import FilterButton from "@/components/Common/FilterButton";
-import OverallActivityChart from "@/components/Dashboard/insights/OverallActivityChart";
+import OverallActivityChart from "@/app/(main_layout)/dashboard/@insights/_components/OverallActivityChart";
 import { Button } from "@/components/ui/button";
 import { Info } from "lucide-react";
 

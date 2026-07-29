@@ -1,7 +1,7 @@
 "use client"
 
 import { ColumnDef, flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table";
-import SmallChart from "@/components/Dashboard/SmallChart/SmallChart";
+import SmallChart from "@/app/(main_layout)/dashboard/@members/_components/SmallChart";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Link from "next/link";

@@ -1,5 +1,5 @@
 import { getDashboardInsights } from '@/actions/dashboard/action';
-import Insights from '@/components/Dashboard/insights/Insights';
+import Insights from '@/app/(main_layout)/dashboard/@insights/_components/Insights';
 import { ISearchParamsProps } from '@/types/type';
 
 const InsightsServer = async ({ searchParams }: ISearchParamsProps) => {
@@ -10,9 +10,7 @@ const InsightsServer = async ({ searchParams }: ISearchParamsProps) => {
   });
 
   return (
-    <div>
-      <Insights data={result?.data}></Insights>
-    </div>
+    <Insights data={result?.data}></Insights>
   );
 };
 

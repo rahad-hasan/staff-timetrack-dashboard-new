@@ -1,5 +1,5 @@
 import { getProjects } from "@/actions/projects/action";
-import DashboardProjectTable from "@/components/Dashboard/ProjectListTable/DashboardProjectTable";
+import DashboardProjectTable from "@/app/(main_layout)/dashboard/@projectListTable/_components/DashboardProjectTable";
 
 const DashboardProjectTableServer = async() => {
     const result = await getProjects({
@@ -7,9 +7,7 @@ const DashboardProjectTableServer = async() => {
     });
 
     return (
-        <div>
-            <DashboardProjectTable data={result?.data}></DashboardProjectTable>
-        </div>
+        <DashboardProjectTable data={result?.data}></DashboardProjectTable>
     );
 };
 

@@ -1,7 +1,7 @@
 import { TrendingDown, TrendingUp } from "lucide-react";
 import { IDashboardStats, ISearchParamsProps } from "@/types/type";
 import { getDashboardStats } from "@/actions/dashboard/action";
-import HeroHeading from "@/components/Dashboard/HeroHeading";
+import HeroHeading from "@/app/(main_layout)/dashboard/@topCart/_components/HeroHeading";
 import WeeklyActivityColoredIcon from "@/components/ColoredIcon/HeroSectionIcon/WeeklyActivityColoredIcon";
 import WeeklyWorkColoredIcon from "@/components/ColoredIcon/HeroSectionIcon/WeeklyWorkColoredIcon";
 import TotalProjectColoredIcon from "@/components/ColoredIcon/HeroSectionIcon/TotalProjectColoredIcon";
