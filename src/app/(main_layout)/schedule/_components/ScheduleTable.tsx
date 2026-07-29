@@ -19,18 +19,18 @@ import {
 } from "@/components/ui/table";
 import { useState } from "react";
 import { ArrowUpDown } from "lucide-react";
-import EmptyTableRow from "../Common/EmptyTableRow";
+import EmptyTableRow from "../../../../components/Common/EmptyTableRow";
 import { ISchedules } from "@/types/type";
-import FilterButton from "../Common/FilterButton";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import EditIcon from "../Icons/FilterOptionIcon/EditIcon";
-import { Dialog } from "../ui/dialog";
+import FilterButton from "../../../../components/Common/FilterButton";
+import { Popover, PopoverContent, PopoverTrigger } from "../../../../components/ui/popover";
+import EditIcon from "../../../../components/Icons/FilterOptionIcon/EditIcon";
+import { Dialog } from "../../../../components/ui/dialog";
 import EditScheduleModal from "./EditScheduleModal";
 import Link from "next/link";
-import DeleteIcon from "../Icons/DeleteIcon";
+import DeleteIcon from "../../../../components/Icons/DeleteIcon";
 import { deleteSchedule } from "@/actions/schedule/action";
 import { toast } from "sonner";
-import ConfirmDialog from "../Common/ConfirmDialog";
+import ConfirmDialog from "../../../../components/Common/ConfirmDialog";
 
 const ScheduleTable = ({ data }: { data: ISchedules[] }) => {
     const [sorting, setSorting] = useState<SortingState>([]);

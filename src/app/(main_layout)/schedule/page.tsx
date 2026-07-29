@@ -1,6 +1,6 @@
 import { getAllSchedule } from "@/actions/schedule/action";
-import HeroSchedule from "@/components/Schedule/HeroSchedule";
-import ScheduleTable from "@/components/Schedule/ScheduleTable";
+import HeroSchedule from "@/app/(main_layout)/schedule/_components/HeroSchedule";
+import ScheduleTable from "@/app/(main_layout)/schedule/_components/ScheduleTable";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {

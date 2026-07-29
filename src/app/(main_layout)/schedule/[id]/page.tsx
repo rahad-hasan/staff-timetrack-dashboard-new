@@ -6,8 +6,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { getDuration } from "@/utils";
-import SingleScheduleMemberTable from "@/components/Schedule/SingleScheduleMemberTable";
-import AssignMemberModal from "@/components/Schedule/AssignMemberModal";
+import SingleScheduleMemberTable from "@/app/(main_layout)/schedule/[id]/_components/SingleScheduleMemberTable";
+import AssignMemberModal from "@/app/(main_layout)/schedule/_components/AssignMemberModal";
 
 const SingleSchedulePage = async ({ params }: { params: Promise<{ id: string }> }) => {
     const { id } = await params;

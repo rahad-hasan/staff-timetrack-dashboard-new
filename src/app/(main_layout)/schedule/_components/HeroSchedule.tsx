@@ -1,8 +1,8 @@
 "use client"
 import { Plus } from "lucide-react";
-import HeadingComponent from "../Common/HeadingComponent";
-import { Button } from "../ui/button";
-import { Dialog, DialogTrigger } from "../ui/dialog";
+import HeadingComponent from "../../../../components/Common/HeadingComponent";
+import { Button } from "../../../../components/ui/button";
+import { Dialog, DialogTrigger } from "../../../../components/ui/dialog";
 import { useState } from "react";
 import AddScheduleModal from "./AddScheduleModal";
 

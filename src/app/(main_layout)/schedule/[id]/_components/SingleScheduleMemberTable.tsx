@@ -9,12 +9,12 @@ import { ArrowUpDown } from "lucide-react";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { User } from "@/types/type";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import SearchBar from "../Common/SearchBar";
+import SearchBar from "../../../../../components/Common/SearchBar";
 import Link from "next/link";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import FilterButton from "../Common/FilterButton";
-import ConfirmDialog from "../Common/ConfirmDialog";
-import DeleteIcon from "../Icons/DeleteIcon";
+import { Popover, PopoverContent, PopoverTrigger } from "../../../../../components/ui/popover";
+import FilterButton from "../../../../../components/Common/FilterButton";
+import ConfirmDialog from "../../../../../components/Common/ConfirmDialog";
+import DeleteIcon from "../../../../../components/Icons/DeleteIcon";
 import { deleteMemberFromSchedule } from "@/actions/schedule/action";
 import { toast } from "sonner";
 

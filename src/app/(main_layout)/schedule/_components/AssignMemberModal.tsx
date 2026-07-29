@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
-import InviteMemberIcon from "../Icons/InviteMemberIcon";
-import { Button } from "../ui/button";
+import InviteMemberIcon from "../../../../components/Icons/InviteMemberIcon";
+import { Button } from "../../../../components/ui/button";
 import {
     Dialog,
     DialogContent,
@@ -30,16 +30,16 @@ import {
     MultiSelectTrigger,
     MultiSelectValue,
 } from "@/components/ui/multi-select";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../../../../components/ui/avatar";
 import { getMembersDashboard } from "@/actions/members/action";
 import { ISchedules } from "@/types/type";
 import { toast } from "sonner";
 import { assignSchedule } from "@/actions/schedule/action";
 import { useDebounce } from "@/hooks/use-debounce";
 import { getProjects } from "@/actions/projects/action";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../../components/ui/select";
 import { Search } from "lucide-react";
-import { Input } from "../ui/input";
+import { Input } from "../../../../components/ui/input";
 
 
 type ProjectOption = {

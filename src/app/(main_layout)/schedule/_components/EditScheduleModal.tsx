@@ -21,8 +21,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
-import ClockIcon from "../Icons/ClockIcon";
-import { Checkbox } from "../ui/checkbox";
+import ClockIcon from "../../../../components/Icons/ClockIcon";
+import { Checkbox } from "../../../../components/ui/checkbox";
 import { toast } from "sonner";
 import { editSchedule } from "@/actions/schedule/action";
 import { ISchedules } from "@/types/type";
