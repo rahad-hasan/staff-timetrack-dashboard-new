@@ -2,9 +2,9 @@ import { Metadata } from "next";
 import { Suspense } from "react";
 
 import HeadingComponent from "@/components/Common/HeadingComponent";
-import HolidayManagementServer from "@/components/LeaveManagement/Holidays/HolidayManagementServer";
+import HolidayManagementServer from "@/app/(main_layout)/leave-management/holidays/_components/HolidayManagementServer";
 import { ISearchParamsProps } from "@/types/type";
-import LeaveTypeSubNav from "@/components/LeaveManagement/LeaveTypeSubNav";
+import LeaveTypeSubNav from "@/app/(main_layout)/leave-management/_components/LeaveTypeSubNav";
 import HolidaySkeleton from "@/skeleton/leaveManagement/HolidaySkeleton";
 
 export const metadata: Metadata = {

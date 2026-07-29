@@ -12,7 +12,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { getLeaveStatusTheme, getLeaveTypeTheme } from "@/lib/leave";
-import MonthPicker from "../Common/MonthPicker";
+import MonthPicker from "../../../../../components/Common/MonthPicker";
 
 const dayHeaders = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -61,7 +61,6 @@ const LeaveCalendarView = ({
   const hasHolidays = Object.values(days)
     .flat()
     .some((item) => item.type === "holiday");
-
 
 
   const renderCalendarItemTooltip = (item: LeaveCalendarDayItem) => {

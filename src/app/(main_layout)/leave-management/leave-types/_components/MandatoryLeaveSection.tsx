@@ -15,7 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import MandatoryLeaveImportDialog from "../Holidays/MandatoryLeaveImportDialog";
+import MandatoryLeaveImportDialog from "../../holidays/_components/MandatoryLeaveImportDialog";
 
 type MandatoryLeaveSectionProps = {
   holidays: LeaveHoliday[];

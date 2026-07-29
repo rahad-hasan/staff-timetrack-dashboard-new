@@ -1,5 +1,5 @@
 import HeadingComponent from "@/components/Common/HeadingComponent";
-import LeaveRequestServer from "@/components/LeaveManagement/RequestQueue/LeaveRequestServer";
+import LeaveRequestServer from "@/app/(main_layout)/leave-management/request-queue/_components/LeaveRequestServer";
 import LeaveRequestQueueSkeleton from "@/skeleton/leaveManagement/LeaveRequestQueueSkeleton";
 import { ISearchParamsProps } from "@/types/type";
 import { Metadata } from "next";

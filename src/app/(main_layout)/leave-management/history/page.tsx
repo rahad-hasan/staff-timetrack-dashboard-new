@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { getLeaveHistory } from "@/actions/leaves/action";
 import { getMembersDashboard } from "@/actions/members/action";
 import HeadingComponent from "@/components/Common/HeadingComponent";
-import LeaveHistoryReport from "@/components/LeaveManagement/LeaveHistory/LeaveHistoryReport";
+import LeaveHistoryReport from "@/app/(main_layout)/leave-management/history/_components/LeaveHistoryReport";
 import { ISearchParamsProps, LeaveStatus } from "@/types/type";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
 import HistorySkeleton from "@/skeleton/leaveManagement/HistorySkeleton";

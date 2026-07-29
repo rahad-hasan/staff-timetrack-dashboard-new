@@ -1,9 +1,9 @@
 import { Suspense } from "react";
 import { Metadata } from "next";
 import HeadingComponent from "@/components/Common/HeadingComponent";
-import LeaveTypesServer from "@/components/LeaveManagement/LeaveTypes/LeaveTypesServer";
+import LeaveTypesServer from "@/app/(main_layout)/leave-management/leave-types/_components/LeaveTypesServer";
 import { ISearchParamsProps } from "@/types/type";
-import LeaveTypeSubNav from "@/components/LeaveManagement/LeaveTypeSubNav";
+import LeaveTypeSubNav from "@/app/(main_layout)/leave-management/_components/LeaveTypeSubNav";
 import LeaveTypesSkeleton from "@/skeleton/leaveManagement/LeaveTypesSkeleton";
 
 export const metadata: Metadata = {

@@ -4,7 +4,7 @@ import {
   getUserLeaveSummary,
 } from "@/actions/leaves/action";
 import { getMembersDashboard } from "@/actions/members/action";
-import MyLeavesDashboard from "@/components/LeaveManagement/MyLeaves/MyLeavesDashboard";
+import MyLeavesDashboard from "@/app/(main_layout)/leave-management/my-leaves/_components/MyLeavesDashboard";
 import { ISearchParamsProps } from "@/types/type";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
 import MyLeaveSkeleton from "@/skeleton/leaveManagement/MyLeaveSkeleton";

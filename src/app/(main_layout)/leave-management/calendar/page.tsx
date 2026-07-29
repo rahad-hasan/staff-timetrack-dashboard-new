@@ -5,7 +5,7 @@ import { getMembersDashboard } from "@/actions/members/action";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import { ISearchParamsProps } from "@/types/type";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
-import LeaveCalendarView from "@/components/LeaveManagement/LeaveCalendarView";
+import LeaveCalendarView from "@/app/(main_layout)/leave-management/calendar/_components/LeaveCalendarView";
 
 export const metadata: Metadata = {
   title: "Staff Time Tracker Leave Calendar",
