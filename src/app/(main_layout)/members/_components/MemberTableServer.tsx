@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import AppPagination from "../Common/AppPagination";
+import AppPagination from "../../../../components/Common/AppPagination";
 import TeamsMemberTable from "./TeamsMemberTable";
 import { getMembers } from "@/actions/members/action";
 

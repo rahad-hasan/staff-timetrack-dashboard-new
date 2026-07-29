@@ -6,7 +6,7 @@ import { useMemo, useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ArrowUpDown, EllipsisVertical, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogTrigger } from "../ui/dialog";
+import { Dialog, DialogTrigger } from "../../../../components/ui/dialog";
 import EditTeamModal from "./EditTeamModal";
 
 const TeamsTable = () => {

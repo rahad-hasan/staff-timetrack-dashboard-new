@@ -8,8 +8,8 @@ import {
 } from "@/components/ui/dialog"
 import { useState } from "react";
 import AddNewMemberModal from "./AddNewMemberModal";
-import SearchBar from "../Common/SearchBar";
-import HeadingComponent from "../Common/HeadingComponent";
+import SearchBar from "../../../../components/Common/SearchBar";
+import HeadingComponent from "../../../../components/Common/HeadingComponent";
 import { useRouter, useSearchParams } from "next/navigation";
 
 const MemberHeroSection = () => {

@@ -2,10 +2,10 @@
 
 // import TeamsTable from "@/components/Members/TeamsTable";
 // import AddTeamModal from "@/components/Members/AddTeamModal";
-import MemberHeroSection from "@/components/Members/MemberHeroSection";
+import MemberHeroSection from "@/app/(main_layout)/members/_components/MemberHeroSection";
 import { Suspense } from "react";
 import TeamsMemberTableSkeleton from "@/skeleton/teams/TeamsMemberTableSkeleton";
-import MemberTableServer from "@/components/Members/MemberTableServer";
+import MemberTableServer from "@/app/(main_layout)/members/_components/MemberTableServer";
 import { Metadata } from "next";
 
 

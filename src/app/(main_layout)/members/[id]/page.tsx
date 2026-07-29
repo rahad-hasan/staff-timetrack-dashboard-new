@@ -1,6 +1,6 @@
 import { getSingleDetailsMember } from "@/actions/members/action";
 // import { getTasks } from "@/actions/task/action";
-import SingleMemberPage from "@/components/Members/SingleMemberPage/SingleMemberPage";
+import SingleMemberPage from "@/app/(main_layout)/members/[id]/_components/SingleMemberPage";
 import { ISearchParams } from "@/types/type";
 interface PageProps {
     params: Promise<{ id: string }>;

@@ -33,14 +33,14 @@ import { Check, ChevronLeft, ChevronsUpDown, Eye, EyeOff, Phone, Search } from "
 import { toast } from "sonner";
 import { addMember } from "@/actions/members/action";
 import { cn } from "@/lib/utils";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "../../../../components/ui/popover";
 import { popularTimeZoneList } from "@/utils/TimeZoneList";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "../ui/command";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "../../../../components/ui/command";
 import { useDebounce } from "@/hooks/use-debounce";
 import { getProjects } from "@/actions/projects/action";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../../../../components/ui/avatar";
 import { getAllSchedule } from "@/actions/schedule/action";
-import { CustomCalendarForDOB } from "../ui/customCalendarForDOB";
+import { CustomCalendarForDOB } from "../../../../components/ui/customCalendarForDOB";
 import { currencies } from "@/utils/CurrencyList";
 
 const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {

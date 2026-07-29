@@ -25,20 +25,20 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Dialog } from "../ui/dialog";
+import { Dialog } from "../../../../components/ui/dialog";
 import EditNewMemberModal from "./EditNewMemberModal";
-import EmptyTableRow from "../Common/EmptyTableRow";
-import FilterButton from "../Common/FilterButton";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import EmptyTableRow from "../../../../components/Common/EmptyTableRow";
+import FilterButton from "../../../../components/Common/FilterButton";
+import { Avatar, AvatarFallback, AvatarImage } from "../../../../components/ui/avatar";
 // import DownloadIcon from "../Icons/DownloadIcon";
-import EditIcon from "../Icons/FilterOptionIcon/EditIcon";
-import DeleteIcon from "../Icons/DeleteIcon";
+import EditIcon from "../../../../components/Icons/FilterOptionIcon/EditIcon";
+import DeleteIcon from "../../../../components/Icons/DeleteIcon";
 import { ITeamMembers } from "@/global/globalTypes";
 import { toast } from "sonner";
 import { deleteMember } from "@/actions/members/action";
-import ConfirmDialog from "../Common/ConfirmDialog";
+import ConfirmDialog from "../../../../components/Common/ConfirmDialog";
 import Link from "next/link";
-import CheckIcon from "../Icons/CheckIcon";
+import CheckIcon from "../../../../components/Icons/CheckIcon";
 
 const TeamsMemberTable = ({ data }: any) => {
   const [sorting, setSorting] = useState<SortingState>([]);
