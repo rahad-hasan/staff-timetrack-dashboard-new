@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { getTickets } from "@/actions/support/action";
-import TicketListView from "@/components/Support/TicketListView";
+import TicketListView from "@/app/(main_layout)/support/tickets/_components/TicketListView";
 import {
   ISearchParamsProps,
   IResponse,

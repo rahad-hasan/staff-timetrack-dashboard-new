@@ -13,7 +13,7 @@ import {
   TicketConversation,
   TicketStatus,
 } from "@/types/support";
-import AttachmentUrlInput from "./AttachmentUrlInput";
+import AttachmentUrlInput from "../../new/_components/AttachmentUrlInput";
 
 const MAX_LENGTH = 5000;
 

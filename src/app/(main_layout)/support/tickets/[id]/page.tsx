@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getTicketById } from "@/actions/support/action";
-import TicketDetailView from "@/components/Support/TicketDetailView";
+import TicketDetailView from "@/app/(main_layout)/support/tickets/[id]/_components/TicketDetailView";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
 
 interface TicketDetailPageProps {

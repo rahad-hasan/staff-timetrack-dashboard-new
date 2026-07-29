@@ -32,7 +32,7 @@ import StarRating from "./StarRating";
 import {
   TicketPriorityBadge,
   TicketStatusBadge,
-} from "./TicketBadges";
+} from "../../_components/TicketBadges";
 
 interface TicketDetailViewProps {
   ticket: TicketDetail;
