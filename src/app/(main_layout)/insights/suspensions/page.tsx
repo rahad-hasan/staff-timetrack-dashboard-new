@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import SuspensionsPageClient from "@/components/Insights/Suspensions/SuspensionsPageClient";
+import SuspensionsPageClient from "@/app/(main_layout)/insights/suspensions/_components/SuspensionsPageClient";
 
 export const metadata: Metadata = {
   title: "Suspicious Activity | Tracking Suspensions",

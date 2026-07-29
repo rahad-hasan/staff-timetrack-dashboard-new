@@ -3,7 +3,7 @@
 import { Bell, Settings } from "lucide-react";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import { Suspense, useState } from "react";
-import UnusualActivityTable from "@/components/Insights/UnusualActivity/UnusualActivityTable";
+import UnusualActivityTable from "@/app/(main_layout)/insights/unusual-activity/_components/UnusualActivityTable";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import SelectUserWrapper from "@/components/Common/SelectUserWrapper";
 

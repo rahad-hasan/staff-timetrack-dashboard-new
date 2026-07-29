@@ -2,7 +2,7 @@
 import { getMonthlyWorkReport } from "@/actions/insights/action";
 import MonthPicker from "@/components/Common/MonthPicker";
 import SelectUserWrapper from "@/components/Common/SelectUserWrapper";
-import PerformanceCharts from "@/components/Insights/Performance/PerformanceCharts";
+import PerformanceCharts from "@/app/(main_layout)/insights/performance/_components/PerformanceCharts";
 import { ISearchParamsProps } from "@/types/type";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
 import { format } from "date-fns";

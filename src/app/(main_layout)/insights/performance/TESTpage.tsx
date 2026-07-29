@@ -2,12 +2,12 @@ import { Bell, Settings } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import { Suspense } from "react";
-import CoreWork from "@/components/Insights/Performance/Old/CoreWork";
-import DailyFocus from "@/components/Insights/Performance/Old/DailyFocus";
-import Activity from "@/components/Insights/Performance/Old/Activity";
+import CoreWork from "@/app/(main_layout)/insights/performance/_components/Old/CoreWork";
+import DailyFocus from "@/app/(main_layout)/insights/performance/_components/Old/DailyFocus";
+import Activity from "@/app/(main_layout)/insights/performance/_components/Old/Activity";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import SelectUserWrapper from "@/components/Common/SelectUserWrapper";
-import Utilization from "@/components/Insights/Performance/Old/Utilization";
+import Utilization from "@/app/(main_layout)/insights/performance/_components/Old/Utilization";
 
 const TESTPerformance = async () => {
 

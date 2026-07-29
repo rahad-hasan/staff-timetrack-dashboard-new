@@ -18,7 +18,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import Image from "next/image";
-import screenshortImg from "../../../assets/dashboard/screenshort1.png";
+import screenshortImg from "../../../../../assets/dashboard/screenshort1.png";
 import {
     Dialog,
     DialogContent,
