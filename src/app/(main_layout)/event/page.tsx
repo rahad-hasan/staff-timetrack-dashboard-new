@@ -1,8 +1,8 @@
 import MonthPicker from "@/components/Common/MonthPicker";
 import { Suspense } from "react";
 // import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
-import CalenderHeading from "@/components/Event/CalenderHeading";
-import CalenderTableServer from "@/components/Event/CalenderTableServer";
+import CalenderHeading from "@/app/(main_layout)/event/_components/CalenderHeading";
+import CalenderTableServer from "@/app/(main_layout)/event/_components/CalenderTableServer";
 import { ISearchParamsProps } from "@/types/type";
 import CalenderSkeleton from "@/skeleton/event/CalenderSkeleton";
 import { Metadata } from "next";

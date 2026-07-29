@@ -48,21 +48,21 @@ import {
   MultiSelectValue,
 } from "@/components/ui/multi-select";
 import { toast } from "sonner";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../../../../components/ui/avatar";
 import { addEvent, getMembersEventDropdown } from "@/actions/calendarEvent/action";
 import {
   getGoogleConnected,
   getMicrosoftConnected,
 } from "@/actions/integrations/action";
-import ClockIcon from "../Icons/ClockIcon";
+import ClockIcon from "../../../../components/Icons/ClockIcon";
 import { cn } from "@/lib/utils";
-import { useGoogleConnectFlow } from "../Integrations/useGoogleConnectFlow";
-import { useMicrosoftConnectFlow } from "../Integrations/useMicrosoftConnectFlow";
-import RichTextEditor from "../Common/RichTextEditor";
+import { useGoogleConnectFlow } from "../../../../components/Integrations/useGoogleConnectFlow";
+import { useMicrosoftConnectFlow } from "../../../../components/Integrations/useMicrosoftConnectFlow";
+import RichTextEditor from "../../../../components/Common/RichTextEditor";
 import { isConflictResponse, parseConflictMessage } from "./eventHelpers";
 import Image from "next/image";
-import googleMeetIcon from '../../assets/events/google_meet.svg'
-import microsoftTeamsIcon from '../../assets/events/microsoft-teams.svg'
+import googleMeetIcon from '../../../../assets/events/google_meet.svg'
+import microsoftTeamsIcon from '../../../../assets/events/microsoft-teams.svg'
 
 type FormInput = z.input<typeof addNewEventSchema>;
 type FormValues = z.output<typeof addNewEventSchema>;

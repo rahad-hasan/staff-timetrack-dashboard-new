@@ -25,10 +25,10 @@ import { rescheduleEvent } from "@/actions/calendarEvent/action";
 import { toast } from "sonner";
 import { toZonedTime } from "date-fns-tz";
 import { useLogInUserStore } from "@/store/logInUserStore";
-import ClockIcon from "../Icons/ClockIcon";
-import { Input } from "../ui/input";
+import ClockIcon from "../../../../components/Icons/ClockIcon";
+import { Input } from "../../../../components/ui/input";
 import { isConflictResponse, parseConflictMessage } from "./eventHelpers";
-import CalendarIcon from "../Icons/CalendarIcon";
+import CalendarIcon from "../../../../components/Icons/CalendarIcon";
 
 const formatToTimeString = (date: Date) => {
     const hours = String(date.getHours()).padStart(2, "0");

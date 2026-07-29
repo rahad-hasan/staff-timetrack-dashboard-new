@@ -2,13 +2,13 @@
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
-import AddEventModal from "@/components/Event/AddEventModal";
+import AddEventModal from "@/app/(main_layout)/event/_components/AddEventModal";
 import { useState } from "react";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import GoogleConnectButton from "./GoogleConnectButton";
 import TeamsConnectButton from "./TeamsConnectButton";
-import CalendarIcon from "../Icons/CalendarIcon";
-import VideoIcon from "../Icons/VideoIcon";
+import CalendarIcon from "../../../../components/Icons/CalendarIcon";
+import VideoIcon from "../../../../components/Icons/VideoIcon";
 
 const CalenderHeading = () => {
     const [open, setOpen] = useState(false);

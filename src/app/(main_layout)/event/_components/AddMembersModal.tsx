@@ -23,7 +23,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { toast } from "sonner";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../../../../components/ui/avatar";
 import { addEventMembers, getMembersEventDropdown } from "@/actions/calendarEvent/action";
 import { AlertTriangle } from "lucide-react";
 import { isConflictResponse, parseConflictMessage } from "./eventHelpers";

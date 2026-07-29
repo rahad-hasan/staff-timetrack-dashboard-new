@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Image from "next/image";
-import googleMeetIcon from "../../assets/events/google_meet.svg";
-import microsoftTeamsIcon from "../../assets/events/microsoft-teams.svg";
+import googleMeetIcon from "../../../../assets/events/google_meet.svg";
+import microsoftTeamsIcon from "../../../../assets/events/microsoft-teams.svg";
 import { EventSyncStatus } from "@/types/type";
 import {
     AlertCircle,

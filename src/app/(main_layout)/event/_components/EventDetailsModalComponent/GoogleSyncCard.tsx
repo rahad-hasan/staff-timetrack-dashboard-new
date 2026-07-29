@@ -3,7 +3,7 @@ import Image from "next/image";
 import { SyncStatusPill } from "../eventHelpers";
 import GoogleSyncMemberRow from "./GoogleSyncMemberRow";
 import { ArrowRight, Users } from "lucide-react";
-import googleMeetIcon from "../../../assets/events/google_meet.svg";
+import googleMeetIcon from "../../../../../assets/events/google_meet.svg";
 
 const GoogleSyncCard = ({
     overview,

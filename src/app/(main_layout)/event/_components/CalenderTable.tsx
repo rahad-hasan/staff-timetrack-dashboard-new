@@ -7,19 +7,19 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Sheet } from "@/components/ui/sheet";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../../../../components/ui/avatar";
 import { useMemo, useState } from "react";
 import { formatTZDate, formatTZFullDate, formatTZTime } from "@/utils";
 import EventDetailsModal from "./EventDetailsModal";
 import { cn } from "@/lib/utils";
 import { IEvent } from "@/types/type";
 import { CalendarClock, } from "lucide-react";
-import googleMeetIcon from "../../assets/events/google_meet.svg"
-import microsoftTeamsIcon from "../../assets/events/microsoft-teams.svg"
+import googleMeetIcon from "../../../../assets/events/google_meet.svg"
+import microsoftTeamsIcon from "../../../../assets/events/microsoft-teams.svg"
 import Image from "next/image";
-import CalendarIcon from "../Icons/CalendarIcon";
-import TeamsIcon from "../Icons/TeamsIcon";
-import VideoIcon from "../Icons/VideoIcon";
+import CalendarIcon from "../../../../components/Icons/CalendarIcon";
+import TeamsIcon from "../../../../components/Icons/TeamsIcon";
+import VideoIcon from "../../../../components/Icons/VideoIcon";
 
 const providerChip = (provider: string | null | undefined) => {
     if (provider === "google_meet") {

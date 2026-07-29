@@ -18,8 +18,8 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
+import { Button } from "../../../../components/ui/button";
+import { Input } from "../../../../components/ui/input";
 import EditEventModal from "./EditEventModal";
 import { refreshEvents } from "@/actions/calendarEvent/action";
 import {
@@ -55,8 +55,8 @@ import { RichTextViewer } from "@/components/Common/RichTextEditor";
 import { cn } from "@/lib/utils";
 import AddMembersModal from "./AddMembersModal";
 import CancelEventDialog from "./EventDetailsModalComponent/CancelEventDialog";
-import googleMeetIcon from "../../assets/events/google_meet.svg";
-import microsoftTeamsIcon from "../../assets/events/microsoft-teams.svg";
+import googleMeetIcon from "../../../../assets/events/google_meet.svg";
+import microsoftTeamsIcon from "../../../../assets/events/microsoft-teams.svg";
 import Image from "next/image";
 import AttendeeRow from "./EventDetailsModalComponent/AttendeeRow";
 import AttendeeStatBlock from "./EventDetailsModalComponent/AttendeeStatBlock";
@@ -64,10 +64,10 @@ import MicrosoftSyncCard from "./EventDetailsModalComponent/MicrosoftSyncCard";
 import GoogleSyncCard from "./EventDetailsModalComponent/GoogleSyncCard";
 import SectionCard from "./EventDetailsModalComponent/SectionCard";
 import EventMetricCard from "./EventDetailsModalComponent/EventMetricCard";
-import CalendarIcon from "../Icons/CalendarIcon";
-import TeamsIcon from "../Icons/TeamsIcon";
-import EditIcon from "../Icons/FilterOptionIcon/EditIcon";
-import DeleteIcon from "../Icons/DeleteIcon";
+import CalendarIcon from "../../../../components/Icons/CalendarIcon";
+import TeamsIcon from "../../../../components/Icons/TeamsIcon";
+import EditIcon from "../../../../components/Icons/FilterOptionIcon/EditIcon";
+import DeleteIcon from "../../../../components/Icons/DeleteIcon";
 
 type Mode = "view" | "edit" | "add-members";
 
