@@ -17,7 +17,7 @@ import {
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import BellIcon from "../Icons/BellIcon";
+import BellIcon from "../../../../components/Icons/BellIcon";
 import NotificationTabs from "./NotificationTabs";
 import NotificationSubjectSelection from "./NotificationSubjectSelection";
 import { getPlainText } from "@/utils/getPlainText";

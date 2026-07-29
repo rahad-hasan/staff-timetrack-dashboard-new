@@ -3,7 +3,7 @@ import {
   getNotificationsCount,
 } from "@/actions/notification/action";
 import AppPagination from "@/components/Common/AppPagination";
-import AllNotification from "@/components/Notification/AllNotification";
+import AllNotification from "@/app/(main_layout)/notification/_components/AllNotification";
 import { ISearchParamsProps } from "@/types/type";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
 
