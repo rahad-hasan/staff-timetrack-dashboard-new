@@ -1337,7 +1337,11 @@ export interface MicrosoftEventsListItem {
 }
 
 /* =========================
- * App Integrations (monday.com — ClickUp/Jira/Asana/Slack will follow)
+ * App Integrations (monday.com + ClickUp — Jira/Asana/Slack will follow)
+ *
+ * The UI only ever sees the provider-neutral `Integration` shapes below;
+ * each provider's wire format (Monday / ClickUp) is normalized to them in
+ * the server actions (appIntegrationAction.ts).
  * ========================= */
 export type IntegrationConnectionStatus =
   | "connected"
@@ -1362,6 +1366,63 @@ export interface IntegrationStatusResponse {
   disconnected_at?: string | null;
 }
 
+/** One importable container (monday board / ClickUp list) — normalized. */
+export interface IntegrationItem {
+  id: string;
+  name: string;
+  description?: string | null;
+  /** monday `items_count` / ClickUp `task_count` */
+  items_count: number;
+  workspace: { id: string; name: string } | null;
+  /** ClickUp only — lists are grouped by Space in the picker */
+  space?: { id: string; name: string } | null;
+  /** ClickUp only — folder badge; null for folderless lists */
+  folder?: { id: string; name: string } | null;
+  already_imported: boolean;
+  project_id: number | null;
+}
+
+/** Neutral import request — mapped to `board_ids` / `list_ids` per provider. */
+export interface IntegrationImportPayload {
+  ids: string[];
+  start_date?: string;
+  deadline?: string;
+}
+
+export interface IntegrationImportedItem {
+  id: string;
+  name: string;
+  project_id: number;
+  created: boolean;
+  tasks_created: number;
+  tasks_updated: number;
+  tasks_skipped: number;
+  /** monday `items_truncated` / ClickUp `tasks_truncated` */
+  truncated: boolean;
+  /** monday `webhooks_registered` / ClickUp `webhook_registered` */
+  webhook_registered: boolean;
+}
+
+export interface IntegrationSkippedItem {
+  id: string;
+  reason: string;
+}
+
+export interface IntegrationUnmatchedUser {
+  id: string;
+  name: string;
+  email: string;
+}
+
+export interface IntegrationImportResult {
+  imported: IntegrationImportedItem[];
+  skipped: IntegrationSkippedItem[];
+  unmatched_users: IntegrationUnmatchedUser[];
+  remaining_ids?: string[];
+}
+
+/* ---- monday.com wire shapes (spec §4.5–§4.7) ---- */
+
 export interface MondayBoard {
   id: string;
   name: string;
@@ -1370,12 +1431,6 @@ export interface MondayBoard {
   workspace: { id: string; name: string } | null;
   already_imported: boolean;
   project_id: number | null;
-}
-
-export interface MondayImportPayload {
-  board_ids: string[];
-  start_date?: string;
-  deadline?: string;
 }
 
 export interface MondayImportedBoard {
@@ -1390,22 +1445,43 @@ export interface MondayImportedBoard {
   webhooks_registered: boolean;
 }
 
-export interface MondaySkippedBoard {
-  board_id: string;
-  reason: string;
-}
-
-export interface MondayUnmatchedUser {
-  id: string;
-  name: string;
-  email: string;
-}
-
 export interface MondayImportResult {
   imported: MondayImportedBoard[];
-  skipped_boards: MondaySkippedBoard[];
-  unmatched_monday_users: MondayUnmatchedUser[];
+  skipped_boards: { board_id: string; reason: string }[];
+  unmatched_monday_users: IntegrationUnmatchedUser[];
   remaining_board_ids?: string[];
+}
+
+/* ---- ClickUp wire shapes (spec §11.2–§11.3) ---- */
+
+export interface ClickUpList {
+  id: string;
+  name: string;
+  task_count: number;
+  workspace: { id: string; name: string } | null;
+  space: { id: string; name: string } | null;
+  folder: { id: string; name: string } | null;
+  already_imported: boolean;
+  project_id: number | null;
+}
+
+export interface ClickUpImportedList {
+  list_id: string;
+  list_name: string;
+  project_id: number;
+  created: boolean;
+  tasks_created: number;
+  tasks_updated: number;
+  tasks_skipped: number;
+  tasks_truncated: boolean;
+  webhook_registered: boolean;
+}
+
+export interface ClickUpImportResult {
+  imported: ClickUpImportedList[];
+  skipped_lists: { list_id: string; reason: string }[];
+  unmatched_clickup_users: IntegrationUnmatchedUser[];
+  remaining_list_ids?: string[];
 }
 
 /* =========================

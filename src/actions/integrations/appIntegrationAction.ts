@@ -1,10 +1,14 @@
 "use server";
 
 import {
+    ClickUpImportResult,
+    ClickUpList,
+    IntegrationImportPayload,
+    IntegrationImportResult,
+    IntegrationItem,
     IntegrationStatusResponse,
     IResponse,
     MondayBoard,
-    MondayImportPayload,
     MondayImportResult,
 } from "@/types/type";
 import axios, { AxiosResponse } from "axios";
@@ -15,16 +19,114 @@ import { baseApi } from "../baseApi";
 
 /**
  * Server-side whitelist of app-integration providers. A new provider
- * (ClickUp, Jira, Asana, Slack) is enabled here + in the client registry —
- * the generic actions below need no changes.
+ * (Jira, Asana, Slack) is enabled here + in the client registry — the
+ * generic actions below need no changes beyond a config entry.
  *
  * `authPrefix` — provider endpoints answer 401 with a message starting with
  * this prefix when the *provider* revoked the token (not a session expiry);
  * baseApi then returns the error envelope instead of logging the user out.
+ *
+ * `toItem` / `toResult` — each provider's wire format (boards vs lists) is
+ * normalized to the neutral `Integration*` shapes here, so every component
+ * stays provider-agnostic.
  */
-const PROVIDERS = {
-    monday: { base: "/monday", tag: "monday-integration", authPrefix: "monday.com" },
-} as const;
+interface ProviderConfig {
+    base: string;
+    tag: string;
+    authPrefix: string;
+    /** listing endpoint path — "/boards" (monday) or "/lists" (ClickUp) */
+    itemsPath: string;
+    /** field name the provider's import endpoint expects the ids under */
+    idsField: string;
+    toItem: (row: never) => IntegrationItem;
+    toResult: (raw: never) => IntegrationImportResult;
+}
+
+const mondayToItem = (row: MondayBoard): IntegrationItem => ({
+    id: row.id,
+    name: row.name,
+    description: row.description,
+    items_count: row.items_count,
+    workspace: row.workspace,
+    already_imported: row.already_imported,
+    project_id: row.project_id,
+});
+
+const mondayToResult = (raw: MondayImportResult): IntegrationImportResult => ({
+    imported: (raw?.imported ?? []).map((board) => ({
+        id: board.board_id,
+        name: board.board_name,
+        project_id: board.project_id,
+        created: board.created,
+        tasks_created: board.tasks_created,
+        tasks_updated: board.tasks_updated,
+        tasks_skipped: board.tasks_skipped,
+        truncated: board.items_truncated,
+        webhook_registered: board.webhooks_registered,
+    })),
+    skipped: (raw?.skipped_boards ?? []).map((board) => ({
+        id: board.board_id,
+        reason: board.reason,
+    })),
+    unmatched_users: raw?.unmatched_monday_users ?? [],
+    ...(raw?.remaining_board_ids
+        ? { remaining_ids: raw.remaining_board_ids }
+        : {}),
+});
+
+const clickupToItem = (row: ClickUpList): IntegrationItem => ({
+    id: row.id,
+    name: row.name,
+    items_count: row.task_count,
+    workspace: row.workspace,
+    space: row.space,
+    folder: row.folder,
+    already_imported: row.already_imported,
+    project_id: row.project_id,
+});
+
+const clickupToResult = (raw: ClickUpImportResult): IntegrationImportResult => ({
+    imported: (raw?.imported ?? []).map((list) => ({
+        id: list.list_id,
+        name: list.list_name,
+        project_id: list.project_id,
+        created: list.created,
+        tasks_created: list.tasks_created,
+        tasks_updated: list.tasks_updated,
+        tasks_skipped: list.tasks_skipped,
+        truncated: list.tasks_truncated,
+        webhook_registered: list.webhook_registered,
+    })),
+    skipped: (raw?.skipped_lists ?? []).map((list) => ({
+        id: list.list_id,
+        reason: list.reason,
+    })),
+    unmatched_users: raw?.unmatched_clickup_users ?? [],
+    ...(raw?.remaining_list_ids
+        ? { remaining_ids: raw.remaining_list_ids }
+        : {}),
+});
+
+const PROVIDERS: Record<"monday" | "clickup", ProviderConfig> = {
+    monday: {
+        base: "/monday",
+        tag: "monday-integration",
+        authPrefix: "monday.com",
+        itemsPath: "/boards",
+        idsField: "board_ids",
+        toItem: mondayToItem,
+        toResult: mondayToResult,
+    },
+    clickup: {
+        base: "/clickup",
+        tag: "clickup-integration",
+        authPrefix: "ClickUp",
+        itemsPath: "/lists",
+        idsField: "list_ids",
+        toItem: clickupToItem,
+        toResult: clickupToResult,
+    },
+};
 
 type ProviderKey = keyof typeof PROVIDERS;
 
@@ -137,50 +239,58 @@ const longRunningPost = async <T>(
     return data as IResponse<T>;
 };
 
-/* -------- board-picker family (§9: same endpoint family per provider) -------- */
+/* -------- item-picker family (§9: same endpoint family per provider) -------- */
 
-export const getIntegrationBoards = async (
+export const getIntegrationItems = async (
     provider: string,
-): Promise<IResponse<MondayBoard[]>> => {
-    const { base, tag, authPrefix } = providerConfig(provider);
-    return await baseApi(`${base}/boards`, {
+): Promise<IResponse<IntegrationItem[]>> => {
+    const { base, tag, authPrefix, itemsPath, toItem } =
+        providerConfig(provider);
+    const res = await baseApi<IResponse<never[]>>(`${base}${itemsPath}`, {
         tag,
         cache: "no-cache",
         providerAuthPrefix: authPrefix,
     });
+    if (res?.success) {
+        // tolerate a malformed success envelope — the UI expects an array
+        return {
+            ...res,
+            data: Array.isArray(res.data) ? res.data.map(toItem) : [],
+        };
+    }
+    return res as unknown as IResponse<IntegrationItem[]>;
 };
 
-export const importIntegrationBoards = async (
+export const importIntegrationItems = async (
     provider: string,
-    payload: MondayImportPayload,
-): Promise<IResponse<MondayImportResult>> => {
-    const { base, tag, authPrefix } = providerConfig(provider);
-    const res = await longRunningPost<MondayImportResult>(
-        `${base}/import`,
-        authPrefix,
-        payload,
-    );
+    payload: IntegrationImportPayload,
+): Promise<IResponse<IntegrationImportResult>> => {
+    const { base, tag, authPrefix, idsField, toResult } =
+        providerConfig(provider);
+    const body: Record<string, unknown> = { [idsField]: payload.ids };
+    if (payload.start_date) body.start_date = payload.start_date;
+    if (payload.deadline) body.deadline = payload.deadline;
+    const res = await longRunningPost<never>(`${base}/import`, authPrefix, body);
     if (res?.success) {
-        // imported boards become ordinary projects/tasks — refresh those caches
+        // imported boards/lists become ordinary projects/tasks — refresh those caches
         revalidateTag(tag);
         revalidateTag("projects");
         revalidateTag("tasks");
+        return { ...res, data: toResult(res.data) };
     }
-    return res;
+    return res as unknown as IResponse<IntegrationImportResult>;
 };
 
 export const syncIntegration = async (
     provider: string,
-): Promise<IResponse<MondayImportResult>> => {
-    const { base, tag, authPrefix } = providerConfig(provider);
-    const res = await longRunningPost<MondayImportResult>(
-        `${base}/sync`,
-        authPrefix,
-    );
+): Promise<IResponse<IntegrationImportResult>> => {
+    const { base, tag, authPrefix, toResult } = providerConfig(provider);
+    const res = await longRunningPost<never>(`${base}/sync`, authPrefix);
     if (res?.success) {
         revalidateTag(tag);
         revalidateTag("projects");
         revalidateTag("tasks");
+        return { ...res, data: toResult(res.data) };
     }
-    return res;
+    return res as unknown as IResponse<IntegrationImportResult>;
 };

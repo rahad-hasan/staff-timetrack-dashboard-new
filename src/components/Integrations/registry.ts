@@ -16,14 +16,20 @@ export interface IntegrationDef {
     blurb: string;
     available: boolean;
     apiBase: string;
-    /** Terminology for the things the provider imports ("Boards", "Lists", …) */
-    itemNoun: string;
+    /** What the provider's importable container is called, lowercase ("board", "list") */
+    noun: { singular: string; plural: string };
+    /** What lives inside a container, lowercase singular ("item", "task") */
+    countNoun: string;
     capabilities: {
         boardPicker: boolean;
         sync: boolean;
         importDefaults: boolean;
     };
 }
+
+/** "boards" → "Boards" for headings/buttons built from registry nouns. */
+export const capitalize = (word: string) =>
+    word.charAt(0).toUpperCase() + word.slice(1);
 
 /** The callback popup posts this message type to window.opener (all providers). */
 export const INTEGRATION_CALLBACK_MESSAGE_TYPE =
@@ -39,7 +45,8 @@ export const INTEGRATIONS: IntegrationDef[] = [
         blurb: "Import boards as projects and keep tasks in sync automatically.",
         available: true,
         apiBase: "/monday",
-        itemNoun: "Boards",
+        noun: { singular: "board", plural: "boards" },
+        countNoun: "item",
         capabilities: { boardPicker: true, sync: true, importDefaults: true },
     },
     {
@@ -49,9 +56,10 @@ export const INTEGRATIONS: IntegrationDef[] = [
         category: "project_management",
         categoryLabel: "Project management sync",
         blurb: "Bring your ClickUp lists and tasks into the tracker.",
-        available: false,
+        available: true,
         apiBase: "/clickup",
-        itemNoun: "Lists",
+        noun: { singular: "list", plural: "lists" },
+        countNoun: "task",
         capabilities: { boardPicker: true, sync: true, importDefaults: true },
     },
     {
@@ -63,7 +71,8 @@ export const INTEGRATIONS: IntegrationDef[] = [
         blurb: "Sync Jira projects and issues as trackable work.",
         available: false,
         apiBase: "/jira",
-        itemNoun: "Projects",
+        noun: { singular: "project", plural: "projects" },
+        countNoun: "issue",
         capabilities: { boardPicker: true, sync: true, importDefaults: true },
     },
     {
@@ -75,7 +84,8 @@ export const INTEGRATIONS: IntegrationDef[] = [
         blurb: "Import Asana projects and tasks for time tracking.",
         available: false,
         apiBase: "/asana",
-        itemNoun: "Projects",
+        noun: { singular: "project", plural: "projects" },
+        countNoun: "task",
         capabilities: { boardPicker: true, sync: true, importDefaults: true },
     },
     {
@@ -87,7 +97,8 @@ export const INTEGRATIONS: IntegrationDef[] = [
         blurb: "Schedule meetings and get event updates right in Slack.",
         available: false,
         apiBase: "/slack",
-        itemNoun: "Channels",
+        noun: { singular: "channel", plural: "channels" },
+        countNoun: "message",
         capabilities: { boardPicker: false, sync: false, importDefaults: false },
     },
 ];

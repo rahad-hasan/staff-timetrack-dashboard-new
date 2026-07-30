@@ -218,7 +218,7 @@ Launch content:
 | Provider | Category | State |
 |---|---|---|
 | monday.com | Project management sync | **Available** |
-| ClickUp | Project management sync | Coming soon |
+| ClickUp | Project management sync | **Available** — see §11 |
 | Jira | Project management sync | Coming soon |
 | Asana | Project management sync | Coming soon |
 | Slack | Meetings & events (like Google/Microsoft) | Coming soon |
@@ -338,7 +338,7 @@ export interface IntegrationDef {
 
 export const INTEGRATIONS: IntegrationDef[] = [
   { key: 'monday', name: 'monday.com', category: 'project_management', available: true,  apiBase: '/monday', capabilities: { boardPicker: true, sync: true, importDefaults: true }, /* … */ },
-  { key: 'clickup', name: 'ClickUp',   category: 'project_management', available: false, apiBase: '/clickup', /* … */ },
+  { key: 'clickup', name: 'ClickUp',   category: 'project_management', available: true,  apiBase: '/clickup', capabilities: { boardPicker: true, sync: true, importDefaults: true }, /* … */ },
   { key: 'jira',    name: 'Jira',      category: 'project_management', available: false, apiBase: '/jira', /* … */ },
   { key: 'asana',   name: 'Asana',     category: 'project_management', available: false, apiBase: '/asana', /* … */ },
   { key: 'slack',   name: 'Slack',     category: 'meetings_events',    available: false, apiBase: '/slack', /* … */ },
@@ -372,4 +372,51 @@ Keep **generic** (registry-driven, provider passed as prop): hub cards, status p
 - [ ] The global 401 interceptor does **not** log the user out on monday-revoked responses.
 - [ ] After import/sync, the Projects and Tasks screens show the new data without manual refresh (cache invalidation).
 - [ ] No dashboard route exists for `/monday/callback`; no calls to `/monday/webhook`.
-- [ ] All new components take the provider from the registry — adding ClickUp later must not require touching the hub, status panel, connect flow, or sync button.
+- [ ] All new components take the provider from the registry — adding a provider must not require touching the hub, status panel, connect flow, or sync button.
+- [ ] ClickUp (§11): list picker grouped by Space with Folder badges, `list_ids` payload field, `skipped_lists`/`unmatched_clickup_users`/`remaining_list_ids` result fields handled by the shared result renderer.
+
+---
+
+## 11. ClickUp — second available provider (differences from monday only)
+
+ClickUp is live on the backend with the **same endpoint family, envelope, roles, popup/postMessage flow (provider key `clickup`), 401 no-logout rule (messages start with `ClickUp`), 409 in-flight message (`A ClickUp import or sync is already running for this company`), continuation/merge rules, and reconnect-then-sync caveat** as monday (§3–§8 all apply). Only these differ:
+
+### 11.1 Terminology & hierarchy
+ClickUp's container is a **List** (hierarchy: Workspace → Space → Folder → List; tasks live in lists). The picker shows **Lists**, grouped by Space, with a Folder name badge when present. `token_expiry` is always `null` (tokens never expire), and `metadata` carries `account_user_id` / `account_user_name` (both nullable, same fallback rules).
+
+### 11.2 `GET /clickup/lists` (replaces `/monday/boards`)
+Row shape — note `space`/`folder` context for grouping:
+
+```json
+{
+  "id": "901307000000",
+  "name": "Sprint 12",
+  "task_count": 34,
+  "workspace": { "id": "9013000000", "name": "Orbit Technology" },
+  "space": { "id": "90130001", "name": "Engineering" },
+  "folder": { "id": "90130777", "name": "Q3" },
+  "already_imported": false,
+  "project_id": null
+}
+```
+
+`folder` is `null` for folderless lists. Large accounts are capped server-side (≈5 workspaces × 20 spaces); ClickUp's 100-req/min rate limit makes this endpoint noticeably slower than monday's — keep the loading state generous.
+
+### 11.3 `POST /clickup/import`
+Body uses **`list_ids`** (1–25, numeric strings) instead of `board_ids`; `start_date`/`deadline` rules identical to §4.6. Result fields are list-flavored:
+
+```json
+{
+  "imported": [{ "list_id": "…", "list_name": "…", "project_id": 91, "created": true, "tasks_created": 20, "tasks_updated": 0, "tasks_skipped": 1, "tasks_truncated": false, "webhook_registered": true }],
+  "skipped_lists": [{ "list_id": "…", "reason": "List is archived" }],
+  "unmatched_clickup_users": [{ "id": "5551212", "name": "freelancer", "email": "f@gmail.com" }]
+}
+```
+
+`webhook_registered: false` ⇒ same warning as monday's `webhooks_registered: false`. `POST /clickup/sync` returns `remaining_list_ids` (same continuation semantics as §4.7).
+
+### 11.4 Error message strings (for the §8 matrix)
+`"ClickUp is not connected for this company"`, `"ClickUp rejected the access token. Please reconnect the account."` (401 — never logout), `"ClickUp rate limit reached. Please try again in a minute."`, `"No ClickUp lists have been imported yet"`, `"ClickUp OAuth configuration is missing"` (500).
+
+### 11.5 What the frontend should reuse vs fork
+Reuse generically (registry-driven): hub card, status panel, connect popup (filter on `provider === 'clickup'`), disconnect modal, sync button + continuation loop, result renderer (map `list_*`/`skipped_lists`/`unmatched_clickup_users` to the same components via a small per-provider field adapter). Fork only: the picker's grouping UI (Space/Folder hierarchy vs monday's flat board list with workspace label).

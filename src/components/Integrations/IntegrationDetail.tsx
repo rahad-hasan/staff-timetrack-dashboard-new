@@ -3,9 +3,9 @@
 
 import {
     disconnectIntegration,
-    getIntegrationBoards,
+    getIntegrationItems,
     getIntegrationStatus,
-    importIntegrationBoards,
+    importIntegrationItems,
     syncIntegration,
 } from "@/actions/integrations/appIntegrationAction";
 import ConfirmDialog from "@/components/Common/ConfirmDialog";
@@ -13,10 +13,10 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import {
+    IntegrationImportPayload,
+    IntegrationImportResult,
+    IntegrationItem,
     IntegrationStatusResponse,
-    MondayBoard,
-    MondayImportPayload,
-    MondayImportResult,
 } from "@/types/type";
 import { formatDistanceToNowStrict } from "date-fns";
 import {
@@ -37,8 +37,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import IntegrationPickerDialog from "./IntegrationPickerDialog";
 import IntegrationResultDialog from "./IntegrationResultDialog";
-import MondayBoardPickerDialog from "./MondayBoardPickerDialog";
 import { IntegrationDef } from "./registry";
 import { useIntegrationConnectFlow } from "./useIntegrationConnectFlow";
 
@@ -80,24 +80,24 @@ const formatRelative = (iso?: string | null) => {
 
 /** §4.7 — merge continuation results: concat rows, union users by id. */
 const mergeResults = (
-    a: MondayImportResult,
-    b: MondayImportResult,
-): MondayImportResult => ({
+    a: IntegrationImportResult,
+    b: IntegrationImportResult,
+): IntegrationImportResult => ({
     imported: [...(a.imported ?? []), ...(b.imported ?? [])],
-    skipped_boards: [...(a.skipped_boards ?? []), ...(b.skipped_boards ?? [])],
-    unmatched_monday_users: [
-        ...(a.unmatched_monday_users ?? []),
-        ...(b.unmatched_monday_users ?? []),
+    skipped: [...(a.skipped ?? []), ...(b.skipped ?? [])],
+    unmatched_users: [
+        ...(a.unmatched_users ?? []),
+        ...(b.unmatched_users ?? []),
     ].filter((user, index, arr) => arr.findIndex((u) => u.id === user.id) === index),
-    remaining_board_ids: b.remaining_board_ids,
+    remaining_ids: b.remaining_ids,
 });
 
-const sameBoardIds = (a: string[], b: string[]) =>
+const sameIds = (a: string[], b: string[]) =>
     a.length === b.length && a.every((id) => b.includes(id));
 
 interface ResultView {
     mode: "import" | "sync";
-    result: MondayImportResult;
+    result: IntegrationImportResult;
     stalled: boolean;
 }
 
@@ -113,9 +113,9 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
     const [statusLoading, setStatusLoading] = useState(true);
     const [statusError, setStatusError] = useState<string | null>(null);
 
-    const [boards, setBoards] = useState<MondayBoard[] | null>(null);
-    const [boardsLoading, setBoardsLoading] = useState(false);
-    const [boardsError, setBoardsError] = useState<string | null>(null);
+    const [items, setItems] = useState<IntegrationItem[] | null>(null);
+    const [itemsLoading, setItemsLoading] = useState(false);
+    const [itemsError, setItemsError] = useState<string | null>(null);
 
     const [pickerOpen, setPickerOpen] = useState(false);
     const [importing, setImporting] = useState(false);
@@ -150,41 +150,47 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
         [def.key],
     );
 
-    const fetchBoards = useCallback(
+    const fetchItems = useCallback(
         async ({ silent = false } = {}) => {
             if (!def.capabilities.boardPicker) return;
             if (!silent) {
-                setBoardsLoading(true);
-                setBoardsError(null);
+                setItemsLoading(true);
+                setItemsError(null);
             }
             try {
-                const res: any = await getIntegrationBoards(def.key);
+                const res: any = await getIntegrationItems(def.key);
                 if (res?.success) {
-                    setBoards(res?.data ?? []);
-                    setBoardsError(null);
+                    setItems(res?.data ?? []);
+                    setItemsError(null);
                 } else if (res?.statusCode === 401) {
                     // provider revoked the token — no logout; close the picker
                     // so the Connection-lost state is actually visible
-                    setBoards(null);
-                    setBoardsError(res?.message || "Connection lost — reconnect the account.");
+                    setItems(null);
+                    setItemsError(res?.message || "Connection lost — reconnect the account.");
                     setPickerOpen(false);
                     fetchStatus({ silent: true });
                 } else {
-                    const message: string = res?.message || "Failed to load boards";
+                    const message: string =
+                        res?.message || `Failed to load ${def.noun.plural}`;
                     if (message.includes("not connected")) {
                         // connection dropped between renders — refresh the status
-                        setBoards(null);
+                        setItems(null);
+                        setItemsError(message);
                         fetchStatus({ silent: true });
+                    } else if (!silent) {
+                        setItemsError(message);
                     }
-                    setBoardsError(message);
+                    // silent background refresh (e.g. right after an import that
+                    // ate the provider's rate limit) keeps showing the stale
+                    // list instead of replacing it with an error box
                 }
             } catch {
-                setBoardsError("Failed to load boards");
+                if (!silent) setItemsError(`Failed to load ${def.noun.plural}`);
             } finally {
-                setBoardsLoading(false);
+                setItemsLoading(false);
             }
         },
-        [def.capabilities.boardPicker, def.key, fetchStatus],
+        [def.capabilities.boardPicker, def.key, def.noun.plural, fetchStatus],
     );
 
     useEffect(() => {
@@ -207,13 +213,13 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
     const isConnected = connStatus === "connected";
     const isLost = connStatus === "expired" || connStatus === "revoked";
 
-    // §5.2 — the boards query feeds the imported list and the Sync-disable
+    // §5.2 — the items query feeds the imported list and the Sync-disable
     // rule, so it is fetched on detail-view mount whenever connected
     useEffect(() => {
         if (isConnected && def.capabilities.boardPicker) {
-            fetchBoards();
+            fetchItems();
         }
-    }, [isConnected, def.capabilities.boardPicker, fetchBoards]);
+    }, [isConnected, def.capabilities.boardPicker, fetchItems]);
 
     // warn before leaving while a long-running import/sync is pending
     const blocking = importing || syncing || continuing;
@@ -262,6 +268,12 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
         if (message.includes("already running")) {
             toast.error("An import or sync is already in progress — try again shortly.");
             startCooldown();
+        } else if (message.includes("not connected")) {
+            // connection dropped mid-flow (e.g. another admin disconnected) —
+            // refresh status so the UI leaves the stale Connected state
+            toast.error(message);
+            setPickerOpen(false);
+            fetchStatus({ silent: true });
         } else if (res?.errorMessages?.length) {
             toast.error(res.errorMessages[0]?.message || message);
         } else {
@@ -271,16 +283,16 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
 
     const afterMutationSuccess = () => {
         fetchStatus({ silent: true });
-        fetchBoards({ silent: true });
-        // imported boards are ordinary projects/tasks — refresh those screens
+        fetchItems({ silent: true });
+        // imported boards/lists are ordinary projects/tasks — refresh those screens
         router.refresh();
     };
 
-    const handleImport = async (payload: MondayImportPayload) => {
+    const handleImport = async (payload: IntegrationImportPayload) => {
         if (blocking) return;
         setImporting(true);
         try {
-            const res: any = await importIntegrationBoards(def.key, payload);
+            const res: any = await importIntegrationItems(def.key, payload);
             if (res?.success) {
                 setPickerOpen(false);
                 setReconnectHint(false);
@@ -310,20 +322,20 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
         try {
             const res: any = await syncIntegration(def.key);
             if (res?.success) {
-                const data: MondayImportResult = res.data;
-                const nextRemaining = data.remaining_board_ids ?? [];
+                const data: IntegrationImportResult = res.data;
+                const nextRemaining = data.remaining_ids ?? [];
                 setReconnectHint(false);
                 if (kind === "fresh") {
                     prevRemainingRef.current = nextRemaining;
                     setResultView({ mode: "sync", result: data, stalled: false });
                 } else {
                     const prev = prevRemainingRef.current ?? [];
-                    // §4.7 — failing boards stay at the front of the queue:
+                    // §4.7 — failing boards/lists stay at the front of the queue:
                     // identical remaining lists twice in a row means no progress
                     const stalled =
                         prev.length > 0 &&
                         nextRemaining.length > 0 &&
-                        sameBoardIds(prev, nextRemaining);
+                        sameIds(prev, nextRemaining);
                     prevRemainingRef.current = nextRemaining;
                     setResultView((current) =>
                         current
@@ -354,8 +366,8 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
             const res: any = await disconnectIntegration(def.key);
             if (res?.success) {
                 toast.success(res?.message || `${def.name} disconnected`);
-                setBoards(null);
-                setBoardsError(null);
+                setItems(null);
+                setItemsError(null);
                 setReconnectHint(false);
                 await fetchStatus({ silent: true });
             } else {
@@ -372,11 +384,15 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
         status?.provider_email ??
         status?.metadata?.account_user_name ??
         `${def.name} account`;
-    const importedBoards = (boards ?? []).filter((b) => b.already_imported);
+    const importedItems = (items ?? []).filter((item) => item.already_imported);
+    // §8 — Sync must stay disabled until the items query proves something is
+    // imported; while it is still in flight (ClickUp's /lists is slow) the
+    // safe reading of "no imported items exist" is to keep it disabled too
     const syncDisabled =
         blocking ||
         mutationCooldown ||
-        (boards !== null && importedBoards.length === 0);
+        items === null ||
+        importedItems.length === 0;
 
     const disconnectTrigger = (
         <Button
@@ -507,7 +523,7 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
                                                 className="gap-2"
                                             >
                                                 <Download className="h-3.5 w-3.5" />
-                                                Import boards
+                                                Import {def.noun.plural}
                                             </Button>
                                         )}
                                         {def.capabilities.sync && (
@@ -517,9 +533,13 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
                                                 onClick={() => runSync("fresh")}
                                                 disabled={syncDisabled}
                                                 title={
-                                                    boards !== null && importedBoards.length === 0
-                                                        ? "Import boards first"
-                                                        : undefined
+                                                    items === null
+                                                        ? itemsLoading
+                                                            ? `Checking imported ${def.noun.plural}…`
+                                                            : undefined
+                                                        : importedItems.length === 0
+                                                            ? `Import ${def.noun.plural} first`
+                                                            : undefined
                                                 }
                                                 className="gap-2 text-headingTextColor dark:text-darkTextPrimary"
                                             >
@@ -577,8 +597,18 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
                                     How it works
                                 </p>
                                 <ul className="mt-2 space-y-1.5 text-xs text-subTextColor dark:text-darkTextSecondary list-disc pl-4">
-                                    <li>Your {def.name} boards are imported as projects; their items become tasks.</li>
-                                    <li>Changes in {def.name} — new items, renames, deletions — sync automatically.</li>
+                                    <li>
+                                        Your {def.name} {def.noun.plural} are imported as
+                                        projects
+                                        {def.countNoun === "task"
+                                            ? ", and their tasks come along with them"
+                                            : `; their ${def.countNoun}s become tasks`}
+                                        .
+                                    </li>
+                                    <li>
+                                        Changes in {def.name} — new {def.countNoun}s, renames,
+                                        deletions — sync automatically.
+                                    </li>
                                     <li>Assignees are matched to teammates by email address.</li>
                                 </ul>
                                 <p className="mt-3 text-xs text-subTextColor dark:text-darkTextSecondary">
@@ -612,31 +642,31 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
                             <div className="mt-5">
                                 <div className="flex items-center justify-between gap-2">
                                     <p className="text-sm font-medium text-headingTextColor dark:text-darkTextPrimary">
-                                        Imported {def.itemNoun.toLowerCase()}
-                                        {boards !== null && (
+                                        Imported {def.noun.plural}
+                                        {items !== null && (
                                             <span className="ml-1.5 text-xs font-normal text-subTextColor dark:text-darkTextSecondary">
-                                                {importedBoards.length}
+                                                {importedItems.length}
                                             </span>
                                         )}
                                     </p>
                                     <Button
                                         variant="outline2"
                                         size="sm"
-                                        onClick={() => fetchBoards()}
-                                        disabled={boardsLoading}
-                                        aria-label="Refresh boards"
+                                        onClick={() => fetchItems()}
+                                        disabled={itemsLoading}
+                                        aria-label={`Refresh ${def.noun.plural}`}
                                         className="text-headingTextColor dark:text-darkTextPrimary"
                                     >
                                         <RefreshCcw
                                             className={cn(
                                                 "h-3.5 w-3.5",
-                                                boardsLoading && "animate-spin",
+                                                itemsLoading && "animate-spin",
                                             )}
                                         />
                                     </Button>
                                 </div>
 
-                                {boardsLoading && (
+                                {itemsLoading && (
                                     <div className="mt-3 space-y-2">
                                         {[0, 1, 2].map((i) => (
                                             <div
@@ -647,59 +677,68 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
                                     </div>
                                 )}
 
-                                {!boardsLoading && boardsError && (
+                                {!itemsLoading && itemsError && (
                                     <div className="mt-3">
                                         <div className="rounded-lg border border-red-200 dark:border-red-500/30 bg-red-50/70 dark:bg-red-500/10 p-3 text-xs text-red-700 dark:text-red-300">
-                                            {boardsError}
+                                            {itemsError}
                                         </div>
                                         <Button
                                             variant="outline2"
                                             size="sm"
                                             className="mt-3"
-                                            onClick={() => fetchBoards()}
+                                            onClick={() => fetchItems()}
                                         >
                                             Try again
                                         </Button>
                                     </div>
                                 )}
 
-                                {!boardsLoading && !boardsError && boards !== null && (
-                                    importedBoards.length === 0 ? (
+                                {!itemsLoading && !itemsError && items !== null && (
+                                    importedItems.length === 0 ? (
                                         <p className="mt-3 text-xs text-subTextColor dark:text-darkTextSecondary">
-                                            No {def.itemNoun.toLowerCase()} imported yet — use{" "}
-                                            <span className="font-medium">Import boards</span> to
-                                            bring your {def.name} work in.
+                                            No {def.noun.plural} imported yet — use{" "}
+                                            <span className="font-medium">
+                                                Import {def.noun.plural}
+                                            </span>{" "}
+                                            to bring your {def.name} work in.
                                         </p>
                                     ) : (
                                         <ul className="mt-3 space-y-2">
-                                            {importedBoards.map((board) => (
-                                                <li
-                                                    key={board.id}
-                                                    className="flex items-center justify-between gap-3 rounded-lg border border-borderColor dark:border-darkBorder bg-bgSecondary/40 dark:bg-darkPrimaryBg/40 px-3 py-2.5"
-                                                >
-                                                    <div className="min-w-0">
-                                                        <p className="text-sm font-medium text-headingTextColor dark:text-darkTextPrimary truncate">
-                                                            {board.name}
-                                                        </p>
-                                                        <p className="text-xs text-subTextColor dark:text-darkTextSecondary truncate">
-                                                            {board.workspace?.name
-                                                                ? `${board.workspace.name} · `
-                                                                : ""}
-                                                            {board.items_count} item
-                                                            {board.items_count === 1 ? "" : "s"}
-                                                        </p>
-                                                    </div>
-                                                    {board.project_id !== null && (
-                                                        <Link
-                                                            href={`/project-management/projects/${board.project_id}`}
-                                                            className="flex shrink-0 items-center gap-1 text-xs font-medium text-primary hover:underline"
-                                                        >
-                                                            View project
-                                                            <ArrowUpRight className="h-3.5 w-3.5" />
-                                                        </Link>
-                                                    )}
-                                                </li>
-                                            ))}
+                                            {importedItems.map((item) => {
+                                                const context = [
+                                                    item.workspace?.name,
+                                                    item.space?.name,
+                                                    item.folder?.name,
+                                                ]
+                                                    .filter(Boolean)
+                                                    .join(" · ");
+                                                return (
+                                                    <li
+                                                        key={item.id}
+                                                        className="flex items-center justify-between gap-3 rounded-lg border border-borderColor dark:border-darkBorder bg-bgSecondary/40 dark:bg-darkPrimaryBg/40 px-3 py-2.5"
+                                                    >
+                                                        <div className="min-w-0">
+                                                            <p className="text-sm font-medium text-headingTextColor dark:text-darkTextPrimary truncate">
+                                                                {item.name}
+                                                            </p>
+                                                            <p className="text-xs text-subTextColor dark:text-darkTextSecondary truncate">
+                                                                {context ? `${context} · ` : ""}
+                                                                {item.items_count} {def.countNoun}
+                                                                {item.items_count === 1 ? "" : "s"}
+                                                            </p>
+                                                        </div>
+                                                        {item.project_id !== null && (
+                                                            <Link
+                                                                href={`/project-management/projects/${item.project_id}`}
+                                                                className="flex shrink-0 items-center gap-1 text-xs font-medium text-primary hover:underline"
+                                                            >
+                                                                View project
+                                                                <ArrowUpRight className="h-3.5 w-3.5" />
+                                                            </Link>
+                                                        )}
+                                                    </li>
+                                                );
+                                            })}
                                         </ul>
                                     )
                                 )}
@@ -709,7 +748,7 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
                 </div>
             )}
 
-            {/* board picker — child stays mounted only while open so state resets */}
+            {/* item picker — child stays mounted only while open so state resets */}
             <Dialog
                 open={pickerOpen}
                 onOpenChange={(open) => {
@@ -717,12 +756,12 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
                 }}
             >
                 {pickerOpen ? (
-                    <MondayBoardPickerDialog
+                    <IntegrationPickerDialog
                         def={def}
-                        boards={boards}
-                        boardsLoading={boardsLoading}
-                        boardsError={boardsError}
-                        onRefreshBoards={() => fetchBoards()}
+                        items={items}
+                        itemsLoading={itemsLoading}
+                        itemsError={itemsError}
+                        onRefreshItems={() => fetchItems()}
                         importing={importing}
                         importCooldown={mutationCooldown}
                         onImport={handleImport}
@@ -773,8 +812,8 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
                             Syncing from {def.name}…
                         </p>
                         <p className="max-w-sm text-xs text-subTextColor dark:text-darkTextSecondary">
-                            This can take a few minutes for large boards. Please keep this
-                            window open.
+                            This can take a few minutes for large{" "}
+                            {def.noun.plural}. Please keep this window open.
                         </p>
                     </div>
                 </DialogContent>

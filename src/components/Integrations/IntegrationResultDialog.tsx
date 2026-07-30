@@ -9,7 +9,7 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import { MondayImportResult } from "@/types/type";
+import { IntegrationImportResult } from "@/types/type";
 import {
     AlertTriangle,
     CheckCircle2,
@@ -19,7 +19,7 @@ import {
     UserX,
 } from "lucide-react";
 import { ReactNode, useEffect, useState } from "react";
-import { IntegrationDef } from "./registry";
+import { capitalize, IntegrationDef } from "./registry";
 
 interface SectionProps {
     title: string;
@@ -76,12 +76,12 @@ const StatTile = ({ label, value }: { label: string; value: number }) => (
 interface IntegrationResultDialogProps {
     def: IntegrationDef;
     mode: "import" | "sync";
-    result: MondayImportResult;
+    result: IntegrationImportResult;
     /** continue-sync call currently running */
     continuing?: boolean;
     /** brief post-409 cooldown — §8: keep the button disabled a few seconds */
     continueCooldown?: boolean;
-    /** two consecutive sync calls returned identical remaining boards */
+    /** two consecutive sync calls returned identical remaining ids */
     stalled?: boolean;
     onContinueSync?: () => void;
     onClose: () => void;
@@ -97,17 +97,18 @@ const IntegrationResultDialog = ({
     onContinueSync,
     onClose,
 }: IntegrationResultDialogProps) => {
+    const noun = def.noun;
     const imported = result.imported ?? [];
-    const skipped = result.skipped_boards ?? [];
-    const unmatched = result.unmatched_monday_users ?? [];
-    const remaining = result.remaining_board_ids ?? [];
+    const skipped = result.skipped ?? [];
+    const unmatched = result.unmatched_users ?? [];
+    const remaining = result.remaining_ids ?? [];
 
     const nothingImported = imported.length === 0;
-    const projectsCreated = imported.filter((b) => b.created).length;
+    const projectsCreated = imported.filter((item) => item.created).length;
     const projectsUpdated = imported.length - projectsCreated;
-    const tasksCreated = imported.reduce((sum, b) => sum + (b.tasks_created || 0), 0);
-    const tasksUpdated = imported.reduce((sum, b) => sum + (b.tasks_updated || 0), 0);
-    const tasksSkipped = imported.reduce((sum, b) => sum + (b.tasks_skipped || 0), 0);
+    const tasksCreated = imported.reduce((sum, item) => sum + (item.tasks_created || 0), 0);
+    const tasksUpdated = imported.reduce((sum, item) => sum + (item.tasks_updated || 0), 0);
+    const tasksSkipped = imported.reduce((sum, item) => sum + (item.tasks_skipped || 0), 0);
 
     const blockClose = continuing;
 
@@ -127,7 +128,7 @@ const IntegrationResultDialog = ({
                     {nothingImported ? (
                         <>
                             <AlertTriangle className="h-5 w-5 text-amber-500" />
-                            No boards were imported
+                            No {noun.plural} were imported
                         </>
                     ) : (
                         <>
@@ -138,7 +139,7 @@ const IntegrationResultDialog = ({
                 </DialogTitle>
                 <DialogDescription>
                     {nothingImported
-                        ? "Every selected board was skipped — the reasons are listed below."
+                        ? `Every selected ${noun.singular} was skipped — the reasons are listed below.`
                         : `Here is what changed in this ${mode === "import" ? "import" : "sync"} from ${def.name}.`}
                 </DialogDescription>
             </DialogHeader>
@@ -156,15 +157,17 @@ const IntegrationResultDialog = ({
                 {!nothingImported && tasksSkipped > 0 && (
                     <p className="text-xs text-subTextColor dark:text-darkTextSecondary">
                         {tasksSkipped} task{tasksSkipped === 1 ? "" : "s"} skipped
-                        (unchanged items or per-item failures) — this is not an error.
+                        (unchanged {def.countNoun}s or per-{def.countNoun} failures) —
+                        this is not an error.
                     </p>
                 )}
 
                 {remaining.length > 0 && !stalled && (
                     <div className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-lg border border-blue-200 dark:border-blue-500/30 bg-blue-50/70 dark:bg-blue-500/10 px-3 py-2.5">
                         <p className="flex-1 text-xs text-blue-800 dark:text-blue-200">
-                            {remaining.length} board{remaining.length === 1 ? "" : "s"} still
-                            pending — the server syncs up to 25 boards per run.
+                            {remaining.length}{" "}
+                            {remaining.length === 1 ? noun.singular : noun.plural} still
+                            pending — the server syncs up to 25 {noun.plural} per run.
                         </p>
                         <Button
                             size="sm"
@@ -185,49 +188,52 @@ const IntegrationResultDialog = ({
                 {stalled && (
                     <div className="rounded-lg border border-amber-200 dark:border-amber-500/30 bg-amber-50/70 dark:bg-amber-500/10 px-3 py-2.5 text-xs text-amber-800 dark:text-amber-200">
                         Sync is not making progress on the remaining{" "}
-                        {remaining.length} board{remaining.length === 1 ? "" : "s"} — check
+                        {remaining.length}{" "}
+                        {remaining.length === 1 ? noun.singular : noun.plural} — check
                         the skipped reasons below before trying again.
                     </div>
                 )}
 
                 {imported.length > 0 && (
                     <ul className="space-y-2">
-                        {imported.map((board) => (
+                        {imported.map((item) => (
                             <li
-                                key={board.board_id}
+                                key={item.id}
                                 className="rounded-lg border border-borderColor dark:border-darkBorder bg-bgSecondary/40 dark:bg-darkPrimaryBg/40 p-3"
                             >
                                 <div className="flex flex-wrap items-center gap-2">
                                     <p className="text-sm font-medium text-headingTextColor dark:text-darkTextPrimary">
-                                        {board.board_name}
+                                        {item.name}
                                     </p>
                                     <span
                                         className={cn(
                                             "inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium",
-                                            board.created
+                                            item.created
                                                 ? "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-300 dark:border-emerald-500/30"
                                                 : "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-500/10 dark:text-blue-300 dark:border-blue-500/30",
                                         )}
                                     >
-                                        {board.created ? "Project created" : "Project updated"}
+                                        {item.created ? "Project created" : "Project updated"}
                                     </span>
                                 </div>
                                 <p className="mt-1 text-xs text-subTextColor dark:text-darkTextSecondary">
-                                    {board.tasks_created} task
-                                    {board.tasks_created === 1 ? "" : "s"} created ·{" "}
-                                    {board.tasks_updated} updated · {board.tasks_skipped} skipped
+                                    {item.tasks_created} task
+                                    {item.tasks_created === 1 ? "" : "s"} created ·{" "}
+                                    {item.tasks_updated} updated · {item.tasks_skipped} skipped
                                 </p>
-                                {board.items_truncated && (
+                                {item.truncated && (
                                     <p className="mt-1.5 flex items-start gap-1.5 text-xs text-amber-700 dark:text-amber-300">
                                         <AlertTriangle className="h-3.5 w-3.5 shrink-0 mt-px" />
-                                        Very large board — only the first ~3000 items were
-                                        imported. New items will still arrive via live updates.
+                                        Very large {noun.singular} — only the first ~3000{" "}
+                                        {def.countNoun}s were imported. New {def.countNoun}s
+                                        will still arrive via live updates.
                                     </p>
                                 )}
-                                {!board.webhooks_registered && (
+                                {!item.webhook_registered && (
                                     <p className="mt-1.5 flex items-start gap-1.5 text-xs text-amber-700 dark:text-amber-300">
                                         <AlertTriangle className="h-3.5 w-3.5 shrink-0 mt-px" />
-                                        Automatic updates unavailable for this board — use Sync.
+                                        Automatic updates unavailable for this {noun.singular}{" "}
+                                        — use Sync.
                                     </p>
                                 )}
                             </li>
@@ -237,21 +243,23 @@ const IntegrationResultDialog = ({
 
                 {skipped.length > 0 && (
                     <Section
-                        title="Skipped boards"
+                        title={`Skipped ${noun.plural}`}
                         count={skipped.length}
                         defaultOpen={nothingImported || stalled}
                         icon={<AlertTriangle className="h-3.5 w-3.5" />}
                     >
                         <ul className="space-y-1.5">
-                            {/* a failing board can be skipped again on a continue-sync
-                                run, so the id alone is not a unique key */}
-                            {skipped.map((board, index) => (
+                            {/* a failing board/list can be skipped again on a
+                                continue-sync run, so the id alone is not a unique key */}
+                            {skipped.map((item, index) => (
                                 <li
-                                    key={`${board.board_id}-${index}`}
+                                    key={`${item.id}-${index}`}
                                     className="text-xs text-amber-800 dark:text-amber-200"
                                 >
-                                    <span className="font-medium">Board {board.board_id}:</span>{" "}
-                                    {board.reason}
+                                    <span className="font-medium">
+                                        {capitalize(noun.singular)} {item.id}:
+                                    </span>{" "}
+                                    {item.reason}
                                 </li>
                             ))}
                         </ul>
@@ -260,14 +268,15 @@ const IntegrationResultDialog = ({
 
                 {unmatched.length > 0 && (
                     <Section
-                        title="Unmatched monday users"
+                        title={`Unmatched ${def.name} users`}
                         count={unmatched.length}
                         icon={<UserX className="h-3.5 w-3.5" />}
                     >
                         <p className="mb-2 text-xs text-amber-800 dark:text-amber-200">
-                            These monday users have no matching account here (by email), so
-                            their items were assigned to you. Invite them with the same
-                            email to match them on the next sync.
+                            These {def.name} users have no matching account here (by
+                            email), so their {def.countNoun}s were assigned to you.
+                            Invite them with the same email to match them on the next
+                            sync.
                         </p>
                         <ul className="space-y-1.5">
                             {unmatched.map((user) => (
