@@ -1,4 +1,3 @@
-import { getWorkReport } from "@/actions/report/action";
 import SelectUserWrapper from "@/components/Common/SelectUserWrapper";
 import CalendarIcon from "@/components/Icons/CalendarIcon";
 import AllowOvertimeCheckbox from "@/app/(main_layout)/report/work-report/_components/AllowOvertimeCheckbox";
@@ -9,6 +8,7 @@ import { Clock, AlertCircle } from "lucide-react";
 import EmptyTableLogo from "@/assets/empty_table.svg";
 import Image from "next/image";
 import MonthPicker from "@/components/Common/MonthPicker";
+import { getWorkReport } from "@/actions/CheckInOut/action";
 
 const WorkReport = async ({ searchParams }: ISearchParamsProps) => {
   const params = await searchParams;

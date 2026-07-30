@@ -13,8 +13,8 @@ import { ITimeSheetEntry } from "@/types/type";
 import TimeEntryTooltip from "@/components/Common/TimeEntryTooltip";
 import ConfirmDialog from "@/components/Common/ConfirmDialog";
 import { useLogInUserStore } from "@/store/logInUserStore";
-import { deleteTimeEntry } from "@/actions/report/action";
 import { toast } from "sonner";
+import { deleteTimeEntry } from "@/actions/truck/action";
 
 type TimezoneOption = {
   value: string;

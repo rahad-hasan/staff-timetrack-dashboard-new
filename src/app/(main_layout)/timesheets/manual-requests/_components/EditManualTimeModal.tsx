@@ -44,8 +44,8 @@ import { IManualTimeEntry, IProject, ITask } from "@/types/type";
 import { useDebounce } from "@/hooks/use-debounce";
 import { getTasks } from "@/actions/task/action";
 import { toast } from "sonner";
-import { editManualTimeEntry } from "@/actions/timesheets/action";
 import { format, parseISO } from "date-fns";
+import { editManualTimeEntry } from "@/actions/truck/action";
 
 interface TimePeriod {
   start: number;

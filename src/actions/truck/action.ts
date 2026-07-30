@@ -4,12 +4,41 @@
 import { buildQuery } from "@/utils/buildQuery";
 import { baseApi } from "../baseApi";
 import {
+  IResponse,
+  ITimeSheetEntry,
+} from "@/types/type";
+import { revalidateTag } from "next/cache";
+import {
   AddTimeEntryPayload,
   IDailyTimeTrackerData,
   IManualTimeEntry,
-  IResponse,
 } from "@/types/type";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
+
+export const getTimeEntry = async (
+  query = {},
+): Promise<IResponse<ITimeSheetEntry[]>> => {
+  const queryString = buildQuery(query);
+  return await baseApi(`/time-entries${queryString ? `?${queryString}` : ""}`, {
+    // tag: "timeEntry",
+    tag: "manualTimeEntry",
+  });
+};
+
+export const deleteTimeEntry = async (id: number): Promise<IResponse<null>> => {
+  const res = await baseApi(`/time-entries/remove-manual-time/${id}`, {
+    method: "DELETE",
+    tag: "timeEntry",
+    cache: "no-cache",
+  });
+
+  if (res?.success) {
+    revalidateTag("DailyTimeEntry");
+    revalidateTag("manualTimeEntry");
+  }
+
+  return res;
+};
 
 export const getManualTimeEntry = async (
   query = {},

@@ -34,35 +34,15 @@ export const getDashboardMembersStats = async (query = {}) => {
   );
 };
 
-export const getDashboardAppsUrls = async (query = {}) => {
-  const queryString = buildQuery(query);
-  return await baseApi(
-    `/admin/recent-app-url${queryString ? `?${queryString}` : ""}`,
-    {
-      tag: "recentAppUrl",
-    },
-  );
-};
-
-export const getDashboardInsights = async (query = {}) => {
-  const queryString = buildQuery(query);
-  return await baseApi(
-    `/dashboard/insights${queryString ? `?${queryString}` : ""}`,
-    {
-      tag: "insightsDashboard",
-    },
-  );
-};
-
-export const getDashboardAppsAndUrls = async (query = {}) => {
-  const queryString = buildQuery(query);
-  return await baseApi(
-    `/admin/recent-app-url${queryString ? `?${queryString}` : ""}`,
-    {
-      tag: "appUrlDashboard",
-    },
-  );
-};
+// export const getDashboardAppsUrls = async (query = {}) => {
+//   const queryString = buildQuery(query);
+//   return await baseApi(
+//     `/admin/recent-app-url${queryString ? `?${queryString}` : ""}`,
+//     {
+//       tag: "recentAppUrl",
+//     },
+//   );
+// };
 
 export const getTodayWorkTime = async () => {
   return await baseApi(`/dashboard/work-time`, {

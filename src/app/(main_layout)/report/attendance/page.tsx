@@ -3,9 +3,9 @@ import { ISearchParamsProps } from "@/types/type";
 import { Suspense } from "react";
 import { Metadata } from "next";
 import { format } from "date-fns";
-import { getAttendance } from "@/actions/report/action";
 import AttendanceTableSkeleton from "@/skeleton/report/Attendance/AttendanceTableSkeleton";
 import AttendanceServer from "./_components/AttendanceServer";
+import { getAttendance } from "@/actions/CheckInOut/action";
 
 export const metadata: Metadata = {
   title: "Staff Time Tracker Attendance",

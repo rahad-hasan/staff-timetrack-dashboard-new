@@ -10,7 +10,6 @@ import CalendarIcon from "@/components/Icons/CalendarIcon";
 import JobIcon from "@/components/Icons/JobIcon";
 import TaskListIcon from "@/components/Icons/TaskListIcon";
 import UserIcon from "@/components/Icons/UserIcon";
-import { addManualTimeEntry, addTimeEntry } from "@/actions/timesheets/action";
 import { getMembersDashboard } from "@/actions/members/action";
 import { getProjects } from "@/actions/projects/action";
 import { getTasks } from "@/actions/task/action";
@@ -49,6 +48,7 @@ import { useDebounce } from "@/hooks/use-debounce";
 import { IProject, ITask } from "@/types/type";
 import { addManualTimeSchema } from "@/zod/schema";
 import { toast } from "sonner";
+import { addManualTimeEntry, addTimeEntry } from "@/actions/truck/action";
 
 interface TimePeriod {
   start: number;

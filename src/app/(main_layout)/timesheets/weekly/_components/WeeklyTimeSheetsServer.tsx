@@ -1,8 +1,8 @@
 import { ISearchParamsProps } from "@/types/type";
 import WeeklyTimeSheetsTable from "./WeeklyTimeSheetsTable";
-import { getWeeklyAndMonthlyTimeEntry } from "@/actions/timesheets/action";
 import { endOfWeek, format, startOfWeek } from "date-fns";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
+import { getWeeklyAndMonthlyTimeEntry } from "@/actions/truck/action";
 
 const WeeklyTimeSheetsServer = async ({ searchParams }: ISearchParamsProps) => {
   const params = await searchParams;

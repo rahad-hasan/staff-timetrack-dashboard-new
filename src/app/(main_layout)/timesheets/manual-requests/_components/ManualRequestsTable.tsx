@@ -34,7 +34,6 @@ import { IManualTimeEntry } from "@/types/type";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import ConfirmDialog from "@/components/Common/ConfirmDialog";
 import { toast } from "sonner";
-import { approveRejectManualTimeEntry } from "@/actions/timesheets/action";
 import { convertDecimalHoursToHMS } from "@/utils";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -44,6 +43,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import Link from "next/link";
+import { approveRejectManualTimeEntry } from "@/actions/truck/action";
 
 const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
   const [sorting, setSorting] = useState<SortingState>([]);

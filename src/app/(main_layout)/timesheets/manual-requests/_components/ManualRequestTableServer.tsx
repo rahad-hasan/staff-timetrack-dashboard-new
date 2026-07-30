@@ -1,7 +1,7 @@
 import { ISearchParamsProps } from "@/types/type";
 import ManualRequestsTable from "./ManualRequestsTable";
-import { getManualTimeEntry } from "@/actions/timesheets/action";
 import AppPagination from "@/components/Common/AppPagination";
+import { getManualTimeEntry } from "@/actions/truck/action";
 
 const ManualRequestTableServer = async ({
   searchParams,

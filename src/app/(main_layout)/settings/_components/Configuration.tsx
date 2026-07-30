@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/select";
 import { useState } from "react";
 import { toast } from "sonner";
-import { updateCompanyInfo } from "@/actions/settings/action";
+import { updateCompanyInfo } from "@/actions/company/action";
 import {
     Command,
     CommandEmpty,

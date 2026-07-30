@@ -14,3 +14,13 @@ export const getMonthlyWorkReport = async (
     },
   );
 };
+
+export const getDashboardInsights = async (query = {}) => {
+  const queryString = buildQuery(query);
+  return await baseApi(
+    `/dashboard/insights${queryString ? `?${queryString}` : ""}`,
+    {
+      tag: "insightsDashboard",
+    },
+  );
+};

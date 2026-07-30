@@ -1,10 +1,9 @@
-import { getDailyTimeEntry } from "@/actions/timesheets/action";
 import { ISearchParams } from "@/types/type";
 import DailyTimeSheets from "./DailyTimeSheets";
 import AppPagination from "@/components/Common/AppPagination";
-import { getTimeEntry } from "@/actions/report/action";
 import { format } from "date-fns";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
+import { getDailyTimeEntry, getTimeEntry } from "@/actions/truck/action";
 
 type TimezoneOption = {
   value: string;

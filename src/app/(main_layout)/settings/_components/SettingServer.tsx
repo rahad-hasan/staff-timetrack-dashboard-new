@@ -2,7 +2,7 @@ import { ISearchParamsProps } from "@/types/type";
 import Configuration from "@/app/(main_layout)/settings/_components/Configuration";
 import Profile from "@/app/(main_layout)/settings/_components/Profile";
 // import Subscription from "@/components/Settings/Subscription";
-import { getCompanyInfo } from "@/actions/settings/action";
+import { getCompanyInfo } from "@/actions/company/action";
 import ChangePassword from "./ChangePassword";
 
 const SettingServer = async ({ searchParams }: ISearchParamsProps) => {

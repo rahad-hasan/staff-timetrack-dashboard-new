@@ -1,4 +1,4 @@
-import { getDashboardAppsAndUrls } from "@/actions/dashboard/action";
+import { getDashboardAppsAndUrls } from "@/actions/appsUrls/action";
 import AppsAndUrl from "@/app/(main_layout)/dashboard/@appsAndUrl/_components/AppsAndUrl";
 import { ISearchParamsProps } from "@/types/type";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
