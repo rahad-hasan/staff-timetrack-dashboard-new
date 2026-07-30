@@ -420,3 +420,51 @@ Body uses **`list_ids`** (1–25, numeric strings) instead of `board_ids`; `star
 
 ### 11.5 What the frontend should reuse vs fork
 Reuse generically (registry-driven): hub card, status panel, connect popup (filter on `provider === 'clickup'`), disconnect modal, sync button + continuation loop, result renderer (map `list_*`/`skipped_lists`/`unmatched_clickup_users` to the same components via a small per-provider field adapter). Fork only: the picker's grouping UI (Space/Folder hierarchy vs monday's flat board list with workspace label).
+
+---
+
+## 12. Asana — third available provider (differences from monday/ClickUp only)
+
+Asana is live on the backend with the **same endpoint family, envelope, roles, popup/postMessage flow (provider key `asana`), 401 no-logout rule (messages start with `Asana`), 409 in-flight message (`A Asana import or sync is already running for this company`), continuation/merge rules** as the other two (§3–§8 all apply). Only these differ:
+
+### 12.1 Terminology, hierarchy & token expiry
+Asana's container is a **Project** (hierarchy: Workspace → *(optional Team)* → Project; tasks live in projects). The picker shows **Projects**, grouped by Workspace, with a Team name badge when present.
+
+**Important:** unlike monday/ClickUp, Asana access tokens **expire hourly** — but the backend refreshes them automatically with a stored refresh token, so `token_expiry` in `/asana/status` is informational only. **Do not build any re-auth UX around it**; treat the connection exactly like the non-expiring providers. Only `status: "revoked"` (user revoked the app inside Asana, or refresh failed permanently) requires the reconnect flow.
+
+### 12.2 `GET /asana/projects` (replaces `/monday/boards`, `/clickup/lists`)
+Row shape — no task count is available (Asana's API has no cheap count):
+
+```json
+{
+  "id": "1205551234567890",
+  "name": "Website Revamp",
+  "workspace": { "id": "1200000000000001", "name": "Orbit Technology" },
+  "team": "Engineering",
+  "already_imported": false,
+  "project_id": null
+}
+```
+
+`team` is `null` in personal workspaces. Server-side cap ≈5 workspaces × 1000 projects.
+
+### 12.3 `POST /asana/import`
+Body uses **`project_gids`** (1–25, numeric strings) instead of `board_ids`/`list_ids`; `start_date`/`deadline` rules identical to §4.6. Result fields are project-flavored:
+
+```json
+{
+  "imported": [{ "project_gid": "…", "project_name": "…", "project_id": 91, "created": true, "tasks_created": 20, "tasks_updated": 0, "tasks_skipped": 1, "tasks_truncated": false, "webhook_registered": true }],
+  "skipped_projects": [{ "project_gid": "…", "reason": "Project is archived" }],
+  "unmatched_asana_users": [{ "id": "5551212", "name": "freelancer", "email": "f@gmail.com" }]
+}
+```
+
+`webhook_registered: false` ⇒ same warning treatment as the other providers. `POST /asana/sync` returns `remaining_project_gids` (same continuation semantics as §4.7).
+
+Mapping notes the UI may surface in the import-result details: Asana has no native status/priority — status comes from the task's **section** name ("To do" / "In progress" / "Done"…) and completion flag; priority from an enum **custom field named "Priority"** when one exists. Tasks with empty names import as `Untitled task #<gid>`.
+
+### 12.4 Error message strings (for the §8 matrix)
+`"Asana is not connected for this company"`, `"Asana rejected the access token. Please reconnect the account."` (401 — never logout), `"Asana session expired. Please reconnect the account."` (401 — refresh token dead ⇒ show reconnect CTA), `"Asana rate limit reached. Please try again in a minute."`, `"No Asana projects have been imported yet"`, `"Asana OAuth configuration is missing"` (500).
+
+### 12.5 What the frontend should reuse vs fork
+Reuse everything registry-driven (hub card, status panel, connect popup filtered on `provider === 'asana'`, disconnect modal, sync button + continuation loop, result renderer via the per-provider field adapter: `project_gid`/`skipped_projects`/`unmatched_asana_users`). Fork only: the picker's grouping (Workspace groups with a flat project list + optional team badge). The reconnect-then-sync caveat banner applies to Asana too — webhooks survive on Asana's side per imported project, but running Sync once after reconnect is still the recommended recovery step.

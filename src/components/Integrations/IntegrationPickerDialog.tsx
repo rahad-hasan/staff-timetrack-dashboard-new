@@ -27,6 +27,7 @@ import {
     Loader2,
     RefreshCcw,
     Search,
+    Users,
     X,
 } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -77,39 +78,49 @@ const IntegrationPickerDialog = ({
                 item.name.toLowerCase().includes(query) ||
                 item.workspace?.name?.toLowerCase().includes(query) ||
                 item.space?.name?.toLowerCase().includes(query) ||
-                item.folder?.name?.toLowerCase().includes(query),
+                item.badge?.toLowerCase().includes(query),
         );
     }, [items, search]);
 
     /**
-     * ClickUp lists carry a Space (Workspace → Space → Folder → List) and the
-     * picker groups by it (§11.1); monday boards have no space and render as
-     * the original flat list. Workspace name is prefixed onto the group label
-     * only when the account actually spans several workspaces.
+     * Registry-driven grouping (§11.1 / §12.1): "space" renders ClickUp's
+     * Workspace · Space headers (workspace name prefixed only when the
+     * account actually spans several workspaces), "workspace" renders Asana's
+     * Workspace headers, "none" keeps monday's flat list.
      */
     const grouped = useMemo(() => {
-        if (!(items ?? []).some((item) => item.space)) return null;
-        const workspaceIds = new Set(
-            (items ?? []).map((item) => item.workspace?.id ?? ""),
-        );
-        const multiWorkspace = workspaceIds.size > 1;
+        if (def.groupBy === "none") return null;
         const groups = new Map<
             string,
             { key: string; label: string; rows: IntegrationItem[] }
         >();
-        for (const item of filteredItems) {
-            const key = `${item.workspace?.id ?? ""}:${item.space?.id ?? ""}`;
-            const spaceName = item.space?.name ?? "Other";
-            const label =
-                multiWorkspace && item.workspace?.name
-                    ? `${item.workspace.name} · ${spaceName}`
-                    : spaceName;
-            const group = groups.get(key);
-            if (group) group.rows.push(item);
-            else groups.set(key, { key, label, rows: [item] });
+        if (def.groupBy === "workspace") {
+            for (const item of filteredItems) {
+                const key = item.workspace?.id ?? "";
+                const label = item.workspace?.name ?? "Other";
+                const group = groups.get(key);
+                if (group) group.rows.push(item);
+                else groups.set(key, { key, label, rows: [item] });
+            }
+        } else {
+            const workspaceIds = new Set(
+                (items ?? []).map((item) => item.workspace?.id ?? ""),
+            );
+            const multiWorkspace = workspaceIds.size > 1;
+            for (const item of filteredItems) {
+                const key = `${item.workspace?.id ?? ""}:${item.space?.id ?? ""}`;
+                const spaceName = item.space?.name ?? "Other";
+                const label =
+                    multiWorkspace && item.workspace?.name
+                        ? `${item.workspace.name} · ${spaceName}`
+                        : spaceName;
+                const group = groups.get(key);
+                if (group) group.rows.push(item);
+                else groups.set(key, { key, label, rows: [item] });
+            }
         }
         return [...groups.values()];
-    }, [items, filteredItems]);
+    }, [def.groupBy, items, filteredItems]);
 
     const toggleItem = (item: IntegrationItem) => {
         setSelected((prev) => {
@@ -147,11 +158,21 @@ const IntegrationPickerDialog = ({
         onImport(payload);
     };
 
+    const BadgeIcon = def.groupBy === "workspace" ? Users : Folder;
+
     const renderRow = (item: IntegrationItem) => {
         const checked = selected.has(item.id);
         const disabled = !checked && capReached;
         // grouped rows already show workspace/space in the header
         const context = grouped ? null : item.workspace?.name;
+        const subtitle = [
+            context,
+            item.items_count != null
+                ? `${item.items_count} ${def.countNoun}${item.items_count === 1 ? "" : "s"}`
+                : null,
+        ]
+            .filter(Boolean)
+            .join(" · ");
         return (
             <label
                 key={item.id}
@@ -173,10 +194,10 @@ const IntegrationPickerDialog = ({
                         <span className="text-sm font-medium text-headingTextColor dark:text-darkTextPrimary truncate">
                             {item.name}
                         </span>
-                        {item.folder?.name && (
+                        {item.badge && (
                             <span className="inline-flex items-center gap-1 rounded-full border border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg px-2 py-0.5 text-[10px] font-medium text-subTextColor dark:text-darkTextSecondary">
-                                <Folder className="h-2.5 w-2.5" />
-                                {item.folder.name}
+                                <BadgeIcon className="h-2.5 w-2.5" />
+                                {item.badge}
                             </span>
                         )}
                         {item.already_imported && (
@@ -185,11 +206,11 @@ const IntegrationPickerDialog = ({
                             </span>
                         )}
                     </span>
-                    <span className="block text-xs text-subTextColor dark:text-darkTextSecondary truncate">
-                        {context ? `${context} · ` : ""}
-                        {item.items_count} {def.countNoun}
-                        {item.items_count === 1 ? "" : "s"}
-                    </span>
+                    {subtitle && (
+                        <span className="block text-xs text-subTextColor dark:text-darkTextSecondary truncate">
+                            {subtitle}
+                        </span>
+                    )}
                 </span>
             </label>
         );
@@ -211,11 +232,14 @@ const IntegrationPickerDialog = ({
                     Import {noun.plural} from {def.name}
                 </DialogTitle>
                 <DialogDescription>
-                    {capitalize(noun.plural)} become projects and{" "}
-                    {def.countNoun === "task"
-                        ? "their tasks are imported with them"
-                        : `their ${def.countNoun}s become tasks`}
-                    . {capitalize(noun.plural)} marked “Imported” can be selected
+                    {noun.singular === "project"
+                        ? `Your ${def.name} projects and the tasks inside them are imported for time tracking.`
+                        : `${capitalize(noun.plural)} become projects and ${
+                              def.countNoun === "task"
+                                  ? "their tasks are imported with them"
+                                  : `their ${def.countNoun}s become tasks`
+                          }.`}{" "}
+                    {capitalize(noun.plural)} marked “Imported” can be selected
                     again to re-sync them — nothing is duplicated.
                 </DialogDescription>
             </DialogHeader>

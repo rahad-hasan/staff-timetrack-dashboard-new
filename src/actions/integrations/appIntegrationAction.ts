@@ -1,6 +1,8 @@
 "use server";
 
 import {
+    AsanaImportResult,
+    AsanaProject,
     ClickUpImportResult,
     ClickUpList,
     IntegrationImportPayload,
@@ -19,8 +21,8 @@ import { baseApi } from "../baseApi";
 
 /**
  * Server-side whitelist of app-integration providers. A new provider
- * (Jira, Asana, Slack) is enabled here + in the client registry — the
- * generic actions below need no changes beyond a config entry.
+ * (Jira, Slack) is enabled here + in the client registry — the generic
+ * actions below need no changes beyond a config entry.
  *
  * `authPrefix` — provider endpoints answer 401 with a message starting with
  * this prefix when the *provider* revoked the token (not a session expiry);
@@ -34,7 +36,7 @@ interface ProviderConfig {
     base: string;
     tag: string;
     authPrefix: string;
-    /** listing endpoint path — "/boards" (monday) or "/lists" (ClickUp) */
+    /** listing endpoint path — "/boards" (monday), "/lists" (ClickUp), "/projects" (Asana) */
     itemsPath: string;
     /** field name the provider's import endpoint expects the ids under */
     idsField: string;
@@ -80,7 +82,7 @@ const clickupToItem = (row: ClickUpList): IntegrationItem => ({
     items_count: row.task_count,
     workspace: row.workspace,
     space: row.space,
-    folder: row.folder,
+    badge: row.folder?.name ?? null,
     already_imported: row.already_imported,
     project_id: row.project_id,
 });
@@ -107,7 +109,39 @@ const clickupToResult = (raw: ClickUpImportResult): IntegrationImportResult => (
         : {}),
 });
 
-const PROVIDERS: Record<"monday" | "clickup", ProviderConfig> = {
+const asanaToItem = (row: AsanaProject): IntegrationItem => ({
+    id: row.id,
+    name: row.name,
+    // Asana's API has no cheap task count (§12.2) — the UI hides it
+    workspace: row.workspace,
+    badge: row.team,
+    already_imported: row.already_imported,
+    project_id: row.project_id,
+});
+
+const asanaToResult = (raw: AsanaImportResult): IntegrationImportResult => ({
+    imported: (raw?.imported ?? []).map((project) => ({
+        id: project.project_gid,
+        name: project.project_name,
+        project_id: project.project_id,
+        created: project.created,
+        tasks_created: project.tasks_created,
+        tasks_updated: project.tasks_updated,
+        tasks_skipped: project.tasks_skipped,
+        truncated: project.tasks_truncated,
+        webhook_registered: project.webhook_registered,
+    })),
+    skipped: (raw?.skipped_projects ?? []).map((project) => ({
+        id: project.project_gid,
+        reason: project.reason,
+    })),
+    unmatched_users: raw?.unmatched_asana_users ?? [],
+    ...(raw?.remaining_project_gids
+        ? { remaining_ids: raw.remaining_project_gids }
+        : {}),
+});
+
+const PROVIDERS: Record<"monday" | "clickup" | "asana", ProviderConfig> = {
     monday: {
         base: "/monday",
         tag: "monday-integration",
@@ -125,6 +159,15 @@ const PROVIDERS: Record<"monday" | "clickup", ProviderConfig> = {
         idsField: "list_ids",
         toItem: clickupToItem,
         toResult: clickupToResult,
+    },
+    asana: {
+        base: "/asana",
+        tag: "asana-integration",
+        authPrefix: "Asana",
+        itemsPath: "/projects",
+        idsField: "project_gids",
+        toItem: asanaToItem,
+        toResult: asanaToResult,
     },
 };
 

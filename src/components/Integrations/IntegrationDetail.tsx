@@ -598,12 +598,11 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
                                 </p>
                                 <ul className="mt-2 space-y-1.5 text-xs text-subTextColor dark:text-darkTextSecondary list-disc pl-4">
                                     <li>
-                                        Your {def.name} {def.noun.plural} are imported as
-                                        projects
-                                        {def.countNoun === "task"
-                                            ? ", and their tasks come along with them"
-                                            : `; their ${def.countNoun}s become tasks`}
-                                        .
+                                        {def.noun.singular === "project"
+                                            ? `Your ${def.name} projects and the tasks inside them are imported for time tracking.`
+                                            : def.countNoun === "task"
+                                                ? `Your ${def.name} ${def.noun.plural} are imported as projects, and their tasks come along with them.`
+                                                : `Your ${def.name} ${def.noun.plural} are imported as projects; their ${def.countNoun}s become tasks.`}
                                     </li>
                                     <li>
                                         Changes in {def.name} — new {def.countNoun}s, renames,
@@ -705,10 +704,13 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
                                     ) : (
                                         <ul className="mt-3 space-y-2">
                                             {importedItems.map((item) => {
-                                                const context = [
+                                                const subtitle = [
                                                     item.workspace?.name,
                                                     item.space?.name,
-                                                    item.folder?.name,
+                                                    item.badge,
+                                                    item.items_count != null
+                                                        ? `${item.items_count} ${def.countNoun}${item.items_count === 1 ? "" : "s"}`
+                                                        : null,
                                                 ]
                                                     .filter(Boolean)
                                                     .join(" · ");
@@ -721,11 +723,11 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
                                                             <p className="text-sm font-medium text-headingTextColor dark:text-darkTextPrimary truncate">
                                                                 {item.name}
                                                             </p>
-                                                            <p className="text-xs text-subTextColor dark:text-darkTextSecondary truncate">
-                                                                {context ? `${context} · ` : ""}
-                                                                {item.items_count} {def.countNoun}
-                                                                {item.items_count === 1 ? "" : "s"}
-                                                            </p>
+                                                            {subtitle && (
+                                                                <p className="text-xs text-subTextColor dark:text-darkTextSecondary truncate">
+                                                                    {subtitle}
+                                                                </p>
+                                                            )}
                                                         </div>
                                                         {item.project_id !== null && (
                                                             <Link

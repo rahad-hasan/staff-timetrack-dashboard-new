@@ -20,6 +20,15 @@ export interface IntegrationDef {
     noun: { singular: string; plural: string };
     /** What lives inside a container, lowercase singular ("item", "task") */
     countNoun: string;
+    /**
+     * How the picker groups rows — "none": flat list (monday),
+     * "space": Workspace · Space headers (ClickUp), "workspace": Workspace
+     * headers (Asana). Row badges (ClickUp Folder / Asana Team) come from
+     * `IntegrationItem.badge` regardless of mode.
+     */
+    groupBy: "none" | "space" | "workspace";
+    /** optional informational line shown on the import/sync result screen */
+    resultNote?: string;
     capabilities: {
         boardPicker: boolean;
         sync: boolean;
@@ -47,6 +56,7 @@ export const INTEGRATIONS: IntegrationDef[] = [
         apiBase: "/monday",
         noun: { singular: "board", plural: "boards" },
         countNoun: "item",
+        groupBy: "none",
         capabilities: { boardPicker: true, sync: true, importDefaults: true },
     },
     {
@@ -60,6 +70,7 @@ export const INTEGRATIONS: IntegrationDef[] = [
         apiBase: "/clickup",
         noun: { singular: "list", plural: "lists" },
         countNoun: "task",
+        groupBy: "space",
         capabilities: { boardPicker: true, sync: true, importDefaults: true },
     },
     {
@@ -73,6 +84,7 @@ export const INTEGRATIONS: IntegrationDef[] = [
         apiBase: "/jira",
         noun: { singular: "project", plural: "projects" },
         countNoun: "issue",
+        groupBy: "none",
         capabilities: { boardPicker: true, sync: true, importDefaults: true },
     },
     {
@@ -82,10 +94,13 @@ export const INTEGRATIONS: IntegrationDef[] = [
         category: "project_management",
         categoryLabel: "Project management sync",
         blurb: "Import Asana projects and tasks for time tracking.",
-        available: false,
+        available: true,
         apiBase: "/asana",
         noun: { singular: "project", plural: "projects" },
         countNoun: "task",
+        groupBy: "workspace",
+        resultNote:
+            "Asana has no native status or priority — task status is taken from its section (e.g. “To do”, “In progress”) and completion flag; priority from a “Priority” custom field when one exists.",
         capabilities: { boardPicker: true, sync: true, importDefaults: true },
     },
     {
@@ -99,6 +114,7 @@ export const INTEGRATIONS: IntegrationDef[] = [
         apiBase: "/slack",
         noun: { singular: "channel", plural: "channels" },
         countNoun: "message",
+        groupBy: "none",
         capabilities: { boardPicker: false, sync: false, importDefaults: false },
     },
 ];

@@ -14,6 +14,7 @@ import {
     AlertTriangle,
     CheckCircle2,
     ChevronDown,
+    Info,
     Loader2,
     RefreshCcw,
     UserX,
@@ -159,6 +160,13 @@ const IntegrationResultDialog = ({
                         {tasksSkipped} task{tasksSkipped === 1 ? "" : "s"} skipped
                         (unchanged {def.countNoun}s or per-{def.countNoun} failures) —
                         this is not an error.
+                    </p>
+                )}
+
+                {!nothingImported && def.resultNote && (
+                    <p className="flex items-start gap-1.5 rounded-lg border border-borderColor dark:border-darkBorder bg-bgSecondary/40 dark:bg-darkPrimaryBg/40 px-3 py-2.5 text-xs text-subTextColor dark:text-darkTextSecondary">
+                        <Info className="h-3.5 w-3.5 shrink-0 mt-px" />
+                        <span>{def.resultNote}</span>
                     </p>
                 )}
 

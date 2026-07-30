@@ -1337,11 +1337,11 @@ export interface MicrosoftEventsListItem {
 }
 
 /* =========================
- * App Integrations (monday.com + ClickUp — Jira/Asana/Slack will follow)
+ * App Integrations (monday.com + ClickUp + Asana — Jira/Slack will follow)
  *
  * The UI only ever sees the provider-neutral `Integration` shapes below;
- * each provider's wire format (Monday / ClickUp) is normalized to them in
- * the server actions (appIntegrationAction.ts).
+ * each provider's wire format (Monday / ClickUp / Asana) is normalized to
+ * them in the server actions (appIntegrationAction.ts).
  * ========================= */
 export type IntegrationConnectionStatus =
   | "connected"
@@ -1366,18 +1366,18 @@ export interface IntegrationStatusResponse {
   disconnected_at?: string | null;
 }
 
-/** One importable container (monday board / ClickUp list) — normalized. */
+/** One importable container (monday board / ClickUp list / Asana project) — normalized. */
 export interface IntegrationItem {
   id: string;
   name: string;
   description?: string | null;
-  /** monday `items_count` / ClickUp `task_count` */
-  items_count: number;
+  /** monday `items_count` / ClickUp `task_count`; Asana exposes no cheap count */
+  items_count?: number | null;
   workspace: { id: string; name: string } | null;
-  /** ClickUp only — lists are grouped by Space in the picker */
+  /** ClickUp only — the picker groups by workspace+space (registry `groupBy: "space"`) */
   space?: { id: string; name: string } | null;
-  /** ClickUp only — folder badge; null for folderless lists */
-  folder?: { id: string; name: string } | null;
+  /** row badge next to the name: ClickUp Folder name / Asana Team name */
+  badge?: string | null;
   already_imported: boolean;
   project_id: number | null;
 }
@@ -1482,6 +1482,37 @@ export interface ClickUpImportResult {
   skipped_lists: { list_id: string; reason: string }[];
   unmatched_clickup_users: IntegrationUnmatchedUser[];
   remaining_list_ids?: string[];
+}
+
+/* ---- Asana wire shapes (spec §12.2–§12.3) ---- */
+
+export interface AsanaProject {
+  id: string;
+  name: string;
+  workspace: { id: string; name: string } | null;
+  /** plain string, null in personal workspaces */
+  team: string | null;
+  already_imported: boolean;
+  project_id: number | null;
+}
+
+export interface AsanaImportedProject {
+  project_gid: string;
+  project_name: string;
+  project_id: number;
+  created: boolean;
+  tasks_created: number;
+  tasks_updated: number;
+  tasks_skipped: number;
+  tasks_truncated: boolean;
+  webhook_registered: boolean;
+}
+
+export interface AsanaImportResult {
+  imported: AsanaImportedProject[];
+  skipped_projects: { project_gid: string; reason: string }[];
+  unmatched_asana_users: IntegrationUnmatchedUser[];
+  remaining_project_gids?: string[];
 }
 
 /* =========================
