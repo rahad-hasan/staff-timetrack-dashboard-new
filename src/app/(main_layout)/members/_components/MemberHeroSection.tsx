@@ -29,7 +29,7 @@ const MemberHeroSection = () => {
     //     params.set("page", String(page));
     //     router.push(`?${params.toString()}`);
     // };
-    
+
     return (
         <div>
             <div className="flex items-center justify-between gap-3 mb-5">
@@ -54,7 +54,9 @@ const MemberHeroSection = () => {
                         <DialogTrigger asChild>
                             <Button className=" text-sm md:text-base py-2"><Plus className="size-5" /> <span className=" hidden sm:block">Add Member</span></Button>
                         </DialogTrigger>
-                        <AddNewMemberModal onClose={() => setOpen(false)}></AddNewMemberModal>
+                        {open && (
+                            <AddNewMemberModal onClose={() => setOpen(false)}></AddNewMemberModal>
+                        )}
                     </form>
                 </Dialog>
 
