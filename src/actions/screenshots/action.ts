@@ -2,7 +2,7 @@
 
 import { buildQuery } from "@/utils/buildQuery";
 import { baseApi } from "../baseApi";
-import { IAllScreenshot, INotes, IResponse } from "@/types/type";
+import { IAllScreenshot, IResponse } from "@/types/type";
 
 export const getScreenshots10Min = async (query = {}) => {
   const queryString = buildQuery(query);
@@ -20,16 +20,6 @@ export const getAllScreenshots = async (
     {
       tag: "allScreenshots",
       revalidate: 30,
-    },
-  );
-};
-
-export const getNotes = async (query = {}): Promise<IResponse<INotes[]>> => {
-  const queryString = buildQuery(query);
-  return await baseApi(
-    `/activities/notes${queryString ? `?${queryString}` : ""}`,
-    {
-      tag: "screenshots",
     },
   );
 };

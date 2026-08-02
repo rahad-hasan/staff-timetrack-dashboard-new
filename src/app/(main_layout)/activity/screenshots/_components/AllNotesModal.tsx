@@ -1,4 +1,3 @@
-import { getNotes } from "@/actions/screenshots/action";
 import {
   DialogContent,
   DialogHeader,
@@ -10,6 +9,7 @@ import { format } from "date-fns";
 import EmptyTableLogo from "@/assets/empty_table.svg";
 import Image from "next/image";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
+import { getNotes } from "@/actions/report/action";
 
 const AllNotesModal = async ({ searchParams }: ISearchParamsProps) => {
     const user = await getDecodedUser();
@@ -34,7 +34,6 @@ const AllNotesModal = async ({ searchParams }: ISearchParamsProps) => {
             key={i}
             className="border rounded-lg p-4 bg-[#f5f6f6] dark:bg-darkSecondaryBg dark:border-darkBorder hover:shadow-sm transition-all"
           >
-            {/* <p className="text-xs font-medium text-textGray mb-1 dark:text-darkTextPrimary">Member</p> */}
             <h3 className="text-sm font-medium ">
               {note?.user?.name}&apos;s notes
             </h3>

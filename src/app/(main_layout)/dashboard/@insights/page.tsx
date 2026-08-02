@@ -1,4 +1,4 @@
-import { getDashboardInsights } from '@/actions/insights/action';
+import { getDashboardInsights } from '@/actions/dashboard/action';
 import Insights from '@/app/(main_layout)/dashboard/@insights/_components/Insights';
 import { ISearchParamsProps } from '@/types/type';
 

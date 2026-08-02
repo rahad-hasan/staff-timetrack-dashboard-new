@@ -1,5 +1,3 @@
-
-import { getMonthlyWorkReport } from "@/actions/insights/action";
 import MonthPicker from "@/components/Common/MonthPicker";
 import SelectUserWrapper from "@/components/Common/SelectUserWrapper";
 import PerformanceCharts from "@/app/(main_layout)/insights/performance/_components/PerformanceCharts";
@@ -8,6 +6,7 @@ import { getDecodedUser } from "@/utils/decodedLogInUser";
 import { format } from "date-fns";
 import { CalendarRange } from "lucide-react";
 import { Metadata } from "next";
+import { getMonthlyWorkReport } from "@/actions/report/action";
 
 export const metadata: Metadata = {
   title: "Staff Time Tracker Monthly Report",

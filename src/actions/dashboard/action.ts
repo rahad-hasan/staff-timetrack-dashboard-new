@@ -63,3 +63,13 @@ export const getTimezones = async () => {
     defaultValue: res?.data?.user_time,
   };
 };
+
+export const getDashboardInsights = async (query = {}) => {
+  const queryString = buildQuery(query);
+  return await baseApi(
+    `/dashboard/insights${queryString ? `?${queryString}` : ""}`,
+    {
+      tag: "insightsDashboard",
+    },
+  );
+};
