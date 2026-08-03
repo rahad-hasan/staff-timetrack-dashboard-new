@@ -671,7 +671,10 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
                                         Changes in {def.name} — new {def.countNoun}s, renames,
                                         deletions — sync automatically.
                                     </li>
-                                    <li>Assignees are matched to teammates by email address.</li>
+                                    <li>
+                                        {def.notes?.assigneeMatching ??
+                                            "Assignees are matched to teammates by email address."}
+                                    </li>
                                 </ul>
                                 <p className="mt-3 text-xs text-subTextColor dark:text-darkTextSecondary">
                                     Only a company admin can connect {def.name}.

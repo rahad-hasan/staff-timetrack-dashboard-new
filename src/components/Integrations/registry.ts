@@ -44,6 +44,8 @@ export interface IntegrationDef {
         unmatchedUsers?: string;
         /** shown next to the Connect button, before OAuth starts */
         connect?: string;
+        /** replaces the default "matched by email" how-it-works bullet */
+        assigneeMatching?: string;
     };
     capabilities: {
         boardPicker: boolean;
@@ -125,7 +127,9 @@ export const INTEGRATIONS: IntegrationDef[] = [
             result:
                 "Issue status is matched by name (with Jira's status category as fallback), priority maps Highest/High → High, Medium → Medium, Low/Lowest → Low, the due date becomes the task deadline, and subtasks are imported as ordinary tasks.",
             unmatchedUsers:
-                "Atlassian hides most user emails behind account privacy settings, so Jira usually has more unmatched people than other providers — a missing email here does not mean the person has no account.",
+                "Atlassian hides most user emails behind account privacy settings, so Jira matches people by email when it is shared and otherwise by an exact display-name match. To fix a listed user, ask them to make their email visible at id.atlassian.com (Profile and visibility → Contact → Email address → “Anyone”), or make their name here match their Jira display name — the next Sync re-maps their issues automatically.",
+            assigneeMatching:
+                "Assignees are matched to teammates by email, or by exact display name when Atlassian hides the email.",
             connect:
                 "Sign in with an Atlassian account that can reach at least one Jira site — accounts without Jira access cannot complete the connection.",
         },

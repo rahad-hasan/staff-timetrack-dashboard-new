@@ -298,10 +298,9 @@ const IntegrationResultDialog = ({
                         icon={<UserX className="h-3.5 w-3.5" />}
                     >
                         <p className="mb-2 text-xs text-amber-800 dark:text-amber-200">
-                            These {def.name} users have no matching account here (by
-                            email), so their {def.countNoun}s were assigned to you.
-                            Invite them with the same email to match them on the next
-                            sync.
+                            These {def.name} users have no matching account here, so
+                            their {def.countNoun}s were assigned to you. Invite them
+                            with the same email to match them on the next sync.
                             {def.notes?.unmatchedUsers
                                 ? ` ${def.notes.unmatchedUsers}`
                                 : ""}
