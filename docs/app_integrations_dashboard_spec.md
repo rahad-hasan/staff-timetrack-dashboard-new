@@ -219,8 +219,8 @@ Launch content:
 |---|---|---|
 | monday.com | Project management sync | **Available** |
 | ClickUp | Project management sync | **Available** — see §11 |
-| Jira | Project management sync | Coming soon |
-| Asana | Project management sync | Coming soon |
+| Jira | Project management sync | **Available** — see §13 |
+| Asana | Project management sync | **Available** — see §12 |
 | Slack | Meetings & events (like Google/Microsoft) | Coming soon |
 
 The monday card's chip is driven by `GET /monday/status`.
@@ -339,7 +339,7 @@ export interface IntegrationDef {
 export const INTEGRATIONS: IntegrationDef[] = [
   { key: 'monday', name: 'monday.com', category: 'project_management', available: true,  apiBase: '/monday', capabilities: { boardPicker: true, sync: true, importDefaults: true }, /* … */ },
   { key: 'clickup', name: 'ClickUp',   category: 'project_management', available: true,  apiBase: '/clickup', capabilities: { boardPicker: true, sync: true, importDefaults: true }, /* … */ },
-  { key: 'jira',    name: 'Jira',      category: 'project_management', available: false, apiBase: '/jira', /* … */ },
+  { key: 'jira',    name: 'Jira',      category: 'project_management', available: true,  apiBase: '/jira', /* … */ },
   { key: 'asana',   name: 'Asana',     category: 'project_management', available: false, apiBase: '/asana', /* … */ },
   { key: 'slack',   name: 'Slack',     category: 'meetings_events',    available: false, apiBase: '/slack', /* … */ },
 ];
@@ -468,3 +468,55 @@ Mapping notes the UI may surface in the import-result details: Asana has no nati
 
 ### 12.5 What the frontend should reuse vs fork
 Reuse everything registry-driven (hub card, status panel, connect popup filtered on `provider === 'asana'`, disconnect modal, sync button + continuation loop, result renderer via the per-provider field adapter: `project_gid`/`skipped_projects`/`unmatched_asana_users`). Fork only: the picker's grouping (Workspace groups with a flat project list + optional team badge). The reconnect-then-sync caveat banner applies to Asana too — webhooks survive on Asana's side per imported project, but running Sync once after reconnect is still the recommended recovery step.
+
+---
+
+## 13. Jira — fourth available provider (differences from monday/ClickUp/Asana only)
+
+Jira is live on the backend with the **same endpoint family, envelope, roles, popup/postMessage flow (provider key `jira`), 401 no-logout rule (messages start with `Jira`), 409 in-flight message (`A Jira import or sync is already running for this company`), continuation/merge rules** as the other three (§3–§8 all apply). Only these differ:
+
+### 13.1 Terminology, hierarchy, multi-site ids & token expiry
+Jira's container is a **Project** (hierarchy: Atlassian **Site** → Project; issues live in projects). The picker shows **Projects**, grouped by Site, with the project **key** ("ENG") as a badge. One Atlassian account can grant several sites, so **every project id the API exchanges is the composite string `"<cloudId>:<projectId>"`** (cloudId = the site's UUID) — treat it as opaque; never split it in the UI.
+
+Like Asana, Jira access tokens **expire hourly** and the backend refreshes them automatically (Atlassian even rotates the refresh token on every use — fully handled server-side). `token_expiry` in `/jira/status` is informational only; do **not** build re-auth UX around it. Only `status: "revoked"` requires the reconnect flow. `metadata` carries `account_user_id` / `account_user_name` (nullable) **plus `sites`** — `[{ id, name, url }]` for grouping and site labels.
+
+### 13.2 `GET /jira/projects` (replaces `/monday/boards`, `/clickup/lists`, `/asana/projects`)
+Row shape — no task count is available:
+
+```json
+{
+  "id": "35a3b1a4-3f6d-4a3e-9c8e-2f4b5d6e7f80:10001",
+  "key": "ENG",
+  "name": "Engineering Backlog",
+  "is_private": false,
+  "site": { "id": "35a3b1a4-…", "name": "orbittech", "url": "https://orbittech.atlassian.net" },
+  "already_imported": false,
+  "project_id": null
+}
+```
+
+Server-side caps ≈5 sites × 500 live projects. Archived/trashed Jira projects are excluded.
+
+### 13.3 `POST /jira/import`
+Body uses **`project_ids`** (1–25, composite `"<cloudId>:<projectId>"` strings exactly as returned by `/jira/projects`); `start_date`/`deadline` rules identical to §4.6. Result fields:
+
+```json
+{
+  "imported": [{ "project_id_external": "…:10001", "project_key": "ENG", "project_name": "Engineering Backlog", "project_id": 91, "created": true, "tasks_created": 20, "tasks_updated": 0, "tasks_skipped": 1, "tasks_truncated": false, "webhook_registered": true }],
+  "skipped_projects": [{ "project_id": "…:10002", "reason": "Project is archived on Jira" }],
+  "unmatched_jira_users": [{ "id": "5b10ac8d82e05b22cc7d4ef5", "name": "Freelancer", "email": null }]
+}
+```
+
+`POST /jira/sync` returns `remaining_project_ids` (same continuation semantics as §4.7).
+
+Mapping notes the UI may surface: issue **status** maps by name first ("In Progress", "Done", "Cancelled"…) with Jira's status *category* as fallback, so custom workflows still land on a sensible app status; **priority** maps Highest/High → high, Medium → medium, Low/Lowest → low; **due date** → task deadline; **subtasks import as ordinary tasks**. Assignee matching is by email, but Atlassian hides emails behind user privacy settings (GDPR) — expect `email: null` in `unmatched_jira_users` and a higher unmatched rate than other providers (those tasks fall back to the importing admin).
+
+### 13.4 Webhook model (why "Sync after being idle" matters)
+Atlassian allows only a handful of webhooks per app user, so the backend keeps **one webhook per site** that covers every imported project on it, and replaces it whenever the imported set changes. Jira webhooks also **expire after 30 days**; the backend extends them automatically during every import/sync and whenever events arrive, but a company with **no imports, syncs or Jira activity for 30+ days** stops receiving live updates until the next **Sync** (which re-registers everything). The existing "run Sync once after reconnect" banner therefore doubles as the recovery path after long idle periods — consider surfacing it when `last_synced_at` is older than ~3 weeks. `webhook_registered: false` on an import result ⇒ same warning treatment as the other providers.
+
+### 13.5 Error message strings (for the §8 matrix)
+`"Jira is not connected for this company"`, `"Jira rejected the access token. Please reconnect the account."` (401 — never logout), `"Jira session expired. Please reconnect the account."` (401 — refresh token dead ⇒ show reconnect CTA), `"Jira rate limit reached. Please try again in a minute."`, `"No Jira projects have been imported yet"`, `"Jira OAuth configuration is missing"` (500), `"The authorized Atlassian account has no accessible Jira sites"` (400 on callback — the user picked an Atlassian account without Jira).
+
+### 13.6 What the frontend should reuse vs fork
+Reuse everything registry-driven (hub card, status panel, connect popup filtered on `provider === 'jira'`, disconnect modal, sync button + continuation loop, result renderer via the per-provider field adapter: `project_id_external`/`skipped_projects`/`unmatched_jira_users`). Fork only: the picker's grouping (Site groups from `metadata.sites`, project key badge, `is_private` lock icon).

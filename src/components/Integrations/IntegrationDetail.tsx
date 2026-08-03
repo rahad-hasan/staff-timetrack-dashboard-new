@@ -26,6 +26,8 @@ import {
     Calendar as CalendarIcon,
     Check,
     Download,
+    Globe,
+    Info,
     Loader2,
     Mail,
     RefreshCcw,
@@ -35,11 +37,11 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import IntegrationPickerDialog from "./IntegrationPickerDialog";
 import IntegrationResultDialog from "./IntegrationResultDialog";
-import { IntegrationDef } from "./registry";
+import { describeImport, IntegrationDef } from "./registry";
 import { useIntegrationConnectFlow } from "./useIntegrationConnectFlow";
 
 const statusMeta = {
@@ -384,7 +386,11 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
         status?.provider_email ??
         status?.metadata?.account_user_name ??
         `${def.name} account`;
-    const importedItems = (items ?? []).filter((item) => item.already_imported);
+    const sites = status?.metadata?.sites ?? [];
+    const importedItems = useMemo(
+        () => (items ?? []).filter((item) => item.already_imported),
+        [items],
+    );
     // §8 — Sync must stay disabled until the items query proves something is
     // imported; while it is still in flight (ClickUp's /lists is slow) the
     // safe reading of "no imported items exist" is to keep it disabled too
@@ -393,6 +399,38 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
         mutationCooldown ||
         items === null ||
         importedItems.length === 0;
+
+    /**
+     * §13.4 — Jira keeps one webhook per site and it expires after 30 days of
+     * inactivity, so a long-idle company silently stops getting live updates
+     * until the next sync. Only warned about once something is actually
+     * imported and a previous sync is on record: a fresh import registers its
+     * webhooks right then, so "never synced" is not stale.
+     */
+    const syncIsStale = useMemo(() => {
+        const days = def.staleSyncWarningDays;
+        if (!days || importedItems.length === 0 || !status?.last_synced_at) {
+            return false;
+        }
+        const lastSynced = new Date(status.last_synced_at).getTime();
+        if (Number.isNaN(lastSynced)) return false;
+        return Date.now() - lastSynced > days * 24 * 60 * 60 * 1000;
+    }, [def.staleSyncWarningDays, importedItems.length, status?.last_synced_at]);
+
+    /**
+     * Display labels for the result screen's skipped rows — provider ids can be
+     * opaque (Jira's are `"<cloudId>:<projectId>"`), so a name reads far better.
+     */
+    const itemLabelById = useMemo(
+        () =>
+            new Map(
+                (items ?? []).map((item) => [
+                    item.id,
+                    item.badge ? `${item.name} (${item.badge})` : item.name,
+                ]),
+            ),
+        [items],
+    );
 
     const disconnectTrigger = (
         <Button
@@ -573,6 +611,37 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
                             </div>
                         )}
 
+                        {/* provider-specific pre-OAuth guidance, e.g. Jira needs an
+                            Atlassian account that can actually reach a Jira site */}
+                        {!isConnected && def.notes?.connect && (
+                            <p className="mt-5 flex items-start gap-1.5 text-xs text-subTextColor dark:text-darkTextSecondary">
+                                <Info className="h-3.5 w-3.5 shrink-0 mt-px" />
+                                <span>{def.notes.connect}</span>
+                            </p>
+                        )}
+
+                        {/* §13.4 — providers whose webhooks lapse while idle stop
+                            delivering live updates until the next sync. Hidden while
+                            the reconnect hint is up: both ask for the same click. */}
+                        {isConnected && syncIsStale && !reconnectHint && (
+                            <div className="mt-5 flex flex-col sm:flex-row sm:items-center gap-3 rounded-lg border border-amber-200 dark:border-amber-500/30 bg-amber-50/70 dark:bg-amber-500/10 px-3 py-2.5">
+                                <p className="flex-1 text-xs text-amber-800 dark:text-amber-200">
+                                    Last synced {formatRelative(status?.last_synced_at)}.{" "}
+                                    {def.name} stops sending automatic updates after a
+                                    long idle period — run a sync to re-enable them.
+                                </p>
+                                <Button
+                                    size="sm"
+                                    onClick={() => runSync("fresh")}
+                                    disabled={syncDisabled}
+                                    className="gap-2 shrink-0"
+                                >
+                                    <RefreshCcw className="h-3.5 w-3.5" />
+                                    Sync now
+                                </Button>
+                            </div>
+                        )}
+
                         {isConnected && reconnectHint && (
                             <div className="mt-5 flex items-start justify-between gap-3 rounded-lg border border-blue-200 dark:border-blue-500/30 bg-blue-50/70 dark:bg-blue-500/10 px-3 py-2.5">
                                 <p className="text-xs text-blue-800 dark:text-blue-200">
@@ -597,13 +666,7 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
                                     How it works
                                 </p>
                                 <ul className="mt-2 space-y-1.5 text-xs text-subTextColor dark:text-darkTextSecondary list-disc pl-4">
-                                    <li>
-                                        {def.noun.singular === "project"
-                                            ? `Your ${def.name} projects and the tasks inside them are imported for time tracking.`
-                                            : def.countNoun === "task"
-                                                ? `Your ${def.name} ${def.noun.plural} are imported as projects, and their tasks come along with them.`
-                                                : `Your ${def.name} ${def.noun.plural} are imported as projects; their ${def.countNoun}s become tasks.`}
-                                    </li>
+                                    <li>{describeImport(def)}</li>
                                     <li>
                                         Changes in {def.name} — new {def.countNoun}s, renames,
                                         deletions — sync automatically.
@@ -617,7 +680,14 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
                         )}
 
                         {isConnected && (
-                            <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div
+                                className={cn(
+                                    "mt-5 grid grid-cols-1 gap-3",
+                                    sites.length > 0
+                                        ? "sm:grid-cols-3"
+                                        : "sm:grid-cols-2",
+                                )}
+                            >
                                 <div className="rounded-lg border border-borderColor dark:border-darkBorder bg-bgSecondary/40 dark:bg-darkPrimaryBg/40 p-3">
                                     <p className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider font-bold text-subTextColor dark:text-darkTextSecondary">
                                         <Mail className="h-3 w-3" /> Connected account
@@ -634,6 +704,40 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
                                         {formatRelative(status?.last_synced_at)}
                                     </p>
                                 </div>
+                                {/* Jira grants access per Atlassian site (§13.1) —
+                                    showing them makes the scope of the connection clear */}
+                                {sites.length > 0 && (
+                                    <div className="rounded-lg border border-borderColor dark:border-darkBorder bg-bgSecondary/40 dark:bg-darkPrimaryBg/40 p-3">
+                                        <p className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider font-bold text-subTextColor dark:text-darkTextSecondary">
+                                            <Globe className="h-3 w-3" /> Sites
+                                            <span className="font-semibold">
+                                                {sites.length}
+                                            </span>
+                                        </p>
+                                        <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                                            {sites.map((site) =>
+                                                site.url ? (
+                                                    <a
+                                                        key={site.id}
+                                                        href={site.url}
+                                                        target="_blank"
+                                                        rel="noreferrer noopener"
+                                                        className="text-sm font-medium text-primary hover:underline truncate"
+                                                    >
+                                                        {site.name}
+                                                    </a>
+                                                ) : (
+                                                    <span
+                                                        key={site.id}
+                                                        className="text-sm font-medium text-headingTextColor dark:text-darkTextPrimary truncate"
+                                                    >
+                                                        {site.name}
+                                                    </span>
+                                                ),
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         )}
 
@@ -790,6 +894,7 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
                         continuing={continuing}
                         continueCooldown={mutationCooldown}
                         stalled={resultView.stalled}
+                        labelById={itemLabelById}
                         onContinueSync={() => runSync("continue")}
                         onClose={() => {
                             setResultView(null);

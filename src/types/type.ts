@@ -1337,11 +1337,11 @@ export interface MicrosoftEventsListItem {
 }
 
 /* =========================
- * App Integrations (monday.com + ClickUp + Asana — Jira/Slack will follow)
+ * App Integrations (monday.com + ClickUp + Asana + Jira — Slack will follow)
  *
  * The UI only ever sees the provider-neutral `Integration` shapes below;
- * each provider's wire format (Monday / ClickUp / Asana) is normalized to
- * them in the server actions (appIntegrationAction.ts).
+ * each provider's wire format (Monday / ClickUp / Asana / Jira) is normalized
+ * to them in the server actions (appIntegrationAction.ts).
  * ========================= */
 export type IntegrationConnectionStatus =
   | "connected"
@@ -1360,24 +1360,36 @@ export interface IntegrationStatusResponse {
   metadata?: {
     account_user_id?: string | null;
     account_user_name?: string | null;
+    /** Jira only (§13.1) — the Atlassian sites the connection can reach */
+    sites?: { id: string; name: string; url: string }[] | null;
   } | null;
   scope?: string[];
   last_synced_at?: string | null;
   disconnected_at?: string | null;
 }
 
-/** One importable container (monday board / ClickUp list / Asana project) — normalized. */
+/**
+ * One importable container (monday board / ClickUp list / Asana project /
+ * Jira project) — normalized.
+ */
 export interface IntegrationItem {
+  /**
+   * Opaque provider id — kept as a string end-to-end and never parsed by the
+   * UI (Jira's is the composite `"<cloudId>:<projectId>"`, §13.1).
+   */
   id: string;
   name: string;
   description?: string | null;
-  /** monday `items_count` / ClickUp `task_count`; Asana exposes no cheap count */
+  /** monday `items_count` / ClickUp `task_count`; Asana + Jira expose no cheap count */
   items_count?: number | null;
+  /** top-level container used for group headers: Workspace, or Jira's Site */
   workspace: { id: string; name: string } | null;
   /** ClickUp only — the picker groups by workspace+space (registry `groupBy: "space"`) */
   space?: { id: string; name: string } | null;
-  /** row badge next to the name: ClickUp Folder name / Asana Team name */
+  /** row badge next to the name: ClickUp Folder / Asana Team / Jira project key */
   badge?: string | null;
+  /** Jira only — restricted project, rendered with a lock icon */
+  is_private?: boolean;
   already_imported: boolean;
   project_id: number | null;
 }
@@ -1392,14 +1404,16 @@ export interface IntegrationImportPayload {
 export interface IntegrationImportedItem {
   id: string;
   name: string;
+  /** optional short label next to the name (Jira project key) */
+  badge?: string | null;
   project_id: number;
   created: boolean;
   tasks_created: number;
   tasks_updated: number;
   tasks_skipped: number;
-  /** monday `items_truncated` / ClickUp `tasks_truncated` */
+  /** monday `items_truncated` / ClickUp + Asana + Jira `tasks_truncated` */
   truncated: boolean;
-  /** monday `webhooks_registered` / ClickUp `webhook_registered` */
+  /** monday `webhooks_registered` / the others `webhook_registered` */
   webhook_registered: boolean;
 }
 
@@ -1411,7 +1425,8 @@ export interface IntegrationSkippedItem {
 export interface IntegrationUnmatchedUser {
   id: string;
   name: string;
-  email: string;
+  /** null when the provider withholds it — Jira hides emails behind Atlassian's privacy settings (§13.3) */
+  email: string | null;
 }
 
 export interface IntegrationImportResult {
@@ -1513,6 +1528,44 @@ export interface AsanaImportResult {
   skipped_projects: { project_gid: string; reason: string }[];
   unmatched_asana_users: IntegrationUnmatchedUser[];
   remaining_project_gids?: string[];
+}
+
+/* ---- Jira wire shapes (spec §13.2–§13.3) ---- */
+
+export interface JiraProject {
+  /** composite `"<cloudId>:<projectId>"` — opaque, never split in the UI */
+  id: string;
+  /** project key, e.g. "ENG" */
+  key: string;
+  name: string;
+  is_private: boolean;
+  /** the Atlassian site the project lives on — used for group headers */
+  site: { id: string; name: string; url: string } | null;
+  already_imported: boolean;
+  project_id: number | null;
+}
+
+export interface JiraImportedProject {
+  /** the composite id that was imported */
+  project_id_external: string;
+  project_key: string;
+  project_name: string;
+  /** the app's own project id */
+  project_id: number;
+  created: boolean;
+  tasks_created: number;
+  tasks_updated: number;
+  tasks_skipped: number;
+  tasks_truncated: boolean;
+  webhook_registered: boolean;
+}
+
+export interface JiraImportResult {
+  imported: JiraImportedProject[];
+  /** note: skipped rows carry the composite id under `project_id` */
+  skipped_projects: { project_id: string; reason: string }[];
+  unmatched_jira_users: IntegrationUnmatchedUser[];
+  remaining_project_ids?: string[];
 }
 
 /* =========================

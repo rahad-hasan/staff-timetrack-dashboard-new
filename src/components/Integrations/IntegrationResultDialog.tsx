@@ -84,6 +84,11 @@ interface IntegrationResultDialogProps {
     continueCooldown?: boolean;
     /** two consecutive sync calls returned identical remaining ids */
     stalled?: boolean;
+    /**
+     * id → display label from the picker list, so skipped rows read as names
+     * instead of raw provider ids (Jira's are opaque composites, §13.1).
+     */
+    labelById?: Map<string, string>;
     onContinueSync?: () => void;
     onClose: () => void;
 }
@@ -95,6 +100,7 @@ const IntegrationResultDialog = ({
     continuing = false,
     continueCooldown = false,
     stalled = false,
+    labelById,
     onContinueSync,
     onClose,
 }: IntegrationResultDialogProps) => {
@@ -163,10 +169,10 @@ const IntegrationResultDialog = ({
                     </p>
                 )}
 
-                {!nothingImported && def.resultNote && (
+                {!nothingImported && def.notes?.result && (
                     <p className="flex items-start gap-1.5 rounded-lg border border-borderColor dark:border-darkBorder bg-bgSecondary/40 dark:bg-darkPrimaryBg/40 px-3 py-2.5 text-xs text-subTextColor dark:text-darkTextSecondary">
                         <Info className="h-3.5 w-3.5 shrink-0 mt-px" />
-                        <span>{def.resultNote}</span>
+                        <span>{def.notes.result}</span>
                     </p>
                 )}
 
@@ -213,6 +219,11 @@ const IntegrationResultDialog = ({
                                     <p className="text-sm font-medium text-headingTextColor dark:text-darkTextPrimary">
                                         {item.name}
                                     </p>
+                                    {item.badge && (
+                                        <span className="inline-flex items-center rounded-full border border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg px-2 py-0.5 text-[10px] font-medium text-subTextColor dark:text-darkTextSecondary">
+                                            {item.badge}
+                                        </span>
+                                    )}
                                     <span
                                         className={cn(
                                             "inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium",
@@ -259,17 +270,23 @@ const IntegrationResultDialog = ({
                         <ul className="space-y-1.5">
                             {/* a failing board/list can be skipped again on a
                                 continue-sync run, so the id alone is not a unique key */}
-                            {skipped.map((item, index) => (
-                                <li
-                                    key={`${item.id}-${index}`}
-                                    className="text-xs text-amber-800 dark:text-amber-200"
-                                >
-                                    <span className="font-medium">
-                                        {capitalize(noun.singular)} {item.id}:
-                                    </span>{" "}
-                                    {item.reason}
-                                </li>
-                            ))}
+                            {skipped.map((item, index) => {
+                                // provider ids can be opaque (Jira's are
+                                // "<cloudId>:<projectId>") — prefer the name
+                                // the picker already knows
+                                const label =
+                                    labelById?.get(item.id) ??
+                                    `${capitalize(noun.singular)} ${item.id}`;
+                                return (
+                                    <li
+                                        key={`${item.id}-${index}`}
+                                        className="text-xs text-amber-800 dark:text-amber-200 break-words"
+                                    >
+                                        <span className="font-medium">{label}:</span>{" "}
+                                        {item.reason}
+                                    </li>
+                                );
+                            })}
                         </ul>
                     </Section>
                 )}
@@ -285,6 +302,9 @@ const IntegrationResultDialog = ({
                             email), so their {def.countNoun}s were assigned to you.
                             Invite them with the same email to match them on the next
                             sync.
+                            {def.notes?.unmatchedUsers
+                                ? ` ${def.notes.unmatchedUsers}`
+                                : ""}
                         </p>
                         <ul className="space-y-1.5">
                             {unmatched.map((user) => (

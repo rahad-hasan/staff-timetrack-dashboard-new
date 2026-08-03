@@ -4,6 +4,7 @@ import clickupLogo from "@/assets/integrations/clickup.svg";
 import jiraLogo from "@/assets/integrations/jira.svg";
 import asanaLogo from "@/assets/integrations/asana.svg";
 import slackLogo from "@/assets/integrations/slack.svg";
+import { Folder, Hash, LucideIcon, Users } from "lucide-react";
 
 export type IntegrationKey = "monday" | "clickup" | "jira" | "asana" | "slack";
 
@@ -18,17 +19,32 @@ export interface IntegrationDef {
     apiBase: string;
     /** What the provider's importable container is called, lowercase ("board", "list") */
     noun: { singular: string; plural: string };
-    /** What lives inside a container, lowercase singular ("item", "task") */
+    /** What lives inside a container, lowercase singular ("item", "task", "issue") */
     countNoun: string;
     /**
      * How the picker groups rows — "none": flat list (monday),
-     * "space": Workspace · Space headers (ClickUp), "workspace": Workspace
-     * headers (Asana). Row badges (ClickUp Folder / Asana Team) come from
+     * "space": Workspace · Space headers (ClickUp), "workspace": headers from
+     * the item's top-level container, i.e. Asana Workspace / Jira Site.
+     * Row badges (ClickUp Folder / Asana Team / Jira key) come from
      * `IntegrationItem.badge` regardless of mode.
      */
     groupBy: "none" | "space" | "workspace";
-    /** optional informational line shown on the import/sync result screen */
-    resultNote?: string;
+    /** icon shown inside `IntegrationItem.badge` chips */
+    badgeIcon?: LucideIcon;
+    /**
+     * Providers whose webhooks lapse while idle (Jira: 30 days, §13.4) warn
+     * after this many days without a sync so the user re-registers them.
+     */
+    staleSyncWarningDays?: number;
+    /** optional provider-specific copy — omitted keys render nothing */
+    notes?: {
+        /** informational line on the import/sync result screen */
+        result?: string;
+        /** appended to the "Unmatched users" warning section */
+        unmatchedUsers?: string;
+        /** shown next to the Connect button, before OAuth starts */
+        connect?: string;
+    };
     capabilities: {
         boardPicker: boolean;
         sync: boolean;
@@ -39,6 +55,21 @@ export interface IntegrationDef {
 /** "boards" → "Boards" for headings/buttons built from registry nouns. */
 export const capitalize = (word: string) =>
     word.charAt(0).toUpperCase() + word.slice(1);
+
+/**
+ * One sentence describing what an import does, derived from the registry
+ * nouns so hub, detail view and picker never drift apart.
+ */
+export const describeImport = (def: IntegrationDef) => {
+    if (def.noun.singular === "project") {
+        // Asana / Jira already call their containers "projects"
+        return `Your ${def.name} projects are imported for time tracking, along with their ${def.countNoun}s.`;
+    }
+    if (def.countNoun === "task") {
+        return `Your ${def.name} ${def.noun.plural} are imported as projects, and their tasks come along with them.`;
+    }
+    return `Your ${def.name} ${def.noun.plural} are imported as projects; their ${def.countNoun}s become tasks.`;
+};
 
 /** The callback popup posts this message type to window.opener (all providers). */
 export const INTEGRATION_CALLBACK_MESSAGE_TYPE =
@@ -71,6 +102,7 @@ export const INTEGRATIONS: IntegrationDef[] = [
         noun: { singular: "list", plural: "lists" },
         countNoun: "task",
         groupBy: "space",
+        badgeIcon: Folder,
         capabilities: { boardPicker: true, sync: true, importDefaults: true },
     },
     {
@@ -80,11 +112,23 @@ export const INTEGRATIONS: IntegrationDef[] = [
         category: "project_management",
         categoryLabel: "Project management sync",
         blurb: "Sync Jira projects and issues as trackable work.",
-        available: false,
+        available: true,
         apiBase: "/jira",
         noun: { singular: "project", plural: "projects" },
         countNoun: "issue",
-        groupBy: "none",
+        // Jira groups by Atlassian Site — normalized onto `workspace` (§13.1)
+        groupBy: "workspace",
+        badgeIcon: Hash,
+        // Jira webhooks lapse after 30 days of inactivity (§13.4)
+        staleSyncWarningDays: 21,
+        notes: {
+            result:
+                "Issue status is matched by name (with Jira's status category as fallback), priority maps Highest/High → High, Medium → Medium, Low/Lowest → Low, the due date becomes the task deadline, and subtasks are imported as ordinary tasks.",
+            unmatchedUsers:
+                "Atlassian hides most user emails behind account privacy settings, so Jira usually has more unmatched people than other providers — a missing email here does not mean the person has no account.",
+            connect:
+                "Sign in with an Atlassian account that can reach at least one Jira site — accounts without Jira access cannot complete the connection.",
+        },
         capabilities: { boardPicker: true, sync: true, importDefaults: true },
     },
     {
@@ -99,8 +143,11 @@ export const INTEGRATIONS: IntegrationDef[] = [
         noun: { singular: "project", plural: "projects" },
         countNoun: "task",
         groupBy: "workspace",
-        resultNote:
-            "Asana has no native status or priority — task status is taken from its section (e.g. “To do”, “In progress”) and completion flag; priority from a “Priority” custom field when one exists.",
+        badgeIcon: Users,
+        notes: {
+            result:
+                "Asana has no native status or priority — task status is taken from its section (e.g. “To do”, “In progress”) and completion flag; priority from a “Priority” custom field when one exists.",
+        },
         capabilities: { boardPicker: true, sync: true, importDefaults: true },
     },
     {

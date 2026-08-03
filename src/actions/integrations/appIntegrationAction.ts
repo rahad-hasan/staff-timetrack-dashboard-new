@@ -10,6 +10,8 @@ import {
     IntegrationItem,
     IntegrationStatusResponse,
     IResponse,
+    JiraImportResult,
+    JiraProject,
     MondayBoard,
     MondayImportResult,
 } from "@/types/type";
@@ -21,7 +23,7 @@ import { baseApi } from "../baseApi";
 
 /**
  * Server-side whitelist of app-integration providers. A new provider
- * (Jira, Slack) is enabled here + in the client registry — the generic
+ * (Slack) is enabled here + in the client registry — the generic
  * actions below need no changes beyond a config entry.
  *
  * `authPrefix` — provider endpoints answer 401 with a message starting with
@@ -36,7 +38,10 @@ interface ProviderConfig {
     base: string;
     tag: string;
     authPrefix: string;
-    /** listing endpoint path — "/boards" (monday), "/lists" (ClickUp), "/projects" (Asana) */
+    /**
+     * listing endpoint path — "/boards" (monday), "/lists" (ClickUp),
+     * "/projects" (Asana and Jira)
+     */
     itemsPath: string;
     /** field name the provider's import endpoint expects the ids under */
     idsField: string;
@@ -141,7 +146,43 @@ const asanaToResult = (raw: AsanaImportResult): IntegrationImportResult => ({
         : {}),
 });
 
-const PROVIDERS: Record<"monday" | "clickup" | "asana", ProviderConfig> = {
+const jiraToItem = (row: JiraProject): IntegrationItem => ({
+    // composite "<cloudId>:<projectId>" (§13.1) — opaque, passed straight back
+    id: row.id,
+    name: row.name,
+    // Jira's Site is its top-level container — the picker groups by it
+    workspace: row.site,
+    badge: row.key,
+    is_private: row.is_private,
+    already_imported: row.already_imported,
+    project_id: row.project_id,
+});
+
+const jiraToResult = (raw: JiraImportResult): IntegrationImportResult => ({
+    imported: (raw?.imported ?? []).map((project) => ({
+        id: project.project_id_external,
+        name: project.project_name,
+        badge: project.project_key,
+        project_id: project.project_id,
+        created: project.created,
+        tasks_created: project.tasks_created,
+        tasks_updated: project.tasks_updated,
+        tasks_skipped: project.tasks_skipped,
+        truncated: project.tasks_truncated,
+        webhook_registered: project.webhook_registered,
+    })),
+    // Jira's skipped rows carry the composite id under `project_id` (§13.3)
+    skipped: (raw?.skipped_projects ?? []).map((project) => ({
+        id: project.project_id,
+        reason: project.reason,
+    })),
+    unmatched_users: raw?.unmatched_jira_users ?? [],
+    ...(raw?.remaining_project_ids
+        ? { remaining_ids: raw.remaining_project_ids }
+        : {}),
+});
+
+const PROVIDERS: Record<"monday" | "clickup" | "asana" | "jira", ProviderConfig> = {
     monday: {
         base: "/monday",
         tag: "monday-integration",
@@ -168,6 +209,15 @@ const PROVIDERS: Record<"monday" | "clickup" | "asana", ProviderConfig> = {
         idsField: "project_gids",
         toItem: asanaToItem,
         toResult: asanaToResult,
+    },
+    jira: {
+        base: "/jira",
+        tag: "jira-integration",
+        authPrefix: "Jira",
+        itemsPath: "/projects",
+        idsField: "project_ids",
+        toItem: jiraToItem,
+        toResult: jiraToResult,
     },
 };
 

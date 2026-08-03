@@ -25,15 +25,24 @@ import {
     ChevronDownIcon,
     Folder,
     Loader2,
+    Lock,
     RefreshCcw,
     Search,
-    Users,
     X,
 } from "lucide-react";
 import { useMemo, useState } from "react";
-import { capitalize, IntegrationDef } from "./registry";
+import { capitalize, describeImport, IntegrationDef } from "./registry";
 
 const SELECTION_CAP = 25;
+
+/**
+ * Accounts can be huge — Jira allows ~5 sites × 500 projects, Asana ~5
+ * workspaces × 1000 (§12.2/§13.2). Rendering every row at once makes the
+ * dialog crawl, so only the first slice is mounted until the user filters or
+ * explicitly asks for the rest. Never a silent truncation: the remainder is
+ * always announced.
+ */
+const ROW_RENDER_CAP = 200;
 
 interface IntegrationPickerDialogProps {
     def: IntegrationDef;
@@ -60,6 +69,7 @@ const IntegrationPickerDialog = ({
     onCancel,
 }: IntegrationPickerDialogProps) => {
     const [search, setSearch] = useState("");
+    const [showAllRows, setShowAllRows] = useState(false);
     const [selected, setSelected] = useState<Set<string>>(new Set());
     const [defaultsOpen, setDefaultsOpen] = useState(false);
     const [startDate, setStartDate] = useState<Date | undefined>(undefined);
@@ -82,11 +92,27 @@ const IntegrationPickerDialog = ({
         );
     }, [items, search]);
 
+    const visibleItems = useMemo(() => {
+        if (showAllRows || filteredItems.length <= ROW_RENDER_CAP) {
+            return filteredItems;
+        }
+        const head = filteredItems.slice(0, ROW_RENDER_CAP);
+        // a checked row must never fall outside the rendered slice, or it
+        // could not be unchecked again — pin selections back in (≤25 rows)
+        const headIds = new Set(head.map((item) => item.id));
+        const pinned = filteredItems.filter(
+            (item) => selected.has(item.id) && !headIds.has(item.id),
+        );
+        return pinned.length ? [...head, ...pinned] : head;
+    }, [filteredItems, showAllRows, selected]);
+    const hiddenCount = filteredItems.length - visibleItems.length;
+
     /**
-     * Registry-driven grouping (§11.1 / §12.1): "space" renders ClickUp's
-     * Workspace · Space headers (workspace name prefixed only when the
-     * account actually spans several workspaces), "workspace" renders Asana's
-     * Workspace headers, "none" keeps monday's flat list.
+     * Registry-driven grouping (§11.1 / §12.1 / §13.1): "space" renders
+     * ClickUp's Workspace · Space headers (workspace name prefixed only when
+     * the account actually spans several workspaces), "workspace" renders the
+     * item's top-level container — Asana Workspace / Jira Site — and "none"
+     * keeps monday's flat list.
      */
     const grouped = useMemo(() => {
         if (def.groupBy === "none") return null;
@@ -95,7 +121,7 @@ const IntegrationPickerDialog = ({
             { key: string; label: string; rows: IntegrationItem[] }
         >();
         if (def.groupBy === "workspace") {
-            for (const item of filteredItems) {
+            for (const item of visibleItems) {
                 const key = item.workspace?.id ?? "";
                 const label = item.workspace?.name ?? "Other";
                 const group = groups.get(key);
@@ -107,7 +133,7 @@ const IntegrationPickerDialog = ({
                 (items ?? []).map((item) => item.workspace?.id ?? ""),
             );
             const multiWorkspace = workspaceIds.size > 1;
-            for (const item of filteredItems) {
+            for (const item of visibleItems) {
                 const key = `${item.workspace?.id ?? ""}:${item.space?.id ?? ""}`;
                 const spaceName = item.space?.name ?? "Other";
                 const label =
@@ -120,7 +146,7 @@ const IntegrationPickerDialog = ({
             }
         }
         return [...groups.values()];
-    }, [def.groupBy, items, filteredItems]);
+    }, [def.groupBy, items, visibleItems]);
 
     const toggleItem = (item: IntegrationItem) => {
         setSelected((prev) => {
@@ -158,7 +184,7 @@ const IntegrationPickerDialog = ({
         onImport(payload);
     };
 
-    const BadgeIcon = def.groupBy === "workspace" ? Users : Folder;
+    const BadgeIcon = def.badgeIcon ?? Folder;
 
     const renderRow = (item: IntegrationItem) => {
         const checked = selected.has(item.id);
@@ -194,6 +220,13 @@ const IntegrationPickerDialog = ({
                         <span className="text-sm font-medium text-headingTextColor dark:text-darkTextPrimary truncate">
                             {item.name}
                         </span>
+                        {item.is_private && (
+                            <Lock
+                                role="img"
+                                aria-label={`Private ${def.noun.singular}`}
+                                className="h-3 w-3 shrink-0 text-subTextColor dark:text-darkTextSecondary"
+                            />
+                        )}
                         {item.badge && (
                             <span className="inline-flex items-center gap-1 rounded-full border border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg px-2 py-0.5 text-[10px] font-medium text-subTextColor dark:text-darkTextSecondary">
                                 <BadgeIcon className="h-2.5 w-2.5" />
@@ -232,15 +265,9 @@ const IntegrationPickerDialog = ({
                     Import {noun.plural} from {def.name}
                 </DialogTitle>
                 <DialogDescription>
-                    {noun.singular === "project"
-                        ? `Your ${def.name} projects and the tasks inside them are imported for time tracking.`
-                        : `${capitalize(noun.plural)} become projects and ${
-                              def.countNoun === "task"
-                                  ? "their tasks are imported with them"
-                                  : `their ${def.countNoun}s become tasks`
-                          }.`}{" "}
-                    {capitalize(noun.plural)} marked “Imported” can be selected
-                    again to re-sync them — nothing is duplicated.
+                    {describeImport(def)} {capitalize(noun.plural)} marked
+                    “Imported” can be selected again to re-sync them — nothing is
+                    duplicated.
                 </DialogDescription>
             </DialogHeader>
 
@@ -358,7 +385,24 @@ const IntegrationPickerDialog = ({
                                           </div>
                                       </div>
                                   ))
-                                : filteredItems.map(renderRow))}
+                                : visibleItems.map(renderRow))}
+
+                        {!itemsLoading && !itemsError && hiddenCount > 0 && (
+                            <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2.5">
+                                <span className="text-xs text-subTextColor dark:text-darkTextSecondary">
+                                    Showing {visibleItems.length} of{" "}
+                                    {filteredItems.length} {noun.plural} — filter to
+                                    narrow it down.
+                                </span>
+                                <Button
+                                    variant="outline2"
+                                    size="sm"
+                                    onClick={() => setShowAllRows(true)}
+                                >
+                                    Show all
+                                </Button>
+                            </div>
+                        )}
                     </div>
 
                     <div className="rounded-lg border border-borderColor dark:border-darkBorder">
