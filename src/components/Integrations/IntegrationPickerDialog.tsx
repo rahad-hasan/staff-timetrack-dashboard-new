@@ -24,8 +24,10 @@ import {
     ChevronDown,
     ChevronDownIcon,
     Folder,
+    Link2,
     Loader2,
     Lock,
+    Plus,
     RefreshCcw,
     Search,
     X,
@@ -71,6 +73,10 @@ const IntegrationPickerDialog = ({
     const [search, setSearch] = useState("");
     const [showAllRows, setShowAllRows] = useState(false);
     const [selected, setSelected] = useState<Set<string>>(new Set());
+    /** pasted ids (trello §2.6) that have no row in the fetched list */
+    const [manualIds, setManualIds] = useState<string[]>([]);
+    const [manualValue, setManualValue] = useState("");
+    const [manualError, setManualError] = useState<string | null>(null);
     const [defaultsOpen, setDefaultsOpen] = useState(false);
     const [startDate, setStartDate] = useState<Date | undefined>(undefined);
     const [deadline, setDeadline] = useState<Date | undefined>(undefined);
@@ -148,7 +154,18 @@ const IntegrationPickerDialog = ({
         return [...groups.values()];
     }, [def.groupBy, items, visibleItems]);
 
+    const capError = `You can import at most ${SELECTION_CAP} ${noun.plural} per run — deselect one first.`;
+    /** the cap error prescribes freeing a slot — retire it once one frees */
+    const clearCapError = () =>
+        setManualError((prev) => (prev === capError ? null : prev));
+
     const toggleItem = (item: IntegrationItem) => {
+        if (selected.has(item.id)) {
+            // unchecking — also drop any manual chip carrying this id (a
+            // pasted id can become a listed row after a list refresh)
+            setManualIds((prev) => prev.filter((id) => id !== item.id));
+            clearCapError();
+        }
         setSelected((prev) => {
             const next = new Set(prev);
             if (next.has(item.id)) {
@@ -161,6 +178,53 @@ const IntegrationPickerDialog = ({
     };
 
     const capReached = selected.size >= SELECTION_CAP;
+
+    /**
+     * Trello's board list stops at the first 100 open boards (§2.5), but
+     * /import takes any board the account can see — pasting a board URL,
+     * 8-char shortLink or 24-hex id covers the rest. A pasted 24-hex id
+     * that matches a listed row checks that row instead of adding a chip.
+     * A URL paste yields the shortLink, which cannot be correlated with
+     * listed rows client-side (the /boards row carries no shortLink) — if
+     * both aliases of one board are selected, the server resolves them to
+     * the same board and the second entry is a harmless re-sync (§2.6).
+     */
+    const handleManualAdd = () => {
+        const manual = def.manualIdEntry;
+        if (!manual || !manualValue.trim()) return;
+        const parsed = manual.parse(manualValue);
+        if (!parsed) {
+            setManualError(manual.error);
+            return;
+        }
+        if (selected.has(parsed)) {
+            // already picked (row or chip) — treat the re-paste as a no-op
+            setManualValue("");
+            setManualError(null);
+            return;
+        }
+        if (capReached) {
+            setManualError(capError);
+            return;
+        }
+        const isListedRow = (items ?? []).some((item) => item.id === parsed);
+        if (!isListedRow) {
+            setManualIds((prev) => [...prev, parsed]);
+        }
+        setSelected((prev) => new Set(prev).add(parsed));
+        setManualValue("");
+        setManualError(null);
+    };
+
+    const removeManualId = (id: string) => {
+        setManualIds((prev) => prev.filter((manualId) => manualId !== id));
+        setSelected((prev) => {
+            const next = new Set(prev);
+            next.delete(id);
+            return next;
+        });
+        clearCapError();
+    };
 
     const deadlineError = useMemo(() => {
         if (!deadline) return null;
@@ -404,6 +468,71 @@ const IntegrationPickerDialog = ({
                             </div>
                         )}
                     </div>
+
+                    {def.manualIdEntry && (
+                        <div>
+                            <div className="flex gap-2">
+                                <div className="relative flex-1">
+                                    <Link2 className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-subTextColor dark:text-darkTextSecondary" />
+                                    <Input
+                                        value={manualValue}
+                                        onChange={(e) => {
+                                            setManualValue(e.target.value);
+                                            if (manualError) setManualError(null);
+                                        }}
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter") {
+                                                e.preventDefault();
+                                                handleManualAdd();
+                                            }
+                                        }}
+                                        placeholder={def.manualIdEntry.placeholder}
+                                        aria-label={`Add a ${def.noun.singular} by link or ID`}
+                                        className="pl-9 dark:bg-darkPrimaryBg dark:border-darkBorder"
+                                    />
+                                </div>
+                                <Button
+                                    variant="outline2"
+                                    onClick={handleManualAdd}
+                                    disabled={!manualValue.trim()}
+                                    className="gap-1.5 shrink-0 text-headingTextColor dark:text-darkTextPrimary"
+                                >
+                                    <Plus className="h-3.5 w-3.5" />
+                                    Add
+                                </Button>
+                            </div>
+                            {manualError ? (
+                                <p className="mt-1.5 flex items-center gap-1.5 text-xs text-red-600 dark:text-red-400">
+                                    <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+                                    {manualError}
+                                </p>
+                            ) : def.manualIdEntry.hint ? (
+                                <p className="mt-1.5 text-xs text-subTextColor dark:text-darkTextSecondary">
+                                    {def.manualIdEntry.hint}
+                                </p>
+                            ) : null}
+                            {manualIds.length > 0 && (
+                                <div className="mt-2 flex flex-wrap gap-1.5">
+                                    {manualIds.map((id) => (
+                                        <span
+                                            key={id}
+                                            className="inline-flex items-center gap-1.5 rounded-full border border-borderColor dark:border-darkBorder bg-bgSecondary dark:bg-darkPrimaryBg px-2 py-1 text-[11px] font-medium text-headingTextColor dark:text-darkTextPrimary"
+                                        >
+                                            <span className="font-mono">{id}</span>
+                                            <button
+                                                type="button"
+                                                aria-label={`Remove ${def.noun.singular} ${id}`}
+                                                onClick={() => removeManualId(id)}
+                                                className="cursor-pointer text-subTextColor hover:text-headingTextColor dark:text-darkTextSecondary dark:hover:text-darkTextPrimary"
+                                            >
+                                                <X className="h-3 w-3" />
+                                            </button>
+                                        </span>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    )}
 
                     <div className="rounded-lg border border-borderColor dark:border-darkBorder">
                         <button

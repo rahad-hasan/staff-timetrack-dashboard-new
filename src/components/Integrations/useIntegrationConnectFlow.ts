@@ -104,7 +104,9 @@ export const useIntegrationConnectFlow = (
             if (!url) {
                 setBusy(false);
                 const message: string = res?.message || "";
-                if (message.includes("OAuth configuration is missing")) {
+                // OAuth2 providers say "<name> OAuth configuration is missing",
+                // Trello says "Trello API configuration is missing" (§6)
+                if (message.includes("configuration is missing")) {
                     toast.error(
                         "Integration is not configured on the server — please contact support.",
                     );

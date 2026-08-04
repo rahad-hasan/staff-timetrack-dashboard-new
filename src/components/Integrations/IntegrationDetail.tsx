@@ -130,6 +130,17 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
     const prevRemainingRef = useRef<string[] | null>(null);
     const cooldownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const lastStatusFetchRef = useRef(0);
+    /**
+     * Boards imported via a pasted link can sit beyond the provider's list
+     * cap (Trello lists only the first 100 open boards, §2.5) — the listing
+     * endpoint will never return them, so successful import/sync results are
+     * remembered here and merged into the items list.
+     */
+    const offListImportsRef = useRef<Map<string, IntegrationItem>>(new Map());
+
+    useEffect(() => {
+        offListImportsRef.current = new Map();
+    }, [def.key]);
 
     const fetchStatus = useCallback(
         async ({ silent = false } = {}) => {
@@ -162,7 +173,11 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
             try {
                 const res: any = await getIntegrationItems(def.key);
                 if (res?.success) {
-                    setItems(res?.data ?? []);
+                    const fetched: IntegrationItem[] = res?.data ?? [];
+                    const offList = [...offListImportsRef.current.values()].filter(
+                        (extra) => !fetched.some((item) => item.id === extra.id),
+                    );
+                    setItems(offList.length ? [...fetched, ...offList] : fetched);
                     setItemsError(null);
                 } else if (res?.statusCode === 401) {
                     // provider revoked the token — no logout; close the picker
@@ -283,6 +298,23 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
         }
     };
 
+    /**
+     * Remember every successfully imported/synced item so ones the capped
+     * listing cannot show (pasted-link imports) still appear as imported.
+     */
+    const recordOffListImports = (result: IntegrationImportResult) => {
+        if (!def.manualIdEntry) return;
+        for (const row of result.imported ?? []) {
+            offListImportsRef.current.set(row.id, {
+                id: row.id,
+                name: row.name,
+                workspace: null,
+                already_imported: true,
+                project_id: row.project_id,
+            });
+        }
+    };
+
     const afterMutationSuccess = () => {
         fetchStatus({ silent: true });
         fetchItems({ silent: true });
@@ -299,6 +331,7 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
                 setPickerOpen(false);
                 setReconnectHint(false);
                 prevRemainingRef.current = null;
+                recordOffListImports(res.data);
                 setResultView({ mode: "import", result: res.data, stalled: false });
                 afterMutationSuccess();
             } else if (res?.statusCode === 401) {
@@ -327,6 +360,7 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
                 const data: IntegrationImportResult = res.data;
                 const nextRemaining = data.remaining_ids ?? [];
                 setReconnectHint(false);
+                recordOffListImports(data);
                 if (kind === "fresh") {
                     prevRemainingRef.current = nextRemaining;
                     setResultView({ mode: "sync", result: data, stalled: false });
@@ -371,6 +405,7 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
                 setItems(null);
                 setItemsError(null);
                 setReconnectHint(false);
+                offListImportsRef.current = new Map();
                 await fetchStatus({ silent: true });
             } else {
                 toast.error(res?.message || `Failed to disconnect ${def.name}`);
@@ -393,12 +428,17 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
     );
     // §8 — Sync must stay disabled until the items query proves something is
     // imported; while it is still in flight (ClickUp's /lists is slow) the
-    // safe reading of "no imported items exist" is to keep it disabled too
+    // safe reading of "no imported items exist" is to keep it disabled too.
+    // Providers with manual id entry are exempt from that proof: their
+    // listing is capped (Trello: first 100 open boards), so an empty
+    // imported list cannot prove nothing is imported — a premature Sync is
+    // answered by the server's own "nothing imported yet" 400 as a toast.
+    const listMayBeIncomplete = Boolean(def.manualIdEntry);
     const syncDisabled =
         blocking ||
         mutationCooldown ||
-        items === null ||
-        importedItems.length === 0;
+        (!listMayBeIncomplete &&
+            (items === null || importedItems.length === 0));
 
     /**
      * §13.4 — Jira keeps one webhook per site and it expires after 30 days of
@@ -571,13 +611,15 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
                                                 onClick={() => runSync("fresh")}
                                                 disabled={syncDisabled}
                                                 title={
-                                                    items === null
-                                                        ? itemsLoading
-                                                            ? `Checking imported ${def.noun.plural}…`
-                                                            : undefined
-                                                        : importedItems.length === 0
-                                                            ? `Import ${def.noun.plural} first`
-                                                            : undefined
+                                                    listMayBeIncomplete
+                                                        ? undefined
+                                                        : items === null
+                                                            ? itemsLoading
+                                                                ? `Checking imported ${def.noun.plural}…`
+                                                                : undefined
+                                                            : importedItems.length === 0
+                                                                ? `Import ${def.noun.plural} first`
+                                                                : undefined
                                                 }
                                                 className="gap-2 text-headingTextColor dark:text-darkTextPrimary"
                                             >
@@ -851,6 +893,15 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
                                         </ul>
                                     )
                                 )}
+
+                                {!itemsLoading &&
+                                    !itemsError &&
+                                    items !== null &&
+                                    def.notes?.importedListCaveat && (
+                                        <p className="mt-2 text-[11px] text-subTextColor dark:text-darkTextSecondary">
+                                            {def.notes.importedListCaveat}
+                                        </p>
+                                    )}
                             </div>
                         )}
                     </div>

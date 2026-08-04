@@ -14,6 +14,8 @@ import {
     JiraProject,
     MondayBoard,
     MondayImportResult,
+    TrelloBoard,
+    TrelloImportResult,
 } from "@/types/type";
 import axios, { AxiosResponse } from "axios";
 import { revalidateTag } from "next/cache";
@@ -182,7 +184,44 @@ const jiraToResult = (raw: JiraImportResult): IntegrationImportResult => ({
         : {}),
 });
 
-const PROVIDERS: Record<"monday" | "clickup" | "asana" | "jira", ProviderConfig> = {
+const trelloToItem = (row: TrelloBoard): IntegrationItem => ({
+    id: row.id,
+    name: row.name,
+    // no cheap card count (§2.5); an unnamed workspace would render a second
+    // "Other" group header, so it folds into the workspace-less bucket
+    workspace: row.workspace?.name
+        ? { id: row.workspace.id, name: row.workspace.name }
+        : null,
+    already_imported: row.already_imported,
+    project_id: row.project_id,
+});
+
+const trelloToResult = (raw: TrelloImportResult): IntegrationImportResult => ({
+    imported: (raw?.imported ?? []).map((board) => ({
+        id: board.board_id,
+        name: board.board_name,
+        project_id: board.project_id,
+        created: board.created,
+        tasks_created: board.tasks_created,
+        tasks_updated: board.tasks_updated,
+        tasks_skipped: board.tasks_skipped,
+        truncated: board.tasks_truncated,
+        webhook_registered: board.webhook_registered,
+    })),
+    skipped: (raw?.skipped_boards ?? []).map((board) => ({
+        id: board.board_id,
+        reason: board.reason,
+    })),
+    unmatched_users: raw?.unmatched_trello_users ?? [],
+    ...(raw?.remaining_board_ids
+        ? { remaining_ids: raw.remaining_board_ids }
+        : {}),
+});
+
+const PROVIDERS: Record<
+    "monday" | "clickup" | "asana" | "jira" | "trello",
+    ProviderConfig
+> = {
     monday: {
         base: "/monday",
         tag: "monday-integration",
@@ -218,6 +257,16 @@ const PROVIDERS: Record<"monday" | "clickup" | "asana" | "jira", ProviderConfig>
         idsField: "project_ids",
         toItem: jiraToItem,
         toResult: jiraToResult,
+    },
+    trello: {
+        base: "/trello",
+        tag: "trello-integration",
+        // 401 message: "Trello rejected the access token. Please reconnect…"
+        authPrefix: "Trello",
+        itemsPath: "/boards",
+        idsField: "board_ids",
+        toItem: trelloToItem,
+        toResult: trelloToResult,
     },
 };
 
@@ -320,6 +369,21 @@ const longRunningPost = async <T>(
         redirect("/session-expired");
     }
     if (res.status < 200 || res.status >= 300) {
+        // Trello's unreadable-token error is a 400, but the contract says to
+        // treat it as connection lost — normalize onto the provider-401
+        // envelope so the shared connection-lost branches fire (§6)
+        if (
+            typeof data?.message === "string" &&
+            data.message.startsWith(authPrefix) &&
+            data.message.includes("access token is missing")
+        ) {
+            return {
+                success: false,
+                statusCode: 401,
+                message: data.message,
+                errorMessages: data?.errorMessages,
+            } as IResponse<T>;
+        }
         return {
             success: false,
             message:

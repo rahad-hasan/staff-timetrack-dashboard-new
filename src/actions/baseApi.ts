@@ -174,6 +174,23 @@ export async function baseApi<T = any>(
   }
 
   if (!res.ok) {
+    // Trello reports an unreadable stored token as 400 (not 401) with
+    // "Trello access token is missing. Please reconnect the account." but the
+    // contract says to treat it as connection lost — normalize it onto the
+    // provider-401 envelope above so every caller branch behaves identically.
+    if (
+      providerAuthPrefix &&
+      typeof data?.message === "string" &&
+      data.message.startsWith(providerAuthPrefix) &&
+      data.message.includes("access token is missing")
+    ) {
+      return {
+        success: false,
+        statusCode: 401,
+        message: data.message,
+        errorMessages: data?.errorMessages,
+      } as T;
+    }
     return {
       success: false,
       message:

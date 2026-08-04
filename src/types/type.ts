@@ -1337,11 +1337,11 @@ export interface MicrosoftEventsListItem {
 }
 
 /* =========================
- * App Integrations (monday.com + ClickUp + Asana + Jira — Slack will follow)
+ * App Integrations (monday.com + ClickUp + Asana + Jira + Trello — Slack will follow)
  *
  * The UI only ever sees the provider-neutral `Integration` shapes below;
- * each provider's wire format (Monday / ClickUp / Asana / Jira) is normalized
- * to them in the server actions (appIntegrationAction.ts).
+ * each provider's wire format (Monday / ClickUp / Asana / Jira / Trello) is
+ * normalized to them in the server actions (appIntegrationAction.ts).
  * ========================= */
 export type IntegrationConnectionStatus =
   | "connected"
@@ -1382,7 +1382,11 @@ export interface IntegrationItem {
   description?: string | null;
   /** monday `items_count` / ClickUp `task_count`; Asana + Jira expose no cheap count */
   items_count?: number | null;
-  /** top-level container used for group headers: Workspace, or Jira's Site */
+  /**
+   * top-level container used for group headers: Workspace, or Jira's Site.
+   * Always named — providers whose workspaces can be unnamed (Trello)
+   * normalize those to null in their adapter so they group as "Other".
+   */
   workspace: { id: string; name: string } | null;
   /** ClickUp only — the picker groups by workspace+space (registry `groupBy: "space"`) */
   space?: { id: string; name: string } | null;
@@ -1566,6 +1570,38 @@ export interface JiraImportResult {
   skipped_projects: { project_id: string; reason: string }[];
   unmatched_jira_users: IntegrationUnmatchedUser[];
   remaining_project_ids?: string[];
+}
+
+/* ---- Trello wire shapes (trello spec §2.5–§2.7) ---- */
+
+export interface TrelloBoard {
+  /** canonical 24-hex board id — passed to /import as-is */
+  id: string;
+  name: string;
+  /** null for boards outside any workspace; the name itself is also nullable */
+  workspace: { id: string; name: string | null } | null;
+  already_imported: boolean;
+  project_id: number | null;
+}
+
+export interface TrelloImportedBoard {
+  board_id: string;
+  board_name: string;
+  project_id: number;
+  created: boolean;
+  tasks_created: number;
+  tasks_updated: number;
+  tasks_skipped: number;
+  tasks_truncated: boolean;
+  webhook_registered: boolean;
+}
+
+export interface TrelloImportResult {
+  imported: TrelloImportedBoard[];
+  skipped_boards: { board_id: string; reason: string }[];
+  /** `email` is always null — Trello never reveals member emails (§1) */
+  unmatched_trello_users: IntegrationUnmatchedUser[];
+  remaining_board_ids?: string[];
 }
 
 /* =========================

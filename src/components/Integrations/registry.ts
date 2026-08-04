@@ -3,10 +3,17 @@ import mondayLogo from "@/assets/integrations/monday.svg";
 import clickupLogo from "@/assets/integrations/clickup.svg";
 import jiraLogo from "@/assets/integrations/jira.svg";
 import asanaLogo from "@/assets/integrations/asana.svg";
+import trelloLogo from "@/assets/integrations/trello.svg";
 import slackLogo from "@/assets/integrations/slack.svg";
 import { Folder, Hash, LucideIcon, Users } from "lucide-react";
 
-export type IntegrationKey = "monday" | "clickup" | "jira" | "asana" | "slack";
+export type IntegrationKey =
+    | "monday"
+    | "clickup"
+    | "jira"
+    | "asana"
+    | "trello"
+    | "slack";
 
 export interface IntegrationDef {
     key: IntegrationKey;
@@ -42,10 +49,36 @@ export interface IntegrationDef {
         result?: string;
         /** appended to the "Unmatched users" warning section */
         unmatchedUsers?: string;
+        /**
+         * replaces the whole default unmatched-users intro (which advises
+         * inviting by email — wrong for providers that never expose emails,
+         * i.e. Trello). `unmatchedUsers` is ignored when this is set.
+         */
+        unmatchedUsersIntro?: string;
         /** shown next to the Connect button, before OAuth starts */
         connect?: string;
         /** replaces the default "matched by email" how-it-works bullet */
         assigneeMatching?: string;
+        /**
+         * footnote under the "Imported …" list for providers whose listing
+         * endpoint is capped and may therefore miss imported items
+         */
+        importedListCaveat?: string;
+    };
+    /**
+     * Lets the import picker accept a pasted container URL/id on top of the
+     * listed rows (Trello: the /boards list caps at the first 100 open
+     * boards, but /import also takes any 24-hex id or 8-char shortLink).
+     */
+    manualIdEntry?: {
+        /** input placeholder, e.g. a sample board URL */
+        placeholder: string;
+        /** helper line under the input explaining when to paste (list cap) */
+        hint?: string;
+        /** validation message when `parse` rejects the input */
+        error: string;
+        /** extract a provider id from pasted text; null = unrecognized */
+        parse: (raw: string) => string | null;
     };
     capabilities: {
         boardPicker: boolean;
@@ -76,6 +109,24 @@ export const describeImport = (def: IntegrationDef) => {
 /** The callback popup posts this message type to window.opener (all providers). */
 export const INTEGRATION_CALLBACK_MESSAGE_TYPE =
     "staff-time-tracker:integration-callback";
+
+/**
+ * Trello §2.6 — /import accepts the canonical 24-hex board id or the 8-char
+ * shortLink from a board URL (https://trello.com/b/<shortLink>/…). Anything
+ * else (including other trello.com URLs, e.g. /c/ card links) is rejected.
+ */
+export const parseTrelloBoardId = (raw: string): string | null => {
+    const text = raw.trim();
+    if (!text) return null;
+    if (/^[0-9a-f]{24}$/i.test(text)) return text.toLowerCase();
+    const fromUrl = text.match(
+        /^(?:https?:\/\/)?(?:www\.)?trello\.com\/b\/([A-Za-z0-9]{8})(?:[/?#]|$)/i,
+    );
+    if (fromUrl) return fromUrl[1];
+    // bare shortLink, case-sensitive on Trello's side — pass through as-is
+    if (/^[A-Za-z0-9]{8}$/.test(text)) return text;
+    return null;
+};
 
 export const INTEGRATIONS: IntegrationDef[] = [
     {
@@ -151,6 +202,39 @@ export const INTEGRATIONS: IntegrationDef[] = [
         notes: {
             result:
                 "Asana has no native status or priority — task status is taken from its section (e.g. “To do”, “In progress”) and completion flag; priority from a “Priority” custom field when one exists.",
+        },
+        capabilities: { boardPicker: true, sync: true, importDefaults: true },
+    },
+    {
+        key: "trello",
+        name: "Trello",
+        logo: trelloLogo,
+        category: "project_management",
+        categoryLabel: "Project management sync",
+        blurb: "Import Trello boards as projects and keep cards in sync.",
+        available: true,
+        apiBase: "/trello",
+        noun: { singular: "board", plural: "boards" },
+        countNoun: "card",
+        // boards can sit outside any workspace — those group under "Other"
+        groupBy: "workspace",
+        notes: {
+            result:
+                "A card's status comes from the list it sits in (a card marked “due complete” is always complete), its priority from labels named high / medium / low, and its due date becomes the task deadline.",
+            unmatchedUsersIntro:
+                "These Trello members have no matching account here, so their cards were assigned to you. Trello shares no member emails — make sure each member's full name in Trello matches their name in Staff Time Tracker, then run Sync.",
+            assigneeMatching:
+                "Assignees are matched to teammates by full name — Trello shares no member emails, so names must match exactly.",
+            importedListCaveat:
+                "Trello lists only your first 100 open boards, so boards imported by pasted link may not appear here.",
+        },
+        manualIdEntry: {
+            placeholder: "Paste a board link, short link, or board ID",
+            hint:
+                "The list above shows your first 100 open boards — paste a board link to import one that isn't listed.",
+            error:
+                "Enter a Trello board link (trello.com/b/…), an 8-character short link, or a 24-character board ID.",
+            parse: parseTrelloBoardId,
         },
         capabilities: { boardPicker: true, sync: true, importDefaults: true },
     },

@@ -210,9 +210,11 @@ const IntegrationResultDialog = ({
 
                 {imported.length > 0 && (
                     <ul className="space-y-2">
-                        {imported.map((item) => (
+                        {/* one board pasted as URL + checked as row can come
+                            back as two result rows with the same canonical id */}
+                        {imported.map((item, index) => (
                             <li
-                                key={item.id}
+                                key={`${item.id}-${index}`}
                                 className="rounded-lg border border-borderColor dark:border-darkBorder bg-bgSecondary/40 dark:bg-darkPrimaryBg/40 p-3"
                             >
                                 <div className="flex flex-wrap items-center gap-2">
@@ -298,12 +300,14 @@ const IntegrationResultDialog = ({
                         icon={<UserX className="h-3.5 w-3.5" />}
                     >
                         <p className="mb-2 text-xs text-amber-800 dark:text-amber-200">
-                            These {def.name} users have no matching account here, so
-                            their {def.countNoun}s were assigned to you. Invite them
-                            with the same email to match them on the next sync.
-                            {def.notes?.unmatchedUsers
-                                ? ` ${def.notes.unmatchedUsers}`
-                                : ""}
+                            {/* Trello never exposes member emails, so its intro
+                                replaces the invite-by-email advice entirely */}
+                            {def.notes?.unmatchedUsersIntro ??
+                                `These ${def.name} users have no matching account here, so their ${def.countNoun}s were assigned to you. Invite them with the same email to match them on the next sync.${
+                                    def.notes?.unmatchedUsers
+                                        ? ` ${def.notes.unmatchedUsers}`
+                                        : ""
+                                }`}
                         </p>
                         <ul className="space-y-1.5">
                             {unmatched.map((user) => (
