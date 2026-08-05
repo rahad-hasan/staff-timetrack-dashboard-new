@@ -1470,3 +1470,225 @@ export interface AddTimeEntryPayload {
   note?: string;
   user_id: number;
 }
+
+//  App Integrations
+export type IntegrationConnectionStatus =
+  | "connected"
+  | "disconnected"
+  | "expired"
+  | "revoked";
+
+export interface IntegrationStatusResponse {
+  id?: number;
+  provider: string;
+  type: string;
+  status: IntegrationConnectionStatus;
+  connected: boolean;
+  provider_email?: string | null;
+  external_account_id?: string | null;
+  metadata?: {
+    account_user_id?: string | null;
+    account_user_name?: string | null;
+    /** Jira only (§13.1) — the Atlassian sites the connection can reach */
+    sites?: { id: string; name: string; url: string }[] | null;
+  } | null;
+  scope?: string[];
+  last_synced_at?: string | null;
+  disconnected_at?: string | null;
+}
+
+
+
+export interface IntegrationUnmatchedUser {
+  id: string;
+  name: string;
+  email: string | null;
+}
+
+export interface AsanaImportedProject {
+  project_gid: string;
+  project_name: string;
+  project_id: number;
+  created: boolean;
+  tasks_created: number;
+  tasks_updated: number;
+  tasks_skipped: number;
+  tasks_truncated: boolean;
+  webhook_registered: boolean;
+}
+
+export interface AsanaImportResult {
+  imported: AsanaImportedProject[];
+  skipped_projects: { project_gid: string; reason: string }[];
+  unmatched_asana_users: IntegrationUnmatchedUser[];
+  remaining_project_gids?: string[];
+}
+
+export interface AsanaProject {
+  id: string;
+  name: string;
+  workspace: { id: string; name: string } | null;
+  team: string | null;
+  already_imported: boolean;
+  project_id: number | null;
+}
+
+export interface ClickUpImportedList {
+  list_id: string;
+  list_name: string;
+  project_id: number;
+  created: boolean;
+  tasks_created: number;
+  tasks_updated: number;
+  tasks_skipped: number;
+  tasks_truncated: boolean;
+  webhook_registered: boolean;
+}
+
+export interface ClickUpImportResult {
+  imported: ClickUpImportedList[];
+  skipped_lists: { list_id: string; reason: string }[];
+  unmatched_clickup_users: IntegrationUnmatchedUser[];
+  remaining_list_ids?: string[];
+}
+
+export interface ClickUpList {
+  id: string;
+  name: string;
+  task_count: number;
+  workspace: { id: string; name: string } | null;
+  space: { id: string; name: string } | null;
+  folder: { id: string; name: string } | null;
+  already_imported: boolean;
+  project_id: number | null;
+}
+
+export interface IntegrationImportPayload {
+  ids: string[];
+  start_date?: string;
+  deadline?: string;
+}
+
+export interface IntegrationImportedItem {
+  id: string;
+  name: string;
+  badge?: string | null;
+  project_id: number;
+  created: boolean;
+  tasks_created: number;
+  tasks_updated: number;
+  tasks_skipped: number;
+  truncated: boolean;
+  webhook_registered: boolean;
+}
+
+export interface IntegrationSkippedItem {
+  id: string;
+  reason: string;
+}
+
+export interface IntegrationImportResult {
+  imported: IntegrationImportedItem[];
+  skipped: IntegrationSkippedItem[];
+  unmatched_users: IntegrationUnmatchedUser[];
+  remaining_ids?: string[];
+}
+
+export interface IntegrationItem {
+  id: string;
+  name: string;
+  description?: string | null;
+  items_count?: number | null;
+  workspace: { id: string; name: string } | null;
+  space?: { id: string; name: string } | null;
+  badge?: string | null;
+  is_private?: boolean;
+  already_imported: boolean;
+  project_id: number | null;
+}
+
+export interface IntegrationStatusResponse {
+  id?: number;
+  provider: string;
+  type: string;
+  status: IntegrationConnectionStatus;
+  connected: boolean;
+  provider_email?: string | null;
+  external_account_id?: string | null;
+  metadata?: {
+    account_user_id?: string | null;
+    account_user_name?: string | null;
+    sites?: { id: string; name: string; url: string }[] | null;
+  } | null;
+  scope?: string[];
+  last_synced_at?: string | null;
+  disconnected_at?: string | null;
+}
+
+export interface IResponse<T> {
+  statusCode: number;
+  data: T;
+  message: string;
+  success: boolean;
+  meta?: IMeta | null;
+  errorMessages?: { path: string; message: string }[];
+}
+
+export interface JiraImportedProject {
+  project_id_external: string;
+  project_key: string;
+  project_name: string;
+  project_id: number;
+  created: boolean;
+  tasks_created: number;
+  tasks_updated: number;
+  tasks_skipped: number;
+  tasks_truncated: boolean;
+  webhook_registered: boolean;
+}
+
+export interface JiraImportResult {
+  imported: JiraImportedProject[];
+  skipped_projects: { project_id: string; reason: string }[];
+  unmatched_jira_users: IntegrationUnmatchedUser[];
+  remaining_project_ids?: string[];
+}
+
+export interface JiraProject {
+  id: string;
+  key: string;
+  name: string;
+  is_private: boolean;
+  site: { id: string; name: string; url: string } | null;
+  already_imported: boolean;
+  project_id: number | null;
+}
+
+export interface MondayBoard {
+  id: string;
+  name: string;
+  description: string | null;
+  items_count: number;
+  workspace: { id: string; name: string } | null;
+  already_imported: boolean;
+  project_id: number | null;
+}
+
+export interface MondayImportedBoard {
+  board_id: string;
+  board_name: string;
+  project_id: number;
+  created: boolean;
+  tasks_created: number;
+  tasks_updated: number;
+  tasks_skipped: number;
+  items_truncated: boolean;
+  webhooks_registered: boolean;
+}
+
+export interface MondayImportResult {
+  imported: MondayImportedBoard[];
+  skipped_boards: { board_id: string; reason: string }[];
+  unmatched_monday_users: IntegrationUnmatchedUser[];
+  remaining_board_ids?: string[];
+}

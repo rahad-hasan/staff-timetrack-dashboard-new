@@ -9,8 +9,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 const SettingsTabs = () => {
     const logInUserData = useLogInUserStore(state => state.logInUserData);
     type Tab = "Profile" | "Configuration" | "Change Password"
-    
-    const roleBasedTabs = (logInUserData?.role === 'admin') ? ["Profile", "Configuration", "Change Password"] : ["Profile", "Change Password"]
+
+    const roleBasedTabs = (logInUserData?.role === 'admin') ? ["Profile", "Configuration",
+         "Change Password"] : ["Profile", "Change Password"]
 
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -41,6 +42,10 @@ const SettingsTabs = () => {
                         tab === "Configuration" &&
                         <NotificationIcon size={16}></NotificationIcon>
                     }
+                    {/* {
+                        tab === "App Integrations" &&
+                        <Blocks size={16}></Blocks>
+                    } */}
                     {
                         tab === "Change Password" &&
                         <Lock size={16}></Lock>
