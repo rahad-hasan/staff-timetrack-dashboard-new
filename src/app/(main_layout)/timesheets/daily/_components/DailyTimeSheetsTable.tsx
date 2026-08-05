@@ -85,7 +85,7 @@ const DailyTimeSheetsTable = ({ data }: { data: IDailyTimeEntryItem[] }) => {
                 %
               </span>
             ) : (
-              <span className=" bg-[#5db0f1] text-white font-normal px-2 py-0.5 rounded-full">
+              <span className={` ${row?.original?.activity_score_avg < 50 ? "bg-yellow-400": row?.original?.activity_score_avg < 30 ? "bg-red-600" : "bg-[#5db0f1]" } text-white font-normal px-2 py-0.5 rounded-full`}>
                 {row?.original?.activity_score_avg}%
               </span>
             )}
