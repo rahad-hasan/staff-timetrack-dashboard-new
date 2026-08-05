@@ -74,19 +74,19 @@ const DailyTimeSheetsTable = ({ data }: { data: IDailyTimeEntryItem[] }) => {
         );
       },
       cell: ({ row }) => {
+        const score = row?.original?.activity_score_avg;
         return (
           <div className="flex items-center gap-2">
-            {row?.original?.activity_score_avg === null ||
-            row?.original?.activity_score_avg < 30 ? (
-              <span className=" bg-[#f40139] text-white font-normal px-2 py-0.5 rounded-full">
-                {row?.original?.activity_score_avg === null
-                  ? 0
-                  : row?.original?.activity_score_avg}
-                %
-              </span>
-            ) : (
-              <span className={` ${row?.original?.activity_score_avg < 50 ? "bg-yellow-400": row?.original?.activity_score_avg < 30 ? "bg-red-600" : "bg-[#5db0f1]" } text-white font-normal px-2 py-0.5 rounded-full`}>
-                {row?.original?.activity_score_avg}%
+            {score !== null && score !== undefined && (
+              <span
+                className={`text-white font-normal px-2 py-0.5 rounded-full ${score < 30
+                    ? "bg-red-600"
+                    : score < 50
+                      ? "bg-yellow-500"
+                      : "bg-[#5db0f1]"
+                  }`}
+              >
+                {score}%
               </span>
             )}
           </div>
@@ -184,9 +184,9 @@ const DailyTimeSheetsTable = ({ data }: { data: IDailyTimeEntryItem[] }) => {
                   {header.isPlaceholder
                     ? null
                     : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext(),
-                      )}
+                      header.column.columnDef.header,
+                      header.getContext(),
+                    )}
                 </TableHead>
               ))}
             </TableRow>
