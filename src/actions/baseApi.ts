@@ -15,6 +15,7 @@ interface BaseApiOptions {
   headers?: HeadersInit;
   cache?: RequestCache;
   revalidate?: number;
+  providerAuthPrefix?: string;
 }
 
 /* ---------------- helpers ---------------- */
@@ -57,6 +58,7 @@ export async function baseApi<T = any>(
     cache = "force-cache",
     // cache = "no-cache",
     revalidate = 60,
+    providerAuthPrefix,
   } = options;
 
   const fullUrl = url.startsWith("http")
@@ -72,11 +74,11 @@ export async function baseApi<T = any>(
       cache,
       ...(method === "GET" &&
         (tag || revalidate) && {
-          next: {
-            ...(tag && { tags: [tag] }),
-            ...(revalidate !== undefined && { revalidate }),
-          },
-        }),
+        next: {
+          ...(tag && { tags: [tag] }),
+          ...(revalidate !== undefined && { revalidate }),
+        },
+      }),
     });
   let res;
   try {
@@ -107,7 +109,29 @@ export async function baseApi<T = any>(
 
   //     redirect(`/api/auth/refresh?redirect=${encodeURIComponent(currentPath)}`);
   // }
+  // if (res.status === 401) {
+  //   redirect("/session-expired");
+  // }
   if (res.status === 401) {
+    if (providerAuthPrefix) {
+      let body401: any = null;
+      try {
+        body401 = await res.clone().json();
+      } catch {
+        body401 = null;
+      }
+      if (
+        typeof body401?.message === "string" &&
+        body401.message.startsWith(providerAuthPrefix)
+      ) {
+        return {
+          success: false,
+          statusCode: 401,
+          message: body401.message,
+          errorMessages: body401?.errorMessages,
+        } as T;
+      }
+    }
     // const cookieStore = await cookies();
     // cookieStore.delete("accessToken");
     redirect("/session-expired");
@@ -146,7 +170,31 @@ export async function baseApi<T = any>(
     data = null;
   }
 
+  // if (!res.ok) {
+  //   return {
+  //     success: false,
+  //     message:
+  //       data?.message ||
+  //       data?.errorMessages?.[0]?.message ||
+  //       `Request failed with ${res.status}`,
+  //     errorMessages: data?.errorMessages,
+  //   } as T;
+  // }
+
   if (!res.ok) {
+    if (
+      providerAuthPrefix &&
+      typeof data?.message === "string" &&
+      data.message.startsWith(providerAuthPrefix) &&
+      data.message.includes("access token is missing")
+    ) {
+      return {
+        success: false,
+        statusCode: 401,
+        message: data.message,
+        errorMessages: data?.errorMessages,
+      } as T;
+    }
     return {
       success: false,
       message:

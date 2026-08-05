@@ -42,10 +42,36 @@ export interface IntegrationDef {
         result?: string;
         /** appended to the "Unmatched users" warning section */
         unmatchedUsers?: string;
+        /**
+         * replaces the whole default unmatched-users intro (which advises
+         * inviting by email — wrong for providers that never expose emails,
+         * i.e. Trello). `unmatchedUsers` is ignored when this is set.
+         */
+        unmatchedUsersIntro?: string;
         /** shown next to the Connect button, before OAuth starts */
         connect?: string;
         /** replaces the default "matched by email" how-it-works bullet */
         assigneeMatching?: string;
+        /**
+         * footnote under the "Imported …" list for providers whose listing
+         * endpoint is capped and may therefore miss imported items
+         */
+        importedListCaveat?: string;
+    };
+    /**
+     * Lets the import picker accept a pasted container URL/id on top of the
+     * listed rows (Trello: the /boards list caps at the first 100 open
+     * boards, but /import also takes any 24-hex id or 8-char shortLink).
+     */
+    manualIdEntry?: {
+        /** input placeholder, e.g. a sample board URL */
+        placeholder: string;
+        /** helper line under the input explaining when to paste (list cap) */
+        hint?: string;
+        /** validation message when `parse` rejects the input */
+        error: string;
+        /** extract a provider id from pasted text; null = unrecognized */
+        parse: (raw: string) => string | null;
     };
     capabilities: {
         boardPicker: boolean;

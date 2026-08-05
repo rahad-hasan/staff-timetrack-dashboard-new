@@ -18,11 +18,13 @@ const WeeklyTimeSheetsServer = async ({ searchParams }: ISearchParamsProps) => {
     timezone: params?.timezone,
   });
 
+  console.log(result)
+
   return (
       <WeeklyTimeSheetsTable
-        items={result.data.items}
-        dayKeys={result.data.day_keys}
-        totals={result.data.totals}
+        items={result?.data?.items}
+        dayKeys={result?.data.day_keys}
+        totals={result?.data.totals}
       />
   );
 };

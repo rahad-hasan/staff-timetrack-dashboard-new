@@ -3,14 +3,14 @@ import NotificationIcon from "@/components/Icons/NotificationIcon";
 import ProfilePlusIcon from "@/components/Icons/ProfilePlusIcon";
 import { useLogInUserStore } from "@/store/logInUserStore";
 // import SubscriptionManagementIcon from "@/components/Icons/SubscriptionManagementIcon"
-import { Lock } from "lucide-react";
+import { Blocks, Lock } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 const SettingsTabs = () => {
     const logInUserData = useLogInUserStore(state => state.logInUserData);
-    type Tab = "Profile" | "Configuration" | "Change Password"
+    type Tab = "Profile" | "Configuration" | "App Integrations" | "Change Password"
 
-    const roleBasedTabs = (logInUserData?.role === 'admin') ? ["Profile", "Configuration",
+    const roleBasedTabs = (logInUserData?.role === 'admin') ? ["Profile", "Configuration", "App Integrations",
          "Change Password"] : ["Profile", "Change Password"]
 
     const searchParams = useSearchParams();
@@ -42,10 +42,10 @@ const SettingsTabs = () => {
                         tab === "Configuration" &&
                         <NotificationIcon size={16}></NotificationIcon>
                     }
-                    {/* {
+                    {
                         tab === "App Integrations" &&
                         <Blocks size={16}></Blocks>
-                    } */}
+                    }
                     {
                         tab === "Change Password" &&
                         <Lock size={16}></Lock>
