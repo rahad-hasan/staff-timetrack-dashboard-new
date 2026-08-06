@@ -19,6 +19,24 @@ const SAFETY_TIMEOUT_MS = 10 * 60 * 1000;
 export type ConnectFlowOutcome = "success" | "failed" | "closed";
 
 /**
+ * Escape hatches for providers outside the generic PROVIDERS family. Slack
+ * runs two flows off one provider key (workspace §2.1 / personal §2.2), each
+ * with its own auth-url endpoint and its own section of the two-part
+ * /slack/status payload — the defaults below cover every flat provider.
+ */
+export interface ConnectFlowOverrides {
+    /** replaces `getIntegrationAuthUrl(def.key)` */
+    getAuthUrl?: () => Promise<any>;
+    /** replaces the default `status.data.connected === true` probe used by
+     *  the popup-closed and while-open polls */
+    checkConnected?: () => Promise<boolean>;
+    /** popup window name — two concurrent flows of one provider must differ */
+    windowName?: string;
+    /** success toast text — default `${def.name} connected` */
+    successToast?: string;
+}
+
+/**
  * OAuth-popup connect flow shared by every app integration (§6.1 of the spec):
  * the popup lands on the backend callback page which posts
  * `{ type, provider, success }` to window.opener. Primary signal is that
@@ -29,6 +47,7 @@ export type ConnectFlowOutcome = "success" | "failed" | "closed";
 export const useIntegrationConnectFlow = (
     def: IntegrationDef,
     onFinished?: (outcome: ConnectFlowOutcome) => void,
+    overrides?: ConnectFlowOverrides,
 ) => {
     const [busy, setBusy] = useState(false);
     const [popupBlocked, setPopupBlocked] = useState(false);
@@ -41,6 +60,8 @@ export const useIntegrationConnectFlow = (
     const settledRef = useRef(false);
     const onFinishedRef = useRef(onFinished);
     onFinishedRef.current = onFinished;
+    const overridesRef = useRef(overrides);
+    overridesRef.current = overrides;
 
     const cleanup = useCallback(() => {
         if (closedTimerRef.current) {
@@ -79,7 +100,10 @@ export const useIntegrationConnectFlow = (
             setBusy(false);
             if (!silent) {
                 if (outcome === "success") {
-                    toast.success(`${def.name} connected`);
+                    toast.success(
+                        overridesRef.current?.successToast ??
+                            `${def.name} connected`,
+                    );
                 } else if (outcome === "failed") {
                     // the popup page already showed the specific reason —
                     // the payload carries none, so keep this neutral
@@ -97,7 +121,9 @@ export const useIntegrationConnectFlow = (
         settledRef.current = false;
         setBusy(true);
         try {
-            const res: any = await getIntegrationAuthUrl(def.key);
+            const res: any = overridesRef.current?.getAuthUrl
+                ? await overridesRef.current.getAuthUrl()
+                : await getIntegrationAuthUrl(def.key);
             const url = typeof res?.data === "string" && res.data.startsWith("http")
                 ? res.data
                 : null;
@@ -118,7 +144,7 @@ export const useIntegrationConnectFlow = (
 
             const popup = window.open(
                 url,
-                `${def.key}-oauth`,
+                overridesRef.current?.windowName ?? `${def.key}-oauth`,
                 "width=620,height=760,menubar=no,toolbar=no,resizable=yes,scrollbars=yes",
             );
             if (!popup) {
@@ -141,6 +167,14 @@ export const useIntegrationConnectFlow = (
             messageHandlerRef.current = handleMessage;
             window.addEventListener("message", handleMessage);
 
+            const probeConnected = async () => {
+                const checkConnected = overridesRef.current?.checkConnected;
+                if (checkConnected) return await checkConnected();
+                const status: any = await getIntegrationStatus(def.key);
+                const payload = status?.data ?? status;
+                return payload?.connected === true;
+            };
+
             closedTimerRef.current = setInterval(async () => {
                 if (settledRef.current) return;
                 if (popupRef.current?.closed) {
@@ -152,9 +186,7 @@ export const useIntegrationConnectFlow = (
                         closedTimerRef.current = null;
                     }
                     try {
-                        const status: any = await getIntegrationStatus(def.key);
-                        const payload = status?.data ?? status;
-                        if (payload?.connected === true) {
+                        if (await probeConnected()) {
                             settle("success");
                             return;
                         }
@@ -169,9 +201,7 @@ export const useIntegrationConnectFlow = (
             statusTimerRef.current = setInterval(async () => {
                 if (settledRef.current || popupRef.current?.closed) return;
                 try {
-                    const status: any = await getIntegrationStatus(def.key);
-                    const payload = status?.data ?? status;
-                    if (payload?.connected === true) {
+                    if (await probeConnected()) {
                         settle("success");
                     }
                 } catch {

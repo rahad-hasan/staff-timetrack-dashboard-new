@@ -4,6 +4,7 @@ import Profile from "@/components/Settings/Profile";
 // import Subscription from "@/components/Settings/Subscription";
 import { getCompanyInfo } from "@/actions/settings/action";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
+import SlackConnectedApps from "@/components/Integrations/SlackConnectedApps";
 import AppIntegrations from "./AppIntegrations";
 import ChangePassword from "./ChangePassword";
 
@@ -18,7 +19,11 @@ const SettingServer = async ({ searchParams }: ISearchParamsProps) => {
         <div>
             {
                 activeTab === "Profile" &&
-                <Profile></Profile>
+                <>
+                    <Profile></Profile>
+                    {/* member-facing Slack surface — every role, incl. employee */}
+                    <SlackConnectedApps></SlackConnectedApps>
+                </>
             }
             {
                 activeTab === "Configuration" &&

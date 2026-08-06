@@ -19,7 +19,7 @@ export interface IntegrationDef {
     key: IntegrationKey;
     name: string;
     logo: StaticImageData;
-    category: "project_management" | "meetings_events";
+    category: "project_management" | "meetings_events" | "messaging";
     categoryLabel: string;
     blurb: string;
     available: boolean;
@@ -242,10 +242,15 @@ export const INTEGRATIONS: IntegrationDef[] = [
         key: "slack",
         name: "Slack",
         logo: slackLogo,
-        category: "meetings_events",
-        categoryLabel: "Meetings & events",
-        blurb: "Schedule meetings and get event updates right in Slack.",
-        available: false,
+        // messaging surface (slack spec §1) — nothing imports or syncs into
+        // projects/tasks, so every picker/import capability stays off and
+        // AppIntegrations routes it to SlackIntegrationDetail instead of the
+        // project-management detail view
+        category: "messaging",
+        categoryLabel: "Messaging",
+        blurb:
+            "Event messages, mirrored notifications, and a live “Tracking time” status in Slack.",
+        available: true,
         apiBase: "/slack",
         noun: { singular: "channel", plural: "channels" },
         countNoun: "message",

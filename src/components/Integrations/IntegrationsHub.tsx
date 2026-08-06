@@ -2,6 +2,7 @@
 "use client";
 
 import { getIntegrationStatus } from "@/actions/integrations/appIntegrationAction";
+import { getSlackStatus } from "@/actions/integrations/slackIntegrationAction";
 import {
     IntegrationConnectionStatus,
     IntegrationStatusResponse,
@@ -62,6 +63,21 @@ const IntegrationsHub = ({ onOpen }: IntegrationsHubProps) => {
         const results = await Promise.all(
             available.map(async (def) => {
                 try {
+                    if (def.key === "slack") {
+                        // /slack/status is two-section (workspace + personal),
+                        // not the flat provider shape — this admin-facing chip
+                        // reflects the company workspace connection
+                        const res: any = await getSlackStatus();
+                        const workspace = res?.data?.workspace;
+                        if (!workspace) return [def.key, null] as const;
+                        const payload: IntegrationStatusResponse = {
+                            provider: "slack",
+                            type: "messaging",
+                            status: workspace.status,
+                            connected: workspace.connected === true,
+                        };
+                        return [def.key, payload] as const;
+                    }
                     const res: any = await getIntegrationStatus(def.key);
                     const payload = res?.data ?? null;
                     return [def.key, payload] as const;

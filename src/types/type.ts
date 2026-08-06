@@ -1337,11 +1337,13 @@ export interface MicrosoftEventsListItem {
 }
 
 /* =========================
- * App Integrations (monday.com + ClickUp + Asana + Jira + Trello — Slack will follow)
+ * App Integrations (monday.com + ClickUp + Asana + Jira + Trello + Slack)
  *
  * The UI only ever sees the provider-neutral `Integration` shapes below;
  * each provider's wire format (Monday / ClickUp / Asana / Jira / Trello) is
  * normalized to them in the server actions (appIntegrationAction.ts).
+ * Slack is a messaging surface with its own two-section status shape (the
+ * `Slack*` types further down) — it never uses the item/import shapes.
  * ========================= */
 export type IntegrationConnectionStatus =
   | "connected"
@@ -1438,6 +1440,56 @@ export interface IntegrationImportResult {
   skipped: IntegrationSkippedItem[];
   unmatched_users: IntegrationUnmatchedUser[];
   remaining_ids?: string[];
+}
+
+/* ---- Slack wire shapes (slack spec §2.4) ----
+ * Slack tokens never expire — there is deliberately no `token_expiry` field
+ * on either section, and never-connected sections collapse to
+ * `{ status, connected }` with no other keys, so everything else is optional.
+ */
+
+/** Company-wide Slack toggles (§3) — present whenever a workspace row exists,
+ *  even in `revoked`/`disconnected` states (settings survive reconnects). */
+export interface SlackWorkspaceSettings {
+  notify_events: boolean;
+  notify_dm: boolean;
+  /** company-wide kill switch — off means no member's status is synced */
+  status_sync: boolean;
+  /** lead time in minutes for the pre-event reminder DM, 1–1440 */
+  reminder_minutes: number;
+}
+
+export interface SlackWorkspaceStatus {
+  status: IntegrationConnectionStatus;
+  connected: boolean;
+  team_id?: string;
+  team_name?: string;
+  settings?: SlackWorkspaceSettings;
+  /** app user id of the installing admin */
+  connected_by?: number;
+  last_synced_at?: string | null;
+  disconnected_at?: string | null;
+}
+
+export interface SlackPersonalStatus {
+  status: IntegrationConnectionStatus;
+  connected: boolean;
+  slack_user_id?: string;
+  /** the member's own toggle — effective sync also needs the company switch */
+  status_sync?: boolean;
+  last_synced_at?: string | null;
+  disconnected_at?: string | null;
+}
+
+/**
+ * GET /slack/status — a two-section object, NOT the flat provider shape used
+ * by monday/Trello/etc. `workspace` reflects the company; `personal` reflects
+ * the requesting user only.
+ */
+export interface SlackStatusResponse {
+  provider: "slack";
+  workspace: SlackWorkspaceStatus;
+  personal: SlackPersonalStatus;
 }
 
 /* ---- monday.com wire shapes (spec §4.5–§4.7) ---- */
