@@ -49,6 +49,7 @@ interface IntegrationsHubProps {
 }
 
 const IntegrationsHub = ({ onOpen }: IntegrationsHubProps) => {
+    console.log(onOpen)
     const [statuses, setStatuses] = useState<
         Partial<Record<IntegrationKey, IntegrationStatusResponse>>
     >({});
