@@ -18,7 +18,7 @@
   validation errors are `400` with the first issue as `message`; bodies are strict
   (`400 "Your request contains unsupported fields"` on unknown keys).
 - **Money:** all Stripe-derived amounts are **integer cents** (`amount_due_cents: 7068` = $70.68).
-  Plan display prices (`monthly_price` etc.) are dollars.
+  Plan seat prices (`seat_price_monthly` etc.) are dollars.
 
 ---
 
@@ -69,12 +69,33 @@ backend allows `GET` requests (dashboard stays browsable) and blocks writes with
 
 ## 2. Pricing page & first purchase (checkout)
 
-1. `GET /packages` (public) — active plans with display pricing: render `monthly_price` with
-   strike-through against `monthly_discount_price` (when non-null), `yearly_*` likewise,
-   `badge_text` ribbon, `discount_percentage` chip, `features` bullets; respect
-   `billing_interval` (`monthly` | `yearly` | `both`) for the cycle toggle.
-   Per-seat charge amounts are `seat_price_monthly` / `seat_price_yearly` — show
-   "billed per user" pricing from these.
+1. `GET /packages` (public) — active plans. A plan has ONE price per billing cycle
+   (`monthly` | `quarterly` | `yearly`), each **per seat** and each exactly what Stripe charges.
+   Read the derived `cycle_pricing[cycle]` rather than the raw prices:
+   - headline `cycle_pricing[cycle].monthly_equivalent` with the caption "per user / month", so
+     every cycle is directly comparable;
+   - underneath, "billed `seat_price` per user / month|quarter|year" so the amount that will
+     actually be invoiced is always on screen (monthly can just say "billed monthly per user");
+   - a "Save `savings_percent`%" chip when that field is non-null. Savings are measured against
+     paying monthly for the same span, so the chip never appears on the monthly cycle and never
+     appears when monthly is not sold.
+   - `badge_text` ribbon, and `features` as the bullet list. Each bullet is
+     `{ label, note, note_source, limit_key, included }`:
+     - render `note` as an ⓘ tooltip when non-null ("Up to 1 month history"). It is derived
+       server-side when `note_source === "limit"` (default phrase, or admin wording with the
+       limit's live value interpolated) — never recompute or cache it client-side;
+     - `included: false` means the plan's limit switches that feature OFF (screenshots disabled,
+       a cap of 0). Do **not** render those with a plain tick — strike through or use a muted
+       icon, or the card claims a feature the plan does not have.
+   - Build the cycle toggle from the union of every plan's `available_cycles`, and filter cards
+     by the same field. `cycle_pricing[cycle] === null` (equivalently, cycle absent from
+     `available_cycles`) means that plan is not sold on that cycle — never render `$0.00` as an
+     offer. An EMPTY `available_cycles` is the free/downgrade-target plan: keep it on the grid,
+     but with a caption instead of a checkout CTA.
+
+   `available_cycles` and `cycle_pricing` are derived server-side on every read — do not persist
+   or recompute them client-side. There is no `billing_interval` field; it was removed because a
+   single enum cannot express which subset of N cycles a plan sells.
 2. Optional promo code: validate against `GET /packages/discount/list?plan=<id>` or just submit it.
 3. Purchase:
 

@@ -5,15 +5,22 @@ import { cn } from "@/lib/utils";
 import { canMutateSubscription, isFreePlan } from "@/lib/billing";
 import { useBillingStore } from "@/store/billingStore";
 import { useLogInUserStore } from "@/store/logInUserStore";
-import { BillingCycle, IBillingPlan } from "@/types/billing";
+import {
+  BILLING_CYCLES,
+  BillingCycle,
+  CYCLE_LABEL,
+  IBillingPlan,
+} from "@/types/billing";
 import PlanCard from "./PlanCard";
 import CheckoutDialog from "./CheckoutDialog";
 import SwitchPlanDialog from "./SwitchPlanDialog";
 
 /**
- * Pricing grid (guide §2/§5). The Monthly/Yearly toggle only shows cycles at
- * least one plan supports, and each card is hidden when its `billing_interval`
- * excludes the selected cycle. Owns the checkout + switch-plan dialogs.
+ * Pricing grid (guide §2/§5). The cycle toggle only shows cycles at least one
+ * plan is actually sold on, and each card is hidden on a cycle it does not
+ * offer — both read the server-derived `available_cycles`, which is exactly the
+ * set of cycles with a Stripe price behind them, so the toggle can never lead
+ * to a checkout that fails. Owns the checkout + switch-plan dialogs.
  */
 export default function PlanPricingSection({
   plans,
@@ -32,27 +39,25 @@ export default function PlanPricingSection({
   // (cacheable) entitlement snapshot.
   const hasPaid = canMutateSubscription(entitlements, plans);
 
-  const supportsMonthly = plans.some(
-    (p) => p.billing_interval === "monthly" || p.billing_interval === "both",
+  // Declaration order (monthly → quarterly → yearly) is the cadence order the
+  // toggle should read in, so filter BILLING_CYCLES rather than collecting.
+  const supported: BillingCycle[] = BILLING_CYCLES.filter((c) =>
+    plans.some((p) => p.available_cycles?.includes(c)),
   );
-  const supportsYearly = plans.some(
-    (p) => p.billing_interval === "yearly" || p.billing_interval === "both",
-  );
-  const supported: BillingCycle[] = [];
-  if (supportsMonthly) supported.push("monthly");
-  if (supportsYearly) supported.push("yearly");
 
   // null = user hasn't toggled yet → follow the current subscription's cycle.
   const [cycle, setCycle] = useState<BillingCycle | null>(null);
-  const fallback: BillingCycle = supportsMonthly ? "monthly" : "yearly";
+  const fallback: BillingCycle = supported[0] ?? "monthly";
   const preferred = cycle ?? entitlements?.billing_cycle ?? fallback;
   const effectiveCycle: BillingCycle = supported.includes(preferred)
     ? preferred
     : fallback;
 
+  // The free/downgrade plan sells on no cycle at all, so it would never match a
+  // cycle filter — but it must stay on the grid (it renders a caption CTA, not
+  // a checkout). Every other plan shows only on the cycles it is sold on.
   const visiblePlans = plans.filter(
-    (p) =>
-      p.billing_interval === "both" || p.billing_interval === effectiveCycle,
+    (p) => isFreePlan(p) || p.available_cycles?.includes(effectiveCycle),
   );
 
   const [selectedPlan, setSelectedPlan] = useState<IBillingPlan | null>(null);
@@ -106,7 +111,7 @@ export default function PlanPricingSection({
                     : "text-subTextColor hover:text-gray-800 dark:text-darkTextPrimary",
                 )}
               >
-                {c === "monthly" ? "Monthly" : "Yearly"}
+                {CYCLE_LABEL[c]}
               </button>
             ))}
           </div>

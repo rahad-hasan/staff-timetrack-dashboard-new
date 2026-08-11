@@ -234,8 +234,4 @@ export const canMutateSubscription = (
  * zero-price check covers plans seeded before that flag existed.
  */
 export const isFreePlan = (plan: IBillingPlan): boolean =>
-  plan.is_default === true ||
-  ((plan.monthly_price ?? 0) === 0 &&
-    (plan.yearly_price ?? 0) === 0 &&
-    (plan.seat_price_monthly ?? 0) === 0 &&
-    (plan.seat_price_yearly ?? 0) === 0);
+  plan.is_default === true || (plan.available_cycles?.length ?? 0) === 0;

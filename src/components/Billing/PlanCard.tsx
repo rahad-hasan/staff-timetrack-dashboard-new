@@ -1,14 +1,20 @@
 "use client";
 
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Info, MinusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { formatDollars, isFreePlan } from "@/lib/billing";
-import { BillingCycle, IBillingPlan } from "@/types/billing";
+import { BillingCycle, CYCLE_PERIOD_NOUN, IBillingPlan } from "@/types/billing";
 
 /**
- * One pricing card (guide §2). Prices are display dollars; the discount price
- * replaces the base price (base struck through) ONLY when it is non-null.
+ * One pricing card (guide §2).
+ *
+ * A plan has exactly ONE price per cycle — per seat, and exactly what Stripe
+ * charges. Every cycle headlines its server-derived `monthly_equivalent` with
+ * the real per-period charge spelled out underneath, so the large number is
+ * always comparable across cycles and the amount that will actually be invoiced
+ * is always on screen. `cycle_pricing[cycle] === null` means not sold.
+ *
  * CTA: current plan → disabled; paid subscription → switch; else checkout.
  * The Free/default plan is never checkout-able — it is applied via downgrade
  * (trial-end "Switch to Free" or cancellation), so its CTA is a caption.
@@ -31,16 +37,8 @@ export default function PlanCard({
   onCheckout: () => void;
   onSwitch: () => void;
 }) {
-  const basePrice = cycle === "monthly" ? plan.monthly_price : plan.yearly_price;
-  const discountPrice =
-    cycle === "monthly" ? plan.monthly_discount_price : plan.yearly_discount_price;
-  const seatPrice =
-    cycle === "monthly" ? plan.seat_price_monthly : plan.seat_price_yearly;
-
-  const hasDiscount = discountPrice !== null && discountPrice !== undefined;
-  const displayPrice = hasDiscount ? discountPrice : basePrice;
-  const periodLabel = cycle === "monthly" ? "per month" : "per year";
-  const perSeatUnit = cycle === "monthly" ? "mo" : "yr";
+  // Server-derived: null means this plan is not sold on this cycle.
+  const pricing = plan.cycle_pricing?.[cycle] ?? null;
 
   return (
     <div
@@ -59,32 +57,38 @@ export default function PlanCard({
         <h3 className="text-xl font-medium text-headingTextColor dark:text-darkTextPrimary">
           {plan.name}
         </h3>
-        {typeof plan.discount_percentage === "number" &&
-          plan.discount_percentage > 0 && (
-            <span className="shrink-0 rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-500/15 dark:text-green-300">
-              Save {plan.discount_percentage}%
-            </span>
-          )}
-      </div>
-
-      <div className="mb-1 flex items-end gap-2">
-        <p className="text-4xl text-headingTextColor dark:text-darkTextPrimary">
-          {formatDollars(displayPrice)}
-        </p>
-        {hasDiscount && basePrice !== null && basePrice !== undefined && (
-          <p className="pb-1 text-lg text-subTextColor line-through dark:text-darkTextSecondary">
-            {formatDollars(basePrice)}
-          </p>
+        {pricing?.savings_percent != null && (
+          <span className="shrink-0 rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-500/15 dark:text-green-300">
+            Save {pricing.savings_percent}%
+          </span>
         )}
-        <p className="pb-1 text-sm text-subTextColor dark:text-darkTextSecondary">
-          / {periodLabel}
-        </p>
       </div>
 
-      {seatPrice !== null && seatPrice !== undefined && (
-        <p className="mb-3 text-sm text-subTextColor dark:text-darkTextSecondary">
-          {formatDollars(seatPrice)} per user / {perSeatUnit} — billed per user
-        </p>
+      {pricing ? (
+        <>
+          <div className="mb-1 flex items-end gap-2">
+            <p className="text-4xl text-headingTextColor dark:text-darkTextPrimary">
+              {formatDollars(pricing.monthly_equivalent)}
+            </p>
+            <p className="pb-1 text-sm text-subTextColor dark:text-darkTextSecondary">
+              per user / month
+            </p>
+          </div>
+
+          <p className="mb-3 text-sm text-subTextColor dark:text-darkTextSecondary">
+            {cycle === "monthly"
+              ? "Billed monthly per user"
+              : `Billed ${formatDollars(pricing.seat_price)} per user / ${CYCLE_PERIOD_NOUN[cycle]}`}
+          </p>
+        </>
+      ) : (
+        // Free/downgrade-target plans price both cycles at 0. "$0.00 per user"
+        // reads as a deal being offered; this plan is not sold at all.
+        <div className="mb-4 flex items-end gap-2">
+          <p className="text-4xl text-headingTextColor dark:text-darkTextPrimary">
+            Free
+          </p>
+        </div>
       )}
 
       {plan.description && (
@@ -121,11 +125,38 @@ export default function PlanCard({
         <ul className="mt-5 space-y-2 border-t border-borderColor pt-5 dark:border-darkBorder">
           {plan.features.map((feature) => (
             <li
-              key={feature}
-              className="flex items-start gap-2 text-sm text-subTextColor dark:text-darkTextSecondary"
+              key={feature.label}
+              className={cn(
+                "flex items-start gap-2 text-sm text-subTextColor dark:text-darkTextSecondary",
+                // A limit can switch a listed feature off entirely (screenshots
+                // disabled, a cap of 0). Showing it as a plain tick would claim
+                // the plan includes something it does not.
+                !feature.included && "opacity-60",
+              )}
             >
-              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-              <span>{feature}</span>
+              {feature.included ? (
+                <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+              ) : (
+                <MinusCircle className="mt-0.5 h-4 w-4 shrink-0 text-subTextColor dark:text-darkTextSecondary" />
+              )}
+
+              <span className={cn(!feature.included && "line-through")}>
+                {feature.label}
+              </span>
+
+              {feature.note && (
+                // `title` keeps the condition reachable without a tooltip
+                // library — and, unlike a hover-only popover, it survives
+                // keyboard focus and screen readers via aria-label.
+                <span
+                  className="mt-0.5 inline-flex shrink-0 cursor-help text-subTextColor/70 dark:text-darkTextSecondary/70"
+                  title={feature.note}
+                  aria-label={`${feature.label}: ${feature.note}`}
+                  tabIndex={0}
+                >
+                  <Info className="h-3.5 w-3.5" />
+                </span>
+              )}
             </li>
           ))}
         </ul>

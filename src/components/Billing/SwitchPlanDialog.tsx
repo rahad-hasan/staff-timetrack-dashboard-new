@@ -17,6 +17,7 @@ import { switchPlan } from "@/actions/billing/action";
 import { useBillingStore } from "@/store/billingStore";
 import {
   BillingCycle,
+  CYCLE_LABEL,
   IBillingPlan,
   ISwitchPlanResult,
 } from "@/types/billing";
@@ -24,12 +25,12 @@ import PendingInvoiceNotice from "./PendingInvoiceNotice";
 import RestoreParkedDialog from "./RestoreParkedDialog";
 
 const cycleLabel = (c: BillingCycle | null | undefined): string =>
-  c === "monthly" ? "Monthly" : c === "yearly" ? "Yearly" : "—";
+  c ? (CYCLE_LABEL[c] ?? "—") : "—";
 
 /**
  * Prorated plan switch (guide §5). Seats override is optional — blank keeps
- * the current quantity. Changing monthly ↔ yearly restarts the billing cycle
- * from today (amber warning). `applied_now: false` keeps the dialog open with
+ * the current quantity. Changing cycle restarts the billing cycle from today
+ * (amber warning). `applied_now: false` keeps the dialog open with
  * the pending-invoice notice; `applied_now: true` closes it and offers the
  * parked-users restore dialog.
  */

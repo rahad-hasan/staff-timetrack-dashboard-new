@@ -2,7 +2,7 @@
  * Billing / plans / seats types — shapes mirror the backend exactly
  * (docs/admin-dashboard-billing-guide.md). Two money units exist:
  *   - `*_cents` fields are integer cents straight from Stripe (7068 = $70.68)
- *   - plan display prices (`monthly_price` …) are dollars
+ *   - plan seat prices (`seat_price_monthly` …) are dollars
  * The frontend never computes proration — it always displays server amounts.
  */
 
@@ -15,10 +15,53 @@ export type BillingStatusValue =
   | "pending_downgrade_selection"
   | "canceled";
 
-export type BillingCycle = "monthly" | "yearly";
+export const BILLING_CYCLES = ["monthly", "quarterly", "yearly"] as const;
 
-/** Plan cycle availability for the pricing toggle. */
-export type PlanBillingInterval = "monthly" | "yearly" | "both";
+export type BillingCycle = (typeof BILLING_CYCLES)[number];
+
+export const CYCLE_LABEL: Record<BillingCycle, string> = {
+  monthly: "Monthly",
+  quarterly: "Quarterly",
+  yearly: "Yearly",
+};
+
+/** Noun for one period, as it reads after "billed … per user / …". */
+export const CYCLE_PERIOD_NOUN: Record<BillingCycle, string> = {
+  monthly: "month",
+  quarterly: "quarter",
+  yearly: "year",
+};
+
+/** Server-derived pricing for one cycle. Absent/null = that cycle is not sold. */
+export interface ICyclePricing {
+  cycle: BillingCycle;
+  /** Per seat, per period — exactly what Stripe charges. */
+  seat_price: number;
+  /** Per seat, per month — the comparable headline across cycles. */
+  monthly_equivalent: number;
+  /** Whole-percent saving vs paying monthly; null = none to advertise. */
+  savings_percent: number | null;
+}
+
+/**
+ * A pricing-card bullet with its condition already resolved server-side.
+ *
+ * `note` is the ⓘ tooltip text ("Up to 1 month history") and is rendered FROM
+ * the plan's real limits when `note_source === "limit"` — never typed by hand —
+ * so it cannot promise something the backend does not enforce. Do not recompute
+ * it client-side.
+ */
+export interface IPlanFeature {
+  label: string;
+  note: string | null;
+  note_source: "limit" | "custom" | null;
+  limit_key: string | null;
+  /**
+   * False when the plan's limit switches the feature off (screenshots disabled,
+   * a cap of 0). Must NOT render as a plain tick — the plan lacks it.
+   */
+  included: boolean;
+}
 
 /** Per-plan feature ceilings; `-1` means unlimited. */
 export interface IPlanLimits {
@@ -114,17 +157,25 @@ export interface IBillingPlan {
   name: string;
   tier: string;
   description?: string | null;
-  monthly_price: number | null;
-  monthly_discount_price: number | null;
-  yearly_price: number | null;
-  yearly_discount_price: number | null;
-  /** Per-seat charge amounts — "billed per user" pricing. */
+  /**
+   * The only prices a plan has: per seat, per cycle, in dollars, and exactly
+   * what Stripe charges. 0 on a cycle means that cycle is not sold — never
+   * "free".
+   */
   seat_price_monthly: number | null;
+  seat_price_quarterly: number | null;
   seat_price_yearly: number | null;
+  /**
+   * Derived server-side on every read (never stored, so they cannot disagree
+   * with the prices above). `available_cycles` replaces the old
+   * `billing_interval` enum — it is exactly the set of cycles priced above 0,
+   * which is exactly the set with a Stripe price behind them. Filter pricing
+   * cards on it; anything else offers a checkout that is guaranteed to fail.
+   */
+  available_cycles: BillingCycle[];
+  cycle_pricing: Record<BillingCycle, ICyclePricing | null>;
   badge_text: string | null;
-  discount_percentage: number | null;
-  billing_interval: PlanBillingInterval;
-  features: string[] | null;
+  features: IPlanFeature[] | null;
   limits?: IPlanLimits | null;
   is_active?: boolean;
   /** The auto-downgrade target (Free/Starter) — never sold via checkout. */
