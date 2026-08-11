@@ -1,10 +1,15 @@
 "use client";
 
 import { format, isSameMonth } from "date-fns";
-import { CalendarDays, Sparkles } from "lucide-react";
+import { CalendarDays, Lock, Sparkles } from "lucide-react";
+import Link from "next/link";
 
-
-import { LeaveCalendarDayItem, LeaveCalendarLeaveItem } from "@/types/type";
+import {
+  LeaveCalendarDayItem,
+  LeaveCalendarLeaveItem,
+  LeaveRetentionMeta,
+} from "@/types/type";
+import { BILLING_URL } from "@/lib/billing";
 import SelectUserDropDown from "@/components/Common/SelectUserDropDown";
 import {
   Tooltip,
@@ -19,11 +24,13 @@ const dayHeaders = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const LeaveCalendarView = ({
   monthDate,
   days,
+  retention,
   canManageUsers = false,
   users = [],
 }: {
   monthDate: Date;
   days: Record<string, LeaveCalendarDayItem[]>;
+  retention?: LeaveRetentionMeta;
   canManageUsers?: boolean;
   users?: { id: string; label: string; avatar: string }[];
 }) => {
@@ -255,7 +262,21 @@ const LeaveCalendarView = ({
               Holiday
             </div>
           ) : null}
-          {!leaveTypeLegend.length && !hasHolidays ? (
+          {retention?.history_limited ? (
+            <div className="inline-flex items-center gap-2 rounded-full bg-amber-100 px-3 py-1 text-sm font-medium text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">
+              <Lock className="size-4" />
+              {retention.history_days !== null
+                ? `Leave history is limited to the last ${retention.history_days} days on your plan.`
+                : "Leave history is limited on your plan."}
+              <Link
+                href={BILLING_URL}
+                className="font-semibold underline underline-offset-2"
+              >
+                Upgrade
+              </Link>
+            </div>
+          ) : null}
+          {!leaveTypeLegend.length && !hasHolidays && !retention?.history_limited ? (
             <div className="inline-flex items-center gap-2 rounded-full bg-bgSecondary px-3 py-1 text-sm text-subTextColor dark:text-darkTextSecondary dark:bg-darkPrimaryBg">
               <Sparkles className="size-4" />
               No calendar entries in this month.

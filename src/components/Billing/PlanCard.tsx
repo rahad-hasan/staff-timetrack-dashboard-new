@@ -15,19 +15,30 @@ import { BillingCycle, CYCLE_PERIOD_NOUN, IBillingPlan } from "@/types/billing";
  * always comparable across cycles and the amount that will actually be invoiced
  * is always on screen. `cycle_pricing[cycle] === null` means not sold.
  *
- * CTA: current plan → disabled — unless the subscription is canceled, where
- * "current" is only the plan the company USED to have: nothing to keep or
+ * CTA: current plan → disabled — unless nothing purchasable actually backs
+ * "current". Canceled: the plan the company USED to have — nothing to keep or
  * switch, so the card offers "Reactivate plan" via checkout (the one path the
- * backend accepts for canceled companies). Paid subscription → switch; else
- * checkout. The Free/default plan is never checkout-able — it is applied via
- * downgrade (trial-end "Switch to Free" or cancellation), so its CTA is a
- * caption. Non-admins never see a mutating CTA.
+ * backend accepts for canceled companies). Trial lifecycle (trialing — running
+ * or expired — and pending_downgrade_selection): the reverse trial parks every
+ * company on the top-tier plan with no Stripe subscription, so a disabled
+ * button would make the trialed plan the only one a trial company cannot buy —
+ * offer "Upgrade now" via checkout instead (the backend converts it, warning
+ * via `trialWillEndImmediately` when the trial is still running). Past-due /
+ * payment-failed: the Stripe subscription still exists, so the backend rejects
+ * BOTH checkout ("already exists") and switch-plan — the only valid action is
+ * settling the open invoice, so non-current cards show that as a caption
+ * instead of a CTA that dead-ends. Paid subscription → switch; else checkout.
+ * The Free/default plan is never checkout-able — it is applied via downgrade
+ * (trial-end "Switch to Free" or cancellation), so its CTA is a caption.
+ * Non-admins never see a mutating CTA.
  */
 export default function PlanCard({
   plan,
   cycle,
   isCurrent,
   isCanceled,
+  isTrial,
+  isDelinquent,
   hasPaid,
   isAdmin,
   onCheckout,
@@ -37,6 +48,8 @@ export default function PlanCard({
   cycle: BillingCycle;
   isCurrent: boolean;
   isCanceled: boolean;
+  isTrial: boolean;
+  isDelinquent: boolean;
   hasPaid: boolean;
   isAdmin: boolean;
   onCheckout: () => void;
@@ -111,6 +124,10 @@ export default function PlanCard({
           <Button type="button" className="w-full" onClick={onCheckout}>
             Reactivate plan
           </Button>
+        ) : isCurrent && isTrial && !isFreePlan(plan) ? (
+          <Button type="button" className="w-full" onClick={onCheckout}>
+            Upgrade now
+          </Button>
         ) : isCurrent ? (
           <Button type="button" disabled className="w-full">
             Current plan
@@ -118,6 +135,10 @@ export default function PlanCard({
         ) : isFreePlan(plan) ? (
           <p className="rounded-md border border-borderColor py-2.5 text-center text-sm text-subTextColor dark:border-darkBorder dark:text-darkTextSecondary">
             Applied automatically — no checkout needed
+          </p>
+        ) : isDelinquent ? (
+          <p className="rounded-md border border-borderColor py-2.5 text-center text-sm text-subTextColor dark:border-darkBorder dark:text-darkTextSecondary">
+            Settle your open invoice to change plans
           </p>
         ) : hasPaid ? (
           <Button type="button" className="w-full" onClick={onSwitch}>

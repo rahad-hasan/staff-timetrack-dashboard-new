@@ -65,6 +65,7 @@ const LeaveCalendarPage = async ({ searchParams }: ISearchParamsProps) => {
       <LeaveCalendarView
         monthDate={new Date(baseDate.getFullYear(), baseDate.getMonth(), 1)}
         days={calendarResponse?.data?.days ?? {}}
+        retention={calendarResponse?.data?.retention}
         canManageUsers={canManageUsers}
         users={users}
       />

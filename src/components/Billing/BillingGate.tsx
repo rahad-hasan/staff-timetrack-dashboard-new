@@ -44,13 +44,13 @@ export default function BillingGate() {
   const status = useBillingStore((s) => s.status);
   const loaded = useBillingStore((s) => s.loaded);
   const fetchStatus = useBillingStore((s) => s.fetchStatus);
+  const startPolling = useBillingStore((s) => s.startPolling);
+  const stopPolling = useBillingStore((s) => s.stopPolling);
   const pathname = usePathname();
 
   useEffect(() => {
     void fetchStatus();
   }, [fetchStatus]);
-
-  if (!loaded) return null;
 
   const st = status?.entitlements?.status ?? null;
   const onBillingPage = isBillingPath(pathname);
@@ -66,6 +66,19 @@ export default function BillingGate() {
     TAKEOVER_BLOCK_CODES.includes(status.block.code)
       ? status.block
       : null;
+
+  // A full-screen takeover offers non-admins no action that refetches, so
+  // without polling they stay blocked even after the admin pays or the worker
+  // resolves the state in another session. Slow-poll while one is up; the
+  // next status flip swaps the surface automatically.
+  const takeoverActive = showDowngradeTakeover || !!takeoverBlock;
+  useEffect(() => {
+    if (!takeoverActive) return undefined;
+    startPolling(30000);
+    return () => stopPolling();
+  }, [takeoverActive, startPolling, stopPolling]);
+
+  if (!loaded) return null;
 
   return (
     <>

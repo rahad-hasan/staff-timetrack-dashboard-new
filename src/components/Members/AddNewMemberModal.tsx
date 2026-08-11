@@ -32,7 +32,8 @@ import { useEffect, useState } from "react";
 import { Check, ChevronLeft, ChevronsUpDown, Eye, EyeOff, Phone, Search } from "lucide-react";
 import { toast } from "sonner";
 import { addMember } from "@/actions/members/action";
-import { SEAT_CAP_MESSAGE } from "@/lib/billing";
+import { useRouter } from "next/navigation";
+import { BILLING_URL, hasPaidSubscription, SEAT_CAP_MESSAGE } from "@/lib/billing";
 import { useBillingStore } from "@/store/billingStore";
 import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
@@ -55,6 +56,7 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
         value: string;
         label: string;
     };
+    const router = useRouter();
     const [step, setStep] = useState<number>(1);
     const [loading, setLoading] = useState(false);
     const [projectLoading, setProjectLoading] = useState(false);
@@ -166,12 +168,28 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
                 toast.success(res?.message || "Member added successfully");
             } else if (res?.message === SEAT_CAP_MESSAGE) {
                 // Seat cap hit (billing guide §3): this exact message means the
-                // company ran out of purchased seats — open the Add-seats
-                // quote→confirm dialog instead of showing a raw error.
+                // company ran out of seats. The Add-seats quote→confirm dialog
+                // only works over a paid Stripe subscription — the seat-quote
+                // endpoint rejects trial/Free companies with the same cap, so
+                // those are routed to a plan upgrade instead of a dialog whose
+                // first call can only fail.
                 requestAnimationFrame(() => {
                     onClose();
                 });
-                useBillingStore.getState().openAddSeats();
+                if (
+                    hasPaidSubscription(
+                        useBillingStore.getState().status?.entitlements,
+                    )
+                ) {
+                    useBillingStore.getState().openAddSeats();
+                } else {
+                    toast.error(res.message, {
+                        action: {
+                            label: "Upgrade plan",
+                            onClick: () => router.push(BILLING_URL),
+                        },
+                    });
+                }
             } else {
                 toast.error(res?.message || "Failed to add member", {
                     style: {

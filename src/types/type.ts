@@ -973,8 +973,21 @@ export interface LeaveCalendarFilters {
   user_id?: string | number;
 }
 
+/**
+ * Plan-retention metadata attached by the backend to leave read endpoints.
+ * `history_floor`/`history_days` come from the plan's
+ * attendance_leaves_retention_days limit — never recompute client-side.
+ */
+export interface LeaveRetentionMeta {
+  history_limited: boolean;
+  history_floor: string | null;
+  history_days: number | null;
+}
+
 export interface LeaveCalendarData {
   days: Record<string, LeaveCalendarDayItem[]>;
+  truncated?: boolean;
+  retention?: LeaveRetentionMeta;
 }
 
 //  leave history

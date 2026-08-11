@@ -76,8 +76,12 @@ export default function CurrentPlanCard() {
             {entitlements.status === "trialing" && (
               <p className="flex items-center gap-1.5">
                 <CalendarDays className="h-4 w-4 shrink-0" />
-                Trial ends {formatBillingDate(entitlements.trial_ends_at)} (
-                {trialDays} day{trialDays === 1 ? "" : "s"})
+                {/* An expired trial keeps status "trialing" until the worker
+                    resolves it — future tense next to the red "trial has
+                    ended" surfaces would contradict them. */}
+                {isDatePast(entitlements.trial_ends_at)
+                  ? `Trial ended ${formatBillingDate(entitlements.trial_ends_at)}`
+                  : `Trial ends ${formatBillingDate(entitlements.trial_ends_at)} (${trialDays} day${trialDays === 1 ? "" : "s"})`}
               </p>
             )}
             {entitlements.status === "canceled" &&

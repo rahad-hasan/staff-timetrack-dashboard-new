@@ -43,6 +43,23 @@ export default function PlanPricingSection({
   // checkout is the only flow the backend accepts for canceled companies. The
   // card must offer reactivation instead of a disabled "Current plan".
   const isCanceled = entitlements?.status === "canceled";
+  // The trial lifecycle — trialing (running or expired) AND
+  // pending_downgrade_selection (expired over the Free plan's limits) — has no
+  // Stripe subscription behind it, and checkout is the one flow that converts
+  // it. The trialed plan's card must offer "Upgrade now" instead of a disabled
+  // "Current plan", or the plan the company is trialing becomes the only one
+  // it cannot buy — in the selection state that is exactly the plan the
+  // "Keep everyone — upgrade instead" takeover funnels the admin toward.
+  const isTrial =
+    entitlements?.status === "trialing" ||
+    entitlements?.status === "pending_downgrade_selection";
+  // While a payment failure is unresolved the Stripe subscription still
+  // exists, so the backend rejects both checkout ("already exists") and
+  // switch-plan — settling the open invoice (PayNowCard above) is the only
+  // action that can succeed.
+  const isDelinquent =
+    entitlements?.status === "past_due" ||
+    entitlements?.status === "payment_failed";
 
   // Declaration order (monthly → quarterly → yearly) is the cadence order the
   // toggle should read in, so filter BILLING_CYCLES rather than collecting.
@@ -136,6 +153,8 @@ export default function PlanPricingSection({
               cycle={effectiveCycle}
               isCurrent={isCurrent(plan)}
               isCanceled={isCanceled}
+              isTrial={isTrial}
+              isDelinquent={isDelinquent}
               hasPaid={hasPaid}
               isAdmin={isAdmin}
               onCheckout={() => handleCheckout(plan)}

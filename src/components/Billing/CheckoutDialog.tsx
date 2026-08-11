@@ -14,7 +14,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createCheckoutSession } from "@/actions/billing/action";
-import { BillingCycle, IBillingPlan, ICheckoutSession } from "@/types/billing";
+import { useBillingStore } from "@/store/billingStore";
+import {
+  BillingCycle,
+  CYCLE_LABEL,
+  IBillingPlan,
+  ICheckoutSession,
+} from "@/types/billing";
 
 /**
  * First purchase (guide §2) — collects seats + optional promo code, creates a
@@ -57,7 +63,9 @@ export default function CheckoutDialog({
 
   if (!plan) return null;
 
-  const cycleLabel = cycle === "monthly" ? "Monthly" : "Yearly";
+  // The payment dialog must state the real cadence — quarterly is a
+  // first-class cycle and labeling it "Yearly" misstates the charge.
+  const cycleLabel = CYCLE_LABEL[cycle];
 
   const handleSubmit = async () => {
     const parsed = Number.parseInt(seats, 10);
@@ -89,10 +97,19 @@ export default function CheckoutDialog({
       } else {
         const msg =
           res?.message || "Could not start checkout. Please try again.";
-        const hint = /already exists/i.test(msg)
-          ? " Use 'Switch to this plan' on the pricing cards instead."
-          : "";
-        setError(msg + hint);
+        if (/already exists/i.test(msg)) {
+          // The client's snapshot is stale (checkout finished in another tab,
+          // or a webhook flipped the status mid-flow). The old hint pointed at
+          // a "Switch to this plan" button that is NOT rendered while
+          // `hasPaid` is stale-false — refetch so the cards catch up, and say
+          // what to actually do.
+          setError(
+            `${msg} Your billing status has been refreshed — close this dialog and use the updated options on the pricing cards.`,
+          );
+          void useBillingStore.getState().fetchStatus();
+        } else {
+          setError(msg);
+        }
       }
     } catch {
       toast.error("Something went wrong starting checkout. Please try again.");
