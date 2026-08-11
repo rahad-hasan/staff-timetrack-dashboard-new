@@ -28,6 +28,8 @@ import { useProjectFormStore } from "@/store/ProjectFormStore";
 import { useState } from "react";
 import { toast } from "sonner";
 import { addProject } from "@/actions/projects/action";
+import { BILLING_URL, isProjectCapMessage } from "@/lib/billing";
+import { useRouter } from "next/navigation";
 
 interface GeneralInfoStepProps {
     setStep: (step: number) => void,
@@ -36,6 +38,7 @@ interface GeneralInfoStepProps {
 const AddBudgetAndHoursStep = ({ setStep, onClose }: GeneralInfoStepProps) => {
 
     const [loading, setLoading] = useState(false);
+    const router = useRouter();
     const { data } = useProjectFormStore(state => state);
 
     const form = useForm<z.infer<typeof addBudgetAndHoursSchema>>({
@@ -74,6 +77,15 @@ const AddBudgetAndHoursStep = ({ setStep, onClose }: GeneralInfoStepProps) => {
                 resetData();
                 setStep(1);
                 toast.success(res?.message || "Project added successfully");
+            } else if (isProjectCapMessage(res?.message)) {
+                // Plan project cap (billing guide §3): prompt an upgrade
+                // instead of a dead-end error.
+                toast.error(res?.message, {
+                    action: {
+                        label: "Upgrade plan",
+                        onClick: () => router.push(BILLING_URL),
+                    },
+                });
             } else {
                 toast.error(res?.message || "Failed to add project", {
                     style: {

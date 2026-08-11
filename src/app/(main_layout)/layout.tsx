@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 
 import SideBar from "@/components/layout/SideBar";
 import Header from "@/components/layout/Header";
+import BillingGate from "@/components/Billing/BillingGate";
 import { getTodayWorkTime } from "@/actions/dashboard/action";
 import { cookies } from "next/headers";
 import SocketProvider from "@/socket/SocketProvider";
@@ -29,6 +30,9 @@ export default async function RootLayout({
             scroll the whole page instead of scrolling inside its own container. */}
         <div className=" bg-bgPrimary w-full min-w-0 lg:border border-borderColor dark:bg-darkPrimaryBg dark:border-darkBorder lg:rounded-[8px] lg:my-3 lg:mr-3 min-h-[100vh] lg:min-h-auto">
           <Header data={result?.data}></Header>
+          {/* Billing state machine surfaces: trial/payment banners + blocked
+              takeovers + the globally-triggerable Add-seats dialog. */}
+          <BillingGate></BillingGate>
           <div className="p-3 lg:p-5 w-full dark:bg-darkPrimaryBg lg:rounded-b-[12px]">
             {children}
           </div>

@@ -143,7 +143,33 @@ export async function baseApi<T = any>(
   await buildHeaders(isFormData, customHeaders);
 
   if (method !== "GET" && !res.ok) {
-    return res.json() as Promise<T>;
+    let errBody: any = null;
+    try {
+      errBody = await res.json();
+    } catch {
+      errBody = null;
+    }
+    // Global billing rule (billing guide §1): a write rejected with 402 means
+    // the company is payment-blocked — land the user on the billing page with
+    // the backend's message instead of leaving each caller to handle it.
+    // GETs are exempt: the dashboard stays browsable during payment failure,
+    // and the billing page's own reads must never redirect-loop.
+    if (res.status === 402) {
+      const msg =
+        typeof errBody?.message === "string" ? errBody.message : "";
+      redirect(
+        `/settings/billing${msg ? `?blocked=${encodeURIComponent(msg)}` : ""}`,
+      );
+    }
+    return {
+      success: false,
+      message:
+        errBody?.message ||
+        errBody?.errorMessages?.[0]?.message ||
+        `Request failed with ${res.status}`,
+      ...errBody,
+      statusCode: res.status,
+    } as T;
   }
 
   // if (!res.ok) {
@@ -193,6 +219,7 @@ export async function baseApi<T = any>(
     }
     return {
       success: false,
+      statusCode: res.status,
       message:
         data?.message ||
         data?.errorMessages?.[0]?.message ||

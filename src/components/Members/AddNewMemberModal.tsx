@@ -32,6 +32,8 @@ import { useEffect, useState } from "react";
 import { Check, ChevronLeft, ChevronsUpDown, Eye, EyeOff, Phone, Search } from "lucide-react";
 import { toast } from "sonner";
 import { addMember } from "@/actions/members/action";
+import { SEAT_CAP_MESSAGE } from "@/lib/billing";
+import { useBillingStore } from "@/store/billingStore";
 import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { popularTimeZoneList } from "@/utils/TimeZoneList";
@@ -162,6 +164,14 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
                     onClose();
                 });
                 toast.success(res?.message || "Member added successfully");
+            } else if (res?.message === SEAT_CAP_MESSAGE) {
+                // Seat cap hit (billing guide §3): this exact message means the
+                // company ran out of purchased seats — open the Add-seats
+                // quote→confirm dialog instead of showing a raw error.
+                requestAnimationFrame(() => {
+                    onClose();
+                });
+                useBillingStore.getState().openAddSeats();
             } else {
                 toast.error(res?.message || "Failed to add member", {
                     style: {

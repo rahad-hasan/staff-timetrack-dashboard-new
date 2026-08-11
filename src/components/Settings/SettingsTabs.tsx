@@ -2,20 +2,31 @@
 import NotificationIcon from "@/components/Icons/NotificationIcon";
 import ProfilePlusIcon from "@/components/Icons/ProfilePlusIcon";
 import { useLogInUserStore } from "@/store/logInUserStore";
-// import SubscriptionManagementIcon from "@/components/Icons/SubscriptionManagementIcon"
+import SubscriptionManagementIcon from "@/components/Icons/SubscriptionManagementIcon"
 import { Blocks, Lock } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 const SettingsTabs = () => {
     const logInUserData = useLogInUserStore(state => state.logInUserData);
-    type Tab = "Profile" | "Configuration" | "App Integrations" | "Change Password"
+    type Tab = "Profile" | "Configuration" | "App Integrations" | "Change Password" | "Subscription"
 
-    const roleBasedTabs = (logInUserData?.role === 'admin') ? ["Profile", "Configuration", "App Integrations", "Change Password"] : ["Profile", "Change Password"]
+    // Billing reads are open to admin/manager/hr (billing guide §0) — the
+    // Subscription tab is a route, not a query tab, so it lands on
+    // /settings/billing (every block.webBillingUrl points there too).
+    const roleBasedTabs = (logInUserData?.role === 'admin')
+        ? ["Profile", "Configuration", "App Integrations", "Subscription", "Change Password"]
+        : ["manager", "hr"].includes(logInUserData?.role)
+            ? ["Profile", "Subscription", "Change Password"]
+            : ["Profile", "Change Password"]
 
     const searchParams = useSearchParams();
     const router = useRouter();
     const activeTab = (searchParams.get("tab") as Tab) ?? "Profile";
     const setTab = (tab: Tab) => {
+        if (tab === "Subscription") {
+            router.push("/settings/billing");
+            return;
+        }
         const params = new URLSearchParams(searchParams.toString());
         // `app` (open integration detail) only makes sense inside the
         // App Integrations tab — drop it so re-entering shows the hub
@@ -51,6 +62,10 @@ const SettingsTabs = () => {
                     {
                         tab === "Change Password" &&
                         <Lock size={16}></Lock>
+                    }
+                    {
+                        tab === "Subscription" &&
+                        <SubscriptionManagementIcon size={16}></SubscriptionManagementIcon>
                     }
                     {/* {
                             tab === "User Role" &&
