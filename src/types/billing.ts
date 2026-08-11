@@ -208,6 +208,18 @@ export interface ICheckoutSession {
   trialWillEndImmediately: boolean;
 }
 
+/**
+ * POST /packages/checkout/confirm — the success page hands the session_id
+ * back so the backend syncs the subscription straight from Stripe instead of
+ * waiting for webhook delivery. Idempotent; safe to retry.
+ */
+export interface ICheckoutConfirmResult {
+  activated: boolean;
+  checkout_status: "open" | "complete" | "expired" | null;
+  payment_status: "paid" | "unpaid" | "no_payment_required" | null;
+  subscription_status: BillingStatusValue | null;
+}
+
 /* ---------------- seats (§3) ---------------- */
 
 export interface IQuoteLine {

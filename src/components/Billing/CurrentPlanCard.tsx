@@ -2,7 +2,7 @@
 
 import { CalendarDays, RefreshCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { daysUntil, formatBillingDate } from "@/lib/billing";
+import { daysUntil, formatBillingDate, isDatePast } from "@/lib/billing";
 import { useBillingStore } from "@/store/billingStore";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import BillingStatusChip from "./BillingStatusChip";
@@ -11,6 +11,9 @@ import CancelSubscriptionDialog from "./CancelSubscriptionDialog";
 /**
  * Billing page hero card — current plan, cycle, renewal/trial dates, pending
  * downgrade note and (admin + active only) the cancel-subscription entry point.
+ * Canceled subscriptions show their access-until/ended date and a reactivate
+ * CTA that jumps to the pricing grid, where the old plan's card re-buys via
+ * checkout.
  */
 export default function CurrentPlanCard() {
   const entitlements = useBillingStore((s) => s.status?.entitlements ?? null);
@@ -77,6 +80,15 @@ export default function CurrentPlanCard() {
                 {trialDays} day{trialDays === 1 ? "" : "s"})
               </p>
             )}
+            {entitlements.status === "canceled" &&
+              entitlements.current_period_end && (
+                <p className="flex items-center gap-1.5">
+                  <CalendarDays className="h-4 w-4 shrink-0" />
+                  {isDatePast(entitlements.current_period_end)
+                    ? `Ended ${formatBillingDate(entitlements.current_period_end)}`
+                    : `Access until ${formatBillingDate(entitlements.current_period_end)}`}
+                </p>
+              )}
           </div>
 
           {entitlements.pending_downgrade_plan_id !== null && (
@@ -95,6 +107,14 @@ export default function CurrentPlanCard() {
         {isAdmin && entitlements.status === "active" && (
           <div className="shrink-0">
             <CancelSubscriptionDialog />
+          </div>
+        )}
+
+        {/* Canceled companies re-buy through checkout — the pricing grid below
+            carries the actual CTA, so this one just brings it into view. */}
+        {isAdmin && entitlements.status === "canceled" && (
+          <div className="shrink-0">
+            <Button onClick={scrollToPlans}>Reactivate plan</Button>
           </div>
         )}
       </div>

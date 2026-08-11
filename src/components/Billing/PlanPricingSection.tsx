@@ -38,6 +38,11 @@ export default function PlanPricingSection({
   // routed to checkout — resolved against the live plans list rather than the
   // (cacheable) entitlement snapshot.
   const hasPaid = canMutateSubscription(entitlements, plans);
+  // A canceled subscription keeps its plan_id/billing_cycle, so the old plan
+  // still matches `isCurrent` — but there is nothing to keep or switch, and
+  // checkout is the only flow the backend accepts for canceled companies. The
+  // card must offer reactivation instead of a disabled "Current plan".
+  const isCanceled = entitlements?.status === "canceled";
 
   // Declaration order (monthly → quarterly → yearly) is the cadence order the
   // toggle should read in, so filter BILLING_CYCLES rather than collecting.
@@ -130,6 +135,7 @@ export default function PlanPricingSection({
               plan={plan}
               cycle={effectiveCycle}
               isCurrent={isCurrent(plan)}
+              isCanceled={isCanceled}
               hasPaid={hasPaid}
               isAdmin={isAdmin}
               onCheckout={() => handleCheckout(plan)}

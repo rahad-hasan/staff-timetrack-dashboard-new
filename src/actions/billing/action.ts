@@ -9,6 +9,7 @@ import {
   IBillingPlan,
   IBillingStatus,
   ICancelPayload,
+  ICheckoutConfirmResult,
   ICheckoutPayload,
   ICheckoutSession,
   IDiscountCode,
@@ -68,6 +69,21 @@ export const createCheckoutSession = async (
   await baseApi(`${BASE}/payment/url`, {
     method: "POST",
     body: payload,
+    tag: TAG,
+    cache: "no-cache",
+  });
+
+/**
+ * Post-checkout activation — /billing/success passes the session_id from the
+ * Stripe redirect; the backend pulls the session from Stripe and runs the same
+ * sync the webhook would. Makes activation independent of webhook delivery.
+ */
+export const confirmCheckout = async (
+  sessionId: string,
+): Promise<IResponse<ICheckoutConfirmResult>> =>
+  await baseApi(`${BASE}/checkout/confirm`, {
+    method: "POST",
+    body: { session_id: sessionId },
     tag: TAG,
     cache: "no-cache",
   });
