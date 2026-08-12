@@ -26,7 +26,7 @@ const Insights = async ({ data }: { data: IDashboardInsight }) => {
                     INSIGHTS
                 </h2>
                 <div className=" flex items-center gap-3">
-                    <FilterButton />
+                    <FilterButton disable={true} />
                     <Button
                         className="py-[14px] px-[16px] sm:py-[18px] sm:px-[20px] rounded-[8px]"
                         size={"sm"}

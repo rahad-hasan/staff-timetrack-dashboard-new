@@ -418,7 +418,7 @@ const DashboardProjectTable = ({ data }: { data: IProject[] }) => {
             <div className=" flex justify-between items-center mb-5">
                 <h2 className=" text-base sm:text-lg text-headingTextColor dark:text-darkTextPrimary uppercase">Project list</h2>
                 <div className=" flex items-center gap-3">
-                    <FilterButton />
+                    <FilterButton disable={true} />
                     <Link href={`/project-management/projects`}>
                         <Button className="py-[14px] px-[16px] sm:py-[18px] sm:px-[20px] rounded-[8px]" size={'sm'}>All Project</Button>
                     </Link>
