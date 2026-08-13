@@ -4,18 +4,19 @@ import { buildQuery } from "@/utils/buildQuery";
 import { baseApi } from "../baseApi";
 import { AdminLeaveHistoryFilters, CreateLeaveHolidayPayload, CreateLeaveTypePayload, ILeaveDetailsResponse, ILeaveRequest, IResponse, LeaveCalendarData, LeaveCalendarFilters, LeaveHoliday, LeaveHolidayListData, LeaveRecord, LeaveRequestTypeDropdownRecord, LeaveTypeListFilters, LeaveTypeRecord, MandatoryLeaveImportPayload, MandatoryLeaveParsePayload, MandatoryLeaveParseResult, UpdateLeaveHolidayPayload, UpdateLeaveTypePayload, UserLeaveSummary } from "@/types/type";
 import { revalidatePath, revalidateTag } from "next/cache";
+import { API_TAGS } from "@/constants/api.constants";
 
 // export const getLeave = async (query = {}): Promise<IResponse<ILeaveRequest[]>> => {
 //     const queryString = buildQuery(query);
 //     return await baseApi(`/leaves${queryString ? `?${queryString}` : ""}`, {
-//         tag: "leaves",
+//         tag: API_TAGS.LEAVES,
 //     });
 // };
 
 // export const getLeaveDetails = async (query = {}): Promise<IResponse<ILeaveDetailsResponse>> => {
 //     const queryString = buildQuery(query);
 //     return await baseApi(`/leaves/details${queryString ? `?${queryString}` : ""}`, {
-//         tag: "leaves",
+//         tag: API_TAGS.LEAVES,
 //     });
 // };
 
@@ -28,7 +29,7 @@ import { revalidatePath, revalidateTag } from "next/cache";
 //     return await baseApi(`/leaves`, {
 //         method: "POST",
 //         body: data,
-//         tag: "leaves",
+//         tag: API_TAGS.LEAVES,
 //         cache: "no-cache",
 //     });
 // };
@@ -43,7 +44,7 @@ import { revalidatePath, revalidateTag } from "next/cache";
 //     return await baseApi(`/leaves/update-status`, {
 //         method: "PATCH",
 //         body: data,
-//         tag: "leaves",
+//         tag: API_TAGS.LEAVES,
 //         cache: "no-cache",
 //     });
 // };
@@ -57,7 +58,7 @@ import { revalidatePath, revalidateTag } from "next/cache";
 //     return await baseApi(`/leaves/${id}`, {
 //         method: "PATCH",
 //         body: data,
-//         tag: "leaves",
+//         tag: API_TAGS.LEAVES,
 //     });
 // };
 
@@ -66,8 +67,8 @@ import { revalidatePath, revalidateTag } from "next/cache";
 // ===========================
 
 const revalidateHolidayViews = () => {
-  revalidateTag("leave-holidays");
-  revalidateTag("leaves");
+  revalidateTag(API_TAGS.leaveHOLIDAYS);
+  revalidateTag(API_TAGS.LEAVES);
   revalidatePath("/leave-management/holidays");
   revalidatePath("/leave-management/calendar");
   revalidatePath("/leave-management/my-leaves");
@@ -76,7 +77,7 @@ const revalidateHolidayViews = () => {
 export const getLeaveCalendar = async (query: LeaveCalendarFilters = {}): Promise<IResponse<LeaveCalendarData>> => {
     const queryString = buildQuery(query);
     return await baseApi(`/leaves/calendar${queryString ? `?${queryString}` : ""}`, {
-        tag: "leaves",
+        tag: API_TAGS.LEAVES,
         cache: "no-cache"
     });
 };
@@ -84,7 +85,7 @@ export const getLeaveCalendar = async (query: LeaveCalendarFilters = {}): Promis
 export const getLeaveHistory = async (query: AdminLeaveHistoryFilters = {}): Promise<IResponse<LeaveRecord[]>> => {
     const queryString = buildQuery(query);
     return await baseApi(`/leaves/history${queryString ? `?${queryString}` : ""}`, {
-        tag: "leaves",
+        tag: API_TAGS.LEAVES,
         cache: "no-cache"
     });
 };
@@ -92,7 +93,7 @@ export const getLeaveHistory = async (query: AdminLeaveHistoryFilters = {}): Pro
 export const getLeave = async (query={}): Promise<IResponse<ILeaveRequest[]>> => {
     const queryString = buildQuery(query);
     return await baseApi(`/leaves${queryString ? `?${queryString}` : ""}`, {
-        tag: "leaves",
+        tag: API_TAGS.LEAVES,
         cache: "no-cache"
     });
 };
@@ -109,13 +110,13 @@ export const approveRejectLeave = async ({
   const response = await baseApi(`/leaves/update-status`, {
     method: "PATCH",
     body: data,
-    tag: "leaves",
+    tag: API_TAGS.LEAVES,
     cache: "no-cache",
   });
 
   if (response?.success) {
-    revalidateTag("leaves");
-    revalidateTag("leave-types");
+    revalidateTag(API_TAGS.LEAVES);
+    revalidateTag(API_TAGS.leaveTYPES);
   }
 
   return response;
@@ -128,7 +129,7 @@ export const getLeaveDetails = async (
   return await baseApi(
     `/leaves/details${queryString ? `?${queryString}` : ""}`,
     {
-      tag: "leaves",
+      tag: API_TAGS.LEAVES,
     },
   );
 };
@@ -138,7 +139,7 @@ export const getLeaveTypes = async (
 ): Promise<IResponse<LeaveTypeRecord[]>> => {
   const queryString = buildQuery(query);
   return await baseApi(`/leaves/types${queryString ? `?${queryString}` : ""}`, {
-    tag: "leave-types",
+    tag: API_TAGS.leaveTYPES,
   });
 };
 
@@ -148,13 +149,13 @@ export const createLeaveType = async (
   const response = await baseApi(`/leaves/types`, {
     method: "POST",
     body: data,
-    tag: "leave-types",
+    tag: API_TAGS.leaveTYPES,
     cache: "no-cache",
   });
 
   if (response?.success) {
-    revalidateTag("leave-types");
-    revalidateTag("leaves");
+    revalidateTag(API_TAGS.leaveTYPES);
+    revalidateTag(API_TAGS.LEAVES);
   }
 
   return response;
@@ -167,13 +168,13 @@ export const updateLeaveType = async (
   const response = await baseApi(`/leaves/types/${id}`, {
     method: "PATCH",
     body: data,
-    tag: "leave-types",
+    tag: API_TAGS.leaveTYPES,
     cache: "no-cache",
   });
 
   if (response?.success) {
-    revalidateTag("leave-types");
-    revalidateTag("leaves");
+    revalidateTag(API_TAGS.leaveTYPES);
+    revalidateTag(API_TAGS.LEAVES);
   }
 
   return response;
@@ -182,13 +183,13 @@ export const updateLeaveType = async (
 export const deleteLeaveType = async (id: number): Promise<IResponse<null>> => {
   const response = await baseApi(`/leaves/types/${id}`, {
     method: "DELETE",
-    tag: "leave-types",
+    tag: API_TAGS.leaveTYPES,
     cache: "no-cache",
   });
 
   if (response?.success) {
-    revalidateTag("leave-types");
-    revalidateTag("leaves");
+    revalidateTag(API_TAGS.leaveTYPES);
+    revalidateTag(API_TAGS.LEAVES);
   }
 
   return response;
@@ -198,7 +199,7 @@ export const getLeaveType = async (
   id: number,
 ): Promise<IResponse<LeaveTypeRecord>> => {
   return await baseApi(`/leaves/types/${id}`, {
-    tag: "leave-types",
+    tag: API_TAGS.leaveTYPES,
   });
 };
 
@@ -209,7 +210,7 @@ export const createLeaveHoliday = async (
   const response = await baseApi(`/leaves/holidays`, {
     method: "POST",
     body: data,
-    tag: "leave-holidays",
+    tag: API_TAGS.leaveHOLIDAYS,
     cache: "no-cache",
   });
 
@@ -227,7 +228,7 @@ export const updateLeaveHoliday = async (
   const response = await baseApi(`/leaves/holidays/${id}`, {
     method: "PATCH",
     body: data,
-    tag: "leave-holidays",
+    tag: API_TAGS.leaveHOLIDAYS,
     cache: "no-cache",
   });
 
@@ -241,7 +242,7 @@ export const updateLeaveHoliday = async (
 export const deleteLeaveHoliday = async (id: number): Promise<IResponse<null>> => {
   const response = await baseApi(`/leaves/holidays/${id}`, {
     method: "DELETE",
-    tag: "leave-holidays",
+    tag: API_TAGS.leaveHOLIDAYS,
     cache: "no-cache",
   });
 
@@ -259,7 +260,7 @@ export const getLeaveHolidays = async (
   return await baseApi(
     `/leaves/holidays${queryString ? `?${queryString}` : ""}`,
     {
-      tag: "leave-holidays",
+      tag: API_TAGS.leaveHOLIDAYS,
     },
   );
 };
@@ -267,13 +268,13 @@ export const getLeaveHolidays = async (
 export const deleteLeave = async (id: number): Promise<IResponse<null>> => {
   const response = await baseApi(`/leaves/${id}`, {
     method: "DELETE",
-    tag: "leaves",
+    tag: API_TAGS.LEAVES,
     cache: "no-cache",
   });
 
   if (response?.success) {
-    revalidateTag("leaves");
-    revalidateTag("leave-types");
+    revalidateTag(API_TAGS.LEAVES);
+    revalidateTag(API_TAGS.leaveTYPES);
   }
 
   return response;
@@ -300,14 +301,14 @@ export const addLeave = async (data: {
   const response = await baseApi(`/leaves`, {
     method: "POST",
     body: formData,
-    tag: "leaves",
+    tag: API_TAGS.LEAVES,
     cache: "no-cache",
     isFormData: true,
   });
 
   if (response?.success) {
-    revalidateTag("leaves");
-    revalidateTag("leave-types");
+    revalidateTag(API_TAGS.LEAVES);
+    revalidateTag(API_TAGS.leaveTYPES);
   }
 
   return response;
@@ -318,7 +319,7 @@ export const getLeaveRequestTypeDropdown = async (): Promise<
   IResponse<LeaveRequestTypeDropdownRecord[]>
 > => {
   return await baseApi(`/leaves/dropdown/types`, {
-    tag: "leaves",
+    tag: API_TAGS.LEAVES,
     cache: "no-cache",
     revalidate: 0,
   });
@@ -331,7 +332,7 @@ export const getUserLeaveSummary = async (
   return await baseApi(
     `/leaves/details/user${queryString ? `?${queryString}` : ""}`,
     {
-      tag: "leaves",
+      tag: API_TAGS.LEAVES,
     },
   );
 };
@@ -365,4 +366,3 @@ export const parseLeaveHolidayImport = async (
     cache: "no-cache",
   });
 };
-

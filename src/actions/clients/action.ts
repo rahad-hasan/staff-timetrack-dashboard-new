@@ -2,11 +2,12 @@
 
 import { buildQuery } from "@/utils/buildQuery";
 import { baseApi } from "../baseApi";
+import { API_TAGS } from "@/constants/api.constants";
 
 export const getClients = async (query = {}) => {
     const queryString = buildQuery(query);
     return await baseApi(`/clients${queryString ? `?${queryString}` : ""}`, {
-        tag: "clients",
+        tag: API_TAGS.CLIENTS,
     });
 };
 
@@ -19,7 +20,7 @@ export const addClient = async (data: {
     return await baseApi(`/clients`, {
         method: "POST",
         body: data,
-        tag: "clients",
+        tag: API_TAGS.CLIENTS,
         cache: "no-cache",
     });
 };
@@ -36,7 +37,7 @@ export const editClient = async ({ data, id }: {
     return await baseApi(`/clients/${id}`, {
         method: "PATCH",
         body: data,
-        tag: "clients",
+        tag: API_TAGS.CLIENTS,
         cache: "no-cache",
     });
 };
@@ -44,6 +45,6 @@ export const editClient = async ({ data, id }: {
 export const deleteClient = async (id: number | undefined) => {
     return await baseApi(`/clients/${id}`, {
         method: "DELETE",
-        tag: "clients",
+        tag: API_TAGS.CLIENTS,
     });
 };

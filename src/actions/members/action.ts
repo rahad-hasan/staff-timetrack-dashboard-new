@@ -4,13 +4,14 @@ import { buildQuery } from "@/utils/buildQuery";
 import { baseApi } from "../baseApi";
 import { EmploymentStatus, IMember, IResponse } from "@/types/type";
 import { revalidatePath } from "next/cache";
+import { API_TAGS } from "@/constants/api.constants";
 
 export const getMembers = async (query = {}): Promise<IResponse<IMember[]>> => {
   const queryString = buildQuery(query);
   return await baseApi(
     `/auth/employees${queryString ? `?${queryString}` : ""}`,
     {
-      tag: "members",
+      tag: API_TAGS.MEMBERS,
     },
   );
 };
@@ -19,7 +20,7 @@ export const getSingleDetailsMember = async (
   id: string,
 ): Promise<IResponse<IMember[]>> => {
   return await baseApi(`/auth/employees/${id}`, {
-    tag: "members",
+    tag: API_TAGS.MEMBERS,
   });
 };
 
@@ -51,7 +52,7 @@ export const editSingleDetailsMember = async ({
   return await baseApi(`/auth/employees/${id}`, {
     method: "PATCH",
     body: data,
-    tag: "members",
+    tag: API_TAGS.MEMBERS,
     cache: "no-cache",
   });
 };
@@ -71,7 +72,7 @@ export const addMember = async (data: {
   return await baseApi(`/auth/employees`, {
     method: "POST",
     body: data,
-    tag: "members",
+    tag: API_TAGS.MEMBERS,
     cache: "no-cache",
   });
 };
@@ -91,7 +92,7 @@ export const editMember = async ({
   return await baseApi(`/auth/employees/${id}`, {
     method: "PATCH",
     body: data,
-    tag: "members",
+    tag: API_TAGS.MEMBERS,
     cache: "no-cache",
   });
 };
@@ -99,7 +100,7 @@ export const editMember = async ({
 export const deleteMember = async (id: number | undefined) => {
   return await baseApi(`/auth/employees/${id}`, {
     method: "DELETE",
-    tag: "members",
+    tag: API_TAGS.MEMBERS,
     cache: "no-cache",
   });
 };

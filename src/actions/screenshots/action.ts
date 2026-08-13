@@ -3,11 +3,12 @@
 import { buildQuery } from "@/utils/buildQuery";
 import { baseApi } from "../baseApi";
 import { IAllScreenshot, IResponse } from "@/types/type";
+import { API_TAGS } from "@/constants/api.constants";
 
 export const getScreenshots10Min = async (query = {}) => {
   const queryString = buildQuery(query);
   return await baseApi(`/activities${queryString ? `?${queryString}` : ""}`, {
-    tag: "screenshots",
+    tag: API_TAGS.SCREENSHOTS,
   });
 };
 
@@ -37,7 +38,7 @@ export const deleteScreenshot = async ({
   return await baseApi(`/screenshots`, {
     method: "DELETE",
     body: data,
-    tag: "screenshots",
+    tag: API_TAGS.SCREENSHOTS,
     cache: "no-cache",
   });
 };

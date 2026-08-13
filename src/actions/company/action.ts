@@ -3,11 +3,12 @@
 import { buildQuery } from "@/utils/buildQuery";
 import { baseApi } from "../baseApi";
 import { ICompany, IResponse } from "@/types/type";
+import { API_TAGS } from "@/constants/api.constants";
 
 export const getCompanyInfo = async (query = {}): Promise<IResponse<ICompany>> => {
     const queryString = buildQuery(query);
     return await baseApi(`/company/own-company/info${queryString ? `?${queryString}` : ""}`, {
-        tag: "company",
+        tag: API_TAGS.COMPANY,
     });
 };
 
@@ -15,7 +16,7 @@ export const updateCompanyInfo = async ({ data, id }: { data: Partial<ICompany>,
     return await baseApi(`/company/${id}`, {
         method: "PATCH",
         body: data,
-        tag: "company",
+        tag: API_TAGS.COMPANY,
         cache: "no-cache",
     });
 };

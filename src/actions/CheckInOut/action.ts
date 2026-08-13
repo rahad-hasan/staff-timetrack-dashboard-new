@@ -7,13 +7,14 @@ import {
   ITimeSheetEntry,
   IUserWorkReport,
 } from "@/types/type";
+import { API_TAGS } from "@/constants/api.constants";
 
 export const getAttendance = async (
   query = {},
 ): Promise<IResponse<ITimeSheetEntry[]>> => {
   const queryString = buildQuery(query);
   return await baseApi(`/check-in-out${queryString ? `?${queryString}` : ""}`, {
-    tag: "attendance",
+    tag: API_TAGS.ATTENDANCE,
     cache: "no-cache",
   });
 };
@@ -25,7 +26,7 @@ export const getWorkReport = async (
   return await baseApi(
     `/check-in-out/monthly-report${queryString ? `?${queryString}` : ""}`,
     {
-      tag: "schedules", // this is related to schedule because it is used in schedule report page
+      tag: API_TAGS.SCHEDULES, // this is related to schedule because it is used in schedule report page
     },
   );
 };

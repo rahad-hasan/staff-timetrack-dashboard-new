@@ -123,7 +123,7 @@ export default function IntegrationDetail({ def, onBack }: Props) {
     startCooldown,
 
     onResult: (result, mode, stalled) => {
-      setResultView((current) =>
+      setResultView((current: any) =>
         current
           ? {
               mode,

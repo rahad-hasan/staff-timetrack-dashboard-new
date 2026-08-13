@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 
+import { API_TAGS } from "@/constants/api.constants";
 import { baseApi } from "../baseApi";
 import { cookies } from "next/headers";
 
@@ -107,7 +108,7 @@ export const uploadProfileImage = async ({ data }: {
   return await baseApi(`/auth/update-profile-image`, {
     method: "PATCH",
     body: data,
-    tag: "profile",
+    tag: API_TAGS.PROFILE,
     cache: "no-cache"
   });
 };
@@ -123,7 +124,7 @@ export const uploadProfileInfo = async ({ data }: {
   return await baseApi(`/auth/update-profile`, {
     method: "PATCH",
     body: data,
-    tag: "profile",
+    tag: API_TAGS.PROFILE,
     cache: "no-cache"
   });
 };
@@ -139,7 +140,7 @@ export const changePassword = async ({
   const res = await baseApi(`/auth/change-password`, {
     method: "PATCH",
     body: data,
-    tag: "profile",
+    tag: API_TAGS.PROFILE,
     cache: "no-cache",
   });
 

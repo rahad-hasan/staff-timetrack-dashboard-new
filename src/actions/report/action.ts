@@ -8,6 +8,7 @@ import {
   INotes,
   IResponse,
 } from "@/types/type";
+import { API_TAGS } from "@/constants/api.constants";
 
 export const getDateBaseTimeEntry = async (
   query = {},
@@ -16,7 +17,7 @@ export const getDateBaseTimeEntry = async (
   return await baseApi(
     `/activities/duration${queryString ? `?${queryString}` : ""}`,
     {
-      tag: "timeEntry",
+      tag: API_TAGS.timeENTRY,
     },
   );
 };
@@ -28,7 +29,7 @@ export const getMonthlyWorkReport = async (
   return await baseApi(
     `/activities/monthly-report${queryString ? `?${queryString}` : ""}`,
     {
-      tag: "monthly-report",
+      tag: API_TAGS.monthlyREPORT,
     },
   );
 };
@@ -38,7 +39,7 @@ export const getNotes = async (query = {}): Promise<IResponse<INotes[]>> => {
   return await baseApi(
     `/activities/notes${queryString ? `?${queryString}` : ""}`,
     {
-      tag: "screenshots",
+      tag: API_TAGS.SCREENSHOTS,
     },
   );
 };

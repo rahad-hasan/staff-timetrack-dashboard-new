@@ -5,11 +5,12 @@ import { buildQuery } from "@/utils/buildQuery";
 // import { buildQuery } from "@/utils/buildQuery";
 import { baseApi } from "../baseApi";
 import { IResponse } from "@/types/type";
+import { API_TAGS } from "@/constants/api.constants";
 
 export const getEvents = async (query = {}): Promise<IResponse<any[]>> => {
     const queryString = buildQuery(query);
     return await baseApi(`/events${queryString ? `?${queryString}` : ""}`, {
-        tag: "events",
+        tag: API_TAGS.EVENTS,
     });
 };
 
@@ -24,7 +25,7 @@ export const addEvent = async (data: any
     return await baseApi(`/events`, {
         method: "POST",
         body: data,
-        tag: "events",
+        tag: API_TAGS.EVENTS,
         cache: "no-cache",
     });
 };
@@ -33,7 +34,7 @@ export const rescheduleEvent = async ({ id, data }: { id: number, data: any }) =
     return await baseApi(`/events/${id}`, {
         method: "PATCH",
         body: data,
-        tag: "events",
+        tag: API_TAGS.EVENTS,
         cache: "no-cache",
     });
 };
@@ -43,7 +44,7 @@ export const refreshEvents = async (
 ): Promise<IResponse<any[]>> => {
   const queryString = buildQuery(query);
   return await baseApi(`/events${queryString ? `?${queryString}` : ""}`, {
-    tag: "events",
+    tag: API_TAGS.EVENTS,
     cache: "no-cache",
   });
 };
@@ -56,7 +57,7 @@ export const addEventMembers = async (data: {
   return await baseApi(`/events`, {
     method: "PATCH",
     body: data,
-    tag: "events",
+    tag: API_TAGS.EVENTS,
     cache: "no-cache",
   });
 };
@@ -64,7 +65,7 @@ export const addEventMembers = async (data: {
 export const cancelEvent = async (id: number) => {
   return await baseApi(`/events/${id}`, {
     method: "DELETE",
-    tag: "events",
+    tag: API_TAGS.EVENTS,
     cache: "no-cache",
   });
 };

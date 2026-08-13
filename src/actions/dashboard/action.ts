@@ -3,13 +3,14 @@
 import { buildQuery } from "@/utils/buildQuery";
 import { baseApi } from "../baseApi";
 import { popularTimeZoneList } from "@/utils/TimeZoneList";
+import { API_TAGS } from "@/constants/api.constants";
 
 export const getDashboardStats = async (query = {}) => {
   const queryString = buildQuery(query);
   return await baseApi(
     `/dashboard/stats${queryString ? `?${queryString}` : ""}`,
     {
-      tag: "dashboardStats",
+      tag: API_TAGS.dashboardSTATS,
     },
   );
 };
@@ -19,7 +20,7 @@ export const getCoreMembers = async (query = {}) => {
   return await baseApi(
     `/admin/core-member${queryString ? `?${queryString}` : ""}`,
     {
-      tag: "coreMember",
+      tag: API_TAGS.coreMEMBER,
     },
   );
 };
@@ -29,7 +30,7 @@ export const getDashboardMembersStats = async (query = {}) => {
   return await baseApi(
     `/admin/members/activity-report${queryString ? `?${queryString}` : ""}`,
     {
-      tag: "memberStats",
+      tag: API_TAGS.memberSTATS,
     },
   );
 };
@@ -46,7 +47,7 @@ export const getDashboardMembersStats = async (query = {}) => {
 
 export const getTodayWorkTime = async () => {
   return await baseApi(`/dashboard/work-time`, {
-    tag: "todayWorkTime",
+    tag: API_TAGS.todayWorkTIME,
     cache: "no-cache",
   });
 };
@@ -69,7 +70,7 @@ export const getDashboardInsights = async (query = {}) => {
   return await baseApi(
     `/dashboard/insights${queryString ? `?${queryString}` : ""}`,
     {
-      tag: "insightsDashboard",
+      tag: API_TAGS.insightsDASHBOARD,
     },
   );
 };

@@ -14,6 +14,7 @@ import {
   IManualTimeEntry,
 } from "@/types/type";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
+import { API_TAGS } from "@/constants/api.constants";
 
 export const getTimeEntry = async (
   query = {},
@@ -21,7 +22,7 @@ export const getTimeEntry = async (
   const queryString = buildQuery(query);
   return await baseApi(`/time-entries${queryString ? `?${queryString}` : ""}`, {
     // tag: "timeEntry",
-    tag: "manualTimeEntry",
+    tag: API_TAGS.manualTimeENTRY,
   });
 };
 
@@ -34,7 +35,7 @@ export const deleteTimeEntry = async (id: number): Promise<IResponse<null>> => {
 
   if (res?.success) {
     revalidateTag("DailyTimeEntry");
-    revalidateTag("manualTimeEntry");
+    revalidateTag(API_TAGS.manualTimeENTRY);
   }
 
   return res;
@@ -47,7 +48,7 @@ export const getManualTimeEntry = async (
   return await baseApi(
     `/time-entries/manual-time-entry${queryString ? `?${queryString}` : ""}`,
     {
-      tag: "manualTimeEntry",
+      tag: API_TAGS.manualTimeENTRY,
     },
   );
 };
@@ -62,7 +63,7 @@ export const addManualTimeEntry = async (data: {
   return await baseApi(`/time-entries/manual-time-entry`, {
     method: "POST",
     body: data,
-    tag: "manualTimeEntry",
+    tag: API_TAGS.manualTimeENTRY,
     cache: "no-cache",
   });
 };
@@ -83,7 +84,7 @@ export const editManualTimeEntry = async ({
   return await baseApi(`/time-entries/manual-time-entry/${id}`, {
     method: "PATCH",
     body: data,
-    tag: "manualTimeEntry",
+    tag: API_TAGS.manualTimeENTRY,
     cache: "no-cache",
   });
 };
@@ -100,7 +101,7 @@ export const approveRejectManualTimeEntry = async ({
   return await baseApi(`/time-entries/approved/${id}`, {
     method: "PATCH",
     body: data,
-    tag: "manualTimeEntry",
+    tag: API_TAGS.manualTimeENTRY,
     cache: "no-cache",
   });
 };
@@ -112,7 +113,7 @@ export const getDailyTimeEntry = async (
   return await baseApi(
     `/time-entries/daily-time-sheet${queryString ? `?${queryString}` : ""}`,
     {
-      tag: "manualTimeEntry",
+      tag: API_TAGS.manualTimeENTRY,
     },
   );
 };
@@ -124,7 +125,7 @@ export const getWeeklyAndMonthlyTimeEntry = async (
   return await baseApi(
     `/time-entries/weekly-time-sheet${queryString ? `?${queryString}` : ""}`,
     {
-      tag: "manualTimeEntry",
+      tag: API_TAGS.manualTimeENTRY,
       cache: "no-store",
     },
   );
@@ -147,7 +148,7 @@ export const addTimeEntry = async (
   return await baseApi(`/time-entries/add-time`, {
     method: "POST",
     body: data,
-    tag: "manualTimeEntry",
+    tag: API_TAGS.manualTimeENTRY,
     cache: "no-cache",
   });
 };
