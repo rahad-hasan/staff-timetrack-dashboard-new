@@ -9,8 +9,8 @@ import {
   Keyboard,
   ShieldAlert,
 } from "lucide-react";
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import ScreenshotImage from "./ScreenshotImage";
 import {
   Carousel,
   CarouselApi,
@@ -186,12 +186,13 @@ const ScreenShortsModal = ({
                 key={index}
                 className="flex items-start justify-center relative"
               >
-                <Image
+                <ScreenshotImage
                   src={getSrc(item?.image)}
                   width={1400}
                   height={900}
                   alt={`screenshot-${index}`}
                   className=" h-[30vh] md:h-[40vh] lg:h-[50vh] xl:h-[60vh] 2xl:h-[78vh] object-contain"
+                  fallbackClassName="relative w-[85vw] max-w-[1200px] h-[30vh] md:h-[40vh] lg:h-[50vh] xl:h-[60vh] 2xl:h-[78vh] rounded-lg"
                   style={{
                     transform: `scale(${zoom})`,
                     transition: "0.25s ease",
@@ -219,12 +220,13 @@ const ScreenShortsModal = ({
                 className={`cursor-pointer rounded-md overflow-hidden border-2 transition-all duration-200 
                 ${realIndex === activeIndex ? "border-primary scale-110 z-10" : "border-transparent opacity-50 hover:opacity-100"}`}
               >
-                <Image
+                <ScreenshotImage
                   src={getSrc(item?.image)}
                   width={120}
                   height={80}
                   alt={`thumb-${realIndex}`}
                   className="rounded-sm object-cover w-[100px] md:w-[130px] h-[60px] md:h-[80px]"
+                  fallbackClassName="relative w-[100px] md:w-[130px] h-[60px] md:h-[80px]"
                 />
               </motion.div>
             );

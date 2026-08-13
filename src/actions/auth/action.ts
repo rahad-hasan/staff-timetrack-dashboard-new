@@ -3,6 +3,7 @@
 
 import { baseApi } from "../baseApi";
 import { cookies } from "next/headers";
+import { getDecodedUser } from "@/utils/decodedLogInUser";
 
 // export const logIn = async (data: any) => {
 //   return await baseApi("/auth/signin", {
@@ -99,6 +100,28 @@ export const logIn = async (data: any) => {
   return res;
 };
 
+/**
+ * Reads the signed-in user's own profile.
+ *
+ * Profile images are stored as private-bucket keys and only become loadable
+ * URLs when the API's signing middleware rewrites an `image` field — and the
+ * signature expires after ~30 minutes. `/auth/update-profile-image` answers
+ * with `imageUrl`, which that middleware does not rewrite, so the upload
+ * response is never renderable on its own. Every consumer that needs a
+ * displayable avatar re-reads it here instead.
+ */
+export const getMyProfile = async () => {
+  const user = await getDecodedUser();
+
+  if (!user?.id) {
+    return { success: false, message: "No active session" };
+  }
+
+  return await baseApi(`/auth/employees/${user.id}`, {
+    cache: "no-cache",
+  });
+};
+
 export const uploadProfileImage = async ({ data }: {
   data: {
     image: string
@@ -117,7 +140,6 @@ export const uploadProfileInfo = async ({ data }: {
     name: string;
     phone?: string;
     time_zone: string;
-    currency?: string;
   }
 }) => {
   return await baseApi(`/auth/update-profile`, {

@@ -48,6 +48,19 @@ const EditMemberStep = ({ setStep, selectedProject }: GeneralInfoStepProps) => {
         setStep(3);
     }
 
+    // /dashboard/members only returns active users, so deactivated users who are
+    // still managers of the project would render as blank selections. Merge the
+    // project's current managers in.
+    const assignedManagers = (selectedProject?.projectManagerAssigns ?? []).map(p => ({
+        id: p?.user?.id,
+        name: p?.user?.name,
+        image: p?.user?.image ?? undefined,
+    }));
+    const managerOptions = [
+        ...assignedManagers,
+        ...members.filter(m => !assignedManagers.some(a => a.id === m.id)),
+    ];
+
     // const managersData = data?.members;
 
         useEffect(() => {
@@ -90,7 +103,7 @@ const EditMemberStep = ({ setStep, selectedProject }: GeneralInfoStepProps) => {
                                         <MultiSelectContent className="dark:bg-darkSecondaryBg">
                                             {/* Items must be wrapped in a group for proper styling */}
                                             <MultiSelectGroup className="dark:bg-darkSecondaryBg">
-                                                {members.map((manager: { id: number | string; image?: string | null; name: string }) => (
+                                                {managerOptions.map((manager: { id: number | string; image?: string | null; name: string }) => (
                                                     <MultiSelectItem
                                                         key={manager.id}
                                                         value={String(manager.id)}

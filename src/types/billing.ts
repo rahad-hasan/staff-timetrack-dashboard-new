@@ -91,7 +91,6 @@ export interface IBillingEntitlements {
   current_period_end: string | null;
   pending_downgrade_plan_id: number | null;
   url_tracking?: boolean;
-  cam_tracking?: boolean;
   last_payment_failure_reason?: string | null;
 }
 

@@ -39,7 +39,7 @@ Fetch once on dashboard load and after every billing action:
     "trial_ends_at": "2026-08-24T…", // null unless trialing
     "current_period_end": "2027-02-01T…",
     "pending_downgrade_plan_id": null,
-    "url_tracking": true, "cam_tracking": false
+    "url_tracking": true
   },
   "blocked": false,
   "block": null,                     // when blocked: { error, code, message, actionRequired, webBillingUrl }

@@ -4,14 +4,19 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import GeneralInfoStep from "./AddProjectFomStep/GeneralInfoStep";
 import AddMemberStep from "./AddProjectFomStep/AddMemberStep";
 import AddBudgetAndHoursStep from "./AddProjectFomStep/AddBudgetAndHoursStep";
+import { useProjectFormStore } from "@/store/ProjectFormStore";
 // import AddTasksStep from "./AddProjectFomStep/AddTasksStep";
 
 const AddProjectModal = ({ onClose }: { onClose: () => void }) => {
     const [step, setStep] = useState<number>(1);
+    const resetData = useProjectFormStore(state => state.resetData);
+    // the store must outlive step navigation but not the wizard itself — clean it
+    // on unmount so route changes can't leak values into the next wizard
+    useEffect(() => resetData, [resetData]);
 
     return (
         <DialogContent

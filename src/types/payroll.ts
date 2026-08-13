@@ -254,7 +254,6 @@ export interface EligibleUser {
   email: string;
   image: string | null;
   role: string;
-  currency: string | null;
   created_at: string;
   status: "probation" | "permanent";
   has_profile: boolean;

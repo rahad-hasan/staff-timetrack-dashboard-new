@@ -11,10 +11,20 @@ import HeadingComponent from "@/components/Common/HeadingComponent";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useLogInUserStore } from "@/store/logInUserStore";
+import { useProjectFormStore } from "@/store/ProjectFormStore";
 
 const ProjectHeroSection = () => {
     const logInUserData = useLogInUserStore(state => state.logInUserData);
     const [open, setOpen] = useState(false)
+    const resetData = useProjectFormStore(state => state.resetData);
+    // handle add modal close and clean zustand store, otherwise abandoned
+    // add-flow values leak into the edit project modal (shared store)
+    const handleOpenChange = (isOpen: boolean) => {
+        if (!isOpen) {
+            resetData();
+        }
+        setOpen(isOpen);
+    };
     // type Tab = "active" | "archived";
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -40,12 +50,13 @@ const ProjectHeroSection = () => {
                     (logInUserData?.role === 'admin' ||
                         logInUserData?.role === 'manager') &&
                     <div className="">
-                        <Dialog open={open} onOpenChange={setOpen}>
+                        <Dialog open={open} onOpenChange={handleOpenChange}>
                             <form>
                                 <DialogTrigger asChild>
                                     <Button className=""><Plus className="size-5" /> <span className=" hidden sm:block">Add Project</span></Button>
                                 </DialogTrigger>
-                                <AddProjectModal onClose={() => setOpen(false)}></AddProjectModal>
+                                {/* remount on every open so the wizard restarts at step 1 */}
+                                {open && <AddProjectModal onClose={() => setOpen(false)}></AddProjectModal>}
                             </form>
                         </Dialog>
                     </div>

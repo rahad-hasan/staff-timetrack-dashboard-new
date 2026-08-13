@@ -72,15 +72,19 @@ export default function BillingPageClient({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Poll every 5s while a payment failure is unresolved; stop when it clears
-  // or on unmount.
+  // Poll every 5s while there is anything to settle: a lockout state, or a
+  // declined upgrade proration surfaced on an ACTIVE subscription (the seat/
+  // plan change stays parked until it's paid — the invoice resolves by
+  // payment or by Stripe voiding it on expiry, so polling is bounded either
+  // way). Stops when it clears or on unmount.
+  const hasUnpaidInvoice = Boolean(effective?.latest_unpaid_invoice);
   useEffect(() => {
-    if (st === "past_due" || st === "payment_failed") {
+    if (st === "past_due" || st === "payment_failed" || hasUnpaidInvoice) {
       startPolling(5000);
       return () => stopPolling();
     }
     return undefined;
-  }, [st, startPolling, stopPolling]);
+  }, [st, hasUnpaidInvoice, startPolling, stopPolling]);
 
   return (
     <div className="mt-4 space-y-4 sm:space-y-6">
@@ -100,12 +104,18 @@ export default function BillingPageClient({
         </div>
       )}
 
-      {(st === "past_due" || st === "payment_failed") &&
-        effective?.latest_unpaid_invoice && (
-          <div id="pay-now">
-            <PayNowCard invoice={effective.latest_unpaid_invoice} />
-          </div>
-        )}
+      {/* The server decides when an invoice needs settling — on lockout
+          states AND on active subscriptions with a declined seat/plan-change
+          proration (which no longer locks the workspace). Render whenever it
+          is present; the card itself adapts its urgency to the context. */}
+      {effective?.latest_unpaid_invoice && (
+        <div id="pay-now">
+          <PayNowCard
+            invoice={effective.latest_unpaid_invoice}
+            blocking={st === "past_due" || st === "payment_failed"}
+          />
+        </div>
+      )}
 
       {/* The global takeovers are suppressed on this page (it is the escape
           hatch), so both trial-end states get their inline equivalents here. */}

@@ -26,6 +26,7 @@ import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { logIn } from "@/actions/auth/action";
 import { useLogInUserStore } from "@/store/logInUserStore";
+import { resetProfileImageRefresh } from "@/utils/profileImageRefresh";
 import { useSidebarStore } from "@/store/sidebarStore";
 import logoWithSlogan from '../../assets/logo-with-text.webp'
 import logoForDark from '../../assets/logo-with-text-dark.png'
@@ -69,14 +70,18 @@ const LoginClientComponent = () => {
         // Cookies.set("accessToken", res?.data?.accessToken);
         // Cookies.set("refreshToken", res?.data?.refreshToken);
         toast.success(res?.message || "Login successful");
+        resetProfileImageRefresh();
         setLogInUserData({
           id: res?.data?.id,
           name: res?.data?.name,
           email: res?.data?.email,
           image: res?.data?.image,
+          // The signin response ships an already-signed avatar URL; stamping
+          // it here stops the first dashboard paint from re-reading one it
+          // just received.
+          imageSyncedAt: Date.now(),
           role: res?.data?.role,
           phone: res?.data?.phone,
-          pay_rate_hourly: res?.data?.pay_rate_hourly,
           timezone: res?.data?.time_zone,
           company_id: res?.data?.company_id,
         });

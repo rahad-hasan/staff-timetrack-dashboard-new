@@ -37,7 +37,6 @@ export interface ISigninResponse {
   is_deleted: boolean;
   is_tracking: boolean;
   url_tracking: boolean;
-  pay_rate_hourly: number;
   time_zone: string;
   multi_factor_auth: boolean;
   updated_at: string; // ISO datetime
@@ -59,7 +58,6 @@ export interface IUser {
   is_deleted: boolean;
   is_tracking: boolean;
   url_tracking: boolean;
-  pay_rate_hourly: number;
   time_zone: string;
   multi_factor_auth: boolean;
   updated_at: string;
@@ -714,6 +712,8 @@ export interface IUserWorkReport {
     total_early_hm: string;
     total_worked_duration: string;
     earnings: null | number;
+    /** Currency of `earnings`, from the payroll profile; null when no rate. */
+    currency: string | null;
   };
   days: {
     date: string;
@@ -766,7 +766,6 @@ export interface IMonthlyWorkReportUser {
   id: number;
   name: string;
   image: string | null;
-  currency?: string | null;
   time_zone: string;
 }
 

@@ -12,14 +12,12 @@ import {
     BadgeCheck,
     BriefcaseBusiness,
     CalendarDays,
-    Camera,
     Check,
     ChevronsUpDown,
     Clock3,
     FolderKanban,
     Globe2,
     Link2,
-    LockKeyhole,
     Mail,
     MapPin,
     Phone,
@@ -27,7 +25,6 @@ import {
     Shield,
     ShieldCheck,
     Sparkles,
-    TimerReset,
     UserRound,
 } from "lucide-react";
 
@@ -70,7 +67,6 @@ import { popularTimeZoneList } from "@/utils/TimeZoneList";
 import { CustomCalendarForDOB } from "@/components/ui/customCalendarForDOB";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import { EmploymentStatus } from "@/types/type";
-import { currencies } from "@/utils/CurrencyList";
 
 const SingleMemberPage = ({
     data,
@@ -83,10 +79,7 @@ const SingleMemberPage = ({
 
     const [switches, setSwitches] = useState({
         is_active: data?.is_active,
-        is_tracking: data?.is_tracking,
         url_tracking: data?.url_tracking,
-        cam_tracking: data?.cam_tracking,
-        multi_factor_auth: data?.multi_factor_auth,
     });
 
     const genderOptions = ["male", "female", "other"] as const;
@@ -139,12 +132,10 @@ const SingleMemberPage = ({
             name: data?.name || "",
             email: data?.email || "",
             phone: data?.phone || "",
-            pay_rate_hourly: data?.pay_rate_hourly || 0,
             role: data?.role || "",
             status: (data?.status as EmploymentStatus | undefined) ?? undefined,
             time_zone: data?.time_zone || "",
             gender: (data?.gender as "male" | "female" | "other") || "male",
-            currency: data?.currency || "USD",
             birth_day: initialBirthDay,
         },
     });
@@ -174,34 +165,23 @@ const SingleMemberPage = ({
         {
             key: "is_active" as const,
             label: "Active Account",
-            hint: "Login and system access",
+            hint: "Login and system access for this employee.",
             icon: BadgeCheck,
-        },
-        {
-            key: "is_tracking" as const,
-            label: "Time Tracking",
-            hint: "Desktop tracking permissions",
-            icon: TimerReset,
+            enabledCaption: "Employee can sign in and use the workspace",
+            disabledCaption: "Sign-in is blocked until this is turned back on",
         },
         {
             key: "url_tracking" as const,
             label: "URL and Apps",
-            hint: "Website and app usage tracking",
+            hint: "Website and app usage tracking on the desktop app.",
             icon: Link2,
-        },
-        {
-            key: "cam_tracking" as const,
-            label: "Webcam Screenshots",
-            hint: "Periodic work snapshots",
-            icon: Camera,
-        },
-        {
-            key: "multi_factor_auth" as const,
-            label: "Multi-Factor Auth",
-            hint: "Additional account verification",
-            icon: LockKeyhole,
+            enabledCaption: "Visited sites and apps are recorded during work time",
+            disabledCaption: "No website or app usage is collected",
         },
     ];
+
+    const toggleControl = (key: (typeof controlItems)[number]["key"]) =>
+        setSwitches((prev) => ({ ...prev, [key]: !prev[key] }));
 
     async function onSubmit(values: z.infer<typeof singleMemberSchema>) {
         setLoading(true);
@@ -244,22 +224,8 @@ const SingleMemberPage = ({
                 payload.is_active = Boolean(switches.is_active);
             }
 
-            if (switches.is_tracking !== data?.is_tracking) {
-                payload.is_tracking = Boolean(switches.is_tracking);
-            }
-
             if (switches.url_tracking !== data?.url_tracking) {
                 payload.url_tracking = Boolean(switches.url_tracking);
-            }
-
-            if (switches.cam_tracking !== data?.cam_tracking) {
-                payload.cam_tracking = Boolean(switches.cam_tracking);
-            }
-
-            if (switches.multi_factor_auth !== data?.multi_factor_auth) {
-                payload.multi_factor_auth = Boolean(
-                    switches.multi_factor_auth
-                );
             }
 
             // If nothing changed
@@ -437,47 +403,107 @@ const SingleMemberPage = ({
             </section>
 
             <section className="rounded-[12px] border border-borderColor bg-white/95 p-5 backdrop-blur dark:border-darkBorder dark:bg-darkSecondaryBg/95 sm:p-6">
-                <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <div>
                         <h3 className="text-xl font-semibold text-headingTextColor dark:text-darkTextPrimary">
                             Account Controls
                         </h3>
-                        <p className="text-sm text-subTextColor dark:text-darkTextSecondary">
-                            Manage access, tracking, and security settings from the top layer of
-                            the employee profile.
+                        <p className="mt-1 text-sm text-subTextColor dark:text-darkTextSecondary">
+                            Manage workspace access and activity tracking for this employee.
                         </p>
                     </div>
-                    <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700 dark:bg-emerald-500/10 dark:text-primary">
+                    <div className="inline-flex shrink-0 items-center gap-2 self-start rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700 dark:bg-emerald-500/10 dark:text-primary">
                         <Sparkles className="size-3.5" />
                         HR Workspace Controls
                     </div>
                 </div>
 
-                <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+                <div className="grid gap-4 md:grid-cols-2">
                     {controlItems.map((item) => {
                         const Icon = item.icon;
+                        const enabled = Boolean(switches[item.key]);
+
                         return (
                             <div
                                 key={item.key}
-                                className="rounded-[12px] border border-borderColor bg-[#f7fafc] px-4 py-3 dark:border-darkBorder dark:bg-darkPrimaryBg"
+                                onClick={() => toggleControl(item.key)}
+                                className={cn(
+                                    "group relative cursor-pointer select-none overflow-hidden rounded-[12px] border p-4 transition-all duration-200 sm:p-5",
+                                    enabled
+                                        ? "border-primary/40 bg-emerald-50/70 shadow-[0_10px_28px_rgba(16,185,129,0.10)] dark:border-primary/30 dark:bg-primary/[0.06] dark:shadow-none"
+                                        : "border-borderColor bg-[#f7fafc] hover:border-primary/30 dark:border-darkBorder dark:bg-darkPrimaryBg dark:hover:border-primary/25",
+                                )}
                             >
-                                <div className="flex items-start justify-between gap-3">
-                                    <div className="rounded-xl bg-primary/10 p-2 text-primary">
-                                        <Icon className="size-3.5" />
+                                <span
+                                    aria-hidden
+                                    className={cn(
+                                        "pointer-events-none absolute -right-8 -top-10 size-28 rounded-full bg-primary/20 blur-2xl transition-opacity duration-300",
+                                        enabled
+                                            ? "opacity-100"
+                                            : "opacity-0 group-hover:opacity-60",
+                                    )}
+                                />
+
+                                <div className="relative flex items-start justify-between gap-4">
+                                    <div className="flex min-w-0 items-start gap-3.5">
+                                        <span
+                                            className={cn(
+                                                "flex size-11 shrink-0 items-center justify-center rounded-2xl transition-colors",
+                                                enabled
+                                                    ? "bg-primary/15 text-primary"
+                                                    : "bg-slate-500/10 text-subTextColor dark:bg-white/5 dark:text-darkTextSecondary",
+                                            )}
+                                        >
+                                            <Icon className="size-5" />
+                                        </span>
+
+                                        <div className="min-w-0">
+                                            <div className="flex flex-wrap items-center gap-2">
+                                                <p className="text-sm font-semibold leading-none text-headingTextColor dark:text-darkTextPrimary">
+                                                    {item.label}
+                                                </p>
+                                                <span
+                                                    className={cn(
+                                                        "rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em]",
+                                                        enabled
+                                                            ? "bg-emerald-500/15 text-emerald-700 dark:bg-primary/15 dark:text-primary"
+                                                            : "bg-slate-500/10 text-subTextColor dark:bg-white/5 dark:text-darkTextSecondary",
+                                                    )}
+                                                >
+                                                    {enabled ? "Enabled" : "Disabled"}
+                                                </span>
+                                            </div>
+                                            <p className="mt-2 text-xs leading-5 text-subTextColor dark:text-darkTextSecondary">
+                                                {item.hint}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <Switch
-                                        checked={Boolean(switches[item.key])}
-                                        onCheckedChange={(val) =>
-                                            setSwitches((prev) => ({ ...prev, [item.key]: val }))
-                                        }
-                                    />
+
+                                    <span
+                                        className="shrink-0 pt-0.5"
+                                        onClick={(event) => event.stopPropagation()}
+                                    >
+                                        <Switch
+                                            checked={enabled}
+                                            aria-label={item.label}
+                                            onCheckedChange={(val) =>
+                                                setSwitches((prev) => ({ ...prev, [item.key]: val }))
+                                            }
+                                        />
+                                    </span>
                                 </div>
-                                <p className="mt-3 text-sm font-semibold leading-none text-headingTextColor dark:text-darkTextPrimary">
-                                    {item.label}
-                                </p>
-                                <p className="mt-1 text-xs leading-4 text-subTextColor dark:text-darkTextSecondary">
-                                    {item.hint}
-                                </p>
+
+                                <div className="relative mt-4 flex items-center gap-2 border-t border-dashed border-borderColor pt-3 dark:border-darkBorder">
+                                    <span
+                                        className={cn(
+                                            "size-1.5 shrink-0 rounded-full",
+                                            enabled ? "bg-primary" : "bg-slate-400/70 dark:bg-white/25",
+                                        )}
+                                    />
+                                    <p className="text-xs text-subTextColor dark:text-darkTextSecondary">
+                                        {enabled ? item.enabledCaption : item.disabledCaption}
+                                    </p>
+                                </div>
                             </div>
                         );
                     })}
@@ -673,7 +699,7 @@ const SingleMemberPage = ({
                                     />
                                 </div>
 
-                                <div className="grid gap-4 md:grid-cols-3">
+                                <div className="grid gap-4 md:grid-cols-2">
                                     <FormField
                                         control={form.control}
                                         name="gender"
@@ -765,121 +791,22 @@ const SingleMemberPage = ({
                                         )}
                                     />
 
-                                    <FormField
-                                        control={form.control}
-                                        name="currency"
-                                        render={({ field }) => (
-                                            <FormItem className="flex flex-col">
-                                                <FormLabel required>Currency</FormLabel>
-                                                <Popover>
-                                                    <PopoverTrigger asChild>
-                                                        <FormControl>
-                                                            <Button
-                                                                variant="outline2"
-                                                                role="combobox"
-                                                                className="!h-[52px] min-h-[52px] w-full justify-between py-0 dark:border-darkBorder dark:bg-darkPrimaryBg dark:text-darkTextPrimary hover:dark:bg-darkPrimaryBg"
-                                                            >
-                                                                <span className="truncate">
-                                                                    {field.value
-                                                                        ? currencies.find(
-                                                                            (currency) =>
-                                                                                currency.value === field.value
-                                                                        )?.label
-                                                                        : "Select currency"}
-                                                                </span>
-                                                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                                            </Button>
-                                                        </FormControl>
-                                                    </PopoverTrigger>
-                                                    <PopoverContent
-                                                        className="w-[--radix-popover-trigger-width] p-0 dark:border-darkBorder dark:bg-darkSecondaryBg"
-                                                    >
-                                                        <Command className="dark:bg-darkSecondaryBg">
-                                                            <CommandInput placeholder="Search currency..." />
-                                                            <CommandList className="max-h-[300px] overflow-y-auto">
-                                                                <CommandEmpty>
-                                                                    No currency found.
-                                                                </CommandEmpty>
-                                                                <CommandGroup>
-                                                                    {currencies.map((currency) => (
-                                                                        <CommandItem
-                                                                            key={currency.value}
-                                                                            value={`${currency.label} ${currency.value}`}
-                                                                            onSelect={() => {
-                                                                                form.setValue(
-                                                                                    "currency",
-                                                                                    currency.value
-                                                                                );
-
-                                                                                document.dispatchEvent(
-                                                                                    new KeyboardEvent("keydown", {
-                                                                                        key: "Escape",
-                                                                                    })
-                                                                                );
-                                                                            }}
-                                                                            className="min-h-[48px] cursor-pointer hover:dark:bg-darkPrimaryBg"
-                                                                        >
-                                                                            <Check
-                                                                                className={cn(
-                                                                                    "mr-2 h-4 w-4",
-                                                                                    currency.value === field.value
-                                                                                        ? "opacity-100"
-                                                                                        : "opacity-0"
-                                                                                )}
-                                                                            />
-                                                                            {currency.label}
-                                                                        </CommandItem>
-                                                                    ))}
-                                                                </CommandGroup>
-                                                            </CommandList>
-                                                        </Command>
-                                                    </PopoverContent>
-                                                </Popover>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-
                                 </div>
 
-                                <div className="grid gap-4 md:grid-cols-2">
-                                    <FormField
-                                        control={form.control}
-                                        name="pay_rate_hourly"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel required>Hourly Pay Rate ($)</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        type="number"
-                                                        {...field}
-                                                        onChange={(e) =>
-                                                            field.onChange(e.target.valueAsNumber)
-                                                        }
-                                                        className="!h-[52px] min-h-[52px] dark:border-darkBorder dark:bg-darkPrimaryBg"
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-
-                                    <div className="rounded-[12px] border border-borderColor bg-bgSecondary/50 p-4 dark:border-darkBorder dark:bg-darkPrimaryBg">
-                                        <div className="flex items-start gap-3">
-                                            <div className="rounded-2xl bg-primary/10 p-2 text-primary">
-                                                <MapPin className="size-4" />
-                                            </div>
-                                            <div>
-                                                <p className="text-sm font-medium text-headingTextColor dark:text-darkTextPrimary">
-                                                    Workspace Snapshot
-                                                </p>
-                                                <p className="mt-1 text-sm text-subTextColor dark:text-darkTextSecondary">
-                                                    {data?.time_zone || "UTC"} timezone,{" "}
-                                                    {data?.currency || "USD"} payroll currency, and{" "}
-                                                    {switches.is_active ? "active" : "inactive"} account
-                                                    access.
-                                                </p>
-                                            </div>
+                                <div className="rounded-[12px] border border-borderColor bg-bgSecondary/50 p-4 dark:border-darkBorder dark:bg-darkPrimaryBg">
+                                    <div className="flex items-start gap-3">
+                                        <div className="rounded-2xl bg-primary/10 p-2 text-primary">
+                                            <MapPin className="size-4" />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-medium text-headingTextColor dark:text-darkTextPrimary">
+                                                Workspace Snapshot
+                                            </p>
+                                            <p className="mt-1 text-sm text-subTextColor dark:text-darkTextSecondary">
+                                                {data?.time_zone || "UTC"} timezone and{" "}
+                                                {switches.is_active ? "active" : "inactive"} account
+                                                access.
+                                            </p>
                                         </div>
                                     </div>
                                 </div>

@@ -12,6 +12,7 @@ import { Dialog } from "@/components/ui/dialog";
 import EditProjectModal from "@/components/ProjectManagement/Projects/EditProjectModal";
 import { formatTZDateDMY } from "@/utils";
 import { useLogInUserStore } from "@/store/logInUserStore";
+import { useProjectFormStore } from "@/store/ProjectFormStore";
 import AppPagination from "@/components/Common/AppPagination";
 import { StatusSelector } from "@/components/Common/StatusSelector";
 import SearchBar from "@/components/Common/SearchBar";
@@ -22,6 +23,14 @@ const SingleProject = ({ data, task, page }: { data: ISingleProjectData, task: a
     const [activeTab, setActiveTab] = useState<"Members" | "Tasks">("Members");
     const [searchTerm, setSearchTerm] = useState("");
     const [open, setOpen] = useState(false)
+    const resetData = useProjectFormStore(state => state.resetData);
+    // handle edit modal close and clean zustand store
+    const handleOpenChange = (isOpen: boolean) => {
+        if (!isOpen) {
+            resetData();
+        }
+        setOpen(isOpen);
+    };
     const handleTabClick = (tab: "Members" | "Tasks") => {
         setActiveTab(tab);
     };
@@ -161,11 +170,14 @@ const SingleProject = ({ data, task, page }: { data: ISingleProjectData, task: a
                     </>
             }
             {/* Edit modal here */}
-            <Dialog open={open} onOpenChange={setOpen}>
-                <EditProjectModal
-                    onClose={() => setOpen(false)}
-                    selectedProject={data}
-                />
+            <Dialog open={open} onOpenChange={handleOpenChange}>
+                {/* remount on every open so the wizard restarts at step 1 in sync with the reset store */}
+                {open && (
+                    <EditProjectModal
+                        onClose={() => setOpen(false)}
+                        selectedProject={data}
+                    />
+                )}
             </Dialog>
         </div>
     );

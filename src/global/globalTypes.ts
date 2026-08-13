@@ -38,7 +38,6 @@ export interface ITeamMembers {
     role: "admin" | "manager" | "hr" | "project_manager" | "employee",
     phone: string | null,
     image: string | null,
-    pay_rate_hourly: number,
     time_zone: string,
     is_active: boolean,
     is_deleted: boolean,

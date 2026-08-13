@@ -9,17 +9,14 @@ const nextConfig: NextConfig = {
   },
   images: {
     remotePatterns: [
-      // ✅ নতুন SGP1 private bucket — CDN (এটা সবচেয়ে important)
       {
         protocol: "https",
         hostname: "staff-time-tracker.sgp1.cdn.digitaloceanspaces.com",
       },
-      // ✅ নতুন SGP1 private bucket — origin (fallback)
       {
         protocol: "https",
         hostname: "staff-time-tracker.sgp1.digitaloceanspaces.com",
       },
-      // ✅ পুরোনো LON1 public bucket — backward compat
       {
         protocol: "https",
         hostname: "staff-time-tracker-screenshot.lon1.digitaloceanspaces.com",

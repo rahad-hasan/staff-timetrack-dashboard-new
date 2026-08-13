@@ -61,7 +61,7 @@ const AttendanceTable = ({ attendanceListData, searchTerm }: any) => {
         const name = row.getValue("name") as string;
         const img = row?.original?.image;
         return (
-          <div className="flex items-center gap-2 min-w-[200px]">
+          <div className="flex items-center gap-2 min-w-50">
             <Avatar className="rounded-full w-8 h-8">
               <AvatarImage src={img ? img : ""} alt={name} />
               <AvatarFallback>{name?.charAt(0)}</AvatarFallback>

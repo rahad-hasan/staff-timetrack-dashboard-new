@@ -9,8 +9,19 @@ import EmptyTableLogo from "@/assets/empty_table.svg";
 import ScreenshotImage from "./ScreenshotImage";
 
 const AllScreenShorts = ({ data }: { data: IAllScreenshot[] | undefined }) => {
-  const [selectedImage, setSelectedImage] = useState<IAllScreenshot>();
+  const [selectedSnapshot, setSelectedSnapshot] = useState<IAllScreenshot>();
+  const [listSnapshot, setListSnapshot] = useState<IAllScreenshot[]>([]);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
+
+  // Prefer live data so an open modal picks up freshly signed image URLs when
+  // the route refreshes after a token expiry; fall back to the click-time
+  // snapshots so a failed refetch (or a remotely deleted screenshot) doesn't
+  // slam the modal shut or empty its carousel mid-browse.
+  const modalScreenshots = data && data.length > 0 ? data : listSnapshot;
+  const selectedImage =
+    modalScreenshots.find(
+      (screenShort) => screenShort.id === selectedSnapshot?.id,
+    ) ?? selectedSnapshot;
 
   return (
     <>
@@ -29,7 +40,8 @@ const AllScreenShorts = ({ data }: { data: IAllScreenshot[] | undefined }) => {
               <div
                 className="relative w-full aspect-[4/2.3] overflow-hidden rounded-t-lg bg-gray-100 dark:bg-darkSecondaryBg cursor-pointer"
                 onClick={() => {
-                  setSelectedImage(screenShort);
+                  setListSnapshot(data ?? []);
+                  setSelectedSnapshot(screenShort);
                   setModalOpen(true);
                 }}
               >
@@ -87,7 +99,7 @@ const AllScreenShorts = ({ data }: { data: IAllScreenshot[] | undefined }) => {
       <AnimatePresence>
         {modalOpen && selectedImage && (
           <AllScreenShortsModal
-            screenShorts={data ?? []}
+            screenShorts={modalScreenshots}
             modalOpen={modalOpen}
             setModalOpen={setModalOpen}
             selectedImage={selectedImage}

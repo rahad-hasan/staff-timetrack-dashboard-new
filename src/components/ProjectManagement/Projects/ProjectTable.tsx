@@ -579,7 +579,8 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
             </Table>
             {/* Edit modal here */}
             <Dialog open={open} onOpenChange={handleOpenChange}>
-                {selectedProject && (
+                {/* remount on every open so the wizard restarts at step 1 in sync with the reset store */}
+                {open && selectedProject && (
                     <EditProjectModal
                         onClose={() => setOpen(false)}
                         selectedProject={selectedProject}

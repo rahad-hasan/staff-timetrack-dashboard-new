@@ -23,6 +23,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { resetPassword } from "@/actions/auth/action";
 import { useLogInUserStore } from "@/store/logInUserStore";
+import { resetProfileImageRefresh } from "@/utils/profileImageRefresh";
 import logoWithSlogan from "../../assets/logo-with-text.webp";
 import logoForDark from "../../assets/logo-with-text-dark.png";
 
@@ -51,14 +52,15 @@ const ResetPasswordClient = () => {
         },
       });
       if (res?.success) {
+        resetProfileImageRefresh();
         setLogInUserData({
           id: res?.data?.id,
           name: res?.data?.name,
           email: res?.data?.email,
           image: res?.data?.image,
+          imageSyncedAt: Date.now(),
           role: res?.data?.role,
           phone: res?.data?.phone,
-          pay_rate_hourly: res?.data?.pay_rate_hourly,
           timezone: res?.data?.time_zone,
           company_id: res?.data?.company_id,
         });

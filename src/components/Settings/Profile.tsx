@@ -24,6 +24,7 @@ import UserIcon from "../Icons/UserIcon";
 import JobIcon from "../Icons/JobIcon";
 import EmailIcon from "../Icons/EmailIcon";
 import { useLogInUserStore } from "@/store/logInUserStore";
+import { useProfileImage } from "@/hooks/useProfileImage";
 import { uploadProfileInfo, uploadProfileImage } from "@/actions/auth/action";
 import { toast } from "sonner";
 import {
@@ -40,10 +41,16 @@ import { cn } from "@/lib/utils";
 
 const Profile = () => {
     const { logInUserData } = useLogInUserStore(state => state);
+    const { src: profileImageSrc, handleImageError, sync: syncProfileImage } = useProfileImage();
     const [loading, setLoading] = useState(false);
     const [imageLoading, setImageLoading] = useState(false);
-    const [preview, setPreview] = useState<any>(logInUserData?.image ? logInUserData?.image : profileAvatar)
+    // Local base64 of a just-picked file. Kept separate from the stored URL so
+    // the two never fight over one state slot; the picked file always wins
+    // until it has been uploaded and re-signed.
+    const [localPreview, setLocalPreview] = useState<string | null>(null)
     const [image, setImage] = useState<any>(null)
+
+    const preview = localPreview ?? profileImageSrc ?? profileAvatar;
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
@@ -51,10 +58,9 @@ const Profile = () => {
             const reader = new FileReader()
             reader.onloadend = () => {
                 const base64String = reader.result as string;
-                setPreview(base64String);
+                setLocalPreview(base64String);
                 setImage(base64String);
             };
-            // reader.onloadend = () => setPreview(reader.result as any)
             reader.readAsDataURL(file)
         }
     }
@@ -72,19 +78,21 @@ const Profile = () => {
             // password: "",
         },
     });
+    const { name, role, email, phone, timezone } = logInUserData ?? {};
+
+    // Depend on the individual values, not the store object: `updateUserData`
+    // returns a new object every call (including the background avatar
+    // re-sign), and resetting on identity would wipe whatever the user had
+    // typed but not saved.
     useEffect(() => {
-        if (!logInUserData) return;
-
         form.reset({
-            name: logInUserData.name ?? "",
-            title: logInUserData.role ?? "",
-            email: logInUserData.email ?? "",
-            phone: logInUserData.phone ?? "",
-            time_zone: logInUserData.timezone ?? "",
+            name: name ?? "",
+            title: role ?? "",
+            email: email ?? "",
+            phone: phone ?? "",
+            time_zone: timezone ?? "",
         });
-
-        setPreview(logInUserData.image || profileAvatar.src);
-    }, [logInUserData, form]);
+    }, [name, role, email, phone, timezone, form]);
 
 
     async function upLoadImage() {
@@ -93,10 +101,15 @@ const Profile = () => {
             const res = await uploadProfileImage({ data: { image: image } });
             if (res?.success) {
                 toast.success(res?.message || "Image updated successfully");
-                updateUserData({
-                    image: res?.data?.imageUrl
-                })
                 setImage(null);
+                // The upload answers with `imageUrl`, a raw private-bucket key
+                // the browser cannot load. Re-read the profile so the store
+                // gets a signed URL; keep showing the local preview if that
+                // read fails, since it is the correct new photo either way.
+                const synced = await syncProfileImage({ force: true });
+                if (synced) {
+                    setLocalPreview(null);
+                }
             } else {
                 toast.error(res?.message || "Failed to update", {
                     style: {
@@ -171,6 +184,7 @@ const Profile = () => {
                         width={100}
                         height={100}
                         className="object-cover w-full h-full"
+                        onError={handleImageError}
                     />
                 </div>
                 <div>

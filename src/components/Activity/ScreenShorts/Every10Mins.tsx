@@ -26,16 +26,27 @@ import {
 // import emptyActivity from "../../../assets/empty_activity.png";
 
 const Every10Mins = ({ data }: { data: TTimelineHourBlock[] }) => {
-  const [selectedImages, setSelectedImages] = useState<TTimelineDetail[]>([]);
-  const [selectedImage, setSelectedImage] = useState<TTimelineDetail>();
+  const [selectedSnapshot, setSelectedSnapshot] = useState<TTimelineDetail>();
+  const [daySnapshot, setDaySnapshot] = useState<TTimelineDetail[]>([]);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
 
   const getDayScreenshots = () =>
-    data.flatMap((hourGroup) =>
+    (data ?? []).flatMap((hourGroup) =>
       hourGroup.slots.flatMap((slot) =>
         slot.type === "data" ? slot.details : [],
       ),
     );
+
+  // Live data is preferred so an open modal picks up freshly signed image
+  // URLs when the route refreshes after a token expiry; the click-time
+  // snapshot keeps the modal alive if a refetch fails and the live payload
+  // comes back empty.
+  const liveDayScreenshots = getDayScreenshots();
+  const dayScreenshots =
+    liveDayScreenshots.length > 0 ? liveDayScreenshots : daySnapshot;
+  const selectedImage =
+    dayScreenshots.find((detail) => detail.id === selectedSnapshot?.id) ??
+    selectedSnapshot;
 
   const handleDeleteScreenShot = async (data: TTimelineDataSlot) => {
     const finalData = {
@@ -117,8 +128,8 @@ const Every10Mins = ({ data }: { data: TTimelineHourBlock[] }) => {
                     <div
                       className="relative w-full aspect-[4/2.2] cursor-pointer"
                       onClick={() => {
-                        setSelectedImages(getDayScreenshots());
-                        setSelectedImage(block?.details?.[0]);
+                        setDaySnapshot(getDayScreenshots());
+                        setSelectedSnapshot(block?.details?.[0]);
                         setModalOpen(true);
                       }}
                     >
@@ -274,7 +285,7 @@ const Every10Mins = ({ data }: { data: TTimelineHourBlock[] }) => {
       <AnimatePresence>
         {modalOpen && (
           <ScreenShortsModal
-            screenShorts={selectedImages}
+            screenShorts={dayScreenshots}
             modalOpen={modalOpen}
             setModalOpen={setModalOpen}
             selectedImage={selectedImage}

@@ -114,6 +114,7 @@ const MonthlyTimeSheetsCalendar = ({
         )}
       </div>
     );
+    
     return is_manual_entry && !is_manual_entry_approved ? (
       <Link
         href={`/timesheets/manual-requests?user_id=${userId || String(logInUserId)}&date=${dateString}`}

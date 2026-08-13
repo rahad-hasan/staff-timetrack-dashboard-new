@@ -14,6 +14,7 @@ import SignOutIcon from "@/components/Icons/SignOutIcon";
 import { useRouter } from "next/navigation";
 import { clearSessionCookie } from "@/actions/auth/action";
 import { useLogInUserStore } from "@/store/logInUserStore";
+import { useProfileImage } from "@/hooks/useProfileImage";
 import Link from "next/link";
 import { useSidebarStore } from "@/store/sidebarStore";
 
@@ -21,6 +22,7 @@ const ProfilePopoverContent = ({ side, align }: { side: "top" | "right" | "botto
     const router = useRouter();
     const { resetSidebar } = useSidebarStore();
     const logInUserData = useLogInUserStore(state => state.logInUserData);
+    const { src: profileImageSrc, handleLoadingStatusChange } = useProfileImage();
     const handleLogOut = async () => {
         try {
             await clearSessionCookie();
@@ -35,7 +37,7 @@ const ProfilePopoverContent = ({ side, align }: { side: "top" | "right" | "botto
         <PopoverContent className=" px-0 shadow-none py-3 border-borderColor dark:border-darkBorder" side={side} align={align}>
             <div className="flex items-center gap-2 mb-4 px-3 ">
                 <Avatar className="w-14 h-14">
-                    <AvatarImage src={logInUserData?.image ? logInUserData?.image : ""} alt="@shadcn" />
+                    <AvatarImage src={profileImageSrc} onLoadingStatusChange={handleLoadingStatusChange} alt={logInUserData?.name || "Profile"} />
                     <AvatarFallback className=" dark:bg-darkPrimaryBg/70">
                         {logInUserData?.name && logInUserData?.name
                             .split(" ")

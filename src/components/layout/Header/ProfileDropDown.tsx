@@ -14,12 +14,14 @@ import {
   AvatarImage,
 } from "@/components/ui/avatar";
 import { useLogInUserStore } from "@/store/logInUserStore";
+import { useProfileImage } from "@/hooks/useProfileImage";
 
 const ProfileDropDown = () => {
   const [open, setOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const DropDownIcon = open ? ChevronUp : ChevronDown;
   const logInUserData = useLogInUserStore(state => state.logInUserData);
+  const { src: profileImageSrc, handleLoadingStatusChange } = useProfileImage();
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     handleResize();
@@ -32,7 +34,7 @@ const ProfileDropDown = () => {
       <PopoverTrigger asChild>
         <Button variant="outline2" className="h-10.5 dark:text-darkTextPrimary dark:hover:bg-darkSecondaryBg">
           <Avatar className="w-7.5 h-7.5">
-            <AvatarImage src={logInUserData?.image ? logInUserData?.image : ""} alt="@shadcn" />
+            <AvatarImage src={profileImageSrc} onLoadingStatusChange={handleLoadingStatusChange} alt={logInUserData?.name || "Profile"} />
             <AvatarFallback>
               {logInUserData?.name
                 ? logInUserData.name

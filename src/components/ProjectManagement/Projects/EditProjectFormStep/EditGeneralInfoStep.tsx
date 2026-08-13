@@ -82,6 +82,19 @@ const EditGeneralInfoStep = ({ setStep, selectedProject }: GeneralInfoStepProps)
     const data = useProjectFormStore(state => state.data);
     const [clientSearch, setClientSearch] = useState("");
 
+    // /dashboard/members only returns active users, so deactivated users who are
+    // still assigned to the project would render as blank selections (and get
+    // silently dropped on save). Merge the project's current assignees in.
+    const assignedMembers = (selectedProject?.projectAssigns ?? []).map(p => ({
+        id: p?.user?.id,
+        name: p?.user?.name,
+        image: p?.user?.image ?? undefined,
+    }));
+    const memberOptions = [
+        ...assignedMembers,
+        ...members.filter(m => !assignedMembers.some(a => a.id === m.id)),
+    ];
+
     const filteredClient = clients.filter(c =>
         c.name.toLowerCase().includes(clientSearch.toLowerCase())
     );
@@ -186,7 +199,7 @@ const EditGeneralInfoStep = ({ setStep, selectedProject }: GeneralInfoStepProps)
                                     <MultiSelect
                                         values={selectedMemberIds}
                                         onValuesChange={(vals) => {
-                                            const selected = members
+                                            const selected = memberOptions
                                                 .filter(m => vals.includes(String(m.id)))
                                                 .map(m => ({ id: m.id, name: m.name }));
 
@@ -199,7 +212,7 @@ const EditGeneralInfoStep = ({ setStep, selectedProject }: GeneralInfoStepProps)
 
                                         <MultiSelectContent className="dark:bg-darkSecondaryBg">
                                             <MultiSelectGroup className="dark:bg-darkSecondaryBg">
-                                                {members.map(member => (
+                                                {memberOptions.map(member => (
                                                     <MultiSelectItem
                                                         key={member.id}
                                                         value={String(member.id)}

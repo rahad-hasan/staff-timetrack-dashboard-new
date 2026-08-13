@@ -8,50 +8,50 @@ import TeamsMemberTableSkeleton from "@/skeleton/teams/TeamsMemberTableSkeleton"
 import MemberTableServer from "@/components/Members/MemberTableServer";
 import { Metadata } from "next";
 
-
 export const metadata: Metadata = {
-    title: "Staff Time Tracker Members",
-    description: "Staff Time Tracker Members",
+  title: "Staff Time Tracker Members",
+  description: "Staff Time Tracker Members",
 };
 const MemberPage = async ({ searchParams }: any) => {
-    // const [activeTab, setActiveTab] = useState<"Teams" | "Members">("Teams");
+  // const [activeTab, setActiveTab] = useState<"Teams" | "Members">("Teams");
 
-    // const handleTabClick = (tab: "Teams" | "Members") => {
-    //     setActiveTab(tab);
-    // };
-    const query = await searchParams;
+  // const handleTabClick = (tab: "Teams" | "Members") => {
+  //     setActiveTab(tab);
+  // };
+  const query = await searchParams;
 
-    // const query = {
-    //     search: params.search ?? "",
-    //     page: Number(params.page ?? 1),
-    //     limit: Number(params.limit ?? 10),
-    //     sortBy: params.sortBy ?? "created_at",
-    //     order: params.order ?? "desc",
-    //     role: params.role ?? undefined,
-    //     status: params.status ?? undefined,
-    // };
+  // const query = {
+  //     search: params.search ?? "",
+  //     page: Number(params.page ?? 1),
+  //     limit: Number(params.limit ?? 10),
+  //     sortBy: params.sortBy ?? "created_at",
+  //     order: params.order ?? "desc",
+  //     role: params.role ?? undefined,
+  //     status: params.status ?? undefined,
+  // };
 
-    return (
-        <div>
-            <MemberHeroSection></MemberHeroSection>
-            {/* {
+  return (
+    <div>
+      <MemberHeroSection></MemberHeroSection>
+      {/* {
                 activeTab === "Teams" &&
                 <TeamsTable></TeamsTable>
             } */}
-            {/* {
+      {/* {
                 activeTab === "Teams" &&
                 <TeamsTableSkeleton></TeamsTableSkeleton>
             } */}
-            {/* {
+      {/* {
                 activeTab === "Members" && */}
 
-            <Suspense fallback={<TeamsMemberTableSkeleton />}>
-                <MemberTableServer query={query} />
-            </Suspense>
-
-
-        </div >
-    );
+      <Suspense
+        fallback={<TeamsMemberTableSkeleton />}
+        key={JSON.stringify(query)}
+      >
+        <MemberTableServer query={query} />
+      </Suspense>
+    </div>
+  );
 };
 
 export default MemberPage;
