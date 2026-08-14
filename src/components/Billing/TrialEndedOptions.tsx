@@ -7,8 +7,8 @@ import { ArrowUpRight, Loader2, PackageOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getPlans, switchToFreePlan } from "@/actions/billing/action";
 import { isFreePlan } from "@/lib/billing";
-import { useBillingStore } from "@/store/billingStore";
 import { IBillingPlan } from "@/types/billing";
+import { useBillingRefresh } from "./useBillingRefresh";
 
 /**
  * Two-option resolution for an ended trial (admin only — parents gate on
@@ -30,7 +30,7 @@ export default function TrialEndedOptions({
 }: {
   upgradeHref?: string;
 }) {
-  const fetchStatus = useBillingStore((s) => s.fetchStatus);
+  const refreshBilling = useBillingRefresh();
 
   const [confirming, setConfirming] = useState(false);
   const [freePlan, setFreePlan] = useState<IBillingPlan | null>(null);
@@ -72,13 +72,13 @@ export default function TrialEndedOptions({
         }
         // The refetched status drives everything: the blocked screen clears
         // (downgraded) or the DowngradeWizard takes over (selection_required).
-        await fetchStatus();
+        await refreshBilling();
       } else {
         setError(
           res?.message || "Could not switch to the Free plan. Please try again.",
         );
         // Covers the race where a payment webhook changed the status meanwhile.
-        void fetchStatus();
+        void refreshBilling();
       }
     } catch {
       toast.error("Something went wrong. Please try again.");

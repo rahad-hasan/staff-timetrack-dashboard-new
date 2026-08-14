@@ -8,9 +8,9 @@ import { Button } from "@/components/ui/button";
 import { IDowngradePreview } from "@/types/billing";
 import { getDowngradePreview } from "@/actions/billing/action";
 import { BILLING_URL } from "@/lib/billing";
-import { useBillingStore } from "@/store/billingStore";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import DowngradeWizard from "./DowngradeWizard";
+import { useBillingRefresh } from "./useBillingRefresh";
 
 /**
  * Owner selection surface for `status === "pending_downgrade_selection"`
@@ -29,7 +29,7 @@ export default function DowngradeTakeover({
 }: {
   variant?: "overlay" | "inline";
 }) {
-  const fetchStatus = useBillingStore((s) => s.fetchStatus);
+  const refreshBilling = useBillingRefresh();
   const { logInUserData } = useLogInUserStore();
   const role = logInUserData?.role as string | undefined;
   const isAdmin = role === "admin";
@@ -66,12 +66,12 @@ export default function DowngradeTakeover({
     toast.success("All set — your workspace now matches your plan.");
     void (async () => {
       try {
-        await fetchStatus();
+        await refreshBilling();
       } catch {
         // non-fatal: the next status poll/refetch will pick the change up
       }
     })();
-  }, [fetchStatus]);
+  }, [refreshBilling]);
 
   const isInline = variant === "inline";
 

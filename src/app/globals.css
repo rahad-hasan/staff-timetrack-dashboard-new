@@ -283,3 +283,86 @@
 .recharts-wrapper :focus-visible {
   outline: none !important;
 }
+
+/* ---------------------------------------------------------------------------
+   Invoice document printing.
+
+   "Print / Save as PDF" is the second export route for an invoice (the first is
+   the jsPDF builder). It is the one that renders EVERY writing system correctly,
+   because the browser draws the text with its own font fallback — so it is also
+   the fallback we point users at when the PDF builder cannot embed a glyph.
+
+   The document must flow through the NORMAL page box, not be absolutely
+   positioned, or a multi-page invoice would print only its first page and the
+   repeated <thead> would never fire. So instead of the usual
+   "visibility: hidden on everything" trick — which leaves the sidebar occupying
+   layout and pushes the document off the sheet — the rest of the app is removed
+   outright and the document's own ancestor chain is flattened to plain
+   full-width blocks:
+
+     *:has(#invoice-print-area)  → exactly the ancestors (html, body, layout divs)
+     the :not() chain            → everything that is neither an ancestor, nor the
+                                   document, nor inside it
+
+   Both selectors need :has(); in a browser without it neither rule applies and
+   the page prints unstyled-but-complete, while "Download PDF" is unaffected.
+   --------------------------------------------------------------------------- */
+@media print {
+  body:has(#invoice-print-area) {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+  }
+
+  body:has(#invoice-print-area)
+    *:not(:has(#invoice-print-area)):not(#invoice-print-area):not(
+      #invoice-print-area *
+    ) {
+    display: none !important;
+  }
+
+  body:has(#invoice-print-area) *:has(#invoice-print-area) {
+    display: block !important;
+    position: static !important;
+    width: auto !important;
+    max-width: none !important;
+    min-height: 0 !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+  }
+
+  #invoice-print-area {
+    background: #ffffff;
+    color: #2d3748;
+    /* Keep the chip and rule colours the guide specifies instead of letting the
+       browser drop backgrounds in its ink-saving default. */
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  #invoice-print-area table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  /* Repeats the column header on every page of a multi-page invoice. */
+  #invoice-print-area thead {
+    display: table-header-group;
+  }
+
+  #invoice-print-area tr,
+  #invoice-print-area img {
+    break-inside: avoid;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 14mm;
+  }
+}

@@ -119,11 +119,32 @@ export type InvoiceStatus =
   | "failed"
   | "refunded";
 
+/**
+ * One row of `GET /packages/billing/invoices` — and also the shape
+ * `billing/status` embeds as `latest_unpaid_invoice`.
+ *
+ * The status snapshot predates the invoice-document work and omits `id`,
+ * `voided`, `amount_paid_cents` and `detail_path`, so those four are optional
+ * here; every helper in `@/lib/invoice` treats their absence as "unknown", not
+ * as `false`/`0`. List rows always carry them.
+ */
 export interface IBillingInvoice {
+  /** Row id, and the `:id` of the detail endpoint. */
+  id?: number;
   invoice_number: string;
   status: InvoiceStatus;
   total_cents: number;
+  /** Server-derived (not the raw Stripe column) — already 0 for voided rows. */
   amount_due_cents: number;
+  /** Server-derived companion of `amount_due_cents`. */
+  amount_paid_cents?: number;
+  /**
+   * A voided invoice is not owed. Stripe maps `void` → our `refunded`, so
+   * `status` alone CANNOT decide the badge — check this first, and suppress
+   * every "Pay now" affordance when it is true.
+   */
+  voided?: boolean;
+  /** Lowercase ISO code — uppercase it before handing it to Intl. */
   currency: string;
   period_start: string | null;
   period_end: string | null;
@@ -132,6 +153,89 @@ export interface IBillingInvoice {
   paid_at?: string | null;
   billing_reason?: string | null;
   created_at?: string;
+  /** Canonical detail URL, e.g. `/api/v1/packages/billing/invoices/412`. */
+  detail_path?: string;
+}
+
+/* ---------------- invoice document (§3 of the integration guide) ---------------- */
+
+/** Seller block — env-configured server-side, never hardcoded in the client. */
+export interface IInvoiceSeller {
+  name: string;
+  product_name: string;
+  address_lines: string[];
+  phone: string | null;
+  support_email: string | null;
+}
+
+export interface IInvoiceBillTo {
+  name: string;
+  company_id: number;
+  address: string | null;
+  email: string | null;
+}
+
+/**
+ * One invoice line. Amounts are PRE-discount and PRE-tax (Stripe's model) —
+ * the totals ladder is what reconciles them, so never sum these into a total.
+ */
+export interface IInvoiceLine {
+  description: string | null;
+  quantity: number | null;
+  unit_amount_cents: number | null;
+  /**
+   * The line total, and the only amount safe to print: on a proration line
+   * `quantity × unit_amount_cents` does NOT equal this, and it can be negative
+   * (a credit).
+   */
+  amount_cents: number;
+  currency: string;
+  /** EPOCH SECONDS, not ISO — these come straight from Stripe. */
+  period_start: number | null;
+  period_end: number | null;
+  proration: boolean;
+}
+
+/**
+ * The authoritative money block. `total_cents === subtotal - discount + tax`,
+ * and (when `lines_truncated === false`) `sum(lines[].amount_cents) ===
+ * subtotal_cents`. Render this ladder; never recompute it from the lines.
+ */
+export interface IInvoiceTotals {
+  subtotal_cents: number;
+  discount_cents: number;
+  tax_cents: number;
+  total_cents: number;
+  amount_paid_cents: number;
+  amount_remaining_cents: number;
+  /** > 0 ⇒ money went back; Stripe still reports the invoice as fully paid. */
+  refunded_cents: number;
+}
+
+/**
+ * `GET /packages/billing/invoices/:id` — the list row plus everything the
+ * printable document needs. The list-shaped money fields and `totals` are
+ * computed by the same server helper, so they can never disagree: use either,
+ * don't mix.
+ */
+export interface IBillingInvoiceDetail extends IBillingInvoice {
+  id: number;
+  /** Print THIS, not `created_at`. */
+  date_of_issue: string | null;
+  date_due: string | null;
+  /** Null while unpaid — omit the row rather than printing a placeholder. */
+  transaction_date: string | null;
+  plan_name: string | null;
+  /**
+   * True ⇒ Stripe holds more lines than we snapshot (cap 20) and the lines
+   * shown sum to LESS than `subtotal_cents`. Do not present them as a complete
+   * itemisation.
+   */
+  lines_truncated: boolean;
+  seller: IInvoiceSeller;
+  bill_to: IInvoiceBillTo;
+  lines: IInvoiceLine[];
+  totals: IInvoiceTotals;
 }
 
 /** `GET /packages/billing/status` — the billing state machine. */

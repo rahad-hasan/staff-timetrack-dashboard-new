@@ -23,6 +23,7 @@ import {
 } from "@/types/billing";
 import PendingInvoiceNotice from "./PendingInvoiceNotice";
 import RestoreParkedDialog from "./RestoreParkedDialog";
+import { useBillingRefresh } from "./useBillingRefresh";
 
 const cycleLabel = (c: BillingCycle | null | undefined): string =>
   c ? (CYCLE_LABEL[c] ?? "—") : "—";
@@ -46,7 +47,7 @@ export default function SwitchPlanDialog({
   onOpenChange: (o: boolean) => void;
 }) {
   const entitlements = useBillingStore((s) => s.status?.entitlements ?? null);
-  const fetchStatus = useBillingStore((s) => s.fetchStatus);
+  const refreshBilling = useBillingRefresh();
   const startPolling = useBillingStore((s) => s.startPolling);
   const stopPolling = useBillingStore((s) => s.stopPolling);
 
@@ -132,12 +133,12 @@ export default function SwitchPlanDialog({
           toast.success(
             `Switched to ${res.data.switched_to?.plan_name ?? plan.name} ✓`,
           );
-          await fetchStatus();
+          await refreshBilling();
           onOpenChange(false);
           setRestoreOpen(true);
         } else {
           setPending(res.data);
-          void fetchStatus();
+          void refreshBilling();
         }
       } else {
         setError(res?.message || "Could not switch plans. Please try again.");

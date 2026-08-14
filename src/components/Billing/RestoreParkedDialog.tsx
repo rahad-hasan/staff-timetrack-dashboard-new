@@ -14,7 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { IRestoreResult } from "@/types/billing";
 import { restoreParked } from "@/actions/billing/action";
-import { useBillingStore } from "@/store/billingStore";
+import { useBillingRefresh } from "./useBillingRefresh";
 
 /**
  * Restore members/projects parked by an earlier trial-expiry downgrade (guide
@@ -28,7 +28,7 @@ export default function RestoreParkedDialog({
   open: boolean;
   onOpenChange: (o: boolean) => void;
 }) {
-  const fetchStatus = useBillingStore((s) => s.fetchStatus);
+  const refreshBilling = useBillingRefresh();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<IRestoreResult | null>(null);
@@ -50,7 +50,7 @@ export default function RestoreParkedDialog({
       if (res?.success && res.data) {
         setResult(res.data);
         try {
-          await fetchStatus();
+          await refreshBilling();
         } catch {
           // non-fatal: the next status refetch will pick the change up
         }

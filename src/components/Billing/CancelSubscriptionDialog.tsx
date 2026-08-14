@@ -26,6 +26,7 @@ import { cn } from "@/lib/utils";
 import { formatBillingDate } from "@/lib/billing";
 import { cancelSubscription } from "@/actions/billing/action";
 import { useBillingStore } from "@/store/billingStore";
+import { useBillingRefresh } from "./useBillingRefresh";
 
 const REASON_OPTIONS = [
   "Too expensive",
@@ -45,7 +46,7 @@ export default function CancelSubscriptionDialog() {
   const currentPeriodEnd = useBillingStore(
     (s) => s.status?.entitlements?.current_period_end ?? null,
   );
-  const fetchStatus = useBillingStore((s) => s.fetchStatus);
+  const refreshBilling = useBillingRefresh();
 
   const [open, setOpen] = useState(false);
   const [atPeriodEnd, setAtPeriodEnd] = useState(true);
@@ -88,7 +89,7 @@ export default function CancelSubscriptionDialog() {
       });
       if (res?.success) {
         toast.success(res.message || "Subscription cancellation requested");
-        await fetchStatus();
+        await refreshBilling();
         handleOpenChange(false);
       } else {
         setError(res?.message || "Could not cancel the subscription.");

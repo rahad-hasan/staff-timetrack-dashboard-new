@@ -19,6 +19,7 @@ import { formatBillingDate, formatCents } from "@/lib/billing";
 import { useBillingStore } from "@/store/billingStore";
 import { IAddSeatsResult, ISeatQuote } from "@/types/billing";
 import PendingInvoiceNotice from "./PendingInvoiceNotice";
+import { useBillingRefresh } from "./useBillingRefresh";
 
 type Step = "input" | "review" | "pending";
 
@@ -31,7 +32,7 @@ type Step = "input" | "review" | "pending";
 export default function AddSeatsDialog() {
   const open = useBillingStore((s) => s.addSeatsOpen);
   const closeAddSeats = useBillingStore((s) => s.closeAddSeats);
-  const fetchStatus = useBillingStore((s) => s.fetchStatus);
+  const refreshBilling = useBillingRefresh();
   const startPolling = useBillingStore((s) => s.startPolling);
   const stopPolling = useBillingStore((s) => s.stopPolling);
   const seatLimit = useBillingStore(
@@ -96,9 +97,12 @@ export default function AddSeatsDialog() {
     ) {
       appliedNotifiedRef.current = true;
       toast.success(`${pendingResult.quote.seats_added} seat(s) added ✓`);
+      // The polled status is already fresh; this is for everything the poll
+      // does NOT touch — the invoice table and the server-rendered tree.
+      void refreshBilling();
       closeAddSeats();
     }
-  }, [step, pendingResult, seatLimit, closeAddSeats]);
+  }, [step, pendingResult, seatLimit, closeAddSeats, refreshBilling]);
 
   const handleSeatsChange = (value: string) => {
     const parsed = parseInt(value, 10);
@@ -143,7 +147,11 @@ export default function AddSeatsDialog() {
           toast.success(
             `${data.quote?.seats_added ?? seats} seat(s) added ✓`,
           );
-          await fetchStatus();
+          // Forced refresh, not a plain fetchStatus(): the charge already
+          // happened, so a request that left before it must not be allowed to
+          // answer for it. Also wakes the invoice table — the seat proration
+          // invoice was just created.
+          await refreshBilling();
           closeAddSeats();
         } else {
           /* pending_update === true or invoice "open" (or any other

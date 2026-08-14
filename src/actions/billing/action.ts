@@ -6,6 +6,7 @@ import { IResponse } from "@/types/type";
 import {
   IAddSeatsResult,
   IBillingInvoice,
+  IBillingInvoiceDetail,
   IBillingPlan,
   IBillingStatus,
   ICancelPayload,
@@ -135,6 +136,40 @@ export const getBillingInvoices = async (
       cache: "no-cache",
     },
   );
+};
+
+/**
+ * `GET /packages/billing/invoices/:id` — the invoice document payload.
+ *
+ * Tenant-scoped server-side: another company's id answers 404, so there is no
+ * ownership check to duplicate here. Uncached like every other billing read —
+ * an invoice that is still settling must not be served from a stale snapshot;
+ * settled ones are memoised per id on the client instead.
+ */
+export const getBillingInvoiceDetail = async (
+  id: number,
+): Promise<IResponse<IBillingInvoiceDetail>> =>
+  await baseApi(`${BASE}/billing/invoices/${id}`, {
+    tag: TAG,
+    cache: "no-cache",
+  });
+
+/** 5xx and transport failures are the only statuses worth a second attempt. */
+const isRetryableStatus = (statusCode: number | undefined): boolean =>
+  statusCode === undefined || statusCode >= 500;
+
+/**
+ * Invoice detail with the guide's §6 retry policy: one automatic retry on 5xx
+ * (or a dead connection), then the envelope is returned as-is so the caller can
+ * render a retry button instead of a half-empty document. 4xx is never retried
+ * — 400/404 mean "not found" and will not change on a second call.
+ */
+export const getBillingInvoiceDetailWithRetry = async (
+  id: number,
+): Promise<IResponse<IBillingInvoiceDetail>> => {
+  const first = await getBillingInvoiceDetail(id);
+  if (first?.success || !isRetryableStatus(first?.statusCode)) return first;
+  return await getBillingInvoiceDetail(id);
 };
 
 /**
