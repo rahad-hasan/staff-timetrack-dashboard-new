@@ -16,6 +16,9 @@ import { cookies } from "next/headers";
 const Every10MinsServer = async ({ searchParams }: ISearchParamsProps) => {
   const user = await getDecodedUser();
   const userId = user?.id;
+  const canDeleteScreenshot = ["admin", "hr", "manager"].includes(
+    user?.role ?? "",
+  );
   const params = await searchParams;
   const currentDate = format(new Date(), "yyyy-MM-dd");
   const cookieStore = await cookies();
@@ -65,7 +68,12 @@ const Every10MinsServer = async ({ searchParams }: ISearchParamsProps) => {
           //   improved_value={"+3.5%"}
         />
       </div>
-      {<Every10Mins data={result?.data?.interval_rows} />}
+      {
+        <Every10Mins
+          data={result?.data?.interval_rows}
+          canDelete={canDeleteScreenshot}
+        />
+      }
     </div>
   );
 };
