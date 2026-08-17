@@ -370,6 +370,92 @@ export type ICompany = {
   created_at: string;
 };
 
+/* ---------------- Organization onboarding ---------------- */
+
+/**
+ * `POST /auth/signin` answers 200 with this shape — not a token pair — when
+ * the account was verified on the marketing site but never finished creating
+ * its organization. `accessToken`/`refreshToken` are explicitly null, so
+ * nothing may be written to the session cookies for it.
+ */
+export interface IOrganizationOnboardingSession {
+  redirect: string;
+  email: string;
+  accessToken: null;
+  refreshToken: null;
+}
+
+/** Mirrors the API's `WeekDay` enum. */
+export type WeekStartDay =
+  | "Monday"
+  | "Tuesday"
+  | "Wednesday"
+  | "Thursday"
+  | "Friday"
+  | "Saturday"
+  | "Sunday";
+
+/** Everything `POST /company` ignores and `PATCH /company/:id` owns. */
+export interface IWorkspacePreferences {
+  week_start: WeekStartDay;
+  weekly_leave_count: number;
+  idle_minutes_limit: number;
+  currency: string;
+}
+
+export interface ICreateOrganizationPayload extends IWorkspacePreferences {
+  name: string;
+  phone: string;
+  address: string;
+  time_zone: string;
+  /** Carried over from the sign-in response; never collected from the form. */
+  email: string;
+}
+
+export interface IOrganizationSubscription {
+  id: number;
+  company_id: number;
+  plan_id: number;
+  seat_limit: number;
+  status: string;
+  billing_cycle: string;
+  trial_ends_at: string | null;
+  current_period_start: string;
+  current_period_end: string;
+}
+
+/**
+ * `POST /company` answers with the freshly created admin user flattened at the
+ * root, plus the company, its reverse-trial subscription and a usable token
+ * pair — the same session material a normal sign-in returns.
+ */
+export interface ICreateOrganizationResponse {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  phone: string | null;
+  image: string | null;
+  time_zone: string;
+  company_id: number;
+  company: ICompany;
+  subscription: IOrganizationSubscription | null;
+  accessToken: string;
+  refreshToken: string;
+}
+
+export interface ICreateOrganizationResult {
+  success: boolean;
+  message: string;
+  data?: ICreateOrganizationResponse;
+  /**
+   * Preference writes that failed *after* the company already existed. The
+   * account is usable either way, so these are surfaced as advisories rather
+   * than turning the whole step into a failure.
+   */
+  warnings?: string[];
+}
+
 // Members Stats in Dashboard
 export interface IDuration {
   hours: number;

@@ -1,6 +1,7 @@
 import { z } from "zod";
 import parsePhoneNumberFromString from "libphonenumber-js";
 import { LeaveTypeApplicableFor } from "@/types/type";
+import { WEEK_START_DAYS } from "@/lib/organization";
 
 export const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -38,6 +39,69 @@ export const createNewPasswordSchema = z
     message: "Confirm passwords do not match",
     path: ["confirmPassword"],
   });
+
+/**
+ * Create-organization onboarding.
+ *
+ * Bounds mirror the API so the wizard never round-trips a payload the server
+ * will reject: name/phone/address/time_zone come from
+ * `CompanyValidation.createSchema`, and week_start / weekly_leave_count /
+ * idle_minutes_limit / currency from its update schema. Leave allowances are
+ * not here on purpose — they belong to the LeaveType model, not to Company.
+ */
+export const createOrganizationSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(2, "Organization name must be at least 2 characters long")
+    .max(50, "Organization name must not exceed 50 characters"),
+
+  phone: z
+    .string()
+    .trim()
+    .min(1, "Phone number is required")
+    .refine(
+      (val) => parsePhoneNumberFromString(val)?.isValid(),
+      { message: "Phone number must be a valid international format" },
+    ),
+
+  address: z
+    .string()
+    .trim()
+    .min(5, "Address must be at least 5 characters long")
+    .max(100, "Address must not exceed 100 characters"),
+
+  time_zone: z.string().min(1, "Time zone is required"),
+
+  week_start: z.enum(WEEK_START_DAYS, {
+    message: "Select the first day of your work week",
+  }),
+
+  weekly_leave_count: z
+    .number({ message: "Weekend length is required" })
+    .int("Weekend length must be a whole number")
+    .min(0, "Weekend length must be 0 or greater")
+    .max(7, "Weekend length cannot exceed 7"),
+
+  idle_minutes_limit: z
+    .number({ message: "Idle limit is required" })
+    .int("Idle limit must be a whole number")
+    .min(1, "Idle limit must be at least 1 minute")
+    .max(60, "Idle limit cannot exceed 60 minutes"),
+
+  currency: z
+    .string()
+    .trim()
+    .regex(
+      /^[A-Za-z]{3}$/,
+      "Currency must be a 3-letter ISO 4217 code (e.g. USD, BDT, EUR)",
+    )
+    .transform((value) => value.toUpperCase()),
+});
+
+export type CreateOrganizationFormValues = z.infer<
+  typeof createOrganizationSchema
+>;
 
 export const addManualTimeSchema = z.object({
   // project: z.string().min(1, "Project is required"),

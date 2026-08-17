@@ -2,8 +2,12 @@
 "use server";
 
 import { baseApi } from "../baseApi";
-import { cookies } from "next/headers";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
+import {
+  clearSessionCookies,
+  hasSessionTokens,
+  writeSessionCookies,
+} from "@/lib/sessionCookies";
 
 // export const logIn = async (data: any) => {
 //   return await baseApi("/auth/signin", {
@@ -11,50 +15,6 @@ import { getDecodedUser } from "@/utils/decodedLogInUser";
 //     body: data,
 //   });
 // };
-
-// Define a duration for cookies (e.g., 30 days)
-const MAX_AGE = 60 * 60 * 24 * 30;
-
-async function setSessionMetaCookies(
-  data: {
-    id?: number | string;
-    email?: string | null;
-    role?: string | null;
-  },
-) {
-  const isProd = process.env.NODE_ENV === "production";
-  const cookieStore = await cookies();
-
-  if (data.id !== undefined && data.id !== null) {
-    cookieStore.set("userId", String(data.id), {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: "lax",
-      path: "/",
-      maxAge: MAX_AGE,
-    });
-  }
-
-  if (data.email) {
-    cookieStore.set("userEmail", data.email, {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: "lax",
-      path: "/",
-      maxAge: MAX_AGE,
-    });
-  }
-
-  if (data.role) {
-    cookieStore.set("userRole", data.role, {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: "lax",
-      path: "/",
-      maxAge: MAX_AGE,
-    });
-  }
-}
 
 export const logIn = async (data: any) => {
   const res = await baseApi("/auth/signin", {
@@ -64,37 +24,28 @@ export const logIn = async (data: any) => {
   });
 
   if (res?.success) {
-    const isProd = process.env.NODE_ENV === "production";
-    const cookieStore = await cookies();
-    cookieStore.set("accessToken", res.data.accessToken, {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: "lax",
-      path: "/",
-      maxAge: MAX_AGE,
-    });
-
-    cookieStore.set("refreshToken", res.data.refreshToken, {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: "lax",
-      path: "/",
-      maxAge: MAX_AGE,
-    });
-
-    cookieStore.set("timeZone", res.data.time_zone, {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: "lax",
-      path: "/",
-      maxAge: MAX_AGE,
-    });
-
-    await setSessionMetaCookies({
-      id: res.data.id,
-      email: res.data.email,
-      role: res.data.role,
-    });
+    // A marketing-site signup that never created its organization signs in
+    // successfully but with null tokens and a `/create-organization` redirect.
+    // Persisting those would satisfy `middleware.ts` while every API call came
+    // back 401 — which is how this case used to land on /session-expired.
+    if (hasSessionTokens(res.data)) {
+      await writeSessionCookies(
+        {
+          accessToken: res.data.accessToken,
+          refreshToken: res.data.refreshToken,
+          timeZone: res.data.time_zone,
+        },
+        {
+          id: res.data.id,
+          email: res.data.email,
+          role: res.data.role,
+        },
+      );
+    } else {
+      // Drop anything left over from an earlier session so the onboarding
+      // dialog is the only way forward.
+      await clearSessionCookies();
+    }
   }
 
   return res;
@@ -166,26 +117,14 @@ export const changePassword = async ({
   });
 
   if (res?.success) {
-    const isProd = process.env.NODE_ENV === "production";
-    const cookieStore = await cookies();
-
-    cookieStore.set("accessToken", res.data.accessToken, {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: "lax",
-      path: "/",
-      maxAge: MAX_AGE,
-    });
+    await writeSessionCookies({ accessToken: res.data.accessToken });
   }
 
   return res;
 };
 
 export async function clearSessionCookie() {
-  const cookieStore = await cookies();
-  cookieStore.delete("accessToken");
-  cookieStore.delete("refreshToken");
-  cookieStore.delete("timeZone");
+  await clearSessionCookies();
 }
 
 export const forgetPassword = async ({ data }: {
@@ -242,31 +181,10 @@ export const resetPassword = async ({ data }: {
   });
 
   if (res?.success) {
-    const isProd = process.env.NODE_ENV === "production";
-    const cookieStore = await cookies();
-
-    cookieStore.set("accessToken", res.data.accessToken, {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: "lax",
-      path: "/",
-      maxAge: MAX_AGE,
-    });
-
-    cookieStore.set("refreshToken", res.data.refreshToken, {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: "lax",
-      path: "/",
-      maxAge: MAX_AGE,
-    });
-
-    cookieStore.set("timeZone", res.data.time_zone, {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: "lax",
-      path: "/",
-      maxAge: MAX_AGE,
+    await writeSessionCookies({
+      accessToken: res.data.accessToken,
+      refreshToken: res.data.refreshToken,
+      timeZone: res.data.time_zone,
     });
   }
 

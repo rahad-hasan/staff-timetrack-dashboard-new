@@ -18,7 +18,7 @@ import { useForm } from "react-hook-form";
 import loginIcon from "../../assets/auth/loginIcon.svg";
 import Image from "next/image";
 import signInImage from "../../assets/auth/signImage.webp";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -30,11 +30,19 @@ import { resetProfileImageRefresh } from "@/utils/profileImageRefresh";
 import { useSidebarStore } from "@/store/sidebarStore";
 import logoWithSlogan from '../../assets/logo-with-text.webp'
 import logoForDark from '../../assets/logo-with-text-dark.png'
+import {
+  buildLogInUserData,
+  requiresOrganizationOnboarding,
+} from "@/lib/authSession";
+import { CreateOrganizationDialog } from "./CreateOrganization";
 
 const LoginClientComponent = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
+  // Set when sign-in resolves to an account that never created its
+  // organization; it is also the dialog's open flag.
+  const [onboardingEmail, setOnboardingEmail] = useState<string | null>(null);
   const router = useRouter();
 
   const searchParams = useSearchParams();
@@ -61,32 +69,37 @@ const LoginClientComponent = () => {
   // console.log(getError());
   const { setLogInUserData } = useLogInUserStore();
 
+  // Stable identity: the onboarding dialog memoizes its submit handler against
+  // this callback, so recreating it every render would defeat that memo.
+  const enterDashboard = useCallback(
+    (data: any) => {
+      resetProfileImageRefresh();
+      setLogInUserData(buildLogInUserData(data));
+      setOpenMenu("/dashboard");
+      router.push("/dashboard");
+    },
+    [router, setLogInUserData, setOpenMenu],
+  );
+
   async function onSubmit(values: z.infer<typeof loginSchema>) {
     setLoading(true);
     try {
       const res: any = await logIn(values);
 
+      // Verified on the marketing site but no company yet: sign-in succeeds
+      // with null tokens and a `/create-organization` redirect. Finish the
+      // signup here instead of pushing into a dashboard there is no session
+      // for — which is what used to land on /session-expired.
+      if (requiresOrganizationOnboarding(res)) {
+        setOnboardingEmail(res.data.email || values.email);
+        return;
+      }
+
       if (res?.success) {
         // Cookies.set("accessToken", res?.data?.accessToken);
         // Cookies.set("refreshToken", res?.data?.refreshToken);
         toast.success(res?.message || "Login successful");
-        resetProfileImageRefresh();
-        setLogInUserData({
-          id: res?.data?.id,
-          name: res?.data?.name,
-          email: res?.data?.email,
-          image: res?.data?.image,
-          // The signin response ships an already-signed avatar URL; stamping
-          // it here stops the first dashboard paint from re-reading one it
-          // just received.
-          imageSyncedAt: Date.now(),
-          role: res?.data?.role,
-          phone: res?.data?.phone,
-          timezone: res?.data?.time_zone,
-          company_id: res?.data?.company_id,
-        });
-        setOpenMenu("/dashboard");
-        router.push("/dashboard");
+        enterDashboard(res?.data ?? {});
       } else {
         toast.error(res?.message || "Invalid credentials", {
           style: {
@@ -300,6 +313,22 @@ const LoginClientComponent = () => {
           </div>
         </div>
       </div>
+
+      {/* Mounted only once sign-in asks for it, so the wizard always starts
+          clean and can safely read the browser's time zone on mount. On success
+          it deliberately stays mounted in its "Creating..." state until the
+          dashboard route takes over, rather than flashing the login form back
+          at an account that is already signed in. */}
+      {onboardingEmail && (
+        <CreateOrganizationDialog
+          open
+          email={onboardingEmail}
+          onOpenChange={(next) => {
+            if (!next) setOnboardingEmail(null);
+          }}
+          onCompleted={enterDashboard}
+        />
+      )}
     </div>
   );
 };
