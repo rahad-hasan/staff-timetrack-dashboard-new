@@ -82,6 +82,11 @@ export default function PlanPricingSection({
     (p) => isFreePlan(p) || p.available_cycles?.includes(effectiveCycle),
   );
 
+  // Taglines are optional per plan, so a grid where only some plans have one is
+  // the normal state. Reserving the slot on every card in that case keeps the
+  // price rows on one baseline instead of stepping down card by card.
+  const anyDescription = visiblePlans.some((p) => Boolean(p.description));
+
   const [selectedPlan, setSelectedPlan] = useState<IBillingPlan | null>(null);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [switchOpen, setSwitchOpen] = useState(false);
@@ -157,6 +162,7 @@ export default function PlanPricingSection({
               isDelinquent={isDelinquent}
               hasPaid={hasPaid}
               isAdmin={isAdmin}
+              reserveDescriptionSpace={anyDescription}
               onCheckout={() => handleCheckout(plan)}
               onSwitch={() => handleSwitch(plan)}
             />

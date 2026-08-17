@@ -143,7 +143,7 @@ export default function BillingPageClient({
       {st === "canceled" && <SubscriptionEndedScreen />}
 
       <div className="grid md:grid-cols-2 gap-4">
-        <CurrentPlanCard />
+        <CurrentPlanCard plans={plans} />
         <SeatUsageCard activeUserCount={seatCount} />
       </div>
 

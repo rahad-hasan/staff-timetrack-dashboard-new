@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { daysUntil, formatBillingDate, isDatePast } from "@/lib/billing";
 import { useBillingStore } from "@/store/billingStore";
 import { useLogInUserStore } from "@/store/logInUserStore";
+import { IBillingPlan } from "@/types/billing";
 import BillingStatusChip from "./BillingStatusChip";
 import CancelSubscriptionDialog from "./CancelSubscriptionDialog";
 
@@ -14,8 +15,13 @@ import CancelSubscriptionDialog from "./CancelSubscriptionDialog";
  * Canceled subscriptions show their access-until/ended date and a reactivate
  * CTA that jumps to the pricing grid, where the old plan's card re-buys via
  * checkout.
+ *
+ * `plans` is passed only to recover the current plan's tagline: the entitlement
+ * snapshot carries plan_id/plan_name/tier but no marketing copy, and it is
+ * cached, so the description must come from the live plans list. A company
+ * sitting on a retired plan simply finds no match and shows no tagline.
  */
-export default function CurrentPlanCard() {
+export default function CurrentPlanCard({ plans }: { plans: IBillingPlan[] }) {
   const entitlements = useBillingStore((s) => s.status?.entitlements ?? null);
   const role = useLogInUserStore((s) => s.logInUserData?.role);
   const isAdmin = role === "admin";
@@ -39,6 +45,8 @@ export default function CurrentPlanCard() {
   }
 
   const trialDays = daysUntil(entitlements.trial_ends_at);
+  const description =
+    plans.find((p) => p.id === entitlements.plan_id)?.description ?? null;
 
   return (
     <div className="border border-borderColor rounded-lg p-3 sm:p-4 bg-white dark:bg-darkPrimaryBg dark:border-darkBorder">
@@ -58,6 +66,12 @@ export default function CurrentPlanCard() {
             )}
             <BillingStatusChip status={entitlements.status} />
           </div>
+
+          {description && (
+            <p className="mb-2 text-sm text-subTextColor dark:text-darkTextSecondary">
+              {description}
+            </p>
+          )}
 
           <div className="space-y-1 text-sm text-subTextColor dark:text-darkTextSecondary">
             {entitlements.billing_cycle && (

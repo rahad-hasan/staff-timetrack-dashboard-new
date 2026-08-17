@@ -259,6 +259,13 @@ export interface IBillingPlan {
   id: number;
   name: string;
   tier: string;
+  /**
+   * Admin-authored card tagline ("Best for growing teams"), rendered under the
+   * plan name. Editorial only — it binds to no limit, so unlike a feature
+   * bullet it promises nothing the backend has to enforce. `null` when unset;
+   * optional because public-plan payloads cached before the field shipped omit
+   * it entirely.
+   */
   description?: string | null;
   /**
    * The only prices a plan has: per seat, per cycle, in dollars, and exactly

@@ -79,6 +79,8 @@ backend allows `GET` requests (dashboard stays browsable) and blocks writes with
    - a "Save `savings_percent`%" chip when that field is non-null. Savings are measured against
      paying monthly for the same span, so the chip never appears on the monthly cycle and never
      appears when monthly is not sold.
+   - `description` as the tagline under the plan name ("Best for growing teams"). It is
+     `string | null` — collapse the element when null rather than substituting the tier name.
    - `badge_text` ribbon, and `features` as the bullet list. Each bullet is
      `{ label, note, note_source, limit_key, included }`:
      - render `note` as an ⓘ tooltip when non-null ("Up to 1 month history"). It is derived

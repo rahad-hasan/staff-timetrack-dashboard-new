@@ -15,6 +15,11 @@ import { BillingCycle, CYCLE_PERIOD_NOUN, IBillingPlan } from "@/types/billing";
  * always comparable across cycles and the amount that will actually be invoiced
  * is always on screen. `cycle_pricing[cycle] === null` means not sold.
  *
+ * `description` is the admin-authored tagline and sits directly under the plan
+ * name, where it reads as a description OF the plan — below the price it would
+ * read as a caption ON the price. It is editorial only (bound to no limit), so
+ * unlike a feature bullet it never claims an entitlement.
+ *
  * CTA: current plan → disabled — unless nothing purchasable actually backs
  * "current". Canceled: the plan the company USED to have — nothing to keep or
  * switch, so the card offers "Reactivate plan" via checkout (the one path the
@@ -41,6 +46,7 @@ export default function PlanCard({
   isDelinquent,
   hasPaid,
   isAdmin,
+  reserveDescriptionSpace = false,
   onCheckout,
   onSwitch,
 }: {
@@ -52,11 +58,20 @@ export default function PlanCard({
   isDelinquent: boolean;
   hasPaid: boolean;
   isAdmin: boolean;
+  /**
+   * True when ANY card in the grid has a tagline: this card then keeps the
+   * slot's height even without one, so prices stay on a single baseline across
+   * the row. Taglines are optional per plan, so mixed grids are the norm.
+   */
+  reserveDescriptionSpace?: boolean;
   onCheckout: () => void;
   onSwitch: () => void;
 }) {
   // Server-derived: null means this plan is not sold on this cycle.
   const pricing = plan.cycle_pricing?.[cycle] ?? null;
+  // Trimmed on write and stored as NULL when blank (plan create AND update both
+  // normalize), so what arrives is either real copy or nothing to render.
+  const description = plan.description ?? null;
 
   return (
     <div
@@ -71,12 +86,30 @@ export default function PlanCard({
         </div>
       )}
 
-      <div className="mb-4 flex items-center justify-between gap-2">
-        <h3 className="text-xl font-medium text-headingTextColor dark:text-darkTextPrimary">
-          {plan.name}
-        </h3>
+      <div className="mb-4 flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <h3 className="text-xl font-medium text-headingTextColor dark:text-darkTextPrimary">
+            {plan.name}
+          </h3>
+
+          {/* Clamped to two lines so one long tagline cannot push its own card's
+              price out of line with its neighbours; `title` keeps the full text
+              reachable if it is ever cut. */}
+          {(description || reserveDescriptionSpace) && (
+            <p
+              className={cn(
+                "mt-1 line-clamp-2 wrap-break-word text-sm text-subTextColor dark:text-darkTextSecondary",
+                reserveDescriptionSpace && "min-h-10",
+              )}
+              title={description ?? undefined}
+            >
+              {description}
+            </p>
+          )}
+        </div>
+
         {pricing?.savings_percent != null && (
-          <span className="shrink-0 rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-500/15 dark:text-green-300">
+          <span className="mt-1 shrink-0 rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-500/15 dark:text-green-300">
             Save {pricing.savings_percent}%
           </span>
         )}
@@ -107,12 +140,6 @@ export default function PlanCard({
             Free
           </p>
         </div>
-      )}
-
-      {plan.description && (
-        <p className="mb-4 text-sm text-subTextColor dark:text-darkTextSecondary">
-          {plan.description}
-        </p>
       )}
 
       <div className="mt-2">
