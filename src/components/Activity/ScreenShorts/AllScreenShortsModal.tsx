@@ -133,7 +133,8 @@ const AllScreenShortsModal = ({
 
     const link = document.createElement("a");
     link.href = src;
-    link.download = `screenshot-${activeIndex + 1}.png`;
+    // The capture pipeline writes JPEG, not PNG — see ScreenShortsModal.
+    link.download = `screenshot-${activeIndex + 1}.jpg`;
     link.click();
   };
 
@@ -189,8 +190,13 @@ const AllScreenShortsModal = ({
               >
                 <ScreenshotImage
                   src={getSrc(item?.image)}
-                  width={1400}
+                  width={1600}
                   height={900}
+                  // See ScreenShortsModal — the optimizer would re-encode an
+                  // already-final JPEG to WebP at quality 75, a second lossy
+                  // pass at lower quality than the capture itself, and the
+                  // original is never upscaled at this layout anyway.
+                  unoptimized
                   alt={`screenshot-${index}`}
                   className=" h-[30vh] md:h-[40vh] lg:h-[50vh] xl:h-[60vh] 2xl:h-[78vh] object-contain"
                   fallbackClassName="relative w-[85vw] max-w-[1200px] h-[30vh] md:h-[40vh] lg:h-[50vh] xl:h-[60vh] 2xl:h-[78vh] rounded-lg"

@@ -22,7 +22,7 @@ import { ArrowUpDown } from "lucide-react";
 // import Image from "next/image";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { IUrl } from "@/types/type";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import SiteAvatar from "@/components/Common/SiteAvatar";
 import {
   Popover,
   PopoverContent,
@@ -56,13 +56,7 @@ const UrlsTable = ({ data }: { data: IUrl[] }) => {
         // const image = row.original.image;
         return (
           <div className="flex items-center gap-2 min-w-[150px] max-w-[500px]">
-            <Avatar className="w-9 h-9 shrink-0">
-              <AvatarImage src={""} />
-              <AvatarFallback>
-                {/* {url.charAt(0)}{url.charAt(1)} */}
-                Ur
-              </AvatarFallback>
-            </Avatar>
+            <SiteAvatar url={url} />
             <div className="min-w-0 flex-1">
               <Popover>
                 <PopoverTrigger asChild>

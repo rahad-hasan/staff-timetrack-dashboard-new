@@ -131,7 +131,9 @@ const ScreenShortsModal = ({
 
     const link = document.createElement("a");
     link.href = src;
-    link.download = `screenshot-${activeIndex + 1}.png`;
+    // The capture pipeline writes JPEG, not PNG. The wrong extension made the
+    // OS mislabel the file and some viewers refuse to preview it.
+    link.download = `screenshot-${activeIndex + 1}.jpg`;
     link.click();
   };
 
@@ -188,8 +190,19 @@ const ScreenShortsModal = ({
               >
                 <ScreenshotImage
                   src={getSrc(item?.image)}
-                  width={1400}
+                  width={1600}
                   height={900}
+                  // The capture pipeline already produced the final artifact:
+                  // the desktop app renders each screenshot at a fixed target
+                  // width and encodes it once. Running that through Next's
+                  // optimizer re-encodes it to WebP at the default quality 75 —
+                  // a second lossy pass at LOWER quality than the first, which
+                  // spends its bit budget preserving the first pass's artifacts
+                  // instead of the text these screenshots exist to show.
+                  // Nothing is gained in exchange: at the widest layout
+                  // (78vh, 16:9) and max zoom (1.25) the image renders around
+                  // 1.5k CSS px, so the original is never upscaled either.
+                  unoptimized
                   alt={`screenshot-${index}`}
                   className=" h-[30vh] md:h-[40vh] lg:h-[50vh] xl:h-[60vh] 2xl:h-[78vh] object-contain"
                   fallbackClassName="relative w-[85vw] max-w-[1200px] h-[30vh] md:h-[40vh] lg:h-[50vh] xl:h-[60vh] 2xl:h-[78vh] rounded-lg"

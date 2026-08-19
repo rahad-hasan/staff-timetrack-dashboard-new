@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import {
   ColumnDef,
@@ -20,47 +19,7 @@ import { useState } from "react";
 import { ArrowUpDown } from "lucide-react";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { IApp } from "@/types/type";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import Image from "next/image";
-import chrome_logo from "../../../assets/apps_logo/chrome_logo.png";
-import figma_logo from "../../../assets/apps_logo/figma_logo.png";
-import photoshop_logo from "../../../assets/apps_logo/photoshop_logo.png";
-import premiere_pro_logo from "../../../assets/apps_logo/premiere_pro_logo.png";
-import teams_logo from "../../../assets/apps_logo/teams_logo.png";
-import time_tracker_logo from "../../../assets/apps_logo/time_tracker_logo.png";
-import vs_code_logo from "../../../assets/apps_logo/vs_code_logo.png";
-import zoom_logo from "../../../assets/apps_logo/zoom_logo.png";
-import microsoft_office_word from "../../../assets/apps_logo/microsoft_office_word.png";
-import postman_logo from "../../../assets/apps_logo/postman_logo.png";
-import terminal_logo from "../../../assets/apps_logo/terminal_logo.png";
-import microsoft_powerPoint from "../../../assets/apps_logo/microsoft_powerPoint.png";
-import edge from "../../../assets/apps_logo/microsoft_edge.png";
-import microsoft_excel from "../../../assets/apps_logo/microsoft_excel.png";
-import notepad from "../../../assets/apps_logo/notepad.png";
-import adobe_acrobat from "../../../assets/apps_logo/adobe_acrobat.png";
-import adobe_illustrator from "../../../assets/apps_logo/adobe_illustrator.png";
-
-const APP_LOGOS: Record<string, any> = {
-  chrome: chrome_logo,
-  figma: figma_logo,
-  photoshop: photoshop_logo,
-  premiere: premiere_pro_logo,
-  teams: teams_logo,
-  tracker: time_tracker_logo,
-  vscode: vs_code_logo,
-  code: vs_code_logo,
-  zoom: zoom_logo,
-  word: microsoft_office_word,
-  postman: postman_logo,
-  terminal: terminal_logo,
-  command: terminal_logo,
-  powerpoint: microsoft_powerPoint,
-  edge: edge,
-  excel: microsoft_excel,
-  notepad: notepad,
-  acrobat: adobe_acrobat,
-  illustrator: adobe_illustrator,
-};
+import AppAvatar from "@/components/Activity/App/AppAvatar";
 
 const AppNameTable = ({ data }: { data: IApp[] }) => {
   // const logInUserData = useLogInUserStore(state => state.logInUserData);
@@ -87,32 +46,9 @@ const AppNameTable = ({ data }: { data: IApp[] }) => {
       },
       cell: ({ row }) => {
         const appName = row.getValue("app_name") as string;
-        // const image = row.original.image;
-        const lowerAppName = appName.toLowerCase();
-
-        // 2. Logic to find the matching logo
-        const matchedKey = Object.keys(APP_LOGOS).find((key) =>
-          lowerAppName.includes(key),
-        );
-        const logoSrc = matchedKey ? APP_LOGOS[matchedKey] : null;
         return (
           <div className="flex items-center gap-2 min-w-[120px] max-w-[190px]">
-            {logoSrc ? (
-              <div className="w-9 h-9 flex items-center justify-center ">
-                <Image
-                  src={logoSrc}
-                  alt={appName}
-                  width={36}
-                  height={36}
-                  className="object-contain"
-                />
-              </div>
-            ) : (
-              <Avatar className="w-9 h-9 ">
-                <AvatarImage src={""} />
-                <AvatarFallback>{appName.charAt(0)}</AvatarFallback>
-              </Avatar>
-            )}
+            <AppAvatar name={appName} />
 
             <div className="">
               <p className=" text-base font-bold text-headingTextColor dark:text-darkTextPrimary capitalize">
