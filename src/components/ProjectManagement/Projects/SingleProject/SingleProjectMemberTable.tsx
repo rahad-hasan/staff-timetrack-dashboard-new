@@ -72,7 +72,7 @@ const SingleProjectMemberTable = ({
             </Avatar>
             <div className="flex flex-col">
               <p>{name}</p>
-              <p className="text-xs">{email}</p>
+              <p className="text-xs opacity-70">{email}</p>
             </div>
           </div>
         );
