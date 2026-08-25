@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { canMutateSubscription, isFreePlan } from "@/lib/billing";
+import { derivePlanGridFlags, isFreePlan } from "@/lib/billing";
 import { useBillingStore } from "@/store/billingStore";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import {
@@ -34,32 +34,13 @@ export default function PlanPricingSection({
   const entitlements = useBillingStore((s) => s.status?.entitlements ?? null);
   const role = useLogInUserStore((s) => s.logInUserData?.role);
   const isAdmin = role === "admin";
-  // Free-plan companies have no Stripe subscription to switch, so they must be
-  // routed to checkout — resolved against the live plans list rather than the
-  // (cacheable) entitlement snapshot.
-  const hasPaid = canMutateSubscription(entitlements, plans);
-  // A canceled subscription keeps its plan_id/billing_cycle, so the old plan
-  // still matches `isCurrent` — but there is nothing to keep or switch, and
-  // checkout is the only flow the backend accepts for canceled companies. The
-  // card must offer reactivation instead of a disabled "Current plan".
-  const isCanceled = entitlements?.status === "canceled";
-  // The trial lifecycle — trialing (running or expired) AND
-  // pending_downgrade_selection (expired over the Free plan's limits) — has no
-  // Stripe subscription behind it, and checkout is the one flow that converts
-  // it. The trialed plan's card must offer "Upgrade now" instead of a disabled
-  // "Current plan", or the plan the company is trialing becomes the only one
-  // it cannot buy — in the selection state that is exactly the plan the
-  // "Keep everyone — upgrade instead" takeover funnels the admin toward.
-  const isTrial =
-    entitlements?.status === "trialing" ||
-    entitlements?.status === "pending_downgrade_selection";
-  // While a payment failure is unresolved the Stripe subscription still
-  // exists, so the backend rejects both checkout ("already exists") and
-  // switch-plan — settling the open invoice (PayNowCard above) is the only
-  // action that can succeed.
-  const isDelinquent =
-    entitlements?.status === "past_due" ||
-    entitlements?.status === "payment_failed";
+  // The CTA state machine's subscription-wide inputs — shared with the
+  // onboarding plan picker so both grids resolve every card identically (the
+  // reasoning behind each flag lives on `derivePlanGridFlags`).
+  const { hasPaid, isCanceled, isTrial, isDelinquent } = derivePlanGridFlags(
+    entitlements,
+    plans,
+  );
 
   // Declaration order (monthly → quarterly → yearly) is the cadence order the
   // toggle should read in, so filter BILLING_CYCLES rather than collecting.

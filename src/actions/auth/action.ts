@@ -152,9 +152,16 @@ export const verifyOtp = async ({ data }: {
   });
 };
 
+/**
+ * `POST /auth/resend-otp` validates `reason` against the backend's OtpReason
+ * enum and rejects the request without it — every caller must say which flow
+ * the code belongs to (`sign_up` for onboarding, `forgot_password` for the
+ * reset flow).
+ */
 export const resetOtp = async ({ data }: {
   data: {
     email: string,
+    reason: "sign_up" | "forgot_password" | "two_factor_auth" | "change_email" | "change_phone",
   }
 }) => {
   return await baseApi(`/auth/resend-otp`, {

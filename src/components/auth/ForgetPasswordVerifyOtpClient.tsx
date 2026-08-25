@@ -76,6 +76,7 @@ const VerificationCode = () => {
             const res = await resetOtp({
                 data: {
                     email: email!,
+                    reason: "forgot_password",
                 }
             });
             if (res?.success) {
@@ -141,7 +142,7 @@ const VerificationCode = () => {
                     <div className=" flex flex-col items-center mb-5">
                         <Image src={roundedEmail} width={200} height={200} alt="icon" className=" w-16" />
                         <h2 className=" text-2xl font-medium mt-4 mb-2">Enter your code</h2>
-                        <p className="">Enter your 5 digit code in your email.</p>
+                        <p className="">Enter your 6 digit code in your email.</p>
                     </div>
                     <div className="flex justify-center">
                         <div className="flex gap-2 mb-2 md:mb-4">

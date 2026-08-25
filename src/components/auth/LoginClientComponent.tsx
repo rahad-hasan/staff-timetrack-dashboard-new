@@ -35,6 +35,7 @@ import {
   requiresOrganizationOnboarding,
 } from "@/lib/authSession";
 import { CreateOrganizationDialog } from "./CreateOrganization";
+import { useEnterPlanSelection } from "./CreateOrganization/useEnterPlanSelection";
 
 const LoginClientComponent = () => {
   const [loading, setLoading] = useState(false);
@@ -69,8 +70,6 @@ const LoginClientComponent = () => {
   // console.log(getError());
   const { setLogInUserData } = useLogInUserStore();
 
-  // Stable identity: the onboarding dialog memoizes its submit handler against
-  // this callback, so recreating it every render would defeat that memo.
   const enterDashboard = useCallback(
     (data: any) => {
       resetProfileImageRefresh();
@@ -80,6 +79,13 @@ const LoginClientComponent = () => {
     },
     [router, setLogInUserData, setOpenMenu],
   );
+
+  // A freshly created organization continues to the plan picker (its reverse
+  // trial is already running, so the picker is skippable); a normal sign-in
+  // goes straight to the dashboard. The hook memoizes the callback — the
+  // onboarding dialog memoizes its submit handler against it, so an unstable
+  // identity would defeat that memo.
+  const enterPlanSelection = useEnterPlanSelection();
 
   async function onSubmit(values: z.infer<typeof loginSchema>) {
     setLoading(true);
@@ -317,7 +323,7 @@ const LoginClientComponent = () => {
       {/* Mounted only once sign-in asks for it, so the wizard always starts
           clean and can safely read the browser's time zone on mount. On success
           it deliberately stays mounted in its "Creating..." state until the
-          dashboard route takes over, rather than flashing the login form back
+          plan-picker route takes over, rather than flashing the login form back
           at an account that is already signed in. */}
       {onboardingEmail && (
         <CreateOrganizationDialog
@@ -326,7 +332,7 @@ const LoginClientComponent = () => {
           onOpenChange={(next) => {
             if (!next) setOnboardingEmail(null);
           }}
-          onCompleted={enterDashboard}
+          onCompleted={enterPlanSelection}
         />
       )}
     </div>

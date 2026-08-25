@@ -366,3 +366,37 @@
     margin: 14mm;
   }
 }
+
+/* ---- Onboarding tour (components/Onboarding/TourOverlay) ----
+   tw-animate-css is not enabled in this project, so the tour ships its own
+   two keyframes: a springy pop-in for the step card and a radiating pulse
+   around the spotlighted element. The pulse derives from --color-primary so
+   it follows the user's theme color. */
+@keyframes tour-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes tour-spotlight-pulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-primary) 55%, transparent);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 14px transparent;
+  }
+}
+
+.tour-popover-in {
+  animation: tour-pop-in 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.tour-spotlight-pulse {
+  animation: tour-spotlight-pulse 1.8s ease-out infinite;
+}

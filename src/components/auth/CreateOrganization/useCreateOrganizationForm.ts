@@ -2,12 +2,15 @@
 
 import { useCallback, useMemo, useState, type FormEvent } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { createOrganization } from "@/actions/organization/action";
 import {
+  COMPANY_EMAIL_EXISTS_MESSAGE,
   DEFAULT_WORKSPACE_PREFERENCES,
+  PENDING_USER_MISSING_MESSAGE,
   resolveBrowserTimeZone,
 } from "@/lib/organization";
 import { ICreateOrganizationResponse } from "@/types/type";
@@ -66,6 +69,7 @@ export const useCreateOrganizationForm = ({
 }: UseCreateOrganizationFormOptions) => {
   const [stepIndex, setStepIndex] = useState(0);
   const [submitting, setSubmitting] = useState(false);
+  const router = useRouter();
 
   // All three generics are pinned on purpose: left to inference, the resolver
   // leaves `TTransformedValues` unresolved and `form.control` stops matching
@@ -124,7 +128,36 @@ export const useCreateOrganizationForm = ({
           const result = await createOrganization({ ...values, email });
 
           if (!result?.success || !result.data) {
-            toast.error(result?.message || "Could not create your organization", {
+            const message = result?.message ?? "";
+
+            // Two rejections are terminal — resubmitting the wizard can never
+            // clear them, so route to sign-in instead of stranding the user
+            // in a retry loop. `submitting` stays raised while the route
+            // changes, same as the success path.
+            if (message === COMPANY_EMAIL_EXISTS_MESSAGE) {
+              toast.warning(
+                "This email already belongs to a workspace — sign in to continue.",
+              );
+              router.replace(`/auth/login?email=${encodeURIComponent(email)}`);
+              return;
+            }
+
+            if (message === PENDING_USER_MISSING_MESSAGE) {
+              toast.error(
+                "We couldn't find a verified sign-up for this email. Please sign up again, or sign in if you already have an account.",
+                {
+                  style: {
+                    backgroundColor: "#ef4444",
+                    color: "white",
+                    border: "none",
+                  },
+                },
+              );
+              router.replace(`/auth/login?email=${encodeURIComponent(email)}`);
+              return;
+            }
+
+            toast.error(message || "Could not create your organization", {
               style: {
                 backgroundColor: "#ef4444",
                 color: "white",
@@ -158,7 +191,7 @@ export const useCreateOrganizationForm = ({
           setSubmitting(false);
         }
       }),
-    [email, form, onCompleted],
+    [email, form, onCompleted, router],
   );
 
   /**

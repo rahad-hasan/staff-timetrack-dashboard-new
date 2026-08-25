@@ -34,12 +34,20 @@ export default function CheckoutDialog({
   activeUserCount,
   open,
   onOpenChange,
+  onSubscriptionConflict,
 }: {
   plan: IBillingPlan | null;
   cycle: BillingCycle;
   activeUserCount: number;
   open: boolean;
   onOpenChange: (o: boolean) => void;
+  /**
+   * "Subscription already exists" recovery refreshes the billing store so the
+   * surrounding cards catch up — which only works where the grid reads that
+   * store. A surface that renders from server props instead (the onboarding
+   * plan picker) passes its own refresh here.
+   */
+  onSubscriptionConflict?: () => void;
 }) {
   const minSeats = Math.max(1, activeUserCount);
 
@@ -107,6 +115,7 @@ export default function CheckoutDialog({
             `${msg} Your billing status has been refreshed — close this dialog and use the updated options on the pricing cards.`,
           );
           void useBillingStore.getState().fetchStatus();
+          onSubscriptionConflict?.();
         } else {
           setError(msg);
         }

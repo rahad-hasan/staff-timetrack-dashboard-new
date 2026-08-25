@@ -235,3 +235,46 @@ export const canMutateSubscription = (
  */
 export const isFreePlan = (plan: IBillingPlan): boolean =>
   plan.is_default === true || (plan.available_cycles?.length ?? 0) === 0;
+
+/**
+ * The subscription-wide inputs of `PlanCard`'s CTA state machine, shared by
+ * every surface that renders the pricing grid (settings/billing and the
+ * onboarding plan picker must never disagree on what a card offers).
+ *
+ * - `hasPaid`: a paid Stripe subscription is active ⇒ cards offer switch-plan;
+ *   resolved against the live plans list because free-plan companies are
+ *   stored `active` without a Stripe subscription and must route to checkout.
+ * - `isCanceled`: a canceled subscription keeps its plan_id/billing_cycle, so
+ *   the old plan still matches "current" — but there is nothing to keep or
+ *   switch, and checkout is the only flow the backend accepts; the card must
+ *   offer reactivation instead of a disabled "Current plan".
+ * - `isTrial`: the trial lifecycle — trialing (running or expired) AND
+ *   pending_downgrade_selection (expired over the Free plan's limits) — has no
+ *   Stripe subscription behind it, and checkout is the one flow that converts
+ *   it; the trialed plan's card offers "Upgrade now" instead of a disabled
+ *   "Current plan".
+ * - `isDelinquent`: while a payment failure is unresolved the Stripe
+ *   subscription still exists, so the backend rejects both checkout ("already
+ *   exists") and switch-plan — settling the open invoice is the only action
+ *   that can succeed.
+ */
+export interface PlanGridFlags {
+  hasPaid: boolean;
+  isCanceled: boolean;
+  isTrial: boolean;
+  isDelinquent: boolean;
+}
+
+export const derivePlanGridFlags = (
+  entitlements: IBillingEntitlements | null | undefined,
+  plans: IBillingPlan[] | null | undefined,
+): PlanGridFlags => ({
+  hasPaid: canMutateSubscription(entitlements, plans),
+  isCanceled: entitlements?.status === "canceled",
+  isTrial:
+    entitlements?.status === "trialing" ||
+    entitlements?.status === "pending_downgrade_selection",
+  isDelinquent:
+    entitlements?.status === "past_due" ||
+    entitlements?.status === "payment_failed",
+});

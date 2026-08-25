@@ -17,6 +17,17 @@ import { IWorkspacePreferences, WeekStartDay } from "@/types/type";
 
 export const ORGANIZATION_ONBOARDING_REDIRECT = "/create-organization";
 
+/* ------- exact `POST /company` rejections the wizard keys off -------
+ * Same pattern as the billing cap catches: these two are terminal — no
+ * amount of resubmitting the wizard can make them succeed, so the UI
+ * routes to sign-in instead of leaving the user in a retry loop. */
+
+/** The company email is already taken — the account is (or someone is) already set up. */
+export const COMPANY_EMAIL_EXISTS_MESSAGE = "Email already exists";
+
+/** No verified pending sign-up for this email — a stale or hand-edited link. */
+export const PENDING_USER_MISSING_MESSAGE = "User not found in waiting list";
+
 export const WEEK_START_DAYS = [
   "Monday",
   "Tuesday",
