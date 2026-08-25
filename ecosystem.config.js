@@ -10,8 +10,8 @@ module.exports = {
       script: "node_modules/next/dist/bin/next",
       args: "start",
 
-      exec_mode: "cluster",
-      instances: 2,
+      exec_mode: "fork",
+      instances: 1,
 
       watch: false,
       autorestart: true,
