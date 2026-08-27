@@ -1,5 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { TOUR_ANCHORS } from "@/lib/onboarding/anchors";
 import {
   Popover,
   PopoverTrigger,
@@ -32,7 +33,7 @@ const ProfileDropDown = () => {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline2" className="h-10.5 dark:text-darkTextPrimary dark:hover:bg-darkSecondaryBg">
+        <Button data-tour={TOUR_ANCHORS.profileMenu} variant="outline2" className="h-10.5 dark:text-darkTextPrimary dark:hover:bg-darkSecondaryBg">
           <Avatar className="w-7.5 h-7.5">
             <AvatarImage src={profileImageSrc} onLoadingStatusChange={handleLoadingStatusChange} alt={logInUserData?.name || "Profile"} />
             <AvatarFallback>

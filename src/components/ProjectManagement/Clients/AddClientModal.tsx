@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { Button } from "@/components/ui/button";
+import { useOnboardingStore } from "@/store/onboardingStore";
 import {
   DialogContent,
   DialogHeader,
@@ -48,6 +49,10 @@ const AddClientModal = ({ onClose }: { onClose: () => void }) => {
         }, 100);
         form.reset();
         toast.success(res?.message || "Client added successfully");
+        // Getting-started milestone. Idempotent and optimistic, so firing it
+        // on every create (not just the first) costs nothing — the checklist
+        // and any open tour tooltip tick over on this frame.
+        void useOnboardingStore.getState().completeTask("CLIENT_CREATED");
       } else {
         toast.error(res?.message || "Failed to add client", {
           style: {

@@ -1,5 +1,6 @@
 "use client"
 import { Button } from "@/components/ui/button";
+import { TOUR_ANCHORS } from "@/lib/onboarding/anchors";
 import { Plus } from "lucide-react";
 // import { useState } from "react";
 import {
@@ -52,7 +53,7 @@ const MemberHeroSection = () => {
                 <Dialog open={open} onOpenChange={setOpen}>
                     <form>
                         <DialogTrigger asChild>
-                            <Button className=" text-sm md:text-base py-2"><Plus className="size-5" /> <span className=" hidden sm:block">Add Member</span></Button>
+                            <Button data-tour={TOUR_ANCHORS.ctaAddMember} className=" text-sm md:text-base py-2"><Plus className="size-5" /> <span className=" hidden sm:block">Add Member</span></Button>
                         </DialogTrigger>
                         <AddNewMemberModal onClose={() => setOpen(false)}></AddNewMemberModal>
                     </form>

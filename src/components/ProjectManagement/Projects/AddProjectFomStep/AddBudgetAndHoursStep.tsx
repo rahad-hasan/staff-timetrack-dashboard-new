@@ -3,6 +3,7 @@
 
 // import { Button } from "@/components/ui/button";
 import { addBudgetAndHoursSchema } from "@/zod/schema";
+import { useOnboardingStore } from "@/store/onboardingStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, type Resolver } from "react-hook-form";
 import z from "zod";
@@ -77,6 +78,9 @@ const AddBudgetAndHoursStep = ({ setStep, onClose }: GeneralInfoStepProps) => {
                 resetData();
                 setStep(1);
                 toast.success(res?.message || "Project added successfully");
+                // Getting-started milestone — the wizard's final step is the
+                // only place a project actually gets created.
+                void useOnboardingStore.getState().completeTask("PROJECT_CREATED");
             } else if (isProjectCapMessage(res?.message)) {
                 // Plan project cap (billing guide §3): prompt an upgrade
                 // instead of a dead-end error.

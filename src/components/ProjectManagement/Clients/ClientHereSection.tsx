@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client"
 import HeadingComponent from "@/components/Common/HeadingComponent";
+import { TOUR_ANCHORS } from "@/lib/onboarding/anchors";
 import { useEffect, useState } from "react";
 // import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -39,7 +40,7 @@ const ClientHereSection = () => {
                     <Dialog open={open} onOpenChange={setOpen}>
                         <form>
                             <DialogTrigger asChild>
-                                <Button className=""><Plus className="size-5" /> <span className=" hidden sm:block">Add Client</span></Button>
+                                <Button data-tour={TOUR_ANCHORS.ctaAddClient} className=""><Plus className="size-5" /> <span className=" hidden sm:block">Add Client</span></Button>
                             </DialogTrigger>
                             <AddClientModal onClose={() => setOpen(false)}></AddClientModal>
                         </form>

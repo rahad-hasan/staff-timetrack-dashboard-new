@@ -1,4 +1,5 @@
 import { TrendingDown, TrendingUp } from "lucide-react";
+import { TOUR_ANCHORS } from "@/lib/onboarding/anchors";
 import { IDashboardStats, ISearchParamsProps } from "@/types/type";
 import { getDashboardStats } from "@/actions/dashboard/action";
 import HeroHeading from "@/components/Dashboard/HeroHeading";
@@ -61,7 +62,7 @@ const HeroCart = async ({ searchParams }: ISearchParamsProps) => {
         <div>
             <HeroHeading searchParams={searchParams}></HeroHeading>
 
-            <div className="mb-5 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+            <div data-tour={TOUR_ANCHORS.dashboardStats} className="mb-5 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
                 {metrics.map(({ id, icon, value, title, change, isUp, note }) => {
                     const TrendIcon = isUp ? TrendingUp : TrendingDown;
                     const trendColor = isUp ? "text-[#12cd69]" : "text-[#f40139]";

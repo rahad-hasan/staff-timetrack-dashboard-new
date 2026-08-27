@@ -21,6 +21,7 @@ import CollapsedIcon from "../Icons/CollapsedIcon";
 import clsx from "clsx";
 import React from "react";
 import { useLogInUserStore } from "@/store/logInUserStore";
+import { TOUR_ANCHORS } from "@/lib/onboarding/anchors";
 
 const SideBar = () => {
   // const pathname = usePathname();
@@ -78,6 +79,7 @@ const SideBar = () => {
     >
       <div className="overflow-y-scroll no-scrollbar scroll-smooth">
         <div
+          data-tour={TOUR_ANCHORS.sidebarNav}
           className={`${isCollapsed ? "w-[90px]" : " w-[240px] 2xl:w-[260px]"} h-screen py-5 z-50  flex flex-col transition-all duration-300`}
         >
           <div

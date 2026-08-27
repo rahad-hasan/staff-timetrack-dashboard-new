@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import { Button } from "@/components/ui/button";
+import { useOnboardingStore } from "@/store/onboardingStore";
 import {
     // DialogClose,
     DialogContent,
@@ -162,6 +163,9 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
                     onClose();
                 });
                 toast.success(res?.message || "Member added successfully");
+                // Getting-started milestone — see AddClientModal for why this
+                // is safe to fire on every successful create.
+                void useOnboardingStore.getState().completeTask("TEAM_INVITED");
             } else if (res?.message === SEAT_CAP_MESSAGE) {
                 // Seat cap hit (billing guide §3): this exact message means the
                 // company ran out of seats. The Add-seats quote→confirm dialog

@@ -14,6 +14,9 @@ import { Sheet, SheetTrigger } from "@/components/ui/sheet";
 import MobileSidebar from "./MobileSidebar";
 import DarkMoodToggle from "./Header/DarkMoodToogle";
 import ProfileDropDown from "./Header/ProfileDropDown";
+import CommandBar from "@/components/Onboarding/CommandBar";
+import { useOnboardingStore } from "@/store/onboardingStore";
+import { TOUR_ANCHORS } from "@/lib/onboarding/anchors";
 import Notification from "./Header/Notification";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -50,6 +53,7 @@ const Header = ({ data }: { data: { duration: string } }) => {
                     <StartTimer onClose={() => setOpen(false)}></StartTimer>
                 </Popover> */}
         <Button
+          data-tour={TOUR_ANCHORS.headerTimer}
           className=" dark:border-darkBorder dark:hover:bg-darkSecondaryBg cursor-default"
           variant={"filter"}
         >
@@ -59,6 +63,7 @@ const Header = ({ data }: { data: { duration: string } }) => {
       </div>
 
       <div className=" hidden lg:flex items-center gap-4">
+        <CommandBar></CommandBar>
         <div>
           <DarkMoodToggle></DarkMoodToggle>
         </div>
@@ -70,7 +75,17 @@ const Header = ({ data }: { data: { duration: string } }) => {
         </div>
         <div className="hidden lg:block ">
           {/* <Button className=" dark:border-primary " variant={'outline'}><Image src={downloadIcon} width={0} height={0} className="w-5" alt="download" />Download App</Button> */}
-          <Link href={`/download`}>
+          {/* Heading to the download page is the closest honest signal we have
+              that the desktop tracker is being set up — the actual install
+              happens outside the browser. */}
+          <Link
+            href={`/download`}
+            onClick={() =>
+              void useOnboardingStore
+                .getState()
+                .completeTask("DESKTOP_APP_DOWNLOADED")
+            }
+          >
             <Button
               className=" dark:border-primary dark:hover:bg-darkSecondaryBg"
               variant={"outline"}

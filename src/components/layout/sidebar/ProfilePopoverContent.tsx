@@ -17,6 +17,7 @@ import { useLogInUserStore } from "@/store/logInUserStore";
 import { useProfileImage } from "@/hooks/useProfileImage";
 import Link from "next/link";
 import { useSidebarStore } from "@/store/sidebarStore";
+import TourMenuItem from "@/components/Onboarding/TourMenuItem";
 
 const ProfilePopoverContent = ({ side, align }: { side: "top" | "right" | "bottom" | "left", align: "center" | "end" | "start" }) => {
     const router = useRouter();
@@ -73,6 +74,7 @@ const ProfilePopoverContent = ({ side, align }: { side: "top" | "right" | "botto
                 <button className="flex items-center gap-2 text-sm font-medium text-headingTextColor dark:text-darkTextPrimary hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-2 py-2 rounded-md cursor-pointer">
                     <SubscriptionIcon size={18} /> Subscription
                 </button>
+                <TourMenuItem className="flex items-center gap-2 text-sm font-medium text-headingTextColor dark:text-darkTextPrimary hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-2 py-2 rounded-md cursor-pointer" />
             </div>
             <div className="border-t border-borderColor dark:border-darkBorder mt-2 pt-3.5 flex flex-col gap-2 px-3">
                 <button className="flex items-center text-headingTextColor dark:text-darkTextPrimary border-borderColor dark:border-darkBorder gap-2 text-sm font-medium border w-full px-3.5 hover:bg-gray-100 hover:dark:bg-darkPrimaryBg py-2 rounded-md cursor-pointer">

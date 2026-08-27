@@ -1,5 +1,6 @@
 "use client"
 import SearchBar from "@/components/Common/SearchBar";
+import { TOUR_ANCHORS } from "@/lib/onboarding/anchors";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import {
@@ -53,7 +54,7 @@ const ProjectHeroSection = () => {
                         <Dialog open={open} onOpenChange={handleOpenChange}>
                             <form>
                                 <DialogTrigger asChild>
-                                    <Button className=""><Plus className="size-5" /> <span className=" hidden sm:block">Add Project</span></Button>
+                                    <Button data-tour={TOUR_ANCHORS.ctaAddProject} className=""><Plus className="size-5" /> <span className=" hidden sm:block">Add Project</span></Button>
                                 </DialogTrigger>
                                 {/* remount on every open so the wizard restarts at step 1 */}
                                 {open && <AddProjectModal onClose={() => setOpen(false)}></AddProjectModal>}
