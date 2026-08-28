@@ -4,46 +4,49 @@ import { buildQuery } from "@/utils/buildQuery";
 import { baseApi } from "../baseApi";
 
 export const getClients = async (query = {}) => {
-    const queryString = buildQuery(query);
-    return await baseApi(`/clients${queryString ? `?${queryString}` : ""}`, {
-        tag: "clients",
-    });
+  const queryString = buildQuery(query);
+  return await baseApi(`/clients${queryString ? `?${queryString}` : ""}`, {
+    tag: "clients",
+  });
 };
 
 export const addClient = async (data: {
-    name: string,
-    email: string,
-    phone: string,
-    address: string
+  name: string;
+  email: string;
+  phone?: string;
+  address?: string;
 }) => {
-    return await baseApi(`/clients`, {
-        method: "POST",
-        body: data,
-        tag: "clients",
-        cache: "no-cache",
-    });
+  return await baseApi(`/clients`, {
+    method: "POST",
+    body: data,
+    tag: "clients",
+    cache: "no-cache",
+  });
 };
 
-export const editClient = async ({ data, id }: {
-    data: {
-        name: string,
-        email: string,
-        phone: string,
-        address: string
-    },
-    id: number | undefined
+export const editClient = async ({
+  data,
+  id,
+}: {
+  data: {
+    name: string;
+    email: string;
+    phone?: string;
+    address?: string;
+  };
+  id: number | undefined;
 }) => {
-    return await baseApi(`/clients/${id}`, {
-        method: "PATCH",
-        body: data,
-        tag: "clients",
-        cache: "no-cache",
-    });
+  return await baseApi(`/clients/${id}`, {
+    method: "PATCH",
+    body: data,
+    tag: "clients",
+    cache: "no-cache",
+  });
 };
 
 export const deleteClient = async (id: number | undefined) => {
-    return await baseApi(`/clients/${id}`, {
-        method: "DELETE",
-        tag: "clients",
-    });
+  return await baseApi(`/clients/${id}`, {
+    method: "DELETE",
+    tag: "clients",
+  });
 };

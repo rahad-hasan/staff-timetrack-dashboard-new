@@ -3,15 +3,47 @@ import parsePhoneNumberFromString from "libphonenumber-js";
 import { LeaveTypeApplicableFor } from "@/types/type";
 import { WEEK_START_DAYS } from "@/lib/organization";
 
+/**
+ * Phone number fields.
+ *
+ * `parsePhoneNumberFromString("")` returns undefined, so a `.refine()` chained
+ * *before* `.optional()` still runs against the empty string an untouched input
+ * submits — which is why an "optional" phone kept failing with the format
+ * message. `optionalPhone` normalises "" to `undefined` first, so the format
+ * check only sees a value the user actually typed and the API never receives an
+ * empty phone (the server rejects that exactly the same way).
+ */
+const PHONE_FORMAT_MESSAGE =
+  "Phone number must be a valid international format";
+
+const isValidPhoneNumber = (value: string) =>
+  Boolean(parsePhoneNumberFromString(value)?.isValid());
+
+const requiredPhone = z
+  .string()
+  .trim()
+  .min(1, "Phone number is required")
+  .refine(isValidPhoneNumber, { message: PHONE_FORMAT_MESSAGE });
+
+const optionalPhone = z
+  .string()
+  .trim()
+  .transform((value) => value || undefined)
+  .refine((value) => value === undefined || isValidPhoneNumber(value), {
+    message: PHONE_FORMAT_MESSAGE,
+  })
+  .optional();
+
 export const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z
     .string()
-    .min(8, "Password must be at least 8 characters")
-    .regex(
-      /[!@#$%^&*(),.?":{}|<>]/,
-      "Password must contain at least one special character",
-    ),
+    .min(6, {
+      message: "Password must be at least 6 characters long",
+    })
+    .max(100, {
+      message: "Password cannot exceed 100 characters",
+    }),
 });
 
 export const forgetPasswordSchema = z.object({
@@ -22,18 +54,20 @@ export const createNewPasswordSchema = z
   .object({
     password: z
       .string()
-      .min(8, "Password must be at least 8 characters")
-      .regex(
-        /[!@#$%^&*(),.?":{}|<>]/,
-        "Password must contain at least one special character",
-      ),
+      .min(6, {
+        message: "Password must be at least 6 characters long",
+      })
+      .max(100, {
+        message: "Password cannot exceed 100 characters",
+      }),
     confirmPassword: z
       .string()
-      .min(8, "Password must be at least 8 characters")
-      .regex(
-        /[!@#$%^&*(),.?":{}|<>]/,
-        "Password must contain at least one special character",
-      ),
+      .min(6, {
+        message: "Password must be at least 6 characters long",
+      })
+      .max(100, {
+        message: "Password cannot exceed 100 characters",
+      }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Confirm passwords do not match",
@@ -56,14 +90,7 @@ export const createOrganizationSchema = z.object({
     .min(2, "Organization name must be at least 2 characters long")
     .max(50, "Organization name must not exceed 50 characters"),
 
-  phone: z
-    .string()
-    .trim()
-    .min(1, "Phone number is required")
-    .refine(
-      (val) => parsePhoneNumberFromString(val)?.isValid(),
-      { message: "Phone number must be a valid international format" },
-    ),
+  phone: requiredPhone,
 
   address: z
     .string()
@@ -225,17 +252,9 @@ export const newTaskCreationSchema = z.object({
 
 export const newClientSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  address: z.string().min(1, "Address is required"),
+  address: z.string().optional(),
   email: z.string().email("Invalid email address"),
-  phone: z.string().refine(
-    (val) => {
-      const parsed = parsePhoneNumberFromString(val);
-      return parsed?.isValid();
-    },
-    {
-      message: "Phone number must be a valid international format",
-    },
-  ),
+  phone: optionalPhone,
 });
 
 export const newTeamSchema = z.object({
@@ -249,27 +268,16 @@ export const newTeamSchema = z.object({
 export const addNewMemberSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email address"),
-  phone: z
-    .string()
-    .refine(
-      (val) => {
-        const parsed = parsePhoneNumberFromString(val);
-        return parsed?.isValid();
-      },
-      {
-        message: "Phone number must be a valid international format",
-      },
-    )
-    .optional(),
+  phone: optionalPhone,
   role: z.string().min(1, "Role is required"),
   gender: z.string().min(1, "Gender is required"),
   birth_day: z
     .string({ message: "Birth day must be a string" })
     .regex(/^\d{4}-\d{2}-\d{2}$/, {
-      message: 'Birth day must be in the format YYYY-MM-DD.',
+      message: "Birth day must be in the format YYYY-MM-DD.",
     })
     .refine((date) => !isNaN(Date.parse(date)), {
-      message: 'Birth day must be a valid calendar date.',
+      message: "Birth day must be a valid calendar date.",
     })
     .optional(),
   time_zone: z.string().min(1, "Time Zone is required"),
@@ -277,11 +285,12 @@ export const addNewMemberSchema = z.object({
   schedule: z.string().min(1, "Schedule is required").optional(),
   password: z
     .string()
-    .min(8, "Minimum 8 characters")
-    .regex(/[a-z]/, "At least one lowercase letter")
-    .regex(/[A-Z]/, "At least one uppercase letter")
-    .regex(/\d/, "At least one number")
-    .regex(/[!@#$%^&*(),.?":{}|<>]/, "At least one special character"),
+    .min(6, {
+      message: "Password must be at least 6 characters long",
+    })
+    .max(100, {
+      message: "Password cannot exceed 100 characters",
+    }),
 });
 
 export const editMemberSchema = z.object({
@@ -293,11 +302,12 @@ export const editMemberSchema = z.object({
   role: z.string().min(1, "Role is required"),
   password: z
     .string()
-    .min(8, "Minimum 8 characters")
-    .regex(/[a-z]/, "At least one lowercase letter")
-    .regex(/[A-Z]/, "At least one uppercase letter")
-    .regex(/\d/, "At least one number")
-    .regex(/[!@#$%^&*(),.?":{}|<>]/, "At least one special character")
+    .min(6, {
+      message: "Password must be at least 6 characters long",
+    })
+    .max(100, {
+      message: "Password cannot exceed 100 characters",
+    })
     .optional(),
 });
 
@@ -320,7 +330,9 @@ export const addNewEventSchema = z
       .string()
       .trim()
       .min(5, "Description must be at least 5 characters"),
-    conference_provider: z.enum(["none", "google", "microsoft"]).default("none"),
+    conference_provider: z
+      .enum(["none", "google", "microsoft"])
+      .default("none"),
   })
   .superRefine((values, ctx) => {
     if (values.start_time && values.end_time) {
@@ -357,17 +369,14 @@ export const userBasicInfoSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z
     .string()
-    .min(8, "Password must be at least 8 characters")
+    .min(6, {
+      message: "Password must be at least 6 characters long",
+    })
+    .max(100, {
+      message: "Password cannot exceed 100 characters",
+    })
     .optional(),
-  phone: z.string().refine(
-    (val) => {
-      const parsed = parsePhoneNumberFromString(val);
-      return parsed?.isValid();
-    },
-    {
-      message: "Phone number must be a valid international format",
-    },
-  ),
+  phone: requiredPhone,
   time_zone: z.string().min(1, "Time Zone is required"),
 });
 
@@ -388,17 +397,7 @@ export const leaveSettingsSchema = z.object({
     .min(1, "Email is required")
     .email("Invalid email format"),
 
-  phone: z
-    .string()
-    .trim()
-    .min(1, "Phone number is required")
-    .refine(
-      (val) => {
-        const parsed = parsePhoneNumberFromString(val);
-        return parsed?.isValid();
-      },
-      { message: "Phone number must be a valid international format" },
-    ),
+  phone: requiredPhone,
 
   address: z
     .string()
@@ -451,23 +450,7 @@ export const changePasswordSchema = z.object({
 export const singleMemberSchema = z.object({
   name: z.string().min(2, "Name is required"),
   email: z.string().email("Invalid email"),
-  phone: z
-    .string()
-    .optional()
-    .or(z.literal("")) // 👈 This allows the empty string from your input to pass
-    .refine(
-      (val) => {
-        // If there's no value, it's valid (optional)
-        if (!val || val.length === 0) return true;
-
-        // If there IS a value, check if it's a valid international number
-        const parsed = parsePhoneNumberFromString(val);
-        return parsed?.isValid();
-      },
-      {
-        message: "Phone number must be a valid international format",
-      },
-    ),
+  phone: optionalPhone,
   role: z.string().min(2, "role is required"),
   status: z.enum(["probation", "permanent"]).optional(),
   time_zone: z.string().min(1, "Time Zone is required"),
@@ -640,10 +623,7 @@ export const payrollProfileFormSchema = z
       }
     }
 
-    if (
-      values.effective_to &&
-      values.effective_to < values.effective_from
-    ) {
+    if (values.effective_to && values.effective_to < values.effective_from) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["effective_to"],
@@ -708,7 +688,7 @@ const leaveRequestBaseSchema = z
         message: "End date cannot be before the start date",
       });
     }
-});
+  });
 
 export const createLeaveRequestSchema = (
   requiredDocumentLeaveTypeIds: Iterable<string | number> = [],
@@ -754,7 +734,10 @@ export const payrollAdjustmentsFormSchema = z.object({
           .trim()
           .min(1, "Amount is required")
           .regex(/^\d+(\.\d{1,2})?$/, "Enter a valid amount (up to 2 decimals)")
-          .refine((value) => Number(value) > 0, "Amount must be greater than zero")
+          .refine(
+            (value) => Number(value) > 0,
+            "Amount must be greater than zero",
+          )
           .refine(
             (value) => Number(value) <= 100000000,
             "Amount must be 100,000,000 or less",

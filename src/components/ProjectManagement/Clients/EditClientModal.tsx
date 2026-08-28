@@ -111,7 +111,7 @@ const EditClientModal = ({ onClose, selectedClient }: EditClientModalProps) => {
                         name="address"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel required={true}>Address</FormLabel>
+                                <FormLabel>Address</FormLabel>
                                 <FormControl>
                                     <Input type="text" className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="Enter Address" {...field} />
                                 </FormControl>
@@ -137,7 +137,7 @@ const EditClientModal = ({ onClose, selectedClient }: EditClientModalProps) => {
                         name="phone"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel required={true}>Phone</FormLabel>
+                                <FormLabel>Phone</FormLabel>
                                 <FormControl>
                                     <Input
                                         type="text"
@@ -157,7 +157,7 @@ const EditClientModal = ({ onClose, selectedClient }: EditClientModalProps) => {
                         )}
                     />
 
-                    <Button className=" w-full" disabled={loading} type="submit">{loading ? "Loading..." : "Update Task"}</Button>
+                    <Button className=" w-full" disabled={loading} type="submit">{loading ? "Loading..." : "Update Client"}</Button>
 
                 </form>
             </Form>

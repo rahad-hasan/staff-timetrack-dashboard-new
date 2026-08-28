@@ -79,7 +79,7 @@ const AddClientModal = ({ onClose }: { onClose: () => void }) => {
   return (
     <DialogContent
       onInteractOutside={(event) => event.preventDefault()}
-      className="sm:max-w-[525px]"
+      className="sm:max-w-131.25"
     >
       <DialogHeader>
         <DialogTitle className=" mb-4 text-headingTextColor dark:text-darkTextPrimary">
@@ -112,7 +112,7 @@ const AddClientModal = ({ onClose }: { onClose: () => void }) => {
             name="address"
             render={({ field }) => (
               <FormItem>
-                <FormLabel required={true}>Address</FormLabel>
+                <FormLabel>Address</FormLabel>
                 <FormControl>
                   <Input
                     type="text"
@@ -148,7 +148,7 @@ const AddClientModal = ({ onClose }: { onClose: () => void }) => {
             name="phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel required={true}>Phone</FormLabel>
+                <FormLabel>Phone</FormLabel>
                 <FormControl>
                   <Input
                     type="text"

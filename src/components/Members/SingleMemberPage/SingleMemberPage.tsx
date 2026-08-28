@@ -215,7 +215,11 @@ const SingleMemberPage = ({
 
                 // compare values
                 if (normalizedOriginal !== normalizedNew) {
-                    payload[key] = value;
+                    // `phone` normalises "" to undefined in the schema, and
+                    // JSON.stringify drops undefined keys — so clearing it has
+                    // to be sent as an explicit empty string.
+                    payload[key] =
+                        key === "phone" && value === undefined ? "" : value;
                 }
             });
 
