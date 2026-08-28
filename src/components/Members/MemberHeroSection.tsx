@@ -2,21 +2,33 @@
 import { Button } from "@/components/ui/button";
 import { TOUR_ANCHORS } from "@/lib/onboarding/anchors";
 import { Plus } from "lucide-react";
-// import { useState } from "react";
 import {
     Dialog,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AddNewMemberModal from "./AddNewMemberModal";
 import SearchBar from "../Common/SearchBar";
 import HeadingComponent from "../Common/HeadingComponent";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useMemberInviteStore } from "@/store/memberInviteStore";
 
 const MemberHeroSection = () => {
     const [open, setOpen] = useState(false)
     const router = useRouter();
     const searchParams = useSearchParams();
+
+    const isInvitePending = useMemberInviteStore(state => state.isInvitePending);
+    const consumeInvite = useMemberInviteStore(state => state.consumeInvite);
+
+    // "Invite member to team" (profile menu) navigates here and leaves the
+    // intent in the store. Claim it exactly once — otherwise a later visit to
+    // /members would reopen the dialog on its own.
+    useEffect(() => {
+        if (!isInvitePending) return;
+        consumeInvite();
+        setOpen(true);
+    }, [isInvitePending, consumeInvite]);
 
     const handleSearch = (query: string) => {
         const params = new URLSearchParams(searchParams.toString());
@@ -25,60 +37,24 @@ const MemberHeroSection = () => {
         router.push(`?${params.toString()}`);
     };
 
-    // const handlePageChange = (page: number) => {
-    //     const params = new URLSearchParams(searchParams.toString());
-    //     params.set("page", String(page));
-    //     router.push(`?${params.toString()}`);
-    // };
-    
     return (
         <div>
             <div className="flex items-center justify-between gap-3 mb-5">
                 <HeadingComponent heading="Members" subHeading="All the member are displayed here"></HeadingComponent>
 
-                {/* <div className="">
-                    {
-                        activeTab === "Teams" &&
-                        <Dialog>
-                            <form>
-                                <DialogTrigger asChild>
-                                    <Button className=" text-sm md:text-base py-2"><Plus className="size-5" /> <span className=" hidden sm:block">Add Team</span></Button>
-                                </DialogTrigger>
-                                <AddTeamModal></AddTeamModal>
-                            </form>
-                        </Dialog>
-                    }
-                    {
-                        activeTab === "Members" && */}
                 <Dialog open={open} onOpenChange={setOpen}>
                     <form>
                         <DialogTrigger asChild>
                             <Button data-tour={TOUR_ANCHORS.ctaAddMember} className=" text-sm md:text-base py-2"><Plus className="size-5" /> <span className=" hidden sm:block">Add Member</span></Button>
                         </DialogTrigger>
-                        <AddNewMemberModal onClose={() => setOpen(false)}></AddNewMemberModal>
+                        {/* remount on every open so the wizard restarts at step 1 —
+                            and so its project/schedule lookups only run once the
+                            dialog is actually on screen */}
+                        {open && <AddNewMemberModal onClose={() => setOpen(false)}></AddNewMemberModal>}
                     </form>
                 </Dialog>
-
-
-                {/* </div> */}
             </div>
             <div className=" flex items-center justify-end md:justify-between">
-                {/* <div className="flex gap-3">
-                    <div className="flex  bg-[#f6f7f9] dark:bg-darkSecondaryBg rounded-lg overflow-hidden">
-                        {["Teams", "Members"].map((tab) => (
-                            <button
-                                key={tab}
-                                onClick={() => handleTabClick(tab as "Teams" | "Members")}
-                                className={`px-4 py-2 text-sm font-medium transition-all cursor-pointer rounded-lg m-0.5 ${activeTab === tab
-                                    ? "bg-white text-headingTextColor shadow-sm dark:bg-darkPrimaryBg dark:text-darkTextPrimary"
-                                    : "text-gray-600 hover:text-gray-800 dark:text-darkTextPrimary"
-                                    }`}
-                            >
-                                {tab} (12)
-                            </button>
-                        ))}
-                    </div>
-                </div> */}
                 <SearchBar onSearch={handleSearch} />
             </div>
         </div>
