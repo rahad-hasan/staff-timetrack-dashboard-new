@@ -9,8 +9,8 @@ interface ColorState {
 export const useColorStore = create<ColorState>()(
   persist(
     (set) => ({
-      color: "#12cd69",
-      // color: "#0788f3",
+      // color: "#12cd69",
+      color: "#0788f3",
       setColor: (color) => set({ color }),
     }),
     {
