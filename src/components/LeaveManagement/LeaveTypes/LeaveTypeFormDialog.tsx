@@ -22,6 +22,7 @@ import {
 } from "@/lib/leave";
 import { CreateLeaveTypePayload, LeaveTypeRecord } from "@/types/type";
 import { leaveTypeFormSchema } from "@/zod/schema";
+import NumberInput from "@/components/Common/NumberInput";
 import { Button } from "@/components/ui/button";
 import {
   DialogClose,
@@ -233,16 +234,10 @@ const LeaveTypeFormDialog = ({
                     <FormItem>
                       <FormLabel required>Annual limit</FormLabel>
                       <FormControl>
-                        <Input
-                          type="number"
+                        <NumberInput
                           min={0}
                           className="dark:border-darkBorder dark:bg-darkPrimaryBg"
-                          value={field.value}
-                          onChange={(event) =>
-                            field.onChange(
-                              event.target.value === "" ? 0 : Number(event.target.value),
-                            )
-                          }
+                          {...field}
                         />
                       </FormControl>
                       <FormMessage />

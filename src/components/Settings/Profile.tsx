@@ -17,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { Check, ChevronsUpDown, Phone, Upload } from "lucide-react";
+import { Check, ChevronsUpDown, Upload } from "lucide-react";
 import profileAvatar from '../../assets/profile_image_avatar.webp';
 import { Label } from "@/components/ui/label";
 import UserIcon from "../Icons/UserIcon";
@@ -38,6 +38,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { popularTimeZoneList } from "@/utils/TimeZoneList";
 import { cn } from "@/lib/utils";
+import PhoneNumberField from "@/components/Common/PhoneNumberField";
 
 const Profile = () => {
     const { logInUserData } = useLogInUserStore(state => state);
@@ -292,34 +293,12 @@ const Profile = () => {
                                 </FormItem>
                             )}
                         />
-                        <FormField
+                        <PhoneNumberField
                             control={form.control}
                             name="phone"
-                            render={({ field }) => (
-                                <FormItem className="w-full ">
-                                    <FormLabel>Phone Number</FormLabel>
-                                    <FormControl>
-                                        <div className="relative">
-                                            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 h-4 w-4" >
-                                                <Phone size={16} />
-                                            </div>
-                                            <Input
-                                                type="text"
-                                                placeholder="Enter Phone Number"
-                                                className="pl-9 dark:bg-darkPrimaryBg dark:border-darkBorder"
-                                                {...field}
-                                                onChange={(e) => {
-                                                    // This Regex allows ONLY the '+' sign and numbers 0-9
-                                                    // It replaces any other character (like 'a', 'b', '!', etc.) with an empty string
-                                                    const sanitizedValue = e.target.value.replace(/[^\d+]/g, "");
-                                                    field.onChange(sanitizedValue);
-                                                }}
-                                            />
-                                        </div>
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
+                            label="Phone Number"
+                            placeholder="Enter Phone Number"
+                            className="w-full "
                         />
                     </div>
                     {

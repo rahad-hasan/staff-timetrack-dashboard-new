@@ -19,6 +19,7 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import PhoneNumberField from "@/components/Common/PhoneNumberField";
 import { IClients } from "@/global/globalTypes";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -132,29 +133,11 @@ const EditClientModal = ({ onClose, selectedClient }: EditClientModalProps) => {
                             </FormItem>
                         )}
                     />
-                    <FormField
+                    <PhoneNumberField
                         control={form.control}
                         name="phone"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Phone</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        type="text"
-                                        placeholder="Enter Phone Number"
-                                        className="dark:bg-darkPrimaryBg dark:border-darkBorder"
-                                        {...field}
-                                        onChange={(e) => {
-                                            // This Regex allows ONLY the '+' sign and numbers 0-9
-                                            // It replaces any other character (like 'a', 'b', '!', etc.) with an empty string
-                                            const sanitizedValue = e.target.value.replace(/[^\d+]/g, "");
-                                            field.onChange(sanitizedValue);
-                                        }}
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
+                        label="Phone"
+                        placeholder="Enter Phone Number"
                     />
 
                     <Button className=" w-full" disabled={loading} type="submit">{loading ? "Loading..." : "Update Client"}</Button>

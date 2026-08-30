@@ -24,6 +24,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import NumberInput from "@/components/Common/NumberInput";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { LeaveHoliday } from "@/types/type";
@@ -206,17 +207,11 @@ const HolidayFormDialog = ({
                     <FormItem>
                       <FormLabel required>Duration</FormLabel>
                       <FormControl>
-                        <Input
-                          type="number"
+                        <NumberInput
                           min={1}
                           max={31}
                           className="dark:border-darkBorder dark:bg-darkPrimaryBg"
-                          value={field.value}
-                          onChange={(event) =>
-                            field.onChange(
-                              event.target.value === "" ? 1 : Number(event.target.value),
-                            )
-                          }
+                          {...field}
                         />
                       </FormControl>
                       <FormMessage />

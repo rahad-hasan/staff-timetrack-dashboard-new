@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
-import { Check, ChevronLeft, ChevronsUpDown, Eye, EyeOff, Phone, Search } from "lucide-react";
+import { Check, ChevronLeft, ChevronsUpDown, Eye, EyeOff, Search } from "lucide-react";
 import { toast } from "sonner";
 import { addMember } from "@/actions/members/action";
 import { useRouter } from "next/navigation";
@@ -45,6 +45,7 @@ import { getProjects } from "@/actions/projects/action";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { getAllSchedule } from "@/actions/schedule/action";
 import { CustomCalendarForDOB } from "../ui/customCalendarForDOB";
+import PhoneNumberField from "@/components/Common/PhoneNumberField";
 
 const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
     type ProjectOption = {
@@ -270,32 +271,12 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
                                     </FormItem>
                                 )}
                             />
-                            <FormField
+                            <PhoneNumberField
                                 control={form.control}
                                 name="phone"
-                                render={({ field }) => (
-                                    <FormItem className="w-full ">
-                                        <FormLabel>Phone Number</FormLabel>
-                                        <FormControl>
-                                            <div className="relative">
-                                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 h-4 w-4" >
-                                                    <Phone size={16} />
-                                                </div>
-                                                <Input
-                                                    type="text"
-                                                    placeholder="Enter Phone Number"
-                                                    className="pl-9 dark:bg-darkPrimaryBg dark:border-darkBorder"
-                                                    {...field}
-                                                    onChange={(e) => {
-                                                        const sanitizedValue = e.target.value.replace(/[^\d+]/g, "");
-                                                        field.onChange(sanitizedValue);
-                                                    }}
-                                                />
-                                            </div>
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
+                                label="Phone Number"
+                                placeholder="Enter Phone Number"
+                                className="w-full "
                             />
                             <FormField
                                 control={form.control}

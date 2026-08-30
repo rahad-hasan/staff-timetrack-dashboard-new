@@ -30,6 +30,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import NumberInput from "@/components/Common/NumberInput";
 import {
   Select,
   SelectContent,
@@ -325,9 +326,23 @@ const PayrollProfileFormDialog = ({
                     <FormLabel required>Salary Type</FormLabel>
                     <Select
                       value={field.value}
-                      onValueChange={(value) =>
-                        field.onChange(value as FormValues["salary_type"])
-                      }
+                      onValueChange={(value) => {
+                        const next = value as FormValues["salary_type"];
+                        field.onChange(next);
+                        // The branch being hidden keeps whatever it held, and an
+                        // empty box holds NaN. That still fails the schema, but
+                        // from behind an unmounted <FormMessage /> — Save would
+                        // do nothing with no error on screen. Retire it at a
+                        // valid 0, and only when it is actually unusable, so a
+                        // rate the user typed survives a round trip.
+                        const hidden =
+                          next === "hourly" ? "monthly_salary" : "hourly_rate";
+
+                        if (!Number.isFinite(form.getValues(hidden))) {
+                          form.setValue(hidden, 0);
+                          form.clearErrors(hidden);
+                        }
+                      }}
                     >
                       <FormControl>
                         <SelectTrigger className="w-full dark:border-darkBorder dark:bg-darkPrimaryBg">
@@ -383,15 +398,11 @@ const PayrollProfileFormDialog = ({
                   <FormItem>
                     <FormLabel required>Monthly Salary</FormLabel>
                     <FormControl>
-                      <Input
-                        type="number"
+                      <NumberInput
                         min={0}
                         step="0.01"
-                        value={field.value ?? 0}
-                        onChange={(event) =>
-                          field.onChange(Number(event.target.value) || 0)
-                        }
                         className="dark:border-darkBorder dark:bg-darkPrimaryBg"
+                        {...field}
                       />
                     </FormControl>
                     <FormDescription>
@@ -412,15 +423,11 @@ const PayrollProfileFormDialog = ({
                   <FormItem>
                     <FormLabel required>Hourly Rate</FormLabel>
                     <FormControl>
-                      <Input
-                        type="number"
+                      <NumberInput
                         min={0}
                         step="0.01"
-                        value={field.value ?? 0}
-                        onChange={(event) =>
-                          field.onChange(Number(event.target.value) || 0)
-                        }
                         className="dark:border-darkBorder dark:bg-darkPrimaryBg"
+                        {...field}
                       />
                     </FormControl>
                     <FormMessage />
@@ -447,7 +454,19 @@ const PayrollProfileFormDialog = ({
                       <FormControl>
                         <Switch
                           checked={field.value}
-                          onCheckedChange={field.onChange}
+                          onCheckedChange={(checked) => {
+                            field.onChange(checked);
+                            // Same trap as the salary-type branches above.
+                            if (
+                              !checked &&
+                              !Number.isFinite(
+                                form.getValues("overtime_multiplier"),
+                              )
+                            ) {
+                              form.setValue("overtime_multiplier", 1.5);
+                              form.clearErrors("overtime_multiplier");
+                            }
+                          }}
                         />
                       </FormControl>
                     </FormItem>
@@ -463,16 +482,12 @@ const PayrollProfileFormDialog = ({
                     <FormItem className="mt-4">
                       <FormLabel required>Overtime Multiplier</FormLabel>
                       <FormControl>
-                        <Input
-                          type="number"
+                        <NumberInput
                           min={1}
                           max={10}
                           step="0.1"
-                          value={field.value ?? 1.5}
-                          onChange={(event) =>
-                            field.onChange(Number(event.target.value) || 1)
-                          }
                           className="dark:border-darkBorder dark:bg-darkPrimaryBg"
+                          {...field}
                         />
                       </FormControl>
                       <FormDescription>

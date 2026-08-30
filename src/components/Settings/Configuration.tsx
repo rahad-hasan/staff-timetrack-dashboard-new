@@ -13,6 +13,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import NumberInput from "@/components/Common/NumberInput";
+import PhoneNumberField from "@/components/Common/PhoneNumberField";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { ICompany } from "@/types/type";
@@ -51,7 +53,6 @@ import {
   Link2,
   Mail,
   MapPin,
-  Phone,
   Sliders,
   Wallet,
 } from "lucide-react";
@@ -235,33 +236,12 @@ const Configuration = ({ data }: { data: ICompany }) => {
                 )}
               />
 
-              <FormField
+              <PhoneNumberField
                 control={form.control}
                 name="phone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel required={true}>Phone Number</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Phone className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-subTextColor dark:text-darkTextSecondary" />
-                        <Input
-                          type="text"
-                          placeholder="Enter Phone Number"
-                          className="pl-9 dark:bg-darkPrimaryBg dark:border-darkBorder"
-                          {...field}
-                          onChange={(e) => {
-                            const sanitizedValue = e.target.value.replace(
-                              /[^\d+]/g,
-                              "",
-                            );
-                            field.onChange(sanitizedValue);
-                          }}
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                label="Phone Number"
+                required
+                placeholder="Enter Phone Number"
               />
 
               <FormField
@@ -517,13 +497,9 @@ const Configuration = ({ data }: { data: ICompany }) => {
                     <FormControl>
                       <div className="relative">
                         <Clock className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-subTextColor dark:text-darkTextSecondary" />
-                        <Input
-                          type="number"
+                        <NumberInput
                           className="pl-9 pr-16 dark:bg-darkPrimaryBg dark:border-darkBorder"
                           {...field}
-                          onChange={(e) =>
-                            field.onChange(e.target.valueAsNumber)
-                          }
                         />
                         <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-subTextColor dark:text-darkTextSecondary">
                           minutes

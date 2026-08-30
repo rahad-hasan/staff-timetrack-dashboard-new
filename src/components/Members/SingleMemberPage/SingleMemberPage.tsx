@@ -20,7 +20,6 @@ import {
     Link2,
     Mail,
     MapPin,
-    Phone,
     Save,
     Shield,
     ShieldCheck,
@@ -47,6 +46,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import PhoneNumberField from "@/components/Common/PhoneNumberField";
 import { singleMemberSchema } from "@/zod/schema";
 import { editSingleDetailsMember } from "@/actions/members/action";
 import {
@@ -581,26 +581,12 @@ const SingleMemberPage = ({
                                 </div>
 
                                 <div className="grid gap-4 md:grid-cols-2">
-                                    <FormField
+                                    <PhoneNumberField
                                         control={form.control}
                                         name="phone"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Phone Number</FormLabel>
-                                                <FormControl>
-                                                    <div className="relative">
-                                                        <Phone className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-subTextColor dark:text-darkTextSecondary" />
-                                                        <Input
-                                                            {...field}
-                                                            value={field.value || ""}
-                                                            placeholder="Phone Number"
-                                                            className="!h-[52px] min-h-[52px] pl-9 dark:border-darkBorder dark:bg-darkPrimaryBg"
-                                                        />
-                                                    </div>
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
+                                        label="Phone Number"
+                                        placeholder="Phone Number"
+                                        inputClassName="!h-[52px] min-h-[52px]"
                                     />
 
                                     <FormField

@@ -20,6 +20,7 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import NumberInput from "@/components/Common/NumberInput";
 import { useEffect, useState } from "react";
 import ClockIcon from "../Icons/ClockIcon";
 import { Checkbox } from "../ui/checkbox";
@@ -178,13 +179,9 @@ const EditScheduleModal = ({ onClose, selectedSchedule }: EditNewMemberModalProp
                             <FormItem>
                                 <FormLabel required={true}>Grace In Minutes</FormLabel>
                                 <FormControl>
-                                    <Input
-                                        type="number"
+                                    <NumberInput
                                         {...field}
                                         className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="10 means 10 minutes"
-                                        onChange={(e) =>
-                                            field.onChange(e.target.value === "" ? undefined : e.target.valueAsNumber)
-                                        }
                                     />
                                 </FormControl>
                                 <FormMessage />
@@ -198,13 +195,9 @@ const EditScheduleModal = ({ onClose, selectedSchedule }: EditNewMemberModalProp
                             <FormItem>
                                 <FormLabel required={true}>Grace Out Minutes</FormLabel>
                                 <FormControl>
-                                    <Input
-                                        type="number"
+                                    <NumberInput
                                         {...field}
                                         className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="10 means 10 minutes"
-                                        onChange={(e) =>
-                                            field.onChange(e.target.value === "" ? undefined : e.target.valueAsNumber)
-                                        }
                                     />
 
                                 </FormControl>
@@ -219,13 +212,9 @@ const EditScheduleModal = ({ onClose, selectedSchedule }: EditNewMemberModalProp
                             <FormItem>
                                 <FormLabel required={true}>Break In Minutes</FormLabel>
                                 <FormControl>
-                                    <Input
-                                        type="number"
+                                    <NumberInput
                                         {...field}
                                         className="dark:bg-darkPrimaryBg dark:border-darkBorder" placeholder="10 means 10 minutes"
-                                        onChange={(e) =>
-                                            field.onChange(e.target.value === "" ? undefined : e.target.valueAsNumber)
-                                        }
                                     />
 
                                 </FormControl>

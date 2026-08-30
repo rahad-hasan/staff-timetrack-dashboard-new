@@ -4,6 +4,7 @@ import { Clock, Info, Wallet } from "lucide-react";
 import { Control, useWatch } from "react-hook-form";
 
 import ComboboxField from "@/components/Common/ComboboxField";
+import NumberInput from "@/components/Common/NumberInput";
 import {
   FormControl,
   FormField,
@@ -11,7 +12,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -119,22 +119,13 @@ const WorkspacePreferencesStep = ({
               <FormControl>
                 <div className="relative">
                   <Clock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-subTextColor dark:text-darkTextSecondary" />
-                  <Input
-                    type="number"
+                  <NumberInput
                     inputMode="numeric"
                     min={1}
                     max={60}
-                    disabled={disabled}
                     className="pl-9 pr-16 dark:bg-darkPrimaryBg dark:border-darkBorder"
                     {...field}
-                    value={Number.isFinite(field.value) ? field.value : ""}
-                    onChange={(event) =>
-                      field.onChange(
-                        event.target.value === ""
-                          ? undefined
-                          : event.target.valueAsNumber,
-                      )
-                    }
+                    disabled={disabled}
                   />
                   <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-subTextColor dark:text-darkTextSecondary">
                     minutes

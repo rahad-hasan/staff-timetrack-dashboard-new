@@ -1,9 +1,10 @@
 "use client";
 
-import { Building2, Globe, MapPin, Phone } from "lucide-react";
+import { Building2, Globe, MapPin } from "lucide-react";
 import { Control } from "react-hook-form";
 
 import ComboboxField from "@/components/Common/ComboboxField";
+import PhoneNumberField from "@/components/Common/PhoneNumberField";
 import {
   FormControl,
   FormField,
@@ -52,32 +53,13 @@ const OrganizationProfileStep = ({
       )}
     />
 
-    <FormField
+    <PhoneNumberField
       control={control}
       name="phone"
-      render={({ field }) => (
-        <FormItem>
-          <FormLabel required>Phone Number</FormLabel>
-          <FormControl>
-            <div className="relative">
-              <Phone className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-subTextColor dark:text-darkTextSecondary" />
-              <Input
-                type="tel"
-                placeholder="Enter Phone Number"
-                disabled={disabled}
-                className="pl-9 dark:bg-darkPrimaryBg dark:border-darkBorder"
-                {...field}
-                onChange={(event) =>
-                  // The API validates against libphonenumber, which needs the
-                  // country code — keep "+" and digits, drop the rest.
-                  field.onChange(event.target.value.replace(/[^\d+]/g, ""))
-                }
-              />
-            </div>
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      )}
+      label="Phone Number"
+      placeholder="Enter Phone Number"
+      required
+      disabled={disabled}
     />
 
     <ComboboxField

@@ -20,6 +20,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import PhoneNumberField from "@/components/Common/PhoneNumberField";
 import { toast } from "sonner";
 import { useState } from "react";
 import { addClient } from "@/actions/clients/action";
@@ -143,32 +144,11 @@ const AddClientModal = ({ onClose }: { onClose: () => void }) => {
               </FormItem>
             )}
           />
-          <FormField
+          <PhoneNumberField
             control={form.control}
             name="phone"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Phone</FormLabel>
-                <FormControl>
-                  <Input
-                    type="text"
-                    placeholder="Enter Phone Number"
-                    className="dark:bg-darkPrimaryBg dark:border-darkBorder"
-                    {...field}
-                    onChange={(e) => {
-                      // This Regex allows ONLY the '+' sign and numbers 0-9
-                      // It replaces any other character (like 'a', 'b', '!', etc.) with an empty string
-                      const sanitizedValue = e.target.value.replace(
-                        /[^\d+]/g,
-                        "",
-                      );
-                      field.onChange(sanitizedValue);
-                    }}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            label="Phone"
+            placeholder="Enter Phone Number"
           />
           {/* <DialogClose asChild> */}
           <Button className="w-full" disabled={loading} type="submit">
