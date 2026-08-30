@@ -72,7 +72,7 @@ const HeroCart = async ({ searchParams }: ISearchParamsProps) => {
                             key={id}
                             className="rounded-2xl w-full transition-all hover:shadow duration-200 relative h-34 2xl:h-40 shadow-sm dark:shadow-slate-100"
                         >
-                            <div className=" border-x-1 border-t-1 border-borderColor/60  dark:border-darkBorder/25 flex items-center justify-between px-3 2xl:px-4 py-[1.4rem] 2xl:py-[1.8rem] bg-bgPrimary dark:bg-darkPrimaryBg rounded-t-2xl">
+                            <div className=" border-x-1 border-t-1 border-borderColor/70  dark:border-darkBorder/40 flex items-center justify-between px-3 2xl:px-4 py-[1.4rem] 2xl:py-[1.8rem] bg-bgPrimary dark:bg-darkPrimaryBg rounded-t-2xl">
                                 <div className="flex items-center gap-2 2xl:gap-3">
                                     <div>{icon}</div>
                                     <div>
@@ -101,7 +101,7 @@ const HeroCart = async ({ searchParams }: ISearchParamsProps) => {
                                 </div>
                             </div>
 
-                            <div className="bg-bgSecondary dark:bg-darkSecondaryBg rounded-b-2xl border-t px-3 2xl:px-4 py-2 sm:py-2.5 2xl:py-3 flex items-center gap-2 absolute left-0 right-0 bottom-0">
+                            <div className="bg-bgSecondary dark:bg-darkTertiaryBg rounded-b-2xl px-3 2xl:px-4 py-2 sm:py-2.5 2xl:py-3 flex items-center gap-2 absolute left-0 right-0 bottom-0">
                                 <div className="w-5">
                                     <TrendIcon size={20} className={trendColor} />
                                 </div>

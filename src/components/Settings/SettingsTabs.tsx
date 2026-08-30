@@ -43,7 +43,7 @@ const SettingsTabs = () => {
                     key={tab}
                     onClick={() => setTab(tab as Tab)}
                     className={`flex items-center gap-1.5 px-2 md:px-4 py-2 h-10 text-xs md:text-sm font-medium outline outline-borderColor dark:outline-darkBorder transition-all cursor-pointer rounded-lg m-0.5 ${activeTab === tab
-                        ? "bg-primary/7 dark:bg-darkSecondaryBg text-primary outline-none"
+                        ? "bg-primary/7 dark:bg-darkTertiaryBg text-primary outline-none"
                         : "text-subTextColor hover:text-gray-800 dark:text-darkTextPrimary "
                         }`}
                 >

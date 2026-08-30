@@ -22,6 +22,7 @@
   --color-darkSecondaryBg: #212830; */
   --color-darkPrimaryBg: #031229;
   --color-darkSecondaryBg: #00172f;
+  --color-darkTertiaryBg: #102041;
   /* Dark Text */
   --color-darkTextPrimary: #F3F4F6;
   --color-darkTextSecondary: #bdbdbd;
@@ -48,8 +49,8 @@
   --card-foreground: oklch(0.1450 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.1450 0 0);
-  /* --primary: #12cd69; */
-  --primary: #0788f3;
+  --primary: #12cd69;
+  /* --primary: #0788f3; */
   --primary-foreground: oklch(0.9850 0 0);
   --secondary: oklch(0.9700 0 0);
   --secondary-foreground: oklch(0.2050 0 0);

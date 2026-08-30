@@ -21,7 +21,7 @@ const DayWeekMonthSelection = () => {
         router.push(`?${params}`);
     };
     return (
-        <div className="grid grid-cols-3 lg:flex mt-3 w-[250px] lg:w-auto sm:mt-0 bg-bgSecondary dark:bg-darkSecondaryBg rounded-lg box-border ">
+        <div className="grid grid-cols-3 lg:flex mt-3 w-[250px] lg:w-auto sm:mt-0 bg-bgSecondary dark:bg-darkTertiaryBg rounded-lg box-border ">
             {["daily", "weekly", "monthly"].map((tab) => (
                 <button
                     key={tab}

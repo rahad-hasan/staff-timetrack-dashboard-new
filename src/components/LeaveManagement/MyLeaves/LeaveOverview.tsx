@@ -77,7 +77,7 @@ const LeaveOverview = ({ data, headingSubtitle, currentUserId }: LeaveOverviewPr
 
     return (
         <div className="grid gap-4 xl:grid-cols-[minmax(0,1.45fr)_360px]">
-            <div className="relative overflow-hidden rounded-[12px] border border-borderColor bg-[linear-gradient(135deg,#ffffff_0%,#fff8f8_50%,#f8fbff_100%)] p-5 dark:border-darkBorder dark:bg-[linear-gradient(135deg,rgba(50,57,71,1)_0%,rgba(33,39,51,1)_100%)]">
+            <div className="relative overflow-hidden rounded-[12px] border border-borderColor bg-[linear-gradient(135deg,#ffffff_0%,#fff8f8_50%,#f8fbff_100%)] p-5 dark:border-darkBorder dark:bg-[linear-gradient(135deg,#00172f,rgba(33,39,51,1)_100%)]">
                 <div className="absolute right-0 top-0 h-36 w-36 rounded-full bg-primary/10 blur-3xl" />
                 <div className="relative flex flex-col justify-between h-full">
                     <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">

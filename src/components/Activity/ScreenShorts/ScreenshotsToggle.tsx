@@ -17,7 +17,7 @@ const ScreenshotsToggle = () => {
 
     return (
         <div className="flex gap-3">
-            <div className="grid grid-cols-2 xl:flex mt-3 lg:mt-0 bg-bgSecondary dark:bg-darkSecondaryBg rounded-lg ">
+            <div className="grid grid-cols-2 xl:flex mt-3 lg:mt-0 bg-bgSecondary dark:bg-darkTertiaryBg rounded-lg ">
                 {["Every 10 min", "All Screenshots"].map((tab) => (
                     <button
                         key={tab}
