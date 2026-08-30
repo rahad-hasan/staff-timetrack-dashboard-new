@@ -4,8 +4,8 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/Theme/theme-provider";
 import { SidebarRouteSync } from "@/utils/SidebarRouteSync";
 import SetGlobalColor from "@/components/Common/SetGlobalColor";
-import { Toaster } from "@/components/ui/sonner"
-import NextTopLoader from 'nextjs-toploader';
+import { Toaster } from "@/components/ui/sonner";
+import NextTopLoader from "nextjs-toploader";
 import ClearNavbarStorageOnWindowClose from "@/utils/ClearNavbarStorageOnWindowClose";
 
 // const inter = Inter({
@@ -16,10 +16,10 @@ import ClearNavbarStorageOnWindowClose from "@/utils/ClearNavbarStorageOnWindowC
 // });
 
 const roboto = Roboto({
-    subsets: ['latin'],
-    weight: ['300', '400', '500', '700', '800', '900'],
-    variable: '--font-roboto',
-    display: 'swap'
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "700", "800", "900"],
+  variable: "--font-roboto",
+  display: "swap",
 });
 
 // const nunito = Nunito({
@@ -30,46 +30,45 @@ const roboto = Roboto({
 // });
 
 export const metadata: Metadata = {
-    title: "Staff Time Tracker Dashboard",
-    description: "Staff Time Tracker Dashboard",
+  title: "Staff Time Tracker Dashboard",
+  description: "Staff Time Tracker Dashboard",
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default async function RootLayout({
-    children,
+  children,
 }: Readonly<{
-    children: React.ReactNode;
+  children: React.ReactNode;
 }>) {
-
-    return (
-        <html lang="en" suppressHydrationWarning className={roboto.className}>
-            <body
-                className={`antialiased flex bg-[#f6f7f9] dark:bg-darkSecondaryBg`}
-                data-gr-ext-installed=""
-                cz-shortcut-listen="true"
-                monica-id="ofpnmcalabcbjgholdjcjblkibolbppb"
-                monica-version="7.9.7"
-                data-new-gr-c-s-check-loaded="14.1263.0"
-                aria-controls="radix-_R_babnqlb_"
-            >
-                <Toaster position='bottom-right' />
-                <ThemeProvider
-                    attribute="class"
-                    defaultTheme="system"
-                    enableSystem
-                    disableTransitionOnChange
-                >
-                    <SetGlobalColor />
-                    <SidebarRouteSync />
-                    <ClearNavbarStorageOnWindowClose />
-                    {/* <ReplaceActiveNavAfterRemount /> */}
-                        <NextTopLoader
-                            color="#2bb0f3"
-                            height={2}
-                            showSpinner={false}
-                        />
-                        {children}
-                </ThemeProvider>
-            </body>
-        </html >
-    );
+  return (
+    <html lang="en" suppressHydrationWarning className={roboto.className}>
+      <body
+        className={`antialiased flex bg-[#f6f7f9] dark:bg-darkSecondaryBg`}
+        data-gr-ext-installed=""
+        cz-shortcut-listen="true"
+        monica-id="ofpnmcalabcbjgholdjcjblkibolbppb"
+        monica-version="7.9.7"
+        data-new-gr-c-s-check-loaded="14.1263.0"
+        aria-controls="radix-_R_babnqlb_"
+      >
+        <Toaster position="bottom-right" />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <SetGlobalColor />
+          <SidebarRouteSync />
+          <ClearNavbarStorageOnWindowClose />
+          {/* <ReplaceActiveNavAfterRemount /> */}
+          <NextTopLoader color="#2bb0f3" height={2} showSpinner={false} />
+          {children}
+        </ThemeProvider>
+      </body>
+    </html>
+  );
 }
