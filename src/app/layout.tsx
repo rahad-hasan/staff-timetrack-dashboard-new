@@ -54,7 +54,7 @@ export default async function RootLayout({
         data-new-gr-c-s-check-loaded="14.1263.0"
         aria-controls="radix-_R_babnqlb_"
       >
-        <Toaster position="bottom-right" />
+        <Toaster position="top-center" />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

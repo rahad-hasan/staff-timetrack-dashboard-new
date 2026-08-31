@@ -91,9 +91,21 @@ export default function TooltipPopover({
     setSheet(false);
   }, [element]);
 
-  const { refs, floatingStyles, context, placement } = useFloating({
+  const { refs, floatingStyles, context, placement, isPositioned } = useFloating({
     placement: step.placement ?? "bottom",
     strategy: "fixed",
+    /**
+     * Position with `left`/`top`, NOT the default `transform: translate(x, y)`.
+     *
+     * The bubble is a `motion.div` that animates `x`, `y` and `scale`, so
+     * framer-motion writes the `transform` property directly to the node on
+     * every frame — clobbering floating-ui's translate the moment it lands.
+     * With the default, the bubble kept the `left: 0; top: 0` that translate
+     * was supposed to offset and painted in the viewport's top-left corner,
+     * while the spotlight (which measures the target itself) stayed correct.
+     * The sheet branch below already avoids transform for the same reason.
+     */
+    transform: false,
     elements: { reference: element },
     whileElementsMounted: (reference, floating, update) =>
       autoUpdate(reference, floating, update, { animationFrame: true }),
@@ -160,7 +172,16 @@ export default function TooltipPopover({
                   marginInline: "auto",
                   zIndex: 9995,
                 }
-              : { ...floatingStyles, zIndex: 9995 }
+              : {
+                  ...floatingStyles,
+                  zIndex: 9995,
+                  // computePosition is async, and floating-ui's coordinates
+                  // start at (0,0) — without this the bubble paints pinned to
+                  // the viewport's top-left corner until the first position
+                  // pass lands. Hidden, not unmounted: the measurement pass
+                  // needs the element in the DOM to size it.
+                  visibility: isPositioned ? undefined : "hidden",
+                }
           }
           initial={{ opacity: 0, scale: 0.96, ...enterOffset }}
           animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}

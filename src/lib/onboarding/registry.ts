@@ -54,6 +54,7 @@ export const ONBOARDING_TASK_LIST: readonly IOnboardingTask[] = [
     description: "Clients are who your projects and billable hours roll up to.",
     href: "/project-management/clients",
     ctaLabel: "Add client",
+    videoSrc: "/videos/add-client-tutorial.mp4",
     roles: MANAGEMENT_ROLES,
   },
   {
@@ -62,14 +63,23 @@ export const ONBOARDING_TASK_LIST: readonly IOnboardingTask[] = [
     description: "Projects are what your team tracks time against.",
     href: "/project-management/projects",
     ctaLabel: "Create project",
+    videoSrc: "/videos/add-project-tutorial.mp4",
     roles: PROJECT_ROLES,
   },
   {
+    /*
+     * The id stays `TEAM_INVITED` — it is a server enum value with rows in
+     * the wild already carrying it, and renaming it would orphan every
+     * earned milestone. Only the wording is ours to change: this product
+     * *adds* members directly (role, gender, date of birth — see
+     * `AddNewMemberModal`), it does not send invitations.
+     */
     id: "TEAM_INVITED",
-    label: "Invite a team member",
+    label: "Add a team member",
     description: "Add teammates and give them a role and permissions.",
     href: "/members",
-    ctaLabel: "Invite team",
+    ctaLabel: "Add member",
+    videoSrc: "/videos/add-member-tutorial.mp4",
     roles: MANAGEMENT_ROLES,
   },
   {
@@ -78,6 +88,7 @@ export const ONBOARDING_TASK_LIST: readonly IOnboardingTask[] = [
     description: "Time, apps and screenshots are captured by the desktop app.",
     href: "/download",
     ctaLabel: "Download",
+    videoSrc: "/videos/download-app-tutorial.mp4",
     roles: ALL_ROLES,
   },
   {
@@ -91,7 +102,7 @@ export const ONBOARDING_TASK_LIST: readonly IOnboardingTask[] = [
 ] as const;
 
 /**
- * An employee can neither add clients nor invite teammates, so showing them a
+ * An employee can neither add clients nor add teammates, so showing them a
  * "1/5 complete" checklist they can never finish would be worse than showing
  * none at all. The denominator is per-role.
  */
@@ -135,7 +146,7 @@ const CORE_STEPS: readonly ITourStep[] = [
     target: "cta-add-member",
     route: "/members",
     title: "Bring your team in",
-    body: "Invite teammates and assign each one a role. Roles decide what they can see and change — an employee tracks time, a manager runs projects.",
+    body: "Add teammates and assign each one a role. Roles decide what they can see and change — an employee tracks time, a manager runs projects.",
     placement: "bottom-end",
     task: "TEAM_INVITED",
     roles: MANAGEMENT_ROLES,

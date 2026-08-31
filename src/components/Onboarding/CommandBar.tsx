@@ -137,7 +137,7 @@ export default function CommandBar() {
                   <CommandItem
                     key={task.id}
                     // cmdk matches on `value`, so folding the CTA wording in
-                    // makes "invite" find "Invite a team member".
+                    // makes "add member" find "Add a team member".
                     value={`${task.ctaLabel} ${task.label}`}
                     onSelect={() => go(task.href)}
                   >

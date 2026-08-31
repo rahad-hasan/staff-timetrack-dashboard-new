@@ -4,7 +4,9 @@ import SideBar from "@/components/layout/SideBar";
 import Header from "@/components/layout/Header";
 import BillingGate from "@/components/Billing/BillingGate";
 import { getTodayWorkTime } from "@/actions/dashboard/action";
+import { getCompanyInfo } from "@/actions/settings/action";
 import { cookies } from "next/headers";
+import { unstable_rethrow } from "next/navigation";
 import SocketProvider from "@/socket/SocketProvider";
 import OnboardingGate from "@/components/Onboarding/OnboardingGate";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
@@ -15,7 +17,22 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const result = await getTodayWorkTime();
+  // Two independent reads, so they go in parallel — the workspace name must
+  // not add a serial round-trip to every dashboard navigation. `getCompanyInfo`
+  // is force-cached with a 60s revalidate behind the shared "company" tag, so
+  // after the first request this is a cache read.
+  const [result, company] = await Promise.all([
+    getTodayWorkTime(),
+    // Cosmetic: the Quick Setup workspace row reads correctly without a name,
+    // so a failure here must never take the whole dashboard layout down.
+    // `unstable_rethrow` keeps Next's own control-flow signals — baseApi's
+    // session-expired redirect above all — propagating.
+    getCompanyInfo().catch((error) => {
+      unstable_rethrow(error);
+      return null;
+    }),
+  ]);
+
   const cookieStore = await cookies();
   const token = cookieStore.get("accessToken");
   // Read here rather than letting the gate pull role from logInUserStore:
@@ -41,7 +58,10 @@ export default async function RootLayout({
           <BillingGate></BillingGate>
           {/* Welcome modal, guided tour and getting-started checklist. Same
               precedent as BillingGate: one mount for the whole dashboard. */}
-          <OnboardingGate role={currentUser?.role}></OnboardingGate>
+          <OnboardingGate
+            role={currentUser?.role}
+            workspaceName={company?.data?.name}
+          ></OnboardingGate>
           <div className="p-3 lg:p-5 w-full dark:bg-darkPrimaryBg lg:rounded-b-[12px]">
             {children}
           </div>

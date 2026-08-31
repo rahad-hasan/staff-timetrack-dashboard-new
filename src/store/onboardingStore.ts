@@ -79,6 +79,17 @@ interface OnboardingStore {
   stepIndex: number;
   checklistExpanded: boolean;
 
+  /**
+   * The milestone a Quick Setup CTA just sent the user off to complete.
+   *
+   * Runtime only, like the rest of the tour state: it is a breadcrumb for
+   * "bring the guide back when they actually do this", and a reload should
+   * forget it rather than ambush someone with a dialog they never asked for.
+   * The gate clears it and reopens Quick Setup once the milestone lands.
+   */
+  pendingTask: OnboardingTaskId | null;
+  setPendingTask: (task: OnboardingTaskId | null) => void;
+
   openWelcome: () => void;
   closeWelcome: () => void;
   startTour: (tour: TourId, role: string | undefined, atIndex?: number) => void;
@@ -169,7 +180,15 @@ export const useOnboardingStore = create<OnboardingStore>()((set, get) => ({
   dismiss: async () => {
     const status = get().status;
     if (status) set({ status: { ...status, isDismissed: true } });
-    set({ welcomeOpen: false, activeTour: null, steps: [], stepIndex: 0 });
+    // Drop the breadcrumb too — turning the guide off must not leave one
+    // last create waiting to pop it back open.
+    set({
+      welcomeOpen: false,
+      activeTour: null,
+      steps: [],
+      stepIndex: 0,
+      pendingTask: null,
+    });
 
     await patchAndStore(set, get, { isDismissed: true });
   },
@@ -201,6 +220,9 @@ export const useOnboardingStore = create<OnboardingStore>()((set, get) => ({
   steps: [],
   stepIndex: 0,
   checklistExpanded: true,
+  pendingTask: null,
+
+  setPendingTask: (task) => set({ pendingTask: task }),
 
   openWelcome: () => set({ welcomeOpen: true }),
   closeWelcome: () => set({ welcomeOpen: false }),
@@ -263,13 +285,26 @@ export const useOnboardingStore = create<OnboardingStore>()((set, get) => ({
       currentStepIndex: toGlobalIndex(activeTour, stepIndex),
     };
 
-    if (options.completed && activeTour === "orientation") {
-      // Clicking Finish IS the act that earns TOUR_COMPLETED, so it is awarded
-      // here explicitly — never by reading the last step's `task`. That field
-      // marks the milestone a step *teaches* (the closing download step
-      // teaches DESKTOP_APP_DOWNLOADED), and milestones are earned by really
-      // doing the thing, not by closing the walkthrough that showed it.
+    if (options.completed) {
+      /**
+       * Clicking Finish IS the act that earns TOUR_COMPLETED, so it is
+       * awarded here explicitly — never by reading the last step's `task`.
+       * That field marks the milestone a step *teaches* (the closing download
+       * step teaches DESKTOP_APP_DOWNLOADED), and milestones are earned by
+       * really doing the thing, not by closing the walkthrough that showed it.
+       *
+       * Awarded for EITHER walkthrough, not just orientation. The orientation
+       * tour is offered after the core one and can be declined, so gating the
+       * milestone on it meant a user who pressed Finish on the tour they were
+       * given — and then said "no thanks" to the optional extra — left the
+       * checklist row "Finish the product tour" unticked forever, with no way
+       * back to tick it. `completeSteps` is an append-only union, so taking
+       * the orientation tour afterwards cannot un-earn it.
+       */
       payload.completeSteps = ["TOUR_COMPLETED"];
+    }
+
+    if (options.completed && activeTour === "orientation") {
       // Only the orientation tour ends the whole onboarding. Finishing the
       // core walkthrough hands off to the "see the rest of the dashboard?"
       // prompt, which the gate owns.

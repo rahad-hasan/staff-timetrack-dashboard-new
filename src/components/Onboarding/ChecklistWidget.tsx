@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { Check, ChevronDown, Rocket, X } from "lucide-react";
+import { Check, ChevronDown, PlayCircle, Rocket, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { IOnboardingTask, OnboardingTaskId } from "@/types/onboarding";
@@ -29,6 +29,8 @@ interface ChecklistWidgetProps {
   onDismiss: () => void;
   /** The TOUR_COMPLETED row runs the walkthrough instead of navigating. */
   onStartTour: () => void;
+  /** Reopens the Quick Setup dialog — per-step video tutorials and CTAs. */
+  onOpenGuide: () => void;
 }
 
 export default function ChecklistWidget({
@@ -38,6 +40,7 @@ export default function ChecklistWidget({
   onExpandedChange,
   onDismiss,
   onStartTour,
+  onOpenGuide,
 }: ChecklistWidgetProps) {
   const done = tasks.filter((task) => completed.includes(task.id)).length;
   const total = tasks.length;
@@ -187,6 +190,17 @@ export default function ChecklistWidget({
                   );
                 })}
               </ul>
+
+              <div className="border-t border-borderColor px-3.5 py-2.5 dark:border-darkBorder">
+                <button
+                  type="button"
+                  onClick={onOpenGuide}
+                  className="flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-[8px] py-1.5 text-sm font-medium text-primary transition-colors hover:bg-primary/5"
+                >
+                  <PlayCircle className="size-4" />
+                  Open setup guide
+                </button>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>

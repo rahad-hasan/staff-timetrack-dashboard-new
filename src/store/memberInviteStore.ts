@@ -3,7 +3,7 @@ import { create } from "zustand";
 /**
  * One-shot "open the Add Member dialog" intent.
  *
- * Raised from anywhere in the app (the profile menu's "Invite member to team")
+ * Raised from anywhere in the app (the profile menu's "Add member to team")
  * and claimed by `MemberHeroSection` once the members page has mounted.
  *
  * A store rather than an `?invite=1` query param on purpose: the members list

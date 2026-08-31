@@ -105,10 +105,39 @@ export function useTourTarget(
       // `isConnected` catches the case that matters most: React replaced the
       // subtree (a route change, a table re-render) and the node we measured
       // is now detached. Re-resolving beats holding a stale reference.
-      const found =
-        element && element.isConnected ? element : resolveAnchor(anchor);
+      let found: HTMLElement | null =
+        element && element.isConnected ? element : null;
+      let box = found ? found.getBoundingClientRect() : null;
 
-      if (!found) {
+      // A cached node must keep earning its place. `resolveAnchor` refuses
+      // zero-area matches (see its comment: a collapsed anchor punches a hole
+      // of nothing and parks the tooltip in a corner), and an element that
+      // collapses *after* we latched onto it — a breakpoint hiding the
+      // sidebar, a menu closing under it — must go back through that same
+      // check rather than being spotlighted as a 0×0 box.
+      if (!box || box.width <= 0 || box.height <= 0) {
+        found = resolveAnchor(anchor);
+        box = found ? found.getBoundingClientRect() : null;
+      }
+
+      if (!found || !box) {
+        /**
+         * Losing a target we had already latched onto is not the same as
+         * never having found one, and it must not inherit that first
+         * search's deadline — which expired long ago, while the user was
+         * reading the bubble. Without this, the first frame of a transient
+         * collapse (a window crossing `lg`, a menu closing over the anchor)
+         * is declared missing immediately: the gate skips the step, and on
+         * the LAST step it ends the tour as completed and awards
+         * TOUR_COMPLETED for a walkthrough nobody finished.
+         *
+         * A fresh budget also buys time to find the *other* copy: the header
+         * renders the theme toggle and profile menu twice, one per
+         * breakpoint, so the anchor that just vanished usually has a visible
+         * sibling one `resolveAnchor` call away.
+         */
+        if (element) deadline = performance.now() + timeoutRef.current;
+
         element = null;
         scrolled = false;
         lastRect = null;
@@ -123,15 +152,25 @@ export function useTourTarget(
         return;
       }
 
-      if (found !== element) {
+      /**
+       * React can replace the anchor with a BRAND NEW node at the SAME
+       * geometry — a Suspense boundary resolving, a list re-rendering. The
+       * rect comparison below would then find nothing changed and skip the
+       * state update, leaving the popover positioned against the DETACHED
+       * node it was handed earlier. A detached element measures 0×0 at the
+       * origin, so the bubble lands in the viewport's top-left corner while
+       * the spotlight — which reads `rect`, not `element` — stays perfectly
+       * correct. Identity has to force the update on its own.
+       */
+      const swapped = found !== element;
+
+      if (swapped) {
         element = found;
         scrolled = false;
         // A fresh element gets a fresh grace period — it may still be
         // animating in from zero height.
         deadline = performance.now() + timeoutRef.current;
       }
-
-      const box = found.getBoundingClientRect();
 
       if (!scrolled) {
         scrolled = true;
@@ -148,7 +187,7 @@ export function useTourTarget(
         radius: readRadius(found),
       };
 
-      if (!lastRect || !rectsEqual(lastRect, next)) {
+      if (swapped || !lastRect || !rectsEqual(lastRect, next)) {
         lastRect = next;
         setState({ status: "found", rect: next, element: found });
       }

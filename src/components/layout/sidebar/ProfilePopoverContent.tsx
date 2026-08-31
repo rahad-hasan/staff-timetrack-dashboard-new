@@ -93,7 +93,7 @@ const ProfilePopoverContent = ({ side, align }: { side: "top" | "right" | "botto
                 {isManagement && (
                     <PopoverClose asChild>
                         <button type="button" onClick={handleInviteMember} className={MENU_ITEM_CLASS}>
-                            <InviteMemberIcon size={18} /> Invite member to team
+                            <InviteMemberIcon size={18} /> Add member to team
                         </button>
                     </PopoverClose>
                 )}

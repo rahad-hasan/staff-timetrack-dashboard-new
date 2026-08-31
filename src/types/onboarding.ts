@@ -44,7 +44,14 @@ export interface IOnboardingTask {
   href: string;
   ctaLabel: string;
   /**
-   * Roles that can actually perform the task. An employee cannot invite
+   * Short tutorial clip shown in the Quick Setup dialog's preview pane,
+   * as a `/videos/*.mp4` path under `public/`. Tasks without one get a
+   * designed static panel instead — absence is a supported state, not an
+   * error.
+   */
+  videoSrc?: string;
+  /**
+   * Roles that can actually perform the task. An employee cannot add
    * teammates, so the checklist must not show them a task they can never
    * finish — see `visibleTasksForRole`.
    */

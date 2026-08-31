@@ -9,7 +9,8 @@ import { resumePoint, useOnboardingStore } from "@/store/onboardingStore";
 import { checklistProgress, stepsForTour } from "@/lib/onboarding/registry";
 import { useTourTarget } from "@/lib/onboarding/useTourTarget";
 import { useDialogOpen } from "@/lib/onboarding/useDialogOpen";
-import OnboardingModal from "./OnboardingModal";
+import { IOnboardingTask } from "@/types/onboarding";
+import QuickSetupDialog from "./QuickSetupDialog";
 import SpotlightOverlay from "./SpotlightOverlay";
 import TooltipPopover from "./TooltipPopover";
 import ChecklistWidget from "./ChecklistWidget";
@@ -38,9 +39,19 @@ interface OnboardingGateProps {
    * exist, so getting it wrong means showing an admin an employee's checklist.
    */
   role?: string;
+  /**
+   * The organization's name, for Quick Setup's workspace row. Read
+   * server-side for the same reason as `role`: no client store holds it —
+   * `buildLogInUserData` keeps `company_id` and drops the name — so the only
+   * source that works on a fresh browser is a prop from the layout.
+   */
+  workspaceName?: string;
 }
 
-export default function OnboardingGate({ role: serverRole }: OnboardingGateProps) {
+export default function OnboardingGate({
+  role: serverRole,
+  workspaceName,
+}: OnboardingGateProps) {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -52,6 +63,7 @@ export default function OnboardingGate({ role: serverRole }: OnboardingGateProps
   const fetchStatus = useOnboardingStore((s) => s.fetchStatus);
   const welcomeOpen = useOnboardingStore((s) => s.welcomeOpen);
   const openWelcome = useOnboardingStore((s) => s.openWelcome);
+  const closeWelcome = useOnboardingStore((s) => s.closeWelcome);
   const activeTour = useOnboardingStore((s) => s.activeTour);
   const steps = useOnboardingStore((s) => s.steps);
   const stepIndex = useOnboardingStore((s) => s.stepIndex);
@@ -62,6 +74,8 @@ export default function OnboardingGate({ role: serverRole }: OnboardingGateProps
   const endTour = useOnboardingStore((s) => s.endTour);
   const dismiss = useOnboardingStore((s) => s.dismiss);
   const finish = useOnboardingStore((s) => s.finish);
+  const pendingTask = useOnboardingStore((s) => s.pendingTask);
+  const setPendingTask = useOnboardingStore((s) => s.setPendingTask);
   const checklistExpanded = useOnboardingStore((s) => s.checklistExpanded);
   const setChecklistExpanded = useOnboardingStore((s) => s.setChecklistExpanded);
 
@@ -111,6 +125,12 @@ export default function OnboardingGate({ role: serverRole }: OnboardingGateProps
     // Only ambush them on the dashboard. Someone who deep-linked into a report
     // came for the report.
     if (!eligible || !pathname?.startsWith("/dashboard")) return;
+
+    // A user with real progress has already met the guide and knows where it
+    // lives — the floating checklist carries it from here. Auto-opening a
+    // modal over every login until the list is finished is how a helpful
+    // guide becomes a nag.
+    if (checklistProgress(role, status.completedSteps).done > 0) return;
 
     welcomeShownRef.current = true;
     openWelcome();
@@ -204,6 +224,38 @@ export default function OnboardingGate({ role: serverRole }: OnboardingGateProps
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [activeTour, dialogOpen, endTour]);
 
+  /* ---------------- come back after a CTA ---------------- */
+
+  /**
+   * A Quick Setup CTA closes the guide and drops the user on the page where
+   * the work happens. When they actually do it, bring the guide back.
+   *
+   * Without this the flow dead-ends exactly where it should feel like
+   * progress: the user adds their member, the success toast fades, and the
+   * guide they were following is simply gone — they have to find the widget
+   * and reopen it to reach the next step. Reopening lands them on the next
+   * incomplete row, which is the whole point of a checklist.
+   */
+  useEffect(() => {
+    if (!pendingTask || !status) return;
+    if (!status.completedSteps.includes(pendingTask)) return;
+
+    // Wait for the create dialog to finish unmounting. Two Radix modals
+    // overlapping fight over the `pointer-events: none` they each put on
+    // <body>, and the loser leaves the page inert.
+    if (dialogOpen) return;
+
+    setPendingTask(null);
+
+    // Nothing to come back to if they turned the guide off or finished, and
+    // a running tour is a deliberate full-screen flow — do not interrupt it.
+    if (status.isDismissed || status.isOnboardingCompleted || activeTour) {
+      return;
+    }
+
+    openWelcome();
+  }, [pendingTask, status, dialogOpen, activeTour, openWelcome, setPendingTask]);
+
   /* ---------------- completion ---------------- */
 
   const progress = checklistProgress(role, status?.completedSteps ?? []);
@@ -266,6 +318,37 @@ export default function OnboardingGate({ role: serverRole }: OnboardingGateProps
     else startTour(openingTour(), role);
   }, [status, role, startTour, openingTour]);
 
+  /**
+   * A Quick Setup CTA closes the dialog and navigates. It deliberately does
+   * NOT launch the spotlight walkthrough.
+   *
+   * The centered guide *is* the tour: the user watches the clip for the step,
+   * presses the one button, and lands on the page ready to do it — then the
+   * milestone ticks itself from that flow's own success handler and the
+   * checklist widget brings them back. Hijacking the click into an anchored,
+   * seven-step overlay is the thing that made the old onboarding feel like an
+   * obstacle. The spotlight tour survives as an explicit opt-in: the
+   * "Finish the product tour" row here, and Resume/Restart in the profile
+   * menu.
+   */
+  const handleQuickSetupAction = useCallback(
+    (task: IOnboardingTask) => {
+      if (task.id === "TOUR_COMPLETED") {
+        // Resume a half-finished walkthrough or start the right one for this
+        // role. `startTour` closes this dialog itself.
+        handleResume();
+        return;
+      }
+
+      // Breadcrumb for the effect below: when this milestone really lands,
+      // the guide comes back on its own.
+      setPendingTask(task.id);
+      closeWelcome();
+      router.push(task.href);
+    },
+    [closeWelcome, router, handleResume, setPendingTask],
+  );
+
   const handleStartOrientation = useCallback(() => {
     setHandoffOpen(false);
     startTour("orientation", role);
@@ -286,17 +369,27 @@ export default function OnboardingGate({ role: serverRole }: OnboardingGateProps
     !status.isOnboardingCompleted &&
     !status.isDismissed &&
     progress.total > 0 &&
-    progress.done < progress.total;
+    progress.done < progress.total &&
+    // The widget is the dialog's own launcher and sits at z-[80], above
+    // ui/dialog's z-50 overlay. Left mounted it would float brightly over the
+    // guide it just opened — and because Radix puts `pointer-events: none` on
+    // the body, a click on that bright card lands on the overlay and closes
+    // the very dialog the user opened. It is also redundant: the dialog shows
+    // the same checklist, larger.
+    !welcomeOpen;
 
   return (
     <>
-      <OnboardingModal
+      <QuickSetupDialog
         open={welcomeOpen}
         userName={logInUserData?.name as string | undefined}
-        canResume={resumable}
-        onStart={handleStartCore}
-        onResume={handleResume}
-        onSkip={() => void dismiss()}
+        workspaceName={workspaceName}
+        tasks={progress.tasks}
+        completed={status.completedSteps}
+        tourResumable={resumable}
+        onClose={closeWelcome}
+        onDismissForever={() => void dismiss()}
+        onAction={handleQuickSetupAction}
       />
 
       <TourHandoffDialog
@@ -347,6 +440,7 @@ export default function OnboardingGate({ role: serverRole }: OnboardingGateProps
             onExpandedChange={setChecklistExpanded}
             onDismiss={() => void dismiss()}
             onStartTour={handleStartCore}
+            onOpenGuide={openWelcome}
           />
         )}
       </AnimatePresence>

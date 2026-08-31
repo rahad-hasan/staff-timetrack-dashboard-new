@@ -301,9 +301,9 @@ const IntegrationResultDialog = ({
                     >
                         <p className="mb-2 text-xs text-amber-800 dark:text-amber-200">
                             {/* Trello never exposes member emails, so its intro
-                                replaces the invite-by-email advice entirely */}
+                                replaces the match-by-email advice entirely */}
                             {def.notes?.unmatchedUsersIntro ??
-                                `These ${def.name} users have no matching account here, so their ${def.countNoun}s were assigned to you. Invite them with the same email to match them on the next sync.${
+                                `These ${def.name} users have no matching account here, so their ${def.countNoun}s were assigned to you. Add them with the same email to match them on the next sync.${
                                     def.notes?.unmatchedUsers
                                         ? ` ${def.notes.unmatchedUsers}`
                                         : ""

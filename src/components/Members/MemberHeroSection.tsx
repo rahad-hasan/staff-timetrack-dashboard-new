@@ -21,7 +21,7 @@ const MemberHeroSection = () => {
     const isInvitePending = useMemberInviteStore(state => state.isInvitePending);
     const consumeInvite = useMemberInviteStore(state => state.consumeInvite);
 
-    // "Invite member to team" (profile menu) navigates here and leaves the
+    // "Add member to team" (profile menu) navigates here and leaves the
     // intent in the store. Claim it exactly once — otherwise a later visit to
     // /members would reopen the dialog on its own.
     useEffect(() => {
