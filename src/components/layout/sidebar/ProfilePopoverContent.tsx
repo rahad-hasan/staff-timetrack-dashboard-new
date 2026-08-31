@@ -19,8 +19,9 @@ import { useProfileImage } from "@/hooks/useProfileImage";
 import Link from "next/link";
 import { useSidebarStore } from "@/store/sidebarStore";
 import TourMenuItem from "@/components/Onboarding/TourMenuItem";
-import { useMemberInviteStore } from "@/store/memberInviteStore";
-import { MANAGEMENT_ROLES } from "@/lib/onboarding/registry";
+import { useQuickActionStore } from "@/store/quickActionStore";
+import { CREATE_ACTIONS } from "@/lib/quickActions";
+import { MANAGEMENT_ROLES } from "@/lib/roles";
 import { BILLING_URL } from "@/lib/billing";
 import { MARKETING_SITE_URL } from "@/lib/siteLinks";
 
@@ -32,7 +33,7 @@ const ProfilePopoverContent = ({ side, align }: { side: "top" | "right" | "botto
     const router = useRouter();
     const { resetSidebar } = useSidebarStore();
     const logInUserData = useLogInUserStore(state => state.logInUserData);
-    const requestInvite = useMemberInviteStore(state => state.requestInvite);
+    const requestCreate = useQuickActionStore(state => state.requestCreate);
     const { src: profileImageSrc, handleLoadingStatusChange } = useProfileImage();
 
     // Members and billing are both admin / manager / hr only — `/settings/billing`
@@ -53,11 +54,11 @@ const ProfilePopoverContent = ({ side, align }: { side: "top" | "right" | "botto
     }
 
     // Leave the intent in the store and navigate: `MemberHeroSection` claims it
-    // on mount and opens the Add Member dialog over the list, so the new member
-    // lands in a page that already shows the team.
+    // and opens the Add Member dialog over the list, so the new member lands in
+    // a page that already shows the team.
     const handleInviteMember = () => {
-        requestInvite();
-        router.push("/members");
+        requestCreate("member");
+        router.push(CREATE_ACTIONS.member.href);
     };
 
     return (

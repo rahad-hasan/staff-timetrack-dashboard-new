@@ -6,29 +6,23 @@ import {
     Dialog,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import AddNewMemberModal from "./AddNewMemberModal";
 import SearchBar from "../Common/SearchBar";
 import HeadingComponent from "../Common/HeadingComponent";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useMemberInviteStore } from "@/store/memberInviteStore";
+import { useCreateIntent } from "@/store/quickActionStore";
 
 const MemberHeroSection = () => {
     const [open, setOpen] = useState(false)
     const router = useRouter();
     const searchParams = useSearchParams();
 
-    const isInvitePending = useMemberInviteStore(state => state.isInvitePending);
-    const consumeInvite = useMemberInviteStore(state => state.consumeInvite);
-
-    // "Add member to team" (profile menu) navigates here and leaves the
-    // intent in the store. Claim it exactly once — otherwise a later visit to
-    // /members would reopen the dialog on its own.
-    useEffect(() => {
-        if (!isInvitePending) return;
-        consumeInvite();
-        setOpen(true);
-    }, [isInvitePending, consumeInvite]);
+    // "Add member" from anywhere else in the app — the profile menu, Quick
+    // Setup, the getting-started widget, ⌘K — navigates here and leaves the
+    // intent in the store. Claimed exactly once, so a later visit to /members
+    // does not reopen the dialog on its own.
+    useCreateIntent("member", () => setOpen(true));
 
     const handleSearch = (query: string) => {
         const params = new URLSearchParams(searchParams.toString());

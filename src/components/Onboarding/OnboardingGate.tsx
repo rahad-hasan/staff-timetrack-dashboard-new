@@ -9,6 +9,7 @@ import { resumePoint, useOnboardingStore } from "@/store/onboardingStore";
 import { checklistProgress, stepsForTour } from "@/lib/onboarding/registry";
 import { useTourTarget } from "@/lib/onboarding/useTourTarget";
 import { useDialogOpen } from "@/lib/onboarding/useDialogOpen";
+import { useQuickActionStore } from "@/store/quickActionStore";
 import { IOnboardingTask } from "@/types/onboarding";
 import QuickSetupDialog from "./QuickSetupDialog";
 import SpotlightOverlay from "./SpotlightOverlay";
@@ -80,6 +81,12 @@ export default function OnboardingGate({
   const setChecklistExpanded = useOnboardingStore((s) => s.setChecklistExpanded);
 
   const setRole = useOnboardingStore((s) => s.setRole);
+
+  /**
+   * Carries "and open the create dialog when you land" across the navigation
+   * a CTA kicks off — see `quickActionStore`.
+   */
+  const requestCreate = useQuickActionStore((s) => s.requestCreate);
 
   const [handoffOpen, setHandoffOpen] = useState(false);
 
@@ -319,20 +326,24 @@ export default function OnboardingGate({
   }, [status, role, startTour, openingTour]);
 
   /**
-   * A Quick Setup CTA closes the dialog and navigates. It deliberately does
-   * NOT launch the spotlight walkthrough.
+   * The one thing every checklist CTA does, from either surface.
    *
-   * The centered guide *is* the tour: the user watches the clip for the step,
-   * presses the one button, and lands on the page ready to do it — then the
-   * milestone ticks itself from that flow's own success handler and the
-   * checklist widget brings them back. Hijacking the click into an anchored,
-   * seven-step overlay is the thing that made the old onboarding feel like an
-   * obstacle. The spotlight tour survives as an explicit opt-in: the
-   * "Finish the product tour" row here, and Resume/Restart in the profile
-   * menu.
+   * It deliberately does NOT launch the spotlight walkthrough. The centered
+   * guide *is* the tour: the user watches the clip for the step, presses the
+   * one button, and lands on the page **with the create dialog already open**
+   * — then the milestone ticks itself from that flow's own success handler.
+   * Hijacking the click into an anchored, seven-step overlay is the thing that
+   * made the old onboarding feel like an obstacle. The spotlight tour survives
+   * as an explicit opt-in: the "Finish the product tour" row, and
+   * Resume/Restart in the profile menu.
+   *
+   * Order matters. The intent is raised BEFORE the navigation so it is already
+   * in the store when the destination's hero section mounts and claims it —
+   * and before `closeWelcome`, so that a CTA pressed while already standing on
+   * the destination (no navigation at all) still has something to claim.
    */
-  const handleQuickSetupAction = useCallback(
-    (task: IOnboardingTask) => {
+  const runTaskAction = useCallback(
+    (task: IOnboardingTask, { reopenGuide }: { reopenGuide: boolean }) => {
       if (task.id === "TOUR_COMPLETED") {
         // Resume a half-finished walkthrough or start the right one for this
         // role. `startTour` closes this dialog itself.
@@ -340,13 +351,28 @@ export default function OnboardingGate({
         return;
       }
 
-      // Breadcrumb for the effect below: when this milestone really lands,
-      // the guide comes back on its own.
-      setPendingTask(task.id);
+      if (task.createIntent) requestCreate(task.createIntent);
+
+      // Breadcrumb for the effect above: when this milestone really lands, the
+      // guide comes back on its own. Only for CTAs pressed *inside* the guide
+      // — reopening a dialog the user never had open is an ambush, not a
+      // hand-off.
+      if (reopenGuide) setPendingTask(task.id);
+
       closeWelcome();
       router.push(task.href);
     },
-    [closeWelcome, router, handleResume, setPendingTask],
+    [closeWelcome, router, handleResume, setPendingTask, requestCreate],
+  );
+
+  const handleQuickSetupAction = useCallback(
+    (task: IOnboardingTask) => runTaskAction(task, { reopenGuide: true }),
+    [runTaskAction],
+  );
+
+  const handleChecklistAction = useCallback(
+    (task: IOnboardingTask) => runTaskAction(task, { reopenGuide: false }),
+    [runTaskAction],
   );
 
   const handleStartOrientation = useCallback(() => {
@@ -439,6 +465,7 @@ export default function OnboardingGate({
             expanded={checklistExpanded}
             onExpandedChange={setChecklistExpanded}
             onDismiss={() => void dismiss()}
+            onTaskAction={handleChecklistAction}
             onStartTour={handleStartCore}
             onOpenGuide={openWelcome}
           />

@@ -1,3 +1,9 @@
+import { CREATE_ACTIONS } from "@/lib/quickActions";
+import {
+  ALL_ROLES,
+  MANAGEMENT_ROLES,
+  PROJECT_ROLES,
+} from "@/lib/roles";
 import {
   IOnboardingTask,
   ITourStep,
@@ -22,26 +28,12 @@ import {
  * step unsearched.
  */
 
-/* ------------------------------------------------------------------ *
- * Roles
- * ------------------------------------------------------------------ */
-
-/**
- * Mirrors the role gates already duplicated across the app — `SideBar.tsx`
- * (which arrays to render), `ProjectHeroSection.tsx` (Add Project), and
- * `dashboard/layout.tsx` (the members row). A step or task whose target only
- * exists for some roles must carry the same gate, or the tour dead-ends on a
- * target that will never mount.
+/*
+ * Role gates live in `src/lib/roles.ts` — shared with `lib/quickActions.ts`,
+ * which this file imports, so they cannot live here without a cycle. A step or
+ * task whose target only exists for some roles must carry the same gate the
+ * component does, or the tour dead-ends on a target that will never mount.
  */
-export const MANAGEMENT_ROLES = ["admin", "manager", "hr"] as const;
-export const PROJECT_ROLES = ["admin", "manager"] as const;
-export const ALL_ROLES = [
-  "admin",
-  "manager",
-  "hr",
-  "project_manager",
-  "employee",
-] as const;
 
 /* ------------------------------------------------------------------ *
  * Getting-started checklist
@@ -52,8 +44,9 @@ export const ONBOARDING_TASK_LIST: readonly IOnboardingTask[] = [
     id: "CLIENT_CREATED",
     label: "Add your first client",
     description: "Clients are who your projects and billable hours roll up to.",
-    href: "/project-management/clients",
+    href: CREATE_ACTIONS.client.href,
     ctaLabel: "Add client",
+    createIntent: "client",
     videoSrc: "/videos/add-client-tutorial.mp4",
     roles: MANAGEMENT_ROLES,
   },
@@ -61,8 +54,9 @@ export const ONBOARDING_TASK_LIST: readonly IOnboardingTask[] = [
     id: "PROJECT_CREATED",
     label: "Create your first project",
     description: "Projects are what your team tracks time against.",
-    href: "/project-management/projects",
+    href: CREATE_ACTIONS.project.href,
     ctaLabel: "Create project",
+    createIntent: "project",
     videoSrc: "/videos/add-project-tutorial.mp4",
     roles: PROJECT_ROLES,
   },
@@ -77,8 +71,9 @@ export const ONBOARDING_TASK_LIST: readonly IOnboardingTask[] = [
     id: "TEAM_INVITED",
     label: "Add a team member",
     description: "Add teammates and give them a role and permissions.",
-    href: "/members",
+    href: CREATE_ACTIONS.member.href,
     ctaLabel: "Add member",
+    createIntent: "member",
     videoSrc: "/videos/add-member-tutorial.mp4",
     roles: MANAGEMENT_ROLES,
   },

@@ -10,6 +10,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import SelectProjectWrapper from "@/components/Common/SelectProjectWrapper";
 import SelectUserWrapper from "@/components/Common/SelectUserWrapper";
+import { useCreateIntent } from "@/store/quickActionStore";
 
 const TaskHeroSection = () => {
   const [open, setOpen] = useState(false);
@@ -41,6 +42,11 @@ const TaskHeroSection = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // "Create task" pressed elsewhere (⌘K) navigates here and leaves the intent
+  // in the store; claim it and open the form rather than making the user find
+  // the button again.
+  useCreateIntent("task", () => setOpen(true));
 
   const handleCloseDialog = () => {
     setOpen(false);

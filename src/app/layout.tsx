@@ -54,13 +54,15 @@ export default async function RootLayout({
         data-new-gr-c-s-check-loaded="14.1263.0"
         aria-controls="radix-_R_babnqlb_"
       >
-        <Toaster position="top-center" />
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >
+          {/* Inside ThemeProvider so the toaster follows the app theme
+              instead of falling back to the OS preference. */}
+          <Toaster position="top-center" />
           <SetGlobalColor />
           <SidebarRouteSync />
           <ClearNavbarStorageOnWindowClose />

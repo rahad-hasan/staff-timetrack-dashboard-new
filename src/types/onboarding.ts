@@ -1,4 +1,5 @@
 import type { Placement } from "@floating-ui/react";
+import type { CreateActionKind } from "@/lib/quickActions";
 
 /**
  * Onboarding / product-tour contract.
@@ -43,6 +44,17 @@ export interface IOnboardingTask {
   /** Where the quick-action button sends the user. */
   href: string;
   ctaLabel: string;
+  /**
+   * The create dialog this task's CTA should open once the user lands on
+   * `href`. Without it the button is a bare navigation and the user has to
+   * find and press the page's own "Add ..." button — the click they already
+   * made. `undefined` for tasks whose destination is the whole point
+   * (`/download`) or which run a flow instead (`TOUR_COMPLETED`).
+   *
+   * `href` is kept alongside rather than derived from this: it is the task's
+   * own contract, and two of the five tasks have no dialog to open.
+   */
+  createIntent?: CreateActionKind;
   /**
    * Short tutorial clip shown in the Quick Setup dialog's preview pane,
    * as a `/videos/*.mp4` path under `public/`. Tasks without one get a

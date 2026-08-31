@@ -16,6 +16,9 @@ import {
 import { useLogInUserStore } from "@/store/logInUserStore";
 import { TOUR_ANCHORS } from "@/lib/onboarding/anchors";
 import { visibleTasksForRole } from "@/lib/onboarding/registry";
+import { CreateActionKind, createActionsForRole } from "@/lib/quickActions";
+import { MANAGEMENT_ROLES, hasRole } from "@/lib/roles";
+import { useQuickActionStore } from "@/store/quickActionStore";
 import {
   employeeOthersSidebarItems,
   othersSidebarItems,
@@ -36,13 +39,25 @@ import {
  * drift out of sync with what the sidebar actually shows a given role.
  */
 
-const MANAGEMENT_ROLES = ["admin", "manager", "hr"];
-
 interface CommandEntry {
   label: string;
   href: string;
   /** Parent group, shown as a subtitle so two "Settings" rows are tellable apart. */
   group?: string;
+}
+
+interface QuickAction {
+  key: string;
+  label: string;
+  /** Subtitle, shown right-aligned — the row's context in one word or phrase. */
+  hint: string;
+  href: string;
+  /**
+   * Create dialog to open on arrival. Without it the row is a bare
+   * navigation and the user has to press the page's own "Add ..." button —
+   * the click they just made.
+   */
+  intent?: CreateActionKind;
 }
 
 export default function CommandBar() {
@@ -52,7 +67,9 @@ export default function CommandBar() {
   const logInUserData = useLogInUserStore((state) => state.logInUserData);
   const role = logInUserData?.role as string | undefined;
 
-  const isManagement = role ? MANAGEMENT_ROLES.includes(role) : false;
+  const isManagement = hasRole(MANAGEMENT_ROLES, role);
+
+  const requestCreate = useQuickActionStore((state) => state.requestCreate);
 
   const destinations = useMemo<CommandEntry[]>(() => {
     const main = isManagement ? sidebarItems : sidebarItemsEmployee;
@@ -71,13 +88,38 @@ export default function CommandBar() {
     );
   }, [isManagement]);
 
-  // The same quick actions the getting-started checklist offers, minus the one
-  // that is not a destination.
-  const quickActions = useMemo(
-    () =>
-      visibleTasksForRole(role).filter((task) => task.id !== "TOUR_COMPLETED"),
-    [role],
-  );
+  /**
+   * The getting-started checklist's actions first — those are the ones a new
+   * workspace is actively being nagged about — then any remaining create
+   * action the checklist has no row for (creating a task is everyday work, not
+   * a setup milestone). Both halves are role-filtered by their own source, so
+   * nobody is offered a dialog they cannot open.
+   */
+  const quickActions = useMemo<QuickAction[]>(() => {
+    const fromChecklist: QuickAction[] = visibleTasksForRole(role)
+      .filter((task) => task.id !== "TOUR_COMPLETED")
+      .map((task) => ({
+        key: task.id,
+        label: task.ctaLabel,
+        hint: task.label,
+        href: task.href,
+        intent: task.createIntent,
+      }));
+
+    const covered = new Set(fromChecklist.map((action) => action.intent));
+
+    const rest: QuickAction[] = createActionsForRole(role)
+      .filter((action) => !covered.has(action.kind))
+      .map((action) => ({
+        key: action.kind,
+        label: action.label,
+        hint: action.hint,
+        href: action.href,
+        intent: action.kind,
+      }));
+
+    return [...fromChecklist, ...rest];
+  }, [role]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -102,6 +144,19 @@ export default function CommandBar() {
       router.push(href);
     },
     [router],
+  );
+
+  /**
+   * "Add client" has to add a client, not show the page that has an Add Client
+   * button on it. The intent is raised before the navigation so it is already
+   * in the store when the destination's hero section mounts and claims it.
+   */
+  const run = useCallback(
+    (action: QuickAction) => {
+      if (action.intent) requestCreate(action.intent);
+      go(action.href);
+    },
+    [go, requestCreate],
   );
 
   return (
@@ -133,16 +188,16 @@ export default function CommandBar() {
           {quickActions.length > 0 && (
             <>
               <CommandGroup heading="Quick actions">
-                {quickActions.map((task) => (
+                {quickActions.map((action) => (
                   <CommandItem
-                    key={task.id}
-                    // cmdk matches on `value`, so folding the CTA wording in
-                    // makes "add member" find "Add a team member".
-                    value={`${task.ctaLabel} ${task.label}`}
-                    onSelect={() => go(task.href)}
+                    key={action.key}
+                    // cmdk matches on `value`, so folding the hint in makes
+                    // "add member" find "Add a team member".
+                    value={`${action.label} ${action.hint}`}
+                    onSelect={() => run(action)}
                   >
-                    {task.ctaLabel}
-                    <CommandShortcut>{task.label}</CommandShortcut>
+                    {action.label}
+                    <CommandShortcut>{action.hint}</CommandShortcut>
                   </CommandItem>
                 ))}
               </CommandGroup>

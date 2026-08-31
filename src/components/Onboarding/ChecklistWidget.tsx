@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { Check, ChevronDown, PlayCircle, Rocket, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -27,6 +26,12 @@ interface ChecklistWidgetProps {
   expanded: boolean;
   onExpandedChange: (expanded: boolean) => void;
   onDismiss: () => void;
+  /**
+   * A task row's CTA. Navigates to where the work happens AND opens that
+   * page's create dialog — the gate owns both halves, this component only
+   * reports the click.
+   */
+  onTaskAction: (task: IOnboardingTask) => void;
   /** The TOUR_COMPLETED row runs the walkthrough instead of navigating. */
   onStartTour: () => void;
   /** Reopens the Quick Setup dialog — per-step video tutorials and CTAs. */
@@ -39,6 +44,7 @@ export default function ChecklistWidget({
   expanded,
   onExpandedChange,
   onDismiss,
+  onTaskAction,
   onStartTour,
   onOpenGuide,
 }: ChecklistWidgetProps) {
@@ -182,8 +188,18 @@ export default function ChecklistWidget({
                             {task.ctaLabel}
                           </Button>
                         ) : (
-                          <Button size="sm" variant="outline" asChild>
-                            <Link href={task.href}>{task.ctaLabel}</Link>
+                          /*
+                            A button, not a link: this does more than navigate
+                            — it opens the create dialog on the page it lands
+                            on. A link would also offer a middle-click that
+                            silently drops that half of the behaviour.
+                          */
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => onTaskAction(task)}
+                          >
+                            {task.ctaLabel}
                           </Button>
                         ))}
                     </li>

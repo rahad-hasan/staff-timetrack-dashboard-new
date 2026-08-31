@@ -13,6 +13,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import { useProjectFormStore } from "@/store/ProjectFormStore";
+import { useCreateIntent } from "@/store/quickActionStore";
 
 const ProjectHeroSection = () => {
     const logInUserData = useLogInUserStore(state => state.logInUserData);
@@ -34,6 +35,12 @@ const ProjectHeroSection = () => {
         params.set("search", query);
         router.push(`?${params.toString()}`);
     };
+
+    // "Create project" pressed elsewhere (Quick Setup, the checklist widget,
+    // ⌘K) navigates here and leaves the intent in the store. Routed through
+    // `handleOpenChange` like every other open, so the shared project form
+    // store is reset on the way back out.
+    useCreateIntent("project", () => handleOpenChange(true));
 
     // const activeTab = (searchParams.get("tab") as Tab) ?? "active";
     // const setTab = (tab: Tab) => {

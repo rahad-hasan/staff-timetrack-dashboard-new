@@ -11,7 +11,8 @@ import {
     Dialog,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import AddClientModal from "@/components/ProjectManagement/Clients/AddClientModal";;
+import AddClientModal from "@/components/ProjectManagement/Clients/AddClientModal";
+import { useCreateIntent } from "@/store/quickActionStore";
 
 const ClientHereSection = () => {
     const [open, setOpen] = useState(false)
@@ -31,6 +32,11 @@ const ClientHereSection = () => {
             router.replace(pathname, { scroll: false });
         }
     }, []);
+
+    // "Add client" pressed elsewhere (Quick Setup, the checklist widget, ⌘K)
+    // navigates here and leaves the intent in the store; claim it and open the
+    // form, so the click the user already made is the only one they need.
+    useCreateIntent("client", () => setOpen(true));
 
     return (
         <div>
