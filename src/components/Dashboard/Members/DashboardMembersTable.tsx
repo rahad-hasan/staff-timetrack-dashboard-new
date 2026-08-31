@@ -9,6 +9,13 @@ import FilterButton from "@/components/Common/FilterButton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { IMembersStatsDashboard } from "@/types/type";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
+import { cn } from "@/lib/utils";
+
+// Keeps the "This Week" group visually detached from "Today" so the stats in the
+// middle can't be read as part of the previous column.
+const COLUMN_CLASSES: Record<string, string> = {
+    week_work: "pl-6 border-l border-borderColor/70 dark:border-darkBorder/60",
+}
 
 const DashboardMembersTable = ({ data = [] }: { data: IMembersStatsDashboard[] }) => {
     
@@ -47,18 +54,16 @@ const DashboardMembersTable = ({ data = [] }: { data: IMembersStatsDashboard[] }
                 else if (progress >= 25) bgColor = "bg-yellow-500";
 
                 return (
-                    <div className="flex gap-3 min-w-[80px]">
-                        <div className="-mt-5">
-                            <span className={` ${bgColor} rounded-full text-center text-white px-2 py-0.5 text-sm mb-1`}>{progress}%</span>
-                            <p className="">{today_work}</p>
-                        </div>
+                    <div className="flex flex-col items-start min-w-[80px]">
+                        <span className={` ${bgColor} inline-flex items-center rounded-full text-white px-2 py-0.5 text-sm leading-5 mb-1`}>{progress}%</span>
+                        <p className="">{today_work}</p>
                     </div>
                 )
             }
         },
         {
             accessorKey: "week_work",
-            header: () => <div className=" text-center">This Week</div>,
+            header: () => <div className="">This Week</div>,
             cell: ({ row }) => {
                 const progress = row?.original?.this_week?.activity_percentage
                 const week_work = row?.original?.this_week?.work_duration?.formatted
@@ -68,15 +73,13 @@ const DashboardMembersTable = ({ data = [] }: { data: IMembersStatsDashboard[] }
                 else if (progress >= 25) bgColor = "bg-yellow-500";
 
                 return (
-                    <div className=" flex justify-end gap-0">
-                        <div className=" flex flex-col items-start">
-                            <span className={` ${bgColor} rounded-full text-center text-white px-2  text-sm mb-1`}>{progress}%</span>
-                            <div className="flex flex-col">
-                                <span className=" font-medium mb-1 text-headingTextColor dark:text-darkTextPrimary">{week_work}</span>
-                                <span className=" font-normal text-xs text-subTextColor dark:text-darkTextSecondary">Last Active {lastActive}</span>
-                            </div>
+                    <div className=" flex items-center justify-end gap-4">
+                        <div className=" flex flex-1 flex-col items-start">
+                            <span className={` ${bgColor} inline-flex items-center rounded-full text-white px-2 py-0.5 text-sm leading-5 mb-1`}>{progress}%</span>
+                            <span className=" font-medium mb-1 text-headingTextColor dark:text-darkTextPrimary">{week_work}</span>
+                            <span className=" font-normal text-xs text-subTextColor dark:text-darkTextSecondary">Last Active {lastActive}</span>
                         </div>
-                        <div className=" ">
+                        <div className=" shrink-0">
                             <SmallChart data={row?.original?.weekly_chart}></SmallChart>
                         </div>
                     </div>
@@ -113,7 +116,7 @@ const DashboardMembersTable = ({ data = [] }: { data: IMembersStatsDashboard[] }
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => (
-                                    <TableHead key={header.id}>
+                                    <TableHead key={header.id} className={COLUMN_CLASSES[header.column.id]}>
                                         {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                                     </TableHead>
                                 ))}
@@ -125,7 +128,7 @@ const DashboardMembersTable = ({ data = [] }: { data: IMembersStatsDashboard[] }
                         {actualRows.map((row) => (
                             <TableRow key={row.id}>
                                 {row.getVisibleCells().map((cell) => (
-                                    <TableCell key={cell.id}>
+                                    <TableCell key={cell.id} className={cn("align-top", COLUMN_CLASSES[cell.column.id])}>
                                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                     </TableCell>
                                 ))}
@@ -136,7 +139,7 @@ const DashboardMembersTable = ({ data = [] }: { data: IMembersStatsDashboard[] }
                         {actualRows.length > 0 && emptyRowsCount > 0 &&
                             Array.from({ length: emptyRowsCount }).map((_, idx) => (
                                 <TableRow key={`empty-${idx}`} className="hover:bg-transparent border-none">
-                                    <TableCell>
+                                    <TableCell className="align-top">
                                         <div className="flex items-center gap-3">
                                             <div className="size-10 rounded-full bg-slate-200 dark:bg-darkBorder" />
                                             <div className="flex flex-col gap-2">
@@ -145,13 +148,13 @@ const DashboardMembersTable = ({ data = [] }: { data: IMembersStatsDashboard[] }
                                             </div>
                                         </div>
                                     </TableCell>
-                                    <TableCell>
+                                    <TableCell className="align-top">
                                         <div className="h-6 w-12 rounded-full bg-slate-200 dark:bg-darkBorder mb-2" />
                                         <div className="h-4 w-16 rounded bg-slate-200 dark:bg-darkBorder" />
                                     </TableCell>
-                                    <TableCell>
+                                    <TableCell className={cn("align-top", COLUMN_CLASSES.week_work)}>
                                         <div className="flex justify-end gap-4">
-                                            <div className="flex flex-col items-start gap-2">
+                                            <div className="flex flex-1 flex-col items-start gap-2">
                                                 <div className="h-6 w-12 rounded-full bg-slate-200 dark:bg-darkBorder" />
                                                 <div className="h-4 w-28 rounded bg-slate-200 dark:bg-darkBorder" />
                                             </div>
