@@ -5,6 +5,7 @@ import { ShieldCheck } from "lucide-react";
 
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import { useDetectedPlatform } from "@/hooks/useDetectedPlatform";
+import { TOUR_ANCHORS } from "@/lib/onboarding/anchors";
 import { useReleases } from "@/hooks/useReleases";
 import DownloadPageSkeleton from "@/skeleton/download/DownloadPageSkeleton";
 
@@ -63,49 +64,63 @@ const DownloadPage = () => {
         ></FallbackNotice>
       ) : null}
 
-      {isResolved ? (
-        <div className="mt-5">
-          <RecommendedDownload
-            platform={platform}
-            release={release}
-            chosenTarget={
-              platform.os === "unknown"
-                ? null
-                : selection.chosenFor(PLATFORM_GROUPS[platform.os])
-            }
-            onExplainChoice={handleExplainMac}
-            helpPanelId={macHelpPanelId}
-            isHelpOpen={isMacHelpOpen}
-          ></RecommendedDownload>
+      {/*
+        One wrapper for both installer surfaces so the product tour can
+        spotlight "where you get the app" as a single hole. The hero alone
+        would be wrong: it renders nothing while the platform is unresolved
+        or unknown, and a zero-area anchor makes the tour skip the step.
+      */}
+      <div data-tour={TOUR_ANCHORS.downloadApp}>
+        {isResolved ? (
+          <div className="mt-5">
+            <RecommendedDownload
+              platform={platform}
+              release={release}
+              chosenTarget={
+                platform.os === "unknown"
+                  ? null
+                  : selection.chosenFor(PLATFORM_GROUPS[platform.os])
+              }
+              onExplainChoice={handleExplainMac}
+              helpPanelId={macHelpPanelId}
+              isHelpOpen={isMacHelpOpen}
+            ></RecommendedDownload>
+          </div>
+        ) : null}
+
+        <section className="mt-6">
+          <h2 className="text-xs font-semibold uppercase tracking-[0.14em] text-subTextColor dark:text-darkTextSecondary">
+            All platforms
+          </h2>
+
+          <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {GROUP_ORDER.map((groupId) => (
+              <PlatformCard
+                key={groupId}
+                group={PLATFORM_GROUPS[groupId]}
+                assets={release.assets}
+                selectedId={selection.selectedFor(PLATFORM_GROUPS[groupId])}
+                onSelect={selection.select}
+                isRecommended={platform.os === groupId}
+              ></PlatformCard>
+            ))}
+          </div>
+        </section>
+
+        {/*
+          Inside the tour anchor on purpose. The hero's "which Mac do I have?"
+          prompt opens and focuses this panel — if it sat outside the wrapper,
+          the spotlight's click shield would dim it and swallow its clicks
+          mid-tour, right after the tour itself invited the interaction.
+        */}
+        <div className="mt-4 scroll-mt-24">
+          <MacArchitectureHelp
+            isOpen={isMacHelpOpen}
+            onOpenChange={setIsMacHelpOpen}
+            panelId={macHelpPanelId}
+            triggerRef={macHelpTriggerRef}
+          ></MacArchitectureHelp>
         </div>
-      ) : null}
-
-      <section className="mt-6">
-        <h2 className="text-xs font-semibold uppercase tracking-[0.14em] text-subTextColor dark:text-darkTextSecondary">
-          All platforms
-        </h2>
-
-        <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {GROUP_ORDER.map((groupId) => (
-            <PlatformCard
-              key={groupId}
-              group={PLATFORM_GROUPS[groupId]}
-              assets={release.assets}
-              selectedId={selection.selectedFor(PLATFORM_GROUPS[groupId])}
-              onSelect={selection.select}
-              isRecommended={platform.os === groupId}
-            ></PlatformCard>
-          ))}
-        </div>
-      </section>
-
-      <div className="mt-4 scroll-mt-24">
-        <MacArchitectureHelp
-          isOpen={isMacHelpOpen}
-          onOpenChange={setIsMacHelpOpen}
-          panelId={macHelpPanelId}
-          triggerRef={macHelpTriggerRef}
-        ></MacArchitectureHelp>
       </div>
 
       <p className="mt-4 flex items-center gap-1.5 text-xs text-subTextColor dark:text-darkTextSecondary">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import {
   FloatingArrow,
   FloatingPortal,
@@ -9,6 +9,7 @@ import {
   flip,
   offset,
   shift,
+  size,
   useFloating,
 } from "@floating-ui/react";
 import { AnimatePresence, motion } from "framer-motion";
@@ -61,6 +62,35 @@ export default function TooltipPopover({
 }: TooltipPopoverProps) {
   const arrowRef = useRef<SVGSVGElement>(null);
 
+  /**
+   * When no anchored position can hold the whole bubble, it becomes a fixed
+   * bottom sheet instead. A big target defeats floating-ui: `flip`'s only
+   * alternative to "bottom" is "top", `shift` for a vertical placement only
+   * corrects the cross axis — so with a target filling most of the screen
+   * (the download finale's installer surface on a phone or a short laptop
+   * window) every candidate clips the bubble, including the edge holding the
+   * ONLY Finish and close controls.
+   *
+   * The verdict is not a heuristic about the target's height. The `size`
+   * middleware reports the real space left for the bubble at the placement
+   * flip settled on, re-evaluated on every reposition (`autoUpdate` with
+   * `animationFrame: true` fires whenever the reference moves or either
+   * element resizes), so the mode also reacts to what a one-shot measure
+   * would miss: the Mac architecture accordion growing the spotlit wrapper
+   * mid-step, a window resize, a phone rotating. The 24px band keeps the
+   * boundary from oscillating.
+   */
+  const [sheet, setSheet] = useState(false);
+  const sheetRef = useRef(false);
+
+  // Each step starts anchored; its own first measurement decides otherwise.
+  // Layout effect on purpose: it must run before floating-ui's first
+  // positioning pass, or it would stomp the verdict that pass just made.
+  useLayoutEffect(() => {
+    sheetRef.current = false;
+    setSheet(false);
+  }, [element]);
+
   const { refs, floatingStyles, context, placement } = useFloating({
     placement: step.placement ?? "bottom",
     strategy: "fixed",
@@ -74,6 +104,20 @@ export default function TooltipPopover({
       // clipped rather than shifted.
       flip({ padding: 16 }),
       shift({ padding: 16 }),
+      size({
+        padding: 16,
+        apply({ availableHeight, elements }) {
+          const needed = elements.floating.scrollHeight;
+          const next = sheetRef.current
+            ? availableHeight < needed + 24 // leave the sheet only for real room
+            : availableHeight < needed;
+
+          if (next !== sheetRef.current) {
+            sheetRef.current = next;
+            setSheet(next);
+          }
+        },
+      }),
       arrow({ element: arrowRef, padding: 12 }),
     ],
   });
@@ -81,10 +125,12 @@ export default function TooltipPopover({
   const isLast = index === total - 1;
 
   // Bubbles enter from the side they are anchored on, so the motion reads as
-  // "coming out of the target" instead of drifting in from nowhere.
+  // "coming out of the target" instead of drifting in from nowhere. The
+  // bottom-sheet fallback rises from the bottom edge it is pinned to.
   const side = placement.split("-")[0];
-  const enterOffset =
-    side === "top"
+  const enterOffset = sheet
+    ? { y: 8 }
+    : side === "top"
       ? { y: 8 }
       : side === "bottom"
         ? { y: -8 }
@@ -97,8 +143,25 @@ export default function TooltipPopover({
       <AnimatePresence mode="wait">
         <motion.div
           key={step.id}
+          // The floating ref stays attached in sheet mode: the `size`
+          // middleware must keep measuring, or the bubble could never leave
+          // the sheet when room comes back. Only the styles are overridden.
           ref={refs.setFloating}
-          style={{ ...floatingStyles, zIndex: 9995 }}
+          style={
+            sheet
+              ? {
+                  // Centered by the width class + auto inline margins — no
+                  // transform, which framer-motion owns for the animation.
+                  position: "fixed",
+                  left: 16,
+                  right: 16,
+                  top: "auto",
+                  bottom: 16,
+                  marginInline: "auto",
+                  zIndex: 9995,
+                }
+              : { ...floatingStyles, zIndex: 9995 }
+          }
           initial={{ opacity: 0, scale: 0.96, ...enterOffset }}
           animate={{ opacity: 1, scale: 1, x: 0, y: 0 }}
           exit={{ opacity: 0, scale: 0.98 }}
@@ -118,6 +181,12 @@ export default function TooltipPopover({
             context={context}
             height={ARROW_HEIGHT}
             width={ARROW_HEIGHT * 2}
+            // Hidden, not unmounted, in sheet mode: the arrow middleware only
+            // positions a mounted arrow, and an arrow remounted on the way
+            // back to anchored mode would sit at a stale corner until the
+            // next reposition — which a one-shot layout change (the Mac
+            // accordion snapping shut) never delivers.
+            style={{ visibility: sheet ? "hidden" : undefined }}
             // Fill and stroke are split so the arrow keeps the card's 1px
             // border along its two outer edges instead of looking pasted on.
             className="fill-bgPrimary dark:fill-darkPrimaryBg [&>path:first-of-type]:stroke-borderColor dark:[&>path:first-of-type]:stroke-darkBorder"

@@ -13,6 +13,13 @@ import {
  * contract — so a card can be restyled or moved without silently breaking the
  * walkthrough. `src/lib/onboarding/anchors.ts` lists every anchor and where it
  * is attached.
+ *
+ * CONSECUTIVE steps must never share a `target`. The target tracker resets on
+ * anchor *change* (`useTourTarget`'s effect keys on the anchor string), so a
+ * repeated anchor would never re-enter its search phase — and the gate's
+ * missing-verdict guard, which compares the verdict's anchor against the
+ * current step's, would wave the stale verdict through and skip the second
+ * step unsearched.
  */
 
 /* ------------------------------------------------------------------ *
@@ -201,7 +208,33 @@ const ORIENTATION_STEPS: readonly ITourStep[] = [
     title: "Account, plan and settings",
     body: "Your profile, workspace settings and subscription all live behind this menu — along with Restart product tour, if you ever want this walkthrough again.",
     placement: "bottom-end",
-    task: "TOUR_COMPLETED",
+    roles: ALL_ROLES,
+  },
+  /**
+   * The finale, and the only step that leaves the dashboard. The tour ends on
+   * the download page on purpose: nothing in this product works until the
+   * desktop app is installed, so the walkthrough's last act is to put the
+   * installer in front of the user and get out of the way. Finishing here
+   * earns TOUR_COMPLETED (awarded by `endTour`, not by this step's `task` —
+   * see `onboardingStore.ts`); the download tick is earned by heading for the
+   * installer (the Header's Download App link) or clicking one
+   * (`Download/DownloadButton.tsx`) — never by pressing Finish.
+   */
+  {
+    id: "orientation.download",
+    tour: "orientation",
+    target: "download-app",
+    route: "/download",
+    title: "One last thing — get the desktop tracker",
+    body: "Time, apps and screenshots are all captured by the desktop app; the dashboard only reports what it records. Grab the build for your machine — every installer comes straight from our official release — then press Finish. You're all set.",
+    placement: "bottom",
+    padding: 10,
+    radius: 12,
+    // The anchor only mounts once `useReleases` settles, and that fetch gets
+    // 10s before the pinned fallback renders. The default 6s patience would
+    // lose that race on a slow connection and kill the tour on its last step.
+    targetTimeoutMs: 15_000,
+    task: "DESKTOP_APP_DOWNLOADED",
     roles: ALL_ROLES,
   },
 ] as const;

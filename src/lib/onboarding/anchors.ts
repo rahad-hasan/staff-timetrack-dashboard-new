@@ -25,6 +25,8 @@ export const TOUR_ANCHORS = {
   profileMenu: "profile-menu",
   /** Metric card grid — `src/app/(main_layout)/dashboard/@topCart/page.tsx`. */
   dashboardStats: "dashboard-stats",
+  /** Installer surface (hero + platform grid) — `src/components/Download/DownloadPage.tsx`. */
+  downloadApp: "download-app",
   /** Add Client — `src/components/ProjectManagement/Clients/ClientHereSection.tsx`. */
   ctaAddClient: "cta-add-client",
   /** Add Project — `src/components/ProjectManagement/Projects/ProjectHeroSection.tsx`. */

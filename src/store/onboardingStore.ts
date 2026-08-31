@@ -251,7 +251,7 @@ export const useOnboardingStore = create<OnboardingStore>()((set, get) => ({
 
   endTour: (options = {}) => {
     flushStepTimer();
-    const { activeTour, steps, stepIndex, status } = get();
+    const { activeTour, stepIndex, status } = get();
     set({ activeTour: null, steps: [], stepIndex: 0 });
 
     if (!activeTour) return;
@@ -263,13 +263,17 @@ export const useOnboardingStore = create<OnboardingStore>()((set, get) => ({
       currentStepIndex: toGlobalIndex(activeTour, stepIndex),
     };
 
-    if (options.completed) {
-      const finishedStep = steps[stepIndex];
-      if (finishedStep?.task) payload.completeSteps = [finishedStep.task];
+    if (options.completed && activeTour === "orientation") {
+      // Clicking Finish IS the act that earns TOUR_COMPLETED, so it is awarded
+      // here explicitly — never by reading the last step's `task`. That field
+      // marks the milestone a step *teaches* (the closing download step
+      // teaches DESKTOP_APP_DOWNLOADED), and milestones are earned by really
+      // doing the thing, not by closing the walkthrough that showed it.
+      payload.completeSteps = ["TOUR_COMPLETED"];
       // Only the orientation tour ends the whole onboarding. Finishing the
       // core walkthrough hands off to the "see the rest of the dashboard?"
       // prompt, which the gate owns.
-      if (activeTour === "orientation") payload.isOnboardingCompleted = true;
+      payload.isOnboardingCompleted = true;
     }
 
     if (status) {

@@ -9,8 +9,18 @@ export type TourTargetState =
   /** The anchor is not in the DOM yet — a route change or Suspense boundary. */
   | { status: "searching"; rect: null; element: null }
   | { status: "found"; rect: ITargetRect; element: HTMLElement }
-  /** Gave up. The gate skips the step rather than spotlighting nothing. */
-  | { status: "missing"; rect: null; element: null };
+  /**
+   * Gave up. The gate skips the step rather than spotlighting nothing.
+   *
+   * Carries WHICH anchor was given up on, because the verdict outlives the
+   * step for one render: when the gate advances past a missing step, its skip
+   * effect re-runs with the new step while this state still says "missing"
+   * (the reset to "searching" lands a commit later). Without the anchor to
+   * compare against, that stale pass would swallow the next step unseen — and
+   * on the last step it would end the whole tour for a target that was never
+   * even searched.
+   */
+  | { status: "missing"; rect: null; element: null; anchor: string };
 
 const IDLE: TourTargetState = { status: "idle", rect: null, element: null };
 const SEARCHING: TourTargetState = {
@@ -18,7 +28,6 @@ const SEARCHING: TourTargetState = {
   rect: null,
   element: null,
 };
-const MISSING: TourTargetState = { status: "missing", rect: null, element: null };
 
 /**
  * How long to wait for an anchor before declaring it absent.
@@ -105,7 +114,7 @@ export function useTourTarget(
         lastRect = null;
 
         if (performance.now() > deadline) {
-          setState(MISSING);
+          setState({ status: "missing", rect: null, element: null, anchor });
           return;
         }
 

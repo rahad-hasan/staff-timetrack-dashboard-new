@@ -106,7 +106,9 @@ export type TourStepId =
   | "orientation.sidebar"
   | "orientation.timer"
   | "orientation.appearance"
-  | "orientation.profile";
+  | "orientation.profile"
+  // Deliberately last — the tour signs off by walking the user to /download.
+  | "orientation.download";
 
 export interface ITourStep {
   id: TourStepId;
@@ -135,6 +137,13 @@ export interface ITourStep {
    * `src/utils/SidebarItems.ts`.
    */
   expandsNavMenu?: string;
+  /**
+   * How long to wait for this step's anchor before giving up, when the default
+   * 6s is not enough. The download step needs this: its anchor only mounts
+   * after `useReleases` settles, and that fetch is allowed 10s before falling
+   * back — a budget the tour must outlast, not race.
+   */
+  targetTimeoutMs?: number;
   /**
    * When set the step shows a live, interactive preview panel inside the
    * tooltip instead of plain copy — the "change a control, watch it apply"

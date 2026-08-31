@@ -143,7 +143,9 @@ export default function OnboardingGate({ role: serverRole }: OnboardingGateProps
   // Suspend targeting while a route change is in flight: the previous page's
   // anchors are still mounted for a frame or two and would be spotlighted.
   const onRoute = !step?.route || pathname === step.route;
-  const target = useTourTarget(step && onRoute ? step.target : null);
+  const target = useTourTarget(step && onRoute ? step.target : null, {
+    timeoutMs: step?.targetTimeoutMs,
+  });
 
   /**
    * A step whose anchor never arrives is skipped rather than left spotlighting
@@ -152,16 +154,55 @@ export default function OnboardingGate({ role: serverRole }: OnboardingGateProps
    * below the `lg` breakpoint, so on a phone every nav step legitimately has
    * no target.
    */
+  // Narrowed out of the union so the effect below can depend on it without
+  // re-running on every measured frame of a "found" target.
+  const missingAnchor = target.status === "missing" ? target.anchor : null;
+
   useEffect(() => {
-    if (!activeTour || target.status !== "missing") return;
+    if (!activeTour || missingAnchor === null) return;
+
+    // A missing verdict is only actionable for the step it was issued for.
+    // After a skip, this effect re-runs with the NEW step while the target
+    // state is still the old step's "missing" for one commit — acting on it
+    // would cascade past steps that were never searched.
+    if (missingAnchor !== step?.target) return;
 
     if (stepIndex >= steps.length - 1) {
-      endTour({ completed: false });
+      // The last step counts as reached even when its anchor never resolves.
+      // By this point the tour has already navigated to the step's route (the
+      // finale is the /download page itself), so ending "not completed" would
+      // strand the user with a checklist that nags about the tour forever and
+      // a CTA that can only restart it from scratch. Grade it done instead.
+      endTour({ completed: true });
       return;
     }
 
     nextStep();
-  }, [target.status, activeTour, stepIndex, steps.length, nextStep, endTour]);
+  }, [missingAnchor, step?.target, activeTour, stepIndex, steps.length, nextStep, endTour]);
+
+  /**
+   * Escape always ends a running tour. The tooltip's ✕ is the only pointer
+   * exit, and it does not exist while a target is still being searched — on
+   * the finale that window can stretch to the release fetch's whole budget,
+   * with the scrim swallowing every click. A keyboard exit must not depend on
+   * any tour UI being on screen. Suspended while a dialog is open: Escape
+   * there belongs to the dialog, and the tour is already standing aside.
+   */
+  useEffect(() => {
+    if (!activeTour || dialogOpen) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      // A Radix layer that consumed this Escape (the theme dropdown, the
+      // profile popover — both spotlighted and opened mid-step by design)
+      // calls preventDefault while closing itself. That Escape closed a menu;
+      // it must not also kill the tour.
+      if (event.defaultPrevented) return;
+      if (event.key === "Escape") endTour({ completed: false });
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [activeTour, dialogOpen, endTour]);
 
   /* ---------------- completion ---------------- */
 
@@ -190,7 +231,7 @@ export default function OnboardingGate({ role: serverRole }: OnboardingGateProps
     endTour({ completed: true });
 
     // Finishing the core walkthrough offers the A-to-Z dashboard tour rather
-    // than launching straight into it — six more steps without being asked is
+    // than launching straight into it — seven more steps without being asked is
     // how a helpful tour becomes an obstacle.
     if (finishedTour === "core") setHandoffOpen(true);
     // An orientation-only run (employee, project_manager) has no hand-off —

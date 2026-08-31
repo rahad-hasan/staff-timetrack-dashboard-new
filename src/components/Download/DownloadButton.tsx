@@ -4,6 +4,7 @@ import type { ComponentProps, ReactNode } from "react";
 import { Download } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { useOnboardingStore } from "@/store/onboardingStore";
 
 interface IDownloadButtonProps {
   href: string;
@@ -30,6 +31,14 @@ interface IDownloadButtonProps {
  * `download` attribute cross-origin — GitHub's `Content-Disposition:
  * attachment` is what actually forces the save.
  */
+// Starting a real download is an even more honest signal than the Header
+// link's "headed to the download page" — without it, a user the tour (or
+// checklist) brought here would install the app and never earn the milestone.
+// `completeTask` is idempotent, so re-downloads are free. Wired to onAuxClick
+// too: a middle-click downloads in a new tab without ever firing click.
+const markDownloaded = () =>
+  void useOnboardingStore.getState().completeTask("DESKTOP_APP_DOWNLOADED");
+
 const DownloadButton = ({
   href,
   accessibleName,
@@ -44,6 +53,10 @@ const DownloadButton = ({
       target="_blank"
       rel="noopener noreferrer"
       aria-label={accessibleName}
+      onClick={markDownloaded}
+      onAuxClick={(event) => {
+        if (event.button === 1) markDownloaded();
+      }}
     >
       <Download aria-hidden className="size-4" />
       {children}

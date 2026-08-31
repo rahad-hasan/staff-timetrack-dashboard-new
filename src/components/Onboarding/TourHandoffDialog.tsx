@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 /**
  * The bridge between Phase 2 and Phase 4.
  *
- * Finishing the core setup walkthrough does not roll straight into six more
+ * Finishing the core setup walkthrough does not roll straight into seven more
  * steps — it asks. A tour the user opted into twice is a tour; one that keeps
  * going after the job is done is an obstacle.
  */
@@ -52,8 +52,8 @@ export default function TourHandoffDialog({
 
         <DialogDescription className="text-sm text-subTextColor dark:text-darkTextSecondary">
           Want a quick pass over the rest of the dashboard? {stepCount} short
-          stops covering search, your metrics, navigation and settings — about a
-          minute.
+          stops covering search, your metrics, navigation and settings, ending
+          with the desktop tracker download — about two minutes.
         </DialogDescription>
 
         <div className="mt-2 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">

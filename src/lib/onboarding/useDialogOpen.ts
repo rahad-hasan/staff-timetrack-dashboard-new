@@ -18,9 +18,14 @@ import { useEffect, useState } from "react";
  * the better behaviour, since the dialog is now what the user is looking at.
  *
  * Detection is on `[data-slot="dialog-content"]`, the attribute the shared
- * `components/ui/dialog.tsx` stamps on every dialog in the app.
+ * `components/ui/dialog.tsx` stamps on every dialog in the app — plus
+ * `sheet-content`, its drawer twin: the mobile burger nav is a Sheet, and on
+ * steps whose spotlight hole is taller than the viewport (the download
+ * finale on a phone) the click shield cannot cover the header, so the sheet
+ * really can open mid-tour. The tour steps aside for it like any dialog.
  */
-const DIALOG_SELECTOR = '[data-slot="dialog-content"]';
+const DIALOG_SELECTOR =
+  '[data-slot="dialog-content"], [data-slot="sheet-content"]';
 
 export function useDialogOpen(): boolean {
   const [open, setOpen] = useState(false);
