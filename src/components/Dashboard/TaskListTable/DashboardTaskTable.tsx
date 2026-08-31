@@ -26,7 +26,7 @@ import Link from "next/link";
 import FilterButton from "@/components/Common/FilterButton";
 import { useLogInUserStore } from "@/store/logInUserStore";
 
-const DashboardTaskTable = ({ data }: { data: ITask[] }) => {
+const DashboardTaskTable = ({ data, isSample = false }: { data: ITask[], isSample?: boolean }) => {
 
     const logInUserData = useLogInUserStore(state => state.logInUserData);
     const [sorting, setSorting] = useState<SortingState>([])
@@ -201,11 +201,12 @@ const DashboardTaskTable = ({ data }: { data: ITask[] }) => {
                 return (
                     <div className="flex justify-end">
                         {
-                            (logInUserData?.role === 'admin' ||
-                                logInUserData?.role === 'manager' ||
-                                logInUserData?.role === 'hr' ||
-                                logInUserData?.role === 'project_manager'
-                            )
+                            (!isSample &&
+                                (logInUserData?.role === 'admin' ||
+                                    logInUserData?.role === 'manager' ||
+                                    logInUserData?.role === 'hr' ||
+                                    logInUserData?.role === 'project_manager'
+                                ))
                                 ?
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>

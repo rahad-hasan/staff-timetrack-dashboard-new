@@ -1,5 +1,7 @@
 import { getDashboardMembersStats } from "@/actions/dashboard/action";
 import DashboardMembersTable from "@/components/Dashboard/Members/DashboardMembersTable";
+import { sampleMembersStats } from "@/lib/sampleData/fixtures";
+import { getSampleDataMode } from "@/lib/sampleData/getSampleDataMode";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
 
 const DashboardMembersTableServer = async () => {
@@ -12,13 +14,18 @@ const DashboardMembersTableServer = async () => {
         return null;
     }
 
-    const result = await getDashboardMembersStats({
-        limit: 4,
-    });
+    const sampleMode = await getSampleDataMode();
+    const result = sampleMode
+        ? null
+        : await getDashboardMembersStats({
+            limit: 4,
+        });
+
+    const members = sampleMode ? sampleMembersStats : result?.data?.members;
 
     return (
         <div>
-            <DashboardMembersTable data={result?.data?.members}></DashboardMembersTable>
+            <DashboardMembersTable data={members}></DashboardMembersTable>
         </div>
     );
 };

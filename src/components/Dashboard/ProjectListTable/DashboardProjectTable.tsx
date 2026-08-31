@@ -25,7 +25,7 @@ import Link from "next/link";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { useLogInUserStore } from "@/store/logInUserStore";
 
-const DashboardProjectTable = ({ data }: { data: IProject[] }) => {
+const DashboardProjectTable = ({ data, isSample = false }: { data: IProject[], isSample?: boolean }) => {
     const logInUserData = useLogInUserStore(state => state.logInUserData);
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
@@ -267,9 +267,10 @@ const DashboardProjectTable = ({ data }: { data: IProject[] }) => {
                 return (
                     <div className="flex justify-end">
                         {
-                            (logInUserData?.role === 'admin' ||
-                                logInUserData?.role === 'manager' ||
-                                logInUserData?.role === 'hr')
+                            (!isSample &&
+                                (logInUserData?.role === 'admin' ||
+                                    logInUserData?.role === 'manager' ||
+                                    logInUserData?.role === 'hr'))
                                 ?
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>

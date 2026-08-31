@@ -2,6 +2,8 @@ import { TrendingDown, TrendingUp } from "lucide-react";
 import { TOUR_ANCHORS } from "@/lib/onboarding/anchors";
 import { IDashboardStats, ISearchParamsProps } from "@/types/type";
 import { getDashboardStats } from "@/actions/dashboard/action";
+import { getSampleDataMode } from "@/lib/sampleData/getSampleDataMode";
+import { sampleStats } from "@/lib/sampleData/fixtures";
 import HeroHeading from "@/components/Dashboard/HeroHeading";
 import WeeklyActivityColoredIcon from "@/components/ColoredIcon/HeroSectionIcon/WeeklyActivityColoredIcon";
 import WeeklyWorkColoredIcon from "@/components/ColoredIcon/HeroSectionIcon/WeeklyWorkColoredIcon";
@@ -12,11 +14,28 @@ import SecondChart from "@/components/Icons/HeadingChartIcon/SecondChart";
 
 const HeroCart = async ({ searchParams }: ISearchParamsProps) => {
     const params = await searchParams;
-    const result = await getDashboardStats({
-        type: params.tab ?? "daily",
-    });
+    const statsType =
+        params.tab === "weekly" || params.tab === "monthly"
+            ? params.tab
+            : "daily";
 
-    const data = result?.data?.metrics;
+    const sampleMode = await getSampleDataMode();
+    const result = sampleMode
+        ? null
+        : await getDashboardStats({
+            type: params.tab ?? "daily",
+        });
+
+    const data: IDashboardStats | undefined = sampleMode
+        ? sampleStats(statsType)
+        : result?.data?.metrics;
+
+    if (!data) {
+        // A failed live fetch used to crash on Object.keys(undefined) and land
+        // in the dashboard error boundary; keep that surface rather than
+        // rendering a "no data" hero that looks like the org is empty.
+        throw new Error(result?.message || "Failed to load dashboard stats");
+    }
 
     // 1. Create a Mapping for your static assets
     const metricConfig = {

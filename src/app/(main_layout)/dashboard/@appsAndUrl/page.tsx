@@ -1,5 +1,7 @@
 import { getDashboardAppsAndUrls } from "@/actions/dashboard/action";
 import AppsAndUrl from "@/components/Dashboard/AppAndUrl/AppsAndUrl";
+import { sampleAppsAndUrls } from "@/lib/sampleData/fixtures";
+import { getSampleDataMode } from "@/lib/sampleData/getSampleDataMode";
 import { ISearchParamsProps } from "@/types/type";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
 
@@ -11,6 +13,15 @@ const AppsAndUrlServer = async ({ searchParams }: ISearchParamsProps) => {
 
     if (!role || !allowedRoles.includes(role)) {
         return null;
+    }
+
+    const sampleMode = await getSampleDataMode();
+    if (sampleMode) {
+        return (
+            <div>
+                <AppsAndUrl data={sampleAppsAndUrls}></AppsAndUrl>
+            </div>
+        );
     }
 
     const params = await searchParams;

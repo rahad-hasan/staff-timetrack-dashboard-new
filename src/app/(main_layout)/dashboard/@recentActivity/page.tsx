@@ -96,18 +96,29 @@
 
 import { getCoreMembers } from "@/actions/dashboard/action";
 import CoreWorkMembers from "@/components/Dashboard/insights/CoreWorkMembers";
+import { sampleCoreMembers } from "@/lib/sampleData/fixtures";
+import { getSampleDataMode } from "@/lib/sampleData/getSampleDataMode";
 import { ISearchParamsProps } from "@/types/type";
 
 const CoreWorkMember = async ({ searchParams }: ISearchParamsProps) => {
   const params = await searchParams;
   const statsType = params.type ? params.type : "highest";
-  const result = await getCoreMembers({
-    type: statsType,
-    limit: 3,
-  });
+
+  const sampleMode = await getSampleDataMode();
+  const result = sampleMode
+    ? null
+    : await getCoreMembers({
+      type: statsType,
+      limit: 3,
+    });
+
+  const members = sampleMode
+    ? sampleCoreMembers(String(statsType))
+    : result?.data?.members;
+
   return (
     <div>
-      <CoreWorkMembers data={result?.data?.members}></CoreWorkMembers>
+      <CoreWorkMembers data={members}></CoreWorkMembers>
     </div>
   );
 };
