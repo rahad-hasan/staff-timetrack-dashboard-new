@@ -150,7 +150,10 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
             role: values.role,
             gender: values.gender,
             time_zone: values.time_zone,
-            birth_day: values.birth_day,
+            // Date of birth is optional. Omit the key rather than send "" —
+            // the server's `birth_day` is optional but still regex-checked, so
+            // an empty string is a 400, not a "no value given".
+            ...(values.birth_day && { birth_day: values.birth_day }),
             // schedule_id: Number(values.schedule),
             ...(values.schedule && { schedule_id: Number(values.schedule) })
         }

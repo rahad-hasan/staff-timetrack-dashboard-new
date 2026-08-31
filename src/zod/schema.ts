@@ -271,14 +271,24 @@ export const addNewMemberSchema = z.object({
   phone: optionalPhone,
   role: z.string().min(1, "Role is required"),
   gender: z.string().min(1, "Gender is required"),
+  /**
+   * Optional, and that has to mean the empty string too — the form seeds this
+   * field with `""`, so a bare `.optional()` (which only admits `undefined`)
+   * put the whole regex on an untouched field and blocked step 1 behind an
+   * error the user could not clear. Same shape as `singleMemberSchema` below.
+   *
+   * `AddNewMemberModal` must then OMIT the key rather than send `""`: the
+   * server's own `birth_day` is `.optional()` guarding the identical regex, so
+   * an empty string 400s there for exactly the same reason.
+   */
   birth_day: z
     .string({ message: "Birth day must be a string" })
-    .regex(/^\d{4}-\d{2}-\d{2}$/, {
-      message: "Birth day must be in the format YYYY-MM-DD.",
-    })
-    .refine((date) => !isNaN(Date.parse(date)), {
-      message: "Birth day must be a valid calendar date.",
-    })
+    .refine(
+      (value) =>
+        value === "" ||
+        (/^\d{4}-\d{2}-\d{2}$/.test(value) && !isNaN(Date.parse(value))),
+      { message: "Birth day must be a valid YYYY-MM-DD date." },
+    )
     .optional(),
   time_zone: z.string().min(1, "Time Zone is required"),
   project: z.string().min(1, "Project is required"),
