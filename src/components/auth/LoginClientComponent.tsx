@@ -28,8 +28,8 @@ import { logIn } from "@/actions/auth/action";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import { resetProfileImageRefresh } from "@/utils/profileImageRefresh";
 import { useSidebarStore } from "@/store/sidebarStore";
-import logoWithSlogan from '../../assets/logo-with-text.webp'
-import logoForDark from '../../assets/logo-with-text-dark.png'
+import logoWithSlogan from "../../assets/logo-with-text.webp";
+import logoForDark from "../../assets/logo-with-text-dark.png";
 import {
   buildLogInUserData,
   requiresOrganizationOnboarding,
@@ -130,19 +130,19 @@ const LoginClientComponent = () => {
 
   const sliderContent = [
     {
-      titleLine1: "Join Trakkers – Streamline",
-      titleLine2: "Your Productivity Today!",
-      body: "Sign up for our powerful time tracker and take control of your teams operations with ease. Manage teams relationships, track work, and boost productivity—all in one intuitive platform. Get started today!",
+      titleLine1: "Manage Time Better,",
+      titleLine2: "Work Smarter Together",
+      body: "Log in and take control of your team’s time, productivity, and daily activities. Staff Time Tracker helps you stay organized, track work accurately, and manage everything from one simple platform.",
     },
     {
       titleLine1: "Effortless Time",
       titleLine2: "Tracking & Reporting",
-      body: "Lorem Ipsum, giving information on its origins Automatically log your working hours, categorize tasks by project, and generate precise reports instantly. Focus on your work, not the clock.",
+      body: "Track working hours, monitor team activity, organize tasks, and generate clear reports with ease. Staff Time Tracker helps you stay organized, understand productivity, and manage your team more efficiently—all from one simple platform.",
     },
     {
       titleLine1: "Seamless Team",
       titleLine2: "Collaboration",
-      body: "Lorem Ipsum, giving information on its origins Coordinate efforts, share updates, and assign tasks across your entire organization without missing a beat. Trakkers keeps everyone aligned and accountable.",
+      body: "Keep your team connected with simple tools for sharing updates, assigning tasks, and coordinating daily work. Staff Time Tracker helps everyone stay aligned, organized, and accountable while making collaboration easier across your entire organization.",
     },
   ];
 
@@ -287,15 +287,16 @@ const LoginClientComponent = () => {
               <h2 className="text-4xl xl:text-5xl text-center mb-5">
                 {currentItem.titleLine2}
               </h2>
-              <p className="text-lg 2xl:px-20">{currentItem.body}</p>
+              <p className="text-lg xl:px-8 2xl:px-18">{currentItem.body}</p>
 
               <div className="flex justify-center mt-6 space-x-2">
                 {sliderContent.map((_, index) => (
                   <button
                     key={index}
                     onClick={() => setCurrentSlide(index)}
-                    className={`h-2 w-2 rounded-full transition-all duration-300 cursor-pointer ${index === currentSlide ? "bg-white w-6" : "bg-white/40"
-                      }`}
+                    className={`h-2 w-2 rounded-full transition-all duration-300 cursor-pointer ${
+                      index === currentSlide ? "bg-white w-6" : "bg-white/40"
+                    }`}
                     aria-label={`Go to slide ${index + 1}`}
                   />
                 ))}
