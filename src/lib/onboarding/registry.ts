@@ -4,6 +4,7 @@ import {
   MANAGEMENT_ROLES,
   PROJECT_ROLES,
 } from "@/lib/roles";
+import { TUTORIAL_VIDEOS } from "@/lib/onboarding/tutorialVideos";
 import {
   IOnboardingTask,
   ITourStep,
@@ -47,7 +48,7 @@ export const ONBOARDING_TASK_LIST: readonly IOnboardingTask[] = [
     href: CREATE_ACTIONS.client.href,
     ctaLabel: "Add client",
     createIntent: "client",
-    videoSrc: "/videos/add-client-tutorial.mp4",
+    videoSrc: TUTORIAL_VIDEOS.addClient,
     roles: MANAGEMENT_ROLES,
   },
   {
@@ -57,7 +58,7 @@ export const ONBOARDING_TASK_LIST: readonly IOnboardingTask[] = [
     href: CREATE_ACTIONS.project.href,
     ctaLabel: "Create project",
     createIntent: "project",
-    videoSrc: "/videos/add-project-tutorial.mp4",
+    videoSrc: TUTORIAL_VIDEOS.addProject,
     roles: PROJECT_ROLES,
   },
   {
@@ -74,7 +75,7 @@ export const ONBOARDING_TASK_LIST: readonly IOnboardingTask[] = [
     href: CREATE_ACTIONS.member.href,
     ctaLabel: "Add member",
     createIntent: "member",
-    videoSrc: "/videos/add-member-tutorial.mp4",
+    videoSrc: TUTORIAL_VIDEOS.addMember,
     roles: MANAGEMENT_ROLES,
   },
   {
@@ -83,7 +84,7 @@ export const ONBOARDING_TASK_LIST: readonly IOnboardingTask[] = [
     description: "Time, apps and screenshots are captured by the desktop app.",
     href: "/download",
     ctaLabel: "Download",
-    videoSrc: "/videos/download-app-tutorial.mp4",
+    videoSrc: TUTORIAL_VIDEOS.downloadApp,
     roles: ALL_ROLES,
   },
   {

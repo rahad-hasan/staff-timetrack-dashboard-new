@@ -56,10 +56,11 @@ export interface IOnboardingTask {
    */
   createIntent?: CreateActionKind;
   /**
-   * Short tutorial clip shown in the Quick Setup dialog's preview pane,
-   * as a `/videos/*.mp4` path under `public/`. Tasks without one get a
-   * designed static panel instead — absence is a supported state, not an
-   * error.
+   * Short tutorial clip shown in the Quick Setup dialog's preview pane — an
+   * absolute CDN URL from `src/lib/onboarding/tutorialVideos.ts`, not a path
+   * under `public/`. Tasks without one get a designed static panel instead;
+   * absence is a supported state, not an error, and so is a URL that fails to
+   * load (`TutorialVideo` retries once, then falls back to the same panel).
    */
   videoSrc?: string;
   /**

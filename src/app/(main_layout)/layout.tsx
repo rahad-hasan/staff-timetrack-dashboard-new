@@ -6,9 +6,11 @@ import BillingGate from "@/components/Billing/BillingGate";
 import { getTodayWorkTime } from "@/actions/dashboard/action";
 import { getCompanyInfo } from "@/actions/settings/action";
 import { cookies } from "next/headers";
+import { prefetchDNS } from "react-dom";
 import { unstable_rethrow } from "next/navigation";
 import SocketProvider from "@/socket/SocketProvider";
 import OnboardingGate from "@/components/Onboarding/OnboardingGate";
+import { TUTORIAL_VIDEO_ORIGIN } from "@/lib/onboarding/tutorialVideos";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
 // import TrackerChatBot from "@/components/Chats/TrackerChatBot";
 
@@ -17,6 +19,17 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  /*
+   * Resolve the tutorial CDN's DNS while the dashboard HTML is still being
+   * parsed. The Quick Setup guide can only ask for a clip once
+   * `/user/onboarding-status` has resolved and the gate has rendered, by which
+   * point a hint issued from the client would be racing the request it is
+   * meant to be ahead of. A DNS answer, unlike a TCP socket, is cached long
+   * enough to still be there when the user opens the guide — and it costs one
+   * UDP round trip for users who never do.
+   */
+  prefetchDNS(TUTORIAL_VIDEO_ORIGIN);
+
   // Two independent reads, so they go in parallel — the workspace name must
   // not add a serial round-trip to every dashboard navigation. `getCompanyInfo`
   // is force-cached with a 60s revalidate behind the shared "company" tag, so
