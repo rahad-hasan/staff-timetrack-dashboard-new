@@ -25,9 +25,9 @@ import {
 } from "@/types/type";
 // import emptyActivity from "../../../assets/empty_activity.png";
 
-// `canDelete` is resolved on the server from the decoded token role
-// (admin / hr / manager) so the action never flashes for employees and
-// project managers while the client store rehydrates.
+// `canDelete` is resolved on the server from the decoded token role plus the
+// company's `screenshot_delete_enabled` setting, so the action never flashes
+// for members who are not allowed to use it while the client store rehydrates.
 const Every10Mins = ({
   data,
   canDelete,

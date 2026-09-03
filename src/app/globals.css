@@ -49,6 +49,10 @@
   --card-foreground: oklch(0.1450 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.1450 0 0);
+  /* Toast surface — sonner reads these through --normal-* in ui/sonner.tsx */
+  --toast-bg: oklch(1 0 0);
+  --toast-foreground: oklch(0.1450 0 0);
+  --toast-border: oklch(0.9220 0 0);
   /* --primary: #12cd69; */
   --primary: #0788f3;
   --primary-foreground: oklch(0.9850 0 0);
@@ -105,6 +109,11 @@
   --card-foreground: oklch(0.9850 0 0);
   --popover: oklch(0.2690 0 0);
   --popover-foreground: oklch(0.9850 0 0);
+  /* Toast surface — matches the navy overlay surfaces (popover/dropdown/select
+     all use dark:bg-darkSecondaryBg), not the neutral-grey --popover token. */
+  --toast-bg: var(--color-darkSecondaryBg, #00172f);
+  --toast-foreground: var(--color-darkTextPrimary, #f3f4f6);
+  --toast-border: var(--color-darkBorder, #4a5263ab);
   /* --primary: oklch(0.7438 0.1945 151.5593); */
   --primary-foreground: oklch(0.2050 0 0);
   --secondary: oklch(0.2690 0 0);

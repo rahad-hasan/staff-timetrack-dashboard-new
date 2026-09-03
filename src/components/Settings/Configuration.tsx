@@ -54,6 +54,7 @@ import {
   Mail,
   MapPin,
   Sliders,
+  Trash2,
   Wallet,
 } from "lucide-react";
 import { popularTimeZoneList } from "@/utils/TimeZoneList";
@@ -118,6 +119,7 @@ const Configuration = ({ data }: { data: ICompany }) => {
     app_notify: data?.app_notify || false,
     email_notify: data?.email_notify || false,
     url_tracking_enabled: data?.url_tracking_enabled || false,
+    screenshot_delete_enabled: data?.screenshot_delete_enabled || false,
   });
 
   const form = useForm<z.input<typeof leaveSettingsSchema>>({
@@ -335,6 +337,37 @@ const Configuration = ({ data }: { data: ICompany }) => {
                   setSwitches((prev) => ({
                     ...prev,
                     url_tracking_enabled: val,
+                  }))
+                }
+              />
+            </div>
+          </section>
+
+          {/* Screenshot Deletion */}
+          <section className="rounded-xl border border-borderColor bg-white p-4 md:p-6 shadow-sm dark:border-darkBorder dark:bg-darkSecondaryBg">
+            <SectionHeader
+              icon={Trash2}
+              title="Screenshot Deletion"
+              description="Let members remove screenshots from their own activity."
+              accent="blue"
+            />
+
+            <div className="mt-5 flex items-center justify-between rounded-lg border border-borderColor p-4 dark:border-darkBorder">
+              <div>
+                <p className="text-sm font-medium text-headingTextColor dark:text-darkTextPrimary">
+                  Member Screenshot Deletion
+                </p>
+                <p className="mt-0.5 text-xs text-subTextColor dark:text-darkTextSecondary">
+                  When off, only admins, HR and managers can delete
+                  screenshots. Deleted time is subtracted from worked hours.
+                </p>
+              </div>
+              <Switch
+                checked={switches.screenshot_delete_enabled}
+                onCheckedChange={(val) =>
+                  setSwitches((prev) => ({
+                    ...prev,
+                    screenshot_delete_enabled: val,
                   }))
                 }
               />

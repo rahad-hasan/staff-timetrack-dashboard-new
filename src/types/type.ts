@@ -357,6 +357,7 @@ export type ICompany = {
   time_zone: string;
   idle_minutes_limit: number;
   url_tracking_enabled: boolean;
+  screenshot_delete_enabled: boolean;
   week_start: string;
   weekly_leave_count: number;
   paid_leave: number;

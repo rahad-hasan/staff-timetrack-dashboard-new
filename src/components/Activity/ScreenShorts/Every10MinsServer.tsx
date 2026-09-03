@@ -11,25 +11,41 @@ import TeamMemberColoredIcon from "@/components/ColoredIcon/HeroSectionIcon/Team
 import ScreenshotActivityCard from "./ScreenshotActivityCard";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
 import { cookies } from "next/headers";
+import { getCompanyInfo } from "@/actions/settings/action";
 // import AllScreenShortsSkeleton from "@/skeleton/activity/screenShorts/AllScreenShortsSkeleton";
 
 const Every10MinsServer = async ({ searchParams }: ISearchParamsProps) => {
   const user = await getDecodedUser();
   const userId = user?.id;
-  const canDeleteScreenshot = ["admin", "hr", "manager"].includes(
-    user?.role ?? "",
-  );
   const params = await searchParams;
   const currentDate = format(new Date(), "yyyy-MM-dd");
   const cookieStore = await cookies();
   const cookieTimeZone = cookieStore.get("timeZone")?.value;
+  const targetUserId = params.user_id ?? userId;
 
-  const result = await getScreenshots10Min({
-    date: params.date ?? currentDate,
-    user_id: params.user_id ?? userId,
-    project_id: params?.project_id,
-    timezone: params?.timezone ?? cookieTimeZone,
-  });
+  const [result, company] = await Promise.all([
+    getScreenshots10Min({
+      date: params.date ?? currentDate,
+      user_id: targetUserId,
+      project_id: params?.project_id,
+      timezone: params?.timezone ?? cookieTimeZone,
+    }),
+    getCompanyInfo(),
+  ]);
+
+  // Admin / HR / manager always may. The two roles the backend newly admits
+  // only once the company turns `screenshot_delete_enabled` on — an employee
+  // for their own day, a project manager for anyone in their member list
+  // (which is already scoped to the projects they manage, the same rule the
+  // backend re-checks). A failed company fetch has no `data`, so the fallback
+  // is today's role-only rule; never default the flag to true.
+  const canDeleteScreenshot =
+    ["admin", "hr", "manager"].includes(user?.role ?? "") ||
+    (company?.data?.screenshot_delete_enabled === true &&
+      (user?.role === "project_manager" ||
+        (user?.role === "employee" &&
+          userId != null &&
+          String(targetUserId) === String(userId))));
 
   return (
     <div className="min-h-[80vh] xl:h-auto">
