@@ -25,7 +25,7 @@ export const ORGANIZATION_STEPS = [
     title: "Organization",
     heading: "Tell us about your organization",
     description:
-      "This is what your team and your invoices will be identified by.",
+      "This is what your team and your invoices will be indentified by",
     fields: ["name", "phone", "time_zone", "address"],
   },
   {
@@ -33,7 +33,7 @@ export const ORGANIZATION_STEPS = [
     title: "Workspace",
     heading: "Set your workspace defaults",
     description:
-      "How the week is counted, when a session goes idle, and what you bill in.",
+      "This is what your team and your invoices will be indentified by",
     fields: [
       "week_start",
       "weekly_leave_count",
@@ -122,6 +122,7 @@ export const useCreateOrganizationForm = ({
   const runSubmit = useMemo(
     () =>
       form.handleSubmit(async (values) => {
+        console.log(values)
         setSubmitting(true);
 
         try {

@@ -38,7 +38,7 @@ export const WEEK_START_DAYS = [
   "Sunday",
 ] as const satisfies ReadonlyArray<WeekStartDay>;
 
-export const WEEKEND_LENGTH_OPTIONS = [0, 1, 2, 3, 4, 5, 6, 7] as const;
+export const WEEKEND_LENGTH_OPTIONS = [1, 2, 3] as const;
 
 /** Mirrors the Company model defaults (`prisma/schema.prisma`). */
 export const DEFAULT_WORKSPACE_PREFERENCES: IWorkspacePreferences = {

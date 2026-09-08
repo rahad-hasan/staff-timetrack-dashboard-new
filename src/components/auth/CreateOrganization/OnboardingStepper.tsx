@@ -1,7 +1,5 @@
 "use client";
 
-import { Check } from "lucide-react";
-
 import { cn } from "@/lib/utils";
 
 interface OnboardingStepperProps {
@@ -9,51 +7,33 @@ interface OnboardingStepperProps {
   activeIndex: number;
 }
 
-/** Compact progress rail for the create-organization wizard. */
-const OnboardingStepper = ({ steps, activeIndex }: OnboardingStepperProps) => (
-  <ol className="flex items-center gap-2" aria-label="Setup progress">
-    {steps.map((step, index) => {
-      const isDone = index < activeIndex;
-      const isActive = index === activeIndex;
+/** Simple horizontal progress bar for the onboarding wizard. */
+const OnboardingStepper = ({
+  steps,
+  activeIndex,
+}: OnboardingStepperProps) => {
+  const progress =
+    steps.length <= 1
+      ? 100
+      : ((activeIndex + 1) / steps.length) * 100;
 
-      return (
-        <li key={step.id} className="flex flex-1 items-center gap-2">
-          <span
-            aria-current={isActive ? "step" : undefined}
-            className={cn(
-              "flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-[11px] font-semibold transition-colors",
-              isDone && "border-primary bg-primary text-primary-foreground",
-              isActive && !isDone && "border-primary text-primary",
-              !isDone &&
-                !isActive &&
-                "border-borderColor text-subTextColor dark:border-darkBorder dark:text-darkTextSecondary",
-            )}
-          >
-            {isDone ? <Check className="h-3.5 w-3.5" /> : index + 1}
-          </span>
-          <span
-            className={cn(
-              "hidden truncate text-xs font-medium sm:inline",
-              isActive
-                ? "text-headingTextColor dark:text-darkTextPrimary"
-                : "text-subTextColor dark:text-darkTextSecondary",
-            )}
-          >
-            {step.title}
-          </span>
-          {index < steps.length - 1 && (
-            <span
-              aria-hidden="true"
-              className={cn(
-                "h-px flex-1 rounded-full",
-                isDone ? "bg-primary" : "bg-borderColor dark:bg-darkBorder",
-              )}
-            />
-          )}
-        </li>
-      );
-    })}
-  </ol>
-);
+  return (
+    <div
+      className="h-2.5 w-full overflow-hidden rounded-full bg-[#f2f7fe]"
+      role="progressbar"
+      aria-label="Setup progress"
+      aria-valuemin={1}
+      aria-valuemax={steps.length}
+      aria-valuenow={activeIndex + 1}
+    >
+      <div
+        className={cn(
+          "h-full rounded-full bg-[linear-gradient(90deg,#427fe3,#3360c8)] dark:bg-[linear-gradient(90deg,#427fe3,#3360c8)] transition-all duration-300 ease-in-out",
+        )}
+        style={{ width: `${progress}%` }}
+      />
+    </div>
+  );
+};
 
 export default OnboardingStepper;

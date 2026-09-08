@@ -1,6 +1,13 @@
 "use client";
 
-import { ArrowLeft, Building2, Loader2 } from "lucide-react";
+import {
+  ArrowBigLeft,
+  ArrowLeft,
+  ArrowRight,
+  Building2,
+  ChevronLeft,
+  Loader2,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -55,7 +62,9 @@ const CreateOrganizationDialog = ({
     goBack,
     handleSubmit,
   } = useCreateOrganizationForm({ email, onCompleted });
-
+  const data = useCreateOrganizationForm({ email, onCompleted });
+  console.log(data);
+  console.log(stepIndex);
   const blockWhileSubmitting = (event: Event) => {
     if (submitting) {
       event.preventDefault();
@@ -74,15 +83,16 @@ const CreateOrganizationDialog = ({
         showCloseButton={false}
         onInteractOutside={(event) => event.preventDefault()}
         onEscapeKeyDown={blockWhileSubmitting}
-        className="max-h-[92vh] gap-0 overflow-y-auto p-0 sm:max-w-xl dark:bg-darkSecondaryBg"
+        className={`max-h-[92vh] ${stepIndex === 1 ? " md:min-w-[700px] lg:min-w-[995px]" : "sm:max-w-xl"} gap-0 overflow-y-auto p-0 dark:bg-darkSecondaryBg`}
       >
-        <DialogHeader className="space-y-3 border-b border-borderColor p-5 dark:border-darkBorder sm:p-6">
+        <DialogHeader className="space-y-3 px-5 sm:px-6 pt-5 sm:pt-6 pb-4">
+          <OnboardingStepper
+            steps={ORGANIZATION_STEPS}
+            activeIndex={stepIndex}
+          />
           <div className="flex items-start gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-              <Building2 className="h-5 w-5" />
-            </span>
             <div className="min-w-0 text-left">
-              <DialogTitle className="text-base font-semibold text-headingTextColor dark:text-darkTextPrimary sm:text-lg">
+              <DialogTitle className="text-xl text-headingTextColor dark:text-darkTextPrimary sm:text-4xl">
                 {step.heading}
               </DialogTitle>
               <DialogDescription className="mt-1 text-xs sm:text-sm">
@@ -90,13 +100,11 @@ const CreateOrganizationDialog = ({
               </DialogDescription>
             </div>
           </div>
-
-          <OnboardingStepper steps={ORGANIZATION_STEPS} activeIndex={stepIndex} />
         </DialogHeader>
 
         <Form {...form}>
           <form onSubmit={handleSubmit} noValidate>
-            <div className="p-5 sm:p-6">
+            <div className="px-5 sm:px-6">
               {step.id === "profile" && (
                 <OrganizationProfileStep
                   control={form.control}
@@ -111,45 +119,82 @@ const CreateOrganizationDialog = ({
               )}
             </div>
 
-            <div className="flex flex-col gap-3 border-t border-borderColor px-5 py-4 dark:border-darkBorder sm:flex-row sm:items-center sm:justify-between sm:px-6">
-              <p
-                className="truncate text-xs text-subTextColor dark:text-darkTextSecondary"
-                title={email}
-              >
-                Setting up for <span className="font-medium">{email}</span>
-              </p>
-
-              <div className="flex items-center justify-end gap-2">
-                {isFirstStep ? (
+            <div className="px-5 py-5 sm:px-6 sm:py-6">
+              {isFirstStep ? (
+                <div className=" flex flex-col sm:flex-row w-full items-center gap-3">
+                  {/* Back to sign in — 30% */}
                   <Button
                     type="button"
                     variant="ghost"
                     onClick={() => onOpenChange(false)}
                     disabled={submitting}
-                    className="text-subTextColor dark:text-darkTextSecondary"
+                    className="h-12 w-full sm:flex-[3] bg-[#e8e9ee] text-subTextColor dark:text-darkTextSecondary"
                   >
-                    Back to sign in
+                    <ChevronLeft className="h-5 w-5 shrink-0" />
+                    <span className="truncate">Back to sign in</span>
                   </Button>
-                ) : (
+
+                  {/* Continue — 70% */}
                   <Button
-                    type="button"
-                    variant="outline2"
-                    onClick={goBack}
+                    type="submit"
                     disabled={submitting}
+                    className="relative h-12 w-full sm:flex-[7]"
                   >
-                    <ArrowLeft className="h-4 w-4" />
-                    Back
+                    {submitting && (
+                      <Loader2 className="absolute left-4 h-5 w-5 animate-spin" />
+                    )}
+
+                    <span className="whitespace-nowrap">
+                      {submitting ? "Creating..." : "Continue"}
+                    </span>
+
+                    <span className="absolute right-2 flex h-8 w-8 items-center justify-center rounded-full bg-white">
+                      <ArrowRight className="h-5 w-5 text-primary" />
+                    </span>
                   </Button>
-                )}
-                <Button type="submit" disabled={submitting}>
-                  {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
-                  {isLastStep
-                    ? submitting
-                      ? "Creating..."
-                      : "Create organization"
-                    : "Continue"}
-                </Button>
-              </div>
+                </div>
+              ) : (
+
+                <div className="flex flex-col lg:flex-row w-full items-center gap-3">
+                  {/* Email — 50% */}
+                  <div className="min-w-0 flex-[1]">
+                    <p className="truncate text-sm">
+                      Setting up for{" "}
+                      <span className="text-primary">{email}</span>
+                    </p>
+                  </div>
+
+                  {/* Actions — 50% */}
+                  <div className="flex flex-col lg:flex-row w-full lg:flex-[1] lg:items-center gap-3">
+                    {/* Back — 20% of actions */}
+                    <Button
+                      type="button"
+                      variant="outline2"
+                      onClick={goBack}
+                      disabled={submitting}
+                      className="h-12 w-full lg:flex-[2]"
+                    >
+                      <ChevronLeft className="h-5 w-5 shrink-0" />
+                      <span>Back</span>
+                    </Button>
+
+                    {/* Create — 80% of actions */}
+                    <Button
+                      type="submit"
+                      disabled={submitting}
+                      className="relative h-12 w-full lg:flex-[8]"
+                    >
+                      {submitting && (
+                        <Loader2 className="absolute left-3 h-5 w-5 animate-spin" />
+                      )}
+
+                      <span className="whitespace-nowrap">
+                        {submitting ? "Creating..." : "Create organization"}
+                      </span>
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           </form>
         </Form>

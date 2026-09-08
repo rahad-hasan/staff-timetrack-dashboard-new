@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, Phone } from "lucide-react";
 import parsePhoneNumberFromString, {
   type CountryCode,
 } from "libphonenumber-js";
@@ -123,11 +123,10 @@ const toNationalDigits = (value: string, country: CountryDialCode) => {
 const toStoredValue = (country: CountryDialCode, digits: string) =>
   digits ? `+${country.dialCode}${digits}` : "";
 
-interface PhoneNumberInputProps
-  extends Omit<
-    React.ComponentProps<"input">,
-    "value" | "onChange" | "onBlur" | "className" | "ref" | "type"
-  > {
+interface PhoneNumberInputProps extends Omit<
+  React.ComponentProps<"input">,
+  "value" | "onChange" | "onBlur" | "className" | "ref" | "type"
+> {
   value: string;
   onChange: (value: string) => void;
   onBlur?: () => void;
@@ -272,7 +271,7 @@ export const PhoneNumberInput = ({
   return (
     <div
       className={cn(
-        "border-input dark:border-darkBorder dark:bg-darkPrimaryBg flex min-h-10 items-stretch rounded-lg border bg-transparent",
+        "border-input dark:border-darkBorder dark:bg-darkPrimaryBg flex gap-2 min-h-12 items-center rounded-lg border bg-transparent",
         "focus-within:border-ring focus-within:ring-ring/50 focus-within:ring-[3px]",
         invalid &&
           "border-destructive ring-destructive/20 dark:ring-destructive/40",
@@ -333,6 +332,9 @@ export const PhoneNumberInput = ({
           </Command>
         </PopoverContent>
       </Popover>
+      <span className="flex h-6.5 w-6.5 shrink-0 items-center justify-center rounded-md bg-[#edf4fe]">
+        <Phone className="h-4 w-4 text-primary" />
+      </span>
 
       <input
         {...inputProps}
@@ -345,7 +347,7 @@ export const PhoneNumberInput = ({
         value={nationalDigits}
         onBlur={handleBlur}
         onChange={(event) => handleInputChange(event.target.value)}
-        className="placeholder:text-muted-foreground dark:text-darkTextPrimary w-full min-w-0 self-stretch rounded-r-lg bg-transparent px-3 py-1 text-base outline-none disabled:cursor-not-allowed md:text-sm"
+        className="placeholder:text-muted-foreground dark:text-darkTextPrimary w-full min-w-0 self-stretch rounded-r-lg bg-transparent pl-1 pr-3 py-1 text-base outline-none disabled:cursor-not-allowed md:text-sm"
       />
     </div>
   );

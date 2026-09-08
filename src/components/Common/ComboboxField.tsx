@@ -35,7 +35,7 @@ export interface ComboboxOption {
 interface ComboboxFieldProps<TValues extends FieldValues> {
   control: Control<TValues>;
   name: FieldPath<TValues>;
-  label: string;
+  label?: string;
   options: readonly ComboboxOption[];
   icon?: LucideIcon;
   /** Trigger text while nothing is selected. */
@@ -80,7 +80,7 @@ const ComboboxField = <TValues extends FieldValues>({
         const selected = options.find((option) => option.value === field.value);
 
         return (
-          <FormItem className="flex flex-col">
+          <FormItem className="flex flex-col w-full">
             <FormLabel required={required}>{label}</FormLabel>
             <Popover open={open} onOpenChange={setOpen}>
               <PopoverTrigger asChild>
@@ -91,19 +91,22 @@ const ComboboxField = <TValues extends FieldValues>({
                     role="combobox"
                     aria-expanded={open}
                     disabled={disabled}
-                    className="flex justify-between font-normal dark:text-darkTextPrimary hover:dark:bg-darkPrimaryBg"
+                    className="h-12 flex justify-between font-normal dark:text-darkTextPrimary hover:dark:bg-darkPrimaryBg  "
                   >
                     <span className="flex items-center gap-2 truncate">
                       {Icon && (
-                        <Icon className="h-4 w-4 shrink-0 text-subTextColor dark:text-darkTextSecondary" />
+                        <span className="flex h-6.5 w-6.5 shrink-0 items-center justify-center rounded-md bg-[#edf4fe]">
+                          <Icon className="h-4 w-4 text-primary" />
+                        </span>
                       )}
+
                       {selected?.label || field.value || placeholder}
                     </span>
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />
                   </Button>
                 </FormControl>
               </PopoverTrigger>
-              <PopoverContent className="w-[--radix-popover-trigger-width] p-0 dark:bg-darkSecondaryBg dark:border-darkBorder">
+              <PopoverContent className="w-[--radix-popover-trigger-width] p-0 dark:bg-darkSecondaryBg dark:border-darkBorder ">
                 <Command className="dark:bg-darkSecondaryBg">
                   <CommandInput placeholder={searchPlaceholder} />
                   <CommandList className="max-h-60 overflow-y-auto no-scrollbar scroll-smooth">
