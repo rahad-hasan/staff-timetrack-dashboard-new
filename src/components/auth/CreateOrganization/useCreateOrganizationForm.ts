@@ -122,7 +122,6 @@ export const useCreateOrganizationForm = ({
   const runSubmit = useMemo(
     () =>
       form.handleSubmit(async (values) => {
-        console.log(values)
         setSubmitting(true);
 
         try {

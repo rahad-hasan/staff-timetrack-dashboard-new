@@ -29,20 +29,20 @@ const CreateOrganizationPageClient = () => {
   const email = searchParams.get("email");
   const enterPlanSelection = useEnterPlanSelection();
 
-  // useEffect(() => {
-  //   if (!email) {
-  //     toast.error("We lost track of your sign-up email — please sign in.", {
-  //       style: {
-  //         backgroundColor: "#ef4444",
-  //         color: "white",
-  //         border: "none",
-  //       },
-  //     });
-  //     router.replace("/auth/login");
-  //   }
-  // }, [email, router]);
+  useEffect(() => {
+    if (!email) {
+      toast.error("We lost track of your sign-up email — please sign in.", {
+        style: {
+          backgroundColor: "#ef4444",
+          color: "white",
+          border: "none",
+        },
+      });
+      router.replace("/auth/login");
+    }
+  }, [email, router]);
 
-  // if (!email) return null;
+  if (!email) return null;
 
   return (
     <div className="min-h-screen w-full bg-linear-to-b from-[#12cd6918] from-5% to-bgSecondary dark:to-darkSecondaryBg to-20%">

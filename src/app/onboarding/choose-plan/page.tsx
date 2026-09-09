@@ -45,6 +45,8 @@ const ChoosePlanPage = async () => {
     getPlans(),
   ]);
 
+  console.log(plansRes)
+
   const plans = plansRes?.data ?? [];
   const entitlements = statusRes?.data?.entitlements ?? null;
 
@@ -62,42 +64,33 @@ const ChoosePlanPage = async () => {
       : null;
 
   return (
-    <div className="min-h-screen w-full bg-linear-to-b from-[#12cd6918] from-5% to-bgSecondary dark:to-darkSecondaryBg to-20%">
-      <header className="flex items-center justify-between px-6 py-5 sm:px-8">
-        <div className="flex items-center gap-1.5">
-          <Image
-            src={logoWithSlogan}
-            alt="Logo"
-            width={120}
-            height={35}
-            className="hidden dark:block"
-          />
-          <Image
-            src={logoForDark}
-            alt="Logo"
-            width={120}
-            height={35}
-            className="dark:hidden"
-          />
-        </div>
-
-        <Link
-          href="/dashboard"
-          className="inline-flex items-center gap-1 text-sm font-medium text-subTextColor hover:text-headingTextColor dark:text-darkTextSecondary dark:hover:text-darkTextPrimary"
-        >
-          Skip for now
-          <ArrowRight className="h-4 w-4" />
-        </Link>
-      </header>
-
-      <main className="mx-auto w-full max-w-7xl px-4 pb-16 sm:px-6">
-        <div className="mx-auto mb-8 max-w-2xl text-center">
-          <h1 className="text-3xl font-semibold text-headingTextColor dark:text-darkTextPrimary sm:text-4xl">
-            Choose the plan that&apos;s right for your team
+    <div className="min-h-screen w-full ">
+      <main className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6">
+        <div className="mx-auto mb-8 w-full text-center">
+          <header className="flex items-center justify-between">
+            <div className="w-full"></div>
+            <div className="w-full flex justify-center">
+              <span className="text-sm text-primary bg-primary/10 px-3 py-1 rounded-full">
+                Pricing
+              </span>
+            </div>
+            <div className="w-full flex justify-end">
+              <Link
+                href="/dashboard"
+                className="bg-primary px-4 py-1 rounded-full text-white inline-flex items-center gap-1 text-sm font-medium dark:text-darkTextSecondary dark:hover:text-darkTextPrimary"
+              >
+                Skip for now
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </header>
+          <h1 className="text-3xl mt-4 font-semibold text-headingTextColor dark:text-darkTextPrimary sm:text-4xl">
+            Simple pricing.{" "}
+            <span className=" text-primary">Powerful features</span>
           </h1>
           <p className="mt-3 text-subTextColor dark:text-darkTextSecondary">
-            Per-seat pricing that scales with your team. Switch or cancel
-            anytime.
+            Choose the plan that fits your team. All plans are per user, per
+            month
           </p>
 
           {trialDaysLeft !== null && (
@@ -108,7 +101,10 @@ const ChoosePlanPage = async () => {
                 {entitlements?.plan_name ? (
                   <>
                     {" "}
-                    of <span className="font-medium">{entitlements.plan_name}</span>
+                    of{" "}
+                    <span className="font-medium">
+                      {entitlements.plan_name}
+                    </span>
                   </>
                 ) : null}{" "}
                 is already active — {trialDaysLeft}{" "}

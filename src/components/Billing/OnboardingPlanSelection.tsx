@@ -13,6 +13,9 @@ import {
 } from "@/types/billing";
 import PlanCard from "./PlanCard";
 import CheckoutDialog from "./CheckoutDialog";
+import Calender2Icon from "../Icons/Calender2Icon";
+import FeatureBanner from "./FeatureBanner";
+import CompareFeaturesPlan from "./CompareFeaturesPlan";
 
 /**
  * The onboarding plan picker — `PlanPricingSection`'s grid without the
@@ -31,14 +34,14 @@ export default function OnboardingPlanSelection({
   entitlements,
   activeUserCount,
   isAdmin,
-}: {
+} : {
   plans: IBillingPlan[];
   entitlements: IBillingEntitlements | null;
   activeUserCount: number;
   isAdmin: boolean;
 }) {
   const router = useRouter();
-
+  console.log(plans)
   const { hasPaid, isCanceled, isTrial, isDelinquent } = derivePlanGridFlags(
     entitlements,
     plans,
@@ -61,7 +64,7 @@ export default function OnboardingPlanSelection({
   const visiblePlans = plans.filter(
     (p) => isFreePlan(p) || p.available_cycles?.includes(effectiveCycle),
   );
-
+  console.log(visiblePlans)
   const anyDescription = visiblePlans.some((p) => Boolean(p.description));
 
   const [selectedPlan, setSelectedPlan] = useState<IBillingPlan | null>(null);
@@ -81,7 +84,7 @@ export default function OnboardingPlanSelection({
     <div>
       {supported.length > 0 && (
         <div className="mb-8 flex justify-center">
-          <div className="inline-flex h-10 rounded-lg bg-white outline-1 outline-borderColor dark:bg-darkPrimaryBg dark:outline-darkBorder">
+          <div className="inline-flex h-12 rounded-lg bg-white p-1 outline-1 outline-borderColor/50 dark:bg-darkPrimaryBg dark:outline-darkBorder">
             {supported.map((c) => (
               <button
                 key={c}
@@ -89,12 +92,13 @@ export default function OnboardingPlanSelection({
                 aria-pressed={effectiveCycle === c}
                 onClick={() => setCycle(c)}
                 className={cn(
-                  "shrink-0 cursor-pointer rounded-lg px-4 py-2 text-[13px] font-medium transition-all sm:text-sm",
+                  "shrink-0 cursor-pointer rounded-md px-4 py-2 text-[13px] flex gap-2 items-center font-medium transition-all sm:text-sm",
                   effectiveCycle === c
                     ? "bg-primary text-white shadow"
                     : "text-subTextColor hover:text-gray-800 dark:text-darkTextPrimary",
                 )}
               >
+                <Calender2Icon className="" size={20} />
                 {CYCLE_LABEL[c]}
               </button>
             ))}
@@ -110,7 +114,7 @@ export default function OnboardingPlanSelection({
       ) : (
         <div
           className={cn(
-            "grid gap-6 pt-3 md:grid-cols-2",
+            "grid gap-6 my-20 md:grid-cols-2",
             // Four cards (Free + three paid) sit on one row on wide screens;
             // a three-plan catalog centers on three columns instead of
             // leaving a phantom fourth.
@@ -137,6 +141,9 @@ export default function OnboardingPlanSelection({
           ))}
         </div>
       )}
+
+      <FeatureBanner></FeatureBanner>
+      <CompareFeaturesPlan></CompareFeaturesPlan>
 
       <CheckoutDialog
         plan={selectedPlan}
