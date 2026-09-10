@@ -82,11 +82,11 @@ export default function PlanCard({
       className={cn(
         "relative flex flex-col border-2 border-borderColor rounded-2xl p-5 sm:p-6 bg-white dark:bg-darkPrimaryBg dark:border-darkBorder",
         plan.badge_text === "Popular" &&
-          "border-primary ring-1 ring-primary shadow-[0_0_20px_8px_rgba(0,0,0,0.07)] min-h-[calc(100%+80px)] my-[-40px]",
+          "border-primary ring-1 ring-primary shadow-[0_0_20px_8px_rgba(0,0,0,0.07)] lg:min-h-[calc(100%+80px)] lg:my-[-40px]",
       )}
     >
       {plan.badge_text === "Popular" && (
-        <div className="absolute -top-3 right-6 -translate-x-1/2 whitespace-nowrap flex items-center gap-1.5 uppercase rounded-full bg-primary px-5 py-1 text-xs font-medium text-white">
+        <div className="absolute -top-3 right-0 -translate-x-1/2 whitespace-nowrap flex items-center gap-1.5 uppercase rounded-full bg-primary px-5 py-1 text-xs font-medium text-white">
           <Image
             src={starIcon}
             className={` -mt-[3px]`}
@@ -94,7 +94,7 @@ export default function PlanCard({
             height={14}
             alt="stater"
           />
-          {plan.badge_text}
+          Most {plan.badge_text}
         </div>
       )}
 
@@ -155,7 +155,9 @@ export default function PlanCard({
         </div>
 
         {pricing?.savings_percent != null && (
-          <span className="mt-1 shrink-0 rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-500/15 dark:text-green-300">
+          <span
+            className={`mt-1 shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${plan.name === "Pro" ? "text-primary bg-primary/10" : "text-[#c286ff] bg-[#c286ff]/10"}`}
+          >
             Save {pricing.savings_percent}%
           </span>
         )}
@@ -226,13 +228,21 @@ export default function PlanCard({
             Reactivate plan
           </Button>
         ) : isCurrent && isTrial && !isFreePlan(plan) ? (
-          <Button type="button" className="w-full" onClick={onCheckout}>
+          <button
+            type="button"
+            className={`w-full rounded-md border font-semibold cursor-pointer py-2.5 text-center text-sm ${plan.name === "Stater" ? "border-[#1ba855] text-[#1ba855]" : plan.name === "Max" ? "border-[#c286ff] text-[#c286ff]" : " bg-[linear-gradient(180deg,#427fe3,#3360c8)] text-white"}`}
+            onClick={onCheckout}
+          >
             Upgrade now
-          </Button>
+          </button>
         ) : isCurrent ? (
-          <Button type="button" disabled className="w-full">
+          <button
+            type="button"
+            disabled
+            className={`w-full rounded-md border font-semibold cursor-not-allowed py-2.5 text-center text-sm ${plan.name === "Stater" ? "border-[#1ba855]/50 text-[#1ba855]/50" : plan.name === "Max" ? "border-[#c286ff]/50 text-[#c286ff]/50" : " bg-[linear-gradient(180deg,#427fe3,#3360c8)] text-white/50"}`}
+          >
             Current plan
-          </Button>
+          </button>
         ) : isFreePlan(plan) ? (
           <button className="w-full rounded-md border border-[#1ba855] text-[#1ba855] font-semibold cursor-pointer py-2.5 text-center text-sm">
             Start Free
@@ -245,20 +255,25 @@ export default function PlanCard({
             Settle your open invoice to change plans
           </p>
         ) : hasPaid ? (
-          <Button type="button" className="w-full" onClick={onSwitch}>
+          <Button
+            type="button"
+            className={`w-full rounded-md border font-semibold cursor-pointer py-2.5 text-center text-sm ${plan.name === "Stater" ? "border-[#1ba855] text-[#1ba855]" : plan.name === "Max" ? "border-[#c286ff] text-[#c286ff]" : " bg-[linear-gradient(180deg,#427fe3,#3360c8)] text-white"}`}
+            onClick={onSwitch}
+          >
             Switch to this plan
           </Button>
+        ) : plan.name === "Max" ? (
+          <button
+            type="button"
+            className="w-full rounded-md border border-[#c286ff] text-[#c286ff] font-semibold cursor-pointer py-2.5 text-center text-sm"
+            onClick={onCheckout}
+          >
+            Get started
+          </button>
         ) : (
-          // {
-          //   plan.name === "Max" ?
-          //   <button type="button" className="w-full rounded-md border border-[#c286ff] text-[#c286ff] font-semibold cursor-pointer py-2.5 text-center text-sm" onClick={onCheckout}>
-          //   Get started
-          // </button>
-          //   :
-          <Button type="button" className="w-full" onClick={onCheckout}>
+          <Button type="button" className="w-full h-11" onClick={onCheckout}>
             Get started
           </Button>
-          // }
         )}
       </div>
 
@@ -278,10 +293,10 @@ export default function PlanCard({
               <div className=" flex items-center gap-2">
                 {feature.included ? (
                   <Check
-                    className={`mt-0.5 p-0.5 h-4 w-4 shrink-0 rounded-full text-white ${plan.name === "Stater" ? "bg-[#1ba855]" : plan.name === "Max" ? "bg-[#c286ff]" : " bg-primary"}`}
+                    className={`-mt-0.5 p-0.5 h-4 w-4 shrink-0 rounded-full text-white ${plan.name === "Stater" ? "bg-[#1ba855]" : plan.name === "Max" ? "bg-[#c286ff]" : " bg-primary"}`}
                   />
                 ) : (
-                  <MinusCircle className="mt-0.5 h-4 w-4 shrink-0 text-subTextColor dark:text-darkTextSecondary" />
+                  <MinusCircle className="-mt-0.5 h-4 w-4 shrink-0 text-subTextColor dark:text-darkTextSecondary" />
                 )}
 
                 <span

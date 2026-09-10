@@ -64,7 +64,7 @@ const ChoosePlanPage = async () => {
       : null;
 
   return (
-    <div className="min-h-screen w-full ">
+    <div className="bg-[#fefefe] min-h-screen w-full ">
       <main className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6">
         <div className="mx-auto mb-8 w-full text-center">
           <header className="flex items-center justify-between">
@@ -121,13 +121,13 @@ const ChoosePlanPage = async () => {
           isAdmin
         />
 
-        <div className="mt-12 text-center">
+        <div className="mt-12 flex flex-col items-center">
           <p className="mb-3 text-sm text-subTextColor dark:text-darkTextSecondary">
             Not sure yet? Keep exploring on your free trial and pick later.
           </p>
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-2 rounded-md border border-borderColor bg-white px-5 py-2.5 text-sm font-medium text-headingTextColor hover:bg-bgSecondary dark:border-darkBorder dark:bg-darkPrimaryBg dark:text-darkTextPrimary dark:hover:bg-darkSecondaryBg"
+            className="flex w-auto cursor-pointer items-center gap-2 rounded-full bg-primary/10 px-5 py-2 font-semibold text-primary"
           >
             Pick a plan later
             <ArrowRight className="h-4 w-4" />

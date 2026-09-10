@@ -16,6 +16,7 @@ import CheckoutDialog from "./CheckoutDialog";
 import Calender2Icon from "../Icons/Calender2Icon";
 import FeatureBanner from "./FeatureBanner";
 import CompareFeaturesPlan from "./CompareFeaturesPlan";
+import DownArrowIcon from "../Icons/PlanIcons/DownArrowIcon";
 
 /**
  * The onboarding plan picker — `PlanPricingSection`'s grid without the
@@ -34,14 +35,14 @@ export default function OnboardingPlanSelection({
   entitlements,
   activeUserCount,
   isAdmin,
-} : {
+}: {
   plans: IBillingPlan[];
   entitlements: IBillingEntitlements | null;
   activeUserCount: number;
   isAdmin: boolean;
 }) {
   const router = useRouter();
-  console.log(plans)
+  console.log(plans);
   const { hasPaid, isCanceled, isTrial, isDelinquent } = derivePlanGridFlags(
     entitlements,
     plans,
@@ -64,11 +65,12 @@ export default function OnboardingPlanSelection({
   const visiblePlans = plans.filter(
     (p) => isFreePlan(p) || p.available_cycles?.includes(effectiveCycle),
   );
-  console.log(visiblePlans)
+  console.log(visiblePlans);
   const anyDescription = visiblePlans.some((p) => Boolean(p.description));
 
   const [selectedPlan, setSelectedPlan] = useState<IBillingPlan | null>(null);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [showCompareFeatures, setShowCompareFeatures] = useState(false);
 
   const handleCheckout = (plan: IBillingPlan) => {
     setSelectedPlan(plan);
@@ -79,7 +81,7 @@ export default function OnboardingPlanSelection({
   const isCurrent = (plan: IBillingPlan): boolean =>
     entitlements?.plan_id === plan.id &&
     (isFreePlan(plan) || entitlements?.billing_cycle === effectiveCycle);
-
+  console.log(supported)
   return (
     <div>
       {supported.length > 0 && (
@@ -100,6 +102,9 @@ export default function OnboardingPlanSelection({
               >
                 <Calender2Icon className="" size={20} />
                 {CYCLE_LABEL[c]}
+                          {/* <span className="mt-1 shrink-0 rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-500/15 dark:text-green-300">
+            Save {pricing.savings_percent}%
+          </span> */}
               </button>
             ))}
           </div>
@@ -114,11 +119,11 @@ export default function OnboardingPlanSelection({
       ) : (
         <div
           className={cn(
-            "grid gap-6 my-20 md:grid-cols-2",
+            "grid gap-6 my-10 lg:my-20 md:grid-cols-2",
             // Four cards (Free + three paid) sit on one row on wide screens;
             // a three-plan catalog centers on three columns instead of
             // leaving a phantom fourth.
-            visiblePlans.length >= 4 ? "xl:grid-cols-4" : "xl:grid-cols-3",
+            visiblePlans.length >= 4 ? "xl:grid-cols-4" : "lg:grid-cols-3",
           )}
         >
           {visiblePlans.map((plan) => (
@@ -143,7 +148,44 @@ export default function OnboardingPlanSelection({
       )}
 
       <FeatureBanner></FeatureBanner>
-      <CompareFeaturesPlan></CompareFeaturesPlan>
+
+      {/* <p className=" text-subTextColor dark:text-darkTextSecondary font-medium text-center mt-5">All Plans are per user, per month. Prices in USD</p> */}
+      <button
+        type="button"
+        onClick={() => setShowCompareFeatures((prev) => !prev)}
+        className="mx-auto mt-11 flex cursor-pointer items-center gap-2 rounded-full bg-primary/10 px-5 py-2 font-semibold text-primary"
+      >
+        Compare All Features
+        <svg
+          width={25}
+          height={25}
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className={cn(
+            "transition-transform duration-200",
+            showCompareFeatures && "rotate-180",
+          )}
+        >
+          <path
+            opacity="0.4"
+            d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9"
+            stroke="#0788F3"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M12 15C13.5811 14.9999 18 9 18 9"
+            stroke="#0788F3"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </button>
+
+      {showCompareFeatures && <CompareFeaturesPlan />}
 
       <CheckoutDialog
         plan={selectedPlan}

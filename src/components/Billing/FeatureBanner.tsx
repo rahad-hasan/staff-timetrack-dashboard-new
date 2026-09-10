@@ -1,24 +1,27 @@
 import React from 'react';
-import { ShieldAlert, CreditCard, RefreshCw, Lock } from 'lucide-react';
+import LockIcon from '../Icons/PlanIcons/LockIcon';
+import CardIcon from '../Icons/PlanIcons/CardIcon';
+import LongTermIcon from '../Icons/PlanIcons/LongTermIcon';
+import SecureIcon from '../Icons/PlanIcons/SecureIcon';
 
 const features = [
   {
-    icon: ShieldAlert,
+    icon: <LockIcon size={22}/>,
     title: '14-day free trial',
     description: 'Explore all features risk-free. Cancel anytime.',
   },
   {
-    icon: CreditCard,
+    icon: <CardIcon size={24}/>,
     title: 'No Credit Card',
     description: 'Get started in seconds. No credit card required.',
   },
   {
-    icon: RefreshCw,
+    icon: <LongTermIcon size={20}/>,
     title: 'Cancel Anytime',
     description: 'No long-term contracts. Switch or cancel anytime.',
   },
   {
-    icon: Lock,
+    icon: <SecureIcon size={24}/>,
     title: 'Secure & Reliable',
     description: 'Your data is always protected with enterprise-grade security.',
   },
@@ -26,7 +29,7 @@ const features = [
 
 export default function FeatureBanner() {
   return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 bg-white rounded-3xl p-6 shadow-[0_0_20px_8px_rgba(0,0,0,0.01)] divide-y sm:divide-y-0 sm:divide-x divide-borderColor dark:divide-darkBorder">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 bg-white rounded-3xl p-6 shadow-[0_0_20px_8px_rgba(0,0,0,0.04)] divide-y sm:divide-y-0 sm:divide-x divide-borderColor dark:divide-darkBorder">
         {features.map((feature, index) => {
           const Icon = feature.icon;
           return (
@@ -38,7 +41,7 @@ export default function FeatureBanner() {
             >
               {/* Icon Container */}
               <div className="flex-shrink-0 flex items-center justify-center w-14 h-14 rounded-full bg-primary/10 text-primary">
-                <Icon className="w-6 h-6 stroke-[2]" />
+                {Icon}
               </div>
 
               {/* Text Content */}

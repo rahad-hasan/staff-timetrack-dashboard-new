@@ -35,21 +35,21 @@ const tableData = [
 export default function CompareFeaturesPlan() {
   return (
     <div className=" mt-11">
-      <div className="overflow-x-auto rounded-xl bg-white">
+      <div className="overflow-x-auto border border-borderColor/50 dark:border-borderColor/50 rounded-xl bg-white">
         <table className="w-full text-left border-collapse min-w-[700px]">
           {/* Table Header */}
           <thead>
             <tr className="text-sm font-semibold">
-              <th className="p-4 w-1/4 bg-[#eef6ff] text-gray-700 rounded-tl-xl border-b border-gray-100">
+              <th className="p-4 w-1/4 bg-[#e6f3fe] text-headingTextColor dark:text-darkTextPrimary rounded-tl-xl border-b border-borderColor dark:border-darkBorder">
                 Feature
               </th>
-              <th className="p-4 w-1/4 bg-[#eef6ff] text-center text-gray-900 font-bold border-b border-gray-100">
+              <th className="p-4 w-1/4 bg-[#e6f3fe] text-center text-headingTextColor dark:text-darkTextPrimary font-bold border-b border-borderColor dark:border-darkBorder">
                 Starter
               </th>
-              <th className="p-4 w-1/4 bg-black text-center text-white border-b border-gray-100">
+              <th className="p-4 w-1/4 bg-black text-center text-white border-b border-borderColor dark:border-darkBorder">
                 Pro
               </th>
-              <th className="p-4 w-1/4 bg-[#0070f3] text-center text-white rounded-tr-xl border-b border-gray-100">
+              <th className="p-4 w-1/4 bg-[#0772ca] text-center text-white rounded-tr-xl border-b border-borderColor dark:border-darkBorder">
                 Enterprise
               </th>
             </tr>
@@ -58,8 +58,8 @@ export default function CompareFeaturesPlan() {
           {/* Table Body */}
           <tbody className="divide-y divide-gray-100 text-sm">
             {tableData.map((row, index) => (
-              <tr key={index} className="hover:bg-gray-50/50 transition-colors">
-                <td className="p-4 font-medium text-gray-600">
+              <tr key={index} className="">
+                <td className="p-4 text-headingTextColor dark:text-darkTextPrimary">
                   {row.feature}
                 </td>
                 <td className="p-4 text-center">
