@@ -4,7 +4,10 @@ import { Check, Info, MinusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { formatDollars, isFreePlan } from "@/lib/billing";
-import { BillingCycle, CYCLE_PERIOD_NOUN, IBillingPlan } from "@/types/billing";
+import { 
+  BillingCycle, 
+  // CYCLE_PERIOD_NOUN, 
+  IBillingPlan } from "@/types/billing";
 import Image from "next/image";
 import staterIcon from "@/components/Icons/PlanIcons/plan_starter.svg";
 import proIcon from "@/components/Icons/PlanIcons/plan_pro.svg";

@@ -16,7 +16,7 @@ import CheckoutDialog from "./CheckoutDialog";
 import Calender2Icon from "../Icons/Calender2Icon";
 import FeatureBanner from "./FeatureBanner";
 import CompareFeaturesPlan from "./CompareFeaturesPlan";
-import DownArrowIcon from "../Icons/PlanIcons/DownArrowIcon";
+// import DownArrowIcon from "../Icons/PlanIcons/DownArrowIcon";
 
 /**
  * The onboarding plan picker — `PlanPricingSection`'s grid without the
