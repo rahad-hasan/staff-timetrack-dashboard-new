@@ -17,8 +17,11 @@ export default function SignupVerifiedClient() {
 
     // No email in this document's URL or DOM. A full document transition after
     // the bounded send prevents the Google tag following authenticated app use.
-    void sendVerifiedTrialConversion(context.id).finally(() => {
-      clearVerifiedTrialTransition();
+    void sendVerifiedTrialConversion(context.id).then((handled) => {
+      // Failed attempts remain eligible for a clean-page revisit during the
+      // original short TTL. Never retry tracking on the email-bearing page.
+      if (handled) clearVerifiedTrialTransition();
+    }).finally(() => {
       window.location.replace(`/auth/create-organization?email=${encodeURIComponent(context.email)}`);
     });
   }, []);

@@ -2,33 +2,58 @@ declare global {
   interface Window {
     dataLayer?: unknown[];
     __sttVerifiedTrialIds?: Set<string>;
+    __sttVerifiedTrialHandledIds?: Set<string>;
   }
 }
 
-/** Queue only a server-confirmed signup. This does not load trackers, grant
- * consent, or send a network request. A consent-aware tag must consume it.
+export function isVerifiedTrialConversionId(id: unknown): id is string {
+  return typeof id === "string" && /^stt_otp_[a-f0-9]{64}$/.test(id);
+}
+
+/** "Handled" means Google's callback ran, not confirmed receipt/attribution. */
+export function wasVerifiedTrialConversionHandled(id: string): boolean {
+  if (typeof window === "undefined") return false;
+  if (window.__sttVerifiedTrialHandledIds?.has(id)) return true;
+  try {
+    return window.sessionStorage.getItem(`stt:otp-conversion:${id}`) === "handled";
+  } catch { return false; }
+}
+
+export function markVerifiedTrialConversionHandled(id: string): void {
+  if (typeof window === "undefined" || !isVerifiedTrialConversionId(id)) return;
+  (window.__sttVerifiedTrialHandledIds ??= new Set<string>()).add(id);
+  try { window.sessionStorage.setItem(`stt:otp-conversion:${id}`, "handled"); } catch { /* optional */ }
+}
+
+/** Ensure one pending event per document. Already-pending IDs stay eligible
+ * for a send retry; only a handled callback suppresses them across navigation.
+ * This does not load trackers, grant consent or send a network request.
  */
 export function queueVerifiedTrialConversion(id: unknown): boolean {
-  if (typeof window === "undefined" || typeof id !== "string" ||
-      !/^stt_otp_[a-f0-9]{64}$/.test(id)) return false;
+  if (typeof window === "undefined" || !isVerifiedTrialConversionId(id)) return false;
 
   try {
     const seen = window.__sttVerifiedTrialIds ??= new Set<string>();
-    if (seen.has(id)) return false;
+    if (wasVerifiedTrialConversionHandled(id)) return false;
+    if (seen.has(id)) return true;
     const storageKey = `stt:otp-conversion:${id}`;
-    try {
-      if (window.sessionStorage.getItem(storageKey) === "queued") return false;
-    } catch { /* Storage may be disabled; in-memory deduplication still works. */ }
-
     const layer = window.dataLayer ??= [];
     if (!Array.isArray(layer)) return false;
-    layer.push({
-      event: "stt_otp_verified_free_trial",
-      transaction_id: id,
-      signup_method: "email_otp",
-    });
+    if (!layer.some((item) => {
+      if (!item || typeof item !== "object") return false;
+      const event = item as Record<string, unknown>;
+      return event.event === "stt_otp_verified_free_trial" && event.transaction_id === id;
+    })) {
+      layer.push({
+        event: "stt_otp_verified_free_trial",
+        transaction_id: id,
+        signup_method: "email_otp",
+      });
+    }
     seen.add(id);
-    try { window.sessionStorage.setItem(storageKey, "queued"); } catch { /* optional */ }
+    // Older versions wrote "queued" before attempting network work. Neither
+    // that legacy marker nor "pending" is evidence that a send was handled.
+    try { window.sessionStorage.setItem(storageKey, "pending"); } catch { /* optional */ }
     return true;
   } catch {
     return false;
