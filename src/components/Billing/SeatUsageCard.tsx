@@ -6,6 +6,8 @@ import { cn } from "@/lib/utils";
 import { getSeatUsage, hasPaidSubscription } from "@/lib/billing";
 import { useBillingStore } from "@/store/billingStore";
 import { useLogInUserStore } from "@/store/logInUserStore";
+import current_plan from "@/assets/settings/current_plan.png";
+import Image from "next/image";
 
 /**
  * "Seats" card (guide §3). Purchased seats + effective cap come from
@@ -34,52 +36,59 @@ export default function SeatUsageCard({
       : 0;
 
   return (
-    <div className="border border-borderColor rounded-lg p-3 sm:p-4 bg-white dark:bg-darkPrimaryBg dark:border-darkBorder">
-      <div className="flex items-start justify-between gap-3">
-        <h3 className="text-lg font-medium text-headingTextColor dark:text-darkTextPrimary">
+    <div className="relative w-full flex justify-between rounded-lg pl-8 py-3 sm:py-4 bg-white dark:bg-darkPrimaryBg">
+      {showAddSeats && (
+        <Button
+          className="absolute top-4 right-4"
+          type="button"
+          size="sm"
+          onClick={openAddSeats}
+        >
+          <Plus />
+          Add seats
+        </Button>
+      )}
+
+      <div className=" flex flex-col justify-center">
+        <h3 className=" text-lg text-subTextColor dark:text-darkTextSecondary">
           Seats
         </h3>
-        {showAddSeats && (
-          <Button type="button" size="sm" onClick={openAddSeats}>
-            <Plus />
-            Add seats
-          </Button>
+        {usage.unlimited ? (
+          <div className=" flex items-center gap-2">
+            <InfinityIcon className="h-12 w-12 text-primary" />
+            <span className="text-[28px] font-semibold text-headingTextColor dark:text-darkTextPrimary">
+              Unlimited seats
+            </span>
+          </div>
+        ) : (
+          <div className="">
+            <p
+              className={cn(
+                "text-sm font-medium",
+                isFull
+                  ? "text-red-600 dark:text-red-400"
+                  : "text-headingTextColor dark:text-darkTextPrimary",
+              )}
+            >
+              {activeUserCount} of {cap} seats used
+            </p>
+            <div className="mt-2 h-2 w-full rounded-full bg-bgSecondary dark:bg-darkSecondaryBg">
+              <div
+                className={cn(
+                  "h-2 rounded-full transition-all",
+                  isFull ? "bg-red-500" : "bg-primary",
+                )}
+                style={{ width: `${percent}%` }}
+              />
+            </div>
+            <p className="mt-2 text-sm text-subTextColor dark:text-darkTextSecondary">
+              Purchased: {usage.purchased ?? "Unlimited"}
+            </p>
+          </div>
         )}
       </div>
 
-      {usage.unlimited ? (
-        <div className="mt-4 flex items-center gap-2">
-          <InfinityIcon className="h-6 w-6 text-primary" />
-          <span className="text-base font-medium text-headingTextColor dark:text-darkTextPrimary">
-            Unlimited seats
-          </span>
-        </div>
-      ) : (
-        <div className="mt-4">
-          <p
-            className={cn(
-              "text-sm font-medium",
-              isFull
-                ? "text-red-600 dark:text-red-400"
-                : "text-headingTextColor dark:text-darkTextPrimary",
-            )}
-          >
-            {activeUserCount} of {cap} seats used
-          </p>
-          <div className="mt-2 h-2 w-full rounded-full bg-bgSecondary dark:bg-darkSecondaryBg">
-            <div
-              className={cn(
-                "h-2 rounded-full transition-all",
-                isFull ? "bg-red-500" : "bg-primary",
-              )}
-              style={{ width: `${percent}%` }}
-            />
-          </div>
-          <p className="mt-2 text-sm text-subTextColor dark:text-darkTextSecondary">
-            Purchased: {usage.purchased ?? "Unlimited"}
-          </p>
-        </div>
-      )}
+      <Image src={current_plan} alt="image" width={200} height={160} />
     </div>
   );
 }

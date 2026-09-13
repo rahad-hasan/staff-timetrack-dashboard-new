@@ -185,7 +185,7 @@ export default function OnboardingPlanSelection({
         </svg>
       </button>
 
-      {showCompareFeatures && <CompareFeaturesPlan />}
+      {showCompareFeatures && <CompareFeaturesPlan margin="mt-11" />}
 
       <CheckoutDialog
         plan={selectedPlan}

@@ -8,7 +8,7 @@ import CheckFillIcon from "../Icons/PlanIcons/CheckFillIcon";
 
 const CardInfo = () => {
   return (
-    <div className="w-[1000px]">
+    <div className="xl:w-[1000px]">
       <HeadingComponent
         heading="Payment Methods"
         subHeading="Add, remove, or manage your payment methods for subscriptions and invoices."

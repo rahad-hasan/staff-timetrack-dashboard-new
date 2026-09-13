@@ -14,6 +14,10 @@ import {
 import PlanCard from "./PlanCard";
 import CheckoutDialog from "./CheckoutDialog";
 import SwitchPlanDialog from "./SwitchPlanDialog";
+import Calender2Icon from "../Icons/Calender2Icon";
+import FeatureBanner from "./FeatureBanner";
+import LockIcon from "../Icons/PlanIcons/LockIcon";
+import SecureIcon from "../Icons/PlanIcons/SecureIcon";
 
 /**
  * Pricing grid (guide §2/§5). The cycle toggle only shows cycles at least one
@@ -96,16 +100,43 @@ export default function PlanPricingSection({
     >
       <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="mb-1.5 text-xl font-medium text-headingTextColor dark:text-darkTextPrimary">
-            Plans &amp; pricing
-          </h2>
-          <p className="text-subTextColor dark:text-darkTextSecondary">
-            Choose the plan that fits your team.
+          <div className="w-full">
+            <span className="text-sm text-primary bg-primary/10 px-3 py-1 rounded-full">
+              Pricing
+            </span>
+          </div>
+
+          <h1 className="text-3xl mt-4 font-semibold text-headingTextColor dark:text-darkTextPrimary sm:text-4xl">
+            Simple pricing.{" "}
+            <span className=" text-primary">Powerful features</span>
+          </h1>
+          <p className="mt-3 text-subTextColor dark:text-darkTextSecondary">
+            Choose the plan that fits your team. All plans are per user, per
+            month
           </p>
         </div>
 
         {supported.length > 0 && (
-          <div className="mt-3 inline-flex h-10 self-start rounded-lg bg-bgSecondary dark:bg-darkSecondaryBg sm:mt-0 sm:self-auto">
+          // <div className="mt-3 inline-flex h-10 self-start rounded-lg bg-bgSecondary dark:bg-darkSecondaryBg sm:mt-0 sm:self-auto">
+          //   {supported.map((c) => (
+          //     <button
+          //       key={c}
+          //       type="button"
+          //       aria-pressed={effectiveCycle === c}
+          //       onClick={() => setCycle(c)}
+          //       className={cn(
+          //         "flex-shrink-0 cursor-pointer rounded-lg px-3 py-2 text-[13px] font-medium transition-all sm:text-sm",
+          //         effectiveCycle === c
+          //           ? "bg-bgPrimary text-headingTextColor shadow outline-1 outline-borderColor dark:bg-darkPrimaryBg dark:text-darkTextPrimary dark:outline-darkBorder"
+          //           : "text-subTextColor hover:text-gray-800 dark:text-darkTextPrimary",
+          //       )}
+          //     >
+          //       {CYCLE_LABEL[c]}
+          //     </button>
+          //   ))}
+          // </div>
+
+          <div className="inline-flex h-12 rounded-lg bg-white p-1 outline-1 outline-borderColor/50 dark:bg-darkPrimaryBg dark:outline-darkBorder">
             {supported.map((c) => (
               <button
                 key={c}
@@ -113,13 +144,17 @@ export default function PlanPricingSection({
                 aria-pressed={effectiveCycle === c}
                 onClick={() => setCycle(c)}
                 className={cn(
-                  "flex-shrink-0 cursor-pointer rounded-lg px-3 py-2 text-[13px] font-medium transition-all sm:text-sm",
+                  "shrink-0 cursor-pointer rounded-md px-4 py-2 text-[13px] flex gap-2 items-center font-medium transition-all sm:text-sm",
                   effectiveCycle === c
-                    ? "bg-bgPrimary text-headingTextColor shadow outline-1 outline-borderColor dark:bg-darkPrimaryBg dark:text-darkTextPrimary dark:outline-darkBorder"
+                    ? "bg-primary text-white shadow"
                     : "text-subTextColor hover:text-gray-800 dark:text-darkTextPrimary",
                 )}
               >
+                <Calender2Icon className="" size={20} />
                 {CYCLE_LABEL[c]}
+                {/* <span className="mt-1 shrink-0 rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-500/15 dark:text-green-300">
+            Save {pricing.savings_percent}%
+          </span> */}
               </button>
             ))}
           </div>
@@ -131,7 +166,7 @@ export default function PlanPricingSection({
           No plans are available right now.
         </p>
       ) : (
-        <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-6 pt-3">
+        <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-6 pt-20">
           {visiblePlans.map((plan) => (
             <PlanCard
               key={plan.id}
@@ -158,12 +193,21 @@ export default function PlanPricingSection({
         open={checkoutOpen}
         onOpenChange={setCheckoutOpen}
       />
+
       <SwitchPlanDialog
         plan={selectedPlan}
         cycle={effectiveCycle}
         open={switchOpen}
         onOpenChange={setSwitchOpen}
       />
+
+      <div className=" mt-24">
+        <FeatureBanner></FeatureBanner>
+      </div>
+
+      <div className=" flex justify-center gap-2 mt-4">
+        <SecureIcon size={20} /> <h2>All Plans are per user, per month. Prices in USD</h2>
+      </div>
     </div>
   );
 }

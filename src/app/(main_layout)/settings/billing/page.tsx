@@ -17,6 +17,9 @@ import {
 import Calender2Icon from "@/components/Icons/Calender2Icon";
 import { cn } from "@/lib/utils";
 import CardInfo from "@/components/Settings/CardInfo";
+import CardIcon from "@/components/Icons/PlanIcons/CardIcon";
+import InvoiceIcon from "@/components/Icons/PlanIcons/InvoiceIcon";
+import PlanIcon from "@/components/Icons/PlanIcons/PlanIcon";
 
 export const metadata: Metadata = {
   title: "Billing & Plans",
@@ -47,9 +50,9 @@ const BillingPage = async ({ searchParams }: ISearchParamsProps) => {
   // seat gate enforces, and no member-list payload on this page.
   const activeUserCount = statusRes?.data?.active_user_count ?? 0;
   const billingTabs = [
-    { name: "My Plan", value: "plan", icon: Package },
-    { name: "Invoice", value: "invoice", icon: Receipt },
-    { name: "Change Card", value: "card", icon: CreditCard },
+    { name: "My Plan", value: "plan", icon: <PlanIcon size={20}/> },
+    { name: "Invoice", value: "invoice", icon: <InvoiceIcon size={20}/> },
+    { name: "Change Card", value: "card", icon: <CardIcon size={20}/> },
   ];
   const activeTab = typeof params.tab === "string" ? params.tab : "plan";
   console.log(activeTab);
@@ -78,7 +81,7 @@ const BillingPage = async ({ searchParams }: ISearchParamsProps) => {
                       : "text-subTextColor hover:text-gray-800 dark:text-darkTextPrimary",
                   )}
                 >
-                  <Icon size={20} />
+                  {Icon}
                   {tab.name}
                 </Link>
               );

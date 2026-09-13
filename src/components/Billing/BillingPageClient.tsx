@@ -18,6 +18,7 @@ import RestoreParkedDialog from "@/components/Billing/RestoreParkedDialog";
 import InvoiceHistoryTable from "@/components/Billing/InvoiceHistoryTable";
 import TrialEndedOptions from "@/components/Billing/TrialEndedOptions";
 import DowngradeTakeover from "@/components/Billing/DowngradeTakeover";
+import CompareFeaturesPlan from "./CompareFeaturesPlan";
 
 /**
  * /settings/billing orchestrator (contract §21). Seeds the billing store with
@@ -31,7 +32,7 @@ export default function BillingPageClient({
   activeUserCount,
   role,
   blockedMessage,
-}: {
+} : {
   initialStatus: IBillingStatus | null;
   plans: IBillingPlan[];
   activeUserCount: number;
@@ -41,7 +42,7 @@ export default function BillingPageClient({
   const status = useBillingStore((s) => s.status);
   const startPolling = useBillingStore((s) => s.startPolling);
   const stopPolling = useBillingStore((s) => s.stopPolling);
-
+  const [showCompareFeatures, setShowCompareFeatures] = useState(false);
   const [blockedDismissed, setBlockedDismissed] = useState(false);
   const [restoreOpen, setRestoreOpen] = useState(false);
 
@@ -65,7 +66,9 @@ export default function BillingPageClient({
       try {
         await useBillingStore.getState().fetchStatus();
       } catch {
-        toast.error("Could not refresh billing status. Please reload the page.");
+        toast.error(
+          "Could not refresh billing status. Please reload the page.",
+        );
       }
     })();
     // Seed + initial refresh run once on mount.
@@ -142,16 +145,24 @@ export default function BillingPageClient({
 
       {st === "canceled" && <SubscriptionEndedScreen />}
 
-      <div className="grid md:grid-cols-2 gap-4">
-        <CurrentPlanCard plans={plans} />
-        <SeatUsageCard activeUserCount={seatCount} />
-      </div>
+      <CurrentPlanCard plans={plans} activeUserCount={seatCount} />
 
       <PlanPricingSection
         plans={plans}
         activeUserCount={seatCount}
         sectionId="plans"
       />
+
+      <div className=" flex justify-center">
+        <button
+          className=" cursor-pointer gap-2 rounded-full bg-primary/10 px-5 py-2 font-semibold text-primary"
+          onClick={() => setShowCompareFeatures((prev) => !prev)}
+        >
+          {showCompareFeatures ? "Hide" : "Show Details"}
+        </button>
+      </div>
+
+      {showCompareFeatures && <CompareFeaturesPlan margin="mt-2" />}
 
       {isAdmin && canMutateSubscription(effective?.entitlements, plans) && (
         <div>
@@ -163,11 +174,14 @@ export default function BillingPageClient({
           >
             Previously parked members or projects?
           </Button>
-          <RestoreParkedDialog open={restoreOpen} onOpenChange={setRestoreOpen} />
+          <RestoreParkedDialog
+            open={restoreOpen}
+            onOpenChange={setRestoreOpen}
+          />
         </div>
       )}
 
       <InvoiceHistoryTable />
     </div>
   );
-}
+};

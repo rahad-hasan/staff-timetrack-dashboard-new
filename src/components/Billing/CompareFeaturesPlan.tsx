@@ -1,5 +1,5 @@
-import React from 'react';
-import { Check, Minus } from 'lucide-react';
+import React from "react";
+import { Check, Minus } from "lucide-react";
 
 // Reusable component to render cell values cleanly
 const RenderCell = ({ value }: { value: boolean | string | null }) => {
@@ -13,28 +13,88 @@ const RenderCell = ({ value }: { value: boolean | string | null }) => {
 };
 
 const tableData = [
-  { feature: 'Time Tracking', starter: true, pro: true, enterprise: true },
-  { feature: 'Timesheets', starter: 'Up to 1 month history', pro: true, enterprise: true },
-  { feature: 'Timesheet Approval', starter: true, pro: false, enterprise: false },
-  { feature: 'Projects', starter: 'Up to 3 projects', pro: true, enterprise: true },
-  { feature: 'Unlimited Tasks', starter: true, pro: true, enterprise: true },
-  { feature: 'Screenshot Monitoring', starter: '1 Screenshot / hour', pro: '20 Screenshot / hour', enterprise: '60 Screenshot / hour' },
-  { feature: 'App Usage Tracking', starter: 'Up to 5 apps / user / day', pro: true, enterprise: true },
-  { feature: 'URLs Tracking', starter: 'Up to 5 URLs / user / day', pro: true, enterprise: true },
-  { feature: 'Real-time Active View', starter: false, pro: true, enterprise: true },
-  { feature: 'Attendance & Leaves', starter: false, pro: true, enterprise: true },
-  { feature: 'Payroll & Members', starter: false, pro: true, enterprise: true },
-  { feature: 'Team Manager & Admin', starter: true, pro: true, enterprise: true },
-  { feature: 'Integrations', starter: false, pro: true, enterprise: true },
-  { feature: 'Activity Analytics', starter: 'Up to 14 days history', pro: true, enterprise: true },
-  { feature: 'Dashboard', starter: true, pro: true, enterprise: true },
-  { feature: 'Ai Report Analysis (Coming Soon)', starter: false, pro: false, enterprise: true },
-  { feature: 'Ai Chatbot (Coming Soon)', starter: false, pro: false, enterprise: true },
+  { feature: "Time Tracking", starter: true, pro: true, enterprise: true },
+  {
+    feature: "Timesheets",
+    starter: "Up to 1 month history",
+    pro: true,
+    enterprise: true,
+  },
+  {
+    feature: "Timesheet Approval",
+    starter: true,
+    pro: false,
+    enterprise: false,
+  },
+  {
+    feature: "Projects",
+    starter: "Up to 3 projects",
+    pro: true,
+    enterprise: true,
+  },
+  { feature: "Unlimited Tasks", starter: true, pro: true, enterprise: true },
+  {
+    feature: "Screenshot Monitoring",
+    starter: "1 Screenshot / hour",
+    pro: "20 Screenshot / hour",
+    enterprise: "60 Screenshot / hour",
+  },
+  {
+    feature: "App Usage Tracking",
+    starter: "Up to 5 apps / user / day",
+    pro: true,
+    enterprise: true,
+  },
+  {
+    feature: "URLs Tracking",
+    starter: "Up to 5 URLs / user / day",
+    pro: true,
+    enterprise: true,
+  },
+  {
+    feature: "Real-time Active View",
+    starter: false,
+    pro: true,
+    enterprise: true,
+  },
+  {
+    feature: "Attendance & Leaves",
+    starter: false,
+    pro: true,
+    enterprise: true,
+  },
+  { feature: "Payroll & Members", starter: false, pro: true, enterprise: true },
+  {
+    feature: "Team Manager & Admin",
+    starter: true,
+    pro: true,
+    enterprise: true,
+  },
+  { feature: "Integrations", starter: false, pro: true, enterprise: true },
+  {
+    feature: "Activity Analytics",
+    starter: "Up to 14 days history",
+    pro: true,
+    enterprise: true,
+  },
+  { feature: "Dashboard", starter: true, pro: true, enterprise: true },
+  {
+    feature: "Ai Report Analysis (Coming Soon)",
+    starter: false,
+    pro: false,
+    enterprise: true,
+  },
+  {
+    feature: "Ai Chatbot (Coming Soon)",
+    starter: false,
+    pro: false,
+    enterprise: true,
+  },
 ];
 
-export default function CompareFeaturesPlan() {
+export default function CompareFeaturesPlan({ margin }: { margin: string }) {
   return (
-    <div className=" mt-11">
+    <div className={margin}>
       <div className="overflow-x-auto border border-borderColor/50 dark:border-borderColor/50 rounded-xl bg-white">
         <table className="w-full text-left border-collapse min-w-[700px]">
           {/* Table Header */}

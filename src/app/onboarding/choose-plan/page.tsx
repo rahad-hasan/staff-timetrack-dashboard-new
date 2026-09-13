@@ -42,8 +42,6 @@ const ChoosePlanPage = async () => {
     getPlans(),
   ]);
 
-  console.log(plansRes)
-
   const plans = plansRes?.data ?? [];
   const entitlements = statusRes?.data?.entitlements ?? null;
 
