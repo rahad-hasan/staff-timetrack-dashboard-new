@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import { useRouter, useSearchParams } from "next/navigation";
 import { resetOtp, verifyOtp } from "@/actions/auth/action";
 import {
-  appendMarketingPlanIntent,
+  buildCreateOrganizationUrl,
   parseMarketingPlanIntent,
 } from "@/lib/marketingPlanIntent";
 import logoWithSlogan from "../../assets/logo-with-text.webp";
@@ -43,9 +43,12 @@ const errorToastStyle = {
  * only begins when `POST /company` completes on the next screen.
  *
  * When the visitor arrived from the marketing pricing page the URL also carries
- * the plan they already picked (`?plan=&cycle=&trial=`). Nothing here reads it
- * — this screen only forwards it, because the decision it feeds cannot be made
- * until the company exists two screens from now. See `@/lib/marketingPlanIntent`.
+ * the plan they already picked (`?plan=&cycle=&trial=`). Nothing here acts on
+ * it — this screen only forwards it, because the decision it feeds cannot be
+ * made until the company exists two screens from now. BOTH ways out of this
+ * screen forward it: directly on the next URL, or, when the Google Ads
+ * conversion hop runs, through the storage record `/auth/signup-verified`
+ * restores it from. See `@/lib/marketingPlanIntent`.
  */
 const SignupVerifyOtpClient = () => {
   const [otp, setOtp] = useState<string>("");
@@ -139,37 +142,48 @@ const SignupVerifyOtpClient = () => {
           return;
         }
 
+        // Everything the next screen needs is gathered BEFORE either exit
+        // below, because both exits need all of it. Computing the onward
+        // context only on the path that happened to be written second is
+        // exactly how the tracking hop below came to swallow it whole.
+        const verifiedEmail = res?.data?.email || email;
+
+        // The verify response carries the signed-up person's name, and this is
+        // the only moment it is in hand: the next screen has no session to look
+        // it up with, so anything dropped here is gone. It seeds the
+        // organization-name suggestions on step 1.
+        const verifiedName = (res?.data?.name ?? "").trim();
+
+        // The plan intent, if this signup carries one. Re-read rather than
+        // re-encoded blindly, so a junk `?plan=` is dropped here instead of
+        // travelling two more screens, and so the `trail`/`trial` spelling is
+        // normalised at the first opportunity. Parses to nothing at all for an
+        // ordinary signup, which costs that path exactly nothing.
+        const intent = parseMarketingPlanIntent(searchParams);
+
         // Only the server's signup-specific success response supplies this ID.
-        // Never load third-party tracking on the email-bearing OTP URL.
+        // Never load third-party tracking on the email-bearing OTP URL — which
+        // is why the conversion fires on a bare `/auth/signup-verified` and the
+        // onboarding context rides in storage rather than on that URL.
+        //
+        // That detour is a SECOND route to the same next screen, so it is
+        // handed the same name and intent this function already holds; it then
+        // rebuilds one identical URL through `buildCreateOrganizationUrl`.
+        // Passing them is not optional — an earlier version returned here with
+        // the email alone, and everything else was lost on this line.
+        //
         // If storage is unavailable, keep the original onboarding flow intact.
         if (storeVerifiedTrialTransition(
           res?.data?.signup_conversion_id,
-          res?.data?.email || email,
+          verifiedEmail,
+          { name: verifiedName, intent },
         )) {
           window.location.replace("/auth/signup-verified");
           return;
         }
 
-        // The verify response carries the signed-up person's name, and this is
-        // the only moment it is in hand: the next screen has no session to look
-        // it up with, so anything dropped here is gone. It seeds the
-        // organization-name suggestions on step 1. Appended only when non-empty
-        // so `buildOrgNameSuggestions` falls through to the email local-part
-        // instead of being handed a blank seed it would have to reject.
-        const verifiedName = (res?.data?.name ?? "").trim();
-
-        // The plan the visitor picked on the marketing site rides along to the
-        // next hop. It is re-read (not re-encoded blindly) so a junk `?plan=`
-        // is dropped here rather than travelling two more screens, and so the
-        // `trail`/`trial` spelling is normalised at the first opportunity.
-        // Appends nothing at all for an ordinary signup, which keeps this URL
-        // byte-identical to what it was before plan intent existed.
         router.replace(
-          appendMarketingPlanIntent(
-            `/auth/create-organization?email=${encodeURIComponent(res?.data?.email || email)}` +
-              (verifiedName ? `&name=${encodeURIComponent(verifiedName)}` : ""),
-            parseMarketingPlanIntent(searchParams),
-          ),
+          buildCreateOrganizationUrl(verifiedEmail, verifiedName, intent),
         );
       } else {
         // Wrong code / expired code / rate limited — the API message says

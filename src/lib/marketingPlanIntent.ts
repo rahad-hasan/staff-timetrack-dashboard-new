@@ -276,6 +276,41 @@ export const appendMarketingPlanIntent = (
   return `${path}${path.includes("?") ? "&" : "?"}${query}`;
 };
 
+/**
+ * The ONE place the `/auth/create-organization` URL is built.
+ *
+ * Signup reaches that screen by two different routes — straight from the OTP
+ * form, or via the `/auth/signup-verified` tracking hop — and those two routes
+ * have already drifted apart once: the tracking hop was merged in ahead of the
+ * intent-carrying redirect and rebuilt the URL from the email alone, which
+ * silently dropped `name`, `plan`, `cycle` and `trial` for every signup that
+ * reached it. Both callers come through here so that cannot happen a second
+ * time; a new hop added to this funnel must call this rather than concatenate
+ * its own.
+ *
+ * The path is a LITERAL and every value is encoded or re-serialised here, which
+ * is what makes this safe to call with a `name` and an intent restored from
+ * user-editable sessionStorage.
+ *
+ * `name` is appended only when non-empty, so `buildOrgNameSuggestions` falls
+ * through to the email local-part rather than being handed a blank seed it
+ * would have to reject. An ordinary signup — no name, no intent — comes out
+ * byte-identical to the URL this funnel produced before plan intent existed.
+ */
+export const buildCreateOrganizationUrl = (
+  email: string,
+  name: string | null | undefined,
+  intent: MarketingPlanIntent,
+): string => {
+  const verifiedName = (name ?? "").trim();
+
+  return appendMarketingPlanIntent(
+    `/auth/create-organization?email=${encodeURIComponent(email)}` +
+      (verifiedName ? `&name=${encodeURIComponent(verifiedName)}` : ""),
+    intent,
+  );
+};
+
 /** A marketing intent checked against the live catalog — safe to charge for. */
 export interface ResolvedMarketingPlanIntent {
   plan: IBillingPlan;
