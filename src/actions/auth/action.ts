@@ -3,6 +3,7 @@
 
 import { baseApi } from "../baseApi";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
+import { verifiedTrialConversionId } from "@/lib/verifiedTrialResponse";
 import {
   clearSessionCookies,
   hasSessionTokens,
@@ -145,11 +146,15 @@ export const verifyOtp = async ({ data }: {
     code: string,
   }
 }) => {
-  return await baseApi(`/auth/verify-otp`, {
+  const res = await baseApi(`/auth/verify-otp`, {
     method: "POST",
     body: data,
     cache: "no-cache",
   });
+  const conversionId = verifiedTrialConversionId(res);
+  return conversionId
+    ? { ...res, data: { ...res.data, signup_conversion_id: conversionId } }
+    : res;
 };
 
 /**

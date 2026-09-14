@@ -5,6 +5,7 @@ import { Suspense } from "react";
 export const metadata: Metadata = {
   title: "Verify your email",
   description: "Enter the verification code we sent to your email",
+  referrer: "no-referrer",
 };
 
 /**

@@ -16,6 +16,7 @@ import {
 } from "@/lib/marketingPlanIntent";
 import logoWithSlogan from "../../assets/logo-with-text.webp";
 import logoForDark from "../../assets/logo-with-text-dark.png";
+import { storeVerifiedTrialTransition } from "@/lib/verifiedTrialTransition";
 
 const OTP_LENGTH = 6;
 
@@ -135,6 +136,17 @@ const SignupVerifyOtpClient = () => {
           router.replace(
             `/auth/reset-password?reset_token=${encodeURIComponent(res.data.reset_token)}`,
           );
+          return;
+        }
+
+        // Only the server's signup-specific success response supplies this ID.
+        // Never load third-party tracking on the email-bearing OTP URL.
+        // If storage is unavailable, keep the original onboarding flow intact.
+        if (storeVerifiedTrialTransition(
+          res?.data?.signup_conversion_id,
+          res?.data?.email || email,
+        )) {
+          window.location.replace("/auth/signup-verified");
           return;
         }
 
