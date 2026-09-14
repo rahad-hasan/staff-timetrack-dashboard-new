@@ -101,6 +101,11 @@ backend allows `GET` requests (dashboard stays browsable) and blocks writes with
 2. Optional promo code: validate against `GET /packages/discount/list?plan=<id>` or just submit it.
 3. Purchase:
 
+   > **SUPERSEDED (2026-09-11).** `POST /packages/payment/url` still works and still returns a
+   > Stripe-hosted `checkoutUrl`, but the dashboard no longer uses it for a first purchase — the
+   > custom checkout at `/billing/checkout` does. See **§2b** below. This section is kept because
+   > the hosted session remains the fallback and `/billing/success?session_id=…` still handles it.
+
    ### `POST /packages/payment/url`
    ```json
    { "plan_id": 3, "seats": 25, "cycle": "yearly", "discount_code": "WELCOME20" }
@@ -125,6 +130,74 @@ billing cycle** — including prorated mid-cycle seat additions (§3). Fixed-amo
 the first invoice only. Renewals are full price.
 
 ---
+
+---
+
+## 2b. Custom checkout (`/billing/checkout`) — the path the dashboard actually uses
+
+Replaces the hosted redirect for a first purchase. Card fields are Stripe's **Payment Element**
+(iframes); a raw card number must never reach our API, a server action, a zod schema or a log —
+that is what keeps this app out of PCI SAQ-D.
+
+**Why not Checkout Sessions `ui_mode:'custom'`?** It needs a newer wire `apiVersion` than the
+pinned `2024-06-20`, and it cannot serve the design's saved-card panel. `default_incomplete`
+gives one path for every state instead.
+
+### `POST /packages/checkout/quote` — the order summary's only data source
+```json
+{ "plan_id": 3, "seats": 25, "cycle": "yearly", "discount_code": "WELCOME20" }
+```
+→ integer **cents** throughout: `subtotal_cents`, `discount_cents`, `tax_cents`,
+`tax_rate_percent`, `total_cents`, `renews_at`, `seat_floor`, `has_billing_subscription`.
+
+- **Display these as received. Never recompute a total client-side** — the invoice the user
+  downloads later is built from the same ladder and any local arithmetic will eventually disagree.
+- Stripe Tax is OFF, so `tax_cents` is `0` and `tax_rate_percent` is `null`. The UI **hides** the
+  VAT row rather than printing a fabricated rate. It appears on its own the day tax is enabled.
+- The quote does **not** mint a Stripe coupon (it is a read). The purchase does.
+- A discount code is **refused for a company that already has a live subscription**
+  (`"Discount codes apply to new subscriptions only."`) — that purchase resolves to a prorated
+  switch, which carries no coupon, so accepting one would promise a saving the charge never applies.
+
+### `POST /packages/subscription/subscribe`
+```json
+{ "plan_id": 3, "seats": 25, "cycle": "yearly", "payment_method_id": "pm_…", "save_payment_method": true }
+```
+Creates the subscription with `payment_behavior: "default_incomplete"` and returns
+`payment_intent_client_secret` (+ `requires_action`, `requires_payment_method`, `already_active`,
+`switched`). A company that already has a live subscription is **switched** (prorated) internally —
+the old `"A Stripe subscription already exists"` 400 is no longer user-visible.
+
+### `POST /packages/subscription/confirm`
+`{ "subscription_id": "sub_…" }` → syncs from Stripe so activation never waits on a webhook.
+Idempotent. This is the only place the company row is allowed to flip onto the new subscription;
+`subscribe` deliberately does **not**, so an unconfirmed `incomplete` cannot rewrite a live trial
+as `past_due` mid-checkout.
+
+### The retry invariant (design: "Try Payment Again")
+A decline leaves the subscription `incomplete` with its invoice open and **the same PaymentIntent
+still confirmable**. The client holds `{subscription_id, client_secret}` and re-confirms THAT one.
+Calling `subscribe` again would mint a second subscription (double billing) and then trip the
+stale-subscription 409. The held intent is dropped only when the ORDER changes.
+
+### Saved cards
+| Endpoint | Notes |
+|---|---|
+| `GET /packages/billing/payment-methods` | Live from Stripe; we store no card data. Empty list + `customer_exists:false` is normal, not an error. |
+| `POST /packages/billing/payment-methods/setup-intent` | Save a card with no charge. Single-use — mint a fresh one per card. |
+| `POST /packages/billing/payment-methods/default` | Writes both `customer.invoice_settings` and the subscription's default. |
+| `DELETE /packages/billing/payment-methods/:id` | Refuses removing the last card behind a live subscription. |
+| `POST /packages/billing/invoices/:id/pay` | In-app retry; a card decline returns the failure shape (not a 5xx) so the panel can render it inline. |
+
+All are `auth('admin')` and tenant-guarded. `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` must be set or
+every card surface renders a "payments unavailable" panel.
+
+### `/settings/billing` is now tabbed
+`?tab=my-plan | invoice | change-card`. **The blocked banner, PayNowCard, TrialEndedOptions,
+DowngradeTakeover and SubscriptionEndedScreen stay ABOVE the tab strip and always render** — they
+are the recovery path for a locked workspace and every 402 redirect lands here. `change-card` is
+withheld from manager/hr.
+
 
 ## 3. Seats: usage, adding users, and mid-cycle proration
 
@@ -228,8 +301,10 @@ When Stripe payment fails (`status` becomes `past_due` or `payment_failed`):
    }
    ```
 
-   **Pay now → open `hosted_invoice_url`** (Stripe-hosted payment page, handles 3-D Secure,
-   updates the default card). No custom payment form needed.
+   **Pay now** charges the card on file via `POST /packages/billing/invoices/:id/pay`, and falls
+   back to opening `hosted_invoice_url` when the charge needs 3-D Secure or no card is stored.
+   (Updated 2026-09-11 — this used to be hosted-only, and the old note that it "updates the
+   default card" stopped being true once cards became manageable under Billing → Change Card.)
 3. After payment, Stripe's webhook restores `status: "active"` within seconds and desktop
    tracking resumes automatically (no restarts). Poll `billing/status` every ~5 s while the
    banner is up; clear it when `blocked` flips false. Show

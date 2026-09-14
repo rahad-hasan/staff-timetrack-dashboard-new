@@ -26,8 +26,17 @@ import { useBillingRefresh } from "./useBillingRefresh";
  */
 export default function DowngradeTakeover({
   variant = "overlay",
+  onUpgradeClick,
 }: {
   variant?: "overlay" | "inline";
+  /**
+   * Billing-page override for the inline CTA. The pricing grid moved inside
+   * the My Plan tab, so reaching it means switching tab first — and that needs
+   * `useSearchParams`, which must NOT leak into this component: BillingGate
+   * mounts the overlay variant on every page, where a search params read would
+   * drag a Suspense requirement across the whole app.
+   */
+  onUpgradeClick?: () => void;
 }) {
   const refreshBilling = useBillingRefresh();
   const { logInUserData } = useLogInUserStore();
@@ -97,9 +106,11 @@ export default function DowngradeTakeover({
                 type="button"
                 variant="outline"
                 onClick={() =>
-                  document
-                    .getElementById("plans")
-                    ?.scrollIntoView({ behavior: "smooth" })
+                  onUpgradeClick
+                    ? onUpgradeClick()
+                    : document
+                        .getElementById("plans")
+                        ?.scrollIntoView({ behavior: "smooth" })
                 }
               >
                 Keep everyone — upgrade instead

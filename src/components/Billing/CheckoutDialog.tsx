@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { AlertTriangle, Loader2 } from "lucide-react";
-import { toast } from "sonner";
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { ArrowRight, Minus, Plus, Users } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -11,22 +13,33 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { createCheckoutSession } from "@/actions/billing/action";
-import { useBillingStore } from "@/store/billingStore";
+import { formatDollars, seatCeilingFor } from "@/lib/billing";
 import {
   BillingCycle,
-  CYCLE_LABEL,
+  CYCLE_PERIOD_NOUN,
   IBillingPlan,
-  ICheckoutSession,
 } from "@/types/billing";
 
+
 /**
- * First purchase (guide §2) — collects seats + optional promo code, creates a
- * Stripe-hosted checkout session and redirects to it. If the backend flags
- * `trialWillEndImmediately`, an interstitial warning is shown INSIDE the
- * dialog before the redirect.
+ * "How many seats?" — the first step of a purchase.
+ *
+ * Seats are asked for BEFORE the card, because the number is a decision and
+ * the card is not: a company signing up with one admin is usually buying for
+ * the team it is about to invite, and discovering that only on the payment
+ * screen means re-reading a total you had already accepted. Answering it here
+ * means the checkout page opens with the right amount already on it.
+ *
+ * The count defaults to the workspace's current billable head count, which is
+ * also the floor — you cannot buy fewer seats than you have active members,
+ * and the server rejects it independently. It is deliberately a typeable
+ * field, not only a stepper: stepping from 1 to 40 one click at a time is not
+ * a reasonable ask.
+ *
+ * The seat count is the only thing collected here. The discount code and the
+ * billing cycle live on the checkout page beside the running total, where
+ * changing them visibly re-prices the order.
  */
 export default function CheckoutDialog({
   plan,
@@ -34,7 +47,6 @@ export default function CheckoutDialog({
   activeUserCount,
   open,
   onOpenChange,
-  onSubscriptionConflict,
 }: {
   plan: IBillingPlan | null;
   cycle: BillingCycle;
@@ -42,209 +54,198 @@ export default function CheckoutDialog({
   open: boolean;
   onOpenChange: (o: boolean) => void;
   /**
-   * "Subscription already exists" recovery refreshes the billing store so the
-   * surrounding cards catch up — which only works where the grid reads that
-   * store. A surface that renders from server props instead (the onboarding
-   * plan picker) passes its own refresh here.
+   * Retained for call-site compatibility. The "subscription already exists"
+   * conflict no longer surfaces: the subscribe endpoint resolves an existing
+   * subscription into a prorated switch instead of rejecting it.
    */
   onSubscriptionConflict?: () => void;
 }) {
-  const minSeats = Math.max(1, activeUserCount);
+  const router = useRouter();
 
-  const [seats, setSeats] = useState<string>(String(minSeats));
-  const [promo, setPromo] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
-  /** Set when the session is created but the trial-ends-now warning must be acknowledged first. */
-  const [session, setSession] = useState<ICheckoutSession | null>(null);
+  const floor = Math.max(1, activeUserCount);
+  /** Held as a string so the field can be cleared and retyped. */
+  const [seats, setSeats] = useState(String(floor));
+  const [navigating, setNavigating] = useState(false);
+  /**
+   * Whether the next click should select the whole value. True on open and
+   * after every blur, cleared once the field has been clicked into — see the
+   * input's handlers.
+   */
+  const selectOnFirstClick = useRef(true);
 
-  // Reset the form every time the dialog (re)opens.
+  // Reset on every open: this dialog is mounted with the grid, so without it
+  // the next plan opens showing the seat count typed for the previous one.
   useEffect(() => {
-    if (open) {
-      setSeats(String(Math.max(1, activeUserCount)));
-      setPromo("");
-      setError(null);
-      setSession(null);
-      setSubmitting(false);
-    }
-  }, [open, activeUserCount, plan?.id]);
+    if (!open) return;
+    setSeats(String(floor));
+    setNavigating(false);
+    selectOnFirstClick.current = true;
+  }, [open, floor, plan?.id]);
 
   if (!plan) return null;
 
-  // The payment dialog must state the real cadence — quarterly is a
-  // first-class cycle and labeling it "Yearly" misstates the charge.
-  const cycleLabel = CYCLE_LABEL[cycle];
+  /**
+   * The plan's OWN ceiling, not just the global 500. The server rejects seats
+   * above `max_seats` on both purchase paths, so offering more here quotes and
+   * charges for seats the entitlement engine will never grant. `Math.max` with
+   * the floor keeps the range valid when a company's head count already
+   * exceeds the cap — the quote answers that case with a "pick a bigger plan"
+   * message rather than an impossible min > max input.
+   */
+  const ceiling = Math.max(floor, seatCeilingFor(plan));
 
-  const handleSubmit = async () => {
-    const parsed = Number.parseInt(seats, 10);
-    if (!Number.isFinite(parsed) || parsed < minSeats) {
-      setError(
-        `Seats must be at least ${minSeats} — you have ${activeUserCount} active members.`,
-      );
-      return;
-    }
+  const parsed = Number.parseInt(seats, 10);
+  const valid = Number.isFinite(parsed) && parsed >= floor && parsed <= ceiling;
+  /** Clamped view of the field, for the estimate and the stepper buttons. */
+  const effective = valid ? parsed : floor;
 
-    setError(null);
-    setSubmitting(true);
-    let redirecting = false;
-    try {
-      const res = await createCheckoutSession({
-        plan_id: plan.id,
-        seats: parsed,
-        cycle,
-        ...(promo.trim() ? { discount_code: promo.trim() } : {}),
-      });
+  const seatPrice = plan.cycle_pricing?.[cycle]?.seat_price ?? null;
 
-      if (res?.success && res.data) {
-        if (res.data.trialWillEndImmediately) {
-          setSession(res.data);
-        } else {
-          redirecting = true;
-          window.location.assign(res.data.checkoutUrl);
-        }
-      } else {
-        const msg =
-          res?.message || "Could not start checkout. Please try again.";
-        if (/already exists/i.test(msg)) {
-          // The client's snapshot is stale (checkout finished in another tab,
-          // or a webhook flipped the status mid-flow). The old hint pointed at
-          // a "Switch to this plan" button that is NOT rendered while
-          // `hasPaid` is stale-false — refetch so the cards catch up, and say
-          // what to actually do.
-          setError(
-            `${msg} Your billing status has been refreshed — close this dialog and use the updated options on the pricing cards.`,
-          );
-          void useBillingStore.getState().fetchStatus();
-          onSubscriptionConflict?.();
-        } else {
-          setError(msg);
-        }
-      }
-    } catch {
-      toast.error("Something went wrong starting checkout. Please try again.");
-    } finally {
-      if (!redirecting) setSubmitting(false);
-    }
+  const nudge = (delta: number) =>
+    setSeats(String(Math.min(ceiling, Math.max(floor, effective + delta))));
+
+  const submit = () => {
+    if (!valid || navigating) return;
+    // Latched: the route change is not instant, and a second click would push
+    // the same checkout twice onto the history stack.
+    setNavigating(true);
+    onOpenChange(false);
+    router.push(
+      `/billing/checkout?plan=${plan.id}&cycle=${encodeURIComponent(cycle)}&seats=${parsed}`,
+    );
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-md dark:bg-darkSecondaryBg">
         <DialogHeader>
           <DialogTitle className="text-headingTextColor dark:text-darkTextPrimary">
-            Get started — {plan.name}
+            How many seats do you need?
           </DialogTitle>
           <DialogDescription className="text-subTextColor dark:text-darkTextSecondary">
-            {cycleLabel} billing. You&apos;ll complete payment on Stripe&apos;s
-            secure checkout page.
+            You&apos;re subscribing to{" "}
+            <span className="font-medium text-headingTextColor dark:text-darkTextPrimary">
+              {plan.name}
+            </span>
+            . One seat per person who tracks time — you can add more later.
           </DialogDescription>
         </DialogHeader>
 
-        {session ? (
-          <>
-            <div className="rounded-md border border-amber-300 bg-amber-50 p-4 dark:border-amber-500/40 dark:bg-amber-500/10">
-              <div className="flex items-start gap-2">
-                <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-600 dark:text-amber-400" />
-                <div>
-                  <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
-                    Your trial ends now and paid billing starts immediately.
-                  </p>
-                  <p className="mt-1 text-xs text-amber-700 dark:text-amber-300/80">
-                    Continue to Stripe&apos;s secure checkout to complete your
-                    purchase, or go back to review your selection.
-                  </p>
-                </div>
-              </div>
+        <div className="space-y-3">
+          <label
+            htmlFor="checkout-seats"
+            className="block text-sm font-medium text-headingTextColor dark:text-darkTextPrimary"
+          >
+            Number of users
+          </label>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              aria-label="Remove a seat"
+              disabled={effective <= floor}
+              onClick={() => nudge(-1)}
+              className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-borderColor text-subTextColor transition-colors hover:text-headingTextColor disabled:pointer-events-none disabled:opacity-40 dark:border-darkBorder dark:text-darkTextSecondary dark:hover:text-darkTextPrimary"
+            >
+              <Minus className="size-4" />
+            </button>
+
+            <div className="relative flex-1">
+              <Users className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-subTextColor dark:text-darkTextSecondary" />
+              <Input
+                id="checkout-seats"
+                inputMode="numeric"
+                value={seats}
+                onChange={(event) =>
+                  // Digits only — a stray letter would read as NaN and silently
+                  // disable Continue with nothing on screen explaining why.
+                  setSeats(event.target.value.replace(/[^\d]/g, ""))
+                }
+                // Select-all on the FIRST click so typing replaces the default
+                // (a click focuses, which selects, and then places the caret —
+                // which would wipe that selection, so the first mouseup is
+                // suppressed too).
+                //
+                // Only the first: suppressing every mouseup left the field
+                // feeling read-only, because clicking into it to fix one digit
+                // could no longer move the caret. After that first entry it
+                // behaves like any other input again.
+                onFocus={(event) => {
+                  if (!selectOnFirstClick.current) return;
+                  event.target.select();
+                }}
+                onMouseUp={(event) => {
+                  if (!selectOnFirstClick.current) return;
+                  event.preventDefault();
+                  selectOnFirstClick.current = false;
+                }}
+                onBlur={() => {
+                  selectOnFirstClick.current = true;
+                }}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    submit();
+                  }
+                }}
+                aria-invalid={!valid && seats.length > 0}
+                className="h-11 pl-9 text-center text-base font-semibold dark:border-darkBorder dark:bg-darkPrimaryBg"
+              />
             </div>
 
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="outline2"
-                onClick={() => setSession(null)}
-              >
-                Go back
-              </Button>
-              <Button
-                type="button"
-                onClick={() => window.location.assign(session.checkoutUrl)}
-              >
-                Continue to payment
-              </Button>
-            </DialogFooter>
-          </>
-        ) : (
-          <>
-            <div className="space-y-4">
-              <div className="space-y-1.5">
-                <label
-                  htmlFor="checkout-seats"
-                  className="text-sm font-medium text-headingTextColor dark:text-darkTextPrimary"
-                >
-                  Seats
-                </label>
-                <Input
-                  id="checkout-seats"
-                  type="number"
-                  min={minSeats}
-                  step={1}
-                  value={seats}
-                  onChange={(e) => setSeats(e.target.value)}
-                  disabled={submitting}
-                />
-                <p className="text-xs text-subTextColor dark:text-darkTextSecondary">
-                  You have {activeUserCount} active members — seats can&apos;t
-                  go below that.
-                </p>
-              </div>
+            <button
+              type="button"
+              aria-label="Add a seat"
+              disabled={effective >= ceiling}
+              onClick={() => nudge(1)}
+              className="flex size-11 shrink-0 cursor-pointer items-center justify-center rounded-lg border border-borderColor text-subTextColor transition-colors hover:text-headingTextColor disabled:pointer-events-none disabled:opacity-40 dark:border-darkBorder dark:text-darkTextSecondary dark:hover:text-darkTextPrimary"
+            >
+              <Plus className="size-4" />
+            </button>
+          </div>
 
-              <div className="space-y-1.5">
-                <label
-                  htmlFor="checkout-promo"
-                  className="text-sm font-medium text-headingTextColor dark:text-darkTextPrimary"
-                >
-                  Promo code{" "}
-                  <span className="font-normal text-subTextColor dark:text-darkTextSecondary">
-                    (optional)
-                  </span>
-                </label>
-                <Input
-                  id="checkout-promo"
-                  value={promo}
-                  onChange={(e) => setPromo(e.target.value)}
-                  placeholder="e.g. WELCOME20"
-                  disabled={submitting}
-                />
-                <p className="text-xs text-subTextColor dark:text-darkTextSecondary">
-                  Percentage codes apply to your entire first billing cycle,
-                  including prorated seat additions. Fixed-amount codes apply to
-                  the first invoice only. Renewals are full price.
-                </p>
-              </div>
+          {!valid && seats.length > 0 ? (
+            <p className="text-sm text-red-600 dark:text-red-400">
+              {parsed < floor
+                ? `You have ${floor} active ${floor === 1 ? "member" : "members"}, so you need at least ${floor} ${floor === 1 ? "seat" : "seats"}.`
+                : `Please enter a number between ${floor} and ${ceiling}.`}
+            </p>
+          ) : (
+            <p className="text-sm text-subTextColor dark:text-darkTextSecondary">
+              Defaults to your {floor} active{" "}
+              {floor === 1 ? "member" : "members"}. Add seats now for people
+              you&apos;re about to invite.
+            </p>
+          )}
 
-              {error && (
-                <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300">
-                  {error}
-                </div>
-              )}
-            </div>
+          {/* An estimate, and labelled as one. The authoritative total — with
+              discount and tax — is computed server-side on the next screen, and
+              this must never look like it is competing with it. */}
+          {seatPrice !== null && valid && (
+            <p className="rounded-lg bg-bgSecondary px-3 py-2.5 text-sm text-subTextColor dark:bg-darkTertiaryBg dark:text-darkTextSecondary">
+              Estimated{" "}
+              <span className="font-semibold text-headingTextColor dark:text-darkTextPrimary">
+                {formatDollars(seatPrice * parsed)}
+              </span>{" "}
+              per {CYCLE_PERIOD_NOUN[cycle]} — before any discount or tax.
+            </p>
+          )}
+        </div>
 
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="outline2"
-                onClick={() => onOpenChange(false)}
-                disabled={submitting}
-              >
-                Cancel
-              </Button>
-              <Button type="button" onClick={handleSubmit} disabled={submitting}>
-                {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
-                Continue to checkout
-              </Button>
-            </DialogFooter>
-          </>
-        )}
+        <DialogFooter>
+          <Button
+            type="button"
+            variant="outline2"
+            onClick={() => onOpenChange(false)}
+            disabled={navigating}
+          >
+            Cancel
+          </Button>
+          <Button type="button" onClick={submit} disabled={!valid || navigating}>
+            Continue to payment
+            <ArrowRight className="size-4" />
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

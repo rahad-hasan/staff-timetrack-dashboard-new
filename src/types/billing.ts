@@ -455,3 +455,188 @@ export interface ICancelPayload {
   /** ≤ 300 chars, stored for churn analytics. */
   reason?: string;
 }
+
+/* ---------------- payment methods (custom checkout) ---------------- */
+
+/**
+ * One saved payment method, as Stripe holds it. We deliberately store NO card
+ * data of our own — Stripe is the source of truth and this view is fetched
+ * live, so a method changed in the Stripe dashboard can never disagree with
+ * our UI.
+ *
+ * NOT ALWAYS A CARD — and that is permanent, not a migration artefact. The
+ * SetupIntent behind "save a payment method" is created with
+ * `automatic_payment_methods: { enabled: true }` and both the checkout and the
+ * add-method drawer mount `<PaymentElement>`, so anything enabled on the Stripe
+ * account can end up attached: a Link wallet in particular, which is then the
+ * thing the subscription actually renews on. Listing only `type: "card"` is
+ * what made the panel claim "No card saved" to a customer whose renewals were
+ * going through fine. Every surface branches on `type`; nothing infers the kind
+ * of method from `brand`.
+ *
+ * `brand`, `last4` and the two expiry numbers stay non-null empty-ish values
+ * ("" / 0) on a method with no card object rather than becoming nullable: that
+ * keeps every existing consumer type-compatible and leaves `type` as the single
+ * thing that decides display. An expiry of 0 means there is NO expiry — never
+ * render it, and never count it as "expiring".
+ *
+ * `type` and `wallet_email` are typed required because the wire contract is
+ * agreed, but a cached/older API response can still arrive without them —
+ * `resolvePaymentMethodType` in `@/lib/billing` is how every consumer reads
+ * `type`, so such a response degrades to the card rendering it always had.
+ *
+ * `id` is a `pm_…` token, not a PAN. Nothing in this type is PCI-sensitive.
+ */
+export interface IPaymentMethod {
+  id: string;
+  /** Stripe's payment-method type: "card" | "link" | "us_bank_account" | … */
+  type: string;
+  /** Lowercase Stripe brand: "visa" | "mastercard" | … ; "" for a non-card. */
+  brand: string;
+  /** "" when the method exposes no last four (most wallets). */
+  last4: string;
+  /** 0 when the method has no expiry — i.e. on everything but a card. */
+  exp_month: number;
+  exp_year: number;
+  funding: string | null;
+  /** ISO-2 of the issuing country. */
+  country: string | null;
+  billing_name: string | null;
+  /**
+   * Link's `link.email` — the only thing that tells two Link wallets on the
+   * same customer apart. Null on every other type.
+   */
+  wallet_email: string | null;
+  is_default: boolean;
+  /** Epoch seconds — used only for "newest first" ordering. */
+  created: number;
+}
+
+/**
+ * `GET /packages/billing/payment-methods`.
+ *
+ * A company that has never reached Stripe answers `customer_exists: false`
+ * with an empty list rather than a 404 — "nothing saved yet" is a normal state
+ * on the Change Card tab, not an error.
+ */
+export interface IPaymentMethodList {
+  payment_methods: IPaymentMethod[];
+  default_payment_method_id: string | null;
+  customer_exists: boolean;
+}
+
+/**
+ * `POST /packages/billing/payment-methods/setup-intent` — saving a card with
+ * no charge. The client confirms this with `stripe.confirmSetup`; the secret
+ * is single-use and must never be logged or put in a URL.
+ */
+export interface ISetupIntentResult {
+  client_secret: string;
+  setup_intent_id: string;
+  customer_id: string;
+}
+
+/* ---------------- checkout quote ---------------- */
+
+export interface IQuoteDiscount {
+  code: string;
+  label: string | null;
+  type: "percentage" | "fixed_amount";
+  value: number;
+  /** The saving this code produces on THIS order, already computed server-side. */
+  amount_cents: number;
+}
+
+/**
+ * `POST /packages/checkout/quote` — the order summary panel's only data
+ * source. Every amount is integer CENTS (unlike `IBillingPlan`'s dollar seat
+ * prices), and the frontend displays them as received: it must never
+ * recompute a total, because the invoice the user downloads later is built
+ * from the same server ladder and the two would drift.
+ *
+ * `tax_cents` is 0 and `tax_rate_percent` is null until Stripe Tax is enabled
+ * on the account — the VAT row is hidden rather than fabricated.
+ */
+export interface ICheckoutQuote {
+  currency: string;
+  seats: number;
+  cycle: BillingCycle;
+  plan: {
+    id: number;
+    name: string;
+    tier: string;
+    description: string | null;
+    features: IPlanFeature[] | null;
+  };
+  seat_price_cents: number;
+  subtotal_cents: number;
+  discount: IQuoteDiscount | null;
+  discount_cents: number;
+  tax_cents: number;
+  tax_rate_percent: number | null;
+  total_cents: number;
+  /** ISO — "Renews on 3 Oct, 2026". */
+  renews_at: string | null;
+  trial_will_end_immediately: boolean;
+  /** Active billable head count; seats can never go below it. */
+  seat_floor: number;
+  /**
+   * True ⇒ a live Stripe subscription already backs this company, so
+   * "Activate Subscription" resolves to a prorated switch rather than a first
+   * purchase. The subscribe endpoint branches on this internally; the client
+   * only uses it for copy.
+   */
+  has_billing_subscription: boolean;
+}
+
+/* ---------------- subscribe (custom checkout) ---------------- */
+
+export interface ISubscribePayload {
+  plan_id: number;
+  seats: number;
+  cycle: BillingCycle;
+  discount_code?: string;
+  /** A saved `pm_…`. Omit to confirm with a freshly entered card instead. */
+  payment_method_id?: string;
+  save_payment_method?: boolean;
+}
+
+/**
+ * `POST /packages/subscription/subscribe` and `/subscription/confirm`.
+ *
+ * The subscription is created with `payment_behavior: "default_incomplete"`,
+ * so a decline leaves it `incomplete` with its invoice still open and the SAME
+ * PaymentIntent re-confirmable — which is exactly what makes the design's "Try
+ * Payment Again" safe. A retry must reuse `payment_intent_client_secret`, never
+ * request a second subscription.
+ */
+export interface ISubscribeResult {
+  subscription_id: string;
+  status: string;
+  requires_action: boolean;
+  requires_payment_method: boolean;
+  payment_intent_client_secret: string | null;
+  payment_intent_status: string | null;
+  latest_invoice_id: string | null;
+  latest_invoice_status: string | null;
+  hosted_invoice_url: string | null;
+  /** Nothing left to confirm — go straight to the success screen. */
+  already_active: boolean;
+  /** The company already had a subscription, so this was a prorated switch. */
+  switched: boolean;
+}
+
+export interface IConfirmSubscriptionResult extends ISubscribeResult {
+  activated: boolean;
+}
+
+/* ---------------- invoice retry ---------------- */
+
+/** `POST /packages/billing/invoices/:id/pay` — in-app retry of a failed charge. */
+export interface IInvoicePayResult {
+  status: string;
+  paid: boolean;
+  requires_action: boolean;
+  payment_intent_client_secret: string | null;
+  hosted_invoice_url: string | null;
+}

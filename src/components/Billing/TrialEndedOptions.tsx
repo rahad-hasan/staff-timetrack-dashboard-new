@@ -27,8 +27,17 @@ import { useBillingRefresh } from "./useBillingRefresh";
  */
 export default function TrialEndedOptions({
   upgradeHref,
+  onUpgradeClick,
 }: {
   upgradeHref?: string;
+  /**
+   * Billing-page override for the scroll CTA. The grid now lives inside the
+   * My Plan tab, so reaching it means switching tab first — and that logic
+   * needs `useSearchParams`, which must NOT leak into this component: the
+   * blocked takeover mounts it on every page via BillingGate, where a search
+   * params read would drag a Suspense requirement across the whole app.
+   */
+  onUpgradeClick?: () => void;
 }) {
   const refreshBilling = useBillingRefresh();
 
@@ -106,9 +115,11 @@ export default function TrialEndedOptions({
             type="button"
             className="sm:min-w-44"
             onClick={() =>
-              document
-                .getElementById("plans")
-                ?.scrollIntoView({ behavior: "smooth" })
+              onUpgradeClick
+                ? onUpgradeClick()
+                : document
+                    .getElementById("plans")
+                    ?.scrollIntoView({ behavior: "smooth" })
             }
           >
             Upgrade — keep everything

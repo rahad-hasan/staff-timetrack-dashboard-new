@@ -4,6 +4,7 @@ import { buildQuery } from "@/utils/buildQuery";
 import { baseApi } from "../baseApi";
 import { IResponse } from "@/types/type";
 import {
+  BillingCycle,
   IAddSeatsResult,
   IBillingInvoice,
   IBillingInvoiceDetail,
@@ -12,8 +13,15 @@ import {
   ICancelPayload,
   ICheckoutConfirmResult,
   ICheckoutPayload,
+  ICheckoutQuote,
   ICheckoutSession,
+  IConfirmSubscriptionResult,
   IDiscountCode,
+  IInvoicePayResult,
+  IPaymentMethodList,
+  ISetupIntentResult,
+  ISubscribePayload,
+  ISubscribeResult,
   IDowngradePreview,
   IDowngradeResolvePayload,
   IDowngradeResolveResult,
@@ -98,6 +106,10 @@ export const getSeatQuote = async (
     body: { seats },
     tag: TAG,
     cache: "no-cache",
+    // Same shape as the checkout quote: a POST that only reads. Today it is
+    // only ever called from the client, but marking it keeps it safe to
+    // server-render and stops it evicting the billing tag for nothing.
+    skipRevalidate: true,
   });
 
 /** Step 2 of add-seats — confirm. Three outcomes: paid / pending payment / 400 blocked. */
@@ -228,4 +240,141 @@ export const cancelSubscription = async (
     body: payload,
     tag: TAG,
     cache: "no-cache",
+  });
+
+/* ---------------- payment methods + custom checkout ---------------- */
+
+/**
+ * The payment surfaces opt out of the global non-GET `402 → /settings/billing`
+ * redirect. Those endpoints ARE the way out of a payment block, so bouncing
+ * them would eject the admin from a half-confirmed payment. They render the
+ * envelope inline instead.
+ *
+ * NOTHING in this section ever carries card data. Card number, expiry and CVV
+ * are entered into Stripe-hosted iframes and confirmed from the browser with
+ * Stripe.js — a PAN must never reach a server action, which is what keeps the
+ * API out of PCI scope.
+ */
+const PAYMENT_OPTS = {
+  tag: TAG,
+  cache: "no-cache",
+  skipPaymentRedirect: true,
+} as const;
+
+/** Saved cards, read live from Stripe — we store none of our own. */
+export const getPaymentMethods = async (): Promise<
+  IResponse<IPaymentMethodList>
+> =>
+  await baseApi(`${BASE}/billing/payment-methods`, {
+    tag: TAG,
+    cache: "no-cache",
+  });
+
+/**
+ * Saving a card with no charge. The returned `client_secret` is single-use and
+ * is confirmed by `stripe.confirmSetup` in the browser — never log it, never
+ * put it in a URL.
+ */
+export const createSetupIntent = async (): Promise<
+  IResponse<ISetupIntentResult>
+> =>
+  await baseApi(`${BASE}/billing/payment-methods/setup-intent`, {
+    method: "POST",
+    body: {},
+    ...PAYMENT_OPTS,
+  });
+
+export const setDefaultPaymentMethod = async (
+  paymentMethodId: string,
+): Promise<IResponse<IPaymentMethodList>> =>
+  await baseApi(`${BASE}/billing/payment-methods/default`, {
+    method: "POST",
+    body: { payment_method_id: paymentMethodId },
+    ...PAYMENT_OPTS,
+  });
+
+/**
+ * Detaching is refused server-side when it would remove the last card behind a
+ * live paid subscription — otherwise the next renewal fails silently.
+ */
+export const detachPaymentMethod = async (
+  paymentMethodId: string,
+): Promise<IResponse<IPaymentMethodList>> =>
+  await baseApi(`${BASE}/billing/payment-methods/${paymentMethodId}`, {
+    method: "DELETE",
+    ...PAYMENT_OPTS,
+  });
+
+/**
+ * The order-summary panel's only data source: subtotal, discount, tax and
+ * total computed server-side in cents. Displayed as received — the client
+ * never recomputes a total, or it would disagree with the invoice built from
+ * the same ladder minutes later.
+ *
+ * An invalid discount code comes back as a 400 whose `message` is one of the
+ * two exact strings the checkout panel renders inline.
+ */
+export const getCheckoutQuote = async (payload: {
+  plan_id: number;
+  seats: number;
+  cycle: BillingCycle;
+  discount_code?: string;
+}): Promise<IResponse<ICheckoutQuote>> =>
+  await baseApi(`${BASE}/checkout/quote`, {
+    method: "POST",
+    body: payload,
+    ...PAYMENT_OPTS,
+    // POST only because it takes a body — it changes nothing, so there is no
+    // cache to invalidate. Load-bearing: the checkout page fetches this during
+    // its server render to paint the order summary on the first frame, and
+    // `revalidateTag` during a render is a hard error in Next 15 that took the
+    // whole route down with a server-side exception.
+    skipRevalidate: true,
+  });
+
+/**
+ * Creates (or reuses) the subscription behind the custom checkout.
+ *
+ * Server-side this is `payment_behavior: "default_incomplete"`, so a decline
+ * leaves the subscription `incomplete` with the SAME PaymentIntent still
+ * confirmable. The retry path calls `stripe.confirmPayment` again with the
+ * returned secret — it must NOT call this action a second time, or a second
+ * subscription could be minted.
+ *
+ * A company that already holds a live subscription is switched (prorated)
+ * instead of double-charged; the server branches internally and flags it with
+ * `switched`.
+ */
+export const subscribeToPlan = async (
+  payload: ISubscribePayload,
+): Promise<IResponse<ISubscribeResult>> =>
+  await baseApi(`${BASE}/subscription/subscribe`, {
+    method: "POST",
+    body: payload,
+    ...PAYMENT_OPTS,
+  });
+
+/**
+ * Post-confirmation activation — the analogue of `confirmCheckout` for the
+ * custom flow. Re-reads the subscription from Stripe and syncs it, so
+ * activation never depends on webhook delivery. Idempotent; safe to retry.
+ */
+export const confirmSubscription = async (
+  subscriptionId: string,
+): Promise<IResponse<IConfirmSubscriptionResult>> =>
+  await baseApi(`${BASE}/subscription/confirm`, {
+    method: "POST",
+    body: { subscription_id: subscriptionId },
+    ...PAYMENT_OPTS,
+  });
+
+/** In-app retry of a failed invoice — the alternative to Stripe's hosted page. */
+export const payInvoice = async (
+  invoiceId: number,
+  paymentMethodId?: string,
+): Promise<IResponse<IInvoicePayResult>> =>
+  await baseApi(`${BASE}/billing/invoices/${invoiceId}/pay`, {
+    method: "POST",
+    body: paymentMethodId ? { payment_method_id: paymentMethodId } : {},
+    ...PAYMENT_OPTS,
   });

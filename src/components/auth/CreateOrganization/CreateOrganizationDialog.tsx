@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Building2, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Building2, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -24,6 +24,11 @@ interface CreateOrganizationDialogProps {
   open: boolean;
   /** From the sign-in response — submitted with the form, never shown as input. */
   email: string;
+  /**
+   * The signed-up person's name, when the entry point had one to pass. Only
+   * seeds the step-1 name suggestions, so every caller may omit it.
+   */
+  userName?: string;
   onOpenChange: (open: boolean) => void;
   onCompleted: (organization: ICreateOrganizationResponse) => void;
 }
@@ -42,6 +47,7 @@ interface CreateOrganizationDialogProps {
 const CreateOrganizationDialog = ({
   open,
   email,
+  userName,
   onOpenChange,
   onCompleted,
 }: CreateOrganizationDialogProps) => {
@@ -53,8 +59,10 @@ const CreateOrganizationDialog = ({
     isLastStep,
     submitting,
     goBack,
+    setOrgName,
+    suggestions,
     handleSubmit,
-  } = useCreateOrganizationForm({ email, onCompleted });
+  } = useCreateOrganizationForm({ email, userName, onCompleted });
 
   const blockWhileSubmitting = (event: Event) => {
     if (submitting) {
@@ -74,7 +82,11 @@ const CreateOrganizationDialog = ({
         showCloseButton={false}
         onInteractOutside={(event) => event.preventDefault()}
         onEscapeKeyDown={blockWhileSubmitting}
-        className="max-h-[92vh] gap-0 overflow-y-auto p-0 sm:max-w-xl dark:bg-darkSecondaryBg"
+        // Wider than the app's other dialogs on purpose: step 2 lays out seven
+        // weekday pills in a row beside the weekend-length row, and at `xl`
+        // they wrapped to 4 + 3 and broke the two-column rhythm the design
+        // draws. `2xl` is the narrowest step that keeps the week on one line.
+        className="max-h-[92vh] gap-0 overflow-y-auto p-0 sm:max-w-2xl dark:bg-darkSecondaryBg"
       >
         <DialogHeader className="space-y-3 border-b border-borderColor p-5 dark:border-darkBorder sm:p-6">
           <div className="flex items-start gap-3">
@@ -91,7 +103,14 @@ const CreateOrganizationDialog = ({
             </div>
           </div>
 
-          <OnboardingStepper steps={ORGANIZATION_STEPS} activeIndex={stepIndex} />
+          {/* A two-step wizard does not need per-step badges to orient anyone —
+              the header already names the step — so the design spends the row
+              on a single fill instead. */}
+          <OnboardingStepper
+            steps={ORGANIZATION_STEPS}
+            activeIndex={stepIndex}
+            variant="bar"
+          />
         </DialogHeader>
 
         <Form {...form}>
@@ -100,6 +119,8 @@ const CreateOrganizationDialog = ({
               {step.id === "profile" && (
                 <OrganizationProfileStep
                   control={form.control}
+                  suggestions={suggestions}
+                  onPickSuggestion={setOrgName}
                   disabled={submitting}
                 />
               )}
@@ -112,42 +133,60 @@ const CreateOrganizationDialog = ({
             </div>
 
             <div className="flex flex-col gap-3 border-t border-borderColor px-5 py-4 dark:border-darkBorder sm:flex-row sm:items-center sm:justify-between sm:px-6">
-              <p
-                className="truncate text-xs text-subTextColor dark:text-darkTextSecondary"
-                title={email}
-              >
-                Setting up for <span className="font-medium">{email}</span>
-              </p>
+              {/* The left slot carries the step's own escape hatch on step 1
+                  (there is no session to fall back to, so leaving means
+                  sign-in) and the address the workspace is about to be created
+                  for on the last step, where it is the final thing worth
+                  double-checking before submitting. */}
+              {isFirstStep ? (
+                <Button
+                  type="button"
+                  variant="outline2"
+                  onClick={() => onOpenChange(false)}
+                  disabled={submitting}
+                  className="w-full sm:w-auto"
+                >
+                  <ArrowLeft className="size-4" />
+                  Back to sign in
+                </Button>
+              ) : (
+                <p
+                  className="truncate text-xs text-subTextColor dark:text-darkTextSecondary"
+                  title={email}
+                >
+                  Setting up for{" "}
+                  <span className="font-medium text-primary">{email}</span>
+                </p>
+              )}
 
-              <div className="flex items-center justify-end gap-2">
-                {isFirstStep ? (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() => onOpenChange(false)}
-                    disabled={submitting}
-                    className="text-subTextColor dark:text-darkTextSecondary"
-                  >
-                    Back to sign in
-                  </Button>
-                ) : (
+              {/* Stacked on a phone the footer is the whole bottom of the
+                  screen, so the actions take the full width there and only
+                  shrink to their labels once the row goes horizontal. */}
+              <div className="flex w-full items-center justify-end gap-2 sm:w-auto">
+                {!isFirstStep && (
                   <Button
                     type="button"
                     variant="outline2"
                     onClick={goBack}
                     disabled={submitting}
+                    className="flex-1 sm:flex-none"
                   >
-                    <ArrowLeft className="h-4 w-4" />
+                    <ArrowLeft className="size-4" />
                     Back
                   </Button>
                 )}
-                <Button type="submit" disabled={submitting}>
-                  {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
+                <Button
+                  type="submit"
+                  disabled={submitting}
+                  className="flex-1 sm:flex-none"
+                >
+                  {submitting && <Loader2 className="size-4 animate-spin" />}
                   {isLastStep
                     ? submitting
                       ? "Creating..."
-                      : "Create organization"
+                      : "Create Organization"
                     : "Continue"}
+                  {!isLastStep && <ArrowRight className="size-4" />}
                 </Button>
               </div>
             </div>

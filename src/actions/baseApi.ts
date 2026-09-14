@@ -22,6 +22,30 @@ interface BaseApiOptions {
    * to the caller instead of redirecting to /session-expired.
    */
   providerAuthPrefix?: string;
+  /**
+   * Opts this call out of the global non-GET `402 → /settings/billing` rule.
+   *
+   * That rule exists so an ordinary write rejected for non-payment lands the
+   * user somewhere they can fix it. On the checkout and payment-method
+   * surfaces it does the opposite: those endpoints ARE the fix, and a 402 from
+   * one of them would eject the user out of a half-finished payment, losing
+   * the PaymentIntent they were confirming. Those callers render the envelope
+   * inline instead.
+   *
+   * Deliberately narrow — only the billing payment actions set it. Widening it
+   * would quietly disable the payment-blocked redirect app-wide.
+   */
+  skipPaymentRedirect?: boolean;
+  /**
+   * Suppresses the automatic `revalidateTag(tag)` that follows every non-GET.
+   *
+   * For a POST that is really a READ — a price quote, a proration preview —
+   * that revalidation is wrong twice over. Nothing changed, so there is no
+   * cache to invalidate; and Next 15 makes `revalidateTag` during a render a
+   * hard error, so a server component that fetches such a preview to paint its
+   * first frame crashes the whole route with a server-side exception.
+   */
+  skipRevalidate?: boolean;
 }
 
 /* ---------------- helpers ---------------- */
@@ -65,6 +89,8 @@ export async function baseApi<T = any>(
     // cache = "no-cache",
     revalidate = 60,
     providerAuthPrefix,
+    skipPaymentRedirect = false,
+    skipRevalidate = false,
   } = options;
 
   const fullUrl = url.startsWith("http")
@@ -154,7 +180,10 @@ export async function baseApi<T = any>(
     // the backend's message instead of leaving each caller to handle it.
     // GETs are exempt: the dashboard stays browsable during payment failure,
     // and the billing page's own reads must never redirect-loop.
-    if (res.status === 402) {
+    // `skipPaymentRedirect` exempts the checkout / payment-method actions —
+    // they are the resolution path, so bouncing them here would strand a
+    // part-confirmed payment (see the option's doc comment).
+    if (res.status === 402 && !skipPaymentRedirect) {
       const msg =
         typeof errBody?.message === "string" ? errBody.message : "";
       redirect(
@@ -229,8 +258,17 @@ export async function baseApi<T = any>(
   }
 
   // 🔄 auto revalidate on mutations
-  if (method !== "GET" && tag) {
-    revalidateTag(tag);
+  if (method !== "GET" && tag && !skipRevalidate) {
+    try {
+      revalidateTag(tag);
+    } catch (error) {
+      // Next 15 throws when this runs inside a render. Callers that fetch
+      // during render should pass `skipRevalidate` (a POST-shaped read has
+      // nothing to invalidate anyway) — but failing to refresh a cache must
+      // never take the page down with it, least of all a payment page. Log it
+      // and carry on: every billing read is `cache: "no-cache"` regardless.
+      console.warn(`revalidateTag("${tag}") skipped:`, error);
+    }
   }
 
   if (res.status === 204) return null as T;

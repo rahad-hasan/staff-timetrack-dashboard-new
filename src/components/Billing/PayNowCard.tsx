@@ -1,18 +1,39 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { AlertTriangle, ExternalLink, FileText, Receipt } from "lucide-react";
+import {
+  AlertTriangle,
+  CreditCard,
+  ExternalLink,
+  FileText,
+  Loader2,
+  Receipt,
+} from "lucide-react";
+import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { formatBillingDate, formatCents } from "@/lib/billing";
 import { invoiceDetailHref, isInvoicePayable } from "@/lib/invoice";
+import { payInvoice } from "@/actions/billing/action";
 import { IBillingInvoice } from "@/types/billing";
 import InvoiceStatusBadge from "@/components/Billing/Invoice/InvoiceStatusBadge";
+import { useBillingRefresh } from "@/components/Billing/useBillingRefresh";
 
 /**
- * Card for `latest_unpaid_invoice` (guide §4). "Pay now" opens Stripe's
- * hosted invoice page — it handles 3-D Secure and updates the default card;
- * the webhook applies the outcome automatically after payment.
+ * Card for `latest_unpaid_invoice` (guide §4).
+ *
+ * Two ways to settle it, in this order:
+ *
+ * 1. **In-app "Pay now"** — `POST /billing/invoices/:id/pay`, charging the
+ *    card already on file. One click, no tab switch, and the entitlement cache
+ *    is invalidated server-side the way the webhook does it.
+ * 2. **Stripe's hosted invoice page** — kept deliberately, not as dead code.
+ *    It is the fallback whenever (1) cannot finish on its own: the invoice
+ *    predates our id column, there is no saved card to charge, or the bank
+ *    demands 3-D Secure. Building an SCA flow inside this card would duplicate
+ *    the checkout page's PaymentElement for a surface a user sees once.
  *
  * `blocking` mirrors the subscription state: red + "access resumes" copy when
  * the workspace is locked (renewal failure), amber + "change on hold" copy
@@ -30,15 +51,86 @@ export default function PayNowCard({
   invoice: IBillingInvoice;
   blocking?: boolean;
 }) {
-  const handlePayNow = () => {
+  const refreshBilling = useBillingRefresh();
+  const [paying, setPaying] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  /**
+   * Set when the bank asks for 3-D Secure. Rendered as a link rather than
+   * opened with `window.open`: this fires after an `await`, so the browser no
+   * longer counts it as a user gesture and most popup blockers eat it — which
+   * would look exactly like "Pay now did nothing".
+   */
+  const [verifyUrl, setVerifyUrl] = useState<string | null>(null);
+
+  const openHostedInvoice = () => {
     if (invoice.hosted_invoice_url) {
       window.open(invoice.hosted_invoice_url, "_blank", "noopener,noreferrer");
+    }
+  };
+
+  const handlePayNow = async () => {
+    // `id` is absent on payloads that predate the detail endpoint; those can
+    // only be settled on Stripe's page.
+    if (typeof invoice.id !== "number") {
+      openHostedInvoice();
+      return;
+    }
+
+    setPaying(true);
+    setError(null);
+    setVerifyUrl(null);
+    try {
+      const res = await payInvoice(invoice.id);
+
+      if (res?.success && res.data) {
+        if (res.data.paid) {
+          toast.success("Payment received — thank you.");
+          // Read-after-write: the status refetch is what clears the lockout and
+          // applies a parked seat/plan change without a reload.
+          await refreshBilling();
+          return;
+        }
+
+        if (res.data.requires_action) {
+          // The bank wants 3-D Secure. Hand it to Stripe's hosted page rather
+          // than growing a second SCA implementation here; the webhook applies
+          // the outcome when the user finishes.
+          setVerifyUrl(
+            res.data.hosted_invoice_url ?? invoice.hosted_invoice_url ?? null,
+          );
+          if (!res.data.hosted_invoice_url && !invoice.hosted_invoice_url) {
+            setError(
+              "Your bank needs to verify this payment, but Stripe did not return a verification page. Please contact support.",
+            );
+          }
+          return;
+        }
+
+        setError(
+          "The payment did not go through. Try another card or pay on Stripe's page.",
+        );
+        return;
+      }
+
+      setError(res?.message || "Could not take the payment. Please try again.");
+    } catch {
+      setError("Something went wrong while taking the payment.");
+    } finally {
+      setPaying(false);
     }
   };
 
   if (invoice.voided) return null;
 
   const documentHref = invoiceDetailHref(invoice);
+  const hostedPayable = isInvoicePayable(invoice);
+  // The in-app path needs a row id but not a hosted URL — a Stripe-side
+  // invoice with no hosted page is still payable through the API.
+  const canPayInApp =
+    !invoice.voided &&
+    invoice.status !== "paid" &&
+    (invoice.amount_due_cents ?? 0) > 0 &&
+    typeof invoice.id === "number";
 
   const accent = blocking
     ? {
@@ -85,16 +177,55 @@ export default function PayNowCard({
 
           <p className="mt-3 text-sm text-subTextColor dark:text-darkTextSecondary">
             {blocking
-              ? "Payment is handled on Stripe's secure page and updates your default card. Access and time tracking resume automatically within seconds."
+              ? "We'll charge the card on file for your workspace. Access and time tracking resume automatically within seconds. Manage or replace that card under Billing → Change Card."
               : "Your requested seat or plan change is on hold until this invoice is paid — it applies automatically within seconds of payment. If it stays unpaid, the request simply expires and your current subscription continues unchanged."}
           </p>
+
+          {verifyUrl && (
+            <p className="mt-2 text-sm text-amber-700 dark:text-amber-300">
+              Your bank needs to verify this payment.{" "}
+              <a
+                href={verifyUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium underline underline-offset-2"
+              >
+                Complete verification on Stripe
+              </a>
+            </p>
+          )}
+
+          {error && (
+            <p className="mt-2 text-sm text-red-600 dark:text-red-400">
+              {error}
+            </p>
+          )}
         </div>
 
         <div className="flex flex-col items-stretch gap-2 sm:items-end shrink-0">
-          {isInvoicePayable(invoice) && (
-            <Button onClick={handlePayNow} className={accent.button}>
-              <ExternalLink className="h-4 w-4" />
+          {canPayInApp && (
+            <Button
+              onClick={() => void handlePayNow()}
+              disabled={paying}
+              className={accent.button}
+            >
+              {paying ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <CreditCard className="h-4 w-4" />
+              )}
               Pay now
+            </Button>
+          )}
+          {hostedPayable && (
+            <Button
+              type="button"
+              variant="outline2"
+              onClick={openHostedInvoice}
+              disabled={paying}
+            >
+              <ExternalLink className="h-4 w-4" />
+              {canPayInApp ? "Pay on Stripe" : "Pay now"}
             </Button>
           )}
           {documentHref && (

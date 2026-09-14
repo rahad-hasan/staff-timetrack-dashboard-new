@@ -6,10 +6,14 @@ import Image from "next/image";
 import Link from "next/link";
 import roundedEmail from "../../assets/auth/roundedEmail.svg";
 import OtpInput from "react-otp-input";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useRouter, useSearchParams } from "next/navigation";
 import { resetOtp, verifyOtp } from "@/actions/auth/action";
+import {
+  appendMarketingPlanIntent,
+  parseMarketingPlanIntent,
+} from "@/lib/marketingPlanIntent";
 import logoWithSlogan from "../../assets/logo-with-text.webp";
 import logoForDark from "../../assets/logo-with-text-dark.png";
 
@@ -32,10 +36,15 @@ const errorToastStyle = {
  * account.
  *
  * `POST /auth/verify-otp` answers the sign-up flow with
- * `{ redirect: "/create-organization", email }` — no session tokens yet (the
+ * `{ redirect: "/create-organization", email, name }` — no session tokens yet (the
  * bundled accessToken is signed for the pending record and is useless against
  * authenticated routes, so it is deliberately never persisted). The session
  * only begins when `POST /company` completes on the next screen.
+ *
+ * When the visitor arrived from the marketing pricing page the URL also carries
+ * the plan they already picked (`?plan=&cycle=&trial=`). Nothing here reads it
+ * — this screen only forwards it, because the decision it feeds cannot be made
+ * until the company exists two screens from now. See `@/lib/marketingPlanIntent`.
  */
 const SignupVerifyOtpClient = () => {
   const [otp, setOtp] = useState<string>("");
@@ -44,6 +53,15 @@ const SignupVerifyOtpClient = () => {
   const [cooldown, setCooldown] = useState(0);
   const [inlineError, setInlineError] = useState<string | null>(null);
   const [width, setWidth] = useState("50px");
+  /**
+   * The exact code the last submission was made with.
+   *
+   * This is what stops the auto-submit below from becoming a retry loop: a
+   * rejected code stays in the boxes, so without remembering that it has
+   * already been tried, every re-render that re-evaluates "the field is full"
+   * would fire another request at the API with the same wrong digits.
+   */
+  const lastSubmittedCode = useRef<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get("email");
@@ -81,6 +99,11 @@ const SignupVerifyOtpClient = () => {
   async function handleVerifyOtp() {
     if (!email || otp.length !== OTP_LENGTH || loading) return;
 
+    // Recorded here rather than in the auto-submit effect so a manual click
+    // counts as an attempt too — otherwise the effect would immediately
+    // re-fire the same code the button just failed with.
+    lastSubmittedCode.current = otp;
+
     setLoading(true);
     setInlineError(null);
     // Verification consumes the OTP row server-side, so a re-click during the
@@ -103,7 +126,9 @@ const SignupVerifyOtpClient = () => {
         // The sign-up flow answers `/create-organization`. A stale
         // forgot-password code for the same address answers
         // `/reset-password` + reset_token instead — honour it rather than
-        // walking a password reset into company creation.
+        // walking a password reset into company creation. That branch stays
+        // free of plan params on purpose: a password reset is not a signup and
+        // has nothing to buy at the end of it.
         // `replace`, not `push`: the code is consumed, so returning here via
         // the Back button could only replay a step that must now fail.
         if (res?.data?.reset_token) {
@@ -113,8 +138,26 @@ const SignupVerifyOtpClient = () => {
           return;
         }
 
+        // The verify response carries the signed-up person's name, and this is
+        // the only moment it is in hand: the next screen has no session to look
+        // it up with, so anything dropped here is gone. It seeds the
+        // organization-name suggestions on step 1. Appended only when non-empty
+        // so `buildOrgNameSuggestions` falls through to the email local-part
+        // instead of being handed a blank seed it would have to reject.
+        const verifiedName = (res?.data?.name ?? "").trim();
+
+        // The plan the visitor picked on the marketing site rides along to the
+        // next hop. It is re-read (not re-encoded blindly) so a junk `?plan=`
+        // is dropped here rather than travelling two more screens, and so the
+        // `trail`/`trial` spelling is normalised at the first opportunity.
+        // Appends nothing at all for an ordinary signup, which keeps this URL
+        // byte-identical to what it was before plan intent existed.
         router.replace(
-          `/auth/create-organization?email=${encodeURIComponent(res?.data?.email || email)}`,
+          appendMarketingPlanIntent(
+            `/auth/create-organization?email=${encodeURIComponent(res?.data?.email || email)}` +
+              (verifiedName ? `&name=${encodeURIComponent(verifiedName)}` : ""),
+            parseMarketingPlanIntent(searchParams),
+          ),
         );
       } else {
         // Wrong code / expired code / rate limited — the API message says
@@ -131,6 +174,40 @@ const SignupVerifyOtpClient = () => {
       if (!navigating) setLoading(false);
     }
   }
+
+  /**
+   * Submit as soon as the sixth digit lands — pasting a code from the email
+   * client, or typing the last digit, should not then require a separate click
+   * on a button that is the only thing left to do.
+   *
+   * Three guards keep it from misfiring:
+   *   - a short code resets the attempt marker, so correcting a digit (or a
+   *     resend clearing the field) makes the corrected code submittable again,
+   *     including when it happens to match one already tried;
+   *   - `loading` keeps a completed code from queueing a second request while
+   *     the first is still in flight;
+   *   - `lastSubmittedCode` stops a REJECTED code from resubmitting itself.
+   *     That one is the important one: the wrong digits stay on screen after a
+   *     failure, so without it this effect would hammer the endpoint until the
+   *     rate limiter cut it off.
+   *
+   * The button stays: it is the accessible, obvious control, and it still
+   * handles the case where an attempt was already spent on these digits.
+   */
+  useEffect(() => {
+    if (otp.length < OTP_LENGTH) {
+      lastSubmittedCode.current = null;
+      return;
+    }
+
+    if (loading || lastSubmittedCode.current === otp) return;
+
+    void handleVerifyOtp();
+    // `handleVerifyOtp` is redeclared every render, so listing it here would
+    // re-run this effect on every render. The guards above are what make the
+    // submission idempotent, not the dependency list.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [otp, loading]);
 
   async function handleResendOtp() {
     if (!email || loadingResend || cooldown > 0) return;

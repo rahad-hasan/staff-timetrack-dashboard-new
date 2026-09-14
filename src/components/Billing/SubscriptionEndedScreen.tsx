@@ -2,15 +2,18 @@
 
 import { CircleOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useScrollToPlans } from "./BillingTabs";
 
 /**
  * Inline section (NOT an overlay) for the billing page when the subscription
  * status is "canceled". Data is intact; checkout is available again (guide §1/§7).
  */
 export default function SubscriptionEndedScreen() {
-  const scrollToPlans = () => {
-    document.getElementById("plans")?.scrollIntoView({ behavior: "smooth" });
-  };
+  // This card sits ABOVE the tab strip and stays visible on every tab, but the
+  // pricing grid it points at only exists inside the My Plan tab — so the CTA
+  // has to switch tab before it can scroll, or it is a dead button on two
+  // thirds of the page.
+  const scrollToPlans = useScrollToPlans();
 
   return (
     <div className="border border-borderColor rounded-lg p-3 sm:p-4 bg-white dark:bg-darkPrimaryBg dark:border-darkBorder">

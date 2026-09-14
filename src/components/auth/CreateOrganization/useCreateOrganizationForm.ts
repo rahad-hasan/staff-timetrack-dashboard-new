@@ -2,17 +2,19 @@
 
 import { useCallback, useMemo, useState, type FormEvent } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { createOrganization } from "@/actions/organization/action";
+import { parseMarketingPlanIntent } from "@/lib/marketingPlanIntent";
 import {
   COMPANY_EMAIL_EXISTS_MESSAGE,
   DEFAULT_WORKSPACE_PREFERENCES,
   PENDING_USER_MISSING_MESSAGE,
   resolveBrowserTimeZone,
 } from "@/lib/organization";
+import { buildOrgNameSuggestions } from "@/lib/orgNameSuggestions";
 import { ICreateOrganizationResponse } from "@/types/type";
 import {
   CreateOrganizationFormValues,
@@ -31,7 +33,7 @@ export const ORGANIZATION_STEPS = [
   {
     id: "workspace",
     title: "Workspace",
-    heading: "Set your workspace defaults",
+    heading: "Set Your Default Workspace",
     description:
       "How the week is counted, when a session goes idle, and what you bill in.",
     fields: [
@@ -52,6 +54,8 @@ export const ORGANIZATION_STEPS = [
 interface UseCreateOrganizationFormOptions {
   /** Comes from the sign-in response — never edited, never displayed as input. */
   email: string;
+  /** From `verify-otp`; absent on the login-page entry point into this dialog. */
+  userName?: string;
   onCompleted: (organization: ICreateOrganizationResponse) => void;
 }
 
@@ -65,11 +69,53 @@ interface UseCreateOrganizationFormOptions {
  */
 export const useCreateOrganizationForm = ({
   email,
+  userName,
   onCompleted,
 }: UseCreateOrganizationFormOptions) => {
   const [stepIndex, setStepIndex] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  /**
+   * The plan the visitor clicked "start a trial" on, on the marketing site —
+   * `/auth/verify-otp?email=…&plan=2&trail=true`, carried to this URL by the
+   * hop before this one.
+   *
+   * Read off the live URL rather than passed in, for the same reason
+   * `useEnterPlanSelection` does it: the login page mounts this very wizard for
+   * accounts that verified but never finished, and that URL simply carries no
+   * plan params — which parses to "no intent" and costs that call site nothing.
+   * Both pages that mount the dialog already read `useSearchParams`, so this
+   * adds no new Suspense boundary.
+   *
+   * Only a TRIAL intent that actually names a plan produces an id. A paid-plan
+   * click (`trail=false`) has nothing to do with the reverse trial — it is
+   * routed to the plan picker and buys a subscription there — so it must leave
+   * the create request untouched.
+   *
+   * Nothing here judges whether that plan HAS a trial: the client cannot know
+   * (`IBillingPlan` carries neither `allow_trial` nor `trial_days`) and must not
+   * pretend to. `POST /company` validates the id and falls back to the default
+   * trial plan when it is unknown, inactive or not trialable. This is intent,
+   * not an assertion — do not "fix" it later by filtering against the catalog.
+   */
+  const trialPlanId = useMemo(() => {
+    const intent = parseMarketingPlanIntent(searchParams);
+    return intent.isTrial ? intent.planId : null;
+  }, [searchParams]);
+
+  /**
+   * Owned here rather than in the step, because the FIRST suggestion is also
+   * the field's default value — computing them in two places is how those two
+   * drift apart and the pre-filled name stops matching the chip beside it.
+   *
+   * Pure and deterministic, so this memo is about identity, not cost.
+   */
+  const suggestions = useMemo(
+    () => buildOrgNameSuggestions(userName, email),
+    [userName, email],
+  );
 
   // All three generics are pinned on purpose: left to inference, the resolver
   // leaves `TTransformedValues` unresolved and `form.control` stops matching
@@ -82,7 +128,11 @@ export const useCreateOrganizationForm = ({
     resolver: zodResolver(createOrganizationSchema),
     mode: "onTouched",
     defaultValues: {
-      name: "",
+      // Pre-filled with the best suggestion so the common case is "read it,
+      // press Continue". It is an ordinary editable value, not a placeholder —
+      // the user can clear or rewrite it, and the schema still has the final
+      // say. Empty when there was no usable seed.
+      name: suggestions[0] ?? "",
       phone: "",
       address: "",
       // The dialog only ever mounts client-side, so reading the browser zone
@@ -109,6 +159,30 @@ export const useCreateOrganizationForm = ({
     setStepIndex((index) => Math.max(0, index - 1));
   }, []);
 
+  /**
+   * Fills the name field from a suggestion chip.
+   *
+   * `clearErrors` rather than `shouldValidate: true`, for two reasons. Every
+   * suggestion is pre-clamped to the schema's 2–50 bound, so there is nothing
+   * to validate at pick time — clearing a stale message (from an earlier blur
+   * on a half-typed name) is the whole job. And re-running the resolver here
+   * is what a picked name least needs: real validation still happens on blur
+   * under `onTouched`, and again across the step when "Continue" triggers it.
+   *
+   * Note the flash this does NOT fix: clicking a chip used to blur the
+   * autofocused, still-empty name input, and `onTouched` painted the
+   * min-length error a frame before the click handler filled it. That is
+   * solved where it is caused — `OrgNameSuggestions` suppresses the chip's
+   * default mousedown focus shift, so no blur happens at all.
+   */
+  const setOrgName = useCallback(
+    (value: string) => {
+      form.setValue("name", value, { shouldDirty: true });
+      form.clearErrors("name");
+    },
+    [form],
+  );
+
   const goNext = useCallback(async () => {
     const valid = await form.trigger([...step.fields]);
 
@@ -125,7 +199,12 @@ export const useCreateOrganizationForm = ({
         setSubmitting(true);
 
         try {
-          const result = await createOrganization({ ...values, email });
+          // `trialPlanId` is null for every signup that did not arrive from a
+          // marketing trial link, which keeps that request exactly as it was.
+          const result = await createOrganization(
+            { ...values, email },
+            trialPlanId,
+          );
 
           if (!result?.success || !result.data) {
             const message = result?.message ?? "";
@@ -191,7 +270,7 @@ export const useCreateOrganizationForm = ({
           setSubmitting(false);
         }
       }),
-    [email, form, onCompleted, router],
+    [email, form, onCompleted, router, trialPlanId],
   );
 
   /**
@@ -219,6 +298,7 @@ export const useCreateOrganizationForm = ({
 
   return {
     form,
+    suggestions,
     step,
     stepIndex,
     isFirstStep,
@@ -226,6 +306,7 @@ export const useCreateOrganizationForm = ({
     submitting: busy,
     goBack,
     goNext,
+    setOrgName,
     handleSubmit,
   };
 };

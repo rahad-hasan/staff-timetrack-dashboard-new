@@ -1,13 +1,11 @@
 "use client";
 
 import { useEffect } from "react";
-import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
-import logoWithSlogan from "../../../assets/logo-with-text.webp";
-import logoForDark from "../../../assets/logo-with-text-dark.png";
 import { CreateOrganizationDialog } from "./index";
+import OnboardingBackdrop from "./OnboardingBackdrop";
 import { useEnterPlanSelection } from "./useEnterPlanSelection";
 
 /**
@@ -22,11 +20,23 @@ import { useEnterPlanSelection } from "./useEnterPlanSelection";
  * verified but never finished; here it sits over a bare branded backdrop and
  * completion continues to the plan picker instead of straight to the
  * dashboard.
+ *
+ * A signup that started from the marketing pricing page also carries
+ * `?plan=&cycle=&trial=` here. This component never reads it, but it must not
+ * strip it either: `useEnterPlanSelection` re-reads the live URL when `POST
+ * /company` succeeds and that is where the plan/trial fork happens. Any future
+ * rewrite of this URL has to preserve those params or the visitor gets asked to
+ * pick a plan they already picked.
  */
 const CreateOrganizationPageClient = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get("email");
+  // Purely a nicety — it only seeds the name suggestions on step 1. The dialog
+  // has a second entry point (the login page, for accounts that verified but
+  // never finished) that has no name to pass, so this must never gate the
+  // render the way a missing `email` does.
+  const userName = searchParams.get("name");
   const enterPlanSelection = useEnterPlanSelection();
 
   useEffect(() => {
@@ -45,29 +55,20 @@ const CreateOrganizationPageClient = () => {
   if (!email) return null;
 
   return (
-    <div className="min-h-screen w-full bg-linear-to-b from-[#12cd6918] from-5% to-bgSecondary dark:to-darkSecondaryBg to-20%">
-      <div className="w-full flex items-center justify-center">
-        <div className="flex items-center gap-1.5 px-8 py-5">
-          <Image
-            src={logoWithSlogan}
-            alt="Logo"
-            width={120}
-            height={60}
-            className="hidden dark:block"
-          />
-          <Image
-            src={logoForDark}
-            alt="Logo"
-            width={120}
-            height={60}
-            className="dark:hidden"
-          />
-        </div>
-      </div>
+    // `relative` so the backdrop's own `fixed` layer can sit behind this
+    // content via its negative z-index without escaping the stacking context.
+    <div className="relative min-h-screen w-full">
+      <OnboardingBackdrop />
+
+      {/* No logo header: the backdrop now carries the product framing (its own
+          sidebar wordmark is right there), and a crisp logo floating over a
+          blurred dashboard read as a rendering fault rather than branding. The
+          design places nothing above the dialog either. */}
 
       <CreateOrganizationDialog
         open
         email={email}
+        userName={userName ?? undefined}
         onOpenChange={(next) => {
           // "Back to sign in" / Escape — there is no session to return to, so
           // leaving the wizard means leaving onboarding.

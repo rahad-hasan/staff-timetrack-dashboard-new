@@ -42,8 +42,14 @@ const LoginClientComponent = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
   // Set when sign-in resolves to an account that never created its
-  // organization; it is also the dialog's open flag.
-  const [onboardingEmail, setOnboardingEmail] = useState<string | null>(null);
+  // organization; it is also the dialog's open flag. `name` rides along only to
+  // seed the organization-name suggestions — older API builds answer this
+  // branch without one, so it stays optional and the step simply falls back to
+  // the email local-part.
+  const [onboardingUser, setOnboardingUser] = useState<{
+    email: string;
+    name?: string;
+  } | null>(null);
   const router = useRouter();
 
   const searchParams = useSearchParams();
@@ -97,7 +103,10 @@ const LoginClientComponent = () => {
       // signup here instead of pushing into a dashboard there is no session
       // for — which is what used to land on /session-expired.
       if (requiresOrganizationOnboarding(res)) {
-        setOnboardingEmail(res.data.email || values.email);
+        setOnboardingUser({
+          email: res.data.email || values.email,
+          name: res.data.name?.trim() || undefined,
+        });
         return;
       }
 
@@ -326,12 +335,13 @@ const LoginClientComponent = () => {
           it deliberately stays mounted in its "Creating..." state until the
           plan-picker route takes over, rather than flashing the login form back
           at an account that is already signed in. */}
-      {onboardingEmail && (
+      {onboardingUser && (
         <CreateOrganizationDialog
           open
-          email={onboardingEmail}
+          email={onboardingUser.email}
+          userName={onboardingUser.name}
           onOpenChange={(next) => {
-            if (!next) setOnboardingEmail(null);
+            if (!next) setOnboardingUser(null);
           }}
           onCompleted={enterPlanSelection}
         />

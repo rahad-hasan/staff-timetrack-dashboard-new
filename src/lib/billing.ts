@@ -5,6 +5,7 @@ import {
   IBillingEntitlements,
   IBillingPlan,
   InvoiceStatus,
+  IPaymentMethod,
 } from "@/types/billing";
 
 /**
@@ -67,6 +68,36 @@ export const isDatePast = (iso: string | null | undefined): boolean =>
  * open the Add-seats dialog instead of showing a raw error (guide §3).
  */
 export const SEAT_CAP_MESSAGE = "Upgrade your plan to add more seats.";
+
+/**
+ * Absolute seat ceiling for any order, independent of plan.
+ *
+ * THE single definition. This used to be re-declared in SeatSelectionDialog,
+ * CheckoutDialog and OrderSummaryPanel, plus a bare `Math.min(500, …)` in the
+ * checkout page — and only one of the four also consulted the plan's own cap,
+ * so the same order was accepted or rejected depending on which door it came
+ * through.
+ */
+export const MAX_ORDER_SEATS = 500;
+
+/**
+ * The largest seat count this plan can actually be sold at.
+ *
+ * `-1` is the repo's "unlimited" and a missing/0 cap means the plan carries no
+ * ceiling of its own — in both cases MAX_ORDER_SEATS is the real limit.
+ *
+ * Every seat input must clamp with this, not with MAX_ORDER_SEATS alone: the
+ * server rejects seats above the plan's `max_seats` on BOTH purchase paths, so
+ * an input that ignores the cap lets someone be quoted and charged for seats
+ * the entitlement engine will never grant. Callers also need it BEFORE opening
+ * a seat dialog — a plan whose cap sits under the company's billable head
+ * count cannot be bought at all, and auto-opening onto it is a dead end.
+ */
+export const seatCeilingFor = (plan: IBillingPlan): number => {
+  const cap = plan.limits?.max_seats;
+  if (typeof cap !== "number" || cap <= 0) return MAX_ORDER_SEATS;
+  return Math.min(MAX_ORDER_SEATS, cap);
+};
 
 /** Project creation cap: `400 "Your plan allows up to N active project(s)…"` → prompt upgrade. */
 export const isProjectCapMessage = (message: string | undefined): boolean =>
@@ -277,4 +308,472 @@ export const derivePlanGridFlags = (
   isDelinquent:
     entitlements?.status === "past_due" ||
     entitlements?.status === "payment_failed",
+});
+
+/* ---------------- saved payment methods ---------------- */
+
+/**
+ * A saved payment method is not necessarily a CARD.
+ *
+ * The SetupIntent behind every "save a payment method" flow is created with
+ * `automatic_payment_methods: { enabled: true }` and the forms mount
+ * `<PaymentElement>`, so whatever the Stripe account has enabled can be
+ * attached — a Link wallet above all. Those methods carry no card object, so
+ * `brand`/`last4` arrive as "" and the expiry as 0/0, and every helper below
+ * branches on `type` rather than printing a card sentence over empty values.
+ * This is a permanent shape, not a migration artefact.
+ */
+
+/** Stripe card-brand slug → the label printed on the card. Cards only. */
+const CARD_BRAND_LABELS: Record<string, string> = {
+  visa: "Visa",
+  mastercard: "Mastercard",
+  amex: "American Express",
+  discover: "Discover",
+  diners: "Diners Club",
+  jcb: "JCB",
+  unionpay: "UnionPay",
+  eftpos_au: "Eftpos",
+};
+
+export const formatCardBrand = (brand: string | null | undefined): string => {
+  if (!brand) return "Card";
+  return CARD_BRAND_LABELS[brand.toLowerCase()] ?? brand.toUpperCase();
+};
+
+/**
+ * Stripe payment-method type → the noun we show. Only the types this account
+ * can realistically attach need an entry; anything else is humanised from the
+ * slug, so a newly enabled method reads sensibly the day it first appears
+ * instead of waiting for a frontend release.
+ */
+const PAYMENT_METHOD_TYPE_LABELS: Record<string, string> = {
+  card: "Card",
+  link: "Link",
+  us_bank_account: "Bank account",
+  sepa_debit: "SEPA Direct Debit",
+  bacs_debit: "Bacs Direct Debit",
+  acss_debit: "Pre-authorized debit",
+  au_becs_debit: "BECS Direct Debit",
+  cashapp: "Cash App Pay",
+  paypal: "PayPal",
+  amazon_pay: "Amazon Pay",
+  revolut_pay: "Revolut Pay",
+  klarna: "Klarna",
+  affirm: "Affirm",
+  afterpay_clearpay: "Afterpay / Clearpay",
+  alipay: "Alipay",
+  wechat_pay: "WeChat Pay",
+  paynow: "PayNow",
+  boleto: "Boleto",
+};
+
+/** "us_bank_account" → "Bank account"; "foo_bar" → "Foo Bar". */
+export const formatPaymentMethodType = (
+  type: string | null | undefined,
+): string => {
+  const key = (type ?? "").trim().toLowerCase();
+  if (!key) return "Payment method";
+  return (
+    PAYMENT_METHOD_TYPE_LABELS[key] ??
+    key
+      .split(/[_\s]+/)
+      .filter(Boolean)
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ")
+  );
+};
+
+/** The subset of a payment method the display helpers actually read. */
+type PaymentMethodLike = Partial<
+  Pick<
+    IPaymentMethod,
+    "type" | "brand" | "last4" | "exp_month" | "exp_year" | "wallet_email"
+  >
+>;
+
+/**
+ * The method's type, resolved defensively — the ONE place `type` is read.
+ *
+ * The field is part of the agreed wire contract and typed required, but a
+ * response cached before it shipped still has none at runtime. Those responses
+ * can only ever describe cards (the backend listed with `type: "card"` back
+ * then), so a row with card data falls back to "card" and renders exactly as it
+ * always did. A row with nothing to go on resolves to "" — `formatPaymentMethodType`
+ * turns that into the neutral "Payment method" rather than inventing a brand.
+ */
+export const resolvePaymentMethodType = (
+  method: PaymentMethodLike | null | undefined,
+): string => {
+  const declared = (method?.type ?? "").trim().toLowerCase();
+  if (declared) return declared;
+  const brand = (method?.brand ?? "").trim().toLowerCase();
+  if (brand === "link") return "link";
+  return brand || method?.last4 ? "card" : "";
+};
+
+/** True ⇒ the card layouts (masked PAN, expiry, cardholder) actually apply. */
+export const isCardMethod = (
+  method: PaymentMethodLike | null | undefined,
+): boolean => resolvePaymentMethodType(method) === "card";
+
+/**
+ * Does this method have an expiry at all? Non-card methods send 0/0, and an
+ * "Expires —" line under a Link wallet is the same lie as "Unknown Ending in".
+ */
+export const hasExpiry = (
+  method: PaymentMethodLike | null | undefined,
+): boolean => Boolean(method?.exp_month && method?.exp_year);
+
+/**
+ * The one-line name of a saved method, used as the row title everywhere.
+ *
+ * A card keeps the exact "Visa Ending in 4242" phrasing the surrounding copy is
+ * written around. A Link wallet is identified by the email it belongs to, which
+ * is the only thing that distinguishes two Link methods on the same customer.
+ * Anything else falls back to its humanised type, plus a last four when the
+ * method exposes one (bank debits do).
+ */
+export const describePaymentMethod = (
+  method: PaymentMethodLike | null | undefined,
+): string => {
+  if (!method) return "No payment method on file";
+
+  const type = resolvePaymentMethodType(method);
+  const isCard = type === "card";
+  const label = isCard
+    ? formatCardBrand(method.brand)
+    : formatPaymentMethodType(type);
+
+  const email = (method.wallet_email ?? "").trim();
+  if (!isCard && email) return `${label} — ${email}`;
+
+  const last4 = (method.last4 ?? "").trim();
+  if (last4) return `${label} Ending in ${last4}`;
+
+  // No digits to quote — a bare "Visa Ending in " is worse than just "Visa".
+  return label;
+};
+
+/**
+ * "08/2028", zero-padded — matches the VALID THRU line on the card visual.
+ *
+ * The "—" is for a card whose expiry genuinely failed to come through. Callers
+ * must gate on `hasExpiry` first, so a method that has no expiry by nature
+ * never reaches here to be rendered as a dash.
+ */
+export const formatCardExpiry = (
+  month: number | null | undefined,
+  year: number | null | undefined,
+): string => {
+  if (!month || !year) return "—";
+  return `${String(month).padStart(2, "0")}/${year}`;
+};
+
+/**
+ * True once the card is in its final month or already past it.
+ *
+ * Stripe treats a card as valid through the LAST day of its expiry month, so
+ * the comparison is month-granular — treating the 1st as expired would warn a
+ * user about a card that still works for another four weeks.
+ *
+ * The falsy guard is load-bearing now that non-card methods exist: they arrive
+ * with `exp_month`/`exp_year` of 0, and 0 is falsy, so they answer "not
+ * expiring" rather than being scored against `new Date(0, 0, 0)` — which is
+ * the year 1899 and would flag every wallet as expired.
+ */
+export const isCardExpiring = (
+  month: number | null | undefined,
+  year: number | null | undefined,
+): boolean => {
+  if (!month || !year) return false;
+  const now = new Date();
+  const expiry = new Date(year, month, 0, 23, 59, 59, 999);
+  const oneMonthOut = new Date(now.getFullYear(), now.getMonth() + 1, now.getDate());
+  return expiry <= oneMonthOut;
+};
+
+/* ---------------- payment failures ---------------- */
+
+export interface PaymentFailureCopy {
+  title: string;
+  description: string;
+  /** Rendered as "Error code: …" under the message, as in the design. */
+  code: string;
+  /** True ⇒ the same card can plausibly work on a retry (issuer/network blip). */
+  retryable: boolean;
+}
+
+/**
+ * One decline, two stories.
+ *
+ * The same Stripe error codes arrive from two different flows: the checkout and
+ * pay-now surfaces confirm a PaymentIntent (money moves), while the change-card
+ * drawer confirms a zero-amount SetupIntent (nothing is charged — the card is
+ * only being stored for later). "Payment unsuccessful … Error code: Card
+ * declined" is the truth on the first and a lie on the second: it tells an admin
+ * a charge failed on a card that was never charged.
+ *
+ * So the failure knowledge lives in ONE table keyed by the Stripe code, and each
+ * entry carries both phrasings. The "Error code" chip and the `retryable`
+ * verdict are properties of the decline itself, so they are shared; only the
+ * sentences differ. Adding a code adds it to both variants in the same edit —
+ * the two cannot drift apart or end up covering different sets of failures.
+ */
+type FailureIntent = "payment" | "setup";
+
+interface FailureWording {
+  title: string;
+  description: string;
+}
+
+interface CardFailureEntry {
+  /** Stripe codes that share this decline (`decline_code` or `code`). */
+  keys: readonly string[];
+  /** Rendered as "Error code: …" — names the decline, not what we attempted. */
+  code: string;
+  retryable: boolean;
+  payment: FailureWording;
+  setup: FailureWording;
+}
+
+const CARD_FAILURES: readonly CardFailureEntry[] = [
+  {
+    keys: ["insufficient_funds"],
+    code: "Insufficient funds",
+    retryable: false,
+    payment: {
+      title: "Payment unsuccessful",
+      description:
+        "Your card was declined for insufficient funds. Try another payment method.",
+    },
+    setup: {
+      title: "Card not saved",
+      description:
+        "Your bank declined this card for insufficient funds. Try adding a different card.",
+    },
+  },
+  {
+    keys: ["expired_card"],
+    code: "Expired card",
+    retryable: false,
+    payment: {
+      title: "Payment unsuccessful",
+      description:
+        "That card has expired. Please update the expiry date or use another card.",
+    },
+    setup: {
+      title: "Card not saved",
+      description:
+        "That card has expired. Please update the expiry date or add another card.",
+    },
+  },
+  {
+    keys: ["incorrect_cvc", "invalid_cvc"],
+    code: "Incorrect CVC",
+    retryable: true,
+    payment: {
+      title: "Payment unsuccessful",
+      description:
+        "The security code did not match. Please check the CVV and try again.",
+    },
+    setup: {
+      title: "Card not saved",
+      description:
+        "The security code did not match. Please check the CVV and try again.",
+    },
+  },
+  {
+    keys: ["incorrect_number", "invalid_number"],
+    code: "Invalid card number",
+    retryable: true,
+    payment: {
+      title: "Payment unsuccessful",
+      description:
+        "That card number is not valid. Please check it and try again.",
+    },
+    setup: {
+      title: "Card not saved",
+      description:
+        "That card number is not valid. Please check it and try again.",
+    },
+  },
+  {
+    keys: ["processing_error"],
+    code: "Processing error",
+    retryable: true,
+    payment: {
+      title: "Payment unsuccessful",
+      description:
+        "Your bank could not process the payment just now. Trying again usually works.",
+    },
+    setup: {
+      title: "Card not saved",
+      description:
+        "Your bank could not check this card just now. Trying again usually works.",
+    },
+  },
+  {
+    keys: ["authentication_required"],
+    code: "Authentication required",
+    retryable: true,
+    payment: {
+      title: "Extra verification needed",
+      description:
+        "Your bank needs to verify this payment. Try again to complete the check.",
+    },
+    setup: {
+      // A SetupIntent can require 3-D Secure too — the bank verifies the card
+      // itself, with no amount attached, so the prompt must not promise one.
+      title: "Extra verification needed",
+      description:
+        "Your bank needs to verify this card. Try again to complete the check.",
+    },
+  },
+  {
+    keys: ["card_not_supported", "currency_not_supported"],
+    code: "Card not supported",
+    retryable: false,
+    payment: {
+      title: "Payment unsuccessful",
+      description:
+        "That card cannot be used for this purchase. Please try another payment method.",
+    },
+    setup: {
+      title: "Card not saved",
+      description:
+        "That card cannot be saved for future billing. Please try another card.",
+    },
+  },
+  {
+    // Stripe deliberately returns a generic decline for these so the UI does
+    // not tell a card thief why it failed. Match that — say nothing specific.
+    keys: ["lost_card", "stolen_card", "pickup_card"],
+    code: "Card declined",
+    retryable: false,
+    payment: {
+      title: "Payment unsuccessful",
+      description:
+        "Your bank declined this payment. Please check your card details or try another payment method",
+    },
+    setup: {
+      title: "Card not saved",
+      description:
+        "Your bank declined this card. Please check your card details or try another card",
+    },
+  },
+];
+
+const CARD_FAILURE_LOOKUP: Record<string, CardFailureEntry> =
+  Object.fromEntries(
+    CARD_FAILURES.flatMap((entry) =>
+      entry.keys.map((key) => [key, entry] as const),
+    ),
+  );
+
+/** Wording for a code the table does not know, per flow. */
+const FALLBACK_FAILURES: Record<FailureIntent, FailureWording> = {
+  payment: {
+    title: "Payment unsuccessful",
+    description:
+      "Your bank declined this payment. Please check your card details or try another payment method",
+  },
+  setup: {
+    title: "Card not saved",
+    description:
+      "Your bank declined this card. Please check your card details or try another card",
+  },
+};
+
+/**
+ * Stripe's own `message` is usually the most specific thing we have, so the
+ * fallback prefers it over our generic line — but it is written for whichever
+ * intent produced it. On the save-a-card flow any charge wording would
+ * reintroduce exactly the lie this split exists to kill, so such a message is
+ * dropped in favour of our neutral sentence.
+ */
+const CHARGE_WORDING = /payment|charg|purchas/i;
+
+/**
+ * Shared resolver behind both public mappers.
+ *
+ * `decline_code` is the specific reason and is only present on `card_declined`;
+ * `code` is the broader error class. Preferring the specific one lets
+ * "insufficient_funds" say so instead of the generic bank-declined line, which
+ * is the difference between a user who knows to try another card and one who
+ * retries the same one four times.
+ *
+ * Anything unrecognised falls back to the design's default wording rather than
+ * surfacing a raw Stripe string.
+ */
+const resolveCardFailure = (
+  intent: FailureIntent,
+  code: string | null | undefined,
+  declineCode: string | null | undefined,
+  message: string | null | undefined,
+): PaymentFailureCopy => {
+  const key = (declineCode || code || "").toLowerCase();
+  const entry = CARD_FAILURE_LOOKUP[key];
+
+  if (entry) {
+    return { ...entry[intent], code: entry.code, retryable: entry.retryable };
+  }
+
+  const fallback = FALLBACK_FAILURES[intent];
+  const specific =
+    message && (intent === "payment" || !CHARGE_WORDING.test(message))
+      ? message
+      : null;
+
+  return {
+    title: fallback.title,
+    description: specific || fallback.description,
+    code: "Card declined",
+    retryable: true,
+  };
+};
+
+/**
+ * Maps a Stripe decline into the alert copy the checkout and pay-now surfaces
+ * show — flows where a real charge was attempted, so "Payment unsuccessful" is
+ * accurate. Card-on-file flows want `mapSetupFailure` instead.
+ */
+export const mapPaymentFailure = (
+  code: string | null | undefined,
+  declineCode?: string | null,
+  message?: string | null,
+): PaymentFailureCopy =>
+  resolveCardFailure("payment", code, declineCode, message);
+
+/**
+ * The same decline, worded for confirming a zero-amount SetupIntent (the
+ * change-card drawer / add-a-payment-method form). Nothing is charged there, so
+ * the copy only ever talks about the card being saved or verified — identical
+ * shape to `mapPaymentFailure`, so the failure panel renders it unchanged.
+ */
+export const mapSetupFailure = (
+  code: string | null | undefined,
+  declineCode?: string | null,
+  message?: string | null,
+): PaymentFailureCopy => resolveCardFailure("setup", code, declineCode, message);
+
+/**
+ * A failure that never reached the card network.
+ *
+ * The server refused the request (seat floor, plan not sold on this cycle, a
+ * 500), or Stripe.js had not loaded yet. Routing these through
+ * `mapPaymentFailure` labelled every one of them "Payment unsuccessful … Error
+ * code: Card declined" — which sent admins to re-check a perfectly good card,
+ * and their support tickets to the wrong place — because the card fallback
+ * hardcodes that code for anything it does not recognise.
+ *
+ * `code: ""` suppresses the "Error code" line entirely (see
+ * PaymentFailureAlert), and these are retryable by definition: nothing was
+ * charged, so pressing the button again is safe.
+ */
+export const mapRequestFailure = (message?: string | null): PaymentFailureCopy => ({
+  title: "We couldn't start this payment",
+  description: message || "Something went wrong. Please try again.",
+  code: "",
+  retryable: true,
 });

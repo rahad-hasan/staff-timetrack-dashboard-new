@@ -5,12 +5,14 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import roundedEmail from '../../assets/auth/roundedEmail.svg'
 import OtpInput from "react-otp-input";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useRouter, useSearchParams } from "next/navigation";
 import { resetOtp, verifyOtp } from "@/actions/auth/action";
 import logoWithSlogan from '../../assets/logo-with-text.webp'
 import logoForDark from '../../assets/logo-with-text-dark.png'
+
+const OTP_LENGTH = 6;
 
 const VerificationCode = () => {
     const [loading, setLoading] = useState(false);
@@ -35,8 +37,19 @@ const VerificationCode = () => {
     }, []);
 
     const [otp, setOtp] = useState<string>("");
+    /** The exact code the last submission used — see the auto-submit effect. */
+    const lastSubmittedCode = useRef<string | null>(null);
 
     async function handleVerifyOtp() {
+        // The button used to be gated on `loading` alone, so a half-typed code
+        // was submittable and answered with a generic "Invalid credentials".
+        if (!email || otp.length !== OTP_LENGTH || loading) return;
+
+        // Recorded here rather than in the effect so a manual click counts as
+        // an attempt too, and the effect cannot immediately re-fire the same
+        // code the button just failed with.
+        lastSubmittedCode.current = otp;
+
         setLoading(true);
         try {
             const res = await verifyOtp({
@@ -70,6 +83,31 @@ const VerificationCode = () => {
         }
     }
 
+
+    /**
+     * Submit as soon as the sixth digit lands, so pasting the code out of the
+     * email does not then need a separate click. Mirrors the sign-up verify
+     * screen — the two must not behave differently.
+     *
+     * A short code clears the attempt marker (so a corrected digit can be
+     * resubmitted), `loading` prevents a second in-flight request, and
+     * `lastSubmittedCode` stops a REJECTED code from resubmitting itself —
+     * without that last guard the wrong digits, which stay on screen after a
+     * failure, would hammer the endpoint until the rate limiter cut it off.
+     */
+    useEffect(() => {
+        if (otp.length < OTP_LENGTH) {
+            lastSubmittedCode.current = null;
+            return;
+        }
+
+        if (loading || lastSubmittedCode.current === otp) return;
+
+        void handleVerifyOtp();
+        // `handleVerifyOtp` is redeclared each render; listing it would re-run
+        // this effect every render. The guards above provide the idempotency.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [otp, loading]);
     async function onResentOtp() {
         setLoadingResent(true);
         try {
@@ -149,7 +187,7 @@ const VerificationCode = () => {
                             <OtpInput
                                 value={otp}
                                 onChange={(value: string) => setOtp(value)}
-                                numInputs={6}
+                                numInputs={OTP_LENGTH}
                                 renderSeparator={<span className="w-2 md:w-4" />}
                                 renderInput={(props) => (
                                     <input
@@ -161,7 +199,7 @@ const VerificationCode = () => {
                             />
                         </div>
                     </div>
-                    <Button onClick={handleVerifyOtp} disabled={loading} className=" w-full" type="button">{loading ? "Loading..." : "Verify"}</Button>
+                    <Button onClick={handleVerifyOtp} disabled={loading || otp.length !== OTP_LENGTH} className=" w-full" type="button">{loading ? "Loading..." : "Verify"}</Button>
                     <h3 className=" text-center mt-3">Didn’t received code? <button onClick={onResentOtp} disabled={loadingResent} className=" text-primary cursor-pointer">{loadingResent ? "Loading..." : "Resent"}</button></h3>
                 </div>
 

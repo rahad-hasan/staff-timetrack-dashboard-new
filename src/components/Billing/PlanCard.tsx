@@ -2,6 +2,11 @@
 
 import { CheckCircle2, Info, MinusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { formatDollars, isFreePlan } from "@/lib/billing";
 import { BillingCycle, CYCLE_PERIOD_NOUN, IBillingPlan } from "@/types/billing";
@@ -202,17 +207,33 @@ export default function PlanCard({
               </span>
 
               {feature.note && (
-                // `title` keeps the condition reachable without a tooltip
-                // library — and, unlike a hover-only popover, it survives
-                // keyboard focus and screen readers via aria-label.
-                <span
-                  className="mt-0.5 inline-flex shrink-0 cursor-help text-subTextColor/70 dark:text-darkTextSecondary/70"
-                  title={feature.note}
-                  aria-label={`${feature.label}: ${feature.note}`}
-                  tabIndex={0}
-                >
-                  <Info className="h-3.5 w-3.5" />
-                </span>
+                <Tooltip>
+                  {/* A real <button> rather than a tabIndex'd <span>: Radix
+                      opens on focus as well as hover, so the condition stays
+                      reachable by keyboard, and the aria-label carries it to
+                      screen readers whether or not the popover ever opens
+                      (it never does on touch). */}
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      aria-label={`${feature.label}: ${feature.note}`}
+                      className="mt-0.5 inline-flex shrink-0 cursor-help rounded-full text-subTextColor/70 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 dark:text-darkTextSecondary/70"
+                    >
+                      <Info className="h-3.5 w-3.5" />
+                    </button>
+                  </TooltipTrigger>
+
+                  {/* TooltipContent's base class sets `text-background`, which
+                      is white-on-white in light mode — every caller has to
+                      state its own text colour. */}
+                  <TooltipContent
+                    side="top"
+                    sideOffset={6}
+                    className="max-w-56 text-headingTextColor dark:text-darkTextPrimary"
+                  >
+                    {feature.note}
+                  </TooltipContent>
+                </Tooltip>
               )}
             </li>
           ))}

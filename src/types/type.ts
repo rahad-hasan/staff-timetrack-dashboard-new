@@ -382,6 +382,12 @@ export type ICompany = {
 export interface IOrganizationOnboardingSession {
   redirect: string;
   email: string;
+  /**
+   * The pending user's name, when the API build in front of us sends one.
+   * Optional on purpose: it is only a seed for the organization-name
+   * suggestions, and nothing in the onboarding flow may depend on it.
+   */
+  name?: string | null;
   accessToken: null;
   refreshToken: null;
 }

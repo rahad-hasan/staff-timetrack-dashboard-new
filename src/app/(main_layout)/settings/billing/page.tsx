@@ -64,6 +64,12 @@ const BillingPage = async ({ searchParams }: ISearchParamsProps) => {
                 blockedMessage={
                     typeof params.blocked === "string" ? params.blocked : undefined
                 }
+                // `?tab=` is read here purely so the requested tab is in the
+                // first HTML paint; the client hook validates it (and drops
+                // `change-card` for manager/hr) and owns it from then on.
+                initialTab={
+                    typeof params.tab === "string" ? params.tab : undefined
+                }
             ></BillingPageClient>
         </div>
     );

@@ -1,26 +1,26 @@
 "use client";
 
 import { useState } from "react";
-import { cn } from "@/lib/utils";
 import { derivePlanGridFlags, isFreePlan } from "@/lib/billing";
 import { useBillingStore } from "@/store/billingStore";
 import { useLogInUserStore } from "@/store/logInUserStore";
-import {
-  BILLING_CYCLES,
-  BillingCycle,
-  CYCLE_LABEL,
-  IBillingPlan,
-} from "@/types/billing";
+import { BillingCycle, IBillingPlan } from "@/types/billing";
 import PlanCard from "./PlanCard";
+import FaqSection from "./FaqSection";
 import CheckoutDialog from "./CheckoutDialog";
+import CycleToggle, { supportedCycles } from "./CycleToggle";
+import PlanComparisonTable from "./PlanComparisonTable";
 import SwitchPlanDialog from "./SwitchPlanDialog";
 
 /**
- * Pricing grid (guide §2/§5). The cycle toggle only shows cycles at least one
- * plan is actually sold on, and each card is hidden on a cycle it does not
- * offer — both read the server-derived `available_cycles`, which is exactly the
- * set of cycles with a Stripe price behind them, so the toggle can never lead
- * to a checkout that fails. Owns the checkout + switch-plan dialogs.
+ * Pricing grid (guide §2/§5). The shared `CycleToggle` only shows cycles at
+ * least one plan is actually sold on, and each card is hidden on a cycle it
+ * does not offer — both read the server-derived `available_cycles`, which is
+ * exactly the set of cycles with a Stripe price behind them, so the toggle can
+ * never lead to a checkout that fails. Owns the checkout + switch-plan dialogs.
+ *
+ * It also closes with the same comparison table the onboarding picker uses, and
+ * the billing FAQ.
  */
 export default function PlanPricingSection({
   plans,
@@ -42,11 +42,9 @@ export default function PlanPricingSection({
     plans,
   );
 
-  // Declaration order (monthly → quarterly → yearly) is the cadence order the
-  // toggle should read in, so filter BILLING_CYCLES rather than collecting.
-  const supported: BillingCycle[] = BILLING_CYCLES.filter((c) =>
-    plans.some((p) => p.available_cycles?.includes(c)),
-  );
+  // Same list the toggle renders from — resolving the fallback off anything
+  // else is how a grid ends up on a cycle its own toggle cannot select.
+  const supported: BillingCycle[] = supportedCycles(plans);
 
   // null = user hasn't toggled yet → follow the current subscription's cycle.
   const [cycle, setCycle] = useState<BillingCycle | null>(null);
@@ -104,26 +102,12 @@ export default function PlanPricingSection({
           </p>
         </div>
 
-        {supported.length > 0 && (
-          <div className="mt-3 inline-flex h-10 self-start rounded-lg bg-bgSecondary dark:bg-darkSecondaryBg sm:mt-0 sm:self-auto">
-            {supported.map((c) => (
-              <button
-                key={c}
-                type="button"
-                aria-pressed={effectiveCycle === c}
-                onClick={() => setCycle(c)}
-                className={cn(
-                  "flex-shrink-0 cursor-pointer rounded-lg px-3 py-2 text-[13px] font-medium transition-all sm:text-sm",
-                  effectiveCycle === c
-                    ? "bg-bgPrimary text-headingTextColor shadow outline-1 outline-borderColor dark:bg-darkPrimaryBg dark:text-darkTextPrimary dark:outline-darkBorder"
-                    : "text-subTextColor hover:text-gray-800 dark:text-darkTextPrimary",
-                )}
-              >
-                {CYCLE_LABEL[c]}
-              </button>
-            ))}
-          </div>
-        )}
+        <CycleToggle
+          plans={plans}
+          value={effectiveCycle}
+          onChange={setCycle}
+          className="mt-3 self-start sm:mt-0 sm:self-auto"
+        />
       </div>
 
       {visiblePlans.length === 0 ? (
@@ -150,6 +134,26 @@ export default function PlanPricingSection({
           ))}
         </div>
       )}
+
+      {/* Same reasoning as the onboarding picker: the table is headed with
+          per-cycle prices, and `effectiveCycle` is client state, so it has to
+          render here rather than one level up — a table quoting a different
+          cadence than the cards above it would be worse than no table.
+          Withheld on the empty state: the table self-guards on an empty plan
+          list, but a "Compare All Features" trigger under a "no plans
+          available" notice still promises a comparison of nothing. */}
+      {visiblePlans.length > 0 && (
+        <PlanComparisonTable
+          plans={visiblePlans}
+          cycle={effectiveCycle}
+          className="mt-10"
+        />
+      )}
+
+      {/* Unconditional, unlike the table above: the answers are about how
+          billing behaves, not about what is on the grid, so they stay true (and
+          useful) on a cycle where nothing happens to be sold. */}
+      <FaqSection className="mt-10" />
 
       <CheckoutDialog
         plan={selectedPlan}

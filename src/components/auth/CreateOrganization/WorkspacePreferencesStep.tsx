@@ -4,7 +4,10 @@ import { Clock, Info, Wallet } from "lucide-react";
 import { Control, useWatch } from "react-hook-form";
 
 import ComboboxField from "@/components/Common/ComboboxField";
-import NumberInput from "@/components/Common/NumberInput";
+import NumberStepper from "@/components/Common/NumberStepper";
+import SegmentedPills, {
+  type SegmentedPillOption,
+} from "@/components/Common/SegmentedPills";
 import {
   FormControl,
   FormField,
@@ -12,20 +15,51 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  WEEK_START_DAYS,
-  WEEKEND_LENGTH_OPTIONS,
-} from "@/lib/organization";
+import { WEEK_START_DAYS } from "@/lib/organization";
 import { weekendPreview } from "@/lib/payroll";
 import { currencies } from "@/utils/CurrencyList";
 import { CreateOrganizationFormValues } from "@/zod/schema";
+
+/**
+ * Full day names are what the API stores (`WeekDay`), but seven of them will
+ * not fit across half a dialog — the pills show the three-letter form and hand
+ * back the stored value untouched.
+ */
+const WEEK_START_PILLS = WEEK_START_DAYS.map((day) => ({
+  value: day,
+  label: day.slice(0, 3),
+}));
+
+/**
+ * The schema accepts 0–7 because the Company record does; the design only
+ * offers the three lengths a real work week uses. Typed as `number` rather
+ * than a 1 | 2 | 3 literal union so a value from outside the row can still be
+ * compared against it without a cast.
+ */
+const WEEKEND_LENGTH_PILLS: ReadonlyArray<SegmentedPillOption<number>> = [
+  { value: 1, label: "1 Day" },
+  { value: 2, label: "2 Days" },
+  { value: 3, label: "3 Days" },
+];
+
+const cardClass =
+  "rounded-xl border border-borderColor bg-bgPrimary p-4 dark:border-darkBorder dark:bg-darkPrimaryBg";
+
+const subLabelClass = "text-xs text-subTextColor dark:text-darkTextSecondary";
+
+/**
+ * Each field is a full-height column with its control pushed to the bottom.
+ *
+ * Grid cells already stretch to the tallest sibling, but the CONTROLS inside
+ * them were still landing at different heights: "Choose how long a session can
+ * be idle before it's paused." wraps to two lines at half-width while
+ * "Choose the currency used in payroll and invoices." fits on one, so the
+ * stepper sat a line lower than the select beside it. `mt-auto` pins both to a
+ * shared baseline no matter how many lines the description above them takes —
+ * which also holds at every breakpoint, unlike reserving a fixed height.
+ */
+const fieldClass = "flex h-full flex-col gap-1.5";
+const controlSlotClass = "mt-auto pt-2";
 
 interface WorkspacePreferencesStepProps {
   control: Control<CreateOrganizationFormValues>;
@@ -51,118 +85,140 @@ const WorkspacePreferencesStep = ({
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <FormField
-          control={control}
-          name="week_start"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel required>Week Start Day</FormLabel>
-              <Select
-                value={field.value}
-                onValueChange={field.onChange}
-                disabled={disabled}
-              >
+      <div className={cardClass}>
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+          <FormField
+            control={control}
+            name="week_start"
+            render={({ field }) => (
+              <FormItem className={fieldClass}>
+                <FormLabel required>Week Start Day</FormLabel>
+                <p className={subLabelClass}>
+                  Choose the first day of your work week
+                </p>
+                <div className={controlSlotClass}>
                 <FormControl>
-                  <SelectTrigger className="w-full dark:bg-darkPrimaryBg dark:border-darkBorder">
-                    <SelectValue placeholder="Select start day" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent className="dark:border-darkBorder">
-                  {WEEK_START_DAYS.map((day) => (
-                    <SelectItem key={day} value={day}>
-                      {day}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={control}
-          name="weekly_leave_count"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel required>Weekend Length</FormLabel>
-              <Select
-                value={String(field.value ?? "")}
-                onValueChange={(value) => field.onChange(Number(value))}
-                disabled={disabled}
-              >
-                <FormControl>
-                  <SelectTrigger className="w-full dark:bg-darkPrimaryBg dark:border-darkBorder">
-                    <SelectValue placeholder="Select weekend length" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent className="dark:border-darkBorder">
-                  {WEEKEND_LENGTH_OPTIONS.map((count) => (
-                    <SelectItem key={count} value={String(count)}>
-                      {count} day{count === 1 ? "" : "s"}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={control}
-          name="idle_minutes_limit"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel required>Idle Minutes Limit</FormLabel>
-              <FormControl>
-                <div className="relative">
-                  <Clock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-subTextColor dark:text-darkTextSecondary" />
-                  <NumberInput
-                    inputMode="numeric"
-                    min={1}
-                    max={60}
-                    className="pl-9 pr-16 dark:bg-darkPrimaryBg dark:border-darkBorder"
-                    {...field}
+                  <SegmentedPills
+                    options={WEEK_START_PILLS}
+                    value={field.value ?? null}
+                    onChange={field.onChange}
+                    ariaLabel="Week start day"
+                    size="sm"
+                    // Seven equal columns — the design draws the week as one
+                    // unbroken row, and free-sized pills wrap "Sun" onto a
+                    // second line at this dialog width.
+                    fill
                     disabled={disabled}
                   />
-                  <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-subTextColor dark:text-darkTextSecondary">
-                    minutes
-                  </span>
+                </FormControl>
+                <FormMessage />
                 </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+              </FormItem>
+            )}
+          />
 
-        <ComboboxField
-          control={control}
-          name="currency"
-          label="Currency"
-          options={currencies}
-          icon={Wallet}
-          placeholder="Select currency"
-          searchPlaceholder="Search currency..."
-          emptyMessage="No currency found."
-          required
-          disabled={disabled}
-        />
+          <FormField
+            control={control}
+            name="weekly_leave_count"
+            render={({ field }) => {
+              // A company that already stores 0, or 5, is storing something
+              // valid — the schema's bound is 0–7 and Settings can write any of
+              // it. Rather than snapping such a value onto the nearest pill
+              // (which would rewrite the user's data behind their back on a
+              // screen they only came to read), leave every pill unselected and
+              // let the stored number stand until they pick one deliberately.
+              const selected = WEEKEND_LENGTH_PILLS.some(
+                (option) => option.value === field.value,
+              )
+                ? field.value
+                : null;
+
+              return (
+                <FormItem className={fieldClass}>
+                  <FormLabel required>Weekend Length</FormLabel>
+                  <p className={subLabelClass}>
+                    Select how many days are considered the weekend
+                  </p>
+                  <div className={controlSlotClass}>
+                  <FormControl>
+                    <SegmentedPills
+                      options={WEEKEND_LENGTH_PILLS}
+                      value={selected}
+                      onChange={field.onChange}
+                      ariaLabel="Weekend length"
+                      size="sm"
+                      disabled={disabled}
+                      className="w-full"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                  </div>
+                </FormItem>
+              );
+            }}
+          />
+        </div>
+
+        {/* Which days those two answers actually land on is the thing people
+            get wrong — spell it out instead of making them derive it. */}
+        <p className="mt-4 text-xs text-headingTextColor dark:text-darkTextPrimary">
+          Weekends will be&nbsp;
+          <span className="font-semibold text-primary">{weekendLabel}</span>
+        </p>
       </div>
 
-      <div className="rounded-lg border border-dashed border-borderColor bg-bgSecondary/60 px-3 py-2.5 text-xs text-headingTextColor dark:border-darkBorder dark:bg-darkPrimaryBg dark:text-darkTextPrimary">
-        Weekends will be&nbsp;
-        <span className="font-semibold text-primary">{weekendLabel}</span>
+      <div className={cardClass}>
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+          <FormField
+            control={control}
+            name="idle_minutes_limit"
+            render={({ field }) => (
+              <FormItem className={fieldClass}>
+                <FormLabel required>Idle Minutes Limit</FormLabel>
+                <p className={subLabelClass}>
+                  Choose how long a session can be idle before it&apos;s paused.
+                </p>
+                <div className={controlSlotClass}>
+                <FormControl>
+                  <NumberStepper
+                    value={field.value}
+                    onChange={field.onChange}
+                    min={1}
+                    max={60}
+                    suffix="Minutes"
+                    icon={Clock}
+                    disabled={disabled}
+                    ariaLabel="Idle minutes limit"
+                  />
+                </FormControl>
+                <FormMessage />
+                </div>
+              </FormItem>
+            )}
+          />
+
+          <ComboboxField
+            control={control}
+            name="currency"
+            label="Currency"
+            description="Choose the currency used in payroll and invoices."
+            fillHeight
+            options={currencies}
+            icon={Wallet}
+            placeholder="Select currency"
+            searchPlaceholder="Search currency..."
+            emptyMessage="No currency found."
+            required
+            disabled={disabled}
+          />
+        </div>
       </div>
 
-      <div className="flex items-start gap-2 rounded-lg border border-borderColor bg-bgSecondary/60 px-3 py-2.5 text-xs text-subTextColor dark:border-darkBorder dark:bg-darkPrimaryBg dark:text-darkTextSecondary">
-        <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+      <div className="flex items-start gap-2 text-xs text-subTextColor dark:text-darkTextSecondary">
+        <Info className="mt-0.5 size-3.5 shrink-0" />
         <span>
-          Weekends drive payroll workday counting, the idle limit tells the
-          desktop tracker when to pause a session, and the currency is what
-          payroll and invoices are denominated in. All of it stays editable in
-          Settings.
+          None of this is permanent — every one of these stays editable in
+          Settings once your workspace is live.
         </span>
       </div>
     </div>

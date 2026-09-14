@@ -20,8 +20,10 @@ import {
  * types, starts the reverse trial and hands back a token pair.
  *
  * The endpoint is deliberately unauthenticated and only accepts the company
- * identity. Everything else the wizard collects is applied right after, with
- * the session it just established.
+ * identity — plus, when the signup came from a marketing "start a trial" link,
+ * the plan that link named, so the trial starts on the tier the visitor
+ * actually clicked. Everything else the wizard collects is applied right after,
+ * with the session it just established.
  */
 
 /**
@@ -90,8 +92,32 @@ const applyCompanyPreferences = async (
   return Boolean(response?.success);
 };
 
+/**
+ * The plan a trial intent named, reduced to something worth sending.
+ *
+ * A server action is a public entry point — the argument is whatever the caller
+ * passed, not whatever the URL parser produced — so the shape is re-checked
+ * here rather than assumed. It stays a SHAPE check: this codebase cannot tell
+ * whether a plan is trialable (`IBillingPlan` exposes neither `allow_trial` nor
+ * `trial_days`, deliberately), and it must not try. The client sends intent;
+ * `POST /company` validates `is_active && allow_trial` and falls back to the
+ * default trial plan on its own. A client-side "is this plan trialable?" guard
+ * added later would be guessing from data it does not have, and the failure
+ * mode would be a silently downgraded trial rather than an error.
+ */
+const normalizeTrialPlanId = (value: number | null | undefined): number | null =>
+  typeof value === "number" && Number.isSafeInteger(value) && value > 0
+    ? value
+    : null;
+
 export const createOrganization = async (
   payload: ICreateOrganizationPayload,
+  /**
+   * The plan id from `?plan=…&trail=true` — the plan the visitor clicked "start
+   * a trial" on, back on the marketing site. Never collected by the wizard, so
+   * it is passed beside the payload instead of inside it.
+   */
+  trialPlanId?: number | null,
 ): Promise<ICreateOrganizationResult> => {
   if (!payload?.email) {
     return {
@@ -99,6 +125,8 @@ export const createOrganization = async (
       message: "We lost track of your sign-up email. Please sign in again.",
     };
   }
+
+  const requestedTrialPlanId = normalizeTrialPlanId(trialPlanId);
 
   const response = await baseApi<IResponse<ICreateOrganizationResponse>>(
     "/company",
@@ -112,6 +140,18 @@ export const createOrganization = async (
         phone: payload.phone.trim(),
         address: payload.address.trim(),
         time_zone: payload.time_zone,
+        // Spread rather than `trial_plan_id: x ?? undefined` so an ordinary
+        // signup's body is byte-identical to what it has always been: the key
+        // is absent, not present-and-null. It only ever appears for a trial
+        // intent that named a plan, and it is advisory in both directions — an
+        // API that predates the field strips it as an unknown key (the create
+        // schema is a Zod object, which drops what it does not declare), and a
+        // newer one that rejects the id falls back to the default trial plan.
+        // Either way the reverse trial still starts and signup still succeeds,
+        // which is the one thing that must never hinge on a URL param.
+        ...(requestedTrialPlanId !== null
+          ? { trial_plan_id: requestedTrialPlanId }
+          : {}),
       },
       cache: "no-cache",
     },

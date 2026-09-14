@@ -8,6 +8,7 @@ import { useLogInUserStore } from "@/store/logInUserStore";
 import { IBillingPlan } from "@/types/billing";
 import BillingStatusChip from "./BillingStatusChip";
 import CancelSubscriptionDialog from "./CancelSubscriptionDialog";
+import { useScrollToPlans } from "./BillingTabs";
 
 /**
  * Billing page hero card — current plan, cycle, renewal/trial dates, pending
@@ -26,9 +27,11 @@ export default function CurrentPlanCard({ plans }: { plans: IBillingPlan[] }) {
   const role = useLogInUserStore((s) => s.logInUserData?.role);
   const isAdmin = role === "admin";
 
-  const scrollToPlans = () => {
-    document.getElementById("plans")?.scrollIntoView({ behavior: "smooth" });
-  };
+  // The pricing grid lives inside the My Plan tab body, so a bare
+  // `getElementById("plans")` is a dead button from any other tab — the anchor
+  // is not in the DOM. The shared hook switches tab first, then scrolls once
+  // the new body has been committed.
+  const scrollToPlans = useScrollToPlans();
 
   if (!entitlements) {
     return (

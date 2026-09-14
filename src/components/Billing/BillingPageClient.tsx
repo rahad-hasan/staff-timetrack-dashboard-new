@@ -15,15 +15,23 @@ import PayNowCard from "@/components/Billing/PayNowCard";
 import SubscriptionEndedScreen from "@/components/Billing/SubscriptionEndedScreen";
 import PlanPricingSection from "@/components/Billing/PlanPricingSection";
 import RestoreParkedDialog from "@/components/Billing/RestoreParkedDialog";
-import InvoiceHistoryTable from "@/components/Billing/InvoiceHistoryTable";
 import TrialEndedOptions from "@/components/Billing/TrialEndedOptions";
 import DowngradeTakeover from "@/components/Billing/DowngradeTakeover";
+import BillingTabs, {
+  useBillingTab,
+  useScrollToPlans,
+} from "@/components/Billing/BillingTabs";
+import InvoiceTab from "@/components/Billing/InvoiceTab";
+import ChangeCardTab from "@/components/Billing/PaymentMethod/ChangeCardTab";
 
 /**
  * /settings/billing orchestrator (contract §21). Seeds the billing store with
  * the server-rendered snapshot, refreshes it on mount, and lays out the page
  * surfaces in the contract order. The pending_downgrade takeover is handled
  * globally by BillingGate — nothing extra here.
+ *
+ * The page is split into My Plan / Invoice / Change Card tabs driven by
+ * `?tab=`, but only the *informational* surfaces moved into them.
  */
 export default function BillingPageClient({
   initialStatus,
@@ -31,12 +39,15 @@ export default function BillingPageClient({
   activeUserCount,
   role,
   blockedMessage,
+  initialTab,
 }: {
   initialStatus: IBillingStatus | null;
   plans: IBillingPlan[];
   activeUserCount: number;
   role: string;
   blockedMessage?: string;
+  /** Server-read `?tab=`; only seeds the first paint (see `useBillingTab`). */
+  initialTab?: string;
 }) {
   const status = useBillingStore((s) => s.status);
   const startPolling = useBillingStore((s) => s.startPolling);
@@ -46,6 +57,16 @@ export default function BillingPageClient({
   const [restoreOpen, setRestoreOpen] = useState(false);
 
   const isAdmin = role === "admin";
+
+  const { activeTab, setTab } = useBillingTab({ isAdmin, initialTab });
+
+  /**
+   * Handed to the recovery surfaces above the strip. They are billing-page
+   * only in their inline form but are also mounted globally by BillingGate, so
+   * the tab-aware scroll is injected rather than imported there — see the prop
+   * docs on TrialEndedOptions / DowngradeTakeover.
+   */
+  const scrollToPlans = useScrollToPlans();
 
   // Prefer the live store status; fall back to the server snapshot for the
   // very first paint (the store is seeded in the mount effect below).
@@ -88,6 +109,19 @@ export default function BillingPageClient({
 
   return (
     <div className="mt-4 space-y-4 sm:space-y-6">
+      {/* ──────────────────────────────────────────────────────────────────
+          EVERYTHING BELOW, UP TO THE TAB STRIP, IS DELIBERATELY OUTSIDE THE
+          TABS AND MUST STAY THERE.
+
+          The blocked banner, PayNowCard, the trial-ended card with
+          TrialEndedOptions, DowngradeTakeover and SubscriptionEndedScreen are
+          the recovery path for a payment-blocked account, and this page is
+          where every 402 redirect and every `block.webBillingUrl` in the app
+          lands. Putting any of them behind an inactive tab means a locked
+          workspace opens on a tab that shows nothing actionable, and the admin
+          has no way to know a second click would reveal the invoice that
+          unlocks them — the workspace becomes unrecoverable from the UI.
+          ────────────────────────────────────────────────────────────────── */}
       {blockedMessage && !blockedDismissed && (
         <div className="flex items-start justify-between gap-3 rounded-lg border border-red-200 bg-red-50 p-3 sm:p-4 dark:border-red-500/30 dark:bg-red-500/10">
           <p className="text-sm text-red-700 dark:text-red-300">
@@ -130,44 +164,65 @@ export default function BillingPageClient({
               Keep everything by upgrading to a paid plan below, or move to the
               Free plan now — your data is all still here.
             </p>
-            <TrialEndedOptions />
+            <TrialEndedOptions onUpgradeClick={scrollToPlans} />
           </div>
         )}
 
       {st === "pending_downgrade_selection" && (
         <div className="border border-borderColor rounded-lg p-4 sm:p-6 bg-white dark:bg-darkPrimaryBg dark:border-darkBorder">
-          <DowngradeTakeover variant="inline" />
+          <DowngradeTakeover variant="inline" onUpgradeClick={scrollToPlans} />
         </div>
       )}
 
       {st === "canceled" && <SubscriptionEndedScreen />}
 
-      <div className="grid md:grid-cols-2 gap-4">
-        <CurrentPlanCard plans={plans} />
-        <SeatUsageCard activeUserCount={seatCount} />
-      </div>
-
-      <PlanPricingSection
-        plans={plans}
-        activeUserCount={seatCount}
-        sectionId="plans"
+      <BillingTabs
+        activeTab={activeTab}
+        onChange={setTab}
+        isAdmin={isAdmin}
       />
 
-      {isAdmin && canMutateSubscription(effective?.entitlements, plans) && (
-        <div>
-          <Button
-            type="button"
-            variant="link"
-            className="px-0"
-            onClick={() => setRestoreOpen(true)}
-          >
-            Previously parked members or projects?
-          </Button>
-          <RestoreParkedDialog open={restoreOpen} onOpenChange={setRestoreOpen} />
+      {/* Inactive tabs are UNMOUNTED, not hidden: the invoice table would
+          otherwise fetch (and self-heal from Stripe) for someone who never
+          opened it, and a hidden #plans anchor would still swallow the
+          "View plans" scroll. `useScrollToPlans` handles the tab swap. */}
+      {activeTab === "my-plan" && (
+        <div className="space-y-4 sm:space-y-6">
+          <div className="grid md:grid-cols-2 gap-4">
+            <CurrentPlanCard plans={plans} />
+            <SeatUsageCard activeUserCount={seatCount} />
+          </div>
+
+          <PlanPricingSection
+            plans={plans}
+            activeUserCount={seatCount}
+            sectionId="plans"
+          />
+
+          {isAdmin && canMutateSubscription(effective?.entitlements, plans) && (
+            <div>
+              <Button
+                type="button"
+                variant="link"
+                className="px-0"
+                onClick={() => setRestoreOpen(true)}
+              >
+                Previously parked members or projects?
+              </Button>
+              <RestoreParkedDialog
+                open={restoreOpen}
+                onOpenChange={setRestoreOpen}
+              />
+            </div>
+          )}
         </div>
       )}
 
-      <InvoiceHistoryTable />
+      {activeTab === "invoice" && <InvoiceTab />}
+
+      {activeTab === "change-card" && (
+        <ChangeCardTab onViewBilling={() => setTab("invoice")} />
+      )}
     </div>
   );
 }

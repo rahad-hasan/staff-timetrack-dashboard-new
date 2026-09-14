@@ -36,6 +36,16 @@ interface ComboboxFieldProps<TValues extends FieldValues> {
   control: Control<TValues>;
   name: FieldPath<TValues>;
   label: string;
+  /** One line of helper copy under the label — omitted renders nothing. */
+  description?: string;
+  /**
+   * Stretch to the grid row's height and pin the control to the row's shared
+   * baseline. Opt-in because most callers stack fields vertically, where it
+   * would do nothing — it matters only side-by-side in a grid, when a
+   * neighbour's description wraps to a different number of lines and would
+   * otherwise leave the two controls on different lines.
+   */
+  fillHeight?: boolean;
   options: readonly ComboboxOption[];
   icon?: LucideIcon;
   /** Trigger text while nothing is selected. */
@@ -62,6 +72,8 @@ const ComboboxField = <TValues extends FieldValues>({
   control,
   name,
   label,
+  description,
+  fillHeight,
   options,
   icon: Icon,
   placeholder = "Select an option",
@@ -80,8 +92,16 @@ const ComboboxField = <TValues extends FieldValues>({
         const selected = options.find((option) => option.value === field.value);
 
         return (
-          <FormItem className="flex flex-col">
+          <FormItem
+            className={cn("flex flex-col", fillHeight && "h-full gap-1.5")}
+          >
             <FormLabel required={required}>{label}</FormLabel>
+            {description && (
+              <p className="text-xs text-subTextColor dark:text-darkTextSecondary">
+                {description}
+              </p>
+            )}
+            <div className={cn(fillHeight && "mt-auto pt-2")}>
             <Popover open={open} onOpenChange={setOpen}>
               <PopoverTrigger asChild>
                 <FormControl>
@@ -136,6 +156,7 @@ const ComboboxField = <TValues extends FieldValues>({
               </PopoverContent>
             </Popover>
             <FormMessage />
+            </div>
           </FormItem>
         );
       }}
