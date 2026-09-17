@@ -86,32 +86,32 @@ const WorkspacePreferencesStep = ({
   return (
     <div className="space-y-4">
       <div className={cardClass}>
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 lg:gap-0">
           <FormField
             control={control}
             name="week_start"
             render={({ field }) => (
-              <FormItem className={fieldClass}>
+              <FormItem className={`${fieldClass} lg:pr-10`}>
                 <FormLabel required>Week Start Day</FormLabel>
+
                 <p className={subLabelClass}>
                   Choose the first day of your work week
                 </p>
+
                 <div className={controlSlotClass}>
-                <FormControl>
-                  <SegmentedPills
-                    options={WEEK_START_PILLS}
-                    value={field.value ?? null}
-                    onChange={field.onChange}
-                    ariaLabel="Week start day"
-                    size="sm"
-                    // Seven equal columns — the design draws the week as one
-                    // unbroken row, and free-sized pills wrap "Sun" onto a
-                    // second line at this dialog width.
-                    fill
-                    disabled={disabled}
-                  />
-                </FormControl>
-                <FormMessage />
+                  <FormControl>
+                    <SegmentedPills
+                      options={WEEK_START_PILLS}
+                      value={field.value ?? null}
+                      onChange={field.onChange}
+                      ariaLabel="Week start day"
+                      size="sm"
+                      fill
+                      disabled={disabled}
+                    />
+                  </FormControl>
+
+                  <FormMessage />
                 </div>
               </FormItem>
             )}
@@ -121,12 +121,6 @@ const WorkspacePreferencesStep = ({
             control={control}
             name="weekly_leave_count"
             render={({ field }) => {
-              // A company that already stores 0, or 5, is storing something
-              // valid — the schema's bound is 0–7 and Settings can write any of
-              // it. Rather than snapping such a value onto the nearest pill
-              // (which would rewrite the user's data behind their back on a
-              // screen they only came to read), leave every pill unselected and
-              // let the stored number stand until they pick one deliberately.
               const selected = WEEKEND_LENGTH_PILLS.some(
                 (option) => option.value === field.value,
               )
@@ -134,24 +128,30 @@ const WorkspacePreferencesStep = ({
                 : null;
 
               return (
-                <FormItem className={fieldClass}>
+                <FormItem
+                  className={`${fieldClass} lg:border-l lg:border-borderColor lg:pl-10 dark:lg:border-darkBorder`}
+                >
                   <FormLabel required>Weekend Length</FormLabel>
+
                   <p className={subLabelClass}>
                     Select how many days are considered the weekend
                   </p>
+
                   <div className={controlSlotClass}>
-                  <FormControl>
-                    <SegmentedPills
-                      options={WEEKEND_LENGTH_PILLS}
-                      value={selected}
-                      onChange={field.onChange}
-                      ariaLabel="Weekend length"
-                      size="sm"
-                      disabled={disabled}
-                      className="w-full"
-                    />
-                  </FormControl>
-                  <FormMessage />
+                    <FormControl>
+                      <SegmentedPills
+                        options={WEEKEND_LENGTH_PILLS}
+                        value={selected}
+                        onChange={field.onChange}
+                        ariaLabel="Weekend length"
+                        outline={true}
+                        size="sm"
+                        disabled={disabled}
+                        className="w-full"
+                      />
+                    </FormControl>
+
+                    <FormMessage />
                   </div>
                 </FormItem>
               );
@@ -168,6 +168,7 @@ const WorkspacePreferencesStep = ({
       </div>
 
       <div className={cardClass}>
+        {/* Removed items-center so the two full-height columns align properly via flex stretching */}
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <FormField
             control={control}
@@ -179,37 +180,51 @@ const WorkspacePreferencesStep = ({
                   Choose how long a session can be idle before it&apos;s paused.
                 </p>
                 <div className={controlSlotClass}>
-                <FormControl>
-                  <NumberStepper
-                    value={field.value}
-                    onChange={field.onChange}
-                    min={1}
-                    max={60}
-                    suffix="Minutes"
-                    icon={Clock}
-                    disabled={disabled}
-                    ariaLabel="Idle minutes limit"
-                  />
-                </FormControl>
-                <FormMessage />
+                  <FormControl>
+                    <NumberStepper
+                      value={field.value}
+                      onChange={field.onChange}
+                      min={1}
+                      max={60}
+                      suffix="Minutes"
+                      icon={Clock}
+                      disabled={disabled}
+                      ariaLabel="Idle minutes limit"
+                    />
+                  </FormControl>
+                  <FormMessage />
                 </div>
               </FormItem>
             )}
           />
 
-          <ComboboxField
+          <FormField
             control={control}
             name="currency"
-            label="Currency"
-            description="Choose the currency used in payroll and invoices."
-            fillHeight
-            options={currencies}
-            icon={Wallet}
-            placeholder="Select currency"
-            searchPlaceholder="Search currency..."
-            emptyMessage="No currency found."
-            required
-            disabled={disabled}
+            render={() => (
+              <FormItem className={fieldClass}>
+
+                <div className={controlSlotClass}>
+                  <FormControl>
+                    <ComboboxField
+                      control={control}
+                      name="currency"
+                      label="Currency"
+                      description="Choose the currency used in payroll and invoices."
+                      fillHeight
+                      options={currencies}
+                      icon={Wallet}
+                      placeholder="Select currency"
+                      searchPlaceholder="Search currency..."
+                      emptyMessage="No currency found."
+                      required
+                      disabled={disabled}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </div>
+              </FormItem>
+            )}
           />
         </div>
       </div>

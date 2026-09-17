@@ -38,6 +38,7 @@ const BillingPage = async ({ searchParams }: ISearchParamsProps) => {
     // Billable head count comes from billing/status itself — same rule the
     // seat gate enforces, and no member-list payload on this page.
     const activeUserCount = statusRes?.data?.active_user_count ?? 0;
+    console.log(statusRes.data)
 
     return (
         <div>

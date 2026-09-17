@@ -48,13 +48,13 @@ const OrganizationProfileStep = ({
           <FormItem className="sm:col-span-2">
             <FormLabel required>Organization Name</FormLabel>
             <FormControl>
-              <div className="relative">
-                <Building2 className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-subTextColor dark:text-darkTextSecondary" />
+              <div className="relative flex items-center">
+                <Building2 className="pointer-events-none absolute left-3 h-6 w-6 text-primary bg-[#edf4fe] p-1 rounded-md" />
                 <Input
                   autoFocus
-                  placeholder="e.g. Galaxy Space"
+                  placeholder="Enter Your Organization Name"
                   disabled={disabled}
-                  className="pl-9 dark:bg-darkPrimaryBg dark:border-darkBorder"
+                  className="pl-11 dark:bg-darkPrimaryBg dark:border-darkBorder"
                   {...field}
                 />
               </div>
@@ -70,50 +70,50 @@ const OrganizationProfileStep = ({
           </FormItem>
         )}
       />
+        <PhoneNumberField
+          control={control}
+          name="phone"
+          label="Phone Number"
+          placeholder="Enter Phone Number"
+          required
+          disabled={disabled}
+          className="w-full"
+        />
 
-      <PhoneNumberField
-        control={control}
-        name="phone"
-        label="Phone Number"
-        placeholder="Enter Phone Number"
-        required
-        disabled={disabled}
-      />
+        <ComboboxField
+          control={control}
+          name="time_zone"
+          label="Time Zone"
+          options={popularTimeZoneList}
+          icon={Globe}
+          placeholder="Select time zone"
+          searchPlaceholder="Search time zone..."
+          emptyMessage="No time zone found."
+          required
+          disabled={disabled}
+        />
 
-      <ComboboxField
-        control={control}
-        name="time_zone"
-        label="Time Zone"
-        options={popularTimeZoneList}
-        icon={Globe}
-        placeholder="Select time zone"
-        searchPlaceholder="Search time zone..."
-        emptyMessage="No time zone found."
-        required
-        disabled={disabled}
-      />
-
-      <FormField
-        control={control}
-        name="address"
-        render={({ field }) => (
-          <FormItem className="sm:col-span-2">
-            <FormLabel required>Address</FormLabel>
-            <FormControl>
-              <div className="relative">
-                <MapPin className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-subTextColor dark:text-darkTextSecondary" />
-                <Input
-                  placeholder="Enter address here"
-                  disabled={disabled}
-                  className="pl-9 dark:bg-darkPrimaryBg dark:border-darkBorder"
-                  {...field}
-                />
-              </div>
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+    <FormField
+      control={control}
+      name="address"
+      render={({ field }) => (
+        <FormItem className="sm:col-span-2 pt-2">
+          <FormLabel required>Address</FormLabel>
+          <FormControl>
+            <div className="relative flex items-center">
+              <MapPin className="pointer-events-none absolute left-3 h-6 w-6 text-primary bg-[#edf4fe] p-1 rounded-md" />
+              <Input
+                placeholder="e.g. London, United Kingdom"
+                disabled={disabled}
+                className="pl-11 dark:bg-darkPrimaryBg dark:border-darkBorder"
+                {...field}
+              />
+            </div>
+          </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
     </div>
   );
 };

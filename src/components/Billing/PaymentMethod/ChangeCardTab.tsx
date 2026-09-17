@@ -3,11 +3,8 @@
 import { useState } from "react";
 import {
   CreditCard,
-  Pencil,
   Receipt,
   RefreshCw,
-  RefreshCcw,
-  Settings2,
   ShieldCheck,
 } from "lucide-react";
 
@@ -16,20 +13,25 @@ import { Button } from "@/components/ui/button";
 import SavedCardVisual from "./SavedCardVisual";
 import ChangePaymentMethodSheet from "./ChangePaymentMethodSheet";
 import { usePaymentMethods } from "./usePaymentMethods";
+import EditIcon from "@/components/Icons/FilterOptionIcon/EditIcon";
+import CardIcon from "@/components/Icons/PlanIcons/CardIcon";
+import SecureIcon from "@/components/Icons/PlanIcons/SecureIcon";
+import ZapIcon from "@/components/Icons/PlanIcons/ZapIcon";
+import CheckFillIcon from "@/components/Icons/PlanIcons/CheckFillIcon";
 
 const REASONS = [
   {
-    icon: RefreshCcw,
+    icon: <ZapIcon size={24} />,
     title: "Automatic payments",
     body: "Your subscription renews without anyone having to remember a due date — no lapse in tracking for the team.",
   },
   {
-    icon: ShieldCheck,
+    icon:  <SecureIcon size={24} />,
     title: "Secure & encrypted",
     body: "Card details are held by Stripe, never by us. We only ever see the brand, the last four digits and the expiry.",
   },
   {
-    icon: Settings2,
+    icon: <CardIcon size={22}/>,
     title: "Easy Management",
     body: "Swap the card, remove an old one or switch which card renews your plan — all from this page.",
   },
@@ -84,7 +86,7 @@ export default function ChangeCardTab({
       )}
 
       <div className="grid gap-4 lg:grid-cols-2 lg:gap-6">
-        <div className="rounded-lg border border-borderColor bg-bgPrimary p-3 sm:p-4 dark:border-darkBorder dark:bg-darkPrimaryBg">
+        <div className="rounded-lg border border-borderColor bg-bgPrimary p-4 sm:p-6 dark:border-darkBorder dark:bg-darkPrimaryBg">
           {loading ? (
             <div className="max-w-[520px] space-y-4" aria-busy>
               {/* The heights mirror the real visual's box — 200px of content
@@ -123,12 +125,12 @@ export default function ChangeCardTab({
                 >
                   {hasCard ? (
                     <>
-                      <Pencil className="size-4" />
+                      <EditIcon size={20} />
                       Change Card
                     </>
                   ) : (
                     <>
-                      <CreditCard className="size-4" />
+                      <CardIcon size={20}/>
                       Add a card
                     </>
                   )}
@@ -157,8 +159,8 @@ export default function ChangeCardTab({
           )}
         </div>
 
-        <div className="rounded-lg border border-borderColor bg-bgPrimary p-3 sm:p-4 dark:border-darkBorder dark:bg-darkPrimaryBg">
-          <h3 className="text-base font-medium text-headingTextColor dark:text-darkTextPrimary">
+        <div className="rounded-lg border border-borderColor bg-bgPrimary p-4 sm:p-6 dark:border-darkBorder dark:bg-darkPrimaryBg">
+          <h3 className="text-2xl font-medium text-headingTextColor dark:text-darkTextPrimary">
             Why save a payment method?
           </h3>
           <ul className="mt-4 space-y-4">
@@ -166,11 +168,11 @@ export default function ChangeCardTab({
               const Icon = reason.icon;
               return (
                 <li key={reason.title} className="flex items-start gap-3">
-                  <span className="mt-0.5 inline-flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                    <Icon className="size-4" />
+                  <span className="mt-0.5 p-3 inline-flex items-center justify-center rounded-full bg-primary/10 text-primary">
+                    {Icon}
                   </span>
                   <span>
-                    <span className="block text-sm font-medium text-headingTextColor dark:text-darkTextPrimary">
+                    <span className="block text-base font-medium text-headingTextColor dark:text-darkTextPrimary">
                       {reason.title}
                     </span>
                     <span className="mt-0.5 block text-sm text-subTextColor dark:text-darkTextSecondary">
@@ -184,21 +186,22 @@ export default function ChangeCardTab({
         </div>
       </div>
 
-      {/* Reassurance, not a status message: the panel stays neutral and only
-          the badge is green, so this cannot be mistaken for a success alert
-          about something that just happened. */}
-      <div className="flex items-center gap-3 rounded-xl border border-borderColor bg-bgSecondary p-3 sm:gap-4 sm:p-4 dark:border-darkBorder dark:bg-darkTertiaryBg">
-        <span className="inline-flex size-12 shrink-0 items-center justify-center rounded-full bg-green-100 text-green-600 dark:bg-green-500/15 dark:text-green-400">
-          <ShieldCheck className="size-6" />
-        </span>
-        <div className="min-w-0">
-          <p className="text-sm font-semibold text-headingTextColor dark:text-darkTextPrimary">
-            Your payments are secure
-          </p>
-          <p className="mt-0.5 text-sm text-subTextColor dark:text-darkTextSecondary">
-            Card details go straight to Stripe over an encrypted connection and
-            are never stored on our servers.
-          </p>
+      <div className="mt-7 w-full rounded-xl border border-[#1BA85533] bg-[#f4fbf7] dark:bg-[#1ba85611] px-4 py-3.5 md:px-4 md:py-4">
+        <div className="flex items-center gap-4">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#d3efdf]">
+            <CheckFillIcon size={30} />
+          </div>
+
+          <div className="min-w-0">
+            <h3 className="text-sm font-semibold text-headingTextColor dark:text-darkTextPrimary md:text-base">
+              Your payments are secure
+            </h3>
+
+            <p className="mt-1 text-xs text-subTextColor dark:text-darkTextSecondary md:text-sm">
+              We use industry-standard encryption to keep your payment
+              information safe.
+            </p>
+          </div>
         </div>
       </div>
 

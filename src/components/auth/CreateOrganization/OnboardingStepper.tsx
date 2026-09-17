@@ -42,12 +42,12 @@ const OnboardingStepper = ({
         // nothing about how many screens are left.
         aria-valuetext={`Step ${current} of ${total}`}
         className={cn(
-          "h-1.5 w-full overflow-hidden rounded-full bg-bgSecondary dark:bg-darkTertiaryBg",
+          "h-2.5 w-full overflow-hidden rounded-full bg-bgSecondary dark:bg-darkTertiaryBg",
           className,
         )}
       >
         <div
-          className="h-full rounded-full bg-primary transition-[width] duration-300 ease-out"
+          className="h-full rounded-full bg-[linear-gradient(90deg,#427fe3,#3360c8)] transition-[width] duration-300 ease-out"
           style={{ width: `${(current / total) * 100}%` }}
         />
       </div>

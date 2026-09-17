@@ -386,7 +386,7 @@ export default function OnboardingPlanSelection({
         plans={plans}
         value={effectiveCycle}
         onChange={setCycle}
-        className="mb-8 flex justify-center"
+        className="mb-8 flex justify-center border border-borderColor dark:border-darkBorder py-1 px-1 rounded-lg  shadow-[5px_05px_10px_rgba(0,0,0,0.05)] w-fit mx-auto"
       />
 
       {visiblePlans.length === 0 ? (
@@ -397,7 +397,7 @@ export default function OnboardingPlanSelection({
       ) : (
         <div
           className={cn(
-            "grid gap-6 pt-3 md:grid-cols-2",
+            "grid gap-6 my-10 lg:my-20 md:grid-cols-2",
             // Four cards (Free + three paid) sit on one row on wide screens;
             // a three-plan catalog centers on three columns instead of
             // leaving a phantom fourth.
@@ -425,7 +425,7 @@ export default function OnboardingPlanSelection({
         </div>
       )}
 
-      <TrustBadgeStrip className="mt-10" />
+      <TrustBadgeStrip />
 
       {/* Lives here rather than on the server page purely because of the cycle:
           `effectiveCycle` is client state, and a table headed with prices from

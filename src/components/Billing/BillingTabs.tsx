@@ -2,11 +2,14 @@
 
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { CreditCard, Package, Receipt } from "lucide-react";
 
 import SegmentedPills, {
   type SegmentedPillOption,
 } from "@/components/Common/SegmentedPills";
+import { CreditCard, Package, Receipt } from "lucide-react";
+import PlanIcon from "../Icons/PlanIcons/PlanIcon";
+import InvoiceIcon from "../Icons/PlanIcons/InvoiceIcon";
+import CardIcon from "../Icons/PlanIcons/CardIcon";
 
 export type BillingTabId = "my-plan" | "invoice" | "change-card";
 
@@ -167,11 +170,11 @@ export default function BillingTabs({
 }) {
   const options = useMemo<SegmentedPillOption<BillingTabId>[]>(() => {
     const base: SegmentedPillOption<BillingTabId>[] = [
-      { value: "my-plan", label: "My Plan", icon: Package },
-      { value: "invoice", label: "Invoice", icon: Receipt },
+      { value: "my-plan", label: "My Plan", icon: <PlanIcon size={20}/> },
+      { value: "invoice", label: "Invoice", icon: <InvoiceIcon size={20}/> },
     ];
     if (isAdmin) {
-      base.push({ value: "change-card", label: "Change Card", icon: CreditCard });
+      base.push({ value: "change-card", label: "Change Card", icon: <CardIcon size={20}/> });
     }
     return base;
   }, [isAdmin]);
@@ -192,8 +195,9 @@ export default function BillingTabs({
       // choosing which panel is mounted, which is precisely the case
       // WAI-ARIA reserves manual activation for.
       activation="manual"
-      variant="loose"
-      className="gap-2"
+      // variant="loose"
+      border={false}
+      className="gap-2 py-1 px-1 rounded-lg  shadow-[5px_05px_10px_rgba(0,0,0,0.05)] border border-borderColor/50 dark:border-darkBorder"
     />
   );
 }

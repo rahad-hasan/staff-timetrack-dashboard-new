@@ -12,6 +12,7 @@ import {
   CYCLE_LABEL,
   IBillingPlan,
 } from "@/types/billing";
+import Calender2Icon from "../Icons/Calender2Icon";
 
 /**
  * The cycles a catalog is actually sold on.
@@ -120,7 +121,7 @@ export default function CycleToggle({
     return {
       value: cycle,
       label: CYCLE_LABEL[cycle],
-      icon: Calendar,
+      icon: <Calender2Icon className="" size={20} />,
       badge: savings === null ? undefined : `Save up to ${savings}%`,
     };
   });
@@ -133,6 +134,8 @@ export default function CycleToggle({
         onChange={onChange}
         activation={activation}
         disabled={disabled}
+        border={false}
+        variant="loose"
         // The fallback name, for the surfaces that show no heading of their own
         // (the two pricing grids). `aria-labelledby` wins outright where it is
         // passed, so the two can never both be announced.
@@ -141,4 +144,4 @@ export default function CycleToggle({
       />
     </div>
   );
-}
+};

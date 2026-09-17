@@ -16,7 +16,7 @@ export default function InvoiceTab() {
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-lg font-medium text-headingTextColor dark:text-darkTextPrimary">
+        <h2 className="text-xl font-semibold text-headingTextColor sm:text-2xl dark:text-darkTextPrimary">
           Invoice History
         </h2>
         <p className="mt-1 text-sm text-subTextColor dark:text-darkTextSecondary">

@@ -87,7 +87,7 @@ const ChoosePlanPage = async ({
   // gradient tints from that token rather than a hardcoded hue nothing else in
   // the app still uses.
   return (
-    <div className="min-h-screen w-full bg-linear-to-b from-primary/8 from-5% to-bgSecondary dark:to-darkSecondaryBg to-20%">
+    <div className="min-h-screen w-full bg-[#fefefe]">
       <header className="flex items-center justify-between px-6 py-5 sm:px-8">
         <div className="flex items-center gap-1.5">
           <Image
@@ -105,32 +105,34 @@ const ChoosePlanPage = async ({
             className="dark:hidden"
           />
         </div>
-
-        <Link
-          href="/dashboard"
-          className="inline-flex items-center gap-1 text-sm font-medium text-subTextColor hover:text-headingTextColor dark:text-darkTextSecondary dark:hover:text-darkTextPrimary"
-        >
-          Skip for now
-          <ArrowRight className="h-4 w-4" />
-        </Link>
       </header>
 
       <main className="mx-auto w-full max-w-7xl px-4 pb-16 sm:px-6">
-        <div className="mx-auto mb-8 max-w-2xl text-center">
-          <span className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-            Pricing
-          </span>
-
-          {/* Two sentences, one of them in brand blue — the emphasis is the
-              design's, and it is the same `--primary` the cards' CTAs use, so
-              the headline cannot drift from the buttons under it. */}
-          <h1 className="mt-4 text-3xl font-semibold text-headingTextColor dark:text-darkTextPrimary sm:text-4xl">
+        <div className="mx-auto mb-8 w-full text-center">
+          <header className="flex items-center justify-between">
+            <div className="w-full"></div>
+            <div className="w-full flex justify-center">
+              <span className="text-sm text-primary bg-primary/10 px-3 py-1 rounded-full">
+                Pricing
+              </span>
+            </div>
+            <div className="w-full flex justify-end">
+              <Link
+                href="/dashboard"
+                className="bg-primary px-4 py-1 rounded-full text-white inline-flex items-center gap-1 text-sm font-medium dark:text-darkTextSecondary dark:hover:text-darkTextPrimary"
+              >
+                Skip for now
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </header>
+          <h1 className="text-3xl mt-4 font-semibold text-headingTextColor dark:text-darkTextPrimary sm:text-4xl">
             Simple pricing.{" "}
-            <span className="text-primary">Powerful features</span>
+            <span className=" text-primary">Powerful features</span>
           </h1>
           <p className="mt-3 text-subTextColor dark:text-darkTextSecondary">
             Choose the plan that fits your team. All plans are per user, per
-            month.
+            month
           </p>
 
           {trialDaysLeft !== null && (
@@ -141,7 +143,10 @@ const ChoosePlanPage = async ({
                 {entitlements?.plan_name ? (
                   <>
                     {" "}
-                    of <span className="font-medium">{entitlements.plan_name}</span>
+                    of{" "}
+                    <span className="font-medium">
+                      {entitlements.plan_name}
+                    </span>
                   </>
                 ) : null}{" "}
                 is already active — {trialDaysLeft}{" "}
@@ -159,13 +164,13 @@ const ChoosePlanPage = async ({
           intent={intent}
         />
 
-        <div className="mt-12 text-center">
+        <div className="mt-12 flex flex-col items-center">
           <p className="mb-3 text-sm text-subTextColor dark:text-darkTextSecondary">
             Not sure yet? Keep exploring on your free trial and pick later.
           </p>
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-2 rounded-md border border-borderColor bg-white px-5 py-2.5 text-sm font-medium text-headingTextColor hover:bg-bgSecondary dark:border-darkBorder dark:bg-darkPrimaryBg dark:text-darkTextPrimary dark:hover:bg-darkSecondaryBg"
+            className="flex w-auto cursor-pointer items-center gap-2 rounded-full bg-primary/10 px-5 py-2 font-semibold text-primary"
           >
             Pick a plan later
             <ArrowRight className="h-4 w-4" />

@@ -72,8 +72,6 @@ const ComboboxField = <TValues extends FieldValues>({
   control,
   name,
   label,
-  description,
-  fillHeight,
   options,
   icon: Icon,
   placeholder = "Select an option",
@@ -92,16 +90,8 @@ const ComboboxField = <TValues extends FieldValues>({
         const selected = options.find((option) => option.value === field.value);
 
         return (
-          <FormItem
-            className={cn("flex flex-col", fillHeight && "h-full gap-1.5")}
-          >
+          <FormItem className="flex flex-col">
             <FormLabel required={required}>{label}</FormLabel>
-            {description && (
-              <p className="text-xs text-subTextColor dark:text-darkTextSecondary">
-                {description}
-              </p>
-            )}
-            <div className={cn(fillHeight && "mt-auto pt-2")}>
             <Popover open={open} onOpenChange={setOpen}>
               <PopoverTrigger asChild>
                 <FormControl>
@@ -111,19 +101,22 @@ const ComboboxField = <TValues extends FieldValues>({
                     role="combobox"
                     aria-expanded={open}
                     disabled={disabled}
-                    className="flex justify-between font-normal dark:text-darkTextPrimary hover:dark:bg-darkPrimaryBg"
+                    className="flex justify-between font-normal dark:text-darkTextPrimary hover:dark:bg-darkPrimaryBg  "
                   >
                     <span className="flex items-center gap-2 truncate">
                       {Icon && (
-                        <Icon className="h-4 w-4 shrink-0 text-subTextColor dark:text-darkTextSecondary" />
+                        <span className="flex h-6.5 w-6.5 shrink-0 items-center justify-center rounded-md bg-[#edf4fe]">
+                          <Icon className="h-4 w-4 text-primary" />
+                        </span>
                       )}
+
                       {selected?.label || field.value || placeholder}
                     </span>
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />
                   </Button>
                 </FormControl>
               </PopoverTrigger>
-              <PopoverContent className="w-[--radix-popover-trigger-width] p-0 dark:bg-darkSecondaryBg dark:border-darkBorder">
+              <PopoverContent className="w-[--radix-popover-trigger-width] p-0 dark:bg-darkSecondaryBg dark:border-darkBorder ">
                 <Command className="dark:bg-darkSecondaryBg">
                   <CommandInput placeholder={searchPlaceholder} />
                   <CommandList className="max-h-60 overflow-y-auto no-scrollbar scroll-smooth">
@@ -156,7 +149,6 @@ const ComboboxField = <TValues extends FieldValues>({
               </PopoverContent>
             </Popover>
             <FormMessage />
-            </div>
           </FormItem>
         );
       }}

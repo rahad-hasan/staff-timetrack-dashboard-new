@@ -16,6 +16,7 @@ import {
 import { cn } from "@/lib/utils";
 import { formatDollars } from "@/lib/billing";
 import { BillingCycle, IBillingPlan } from "@/types/billing";
+import CompareFeaturesPlan from "./CompareFeaturesPlan";
 
 /** One plan's answer for one feature row. `null` = the plan never lists it. */
 interface FeatureCell {
@@ -128,8 +129,11 @@ export default function PlanComparisonTable({
     // that is what drops `feature_flags` (an object) and any string a future
     // limit might use, without having to enumerate the keys client-side.
     const withLimits = plans.filter(
-      (plan): plan is IBillingPlan & { limits: NonNullable<IBillingPlan["limits"]> } =>
-        Boolean(plan.limits),
+      (
+        plan,
+      ): plan is IBillingPlan & {
+        limits: NonNullable<IBillingPlan["limits"]>;
+      } => Boolean(plan.limits),
     );
 
     const sharedKeys =
@@ -152,172 +156,52 @@ export default function PlanComparisonTable({
 
   // Nothing to compare — two columns of ticks with no rows is worse than no
   // section at all.
-  if (plans.length === 0 || (featureRows.length === 0 && limitRows.length === 0)) {
+  if (
+    plans.length === 0 ||
+    (featureRows.length === 0 && limitRows.length === 0)
+  ) {
     return null;
   }
 
   return (
     <div className={className}>
       <div className="flex justify-center">
-        <Button
+        <button
           type="button"
-          variant="outline2"
-          aria-expanded={open}
-          aria-controls={panelId}
-          onClick={() => setOpen((previous) => !previous)}
+          onClick={() => setOpen((prev) => !prev)}
+          className="mx-auto flex cursor-pointer items-center gap-2 rounded-full bg-primary/10 px-5 py-2 font-semibold text-primary"
         >
           Compare All Features
-          <ChevronDown
-            className={cn("size-4 transition-transform", open && "rotate-180")}
-          />
-        </Button>
-      </div>
-
-      <div
-        id={panelId}
-        hidden={!open}
-        className="mt-6 rounded-lg border border-borderColor bg-bgPrimary p-1 sm:p-2 dark:border-darkBorder dark:bg-darkPrimaryBg"
-      >
-        {/* `Table` already supplies the `overflow-x-auto` container, which is
-            also what makes the first column's `sticky` stick — do not wrap it
-            in a second scroller or the plan names scroll away with the rows. */}
-        <Table>
-          {/* The table's accessible name. sr-only is out of flow, so the
-              caption's own `mt-4` moves nothing — the name exists for the
-              screen-reader table list without a visible heading appearing
-              under a panel that is already introduced by its toggle. */}
-          <TableCaption className="sr-only">
-            Feature and limit comparison across plans
-          </TableCaption>
-
-          <TableHeader>
-            <TableRow>
-              <TableHead
-                scope="col"
-                className="sticky left-0 z-10 min-w-45 bg-bgSecondary dark:bg-darkTertiaryBg"
-              >
-                Features
-              </TableHead>
-
-              {plans.map((plan) => {
-                const pricing = plan.cycle_pricing?.[cycle] ?? null;
-
-                return (
-                  <TableHead
-                    key={plan.id}
-                    scope="col"
-                    className="min-w-35 text-center align-bottom"
-                  >
-                    <span className="block font-medium">{plan.name}</span>
-                    <span className="block text-xs font-normal text-subTextColor dark:text-darkTextSecondary">
-                      {pricing
-                        ? `${formatDollars(pricing.monthly_equivalent)} / user / mo`
-                        : "Free"}
-                    </span>
-                  </TableHead>
-                );
-              })}
-            </TableRow>
-          </TableHeader>
-
-          <TableBody>
-            {featureRows.map((row) => (
-              <TableRow key={row.label}>
-                {/* `TableHead` is the only primitive that emits a <th>, so the
-                    row header arrives with the header cell's own `h-10` and
-                    `first:rounded-l-xl` attached. Both are neutralised so this
-                    measures and clips exactly like the <td> it replaces: the
-                    rounded corner would otherwise let rows scrolling underneath
-                    this sticky column peek through it, and `h-10` would floor
-                    the last row's height after `last:[&_td]:pb-0` drops its
-                    padding. That same last-row rule lives on `TableRow` and only
-                    targets `td`, so it is mirrored here by hand. */}
-                <TableHead
-                  scope="row"
-                  className="sticky left-0 z-10 h-auto bg-bgPrimary text-left font-normal whitespace-normal first:rounded-none [tr:last-child_&]:pb-0 dark:bg-darkPrimaryBg"
-                >
-                  {row.label}
-                </TableHead>
-
-                {row.cells.map((cell, index) => (
-                  <TableCell
-                    key={plans[index].id}
-                    className="text-center whitespace-normal"
-                  >
-                    {cell?.included ? (
-                      <span className="inline-flex flex-col items-center gap-1">
-                        {/* sr-only is absolutely positioned, so it adds no flex
-                            item to measure and no `gap-1` of its own — the
-                            column looks identical and stops reading as empty.
-                            It leads the note so the cell announces as
-                            "Included, Up to 3 projects": the note is the plan's
-                            server-derived condition ON that tick, and reading
-                            it alone would state a limit without ever saying the
-                            feature is there. */}
-                        <span className="sr-only">Included</span>
-                        <Check className="size-4 text-primary" />
-                        {cell.note && (
-                          <span className="text-xs font-normal text-subTextColor dark:text-darkTextSecondary">
-                            {cell.note}
-                          </span>
-                        )}
-                      </span>
-                    ) : (
-                      // Absent from the plan AND switched off by its limits both
-                      // land here: in a comparison table the only honest answer
-                      // to "does this plan have it" is the same dash. The wording
-                      // matches `formatLimitValue`'s disabled-screenshot string
-                      // so one plan reads the same either way it says no.
-                      <>
-                        <Minus className="mx-auto size-4 text-subTextColor/60 dark:text-darkTextSecondary/60" />
-                        <span className="sr-only">Not included</span>
-                      </>
-                    )}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
-
-            {limitRows.length > 0 && (
-              <TableRow>
-                {/* Heads every column beneath it rather than answering for one,
-                    so it is a colgroup header — as a <td> it was an untitled
-                    blank row that told a screen reader nothing about the section
-                    change. It is both first AND last child, so the header cell's
-                    two rounding rules would bow both ends of a full-width band
-                    that has always been square. */}
-                <TableHead
-                  scope="colgroup"
-                  colSpan={plans.length + 1}
-                  className="h-auto bg-bgSecondary text-xs font-medium tracking-wide text-subTextColor uppercase first:rounded-none last:rounded-none dark:bg-darkTertiaryBg dark:text-darkTextSecondary"
-                >
-                  Plan limits
-                </TableHead>
-              </TableRow>
+          <svg
+            width={25}
+            height={25}
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className={cn(
+              "transition-transform duration-200",
+              open && "rotate-180",
             )}
-
-            {limitRows.map((row) => (
-              <TableRow key={row.label}>
-                <TableHead
-                  scope="row"
-                  className="sticky left-0 z-10 h-auto bg-bgPrimary text-left font-normal whitespace-normal first:rounded-none [tr:last-child_&]:pb-0 dark:bg-darkPrimaryBg"
-                >
-                  {row.label}
-                </TableHead>
-
-                {row.values.map((value, index) => (
-                  <TableCell
-                    key={plans[index].id}
-                    className="text-center font-normal whitespace-normal"
-                  >
-                    {value}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+          >
+            <path
+              opacity="0.4"
+              d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9"
+              stroke="#0788F3"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path
+              d="M12 15C13.5811 14.9999 18 9 18 9"
+              stroke="#0788F3"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
       </div>
+      {open && <CompareFeaturesPlan margin="mt-10"></CompareFeaturesPlan>}
     </div>
   );
 }

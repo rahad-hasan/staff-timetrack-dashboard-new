@@ -86,18 +86,23 @@ const CreateOrganizationDialog = ({
         // weekday pills in a row beside the weekend-length row, and at `xl`
         // they wrapped to 4 + 3 and broke the two-column rhythm the design
         // draws. `2xl` is the narrowest step that keeps the week on one line.
-        className="max-h-[92vh] gap-0 overflow-y-auto p-0 sm:max-w-2xl dark:bg-darkSecondaryBg"
+        className={`max-h-[92vh] ${stepIndex === 1 ? " md:min-w-[700px] lg:min-w-[995px]" : "sm:max-w-xl"} gap-0 overflow-y-auto p-0 dark:bg-darkSecondaryBg`}
       >
-        <DialogHeader className="space-y-3 border-b border-borderColor p-5 dark:border-darkBorder sm:p-6">
+        <DialogHeader className="space-y-3 px-5 sm:px-6 pt-5 sm:pt-5">
+          <OnboardingStepper
+            steps={ORGANIZATION_STEPS}
+            activeIndex={stepIndex}
+            variant="bar"
+          />
           <div className="flex items-start gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            {/* <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
               <Building2 className="h-5 w-5" />
-            </span>
+            </span> */}
             <div className="min-w-0 text-left">
-              <DialogTitle className="text-base font-semibold text-headingTextColor dark:text-darkTextPrimary sm:text-lg">
+              <DialogTitle className="text-base font-semibold text-headingTextColor dark:text-darkTextPrimary sm:text-4xl">
                 {step.heading}
               </DialogTitle>
-              <DialogDescription className="mt-1 text-xs sm:text-sm">
+              <DialogDescription className="mt-3 text-xs sm:text-sm">
                 {step.description}
               </DialogDescription>
             </div>
@@ -106,11 +111,6 @@ const CreateOrganizationDialog = ({
           {/* A two-step wizard does not need per-step badges to orient anyone —
               the header already names the step — so the design spends the row
               on a single fill instead. */}
-          <OnboardingStepper
-            steps={ORGANIZATION_STEPS}
-            activeIndex={stepIndex}
-            variant="bar"
-          />
         </DialogHeader>
 
         <Form {...form}>
@@ -132,7 +132,7 @@ const CreateOrganizationDialog = ({
               )}
             </div>
 
-            <div className="flex flex-col gap-3 border-t border-borderColor px-5 py-4 dark:border-darkBorder sm:flex-row sm:items-center sm:justify-between sm:px-6">
+            <div className="flex flex-col gap-3 px-5 pb-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
               {/* The left slot carries the step's own escape hatch on step 1
                   (there is no session to fall back to, so leaving means
                   sign-in) and the address the workspace is about to be created
@@ -162,7 +162,11 @@ const CreateOrganizationDialog = ({
               {/* Stacked on a phone the footer is the whole bottom of the
                   screen, so the actions take the full width there and only
                   shrink to their labels once the row goes horizontal. */}
-              <div className="flex w-full items-center justify-end gap-2 sm:w-auto">
+              <div
+                className={`flex w-full items-center justify-end gap-2 ${
+                  isFirstStep ? "" : "sm:w-auto"
+                }`}
+              >
                 {!isFirstStep && (
                   <Button
                     type="button"
@@ -175,10 +179,11 @@ const CreateOrganizationDialog = ({
                     Back
                   </Button>
                 )}
+
                 <Button
                   type="submit"
                   disabled={submitting}
-                  className="flex-1 sm:flex-none"
+                  className={isFirstStep ? "w-full" : "w-full sm:w-auto"}
                 >
                   {submitting && <Loader2 className="size-4 animate-spin" />}
                   {isLastStep
