@@ -36,16 +36,16 @@ const SingleProject = ({ data, task, page }: { data: ISingleProjectData, task: a
     };
     const statusClass =
         data?.status === "processing"
-            ? "bg-[#fff5db] border-[#efaf07] text-[#efaf07] hover:bg-[#fff5db] dark:bg-transparent"
+            ? "bg-[#fff5db] hover:bg-[#fff5db] dark:bg-transparent"
             : data?.status === "cancelled"
-                ? "bg-[#fee6eb] border-[#f40139] text-[#f40139] hover:bg-[#fee6eb] dark:bg-transparent"
+                ? "bg-[#fee6eb] hover:bg-[#fee6eb] dark:bg-transparent"
                 : data?.status === "pending"
-                    ? "bg-[#eff7fe] border-[#5db0f1] text-[#5db0f1] hover:bg-[#eff7fe] dark:bg-transparent"
-                    : "bg-[#e9f8f0] border-[#26bd6c] text-[#26bd6c] hover:bg-[#e9f8f0] dark:bg-transparent";
+                    ? "bg-[#eff7fe] hover:bg-[#eff7fe] dark:bg-transparent"
+                    : "bg-[#e9f8f0] hover:bg-[#e9f8f0] dark:bg-transparent";
     const dotClass =
-        data?.status === "processing" ? "bg-[#efaf07]" :
-            data?.status === "cancelled" ? "bg-[#f40139]" :
-                data?.status === "pending" ? "bg-[#5db0f1]" : "bg-[#26bd6c]";
+        data?.status === "processing" ? "bg-white" :
+            data?.status === "cancelled" ? "bg-white" :
+                data?.status === "pending" ? "bg-[#f40139]" : "bg-[#f40139]";
 
     return (
         <div>
