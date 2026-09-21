@@ -100,7 +100,7 @@ const LeaveOverview = ({ data, headingSubtitle, currentUserId }: LeaveOverviewPr
                             </p>
                         </div>
 
-                        <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
+                        <div className="flex flex-col gap-3 sm:flex-row lg:flex-col mb-4">
                             <div className="rounded-[12px] border border-primary/10 bg-white/85 px-5 py-4 text-right dark:border-primary/20 dark:bg-darkPrimaryBg">
                                 <p className="text-xs uppercase tracking-[0.18em] text-subTextColor dark:text-darkTextSecondary">
                                     Total allowed
