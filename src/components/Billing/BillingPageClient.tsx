@@ -24,7 +24,6 @@ import BillingTabs, {
 import InvoiceTab from "@/components/Billing/InvoiceTab";
 import ChangeCardTab from "@/components/Billing/PaymentMethod/ChangeCardTab";
 import Link from "next/link";
-import CompareFeaturesPlan from "./CompareFeaturesPlan";
 
 /**
  * /settings/billing orchestrator (contract §21). Seeds the billing store with

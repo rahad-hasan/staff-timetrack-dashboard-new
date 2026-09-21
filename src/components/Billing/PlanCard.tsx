@@ -84,11 +84,11 @@ export default function PlanCard({
     <div
       className={cn(
         "relative flex flex-col border-2 border-borderColor rounded-2xl p-5 sm:p-6 bg-white dark:bg-darkPrimaryBg dark:border-darkBorder",
-        plan.badge_text === "Popular" &&
+        plan.tier === "pro" &&
           "border-primary ring-1 ring-primary shadow-[0_0_20px_8px_rgba(0,0,0,0.07)] lg:min-h-[calc(100%+80px)] lg:my-[-40px]",
       )}
     >
-      {plan.badge_text === "Popular" && (
+      {plan.tier === "pro" && (
         <div className="absolute -top-3 right-0 -translate-x-1/2 whitespace-nowrap flex items-center gap-1.5 uppercase rounded-full bg-primary px-5 py-1 text-xs font-medium text-white">
           <Image
             src={starIcon}
@@ -97,7 +97,7 @@ export default function PlanCard({
             height={14}
             alt="stater"
           />
-          Most {plan.badge_text}
+          Most Popular
         </div>
       )}
 
@@ -135,9 +135,10 @@ export default function PlanCard({
                 {plan.name}
               </h3>
 
-              {plan.badge_text && plan.badge_text !== "Popular" && (
+              {plan.badge_text && (
+                // plan.name === "Stater" ? "border-[#1ba855] text-[#1ba855]" : plan.name === "Max" ? "border-[#c286ff] text-[#c286ff]" : " bg-[linear-gradient(180deg,#427fe3,#3360c8)]
                 <span
-                  className={` ${plan.badge_text ? "bg-[#1ba855]" : "bg-[#c286ff]"} text-xs px-3 py-0.5 rounded-full text-white`}
+                  className={` ${plan.name === "Stater" ? "bg-[#1ba855]" : plan.name === "Max" ? "border-[#c286ff]" : "bg-[#0788f3]"} text-xs px-3 py-0.5 rounded-full text-white`}
                 >
                   {plan.badge_text && plan.badge_text}
                 </span>

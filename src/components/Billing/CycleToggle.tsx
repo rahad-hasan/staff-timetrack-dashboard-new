@@ -1,7 +1,5 @@
 "use client";
 
-import { Calendar } from "lucide-react";
-
 import SegmentedPills, {
   SegmentedPillOption,
   type SegmentedPillsActivation,

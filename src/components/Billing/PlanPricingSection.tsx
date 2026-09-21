@@ -9,7 +9,6 @@ import PlanCard from "./PlanCard";
 import FaqSection from "./FaqSection";
 import CheckoutDialog from "./CheckoutDialog";
 import CycleToggle, { supportedCycles } from "./CycleToggle";
-import PlanComparisonTable from "./PlanComparisonTable";
 import SwitchPlanDialog from "./SwitchPlanDialog";
 import CompareFeaturesPlan from "./CompareFeaturesPlan";
 

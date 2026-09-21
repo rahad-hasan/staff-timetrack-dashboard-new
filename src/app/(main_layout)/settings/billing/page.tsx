@@ -3,12 +3,9 @@ export const dynamic = "force-dynamic";
 import { getBillingStatus, getPlans } from "@/actions/billing/action";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
 import BillingPageClient from "@/components/Billing/BillingPageClient";
-import HeadingComponent from "@/components/Common/HeadingComponent";
 import { ISearchParamsProps } from "@/types/type";
 import { Metadata } from "next";
 import { redirect } from "next/navigation";
-import Link from "next/link";
-import { ChevronLeft } from "lucide-react";
 
 export const metadata: Metadata = {
     title: "Billing & Plans",

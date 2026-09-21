@@ -1,20 +1,7 @@
 "use client";
 
-import { useId, useMemo, useState } from "react";
-import { Check, ChevronDown, Minus } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
-import { formatDollars } from "@/lib/billing";
 import { BillingCycle, IBillingPlan } from "@/types/billing";
 import CompareFeaturesPlan from "./CompareFeaturesPlan";
 
@@ -93,7 +80,7 @@ export default function PlanComparisonTable({
   className?: string;
 }) {
   const [open, setOpen] = useState(false);
-  const panelId = useId();
+  // const panelId = useId();
 
   const { featureRows, limitRows } = useMemo(() => {
     // Label → feature, per plan. Built once per plan instead of scanning
