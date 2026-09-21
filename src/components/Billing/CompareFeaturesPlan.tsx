@@ -190,7 +190,7 @@ export default function CompareFeaturesPlan({ margin }: { margin: string }) {
               <th className="p-4 w-1/4 bg-black text-center text-white">Pro</th>
 
               <th className="p-4 w-1/4 bg-[#0772ca] text-center text-white rounded-tr-xl">
-                Enterprise
+                Max
               </th>
             </tr>
           </thead>

@@ -40,6 +40,8 @@ const WEEKEND_LENGTH_PILLS: ReadonlyArray<SegmentedPillOption<number>> = [
   { value: 1, label: "1 Day" },
   { value: 2, label: "2 Days" },
   { value: 3, label: "3 Days" },
+  { value: 4, label: "4 Days" },
+  { value: 5, label: "5 Days" },
 ];
 
 const cardClass =

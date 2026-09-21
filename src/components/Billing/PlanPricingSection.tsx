@@ -164,7 +164,7 @@ export default function PlanPricingSection({
       <TrustBadgeStrip marginTop="mt-10 md:mt-20" />
 
       <div className="flex justify-center gap-2 items-center mt-5">
-        <SecureIcon className="text-black" size={20}/>
+        <SecureIcon className="text-black dark:text-white/60" size={20}/>
         <p className=" text-subTextColor dark:text-darkTextSecondary"> All Plans are per user, per month. Prices in USD</p>
       </div>
 
