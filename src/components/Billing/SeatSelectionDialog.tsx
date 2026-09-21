@@ -456,12 +456,12 @@ export default function SeatSelectionDialog({
           {/* These users are mid reverse-trial, so this is the common case, not
               an edge one — and it belongs next to the money rather than on a
               screen they reach after committing. */}
-          {pricedQuote?.trial_will_end_immediately && (
+          {/* {pricedQuote?.trial_will_end_immediately && (
             <p className="rounded-lg bg-amber-50 p-3 text-xs text-amber-800 dark:bg-amber-500/10 dark:text-amber-300">
               Your free trial ends as soon as this payment completes and paid
               billing starts immediately.
             </p>
-          )}
+          )} */}
 
           {/* A pricing failure is now a stop, not a shrug: with no total on
               screen there is nothing for the next step to honour, so the way
