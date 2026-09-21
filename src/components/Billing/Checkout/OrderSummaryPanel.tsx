@@ -22,7 +22,6 @@ import type {
   ICheckoutQuote,
 } from "@/types/billing";
 
-
 /** Reads as "…/month" next to the headline price, per the design. */
 const CYCLE_SUFFIX: Record<BillingCycle, string> = {
   monthly: "/month",
@@ -75,7 +74,9 @@ export default function OrderSummaryPanel({
   disabled?: boolean;
 }) {
   const currency = quote?.currency ?? "usd";
-  const features = (quote?.plan.features ?? []).filter((f) => f.included).slice(0, 4);
+  const features = (quote?.plan.features ?? [])
+    .filter((f) => f.included)
+    .slice(0, 4);
   // The catalogue row for the plan being bought — the quote carries its
   // identity but not its `available_cycles`, which the toggle needs.
   const ownPlan = plans.find((plan) => plan.id === quote?.plan.id) ?? null;
@@ -205,7 +206,9 @@ export default function OrderSummaryPanel({
             aria-label="Number of users"
             value={draft}
             disabled={locked}
-            onChange={(event) => setDraft(event.target.value.replace(/[^\d]/g, ""))}
+            onChange={(event) =>
+              setDraft(event.target.value.replace(/[^\d]/g, ""))
+            }
             // Select-all on the first click only. Suppressing every mouseup
             // kept the selection but made the field feel read-only — clicking
             // in to fix a digit could not move the caret (see CheckoutDialog).
@@ -270,9 +273,7 @@ export default function OrderSummaryPanel({
           <dt className="text-subTextColor dark:text-darkTextSecondary">
             Subtotal
             {quote && quote.seats > 1 && (
-              <span className="ml-1 text-xs">
-                ({quote.seats} seats)
-              </span>
+              <span className="ml-1 text-xs">({quote.seats} seats)</span>
             )}
           </dt>
           <dd className="tabular-nums text-headingTextColor dark:text-darkTextPrimary">
@@ -344,12 +345,12 @@ export default function OrderSummaryPanel({
 
       {/* The trial warning belongs next to the money, not in a dialog the user
           has already dismissed by the time they reach this button. */}
-      {quote?.trial_will_end_immediately && (
+      {/* {quote?.trial_will_end_immediately && (
         <p className="mt-4 rounded-lg bg-amber-50 p-3 text-xs text-amber-800 dark:bg-amber-500/10 dark:text-amber-300">
           Your free trial ends as soon as this payment completes and paid
           billing starts immediately.
         </p>
-      )}
+      )} */}
 
       <div className="mt-5 flex items-center justify-center gap-2 rounded-lg bg-green-50 px-4 py-3 text-sm font-medium text-green-700 dark:bg-green-500/10 dark:text-green-300">
         <ShieldCheck className="size-4 shrink-0" />
