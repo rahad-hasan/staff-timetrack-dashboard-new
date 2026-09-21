@@ -126,16 +126,16 @@ export const STATUS_LABELS: Record<BillingStatusValue, string> = {
 /** Tailwind classes for the small status chip, light + dark. */
 export const STATUS_CHIP_STYLES: Record<BillingStatusValue, string> = {
   trialing:
-    "bg-blue-50 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300",
+    "bg-blue-50 text-blue-700 dark:bg-blue-500/15 border border-blue-500/20 dark:text-blue-300",
   active:
-    "bg-green-50 text-green-700 dark:bg-green-500/15 dark:text-green-300",
-  past_due: "bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-300",
+    "bg-green-50 text-green-700 dark:bg-green-500/15 border border-green-500/20 dark:text-green-300",
+  past_due: "bg-red-50 text-red-700 dark:bg-red-500/15 border border-red-500/20 dark:text-red-300",
   payment_failed:
-    "bg-red-50 text-red-700 dark:bg-red-500/15 dark:text-red-300",
+    "bg-red-50 text-red-700 dark:bg-red-500/15 border border-red-500/20 dark:text-red-300",
   pending_downgrade_selection:
-    "bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300",
+    "bg-amber-50 text-amber-700 dark:bg-amber-500/15 border border-amber-500/20 dark:text-amber-300",
   canceled:
-    "bg-gray-100 text-gray-600 dark:bg-gray-500/15 dark:text-gray-300",
+    "bg-gray-100 text-gray-600 dark:bg-gray-500/15 border border-gray-500/20 dark:text-gray-300",
 };
 
 /** Invoice chips: paid green, pending/unpaid orange, failed red, refunded gray (guide §4). */

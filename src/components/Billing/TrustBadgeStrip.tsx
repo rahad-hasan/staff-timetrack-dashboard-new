@@ -27,9 +27,9 @@ const features = [
   },
 ];
 
-export default function TrustBadgeStrip() {
+export default function TrustBadgeStrip({marginTop = "mt-10"}:{marginTop?:string}) {
   return (
-      <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 bg-white rounded-3xl p-6 shadow-[0_0_20px_8px_rgba(0,0,0,0.04)] divide-y sm:divide-y-0 sm:divide-x divide-borderColor dark:divide-darkBorder">
+      <div className={`${marginTop} grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 dark:border dark:border-darkBorder/50 bg-white dark:bg-darkSecondaryBg rounded-3xl p-6 shadow-[0_0_20px_8px_rgba(0,0,0,0.04)] divide-y sm:divide-y-0 sm:divide-x divide-borderColor dark:divide-darkBorder`}>
         {features.map((feature, index) => {
           const Icon = feature.icon;
           return (
@@ -46,10 +46,10 @@ export default function TrustBadgeStrip() {
 
               {/* Text Content */}
               <div className="flex-1 min-w-0">
-                <h3 className="text-base font-bold text-gray-900 mb-1">
+                <h3 className="text-base font-bold text-headingTextColor dark:text-darkTextPrimary mb-1">
                   {feature.title}
                 </h3>
-                <p className="text-xs sm:text-sm text-gray-500 leading-relaxed">
+                <p className="text-xs sm:text-sm text-subTextColor dark:text-darkTextSecondary leading-relaxed">
                   {feature.description}
                 </p>
               </div>

@@ -9,6 +9,9 @@ import { IBillingPlan } from "@/types/billing";
 import BillingStatusChip from "./BillingStatusChip";
 import CancelSubscriptionDialog from "./CancelSubscriptionDialog";
 import { useScrollToPlans } from "./BillingTabs";
+import SeatUsageCard from "./SeatUsageCard";
+import BillingIcon from "../Icons/PlanIcons/BillingIcon";
+import TrailCalenderIcon from "../Icons/PlanIcons/TrailCalenderIcon";
 
 /**
  * Billing page hero card — current plan, cycle, renewal/trial dates, pending
@@ -22,7 +25,13 @@ import { useScrollToPlans } from "./BillingTabs";
  * cached, so the description must come from the live plans list. A company
  * sitting on a retired plan simply finds no match and shows no tagline.
  */
-export default function CurrentPlanCard({ plans }: { plans: IBillingPlan[] }) {
+export default function CurrentPlanCard({
+  plans,
+  activeUserCount,
+}: {
+  plans: IBillingPlan[];
+  activeUserCount: number;
+}) {
   const entitlements = useBillingStore((s) => s.status?.entitlements ?? null);
   const role = useLogInUserStore((s) => s.logInUserData?.role);
   const isAdmin = role === "admin";
@@ -52,8 +61,8 @@ export default function CurrentPlanCard({ plans }: { plans: IBillingPlan[] }) {
     plans.find((p) => p.id === entitlements.plan_id)?.description ?? null;
 
   return (
-    <div className="border border-borderColor rounded-lg p-3 sm:p-4 bg-white dark:bg-darkPrimaryBg dark:border-darkBorder">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+    <div className="w-full border border-borderColor rounded-lg p-3 sm:p-4 lg:flex lg:items-center bg-white dark:bg-darkPrimaryBg dark:border-darkBorder">
+      <div className="w-[400px] flex flex-col gap-4 pr-8 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <p className="text-sm text-subTextColor dark:text-darkTextSecondary mb-1">
             Current plan
@@ -63,7 +72,7 @@ export default function CurrentPlanCard({ plans }: { plans: IBillingPlan[] }) {
               {entitlements.plan_name ?? "—"}
             </h3>
             {entitlements.tier && (
-              <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium capitalize text-primary">
+              <span className="inline-flex items-center rounded-full bg-primary/10  border border-primary/20 px-2 py-0.5 text-xs font-medium capitalize text-primary">
                 {entitlements.tier}
               </span>
             )}
@@ -76,23 +85,23 @@ export default function CurrentPlanCard({ plans }: { plans: IBillingPlan[] }) {
             </p>
           )}
 
-          <div className="space-y-1 text-sm text-subTextColor dark:text-darkTextSecondary">
+          <div className="space-y-2 text-sm text-subTextColor dark:text-darkTextSecondary">
             {entitlements.billing_cycle && (
               <p className="flex items-center gap-1.5">
-                <RefreshCcw className="h-4 w-4 shrink-0" />
+                <BillingIcon size={28} className="bg-[#f3f5fa] dark:bg-[#ececec15] p-1 rounded" />
                 Billed {entitlements.billing_cycle}
               </p>
             )}
             {entitlements.status === "active" &&
               entitlements.current_period_end && (
                 <p className="flex items-center gap-1.5">
-                  <CalendarDays className="h-4 w-4 shrink-0" />
+                  <TrailCalenderIcon size={28} className="bg-[#f3f5fa] dark:bg-[#ececec15] p-1 rounded" />
                   Renews {formatBillingDate(entitlements.current_period_end)}
                 </p>
               )}
             {entitlements.status === "trialing" && (
               <p className="flex items-center gap-1.5">
-                <CalendarDays className="h-4 w-4 shrink-0" />
+                <TrailCalenderIcon size={28} className="bg-[#f3f5fa] dark:bg-[#ececec15] p-1 rounded" />
                 {/* An expired trial keeps status "trialing" until the worker
                     resolves it — future tense next to the red "trial has
                     ended" surfaces would contradict them. */}
@@ -104,7 +113,7 @@ export default function CurrentPlanCard({ plans }: { plans: IBillingPlan[] }) {
             {entitlements.status === "canceled" &&
               entitlements.current_period_end && (
                 <p className="flex items-center gap-1.5">
-                  <CalendarDays className="h-4 w-4 shrink-0" />
+                  <TrailCalenderIcon size={28} className="bg-[#f3f5fa] dark:bg-[#ececec15] p-1 rounded" />
                   {isDatePast(entitlements.current_period_end)
                     ? `Ended ${formatBillingDate(entitlements.current_period_end)}`
                     : `Access until ${formatBillingDate(entitlements.current_period_end)}`}
@@ -113,7 +122,7 @@ export default function CurrentPlanCard({ plans }: { plans: IBillingPlan[] }) {
           </div>
 
           {entitlements.pending_downgrade_plan_id !== null && (
-            <p className="mt-3 rounded-md bg-amber-50 dark:bg-amber-500/10 px-3 py-2 text-sm text-amber-700 dark:text-amber-300">
+            <p className="mt-3 rounded-md bg-amber-50 dark:bg-amber-500/10 px-3 py-2 text-sm text-amber-700 dark:text-amber-280">
               A downgrade is scheduled to apply at your renewal.
             </p>
           )}
@@ -139,6 +148,8 @@ export default function CurrentPlanCard({ plans }: { plans: IBillingPlan[] }) {
           </div>
         )}
       </div>
+
+      <SeatUsageCard activeUserCount={activeUserCount}></SeatUsageCard>
     </div>
   );
 }

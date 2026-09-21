@@ -199,17 +199,14 @@ export default function BillingPageClient({
           "View plans" scroll. `useScrollToPlans` handles the tab swap. */}
       {activeTab === "my-plan" && (
         <div className="space-y-4 sm:space-y-6">
-          <div className="grid md:grid-cols-2 gap-4">
-            <CurrentPlanCard plans={plans} />
-            <SeatUsageCard activeUserCount={seatCount} />
-          </div>
+ 
+          <CurrentPlanCard plans={plans} activeUserCount={seatCount} />
 
           <PlanPricingSection
             plans={plans}
             activeUserCount={seatCount}
             sectionId="plans"
           />
-
 
           {isAdmin && canMutateSubscription(effective?.entitlements, plans) && (
             <div>

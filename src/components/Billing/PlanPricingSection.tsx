@@ -11,6 +11,8 @@ import CheckoutDialog from "./CheckoutDialog";
 import CycleToggle, { supportedCycles } from "./CycleToggle";
 import SwitchPlanDialog from "./SwitchPlanDialog";
 import CompareFeaturesPlan from "./CompareFeaturesPlan";
+import TrustBadgeStrip from "./TrustBadgeStrip";
+import SecureIcon from "../Icons/PlanIcons/SecureIcon";
 
 /**
  * Pricing grid (guide §2/§5). The shared `CycleToggle` only shows cycles at
@@ -159,9 +161,17 @@ export default function PlanPricingSection({
         />
       )} */}
 
-      <div className=" flex justify-center">
+      <TrustBadgeStrip marginTop="mt-20" />
+
+      <div className="flex justify-center gap-2 items-center mt-5">
+        <SecureIcon className="text-black" size={20}/>
+        <p className=" text-subTextColor dark:text-darkTextSecondary"> All Plans are per user, per month. Prices in USD</p>
+      </div>
+
+      <div className={`mt-10 flex justify-center`}>
         <button
-          className=" cursor-pointer gap-2 rounded-full bg-primary/10 px-5 py-2 font-semibold text-primary"
+          type="button"
+          className="cursor-pointer rounded-full bg-primary/10 px-5 py-2 font-semibold text-primary"
           onClick={() => setShowCompareFeatures((prev) => !prev)}
         >
           {showCompareFeatures ? "Hide" : "Show Details"}
