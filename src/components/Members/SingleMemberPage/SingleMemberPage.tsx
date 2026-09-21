@@ -269,7 +269,7 @@ const SingleMemberPage = ({
 
     return (
         <div className="space-y-6">
-            <section className="overflow-hidden rounded-[12px] border border-emerald-100 bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.18),_transparent_30%),linear-gradient(135deg,#f8fffc_0%,#eefbf5_42%,#e5f7ef_100%)] p-4 text-slate-900 shadow-[0_24px_60px_rgba(15,23,42,0.08)] dark:border-darkBorder dark:bg-[radial-gradient(circle_at_top,_rgba(16,185,129,0.12),_transparent_28%),linear-gradient(180deg,#0c1524_0%,#111b2d_100%)] dark:text-white dark:shadow-[0_30px_80px_rgba(2,6,23,0.35)] sm:p-6">
+            <section className="overflow-hidden rounded-[12px] border border-blue-100 bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.18),_transparent_30%),linear-gradient(135deg,#f8fbff_0%,#eef5ff_42%,#e5efff_100%)] p-4 text-slate-900 shadow-[0_24px_60px_rgba(15,23,42,0.08)] dark:border-darkBorder dark:bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.12),_transparent_28%),linear-gradient(180deg,#0c1524_0%,#111b2d_100%)] dark:text-white dark:shadow-[0_30px_80px_rgba(2,6,23,0.35)] sm:p-6">
                 <div className="flex flex-col gap-6">
                     <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                         <div className="flex items-start gap-3">
@@ -277,7 +277,7 @@ const SingleMemberPage = ({
                                 type="button"
                                 variant="outline2"
                                 size="icon"
-                                className="border-emerald-200 bg-white/80 text-slate-700 hover:bg-white hover:text-slate-900 dark:border-white/15 dark:bg-white/5 dark:text-white dark:hover:bg-white/10 dark:hover:text-white"
+                                className="border-blue-200 bg-white/80 text-slate-700 hover:bg-white hover:text-slate-900 dark:border-white/15 dark:bg-white/5 dark:text-white dark:hover:bg-white/10 dark:hover:text-white"
                                 onClick={() => router.back()}
                             >
                                 <ArrowLeft className="size-4" />
@@ -298,7 +298,7 @@ const SingleMemberPage = ({
                             <Button
                                 type="button"
                                 variant="outline2"
-                                className="border-emerald-200 bg-white/80 text-slate-700 hover:bg-white hover:text-slate-900 dark:border-white/15 dark:bg-white/5 dark:text-white dark:hover:bg-white/10 dark:hover:text-white"
+                                className="border-blue-200 bg-white/80 text-slate-700 hover:bg-white hover:text-slate-900 dark:border-white/15 dark:bg-white/5 dark:text-white dark:hover:bg-white/10 dark:hover:text-white"
                                 onClick={() => router.back()}
                             >
                                 Cancel
@@ -318,7 +318,7 @@ const SingleMemberPage = ({
                     <div className="rounded-[12px] border border-white/60 bg-white/72 p-4 backdrop-blur-md dark:border-white/10 dark:bg-white/5 sm:p-6">
                         <div className="grid gap-6 xl:grid-cols-[1.2fr_2fr] xl:items-center">
                             <div className="flex items-start gap-4 sm:gap-5">
-                                <Avatar className="size-20 border border-primary/60 dark:border-primary/60 bg-white shadow-[0_0_0_8px_rgba(16,185,129,0.08)] sm:size-28 dark:bg-white/10">
+                                <Avatar className="size-20 border border-primary/60 dark:border-primary/60 bg-white shadow-[0_0_0_8px_rgba(59,130,246,0.08)] sm:size-28 dark:bg-white/10">
                                     <AvatarImage
                                         src={data?.image}
                                         alt={data?.name}
@@ -334,7 +334,7 @@ const SingleMemberPage = ({
                                         <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">
                                             {data?.name || "Unknown Employee"}
                                         </h2>
-                                        <span className="rounded-full border border-primary bg-emerald-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700 dark:border-emerald-400/30 dark:bg-emerald-500/15 dark:text-primary">
+                                        <span className="rounded-full border border-primary bg-blue-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-blue-700 dark:border-blue-400/30 dark:bg-blue-500/15 dark:text-primary">
                                             {data?.role || "Employee"}
                                         </span>
                                     </div>
@@ -416,7 +416,7 @@ const SingleMemberPage = ({
                             Manage workspace access and activity tracking for this employee.
                         </p>
                     </div>
-                    <div className="inline-flex shrink-0 items-center gap-2 self-start rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-emerald-700 dark:bg-emerald-500/10 dark:text-primary">
+                    <div className="inline-flex shrink-0 items-center gap-2 self-start rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-blue-700 dark:bg-blue-500/10 dark:text-primary">
                         <Sparkles className="size-3.5" />
                         HR Workspace Controls
                     </div>
@@ -434,7 +434,7 @@ const SingleMemberPage = ({
                                 className={cn(
                                     "group relative cursor-pointer select-none overflow-hidden rounded-[12px] border p-4 transition-all duration-200 sm:p-5",
                                     enabled
-                                        ? "border-primary/40 bg-emerald-50/70 shadow-[0_10px_28px_rgba(16,185,129,0.10)] dark:border-primary/30 dark:bg-primary/[0.06] dark:shadow-none"
+                                        ? "border-primary/40 bg-blue-50/70 dark:border-primary/30 dark:bg-primary/[0.06] dark:shadow-none"
                                         : "border-borderColor bg-[#f7fafc] hover:border-primary/30 dark:border-darkBorder dark:bg-darkPrimaryBg dark:hover:border-primary/25",
                                 )}
                             >
@@ -470,7 +470,7 @@ const SingleMemberPage = ({
                                                     className={cn(
                                                         "rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em]",
                                                         enabled
-                                                            ? "bg-emerald-500/15 text-emerald-700 dark:bg-primary/15 dark:text-primary"
+                                                            ? "bg-blue-500/15 text-blue-700 dark:bg-primary/15 dark:text-primary"
                                                             : "bg-slate-500/10 text-subTextColor dark:bg-white/5 dark:text-darkTextSecondary",
                                                     )}
                                                 >
