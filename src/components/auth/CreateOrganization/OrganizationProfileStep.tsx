@@ -49,7 +49,7 @@ const OrganizationProfileStep = ({
             <FormLabel required>Organization Name</FormLabel>
             <FormControl>
               <div className="relative flex items-center">
-                <Building2 className="pointer-events-none absolute left-3 h-6 w-6 text-primary bg-[#edf4fe] p-1 rounded-md" />
+                <Building2 className="pointer-events-none absolute left-3 h-6 w-6 text-primary bg-[#edf4fe] dark:bg-[#77777738] p-1 rounded-md" />
                 <Input
                   autoFocus
                   placeholder="Enter Your Organization Name"
@@ -101,7 +101,7 @@ const OrganizationProfileStep = ({
           <FormLabel required>Address</FormLabel>
           <FormControl>
             <div className="relative flex items-center">
-              <MapPin className="pointer-events-none absolute left-3 h-6 w-6 text-primary bg-[#edf4fe] p-1 rounded-md" />
+              <MapPin className="pointer-events-none absolute left-3 h-6 w-6 text-primary bg-[#edf4fe] dark:bg-[#77777738] p-1 rounded-md" />
               <Input
                 placeholder="e.g. London, United Kingdom"
                 disabled={disabled}

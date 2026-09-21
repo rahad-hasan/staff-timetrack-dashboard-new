@@ -89,7 +89,7 @@ const ChoosePlanPage = async ({
   // gradient tints from that token rather than a hardcoded hue nothing else in
   // the app still uses.
   return (
-    <div className="min-h-screen w-full bg-[#fefefe]">
+    <div className="min-h-screen w-full bg-bgSecondary dark:bg-darkSecondaryBg">
       <header className="flex items-center justify-between px-6 py-5 sm:px-8">
         <div className="flex items-center gap-1.5">
           <Image
@@ -121,7 +121,7 @@ const ChoosePlanPage = async ({
             <div className="w-full flex justify-end">
               <Link
                 href="/dashboard"
-                className="bg-primary px-4 py-1 rounded-full text-white inline-flex items-center gap-1 text-sm font-medium dark:text-darkTextSecondary dark:hover:text-darkTextPrimary"
+                className="bg-primary px-4 py-1 rounded-full text-white inline-flex items-center gap-1 text-sm font-medium dark:text-darkTextPrimary"
               >
                 Skip for now
                 <ArrowRight className="h-4 w-4" />

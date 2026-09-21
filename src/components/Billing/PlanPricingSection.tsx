@@ -161,7 +161,7 @@ export default function PlanPricingSection({
         />
       )} */}
 
-      <TrustBadgeStrip marginTop="mt-20" />
+      <TrustBadgeStrip marginTop="mt-10 md:mt-20" />
 
       <div className="flex justify-center gap-2 items-center mt-5">
         <SecureIcon className="text-black" size={20}/>

@@ -434,7 +434,7 @@ export default function OnboardingPlanSelection({
       <PlanComparisonTable
         plans={visiblePlans}
         cycle={effectiveCycle}
-        className="mt-10"
+        className="mt-10 "
       />
 
       <CheckoutDialog

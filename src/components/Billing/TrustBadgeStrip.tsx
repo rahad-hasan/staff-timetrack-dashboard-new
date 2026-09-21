@@ -40,7 +40,7 @@ export default function TrustBadgeStrip({marginTop = "mt-10"}:{marginTop?:string
               } ${index === features.length - 1 ? 'sm:pr-0' : 'sm:pr-6'}`}
             >
               {/* Icon Container */}
-              <div className="flex-shrink-0 flex items-center justify-center w-14 h-14 rounded-full bg-primary/10 text-primary">
+              <div className="flex items-center justify-center w-14 h-14 rounded-full bg-primary/10 text-primary">
                 {Icon}
               </div>
 

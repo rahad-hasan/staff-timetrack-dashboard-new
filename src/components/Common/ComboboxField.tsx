@@ -105,7 +105,7 @@ const ComboboxField = <TValues extends FieldValues>({
                   >
                     <span className="flex items-center gap-2 truncate">
                       {Icon && (
-                        <span className="flex h-6.5 w-6.5 shrink-0 items-center justify-center rounded-md bg-[#edf4fe]">
+                        <span className="flex h-6.5 w-6.5 shrink-0 items-center justify-center rounded-md bg-[#edf4fe] dark:bg-[#77777738]">
                           <Icon className="h-4 w-4 text-primary" />
                         </span>
                       )}
