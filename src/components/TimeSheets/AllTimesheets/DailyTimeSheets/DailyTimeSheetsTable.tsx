@@ -25,6 +25,13 @@ import { IDailyTimeEntryItem } from "@/types/type";
 const DailyTimeSheetsTable = ({ data }: { data: IDailyTimeEntryItem[] }) => {
   const [sorting, setSorting] = useState<SortingState>([]);
 
+  const getActivityBg = (score: number) => {
+    if (score === null || score === undefined || score <= 30)
+      return "bg-[#f40139]";
+    if (score <= 40) return "bg-yellow-500";
+    return "bg-[#5db0f1]";
+  };
+
   const columns: ColumnDef<IDailyTimeEntryItem>[] = [
     {
       accessorKey: "project",
@@ -74,21 +81,16 @@ const DailyTimeSheetsTable = ({ data }: { data: IDailyTimeEntryItem[] }) => {
         );
       },
       cell: ({ row }) => {
+        const activity = row?.original?.activity_score_avg ?? 0;
         return (
           <div className="flex items-center gap-2">
-            {row?.original?.activity_score_avg === null ||
-            row?.original?.activity_score_avg < 30 ? (
-              <span className=" bg-[#f40139] text-white font-normal px-2 py-0.5 rounded-full">
-                {row?.original?.activity_score_avg === null
-                  ? 0
-                  : row?.original?.activity_score_avg}
-                %
-              </span>
-            ) : (
-              <span className=" bg-[#5db0f1] text-white font-normal px-2 py-0.5 rounded-full">
-                {row?.original?.activity_score_avg}%
-              </span>
-            )}
+            <span
+              className={`${getActivityBg(
+                activity,
+              )} text-white font-normal px-2 py-0.5 rounded-full`}
+            >
+              {row?.original?.activity_score_avg ?? 0}%
+            </span>
           </div>
         );
       },
