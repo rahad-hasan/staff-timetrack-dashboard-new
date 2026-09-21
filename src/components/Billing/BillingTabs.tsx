@@ -197,7 +197,7 @@ export default function BillingTabs({
       activation="manual"
       // variant="loose"
       border={false}
-      className="gap-2 py-1 px-1 rounded-lg  shadow-[5px_05px_10px_rgba(0,0,0,0.05)] border border-borderColor/50 dark:border-darkBorder"
+      className="gap-2 py-1 px-1 rounded-lg  shadow-[5px_05px_10px_rgba(0,0,0,0.02)] border border-borderColor/50 dark:border-darkBorder"
     />
   );
 }

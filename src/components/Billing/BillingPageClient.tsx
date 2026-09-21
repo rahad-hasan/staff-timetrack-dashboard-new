@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { X } from "lucide-react";
+import { ChevronLeft, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { IBillingPlan, IBillingStatus } from "@/types/billing";
@@ -23,6 +23,8 @@ import BillingTabs, {
 } from "@/components/Billing/BillingTabs";
 import InvoiceTab from "@/components/Billing/InvoiceTab";
 import ChangeCardTab from "@/components/Billing/PaymentMethod/ChangeCardTab";
+import Link from "next/link";
+import CompareFeaturesPlan from "./CompareFeaturesPlan";
 
 /**
  * /settings/billing orchestrator (contract §21). Seeds the billing store with
@@ -86,7 +88,9 @@ export default function BillingPageClient({
       try {
         await useBillingStore.getState().fetchStatus();
       } catch {
-        toast.error("Could not refresh billing status. Please reload the page.");
+        toast.error(
+          "Could not refresh billing status. Please reload the page.",
+        );
       }
     })();
     // Seed + initial refresh run once on mount.
@@ -109,6 +113,20 @@ export default function BillingPageClient({
 
   return (
     <div className="mt-4 space-y-4 sm:space-y-6">
+      <div className=" flex justify-between">
+        <BillingTabs
+          activeTab={activeTab}
+          onChange={setTab}
+          isAdmin={isAdmin}
+        />
+        <Link
+          href="/settings"
+          className="inline-flex items-center gap-1 mt-3 sm:mt-0 text-sm text-subTextColor hover:text-headingTextColor dark:text-darkTextSecondary dark:hover:text-darkTextPrimary"
+        >
+          <ChevronLeft size={16} />
+          Back to Settings
+        </Link>
+      </div>
       {/* ──────────────────────────────────────────────────────────────────
           EVERYTHING BELOW, UP TO THE TAB STRIP, IS DELIBERATELY OUTSIDE THE
           TABS AND MUST STAY THERE.
@@ -176,12 +194,6 @@ export default function BillingPageClient({
 
       {st === "canceled" && <SubscriptionEndedScreen />}
 
-      <BillingTabs
-        activeTab={activeTab}
-        onChange={setTab}
-        isAdmin={isAdmin}
-      />
-
       {/* Inactive tabs are UNMOUNTED, not hidden: the invoice table would
           otherwise fetch (and self-heal from Stripe) for someone who never
           opened it, and a hidden #plans anchor would still swallow the
@@ -198,6 +210,7 @@ export default function BillingPageClient({
             activeUserCount={seatCount}
             sectionId="plans"
           />
+
 
           {isAdmin && canMutateSubscription(effective?.entitlements, plans) && (
             <div>

@@ -125,6 +125,7 @@ const LoginClientComponent = () => {
         });
       }
     } catch (error: any) {
+      console.log(error.message)
       toast.error(error.message || "Server is not active", {
         style: {
           backgroundColor: "#ef4444",

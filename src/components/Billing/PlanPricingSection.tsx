@@ -11,6 +11,7 @@ import CheckoutDialog from "./CheckoutDialog";
 import CycleToggle, { supportedCycles } from "./CycleToggle";
 import PlanComparisonTable from "./PlanComparisonTable";
 import SwitchPlanDialog from "./SwitchPlanDialog";
+import CompareFeaturesPlan from "./CompareFeaturesPlan";
 
 /**
  * Pricing grid (guide §2/§5). The shared `CycleToggle` only shows cycles at
@@ -69,6 +70,7 @@ export default function PlanPricingSection({
   const [selectedPlan, setSelectedPlan] = useState<IBillingPlan | null>(null);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [switchOpen, setSwitchOpen] = useState(false);
+  const [showCompareFeatures, setShowCompareFeatures] = useState(false);
 
   const handleCheckout = (plan: IBillingPlan) => {
     setSelectedPlan(plan);
@@ -94,11 +96,19 @@ export default function PlanPricingSection({
     >
       <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="mb-1.5 text-xl font-medium text-headingTextColor dark:text-darkTextPrimary">
-            Plans &amp; pricing
-          </h2>
-          <p className="text-subTextColor dark:text-darkTextSecondary">
-            Choose the plan that fits your team.
+          <div className="w-full">
+            <span className="text-sm text-primary bg-primary/10 px-3 py-1 rounded-full">
+              Pricing
+            </span>
+          </div>
+
+          <h1 className="text-3xl mt-4 font-semibold text-headingTextColor dark:text-darkTextPrimary sm:text-4xl">
+            Simple pricing.{" "}
+            <span className=" text-primary">Powerful features</span>
+          </h1>
+          <p className="mt-3 text-subTextColor dark:text-darkTextSecondary">
+            Choose the plan that fits your team. All plans are per user, per
+            month
           </p>
         </div>
 
@@ -106,7 +116,7 @@ export default function PlanPricingSection({
           plans={plans}
           value={effectiveCycle}
           onChange={setCycle}
-          className="mt-3 self-start sm:mt-0 sm:self-auto"
+          className="gap-2 py-1 px-1 rounded-lg  shadow-[5px_05px_10px_rgba(0,0,0,0.02)] border border-borderColor/50 dark:border-darkBorder"
         />
       </div>
 
@@ -115,7 +125,7 @@ export default function PlanPricingSection({
           No plans are available right now.
         </p>
       ) : (
-        <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-6 pt-3">
+        <div className="grid lg:grid-cols-2 xl:grid-cols-3 gap-6 pt-14">
           {visiblePlans.map((plan) => (
             <PlanCard
               key={plan.id}
@@ -142,14 +152,24 @@ export default function PlanPricingSection({
           Withheld on the empty state: the table self-guards on an empty plan
           list, but a "Compare All Features" trigger under a "no plans
           available" notice still promises a comparison of nothing. */}
-      {visiblePlans.length > 0 && (
+      {/* {visiblePlans.length > 0 && (
         <PlanComparisonTable
           plans={visiblePlans}
           cycle={effectiveCycle}
           className="mt-10"
         />
-      )}
+      )} */}
 
+      <div className=" flex justify-center">
+        <button
+          className=" cursor-pointer gap-2 rounded-full bg-primary/10 px-5 py-2 font-semibold text-primary"
+          onClick={() => setShowCompareFeatures((prev) => !prev)}
+        >
+          {showCompareFeatures ? "Hide" : "Show Details"}
+        </button>
+      </div>
+
+      {showCompareFeatures && <CompareFeaturesPlan margin="mt-10" />}
       {/* Unconditional, unlike the table above: the answers are about how
           billing behaves, not about what is on the grid, so they stay true (and
           useful) on a cycle where nothing happens to be sold. */}

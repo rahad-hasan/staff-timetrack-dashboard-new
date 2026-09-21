@@ -42,19 +42,6 @@ const BillingPage = async ({ searchParams }: ISearchParamsProps) => {
 
     return (
         <div>
-            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-2 sm:mb-5">
-                <HeadingComponent
-                    heading="Billing & Plans"
-                    subHeading="Manage your subscription, seats, invoices and payment status"
-                ></HeadingComponent>
-                <Link
-                    href="/settings"
-                    className="inline-flex items-center gap-1 mt-3 sm:mt-0 text-sm text-subTextColor hover:text-headingTextColor dark:text-darkTextSecondary dark:hover:text-darkTextPrimary"
-                >
-                    <ChevronLeft size={16} />
-                    Back to Settings
-                </Link>
-            </div>
             <BillingPageClient
                 initialStatus={statusRes?.success ? statusRes.data : null}
                 plans={

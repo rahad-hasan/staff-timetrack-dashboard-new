@@ -64,6 +64,8 @@ const ChoosePlanPage = async ({
   const plans = plansRes?.data ?? [];
   const entitlements = statusRes?.data?.entitlements ?? null;
 
+  console.log(plans)
+
   if (canMutateSubscription(entitlements, plans)) {
     redirect("/dashboard");
   }

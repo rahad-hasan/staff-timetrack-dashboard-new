@@ -96,7 +96,7 @@ export async function baseApi<T = any>(
   const fullUrl = url.startsWith("http")
     ? url
     : `${process.env.NEXT_PUBLIC_API_URL}/api/v1${url}`;
-
+  console.log(fullUrl)
   const doFetch = async () =>
     fetch(fullUrl, {
       method,
