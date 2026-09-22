@@ -9,7 +9,7 @@ import {
   // CYCLE_PERIOD_NOUN, 
   IBillingPlan } from "@/types/billing";
 import Image from "next/image";
-import staterIcon from "@/components/Icons/PlanIcons/plan_starter.svg";
+import StarterIcon from "@/components/Icons/PlanIcons/plan_starter.svg";
 import proIcon from "@/components/Icons/PlanIcons/plan_pro.svg";
 import maxIcon from "@/components/Icons/PlanIcons/plan_max.svg";
 import starIcon from "@/components/Icons/PlanIcons/star.svg";
@@ -95,7 +95,7 @@ export default function PlanCard({
             className={` -mt-[3px]`}
             width={14}
             height={14}
-            alt="stater"
+            alt="Starter"
           />
           Most Popular
         </div>
@@ -103,13 +103,13 @@ export default function PlanCard({
 
       <div className="mb-4 flex items-start justify-between gap-2">
         <div className="flex items-start gap-5 border-b border-borderColor dark:border-darkBorder w-full">
-          {plan.name === "Stater" ? (
+          {plan.name === "Starter" ? (
             <Image
-              src={staterIcon}
+              src={StarterIcon}
               className={`bg-[#ddf2e6] p-4 rounded-lg`}
               width={60}
               height={60}
-              alt="stater"
+              alt="Starter"
             />
           ) : plan.name === "Max" ? (
             <Image
@@ -117,7 +117,7 @@ export default function PlanCard({
               className={`bg-[#f6edff] p-4 rounded-lg`}
               width={60}
               height={60}
-              alt="stater"
+              alt="Starter"
             />
           ) : (
             <Image
@@ -125,7 +125,7 @@ export default function PlanCard({
               className={`bg-[#daedfd] p-4 rounded-lg`}
               width={60}
               height={60}
-              alt="stater"
+              alt="Starter"
             />
           )}
 
@@ -136,9 +136,9 @@ export default function PlanCard({
               </h3>
 
               {plan.badge_text && (
-                // plan.name === "Stater" ? "border-[#1ba855] text-[#1ba855]" : plan.name === "Max" ? "border-[#c286ff] text-[#c286ff]" : " bg-[linear-gradient(180deg,#427fe3,#3360c8)]
+                // plan.name === "Starter" ? "border-[#1ba855] text-[#1ba855]" : plan.name === "Max" ? "border-[#c286ff] text-[#c286ff]" : " bg-[linear-gradient(180deg,#427fe3,#3360c8)]
                 <span
-                  className={` ${plan.name === "Stater" ? "bg-[#1ba855]" : plan.name === "Max" ? "border-[#c286ff]" : "bg-[#0788f3]"} text-xs px-3 py-0.5 rounded-full text-white`}
+                  className={` ${plan.name === "Starter" ? "bg-[#1ba855]" : plan.name === "Max" ? "border-[#c286ff]" : "bg-[#0788f3]"} text-xs px-3 py-0.5 rounded-full text-white`}
                 >
                   {plan.badge_text && plan.badge_text}
                 </span>
@@ -234,7 +234,7 @@ export default function PlanCard({
         ) : isCurrent && isTrial && !isFreePlan(plan) ? (
           <button
             type="button"
-            className={`w-full rounded-md border font-semibold cursor-pointer py-2.5 text-center text-sm ${plan.name === "Stater" ? "border-[#1ba855] text-[#1ba855]" : plan.name === "Max" ? "border-[#c286ff] text-[#c286ff]" : " bg-[linear-gradient(180deg,#427fe3,#3360c8)] text-white"}`}
+            className={`w-full rounded-md border font-semibold cursor-pointer py-2.5 text-center text-sm ${plan.name === "Starter" ? "border-[#1ba855] text-[#1ba855]" : plan.name === "Max" ? "border-[#c286ff] text-[#c286ff]" : " bg-[linear-gradient(180deg,#427fe3,#3360c8)] text-white"}`}
             onClick={onCheckout}
           >
             Upgrade now
@@ -243,7 +243,7 @@ export default function PlanCard({
           <button
             type="button"
             disabled
-            className={`w-full rounded-md border font-semibold cursor-not-allowed py-2.5 text-center text-sm ${plan.name === "Stater" ? "border-[#1ba855]/50 text-[#1ba855]/50" : plan.name === "Max" ? "border-[#c286ff]/50 text-[#c286ff]/50" : " bg-[linear-gradient(180deg,#427fe3,#3360c8)] text-white/50"}`}
+            className={`w-full rounded-md border font-semibold cursor-not-allowed py-2.5 text-center text-sm ${plan.name === "Starter" ? "border-[#1ba855]/50 text-[#1ba855]/50" : plan.name === "Max" ? "border-[#c286ff]/50 text-[#c286ff]/50" : " bg-[linear-gradient(180deg,#427fe3,#3360c8)] text-white/50"}`}
           >
             Current plan
           </button>
@@ -261,7 +261,7 @@ export default function PlanCard({
         ) : hasPaid ? (
           <Button
             type="button"
-            className={`w-full rounded-md border font-semibold cursor-pointer py-2.5 text-center text-sm ${plan.name === "Stater" ? "border-[#1ba855] text-[#1ba855]" : plan.name === "Max" ? "border-[#c286ff] text-[#c286ff]" : " bg-[linear-gradient(180deg,#427fe3,#3360c8)] text-white"}`}
+            className={`w-full rounded-md border font-semibold cursor-pointer py-2.5 text-center text-sm ${plan.name === "Starter" ? "border-[#1ba855] text-[#1ba855]" : plan.name === "Max" ? "border-[#c286ff] text-[#c286ff]" : " bg-[linear-gradient(180deg,#427fe3,#3360c8)] text-white"}`}
             onClick={onSwitch}
           >
             Switch to this plan
@@ -297,7 +297,7 @@ export default function PlanCard({
               <div className=" flex items-center gap-2">
                 {feature.included ? (
                   <Check
-                    className={`-mt-0.5 p-0.5 h-4 w-4 shrink-0 rounded-full text-white ${plan.name === "Stater" ? "bg-[#1ba855]" : plan.name === "Max" ? "bg-[#c286ff]" : " bg-primary"}`}
+                    className={`-mt-0.5 p-0.5 h-4 w-4 shrink-0 rounded-full text-white ${plan.name === "Starter" ? "bg-[#1ba855]" : plan.name === "Max" ? "bg-[#c286ff]" : " bg-primary"}`}
                   />
                 ) : (
                   <MinusCircle className="-mt-0.5 h-4 w-4 shrink-0 text-subTextColor dark:text-darkTextSecondary" />
