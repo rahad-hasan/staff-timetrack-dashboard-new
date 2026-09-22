@@ -27,6 +27,7 @@ import EyeIcon from "@/components/Icons/EyeIcon";
 const LeaveHistoryReport = ({
   data,
   canManageUsers,
+  canManageLeaves,
   users = [],
   total,
   currentPage,
@@ -34,6 +35,7 @@ const LeaveHistoryReport = ({
 }: {
   data: LeaveRecord[];
   canManageUsers: boolean;
+  canManageLeaves: boolean;
   users?: { id: string; label: string; avatar: string }[];
   total: number;
   currentPage: number;
@@ -80,6 +82,8 @@ const LeaveHistoryReport = ({
             setSelectedLeave(null);
           }
         }}
+        canManageLeaves={canManageLeaves}
+        onMutated={() => router.refresh()}
       />
 
       <div className="rounded-[12px] border border-borderColor p-3 sm:p-5 dark:border-darkBorder dark:bg-darkSecondaryBg">

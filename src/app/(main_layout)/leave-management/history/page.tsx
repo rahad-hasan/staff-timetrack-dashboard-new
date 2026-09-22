@@ -19,6 +19,7 @@ const LeaveHistoryPage = async ({ searchParams }: ISearchParamsProps) => {
   const canManageUsers = ["admin", "manager", "hr"].includes(
     currentUser?.role ?? "",
   );
+  const canManageLeaves = ["admin", "hr"].includes(currentUser?.role ?? "");
   const currentPage =
     typeof params.page === "string" ? Number(params.page) || 1 : 1;
 
@@ -54,6 +55,7 @@ const LeaveHistoryPage = async ({ searchParams }: ISearchParamsProps) => {
         <LeaveHistoryReport
           data={historyResponse.data ?? []}
           canManageUsers={canManageUsers}
+          canManageLeaves={canManageLeaves}
           users={users}
           total={(historyResponse.meta?.total as number) ?? 0}
           currentPage={currentPage}

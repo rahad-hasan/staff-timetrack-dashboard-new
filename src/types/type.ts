@@ -1102,6 +1102,18 @@ export interface LeaveRecord {
   approved_hours: number;
   approved_hours_formatted: string;
   reason: string;
+  document?: string | null;
+  /**
+   * Present on GET /leaves/details/user rows, whose dates/counts/hours are
+   * clipped to the selected year; holds the stored values.
+   */
+  unscoped?: {
+    start_date: string;
+    end_date: string;
+    leave_count: number;
+    approved_hours: number;
+    approved_hours_formatted: string;
+  };
   hr_approved: boolean;
   admin_approved: boolean;
   is_rejected: boolean;
@@ -1113,6 +1125,13 @@ export interface LeaveRecord {
   leaveType: LeaveType;
   user?: LeaveUser;
   company?: Company;
+}
+
+export interface UpdateLeaveRequestPayload {
+  leave_type_id?: number;
+  start_date?: string;
+  end_date?: string;
+  reason?: string;
 }
 
 export interface AdminLeaveHistoryFilters {
