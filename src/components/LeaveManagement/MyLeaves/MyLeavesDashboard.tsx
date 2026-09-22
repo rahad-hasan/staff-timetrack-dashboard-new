@@ -30,6 +30,7 @@ type MyLeavesDashboardProps = {
   leaveTypes: LeaveRequestTypeDropdownRecord[];
   currentUserId?: number;
   canManageUsers?: boolean;
+  canManageLeaves?: boolean;
   users?: { id: string; label: string; avatar: string }[];
   allowRequestLeave?: boolean;
   headingTitle?: string;
@@ -44,6 +45,7 @@ const MyLeavesDashboard = ({
   leaveTypes,
   currentUserId,
   canManageUsers = false,
+  canManageLeaves = false,
   users = [],
   allowRequestLeave,
   headingTitle,
@@ -113,6 +115,8 @@ const MyLeavesDashboard = ({
             setSelectedLeave(null);
           }
         }}
+        canManageLeaves={canManageLeaves}
+        onMutated={() => router.refresh()}
       />
       <Dialog open={requestOpen} onOpenChange={setRequestOpen}>
         {requestOpen && canRequestLeave ? (

@@ -21,6 +21,7 @@ const MyLeavesPage = async ({ searchParams }: ISearchParamsProps) => {
   const canManageUsers = ["admin", "manager", "hr"].includes(
     currentUser?.role ?? "",
   );
+  const canManageLeaves = ["admin", "hr"].includes(currentUser?.role ?? "");
 
   const selectedUserId =
     canManageUsers && typeof params.user_id === "string"
@@ -100,6 +101,7 @@ const MyLeavesPage = async ({ searchParams }: ISearchParamsProps) => {
         leaveTypes={leaveTypesResponse.data}
         currentUserId={currentUser?.id}
         canManageUsers={canManageUsers}
+        canManageLeaves={canManageLeaves}
         users={memberUsers}
         allowRequestLeave={currentUser?.id === summaryData.user.id}
       />

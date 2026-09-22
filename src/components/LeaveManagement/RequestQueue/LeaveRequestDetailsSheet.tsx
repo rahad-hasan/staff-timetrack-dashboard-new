@@ -19,6 +19,7 @@ import {
 import { toast } from "sonner";
 
 import { approveRejectLeave } from "@/actions/leaves/action";
+import LeaveAdminActions from "@/components/LeaveManagement/Common/LeaveAdminActions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -624,6 +625,14 @@ const LeaveRequestDetailsSheet = ({
                   )}
                 </div>
               ) : null}
+
+              <LeaveAdminActions
+                key={leave.id}
+                leave={leave}
+                canManage={canTakeAction}
+                onMutated={onMutated}
+                onClose={() => handleOpenChange(false)}
+              />
             </>
           ) : (
             <div className="rounded-[12px] border border-dashed border-borderColor px-5 py-10 text-center text-subTextColor dark:text-darkTextSecondary dark:border-darkBorder">

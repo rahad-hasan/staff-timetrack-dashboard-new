@@ -95,6 +95,19 @@ export function formatLeaveMetric(value: number, suffix = "days") {
   return `${value} ${suffix}`;
 }
 
+/**
+ * Leave dates arrive as ISO strings at UTC midnight ("2026-09-14T00:00:00.000Z").
+ * `new Date(iso)` would shift the calendar day in western timezones, so only the
+ * `yyyy-MM-dd` prefix is read and turned into a local-midnight Date.
+ */
+export function isoDateToLocalDate(iso: string): Date | null {
+  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
+  if (!match) return null;
+
+  const [, year, month, day] = match;
+  return new Date(Number(year), Number(month) - 1, Number(day));
+}
+
 export function buildUserScopedLeaveTypes(
   leaveTypes: LeaveTypeRecord[],
   summaryTypes: LeaveTypeSummary[],

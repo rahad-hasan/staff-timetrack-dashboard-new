@@ -22,6 +22,7 @@ import {
     SheetHeader,
     SheetTitle,
 } from "@/components/ui/sheet";
+import LeaveAdminActions from "@/components/LeaveManagement/Common/LeaveAdminActions";
 import { getLeaveStatusTheme, getLeaveTypeTheme } from "@/lib/leave";
 import { LeaveRecord, LeaveStatus } from "@/types/type";
 import { formatTZDayMonthYear } from "@/utils";
@@ -31,6 +32,8 @@ type LeaveHistoryDetailsSheetProps = {
     user: { id: number, name: string, image: string | null, email: string, gender: string },
     open: boolean;
     onOpenChange: (open: boolean) => void;
+    canManageLeaves: boolean;
+    onMutated: () => void;
 };
 type AttachmentInfo = {
     url: string;
@@ -58,6 +61,8 @@ const MyLeaveDetailsSheet = ({
     user,
     open,
     onOpenChange,
+    canManageLeaves,
+    onMutated,
 }: LeaveHistoryDetailsSheetProps) => {
     const leaveTypeTheme = useMemo(
         () => getLeaveTypeTheme(leave?.leaveType?.color_code),
@@ -430,6 +435,15 @@ const MyLeaveDetailsSheet = ({
                                     </p>
                                 </div>
                             </div>
+
+                            <LeaveAdminActions
+                                key={leave.id}
+                                leave={leave}
+                                canManage={canManageLeaves}
+                                onMutated={onMutated}
+                                onClose={() => onOpenChange(false)}
+                                owner={{ name: user?.name, gender: user?.gender }}
+                            />
                         </>
                     ) : (
                         <div className="rounded-[24px] border border-dashed border-borderColor px-5 py-10 text-center text-subTextColor dark:text-darkTextSecondary dark:border-darkBorder">

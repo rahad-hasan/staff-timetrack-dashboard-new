@@ -721,6 +721,48 @@ export const createLeaveRequestSchema = (
 export const leaveRequestSchema = createLeaveRequestSchema();
 
 /**
+ * Admin/HR edit of an existing leave request.
+ *
+ * Standalone on purpose: the create schema above is already refined, and the
+ * edit form has no document upload and no min-notice / past-date gating (the
+ * backend does not apply those rules to admin edits either).
+ */
+const requiredLeaveDate = (label: string) =>
+  z
+    .date()
+    .nullable()
+    .refine((date) => date !== null && !isNaN(date.getTime()), {
+      message: `${label} is required`,
+    });
+
+export const leaveRequestEditSchema = z
+  .object({
+    leaveTypeId: z.string().min(1, "Leave type is required"),
+    startDate: requiredLeaveDate("Start date"),
+    endDate: requiredLeaveDate("End date"),
+    reason: z
+      .string()
+      .trim()
+      .min(1, "Reason is required")
+      .max(2000, "Reason must not exceed 2000 characters"),
+  })
+  .superRefine((values, ctx) => {
+    if (
+      values.startDate &&
+      values.endDate &&
+      values.endDate < values.startDate
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["endDate"],
+        message: "End date cannot be before the start date",
+      });
+    }
+  });
+
+export type LeaveEditFormValues = z.infer<typeof leaveRequestEditSchema>;
+
+/**
  * Payroll manual adjustments — REPLACE editor.
  *
  * `amount` is validated as a string and converted to a number by the caller on

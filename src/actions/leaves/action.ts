@@ -2,7 +2,7 @@
 
 import { buildQuery } from "@/utils/buildQuery";
 import { baseApi } from "../baseApi";
-import { AdminLeaveHistoryFilters, CreateLeaveHolidayPayload, CreateLeaveTypePayload, ILeaveDetailsResponse, ILeaveRequest, IResponse, LeaveCalendarData, LeaveCalendarFilters, LeaveHoliday, LeaveHolidayListData, LeaveRecord, LeaveRequestTypeDropdownRecord, LeaveTypeListFilters, LeaveTypeRecord, MandatoryLeaveImportPayload, MandatoryLeaveParsePayload, MandatoryLeaveParseResult, UpdateLeaveHolidayPayload, UpdateLeaveTypePayload, UserLeaveSummary } from "@/types/type";
+import { AdminLeaveHistoryFilters, CreateLeaveHolidayPayload, CreateLeaveTypePayload, ILeaveDetailsResponse, ILeaveRequest, IResponse, LeaveCalendarData, LeaveCalendarFilters, LeaveHoliday, LeaveHolidayListData, LeaveRecord, LeaveRequestTypeDropdownRecord, LeaveTypeListFilters, LeaveTypeRecord, MandatoryLeaveImportPayload, MandatoryLeaveParsePayload, MandatoryLeaveParseResult, UpdateLeaveHolidayPayload, UpdateLeaveRequestPayload, UpdateLeaveTypePayload, UserLeaveSummary } from "@/types/type";
 import { revalidatePath, revalidateTag } from "next/cache";
 
 // export const getLeave = async (query = {}): Promise<IResponse<ILeaveRequest[]>> => {
@@ -71,6 +71,15 @@ const revalidateHolidayViews = () => {
   revalidatePath("/leave-management/holidays");
   revalidatePath("/leave-management/calendar");
   revalidatePath("/leave-management/my-leaves");
+};
+
+const revalidateLeaveViews = () => {
+  revalidateTag("leaves");
+  revalidateTag("leave-types");
+  revalidatePath("/leave-management/my-leaves");
+  revalidatePath("/leave-management/history");
+  revalidatePath("/leave-management/request-queue");
+  revalidatePath("/leave-management/calendar");
 };
 
 export const getLeaveCalendar = async (query: LeaveCalendarFilters = {}): Promise<IResponse<LeaveCalendarData>> => {
@@ -272,8 +281,25 @@ export const deleteLeave = async (id: number): Promise<IResponse<null>> => {
   });
 
   if (response?.success) {
-    revalidateTag("leaves");
-    revalidateTag("leave-types");
+    revalidateLeaveViews();
+  }
+
+  return response;
+};
+
+export const updateLeaveRequest = async (
+  id: number,
+  data: UpdateLeaveRequestPayload,
+): Promise<IResponse<LeaveRecord>> => {
+  const response = await baseApi(`/leaves/${id}`, {
+    method: "PATCH",
+    body: data,
+    tag: "leaves",
+    cache: "no-cache",
+  });
+
+  if (response?.success) {
+    revalidateLeaveViews();
   }
 
   return response;
