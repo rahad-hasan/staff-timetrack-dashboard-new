@@ -365,7 +365,7 @@ const Profile = () => {
                         </div>
                     }
 
-                    <div className="border-b pb-8 mt-2">
+                    <div className="border-b border-borderColor dark:border-darkBorder pb-8 mt-2">
                         <h2 className=" text-lg sm:text-2xl font-medium mb-3 text-headingTextColor dark:text-darkTextPrimary">Team Role</h2>
                         <span
                             className=" border bg-[#f5f6f6] px-4 py-1.5 rounded-lg dark:bg-gray-700 text-headingTextColor dark:text-darkTextPrimary dark:border-darkBorder"
