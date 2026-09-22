@@ -135,6 +135,7 @@ const SummaryRow = memo(
             type="button"
             variant="outline"
             size="sm"
+            className="dark:border-primary"
             onClick={handleView}
             aria-label={`View suspension events for ${row.user.name}`}
             aria-haspopup="dialog"
