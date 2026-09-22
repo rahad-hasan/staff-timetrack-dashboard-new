@@ -94,7 +94,7 @@ const MyLeavesPage = async ({ searchParams }: ISearchParamsProps) => {
   // ).sort((first, second) => first.label.localeCompare(second.label));
 
   return (
-    <Suspense fallback={<MyLeaveSkeleton />}>
+    <Suspense fallback={<MyLeaveSkeleton />}  key={`${JSON.stringify(params.user_id)}:${JSON.stringify(params.year)}`}>
       <MyLeavesDashboard
         data={summaryData}
         leaveTypes={leaveTypesResponse.data}
