@@ -234,7 +234,7 @@ const PayrollSettingsBoard = ({
       />
 
       <div className="space-y-6">
-        <div className="rounded-[12px] border border-borderColor bg-[linear-gradient(135deg,#ffffff_0%,#f7fafc_45%,#fdf4ff_100%)] p-3 sm:p-5 dark:border-darkBorder dark:bg-[linear-gradient(135deg,rgba(50,57,71,1)_0%,rgba(33,39,51,1)_100%)]">
+        <div className="rounded-[12px] border border-borderColor bg-[linear-gradient(135deg,#ffffff_0%,#f7fafc_45%,#fdf4ff_100%)] p-3 sm:p-5 dark:border-darkBorder dark:bg-[linear-gradient(135deg,rgba(50,57,71,0.2)_0%,rgba(33,39,51,1)_100%)]">
           <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
             <div className="max-w-3xl">
               <p className="text-sm uppercase tracking-[0.16em] text-subTextColor dark:text-darkTextSecondary">
@@ -510,7 +510,9 @@ const PayrollSettingsBoard = ({
                                       : "This profile will resume driving payroll calculations for this employee."
                                   }
                                   confirmText={
-                                    profile.is_active ? "Deactivate" : "Activate"
+                                    profile.is_active
+                                      ? "Deactivate"
+                                      : "Activate"
                                   }
                                   cancelText="Cancel"
                                   confirmClassName={
