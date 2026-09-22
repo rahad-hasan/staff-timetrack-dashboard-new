@@ -84,7 +84,7 @@ const SideBar = () => {
         >
           <div
             className={`flex items-center justify-between bg-bgPrimary dark:bg-darkPrimaryBg  mx-4 rounded-2xl border border-borderColor dark:border-darkBorder/70 ${
-              isCollapsed ? "flex-col py-2 px-2" : "flex-row py-2.5 px-3"
+              isCollapsed ? "flex-col py-2 px-2 gap-2.5" : "flex-row py-2.5 px-3"
             } transition-all duration-300`}
           >
             {isCollapsed ? (
