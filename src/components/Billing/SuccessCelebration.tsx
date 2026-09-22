@@ -2,10 +2,15 @@
 
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
-import { Clock, LineChart, MonitorPlay, Receipt, Users } from "lucide-react";
-
 import { BILLING_URL } from "@/lib/billing";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import successIcon from "@/assets/success-icon.png";
+import detailedInsights from "@/components/Icons/PlanIcons/detailed-insights.svg";
+import screenshotMonitoring from "@/components/Icons/PlanIcons/screenshot-monitoring.svg";
+import teamManagement from "@/components/Icons/PlanIcons/team-management.svg";
+import timeTrackingIcon from "@/components/Icons/PlanIcons/time-tracking-icon.svg";
+import InvoiceIcon from "../Icons/PlanIcons/InvoiceIcon";
 
 /**
  * The designed "you're subscribed" screen: confetti-ringed check, plan
@@ -86,26 +91,26 @@ const HALOS = [
 
 const FEATURES = [
   {
-    icon: Clock,
+    icon: timeTrackingIcon,
     label: "Time Tracking",
     sub: "Track work hours accurately",
     // --primary is blue in both themes, so the token needs no dark pair here.
     tint: "bg-primary/10 text-primary",
   },
   {
-    icon: LineChart,
+    icon: detailedInsights,
     label: "Detailed Insights",
     sub: "Get productive Analytics",
     tint: "bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400",
   },
   {
-    icon: Users,
+    icon: teamManagement,
     label: "Team Management",
     sub: "Manage your team effortlessly",
     tint: "bg-purple-50 text-purple-600 dark:bg-purple-500/10 dark:text-purple-400",
   },
   {
-    icon: MonitorPlay,
+    icon: screenshotMonitoring,
     label: "Screenshot Monitoring",
     sub: "Ensure accountability",
     tint: "bg-orange-50 text-orange-600 dark:bg-orange-500/10 dark:text-orange-400",
@@ -168,8 +173,8 @@ export default function SuccessCelebration({
   });
 
   return (
-    <div className="w-full max-w-xl">
-      <div className="rounded-2xl border border-borderColor bg-bgPrimary p-6 text-center shadow-sm sm:p-8 dark:border-darkBorder dark:bg-darkPrimaryBg">
+    <div className="w-full max-w-2xl">
+      <div className="rounded-2xl border border-borderColor bg-bgPrimary p-6 text-center sm:p-8 dark:border-darkBorder dark:bg-darkPrimaryBg">
         <svg
           viewBox="0 0 220 220"
           role="img"
@@ -258,8 +263,9 @@ export default function SuccessCelebration({
           ))}
         </svg>
 
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-700 ring-1 ring-green-200 dark:bg-green-500/10 dark:text-green-400 dark:ring-green-500/25">
-          🎉 Payment Successful!
+        <span className="mt-8 inline-flex items-center gap-1.5 rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-[#1BA855] ring-1 ring-green-200 dark:bg-green-500/10 dark:text-green-400 dark:ring-green-500/25">
+          <Image src={successIcon} className="w-4" alt="icon" width={50} height={50} />
+          Payment Successful!
         </span>
 
         <h1 className="mt-4 text-2xl font-semibold text-headingTextColor sm:text-3xl dark:text-darkTextPrimary">
@@ -269,7 +275,7 @@ export default function SuccessCelebration({
           Your subscription is now active
         </p>
 
-        <div className="mt-8 grid grid-cols-2 gap-5 sm:grid-cols-4">
+        <div className="mt-8 grid grid-cols-2 gap-2 sm:grid-cols-4">
           {FEATURES.map((feature) => (
             <div
               key={feature.label}
@@ -278,7 +284,7 @@ export default function SuccessCelebration({
               <span
                 className={`flex size-11 items-center justify-center rounded-full ${feature.tint}`}
               >
-                <feature.icon className="size-5" />
+                <Image src={feature.icon} alt="icon" width={80} height={80} />
               </span>
               <span className="text-sm font-semibold text-headingTextColor dark:text-darkTextPrimary">
                 {feature.label}
@@ -296,7 +302,7 @@ export default function SuccessCelebration({
           </Button>
           <Button asChild variant="outline2" className="w-full">
             <Link href={BILLING_URL}>
-              <Receipt className="size-4" />
+              <InvoiceIcon className="mt-0.5" size={20}/>
               View Billing
             </Link>
           </Button>
