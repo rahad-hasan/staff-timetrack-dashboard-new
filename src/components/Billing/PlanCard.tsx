@@ -259,13 +259,13 @@ export default function PlanCard({
             Settle your open invoice to change plans
           </p>
         ) : hasPaid ? (
-          <Button
+          <button
             type="button"
             className={`w-full rounded-md border font-semibold cursor-pointer py-2.5 text-center text-sm ${plan.name === "Starter" ? "border-[#1ba855] text-[#1ba855]" : plan.name === "Max" ? "border-[#c286ff] text-[#c286ff]" : " bg-[linear-gradient(180deg,#427fe3,#3360c8)] text-white"}`}
             onClick={onSwitch}
           >
             Switch to this plan
-          </Button>
+          </button>
         ) : plan.name === "Max" ? (
           <button
             type="button"
