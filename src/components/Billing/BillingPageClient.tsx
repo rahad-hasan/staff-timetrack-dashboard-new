@@ -8,9 +8,7 @@ import { IBillingPlan, IBillingStatus } from "@/types/billing";
 import { canMutateSubscription } from "@/lib/billing";
 import { useBillingStore } from "@/store/billingStore";
 import { Button } from "@/components/ui/button";
-
 import CurrentPlanCard from "@/components/Billing/CurrentPlanCard";
-import SeatUsageCard from "@/components/Billing/SeatUsageCard";
 import PayNowCard from "@/components/Billing/PayNowCard";
 import SubscriptionEndedScreen from "@/components/Billing/SubscriptionEndedScreen";
 import PlanPricingSection from "@/components/Billing/PlanPricingSection";

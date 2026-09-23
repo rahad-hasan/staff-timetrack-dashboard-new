@@ -61,13 +61,13 @@ export default function CurrentPlanCard({
 
   return (
     <div className="w-full border border-borderColor rounded-lg p-3 sm:p-4 lg:flex lg:items-center bg-white dark:bg-darkPrimaryBg dark:border-darkBorder">
-      <div className="w-[400px] flex flex-col gap-4 pr-8 sm:flex-row sm:items-start sm:justify-between">
+      <div className="min-w-[450px] flex flex-col gap-4 pr-8 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <p className="text-sm text-subTextColor dark:text-darkTextSecondary mb-1">
             Current plan
           </p>
           <div className="flex flex-wrap items-center gap-2 mb-2">
-            <h3 className="text-xl font-medium text-headingTextColor dark:text-darkTextPrimary">
+            <h3 className="text-xl font-medium ?text-headingTextColor dark:text-darkTextPrimary">
               {entitlements.plan_name ?? "—"}
             </h3>
             {entitlements.tier && (
@@ -134,7 +134,7 @@ export default function CurrentPlanCard({
         </div>
 
         {isAdmin && entitlements.status === "active" && (
-          <div className="shrink-0">
+          <div className="shrink-0 ">
             <CancelSubscriptionDialog />
           </div>
         )}
