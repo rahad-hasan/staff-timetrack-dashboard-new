@@ -11,13 +11,28 @@ import {
 } from "@/actions/billing/action";
 import { BILLING_URL } from "@/lib/billing";
 import { storeVerifiedSubscriptionTransition } from "@/lib/verifiedSubscriptionTransition";
+import type { IBillingEntitlements } from "@/types/billing";
 import { Button } from "@/components/ui/button";
 import SuccessCelebration from "./SuccessCelebration";
 
 const POLL_INTERVAL_MS = 4000;
 const TIMEOUT_MS = 90_000;
+/**
+ * The wait when there is NO checkout reference (see the component docblock):
+ * nothing is being confirmed, only billing/status is read, so a fraction of
+ * the payment-processing budget above is plenty — an active company answers
+ * on the first poll, and a stray link must not spin for a minute and a half.
+ */
+const STATUS_ONLY_TIMEOUT_MS = 15_000;
 /** Re-attempt server-side confirm every Nth poll (~12s) until it concludes. */
 const CONFIRM_EVERY_N_POLLS = 3;
+/**
+ * The bare document the purchase conversion fires on. It must be reached by a
+ * full navigation with no query/hash (`isSafeDocument` in
+ * `@/lib/verifiedSubscriptionGoogleAds`), and it returns here without a
+ * reference once the tag has had its bounded chance.
+ */
+const CONVERSION_URL = "/billing/subscription-verified";
 
 /**
  * Where the failed state sends the user to try again.
@@ -95,6 +110,21 @@ const isSuccessStatus = (status: string | null | undefined): boolean =>
   status === "active" || status === "trialing";
 
 /**
+ * "The purchase went through" as billing/status reports it. Neither status
+ * counts on its own: a free/downgraded plan is `active` with no Stripe
+ * subscription behind it, and `trialing` alone is the company's pre-existing
+ * reverse trial — either would report success the instant this page mounts,
+ * even on a declined card. Only a Stripe-backed snapshot is proof. The flag is
+ * optional on older cached snapshots; absent, we keep waiting rather than
+ * guess in the user's favour.
+ */
+const isPurchasedEntitlement = (
+  entitlements: IBillingEntitlements | null | undefined,
+): boolean =>
+  isSuccessStatus(entitlements?.status) &&
+  entitlements?.has_billing_subscription === true;
+
+/**
  * Client for the standalone /billing/success page (rendered OUTSIDE the main
  * layout — no billing store here). Two entry shapes land here and exactly one
  * of them is present:
@@ -115,6 +145,16 @@ const isSuccessStatus = (status: string | null | undefined): boolean =>
  * immediately instead of burning the full 90s timeout on a result that will
  * never change. The timeout state survives only for the genuinely unknown
  * case — a payment still processing.
+ *
+ * Purchase conversion (Google Ads): a live, paid, first-time session confirm
+ * also carries `subscription_conversion`. That rides sessionStorage through a
+ * full navigation to the bare `CONVERSION_URL` document, which fires the tag
+ * and then returns here with NO reference at all — by design, so the tag never
+ * sees a param-bearing URL. A reference-less visit is therefore not an error:
+ * it reads billing/status for a short, bounded window and celebrates an active
+ * purchase; only a company that is not subscribed gets the "missing reference"
+ * failure. The custom-checkout confirm carries no conversion payload today, so
+ * that path never detours.
  */
 export default function CheckoutSuccessClient({
   sessionId,
@@ -123,14 +163,12 @@ export default function CheckoutSuccessClient({
   sessionId: string | null;
   subscriptionId: string | null;
 }) {
-  // Neither id means there is nothing to confirm and nothing to wait for, so
-  // skip the spinner entirely rather than polling billing/status for 90s on a
-  // company whose status was never going to change.
+  // With neither id there is nothing to confirm; the page can only read
+  // billing/status (the conversion detour's return trip, or a stray link), so
+  // confirm is skipped and the wait is the short status-only budget.
   const hasReference = Boolean(sessionId || subscriptionId);
 
-  const [phase, setPhase] = useState<Phase>(
-    hasReference ? "verifying" : "failed",
-  );
+  const [phase, setPhase] = useState<Phase>("verifying");
   const [planName, setPlanName] = useState<string | null>(null);
   const [failure, setFailure] = useState<FailureCopy>(
     FAILURE_COPY.missing_reference,
@@ -140,30 +178,30 @@ export default function CheckoutSuccessClient({
   const [invoiceUrl, setInvoiceUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!hasReference) return;
-
     let cancelled = false;
     const startedAt = Date.now();
+    const timeoutMs = hasReference ? TIMEOUT_MS : STATUS_ONLY_TIMEOUT_MS;
     let tick = 0;
     // Flips true once confirm has definitively concluded (activated, or a
     // terminal 4xx: bad/foreign/stale session id) — transient failures
     // (network, 5xx, 408/429 throttling) keep retrying.
     let confirmConcluded = false;
-<<<<<<< Updated upstream
     // A terminal 4xx is a verdict, not just a reason to stop retrying: we let
     // the status poll in the SAME pass corroborate it (the webhook may have
     // activated the company while confirm rejected a replayed id) and fail
     // only if that poll also comes back short.
     let rejected = false;
     // Once a phase is decided, late-resolving in-flight checks must not
-    // overwrite it (e.g. a slow poll flipping "active" back to "timeout").
-=======
-    // Once confirmation concludes or the deadline fires, late checks cannot
-    // change the result or start a conversion transition.
->>>>>>> Stashed changes
+    // overwrite it (e.g. a slow poll flipping "active" back to "timeout") nor
+    // start a conversion hand-off after the fact.
     let finished = false;
+    // billing/status has reported the purchase live. On the session path that
+    // paints the celebration WITHOUT finishing: the status snapshot carries no
+    // conversion payload, so confirm keeps retrying for one until it concludes
+    // or the deadline fires (see `check()`).
     let activeObserved = false;
-    // A fallback poll must not finish before a pending authoritative confirm.
+    let observedPlanName: string | null = null;
+    // A fallback poll must not overlap a pending authoritative confirm.
     let checking = false;
 
     function finish(next: Phase) {
@@ -176,6 +214,13 @@ export default function CheckoutSuccessClient({
 
     function fail(reason: FailureReason) {
       if (finished) return;
+      // An activation billing/status already reported outranks a later dead
+      // verdict from a re-synced confirm: a celebration that is already on
+      // screen must never flip into a failure card.
+      if (activeObserved) {
+        finish("active");
+        return;
+      }
       setFailure(FAILURE_COPY[reason]);
       finish("failed");
     }
@@ -188,8 +233,9 @@ export default function CheckoutSuccessClient({
     async function succeed(nameFromStatus?: string | null) {
       if (finished) return;
       finish("active");
-      if (nameFromStatus) {
-        setPlanName(nameFromStatus);
+      const known = nameFromStatus ?? observedPlanName;
+      if (known) {
+        setPlanName(known);
         return;
       }
       try {
@@ -198,6 +244,45 @@ export default function CheckoutSuccessClient({
       } catch {
         // Generic headline it is.
       }
+    }
+
+    /**
+     * The purchase-conversion hand-off. Only an authoritative session confirm
+     * stores a transition — the backend attaches `subscription_conversion`
+     * solely to a live-mode, paid, active, ownership- and replay-checked
+     * session, and the store helper re-validates the payload shape. Every
+     * other payload (the whole custom-checkout path, test mode, a replayed
+     * confirm) returns false and the celebration renders here as usual.
+     *
+     * The celebration is committed BEFORE navigating so a navigation that
+     * never happens can never strand the user on a spinner; the bare
+     * conversion document then returns here without a reference and the
+     * status-only read repaints the same screen.
+     */
+    function handOffForConversion(confirmed: unknown): boolean {
+      if (finished || !storeVerifiedSubscriptionTransition(confirmed)) {
+        return false;
+      }
+      finish("active");
+      window.location.replace(CONVERSION_URL);
+      return true;
+    }
+
+    /**
+     * What the deadline settles on: the celebration if the purchase was ever
+     * seen live, "still processing" when there was a reference to process, and
+     * the missing-reference failure when there was not.
+     */
+    function settleAtDeadline() {
+      if (activeObserved) {
+        finish("active");
+        return;
+      }
+      if (hasReference) {
+        finish("timeout");
+        return;
+      }
+      fail("missing_reference");
     }
 
     function isTerminalConfirmStatus(statusCode: unknown): boolean {
@@ -258,13 +343,17 @@ export default function CheckoutSuccessClient({
       try {
         // Primary path: server-side confirm straight from Stripe. Both
         // endpoints are idempotent, so retrying alongside the webhook is safe
-        // — they converge on the same upsert.
-        if (!confirmConcluded && currentTick % CONFIRM_EVERY_N_POLLS === 0) {
+        // — they converge on the same upsert. Nothing to confirm without a
+        // reference.
+        if (
+          hasReference &&
+          !confirmConcluded &&
+          currentTick % CONFIRM_EVERY_N_POLLS === 0
+        ) {
           const confirmed = sessionId
             ? await confirmCheckout(sessionId)
             : await confirmSubscription(subscriptionId!);
           if (cancelled || finished) return;
-<<<<<<< Updated upstream
 
           if (confirmed?.success && confirmed.data) {
             const data = confirmed.data;
@@ -275,6 +364,7 @@ export default function CheckoutSuccessClient({
               ? verdictFromSession(data)
               : verdictFromSubscription(data);
             if (verdict === "ok") {
+              if (handOffForConversion(confirmed)) return;
               await succeed();
               return;
             }
@@ -282,15 +372,6 @@ export default function CheckoutSuccessClient({
               fail(verdict);
               return;
             }
-=======
-          if (confirmed?.success === true && confirmed.data?.activated === true) {
-            const trackSubscription = storeVerifiedSubscriptionTransition(confirmed);
-            finish("active");
-            if (trackSubscription) {
-              window.location.replace("/billing/subscription-verified");
-            }
-            return;
->>>>>>> Stashed changes
           }
 
           if (
@@ -302,40 +383,37 @@ export default function CheckoutSuccessClient({
           }
         }
 
-        // Once billing is active, its UI can stay visible while a transient
-        // confirm failure retries for an authoritative conversion payload.
+        // The celebration is already up from an earlier status poll and only
+        // confirm can still add anything (a conversion payload). Status has
+        // nothing more to say; finish as soon as confirm is out of the picture.
         if (activeObserved) {
           if (!sessionId || confirmConcluded) finish("active");
           return;
         }
 
-        // Fallback path: the webhook (when it IS delivered) flips the status.
+        // Fallback path: the webhook (when it IS delivered) flips the status —
+        // and the only path at all without a reference.
         const res = await getBillingStatus();
         if (cancelled || finished) return;
-<<<<<<< Updated upstream
         const entitlements = res?.success ? res.data?.entitlements : null;
-        // `trialing` counts here ONLY when a Stripe subscription backs it —
-        // otherwise the company's pre-existing reverse trial would report
-        // success the instant this page mounts, even on a declined card. The
-        // flag is optional on older snapshots; absent, we keep waiting rather
-        // than guess in the user's favour.
-        const trialIsPurchased =
-          entitlements?.status === "trialing" &&
-          entitlements?.has_billing_subscription === true;
-        if (entitlements?.status === "active" || trialIsPurchased) {
-          await succeed(entitlements?.plan_name);
+        if (isPurchasedEntitlement(entitlements)) {
+          activeObserved = true;
+          observedPlanName = entitlements?.plan_name ?? null;
+          // Session path with confirm still pending: paint the celebration now
+          // but keep polling so confirm can still return the conversion
+          // payload the status snapshot cannot carry. Every other path is done.
+          if (sessionId && !confirmConcluded) {
+            setPlanName(observedPlanName);
+            setPhase("active");
+          } else {
+            await succeed(observedPlanName);
+          }
           return;
         }
         // Confirm rejected the id outright and the status poll agrees nothing
         // activated — that verdict is final, so stop spinning.
         if (rejected) {
           fail("rejected");
-=======
-        if (res?.success && res.data?.entitlements?.status === "active") {
-          activeObserved = true;
-          if (sessionId && !confirmConcluded) setPhase("active");
-          else finish("active");
->>>>>>> Stashed changes
           return;
         }
       } catch {
@@ -343,8 +421,8 @@ export default function CheckoutSuccessClient({
       } finally {
         checking = false;
       }
-      if (!cancelled && Date.now() - startedAt >= TIMEOUT_MS) {
-        finish(activeObserved ? "active" : "timeout");
+      if (!cancelled && Date.now() - startedAt >= timeoutMs) {
+        settleAtDeadline();
       }
     }
 
@@ -352,10 +430,10 @@ export default function CheckoutSuccessClient({
       void check();
     }, POLL_INTERVAL_MS);
     // The API transport may hang. This deadline must not depend on an awaited
-    // confirm/status request settling before the timeout state can render.
+    // confirm/status request settling before the final state can render.
     const deadlineTimer = setTimeout(() => {
-      if (!cancelled) finish(activeObserved ? "active" : "timeout");
-    }, TIMEOUT_MS);
+      if (!cancelled) settleAtDeadline();
+    }, timeoutMs);
     void check();
 
     return () => {
