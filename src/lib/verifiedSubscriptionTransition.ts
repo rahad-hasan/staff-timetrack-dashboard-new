@@ -1,5 +1,9 @@
 import type { ISubscriptionConversion } from "../types/billing";
-import { readSubscriptionConversion, verifiedSubscriptionConversion } from "./verifiedSubscriptionTracking";
+import {
+  readSubscriptionConversion,
+  verifiedSubscriptionConversion,
+  wasSubscriptionConversionHandled,
+} from "./verifiedSubscriptionTracking";
 
 const TRANSITION_KEY = "stt:subscription-transition:v1";
 const MAX_AGE_MS = 120_000;
@@ -9,7 +13,10 @@ type Transition = ISubscriptionConversion & { createdAt: number };
 export function storeVerifiedSubscriptionTransition(response: unknown): boolean {
   if (typeof window === "undefined") return false;
   const payload = verifiedSubscriptionConversion(response);
-  if (!payload) return false;
+  // Already handled from this tab (a refresh of the success URL replays the
+  // confirm and the backend re-sends the payload): nothing left to fire, so
+  // the caller must not detour again.
+  if (!payload || wasSubscriptionConversionHandled(payload.id)) return false;
   try {
     const serialized = JSON.stringify({ ...payload, createdAt: Date.now() });
     window.sessionStorage.setItem(TRANSITION_KEY, serialized);

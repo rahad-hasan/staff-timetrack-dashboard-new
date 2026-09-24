@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Clock, ExternalLink, Loader2, XCircle } from "lucide-react";
 
@@ -146,8 +146,8 @@ const isPurchasedEntitlement = (
  * never change. The timeout state survives only for the genuinely unknown
  * case — a payment still processing.
  *
- * Purchase conversion (Google Ads): a live, paid, first-time session confirm
- * also carries `subscription_conversion`. That rides sessionStorage through a
+ * Purchase conversion (Google Ads): a live, paid session confirm also carries
+ * `subscription_conversion`. That rides sessionStorage through a
  * full navigation to the bare `CONVERSION_URL` document, which fires the tag
  * and then returns here with NO reference at all — by design, so the tag never
  * sees a param-bearing URL. A reference-less visit is therefore not an error:
@@ -176,6 +176,12 @@ export default function CheckoutSuccessClient({
   /** Stripe's own hosted invoice page — the one recovery path we can offer
    *  without knowing which plan/cycle the user was buying. */
   const [invoiceUrl, setInvoiceUrl] = useState<string | null>(null);
+  /**
+   * Set when the user takes an exit from the celebration. A conversion hand-off
+   * that resolves after that must not replace the navigation they chose. A ref,
+   * not state: the poll closure needs the live value, not a render's snapshot.
+   */
+  const leavingRef = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -203,6 +209,14 @@ export default function CheckoutSuccessClient({
     let observedPlanName: string | null = null;
     // A fallback poll must not overlap a pending authoritative confirm.
     let checking = false;
+    // A bare visit's deadline must tell "billing/status said no" apart from
+    // "billing/status never answered": only the former is a missing reference.
+    let statusAnswered = false;
+    // Once the celebration is painted from billing/status, confirm gets ONE
+    // more attempt (pulled forward to the next tick) to deliver a conversion
+    // payload. Beyond that a detour would interrupt a celebration the user is
+    // already reading, which is not worth a rare analytics event.
+    let confirmRetriedAfterActive = false;
 
     function finish(next: Phase) {
       if (finished) return;
@@ -249,20 +263,23 @@ export default function CheckoutSuccessClient({
     /**
      * The purchase-conversion hand-off. Only an authoritative session confirm
      * stores a transition — the backend attaches `subscription_conversion`
-     * solely to a live-mode, paid, active, ownership- and replay-checked
-     * session, and the store helper re-validates the payload shape. Every
-     * other payload (the whole custom-checkout path, test mode, a replayed
-     * confirm) returns false and the celebration renders here as usual.
+     * solely to a live-mode, paid, active, ownership-checked session (and
+     * re-sends it on every confirm of that same session), while the store
+     * helper re-validates the payload shape and skips a conversion this tab
+     * already handled. So the custom-checkout path, test mode and a refresh of
+     * this URL all return false and the celebration renders here as usual; a
+     * replay in a fresh tab does detour again and relies on Google's
+     * transaction-id de-duplication.
      *
-     * The celebration is committed BEFORE navigating so a navigation that
-     * never happens can never strand the user on a spinner; the bare
-     * conversion document then returns here without a reference and the
-     * status-only read repaints the same screen.
+     * A click the user already made on the celebration always wins over a
+     * late hand-off. Otherwise the celebration is committed BEFORE navigating
+     * so a navigation that never happens can never strand the user on a
+     * spinner; the bare conversion document then returns here without a
+     * reference and the status-only read repaints the same screen.
      */
     function handOffForConversion(confirmed: unknown): boolean {
-      if (finished || !storeVerifiedSubscriptionTransition(confirmed)) {
-        return false;
-      }
+      if (finished || leavingRef.current) return false;
+      if (!storeVerifiedSubscriptionTransition(confirmed)) return false;
       finish("active");
       window.location.replace(CONVERSION_URL);
       return true;
@@ -270,15 +287,18 @@ export default function CheckoutSuccessClient({
 
     /**
      * What the deadline settles on: the celebration if the purchase was ever
-     * seen live, "still processing" when there was a reference to process, and
-     * the missing-reference failure when there was not.
+     * seen live; otherwise "still processing" when there was a reference to
+     * process OR billing/status never answered (an outage must not call the
+     * link broken — least of all on the conversion detour's return trip); the
+     * missing-reference failure only when status answered and showed no
+     * Stripe-backed subscription.
      */
     function settleAtDeadline() {
       if (activeObserved) {
         finish("active");
         return;
       }
-      if (hasReference) {
+      if (hasReference || !statusAnswered) {
         finish("timeout");
         return;
       }
@@ -350,6 +370,7 @@ export default function CheckoutSuccessClient({
           !confirmConcluded &&
           currentTick % CONFIRM_EVERY_N_POLLS === 0
         ) {
+          if (activeObserved) confirmRetriedAfterActive = true;
           const confirmed = sessionId
             ? await confirmCheckout(sessionId)
             : await confirmSubscription(subscriptionId!);
@@ -385,9 +406,12 @@ export default function CheckoutSuccessClient({
 
         // The celebration is already up from an earlier status poll and only
         // confirm can still add anything (a conversion payload). Status has
-        // nothing more to say; finish as soon as confirm is out of the picture.
+        // nothing more to say; finish as soon as confirm is out of the picture
+        // or has had its one post-celebration attempt.
         if (activeObserved) {
-          if (!sessionId || confirmConcluded) finish("active");
+          if (!sessionId || confirmConcluded || confirmRetriedAfterActive) {
+            finish("active");
+          }
           return;
         }
 
@@ -395,16 +419,21 @@ export default function CheckoutSuccessClient({
         // and the only path at all without a reference.
         const res = await getBillingStatus();
         if (cancelled || finished) return;
+        if (res?.success) statusAnswered = true;
         const entitlements = res?.success ? res.data?.entitlements : null;
         if (isPurchasedEntitlement(entitlements)) {
           activeObserved = true;
           observedPlanName = entitlements?.plan_name ?? null;
           // Session path with confirm still pending: paint the celebration now
-          // but keep polling so confirm can still return the conversion
-          // payload the status snapshot cannot carry. Every other path is done.
+          // and pull confirm's one remaining attempt forward to the next tick
+          // (instead of the usual every-Nth cadence) so it can still return
+          // the conversion payload the status snapshot cannot carry. Every
+          // other path is done here.
           if (sessionId && !confirmConcluded) {
             setPlanName(observedPlanName);
             setPhase("active");
+            tick =
+              Math.ceil(tick / CONFIRM_EVERY_N_POLLS) * CONFIRM_EVERY_N_POLLS;
           } else {
             await succeed(observedPlanName);
           }
@@ -443,7 +472,16 @@ export default function CheckoutSuccessClient({
     };
   }, [sessionId, subscriptionId, hasReference]);
 
-  if (phase === "active") return <SuccessCelebration planName={planName} />;
+  if (phase === "active") {
+    return (
+      <SuccessCelebration
+        planName={planName}
+        onExit={() => {
+          leavingRef.current = true;
+        }}
+      />
+    );
+  }
 
   return (
     <div className="w-full max-w-md rounded-2xl border border-borderColor bg-bgPrimary p-6 text-center shadow-sm sm:p-8 dark:border-darkBorder dark:bg-darkPrimaryBg">

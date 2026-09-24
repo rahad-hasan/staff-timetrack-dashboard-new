@@ -150,8 +150,14 @@ function ConfettiPiece({
 
 export default function SuccessCelebration({
   planName,
+  onExit,
 }: {
   planName?: string | null;
+  /**
+   * Fired when the user takes either exit, before the client navigation
+   * commits — lets the owner disarm anything that could still redirect.
+   */
+  onExit?: () => void;
 }) {
   const reduce = useReducedMotion();
   // A blank/whitespace name from the entitlement snapshot must not render
@@ -298,10 +304,12 @@ export default function SuccessCelebration({
 
         <div className="mt-8 flex flex-col gap-3">
           <Button asChild className="w-full">
-            <Link href="/dashboard">Go to Dashboard</Link>
+            <Link href="/dashboard" onClick={onExit}>
+              Go to Dashboard
+            </Link>
           </Button>
           <Button asChild variant="outline2" className="w-full">
-            <Link href={BILLING_URL}>
+            <Link href={BILLING_URL} onClick={onExit}>
               <InvoiceIcon className="mt-0.5" size={20}/>
               View Billing
             </Link>
