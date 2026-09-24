@@ -8,12 +8,13 @@ import ConfirmDialog from "@/components/Common/ConfirmDialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { hasErrorCode } from "@/lib/support";
+import { useAttachmentUploads } from "@/hooks/useAttachmentUploads";
 import {
   CreateReplyPayload,
   TicketConversation,
   TicketStatus,
 } from "@/types/support";
-import AttachmentUrlInput from "./AttachmentUrlInput";
+import AttachmentUploader from "./AttachmentUploader";
 
 const MAX_LENGTH = 5000;
 
@@ -36,39 +37,45 @@ const ReplyComposer = ({
   currentUser,
 }: ReplyComposerProps) => {
   const [message, setMessage] = useState("");
-  const [attachments, setAttachments] = useState<string[]>([]);
   const [sending, setSending] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const composerRef = useRef<HTMLDivElement>(null);
+  const uploads = useAttachmentUploads();
 
   const isResolved = status === "resolved";
   const trimmed = message.trim();
-  const canSend = trimmed.length > 0 && !sending;
+  const canSend =
+    trimmed.length > 0 && !sending && !uploads.uploading && !uploads.hasErrors;
 
   const doSend = async () => {
     if (!canSend) return;
     setSending(true);
 
     const payload: CreateReplyPayload = { message: trimmed };
-    if (attachments.length > 0) payload.attachments = attachments;
+    if (uploads.keys.length > 0) payload.attachments = uploads.keys;
 
     const optimistic: TicketConversation = onOptimisticAppend({
       id: -Date.now(),
       sender_id: currentUser.id,
       sender_role: "user",
       message: trimmed,
-      attachments,
+      // Signed preview URLs from the upload step render immediately; the
+      // confirmed row from the API replaces them.
+      attachments: uploads.previewUrls,
       created_at: new Date().toISOString(),
       sender: currentUser,
     });
 
+    uploads.setSubmitLock(true);
     const response = await postTicketReply(ticketId, payload);
 
     if (response?.success && response.data) {
       onConfirmed(optimistic.id, response.data);
       setMessage("");
-      setAttachments([]);
+      uploads.reset();
       requestAnimationFrame(() => textareaRef.current?.focus());
     } else {
+      uploads.setSubmitLock(false);
       onConfirmed(optimistic.id, null);
       if (hasErrorCode(response, "TICKET_CLOSED")) {
         toast.error("This ticket is closed. Open a new ticket.");
@@ -99,7 +106,7 @@ const ReplyComposer = ({
   };
 
   return (
-    <div className="space-y-3">
+    <div ref={composerRef} className="space-y-3">
       {isResolved ? (
         <div className="flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800 dark:border-amber-800/40 dark:bg-amber-900/20 dark:text-amber-200">
           <AlertTriangle className="mt-0.5 size-4 shrink-0" />
@@ -114,21 +121,27 @@ const ReplyComposer = ({
         onKeyDown={handleKeyDown}
         maxLength={MAX_LENGTH}
         rows={4}
-        placeholder="Write your reply…"
+        placeholder="Write your reply… (paste a screenshot to attach it)"
         className="min-h-[110px] dark:border-darkBorder dark:bg-darkPrimaryBg"
         aria-label="Reply to ticket"
         disabled={sending}
       />
 
-      <AttachmentUrlInput
-        value={attachments}
-        onChange={setAttachments}
+      <AttachmentUploader
+        items={uploads.items}
+        max={uploads.max}
+        onAddFiles={uploads.addFiles}
+        onRemove={uploads.remove}
+        onRetry={uploads.retry}
         disabled={sending}
+        pasteScopeRef={composerRef}
+        compact
       />
 
       <div className="flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-between">
         <span className="text-xs text-subTextColor dark:text-darkTextSecondary">
           {trimmed.length}/{MAX_LENGTH} · Cmd/Ctrl + Enter to send
+          {uploads.uploading ? " · uploading attachments…" : ""}
         </span>
 
         {isResolved ? (

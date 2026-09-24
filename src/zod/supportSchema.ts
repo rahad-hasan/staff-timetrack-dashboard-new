@@ -4,10 +4,8 @@ import {
   TICKET_PRIORITY_VALUES,
 } from "@/types/support";
 
-const attachmentUrlSchema = z
-  .string()
-  .trim()
-  .url("Attachment must be a valid URL");
+/** Object key handed back by the upload endpoint; the server enforces ownership. */
+const attachmentKeySchema = z.string().trim().min(1, "Attachment is missing");
 
 export const createTicketSchema = z.object({
   title: z
@@ -22,19 +20,8 @@ export const createTicketSchema = z.object({
     .max(5000, "Description must be at most 5000 characters"),
   category: z.enum(TICKET_CATEGORY_VALUES as [string, ...string[]]),
   priority: z.enum(TICKET_PRIORITY_VALUES as [string, ...string[]]),
-  affected_project: z
-    .string()
-    .trim()
-    .max(200, "Affected project is too long")
-    .optional()
-    .or(z.literal("")),
-  affected_time_entry_id: z
-    .string()
-    .trim()
-    .optional()
-    .or(z.literal("")),
   attachments: z
-    .array(attachmentUrlSchema)
+    .array(attachmentKeySchema)
     .max(10, "Up to 10 attachments allowed")
     .optional(),
 });
@@ -48,7 +35,7 @@ export const replySchema = z.object({
     .min(1, "Message is required")
     .max(5000, "Message must be at most 5000 characters"),
   attachments: z
-    .array(attachmentUrlSchema)
+    .array(attachmentKeySchema)
     .max(10, "Up to 10 attachments allowed")
     .optional(),
 });

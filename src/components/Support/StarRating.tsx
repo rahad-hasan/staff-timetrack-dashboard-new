@@ -48,7 +48,10 @@ const StarRating = ({
       aria-label={ariaLabel}
       tabIndex={readOnly ? -1 : 0}
       onKeyDown={handleKeyDown}
-      className={cn("inline-flex items-center gap-1 outline-none", className)}
+      className={cn(
+        "inline-flex items-center gap-1 rounded outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+        className,
+      )}
     >
       {[1, 2, 3, 4, 5].map((star) => {
         const filled = star <= displayValue;

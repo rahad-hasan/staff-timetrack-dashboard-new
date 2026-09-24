@@ -143,6 +143,8 @@ export interface TicketDetail {
   closed_at: string | null;
   reopen_count: number;
   affected_project: string | null;
+  /** Signed read URLs (the API stores object keys and signs them on the way out). */
+  attachments: string[];
   assignedAgent: TicketAgent | null;
   conversations: TicketConversation[];
   feedback: TicketFeedback | null;
@@ -153,16 +155,26 @@ export interface CreateTicketPayload {
   description: string;
   category?: TicketCategory;
   priority?: TicketPriority;
-  affected_time_entry_id?: number;
-  affected_project?: string;
   client_logs?: string[];
   device_info?: Record<string, unknown>;
+  /** Object keys returned by the attachment upload endpoint. */
   attachments?: string[];
 }
 
 export interface CreateReplyPayload {
   message: string;
+  /** Object keys returned by the attachment upload endpoint. */
   attachments?: string[];
+}
+
+/** One row of `POST /tickets/attachments` → `data[]`. */
+export interface UploadedTicketAttachment {
+  key: string;
+  name: string;
+  size: number;
+  content_type: string;
+  /** Short-lived signed preview URL. */
+  url: string;
 }
 
 export interface SubmitFeedbackPayload {

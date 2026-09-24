@@ -24,13 +24,40 @@ import {
 import { FeedbackFormValues, feedbackSchema } from "@/zod/supportSchema";
 import StarRating from "./StarRating";
 
+export type FeedbackRejection = "FEEDBACK_EXISTS" | "INVALID_STATE";
+
 interface FeedbackFormProps {
   ticketId: number;
   onSubmitted: (feedback: TicketFeedback) => void;
+  /**
+   * The server refused because the page is stale: feedback already exists
+   * (another tab) or the ticket is no longer resolved/closed. The caller
+   * resyncs; the toast has already explained it.
+   */
+  onRejected?: (code: FeedbackRejection) => void;
+  /** Lets a host dialog block closing while the request is in flight. */
+  onSavingChange?: (saving: boolean) => void;
+  /** Renders a secondary action next to Submit (the dialog's "Maybe later"). */
+  onCancel?: () => void;
+  cancelLabel?: string;
+  /** The dialog states the intro in its header; skip the inline banner. */
+  hideIntro?: boolean;
 }
 
-const FeedbackForm = ({ ticketId, onSubmitted }: FeedbackFormProps) => {
-  const [saving, setSaving] = useState(false);
+const FeedbackForm = ({
+  ticketId,
+  onSubmitted,
+  onRejected,
+  onSavingChange,
+  onCancel,
+  cancelLabel = "Maybe later",
+  hideIntro = false,
+}: FeedbackFormProps) => {
+  const [saving, setSavingState] = useState(false);
+  const setSaving = (next: boolean) => {
+    setSavingState(next);
+    onSavingChange?.(next);
+  };
 
   const form = useForm<FeedbackFormValues>({
     resolver: zodResolver(feedbackSchema),
@@ -49,6 +76,7 @@ const FeedbackForm = ({ ticketId, onSubmitted }: FeedbackFormProps) => {
 
     if (response?.success && response.data) {
       toast.success("Thanks for the feedback!");
+      setSaving(false);
       onSubmitted(response.data);
       return;
     }
@@ -56,8 +84,10 @@ const FeedbackForm = ({ ticketId, onSubmitted }: FeedbackFormProps) => {
     setSaving(false);
     if (hasErrorCode(response, "FEEDBACK_EXISTS")) {
       toast.info("You've already submitted feedback for this ticket.");
+      onRejected?.("FEEDBACK_EXISTS");
     } else if (hasErrorCode(response, "INVALID_STATE")) {
       toast.error("Feedback is only available on resolved or closed tickets.");
+      onRejected?.("INVALID_STATE");
     } else {
       toast.error(response?.message || "Could not submit feedback.");
     }
@@ -66,12 +96,14 @@ const FeedbackForm = ({ ticketId, onSubmitted }: FeedbackFormProps) => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <div className="flex items-start gap-3 rounded-md bg-primary/5 p-3 dark:bg-primary/10">
-          <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
-          <p className="text-sm text-headingTextColor dark:text-darkTextPrimary">
-            How did we do? Your rating helps us improve support.
-          </p>
-        </div>
+        {hideIntro ? null : (
+          <div className="flex items-start gap-3 rounded-md bg-primary/5 p-3 dark:bg-primary/10">
+            <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+            <p className="text-sm text-headingTextColor dark:text-darkTextPrimary">
+              How did we do? Your rating helps us improve support.
+            </p>
+          </div>
+        )}
 
         <FormField
           control={form.control}
@@ -111,7 +143,18 @@ const FeedbackForm = ({ ticketId, onSubmitted }: FeedbackFormProps) => {
           )}
         />
 
-        <div className="flex justify-end">
+        <div className="flex flex-col-reverse justify-end gap-2 sm:flex-row">
+          {onCancel ? (
+            <Button
+              type="button"
+              variant="outline2"
+              onClick={onCancel}
+              disabled={saving}
+              className="dark:bg-darkPrimaryBg"
+            >
+              {cancelLabel}
+            </Button>
+          ) : null}
           <Button type="submit" disabled={saving || form.watch("rating") < 1}>
             {saving ? "Submitting…" : "Submit feedback"}
           </Button>

@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -19,6 +19,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -27,6 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useAttachmentUploads } from "@/hooks/useAttachmentUploads";
 import {
   CATEGORY_LABELS,
   CreateTicketPayload,
@@ -40,41 +42,42 @@ import {
   CreateTicketFormValues,
   createTicketSchema,
 } from "@/zod/supportSchema";
-import AttachmentUrlInput from "./AttachmentUrlInput";
+import AttachmentUploader from "./AttachmentUploader";
 
 const DESCRIPTION_WARN_AT = 4500;
 const DESCRIPTION_MAX = 5000;
 
+const DEFAULT_VALUES: CreateTicketFormValues = {
+  title: "",
+  description: "",
+  category: "general_inquiry",
+  priority: "medium",
+  attachments: [],
+};
+
 const CreateTicketForm = () => {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [submitting, setSubmitting] = useState(false);
-  const [attachments, setAttachments] = useState<string[]>([]);
-
-  const prefillTimeEntry = searchParams.get("time_entry_id") ?? "";
-  const prefillProject = searchParams.get("project") ?? "";
-
-  const defaultValues = useMemo<CreateTicketFormValues>(
-    () => ({
-      title: "",
-      description: "",
-      category: "general_inquiry",
-      priority: "medium",
-      affected_project: prefillProject,
-      affected_time_entry_id: prefillTimeEntry,
-      attachments: [],
-    }),
-    [prefillProject, prefillTimeEntry],
-  );
+  const formRef = useRef<HTMLFormElement | null>(null);
+  const uploads = useAttachmentUploads();
 
   const form = useForm<CreateTicketFormValues>({
     resolver: zodResolver(createTicketSchema),
-    defaultValues,
+    defaultValues: DEFAULT_VALUES,
   });
 
   const descriptionLength = form.watch("description")?.length ?? 0;
 
   async function onSubmit(values: CreateTicketFormValues) {
+    if (uploads.uploading) {
+      toast.info("Please wait for your attachments to finish uploading.");
+      return;
+    }
+    if (uploads.hasErrors) {
+      toast.error("Retry or remove the attachments that failed to upload.");
+      return;
+    }
+
     setSubmitting(true);
 
     const payload: CreateTicketPayload = {
@@ -84,27 +87,15 @@ const CreateTicketForm = () => {
       priority: values.priority as TicketPriority,
     };
 
-    const trimmedProject = values.affected_project?.trim();
-    if (trimmedProject) payload.affected_project = trimmedProject;
+    if (uploads.keys.length > 0) payload.attachments = uploads.keys;
 
-    const timeEntryRaw = values.affected_time_entry_id?.trim();
-    if (timeEntryRaw) {
-      const parsed = Number(timeEntryRaw);
-      if (!Number.isFinite(parsed) || parsed <= 0) {
-        form.setError("affected_time_entry_id", {
-          message: "Enter a valid time entry id",
-        });
-        setSubmitting(false);
-        return;
-      }
-      payload.affected_time_entry_id = parsed;
-    }
-
-    if (attachments.length > 0) payload.attachments = attachments;
-
+    uploads.setSubmitLock(true);
     const response = await createTicket(payload);
 
     if (response?.success && response.data) {
+      // The objects now belong to the ticket — clear local state without
+      // deleting them (unmount cleanup only removes what is still listed).
+      uploads.reset();
       toast.success(
         response.message || `Ticket created — ${response.data.display_number}`,
       );
@@ -112,11 +103,14 @@ const CreateTicketForm = () => {
       return;
     }
 
+    uploads.setSubmitLock(false);
     setSubmitting(false);
     toast.error(
       response?.message || "We couldn't create your ticket. Please try again.",
     );
   }
+
+  const busy = submitting || uploads.uploading;
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
@@ -139,6 +133,7 @@ const CreateTicketForm = () => {
 
       <Form {...form}>
         <form
+          ref={formRef}
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-5 rounded-[12px] border border-borderColor bg-white p-5 dark:border-darkBorder dark:bg-darkSecondaryBg"
         >
@@ -224,7 +219,7 @@ const CreateTicketForm = () => {
                   <Textarea
                     rows={7}
                     maxLength={DESCRIPTION_MAX}
-                    placeholder="What happened? What did you expect? Include steps to reproduce."
+                    placeholder="What happened? What did you expect? Include steps to reproduce. You can paste a screenshot directly here."
                     className="min-h-[160px] dark:border-darkBorder dark:bg-darkPrimaryBg"
                     {...field}
                   />
@@ -247,51 +242,18 @@ const CreateTicketForm = () => {
             )}
           />
 
-          <div className="grid gap-4 md:grid-cols-2">
-            <FormField
-              control={form.control}
-              name="affected_project"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Affected project (optional)</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Project name if relevant"
-                      className="dark:border-darkBorder dark:bg-darkPrimaryBg"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="affected_time_entry_id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Affected time entry ID (optional)</FormLabel>
-                  <FormControl>
-                    <Input
-                      inputMode="numeric"
-                      placeholder="e.g. 123456"
-                      className="dark:border-darkBorder dark:bg-darkPrimaryBg"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-
           <div className="space-y-2">
-            <FormLabel>Attachments (optional)</FormLabel>
-            <AttachmentUrlInput
-              value={attachments}
-              onChange={setAttachments}
+            <Label className="dark:text-darkTextPrimary">
+              Attachments (optional)
+            </Label>
+            <AttachmentUploader
+              items={uploads.items}
+              max={uploads.max}
+              onAddFiles={uploads.addFiles}
+              onRemove={uploads.remove}
+              onRetry={uploads.retry}
               disabled={submitting}
+              pasteScopeRef={formRef}
             />
           </div>
 
@@ -306,9 +268,13 @@ const CreateTicketForm = () => {
             </Button>
             <Button
               type="submit"
-              disabled={submitting || !form.formState.isValid}
+              disabled={busy || !form.formState.isValid}
             >
-              {submitting ? "Submitting…" : "Create ticket"}
+              {submitting
+                ? "Submitting…"
+                : uploads.uploading
+                  ? "Uploading attachments…"
+                  : "Create ticket"}
             </Button>
           </div>
         </form>

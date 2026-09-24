@@ -77,6 +77,24 @@ export const postTicketReply = async (
   return response;
 };
 
+/**
+ * Removes an uploaded-but-unsent attachment (the "x" on a pending chip).
+ * The API refuses (409) once the key is part of a ticket or message, so a
+ * failure here is never worth surfacing — the chip is gone either way.
+ */
+export const deleteTicketAttachment = async (
+  key: string,
+): Promise<IResponse<{ key: string; deleted: boolean }>> => {
+  return await baseApi<IResponse<{ key: string; deleted: boolean }>>(
+    `/tickets/attachments`,
+    {
+      method: "DELETE",
+      body: { key },
+      cache: "no-cache",
+    },
+  );
+};
+
 export const submitTicketFeedback = async (
   ticketId: number | string,
   data: SubmitFeedbackPayload,

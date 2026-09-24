@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { format, formatDistanceToNow, parseISO } from "date-fns";
 import {
   ArrowLeft,
+  CheckCircle2,
   MessageSquare,
   RotateCcw,
   Star,
@@ -26,7 +27,7 @@ import {
 } from "@/types/support";
 import { useTicketRoomSocket } from "@/hooks/useTicketSocket";
 import AttachmentList from "./AttachmentList";
-import FeedbackForm from "./FeedbackForm";
+import FeedbackDialog from "./FeedbackDialog";
 import ReplyComposer from "./ReplyComposer";
 import StarRating from "./StarRating";
 import {
@@ -41,6 +42,37 @@ interface TicketDetailViewProps {
 
 const sortByCreatedAsc = (a: TicketConversation, b: TicketConversation) =>
   new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+
+// The rating prompt auto-opens once per ticket. A dismissal is remembered in
+// the browser so a refresh does not nag again; the sidebar keeps a button for
+// rating later. Storage can be unavailable (private mode, blocked site data),
+// in which case the prompt simply behaves as "not yet dismissed".
+const feedbackPromptKey = (ticketId: number) =>
+  `support-feedback-dismissed:${ticketId}`;
+
+const wasFeedbackPromptDismissed = (ticketId: number) => {
+  try {
+    return window.localStorage.getItem(feedbackPromptKey(ticketId)) === "1";
+  } catch {
+    return false;
+  }
+};
+
+const rememberFeedbackPromptDismissed = (ticketId: number) => {
+  try {
+    window.localStorage.setItem(feedbackPromptKey(ticketId), "1");
+  } catch {
+    // best effort only
+  }
+};
+
+const forgetFeedbackPromptDismissed = (ticketId: number) => {
+  try {
+    window.localStorage.removeItem(feedbackPromptKey(ticketId));
+  } catch {
+    // best effort only
+  }
+};
 
 const TicketDetailView = ({ ticket, currentUser }: TicketDetailViewProps) => {
   const router = useRouter();
@@ -62,8 +94,7 @@ const TicketDetailView = ({ ticket, currentUser }: TicketDetailViewProps) => {
   const [feedback, setFeedback] = useState<TicketFeedback | null>(
     ticket.feedback,
   );
-  const [highlightFeedback, setHighlightFeedback] = useState(false);
-  const feedbackRef = useRef<HTMLDivElement | null>(null);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
   const threadEndRef = useRef<HTMLDivElement | null>(null);
   const sendingIdsRef = useRef<Set<number>>(new Set());
 
@@ -78,12 +109,24 @@ const TicketDetailView = ({ ticket, currentUser }: TicketDetailViewProps) => {
     threadEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [conversations.length]);
 
+  // Opening a resolved ticket that has not been rated yet prompts once, unless
+  // the prompt was dismissed before. (A live status change to "resolved" is a
+  // fresh event and opens the prompt regardless — see onStatusChanged.)
   useEffect(() => {
-    if (!highlightFeedback) return;
-    feedbackRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-    const timer = setTimeout(() => setHighlightFeedback(false), 2500);
-    return () => clearTimeout(timer);
-  }, [highlightFeedback]);
+    if (status !== "resolved" || feedback) return;
+    if (wasFeedbackPromptDismissed(ticket.id)) return;
+    setFeedbackOpen(true);
+  }, [status, feedback, ticket.id]);
+
+  // Back in progress (a reply reopened it, or the agent did): drop any pending
+  // prompt so it cannot resurface when the ticket is later closed, and forget
+  // the earlier dismissal so the next resolution asks again — it is a new
+  // outcome worth rating.
+  useEffect(() => {
+    if (status === "resolved" || status === "closed") return;
+    setFeedbackOpen(false);
+    forgetFeedbackPromptDismissed(ticket.id);
+  }, [status, ticket.id]);
 
   useTicketRoomSocket(ticket.id, {
     onMessage: (event) => {
@@ -110,7 +153,7 @@ const TicketDetailView = ({ ticket, currentUser }: TicketDetailViewProps) => {
         `Status changed: ${STATUS_LABELS[event.from]} → ${STATUS_LABELS[event.to]}`,
       );
       if (event.to === "resolved" && !feedback) {
-        setHighlightFeedback(true);
+        setFeedbackOpen(true);
       }
     },
     onAssigned: (event) => {
@@ -154,6 +197,23 @@ const TicketDetailView = ({ ticket, currentUser }: TicketDetailViewProps) => {
   const canReply = status !== "closed";
   const canGiveFeedback =
     (status === "resolved" || status === "closed") && !feedback;
+
+  const handleFeedbackOpenChange = (open: boolean) => {
+    setFeedbackOpen(open);
+    if (!open && !feedback) rememberFeedbackPromptDismissed(ticket.id);
+  };
+
+  const handleFeedbackSubmitted = (next: TicketFeedback) => {
+    setFeedback(next);
+    setFeedbackOpen(false);
+  };
+
+  // The server knows better than this page: feedback already exists (another
+  // tab) or the ticket is no longer resolved. Close and resync from the server.
+  const handleFeedbackRejected = () => {
+    setFeedbackOpen(false);
+    router.refresh();
+  };
   const firstResponseMinutes =
     ticket.first_response_at && ticket.created_at
       ? Math.max(
@@ -256,7 +316,7 @@ const TicketDetailView = ({ ticket, currentUser }: TicketDetailViewProps) => {
                 sender_id: 0,
                 sender_role: "user",
                 message: ticket.description,
-                attachments: [],
+                attachments: ticket.attachments ?? [],
                 created_at: ticket.created_at,
                 sender: { id: 0, name: "You" },
               }}
@@ -297,13 +357,7 @@ const TicketDetailView = ({ ticket, currentUser }: TicketDetailViewProps) => {
             )}
           </div>
 
-          <div
-            ref={feedbackRef}
-            className={cn(
-              "rounded-[12px] border border-borderColor bg-white p-5 transition-shadow dark:border-darkBorder dark:bg-darkSecondaryBg",
-              highlightFeedback && "shadow-lg ring-2 ring-primary/30",
-            )}
-          >
+          <div className="rounded-[12px] border border-borderColor bg-white p-5 dark:border-darkBorder dark:bg-darkSecondaryBg">
             <h2 className="mb-3 text-sm font-semibold text-headingTextColor dark:text-darkTextPrimary">
               Feedback
             </h2>
@@ -328,10 +382,24 @@ const TicketDetailView = ({ ticket, currentUser }: TicketDetailViewProps) => {
                 </p>
               </div>
             ) : canGiveFeedback ? (
-              <FeedbackForm
-                ticketId={ticket.id}
-                onSubmitted={(next) => setFeedback(next)}
-              />
+              <div className="space-y-3">
+                <div className="flex items-start gap-3 rounded-md bg-primary/5 p-3 dark:bg-primary/10">
+                  <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+                  <p className="text-sm text-headingTextColor dark:text-darkTextPrimary">
+                    {status === "resolved"
+                      ? "This ticket is resolved. How did we do?"
+                      : "This ticket is closed. How did we do?"}
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  className="w-full"
+                  onClick={() => setFeedbackOpen(true)}
+                >
+                  <Star className="size-4" />
+                  Rate this ticket
+                </Button>
+              </div>
             ) : (
               <p className="text-sm text-subTextColor dark:text-darkTextSecondary">
                 You can rate this ticket once it&apos;s resolved or closed.
@@ -340,6 +408,16 @@ const TicketDetailView = ({ ticket, currentUser }: TicketDetailViewProps) => {
           </div>
         </aside>
       </div>
+
+      <FeedbackDialog
+        ticketId={ticket.id}
+        displayNumber={ticket.display_number}
+        status={status}
+        open={feedbackOpen && canGiveFeedback}
+        onOpenChange={handleFeedbackOpenChange}
+        onSubmitted={handleFeedbackSubmitted}
+        onRejected={handleFeedbackRejected}
+      />
     </div>
   );
 };
