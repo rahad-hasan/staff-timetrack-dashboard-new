@@ -323,11 +323,20 @@ export interface ICheckoutSession {
  * back so the backend syncs the subscription straight from Stripe instead of
  * waiting for webhook delivery. Idempotent; safe to retry.
  */
+export interface ISubscriptionConversion {
+  /** Opaque transaction ID derived server-side; never a Stripe identifier. */
+  id: string;
+  value: number;
+  currency: "USD" | "GBP" | "EUR";
+}
+
 export interface ICheckoutConfirmResult {
   activated: boolean;
   checkout_status: "open" | "complete" | "expired" | null;
   payment_status: "paid" | "unpaid" | "no_payment_required" | null;
   subscription_status: BillingStatusValue | null;
+  /** Present only for an authoritative live, paid and active subscription. */
+  subscription_conversion?: ISubscriptionConversion;
 }
 
 /* ---------------- seats (§3) ---------------- */

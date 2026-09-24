@@ -4,6 +4,8 @@ import { Metadata } from "next";
 export const metadata: Metadata = {
     title: "Checkout Complete",
     description: "Finalizing your subscription",
+    referrer: "no-referrer",
+    robots: { index: false, follow: false },
 };
 
 /** Repeated `?foo=a&foo=b` arrives as an array; only a lone string is a usable id. */

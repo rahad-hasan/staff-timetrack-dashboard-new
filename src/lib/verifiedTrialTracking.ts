@@ -10,6 +10,12 @@ export function isVerifiedTrialConversionId(id: unknown): id is string {
   return typeof id === "string" && /^stt_otp_[a-f0-9]{64}$/.test(id);
 }
 
+/** Google Ads accepts at most 64 characters. Preserve the full hash while
+ * keeping the typed prefix in the application's internal deduplication ID. */
+export function verifiedTrialAdsTransactionId(id: string): string {
+  return id.slice("stt_otp_".length);
+}
+
 /** "Handled" means Google's callback ran, not confirmed receipt/attribution. */
 export function wasVerifiedTrialConversionHandled(id: string): boolean {
   if (typeof window === "undefined") return false;
@@ -37,16 +43,18 @@ export function queueVerifiedTrialConversion(id: unknown): boolean {
     if (wasVerifiedTrialConversionHandled(id)) return false;
     if (seen.has(id)) return true;
     const storageKey = `stt:otp-conversion:${id}`;
+    const transactionId = verifiedTrialAdsTransactionId(id);
     const layer = window.dataLayer ??= [];
     if (!Array.isArray(layer)) return false;
     if (!layer.some((item) => {
       if (!item || typeof item !== "object") return false;
       const event = item as Record<string, unknown>;
-      return event.event === "stt_otp_verified_free_trial" && event.transaction_id === id;
+      return event.event === "stt_otp_verified_free_trial" &&
+        (event.transaction_id === transactionId || event.transaction_id === id);
     })) {
       layer.push({
         event: "stt_otp_verified_free_trial",
-        transaction_id: id,
+        transaction_id: transactionId,
         signup_method: "email_otp",
       });
     }

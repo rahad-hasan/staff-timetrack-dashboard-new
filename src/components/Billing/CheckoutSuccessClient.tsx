@@ -10,6 +10,7 @@ import {
   getBillingStatus,
 } from "@/actions/billing/action";
 import { BILLING_URL } from "@/lib/billing";
+import { storeVerifiedSubscriptionTransition } from "@/lib/verifiedSubscriptionTransition";
 import { Button } from "@/components/ui/button";
 import SuccessCelebration from "./SuccessCelebration";
 
@@ -148,6 +149,7 @@ export default function CheckoutSuccessClient({
     // terminal 4xx: bad/foreign/stale session id) — transient failures
     // (network, 5xx, 408/429 throttling) keep retrying.
     let confirmConcluded = false;
+<<<<<<< Updated upstream
     // A terminal 4xx is a verdict, not just a reason to stop retrying: we let
     // the status poll in the SAME pass corroborate it (the webhook may have
     // activated the company while confirm rejected a replayed id) and fail
@@ -155,12 +157,20 @@ export default function CheckoutSuccessClient({
     let rejected = false;
     // Once a phase is decided, late-resolving in-flight checks must not
     // overwrite it (e.g. a slow poll flipping "active" back to "timeout").
+=======
+    // Once confirmation concludes or the deadline fires, late checks cannot
+    // change the result or start a conversion transition.
+>>>>>>> Stashed changes
     let finished = false;
+    let activeObserved = false;
+    // A fallback poll must not finish before a pending authoritative confirm.
+    let checking = false;
 
     function finish(next: Phase) {
       if (finished) return;
       finished = true;
       clearInterval(timer);
+      clearTimeout(deadlineTimer);
       setPhase(next);
     }
 
@@ -242,6 +252,8 @@ export default function CheckoutSuccessClient({
     }
 
     async function check() {
+      if (checking || cancelled || finished) return;
+      checking = true;
       const currentTick = tick++;
       try {
         // Primary path: server-side confirm straight from Stripe. Both
@@ -252,6 +264,7 @@ export default function CheckoutSuccessClient({
             ? await confirmCheckout(sessionId)
             : await confirmSubscription(subscriptionId!);
           if (cancelled || finished) return;
+<<<<<<< Updated upstream
 
           if (confirmed?.success && confirmed.data) {
             const data = confirmed.data;
@@ -269,6 +282,15 @@ export default function CheckoutSuccessClient({
               fail(verdict);
               return;
             }
+=======
+          if (confirmed?.success === true && confirmed.data?.activated === true) {
+            const trackSubscription = storeVerifiedSubscriptionTransition(confirmed);
+            finish("active");
+            if (trackSubscription) {
+              window.location.replace("/billing/subscription-verified");
+            }
+            return;
+>>>>>>> Stashed changes
           }
 
           if (
@@ -280,9 +302,17 @@ export default function CheckoutSuccessClient({
           }
         }
 
+        // Once billing is active, its UI can stay visible while a transient
+        // confirm failure retries for an authoritative conversion payload.
+        if (activeObserved) {
+          if (!sessionId || confirmConcluded) finish("active");
+          return;
+        }
+
         // Fallback path: the webhook (when it IS delivered) flips the status.
         const res = await getBillingStatus();
         if (cancelled || finished) return;
+<<<<<<< Updated upstream
         const entitlements = res?.success ? res.data?.entitlements : null;
         // `trialing` counts here ONLY when a Stripe subscription backs it —
         // otherwise the company's pre-existing reverse trial would report
@@ -300,24 +330,38 @@ export default function CheckoutSuccessClient({
         // activated — that verdict is final, so stop spinning.
         if (rejected) {
           fail("rejected");
+=======
+        if (res?.success && res.data?.entitlements?.status === "active") {
+          activeObserved = true;
+          if (sessionId && !confirmConcluded) setPhase("active");
+          else finish("active");
+>>>>>>> Stashed changes
           return;
         }
       } catch {
         // Network hiccup — keep polling until the timeout.
+      } finally {
+        checking = false;
       }
       if (!cancelled && Date.now() - startedAt >= TIMEOUT_MS) {
-        finish("timeout");
+        finish(activeObserved ? "active" : "timeout");
       }
     }
 
     const timer = setInterval(() => {
       void check();
     }, POLL_INTERVAL_MS);
+    // The API transport may hang. This deadline must not depend on an awaited
+    // confirm/status request settling before the timeout state can render.
+    const deadlineTimer = setTimeout(() => {
+      if (!cancelled) finish(activeObserved ? "active" : "timeout");
+    }, TIMEOUT_MS);
     void check();
 
     return () => {
       cancelled = true;
       clearInterval(timer);
+      clearTimeout(deadlineTimer);
     };
   }, [sessionId, subscriptionId, hasReference]);
 
