@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { cn } from "@/lib/utils";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { BillingCycle, IBillingPlan } from "@/types/billing";
 import CompareFeaturesPlan from "./CompareFeaturesPlan";
 
@@ -155,37 +155,16 @@ export default function PlanComparisonTable({
       <div className="flex justify-center">
         <button
           type="button"
+          aria-expanded={open}
           onClick={() => setOpen((prev) => !prev)}
           className="mx-auto flex cursor-pointer items-center gap-2 rounded-full bg-primary/10 px-5 py-2 font-semibold text-primary"
         >
-          Compare All Features
-          <svg
-            width={25}
-            height={25}
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className={cn(
-              "transition-transform duration-200",
-              open && "rotate-180",
-            )}
-          >
-            <path
-              opacity="0.4"
-              d="M18 9.00005C18 9.00005 13.5811 15 12 15C10.4188 15 6 9 6 9"
-              stroke="#0788F3"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M12 15C13.5811 14.9999 18 9 18 9"
-              stroke="#0788F3"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          Compare Plans
+          {open ? (
+            <ChevronUp className="h-4 w-4" aria-hidden />
+          ) : (
+            <ChevronDown className="h-4 w-4" aria-hidden />
+          )}
         </button>
       </div>
       {open && <CompareFeaturesPlan margin="mt-10"></CompareFeaturesPlan>}
