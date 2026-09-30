@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { derivePlanGridFlags, isFreePlan } from "@/lib/billing";
 import { useBillingStore } from "@/store/billingStore";
 import { useLogInUserStore } from "@/store/logInUserStore";
@@ -171,10 +172,16 @@ export default function PlanPricingSection({
       <div className={`mt-10 flex justify-center`}>
         <button
           type="button"
-          className="cursor-pointer rounded-full bg-primary/10 px-5 py-2 font-semibold text-primary"
+          className="flex cursor-pointer items-center gap-2 rounded-full bg-primary/10 px-5 py-2 font-semibold text-primary"
+          aria-expanded={showCompareFeatures}
           onClick={() => setShowCompareFeatures((prev) => !prev)}
         >
-          {showCompareFeatures ? "Hide" : "Show Details"}
+          Compare Plans
+          {showCompareFeatures ? (
+            <ChevronUp className="h-4 w-4" aria-hidden />
+          ) : (
+            <ChevronDown className="h-4 w-4" aria-hidden />
+          )}
         </button>
       </div>
 
