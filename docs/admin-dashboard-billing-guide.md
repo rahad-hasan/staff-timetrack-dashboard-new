@@ -158,6 +158,18 @@ gives one path for every state instead.
 - A discount code is **refused for a company that already has a live subscription**
   (`"Discount codes apply to new subscriptions only."`) — that purchase resolves to a prorated
   switch, which carries no coupon, so accepting one would promise a saving the charge never applies.
+- A discount code belongs to **one plan** (marketing picks it in the console; the same code can
+  be created again for another plan). A refused code returns a 400 whose `message` says why, and
+  the panel shows it under the code field as received (the same messages come back from
+  `subscription/subscribe`):
+
+  | `message` | When |
+  |---|---|
+  | `This discount code is only valid for the Pro plan.` (or `…for the Pro or Max plans.`) | Code is running on other plans, not this one |
+  | `This discount code has expired.` | This plan's code is past its end date |
+  | `This discount code is not active yet.` | This plan's code has a start date in the future |
+  | `This discount code is no longer available.` | The code's `redeem_limit` is 0 |
+  | `Invalid or inactive discount code` | Unknown, switched off or deleted |
 
 ### `POST /packages/subscription/subscribe`
 ```json

@@ -311,8 +311,10 @@ export const detachPaymentMethod = async (
  * never recomputes a total, or it would disagree with the invoice built from
  * the same ladder minutes later.
  *
- * An invalid discount code comes back as a 400 whose `message` is one of the
- * two exact strings the checkout panel renders inline.
+ * A refused discount code comes back as a 400 whose `message` says why (code
+ * scoped to another plan, expired, not active yet, unknown or switched off);
+ * the checkout panel renders whatever message arrives inline under the code
+ * field.
  */
 export const getCheckoutQuote = async (payload: {
   plan_id: number;

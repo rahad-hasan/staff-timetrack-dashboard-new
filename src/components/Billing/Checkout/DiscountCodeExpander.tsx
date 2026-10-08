@@ -40,20 +40,30 @@ export default function DiscountCodeExpander({
 
   if (appliedCode) {
     return (
-      <div className="flex items-center justify-between gap-3 rounded-lg bg-green-50 px-3 py-2.5 dark:bg-green-500/10">
-        <span className="flex min-w-0 items-center gap-2 text-sm font-medium text-green-700 dark:text-green-300">
-          <Check className="size-4 shrink-0" />
-          <span className="truncate">Code {appliedCode} applied</span>
-        </span>
-        <button
-          type="button"
-          onClick={onRemove}
-          disabled={disabled || applying}
-          aria-label={`Remove discount code ${appliedCode}`}
-          className="shrink-0 cursor-pointer text-green-700 transition-colors hover:text-green-900 disabled:opacity-50 dark:text-green-300 dark:hover:text-green-200"
-        >
-          <X className="size-4" />
-        </button>
+      <div className="space-y-2">
+        <div className="flex items-center justify-between gap-3 rounded-lg bg-green-50 px-3 py-2.5 dark:bg-green-500/10">
+          <span className="flex min-w-0 items-center gap-2 text-sm font-medium text-green-700 dark:text-green-300">
+            <Check className="size-4 shrink-0" />
+            <span className="truncate">Code {appliedCode} applied</span>
+          </span>
+          <button
+            type="button"
+            onClick={onRemove}
+            disabled={disabled || applying}
+            aria-label={`Remove discount code ${appliedCode}`}
+            className="shrink-0 cursor-pointer text-green-700 transition-colors hover:text-green-900 disabled:opacity-50 dark:text-green-300 dark:hover:text-green-200"
+          >
+            <X className="size-4" />
+          </button>
+        </div>
+
+        {/* A seat or cycle re-quote carries the applied code, so a code that
+            expired or was switched off since it was applied fails HERE. The
+            message has to show beside the X that clears it, or the order is
+            left un-repriced behind a dead button with nothing on screen. */}
+        {error && (
+          <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+        )}
       </div>
     );
   }
