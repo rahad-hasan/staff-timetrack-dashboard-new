@@ -31,6 +31,24 @@
   /* --color-darkBorder: #4a5263; */
   --color-darkBorder: #4a5263ab;
   /* --shadow-greenShadow: '0px 10px 30px rgba(18, 205, 105, 0.5)' */
+
+  /* Support (requester portal) — the support palette beyond the app tokens above. The single
+     source for the support class names (`text-support-primary-text` …); the reasoning and the
+     measured contrast of each value is in components/Support/primitives/tokens.ts. */
+  --color-support-primary-text: #066fc6;
+  --color-support-primary-text-dark: #8ec5ff;
+  --color-support-muted: #8a9190;
+  --color-support-muted-text: #697170;
+  --color-support-slate: #314158;
+  --color-support-divider: #e8ecec;
+  --color-support-surface-muted: #f3f5f5;
+  --color-support-border-hover: #c6d0d0;
+  --color-support-primary-soft: #e6f3fe;
+  --color-support-primary-tint: #f0f7fe;
+  --color-support-hero-glass: rgb(15 47 122 / 0.12);
+  --color-support-hero-glass-hover: rgb(15 47 122 / 0.2);
+  --color-support-hero-glass-active: rgb(15 47 122 / 0.28);
+  --color-support-stats-glass: rgb(15 47 122 / 0.46);
 }
 
 @plugin "tailwindcss-animate";

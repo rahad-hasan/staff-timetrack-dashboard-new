@@ -12,6 +12,11 @@ export const dynamic = "force-dynamic";
  * (S3_READ_URL_TTL_SECONDS). Linking through this route means a click works
  * however long the page has been open; the API re-checks that the caller
  * may see the attachment before signing.
+ *
+ * Kept on purpose although no step-9 screen links here any more (they
+ * re-sign through `GET /tickets/attachments/url` in place): the v1 ticket
+ * pages rendered every attachment as a link to this route, so copied links,
+ * bookmarks and browser history still point at it.
  */
 export async function GET(request: NextRequest) {
   const key = request.nextUrl.searchParams.get("key")?.trim() ?? "";

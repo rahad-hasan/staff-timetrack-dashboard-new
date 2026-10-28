@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Build/dev output folder. Defaults to .next (what `npm run start` serves under pm2);
+  // automated tooling sets NEXT_DIST_DIR=.next-agent so its builds and dev servers never
+  // overwrite the folder a running `next start` is serving.
+  distDir: process.env.NEXT_DIST_DIR || ".next",
   output: "standalone",
   experimental: {
     serverActions: {

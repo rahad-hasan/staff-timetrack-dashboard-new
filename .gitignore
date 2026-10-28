@@ -24,6 +24,7 @@
 
 # next.js
 /.next/
+/.next-agent/
 /out/
 
 # production
