@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Download, ExternalLink, FileText, Loader2, Printer } from "lucide-react";
+import { Download, ExternalLink, FileText, Loader2, Printer, Undo2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { IBillingInvoiceDetail } from "@/types/billing";
+import RequestRefundDialog from "../Refund/RequestRefundDialog";
 
 /**
  * Everything the user can do with an invoice document.
@@ -22,10 +23,14 @@ import { IBillingInvoiceDetail } from "@/types/billing";
  */
 export default function InvoiceActionsBar({
   invoice,
+  canRequestRefund = false,
 }: {
   invoice: IBillingInvoiceDetail;
+  /** Admin viewing a paid invoice: the server re-checks both. */
+  canRequestRefund?: boolean;
 }) {
   const [building, setBuilding] = useState(false);
+  const [refundOpen, setRefundOpen] = useState(false);
 
   const handleDownload = async () => {
     if (building) return;
@@ -86,6 +91,21 @@ export default function InvoiceActionsBar({
             Stripe PDF
           </a>
         </Button>
+      )}
+
+      {canRequestRefund && (
+        <>
+          <Button type="button" variant="outline2" onClick={() => setRefundOpen(true)}>
+            <Undo2 className="h-4 w-4" />
+            Request refund
+          </Button>
+          <RequestRefundDialog
+            open={refundOpen}
+            onOpenChange={setRefundOpen}
+            invoiceId={invoice.id}
+            invoiceNumber={invoice.invoice_number}
+          />
+        </>
       )}
     </div>
   );

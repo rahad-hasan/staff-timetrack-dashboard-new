@@ -20,6 +20,7 @@ import BillingTabs, {
   useScrollToPlans,
 } from "@/components/Billing/BillingTabs";
 import InvoiceTab from "@/components/Billing/InvoiceTab";
+import RefundsTab from "@/components/Billing/Refund/RefundsTab";
 import ChangeCardTab from "@/components/Billing/PaymentMethod/ChangeCardTab";
 import Link from "next/link";
 
@@ -226,6 +227,8 @@ export default function BillingPageClient({
       )}
 
       {activeTab === "invoice" && <InvoiceTab />}
+
+      {activeTab === "refunds" && <RefundsTab isAdmin={isAdmin} />}
 
       {activeTab === "change-card" && (
         <ChangeCardTab onViewBilling={() => setTab("invoice")} />

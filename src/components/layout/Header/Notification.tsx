@@ -21,6 +21,7 @@ import {
   ChevronRight,
   AlertTriangle,
   Loader2,
+  ReceiptText,
 } from "lucide-react";
 import BellIcon from "@/components/Icons/BellIcon";
 import { getPlainText } from "@/utils/getPlainText";
@@ -30,6 +31,7 @@ const CATEGORY_MAP: Record<string, string> = {
   meeting: "MEETING",
   task: "TASK UPDATE",
   work_report: "WORK REPORT REMINDER",
+  refund: "BILLING",
 };
 
 const Notification = ({ unreadCount, notificationsList }: any) => {
@@ -46,6 +48,8 @@ const Notification = ({ unreadCount, notificationsList }: any) => {
         );
       case "work_report":
         return <FileText className="w-4 h-4 text-orange-500" />;
+      case "refund":
+        return <ReceiptText className="w-4 h-4 text-green-600" />;
       case "task":
         return (
           <RefreshCcw className="w-4 h-4 text-gray-500 dark:text-white/80" />

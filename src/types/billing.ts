@@ -649,3 +649,83 @@ export interface IInvoicePayResult {
   payment_intent_client_secret: string | null;
   hosted_invoice_url: string | null;
 }
+
+/* ─────────────── Refunds (`/refunds`) ─────────────── */
+
+export type TRefundStatus =
+  | "pending"
+  | "approved"
+  | "rejected"
+  | "processing"
+  | "processed"
+  | "failed"
+  | "canceled";
+export type TRefundReason =
+  | "duplicate_charge"
+  | "service_issue"
+  | "billing_error"
+  | "plan_change"
+  | "other";
+export type TRefundBlockedReason = "not_paid" | "fully_refunded" | "request_open" | "window_expired";
+
+/** Amounts are integer cents in the invoice currency. */
+export interface IRefundRequest {
+  id: number;
+  status: TRefundStatus;
+  /** `direct` / `external` refunds were issued by the billing team, not requested. */
+  source: "request" | "direct" | "external";
+  currency: string;
+  requested_amount_cents: number;
+  approved_amount_cents: number | null;
+  refunded_amount_cents: number;
+  reason_code: TRefundReason;
+  reason: string | null;
+  /** The billing team's note to the customer (decline reason, approval note). */
+  review_note: string | null;
+  invoice: { id: number; invoice_number: string };
+  requested_by: { id: number; name: string } | null;
+  created_at: string;
+  reviewed_at: string | null;
+  processed_at: string | null;
+  /** Set when this refund ended the subscription. */
+  subscription_canceled_at: string | null;
+}
+
+export interface IRefundTimelineEntry {
+  action: string;
+  status: TRefundStatus;
+  amount_cents: number | null;
+  note: string | null;
+  created_at: string;
+}
+
+export interface IRefundRequestDetail extends IRefundRequest {
+  timeline: IRefundTimelineEntry[];
+}
+
+/** `GET /refunds/invoices/:id/eligibility` — what may still be asked for. */
+export interface IRefundEligibility {
+  invoice: { id: number; invoice_number: string; currency: string; paid_at: string | null };
+  currency: string;
+  paid_cents: number;
+  refunded_cents: number;
+  available_cents: number;
+  open_request: {
+    id: number;
+    status: TRefundStatus;
+    requested_amount_cents: number;
+    created_at: string;
+  } | null;
+  can_request: boolean;
+  /** This invoice paid for the current period: refunding all that is left ends the subscription. */
+  cancels_subscription_when_full: boolean;
+  blocked_reason: TRefundBlockedReason | null;
+  request_window_days: number;
+}
+
+export interface ICreateRefundPayload {
+  invoice_id: number;
+  amount_cents: number;
+  reason_code: TRefundReason;
+  reason: string;
+}

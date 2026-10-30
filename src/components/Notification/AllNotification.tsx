@@ -13,6 +13,7 @@ import {
   Briefcase,
   CheckSquare,
   Loader2,
+  ReceiptText,
 } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -50,6 +51,11 @@ const REASON_CONFIG: Record<
     label: "Task Assignment",
     icon: CheckSquare,
     colorClass: "text-emerald-500 bg-emerald-50 dark:bg-emerald-900/20",
+  },
+  refund: {
+    label: "Billing",
+    icon: ReceiptText,
+    colorClass: "text-green-600 bg-green-50 dark:bg-green-900/20",
   },
   default: {
     label: "Notification",

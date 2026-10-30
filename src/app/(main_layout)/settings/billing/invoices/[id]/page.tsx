@@ -115,7 +115,18 @@ const InvoiceDetailPage = async ({ params }: PageProps) => {
       </div>
 
       <div className="mb-4 print:hidden">
-        <InvoiceActionsBar invoice={invoice} />
+        <InvoiceActionsBar
+          invoice={invoice}
+          canRequestRefund={
+            role === "admin" &&
+            !invoice.voided &&
+            // 'refunded' rows flipped by the old partial-refund webhook still hold
+            // money; the dialog's eligibility check has the final word.
+            (invoice.status === "paid" ||
+              (invoice.status === "refunded" &&
+                invoice.totals.refunded_cents < invoice.totals.amount_paid_cents))
+          }
+        />
       </div>
 
       <InvoiceDocument invoice={invoice} />

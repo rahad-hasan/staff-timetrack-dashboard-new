@@ -6,12 +6,12 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import SegmentedPills, {
   type SegmentedPillOption,
 } from "@/components/Common/SegmentedPills";
-import { CreditCard, Package, Receipt } from "lucide-react";
+import { CreditCard, Package, Receipt, Undo2 } from "lucide-react";
 import PlanIcon from "../Icons/PlanIcons/PlanIcon";
 import InvoiceIcon from "../Icons/PlanIcons/InvoiceIcon";
 import CardIcon from "../Icons/PlanIcons/CardIcon";
 
-export type BillingTabId = "my-plan" | "invoice" | "change-card";
+export type BillingTabId = "my-plan" | "invoice" | "refunds" | "change-card";
 
 /**
  * The tab the page opens on. Its value is never written to the URL — the
@@ -25,7 +25,7 @@ export const DEFAULT_BILLING_TAB: BillingTabId = "my-plan";
 /** Anchor id of the pricing grid, which lives inside the My Plan tab body. */
 const PLANS_ANCHOR_ID = "plans";
 
-const TAB_IDS: readonly BillingTabId[] = ["my-plan", "invoice", "change-card"];
+const TAB_IDS: readonly BillingTabId[] = ["my-plan", "invoice", "refunds", "change-card"];
 
 /**
  * Normalises whatever is in `?tab=`.
@@ -172,6 +172,8 @@ export default function BillingTabs({
     const base: SegmentedPillOption<BillingTabId>[] = [
       { value: "my-plan", label: "My Plan", icon: <PlanIcon size={20}/> },
       { value: "invoice", label: "Invoice", icon: <InvoiceIcon size={20}/> },
+      // Readable by every billing viewer; requesting/withdrawing is admin-only inside.
+      { value: "refunds", label: "Refunds", icon: <Undo2 size={20} /> },
     ];
     if (isAdmin) {
       base.push({ value: "change-card", label: "Change Card", icon: <CardIcon size={20}/> });
