@@ -148,7 +148,7 @@ const LoginClientComponent = () => {
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-center p-4 lg:p-8">
       {/* Main Container Card */}
-      <div className="w-full max-w-[1040px] bg-white dark:bg-zinc-900 rounded-[28px] shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex flex-col lg:flex-row min-h-[640px]">
+      <div className="w-full max-w-[940px] bg-white dark:bg-zinc-900 rounded-[28px] shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex flex-col lg:flex-row min-h-[580px]">
         
         {/* Left Column: Login Form */}
         <div className="w-full lg:w-1/2 p-6 lg:p-12 flex flex-col justify-between">
