@@ -4,7 +4,6 @@
 import { loginSchema } from "@/zod/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -15,14 +14,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
-import loginIcon from "../../assets/auth/loginIcon.svg";
 import Image from "next/image";
-import signInImage from "../../assets/auth/signImage.webp";
-import { useCallback, useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { useCallback, useState, useEffect } from "react";
+import { Eye, EyeOff, ArrowRight, ShieldCheck, Star } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { logIn } from "@/actions/auth/action";
 import { useLogInUserStore } from "@/store/logInUserStore";
@@ -36,27 +32,55 @@ import {
 } from "@/lib/authSession";
 import { CreateOrganizationDialog } from "./CreateOrganization";
 import { useEnterPlanSelection } from "./CreateOrganization/useEnterPlanSelection";
+import EmailIcon from "../Icons/EmailIcon";
+import SecureIcon from "../Icons/PlanIcons/SecureIcon";
+import gdpr from "../../assets/gdpr.webp";
+import hipaa from "../../assets/hipaa.webp";
+
+
+// Carousel items for the right-hand showcase banner
+const SLIDES = [
+  {
+    title: "Manage Time Better, Work Smarter Together",
+    description:
+      "Log in and take control of your team’s time, productivity, and daily activities. Staff Time Tracker helps you stay organized, track work accurately, and manage everything from one simple platform.",
+  },
+  {
+    title: "Track Projects & Tasks in Real Time",
+    description:
+      "Keep projects on schedule with automated activity logging, insightful reports, and smooth collaboration across all your team members.",
+  },
+  {
+    title: "Streamline Team Payroll & Productivity",
+    description:
+      "Generate detailed time sheets and accurate work summaries in minutes so your organization can focus on scaling efficiently.",
+  },
+];
 
 const LoginClientComponent = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
-  // Set when sign-in resolves to an account that never created its
-  // organization; it is also the dialog's open flag. `name` rides along only to
-  // seed the organization-name suggestions — older API builds answer this
-  // branch without one, so it stays optional and the step simply falls back to
-  // the email local-part.
+
   const [onboardingUser, setOnboardingUser] = useState<{
     email: string;
     name?: string;
   } | null>(null);
+
   const router = useRouter();
-
   const searchParams = useSearchParams();
-
   const email = searchParams.get("email") ?? "";
 
   const { setOpenMenu } = useSidebarStore();
+  const { setLogInUserData } = useLogInUserStore();
+
+  // Auto-rotate hero slider
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % SLIDES.length);
+    }, 6000);
+    return () => clearInterval(timer);
+  }, []);
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -70,12 +94,6 @@ const LoginClientComponent = () => {
     setShowPassword((prev) => !prev);
   };
 
-  // const { logIn, isLogging } = useAuthStore();
-  // const currentError = useAuthStore.getState().error;
-  // console.log(getUser());
-  // console.log(getError());
-  const { setLogInUserData } = useLogInUserStore();
-
   const enterDashboard = useCallback(
     (data: any) => {
       resetProfileImageRefresh();
@@ -86,11 +104,6 @@ const LoginClientComponent = () => {
     [router, setLogInUserData, setOpenMenu],
   );
 
-  // A freshly created organization continues to the plan picker (its reverse
-  // trial is already running, so the picker is skippable); a normal sign-in
-  // goes straight to the dashboard. The hook memoizes the callback — the
-  // onboarding dialog memoizes its submit handler against it, so an unstable
-  // identity would defeat that memo.
   const enterPlanSelection = useEnterPlanSelection();
 
   async function onSubmit(values: z.infer<typeof loginSchema>) {
@@ -98,10 +111,6 @@ const LoginClientComponent = () => {
     try {
       const res: any = await logIn(values);
 
-      // Verified on the marketing site but no company yet: sign-in succeeds
-      // with null tokens and a `/create-organization` redirect. Finish the
-      // signup here instead of pushing into a dashboard there is no session
-      // for — which is what used to land on /session-expired.
       if (requiresOrganizationOnboarding(res)) {
         setOnboardingUser({
           email: res.data.email || values.email,
@@ -111,8 +120,6 @@ const LoginClientComponent = () => {
       }
 
       if (res?.success) {
-        // Cookies.set("accessToken", res?.data?.accessToken);
-        // Cookies.set("refreshToken", res?.data?.refreshToken);
         toast.success(res?.message || "Login successful");
         enterDashboard(res?.data ?? {});
       } else {
@@ -125,7 +132,7 @@ const LoginClientComponent = () => {
         });
       }
     } catch (error: any) {
-      console.log(error.message)
+      console.log(error.message);
       toast.error(error.message || "Server is not active", {
         style: {
           backgroundColor: "#ef4444",
@@ -138,204 +145,281 @@ const LoginClientComponent = () => {
     }
   }
 
-  const sliderContent = [
-    {
-      titleLine1: "Manage Time Better,",
-      titleLine2: "Work Smarter Together",
-      body: "Log in and take control of your team’s time, productivity, and daily activities. Staff Time Tracker helps you stay organized, track work accurately, and manage everything from one simple platform.",
-    },
-    {
-      titleLine1: "Effortless Time",
-      titleLine2: "Tracking & Reporting",
-      body: "Track working hours, monitor team activity, organize tasks, and generate clear reports with ease. Staff Time Tracker helps you stay organized, understand productivity, and manage your team more efficiently—all from one simple platform.",
-    },
-    {
-      titleLine1: "Seamless Team",
-      titleLine2: "Collaboration",
-      body: "Keep your team connected with simple tools for sharing updates, assigning tasks, and coordinating daily work. Staff Time Tracker helps everyone stay aligned, organized, and accountable while making collaboration easier across your entire organization.",
-    },
-  ];
-
-  // const totalSlides = sliderContent.length;
-
-  // const nextSlide = () => {
-  //     setCurrentSlide((prev) => (prev + 1) % totalSlides);
-  // };
-
-  // const prevSlide = () => {
-  //     setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
-  // };
-
-  const currentItem = sliderContent[currentSlide];
   return (
-    <div className=" h-auto lg:h-screen w-full flex flex-col lg:flex-row bg-linear-to-b from-[#12cd6918] from-5% to-bgSecondary dark:to-darkSecondaryBg to-20%">
-      <div className=" lg:w-1/2 h-screen lg:h-full">
-        {/* <div className={`flex items-center gap-1.5 px-8 py-5 `}>
-          <Image
-            src={logo}
-            alt="Logo"
-            width={0}
-            height={0}
-            className={`w-12 h-12`}
-          />
-          <h2 className="text-2xl font-bold">Tracker</h2>
-        </div> */}
-        <div className={`flex items-center gap-1.5 px-8 py-5 `}>
-          <Image
-            src={logoWithSlogan}
-            alt="Logo"
-            width={120}
-            height={35}
-            className="hidden dark:block"
-          />
-          <Image
-            src={logoForDark}
-            alt="Logo"
-            width={120}
-            height={35}
-            className="dark:hidden"
-          />
-        </div>
-        <div className="  flex justify-center items-center h-[80%]">
+    <div className="min-h-screen w-full flex flex-col items-center justify-center p-4 lg:p-8">
+      {/* Main Container Card */}
+      <div className="w-full max-w-[1040px] bg-white dark:bg-zinc-900 rounded-[28px] shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex flex-col lg:flex-row min-h-[640px]">
+        
+        {/* Left Column: Login Form */}
+        <div className="w-full lg:w-1/2 p-6 lg:p-12 flex flex-col justify-between">
           <div>
-            <div className=" flex flex-col items-center mb-5">
+            {/* Logo */}
+            <div className="mb-8">
               <Image
-                src={loginIcon}
-                width={200}
-                height={200}
-                alt="icon"
-                className=" w-16"
+                src={logoWithSlogan}
+                alt="Logo"
+                width={140}
+                height={40}
+                className="hidden dark:block object-contain"
               />
-              <h2 className=" text-2xl font-medium mt-4 mb-2">Sign in</h2>
-              <p className="">Enter your details to sign in</p>
+              <Image
+                src={logoForDark}
+                alt="Logo"
+                width={140}
+                height={40}
+                className="dark:hidden object-contain"
+              />
             </div>
+
+            {/* Header */}
+            <div className="mb-8">
+              <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
+                Sign in
+              </h1>
+              <p className="text-slate-500 dark:text-slate-400 mt-1.5">
+                Enter your details to sign in
+              </p>
+            </div>
+
+            {/* Form */}
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="space-y-4 "
+                className="space-y-5"
               >
+                {/* Email Field */}
                 <FormField
                   control={form.control}
                   name="email"
                   render={({ field }) => (
-                    <FormItem className="">
-                      <FormLabel>Email</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="email"
-                          className="w-75 sm:w-100 md:h-12 dark:border-darkBorder"
-                          placeholder="Email"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <div className=" flex items-center justify-between">
-                        <FormLabel>Password</FormLabel>
-                        <Link href={`/auth/forgot-password`}>
-                          <p className=" text-sm text-primary cursor-pointer">
-                            Forgot Password?
-                          </p>
-                        </Link>
-                      </div>
-
+                    <FormItem className="space-y-1.5">
+                      <FormLabel className=" font-semibold text-slate-700 dark:text-slate-300">
+                        Email
+                      </FormLabel>
                       <FormControl>
                         <div className="relative">
+                          {/* <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" /> */}
+                          <EmailIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16}/>
                           <Input
-                            type={showPassword ? "text" : "password"}
-                            className="w-75 sm:w-100 md:h-12 dark:border-darkBorder"
-                            placeholder="Password"
+                            type="email"
+                            placeholder="Email"
+                            className="pl-10 h-12.5 rounded-xl border-slate-200 bg-white dark:bg-zinc-800 dark:border-zinc-700 text-slate-900 dark:text-white placeholder:text-slate-400 "
                             {...field}
                           />
-                          <div
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
-                            onClick={togglePasswordVisibility}
-                          >
-                            {showPassword ? (
-                              <Eye size={18} />
-                            ) : (
-                              <EyeOff size={18} />
-                            )}
-                          </div>
                         </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                {/* <Link href={`/dashboard`}> */}
-                <Button disabled={loading} className=" w-full" type="submit">
-                  {loading ? "Loading..." : "Sign in"}
-                </Button>
-                {/* <Button className=" w-full" type="submit">{"Sign in"}</Button> */}
-                {/* </Link> */}
-                {/* <h3 className=" text-center mt-2">Don’t have a account? <span className=" text-primary cursor-pointer">Sign Up</span></h3> */}
+
+                {/* Password Field */}
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem className="space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <FormLabel className=" font-semibold text-slate-700 dark:text-slate-300">
+                          Password
+                        </FormLabel>
+                        <Link href="/auth/forgot-password">
+                          <span className="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 transition-colors">
+                            Forgot Password?
+                          </span>
+                        </Link>
+                      </div>
+                      <FormControl>
+                        <div className="relative">
+
+                          <SecureIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" size={18}/>
+                          <Input
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Password"
+                            className="pl-10 pr-10 h-12.5 rounded-xl border-slate-200 bg-white dark:bg-zinc-800 dark:border-zinc-700 text-slate-900 dark:text-white placeholder:text-slate-400 "
+                            {...field}
+                          />
+                          <button
+                            type="button"
+                            onClick={togglePasswordVisibility}
+                            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                          >
+                            {showPassword ? (
+                              <Eye className="h-5 w-5 cursor-pointer" />
+                            ) : (
+                              <EyeOff className="h-5 w-5 cursor-pointer" />
+                            )}
+                          </button>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Submit Button */}
+                <button
+                  disabled={loading}
+                  type="submit"
+                  className="mt-8 w-full h-12.5 cursor-pointer shadow-[0_20px_50px_rgba(0,0,0,0.2)] bg-gradient-to-r from-[#0160F1] to-[#7B61FF] text-white font-medium rounded-full shadow-lg shadow-blue-500/25 transition-all flex items-center justify-center gap-2"
+                >
+                  {loading ? (
+                    "Loading..."
+                  ) : (
+                    <>
+                      Sign in <ArrowRight className="h-4 w-4" />
+                    </>
+                  )}
+                </button>
               </form>
             </Form>
           </div>
-        </div>
-      </div>
-      <div
-        className={`hidden lg:block lg:w-1/2 h-screen lg:h-full p-5 relative`}
-      >
-        <div
-          className={`w-full h-full rounded-xl bg-cover bg-center bg-no-repeat relative`}
-          style={{ backgroundImage: `url('${signInImage.src}')` }}
-        >
-          <div className="relative w-full h-full">
-            <div className="bg-[#61616157] text-white py-10 xl:py-12 px-5 xl:px-10 text-center rounded-xl absolute bottom-0 left-0 right-0 backdrop-blur">
-              <h2 className="text-4xl xl:text-5xl text-center mb-2">
-                {currentItem.titleLine1}
-              </h2>
-              <h2 className="text-4xl xl:text-5xl text-center mb-5">
-                {currentItem.titleLine2}
-              </h2>
-              <p className="text-lg xl:px-8 2xl:px-18">{currentItem.body}</p>
 
-              <div className="flex justify-center mt-6 space-x-2">
-                {sliderContent.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentSlide(index)}
-                    className={`h-2 w-2 rounded-full transition-all duration-300 cursor-pointer ${
-                      index === currentSlide ? "bg-white w-6" : "bg-white/40"
-                    }`}
-                    aria-label={`Go to slide ${index + 1}`}
-                  />
-                ))}
+          {/* Footer Callout */}
+          <div className="mt-8 pt-4  text-slate-500 dark:text-slate-400">
+            New to Staff Time Tracker?{" "}
+            <Link
+              href="/auth/register"
+              className="font-semibold text-blue-600 hover:underline dark:text-blue-400"
+            >
+              Try for Free
+            </Link>
+          </div>
+        </div>
+
+        {/* Right Column: Hero Banner Carousel */}
+        <div className="w-full lg:w-1/2 bg-gradient-to-br from-[#0160F1] via-[#4c60fa] to-[#7B61FF] p-6 lg:p-12 text-white flex flex-col gap-5 justify-between relative overflow-hidden lg:m-2 rounded-[24px]">
+          <svg
+            className="absolute inset-0 w-full h-full pointer-events-none opacity-25 overflow-hidden"
+            viewBox="0 0 400 600"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+
+            <circle
+              cx="450"
+              cy="80"
+              r="150"
+              stroke="currentColor"
+              strokeWidth="1"
+              strokeLinecap="round"
+            />
+
+            <circle
+              cx="450"
+              cy="80"
+              r="250"
+              stroke="currentColor"
+              strokeWidth="1"
+              strokeLinecap="round"
+            />
+
+            <circle
+              cx="450"
+              cy="80"
+              r="350"
+              stroke="currentColor"
+              strokeWidth="1"
+              strokeLinecap="round"
+            />
+          </svg>
+
+          {/* Slide Indicator Number */}
+          <div className="relative z-10 text-sm font-medium text-white">
+            0{currentSlide + 1} <span className="opacity-60">/ 0{SLIDES.length}</span>
+          </div>
+
+          {/* Floating Time Tracker Visual Mockup */}
+          <div className="w-[70%] relative z-10">
+            <div className="w-full max-w-sm bg-white/15 backdrop-blur-md border border-white/20 rounded-2xl p-5 shadow-2xl">
+              <div className="flex items-center gap-2 mb-3  font-medium text-blue-100">
+                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                Tracking now
+              </div>
+              <div className="text-4xl font-extrabold text-white mb-6">
+                07:42:18
+              </div>
+              
+              {/* Animated Activity Bars */}
+              <div className="flex items-end gap-2 h-20 pt-2">
+                <div className="flex-1 bg-white/30 rounded-md h-[40%]" />
+                <div className="flex-1 bg-white/40 rounded-md h-[60%]" />
+                <div className="flex-1 bg-white/50 rounded-md h-[80%]" />
+                <div className="flex-1 bg-white/40 rounded-md h-[55%]" />
+                <div className="flex-1 bg-white rounded-md h-[100%] shadow-lg" />
+                <div className="flex-1 bg-white/30 rounded-md h-[35%]" />
               </div>
             </div>
-            {/* 
-                        <button
-                            onClick={prevSlide}
-                            className="absolute top-1/2 left-0 z-10 p-2 transform -translate-y-1/2 text-white/80 hover:text-white"
-                            aria-label="Previous Slide"
-                        >
-                            <svg className="h-6 w-6 " fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
-                        </button>
-                        <button
-                            onClick={nextSlide}
-                            className="absolute top-1/2 right-0 z-10 p-2 transform -translate-y-1/2 text-white/80 hover:text-white"
-                            aria-label="Next Slide"
-                        >
-                            <svg className="h-6 w-6 " fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
-                        </button> */}
+          </div>
+
+          {/* Text Content Carousel & Dots */}
+          <div className="relative z-10">
+            <h2 className="text-3xl font-medium mb-3">
+              {SLIDES[currentSlide].title}
+            </h2>
+            <p className=" text-darkTextPrimary leading-relaxed mb-6 max-w-md">
+              {SLIDES[currentSlide].description}
+            </p>
+
+            {/* Pagination Dots */}
+            <div className="flex items-center gap-2">
+              {SLIDES.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentSlide(index)}
+                  className={`h-1.5 rounded-full transition-all duration-300 ${
+                    currentSlide === index
+                      ? "w-8 bg-white"
+                      : "w-2 bg-white/30 hover:bg-white/50"
+                  }`}
+                  aria-label={`Go to slide ${index + 1}`}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Mounted only once sign-in asks for it, so the wizard always starts
-          clean and can safely read the browser's time zone on mount. On success
-          it deliberately stays mounted in its "Creating..." state until the
-          plan-picker route takes over, rather than flashing the login form back
-          at an account that is already signed in. */}
+      <div className="w-full max-w-[740px] bg-white dark:bg-zinc-800 rounded-3xl md:rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.2)] border border-slate-100 dark:border-zinc-700 px-6 py-3 mt-6 flex flex-wrap gap-4 items-center justify-between">
+        {/* Rating Section */}
+        <div className="flex items-center gap-2.5">
+          <div className="flex items-center text-amber-400 gap-0.5">
+            {[...Array(5)].map((_, i) => (
+              
+              <Star key={i} className="h-3.5 w-3.5 fill-current" />
+            ))}
+          </div>
+          <span className="text-sm font-semibold text-slate-800 dark:text-white">
+            4.9 out of 5
+          </span>
+        </div>
+
+        <div className="hidden md:block h-5 w-[1px] bg-slate-200 dark:bg-zinc-700" />
+
+        {/* SOC 2 Badge */}
+        <div className="flex items-center gap-2 border border-emerald-200/60 dark:border-emerald-800 px-3.5 py-1.5 rounded-full">
+          <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+          <span className="text-xs font-semibold ">
+            SOC 2 Type II
+          </span>
+        </div>
+
+        {/* Compliance Badges */}
+        <div className="flex items-center gap-3">
+          <Image src={gdpr} alt="gdpr" width={30} height={30} />
+          <Image src={hipaa} alt="hipaa" width={30} height={30} />
+
+        </div>
+
+        <div className="hidden md:block h-5 w-[1px] bg-slate-200 dark:bg-zinc-700" />
+
+        {/* Encrypted HTTPS */}
+        <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400 text-xs font-medium">
+          <SecureIcon size={16} className="h-3.5 w-3.5 text-slate-600" />
+          <span>Secured with encrypted HTTPS</span>
+        </div>
+      </div>
+      {/* Onboarding Dialog */}
       {onboardingUser && (
         <CreateOrganizationDialog
           open
