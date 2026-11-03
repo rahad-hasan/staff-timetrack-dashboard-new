@@ -1,10 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { ArrowLeft, ArrowRight, Check, Loader2, ShieldCheck, Star } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
-
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { ICreateOrganizationResponse } from "@/types/type";
@@ -53,9 +50,9 @@ const CreateOrganizationDialog = ({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center p-4 lg:p-8">
+    <div className="min-h-screen w-full flex flex-col items-center justify-center p-4 lg:p-8">
       {/* Main Container Card matching the design system style */}
-      <div className="w-full max-w-[940px] bg-white dark:bg-zinc-900 rounded-[28px] shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex flex-col lg:flex-row min-h-[580px] mb-5 overflow-hidden">
+      <div className="w-full max-w-[940px] bg-white dark:bg-zinc-900 rounded-[28px] shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex flex-col lg:flex-row mb-5 overflow-hidden">
 
         {/* Left Column: Form Content */}
         <div className="w-full lg:w-1/2 p-6 lg:p-10 flex flex-col justify-between">

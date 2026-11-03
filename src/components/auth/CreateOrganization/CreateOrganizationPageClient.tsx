@@ -57,7 +57,7 @@ const CreateOrganizationPageClient = () => {
   return (
     // `relative` so the backdrop's own `fixed` layer can sit behind this
     // content via its negative z-index without escaping the stacking context.
-    <div className="relative min-h-screen w-full">
+    <div className="min-h-screen w-full flex flex-col items-center justify-center relative overflow-y-auto">
       <OnboardingBackdrop />
 
       {/* No logo header: the backdrop now carries the product framing (its own
@@ -65,17 +65,18 @@ const CreateOrganizationPageClient = () => {
           blurred dashboard read as a rendering fault rather than branding. The
           design places nothing above the dialog either. */}
 
-      <CreateOrganizationDialog
-        open
-        email={"emon@gmail.com"}
-        userName={userName ?? undefined}
-        onOpenChange={(next) => {
-          // "Back to sign in" / Escape — there is no session to return to, so
-          // leaving the wizard means leaving onboarding.
-          if (!next) router.push("/auth/login");
-        }}
-        onCompleted={enterPlanSelection}
-      />
+        <CreateOrganizationDialog
+          open
+          email={"emon@gmail.com"}
+          userName={userName ?? undefined}
+          onOpenChange={(next) => {
+            // "Back to sign in" / Escape — there is no session to return to, so
+            // leaving the wizard means leaving onboarding.
+            if (!next) router.push("/auth/login");
+          }}
+          onCompleted={enterPlanSelection}
+        />
+
     </div>
   );
 };
