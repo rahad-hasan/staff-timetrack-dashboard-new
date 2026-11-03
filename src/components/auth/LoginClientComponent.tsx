@@ -173,7 +173,7 @@ const LoginClientComponent = () => {
 
             {/* Header */}
             <div className="mb-8">
-              <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
+              <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">
                 Sign in
               </h1>
               <p className="text-slate-500 dark:text-slate-400 mt-1.5">
@@ -354,7 +354,7 @@ const LoginClientComponent = () => {
 
           {/* Text Content Carousel & Dots */}
           <div className="relative z-10">
-            <h2 className="text-3xl font-medium mb-3">
+            <h2 className="text-2xl md:text-3xl font-medium mb-3">
               {SLIDES[currentSlide].title}
             </h2>
             <p className=" text-darkTextPrimary leading-relaxed mb-6 max-w-md">

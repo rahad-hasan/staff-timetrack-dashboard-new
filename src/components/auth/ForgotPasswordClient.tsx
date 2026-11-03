@@ -106,7 +106,7 @@ const ForgotPasswordClient = () => {
 
             {/* Header */}
             <div className="mb-8">
-              <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
+              <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">
                 Forgot password
               </h1>
               <p className="text-slate-500 dark:text-slate-400 mt-1.5">
@@ -218,7 +218,7 @@ const ForgotPasswordClient = () => {
 
           {/* Main Hero Title & Description */}
           <div className="relative z-10 my-6">
-            <h2 className="text-3xl font-bold mb-3 leading-tight">
+            <h2 className="text-2xl md:text-3xl font-bold mb-3 leading-tight">
               Reset your password in three quick steps
             </h2>
           </div>
