@@ -39,20 +39,20 @@ const CreateOrganizationPageClient = () => {
   const userName = searchParams.get("name");
   const enterPlanSelection = useEnterPlanSelection();
 
-  useEffect(() => {
-    if (!email) {
-      toast.error("We lost track of your sign-up email — please sign in.", {
-        style: {
-          backgroundColor: "#ef4444",
-          color: "white",
-          border: "none",
-        },
-      });
-      router.replace("/auth/login");
-    }
-  }, [email, router]);
+  // useEffect(() => {
+  //   if (!email) {
+  //     toast.error("We lost track of your sign-up email — please sign in.", {
+  //       style: {
+  //         backgroundColor: "#ef4444",
+  //         color: "white",
+  //         border: "none",
+  //       },
+  //     });
+  //     router.replace("/auth/login");
+  //   }
+  // }, [email, router]);
 
-  if (!email) return null;
+  // if (!email) return null;
 
   return (
     // `relative` so the backdrop's own `fixed` layer can sit behind this
@@ -67,7 +67,7 @@ const CreateOrganizationPageClient = () => {
 
       <CreateOrganizationDialog
         open
-        email={email}
+        email={"emon@gmail.com"}
         userName={userName ?? undefined}
         onOpenChange={(next) => {
           // "Back to sign in" / Escape — there is no session to return to, so

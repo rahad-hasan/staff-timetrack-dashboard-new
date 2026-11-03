@@ -211,8 +211,8 @@ const SegmentedPills = <TValue extends string | number>({
                 ),
               selected && outline
                 ? cn(
-                    "bg-primary/10 text-primary",
-                    border ? "ring-1 ring-primary/50" : "ring-0",
+                    "bg-[#edf4fe] text-[#0160F1]",
+                    border ? "ring-1 ring-[#0160F1]" : "ring-0",
                   )
                 : selected
                   ? "bg-primary text-white shadow-sm dark:text-white"

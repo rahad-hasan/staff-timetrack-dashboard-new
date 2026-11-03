@@ -73,7 +73,7 @@ const ForgotPasswordClient = () => {
       {/* Main Container Card */}
       <div className="w-full max-w-[940px] bg-white dark:bg-zinc-900 rounded-[28px] shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex flex-col lg:flex-row min-h-[580px]">
         {/* Left Column: Forgot Password Form */}
-        <div className="w-full lg:w-1/2 p-6 lg:p-12 flex flex-col justify-between">
+        <div className="w-full lg:w-1/2 p-6 lg:p-10 flex flex-col justify-between">
           <div>
             {/* Logo */}
             <div className="mb-6">
@@ -178,7 +178,7 @@ const ForgotPasswordClient = () => {
         </div>
 
         {/* Right Column: Hero Banner Steps Guide */}
-        <div className="w-full lg:w-1/2 bg-gradient-to-br from-[#0160F1] via-[#4c60fa] to-[#7B61FF] p-6 lg:p-12 text-white flex flex-col justify-between relative overflow-hidden lg:m-2 rounded-[24px]">
+        <div className="w-full lg:w-1/2 bg-gradient-to-br from-[#0160F1] via-[#4c60fa] to-[#7B61FF] p-6 lg:p-10 text-white flex flex-col justify-between relative overflow-hidden lg:m-2 rounded-[24px]">
           <svg
             className="absolute inset-0 w-full h-full pointer-events-none opacity-25 overflow-hidden"
             viewBox="0 0 400 600"
