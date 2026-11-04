@@ -246,7 +246,7 @@ const CreateOrganizationDialog = ({
               <div>
                 <div className="flex items-center gap-2">
                   <h3 className=" text-white">Organization</h3>
-                  {stepIndex > 0 && <span className="py-0.5 px-2 rounded-full text-[10px] bg-white/20 font-medium">Done</span>}
+                  {stepIndex > 0 && <span className="py-0.5 px-2 rounded-full text-[10px] bg-[#5383f6] font-medium">Done</span>}
                 </div>
                 <p className="text-sm font-thin">Name, phone, time zone and address.</p>
               </div>

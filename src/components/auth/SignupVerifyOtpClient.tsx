@@ -49,8 +49,7 @@ const SignupVerifyOtpClient = () => {
   const lastSubmittedCode = useRef<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
-  // const email = searchParams.get("email");
-  const email = 'emon@gamil.com';
+  const email = searchParams.get("email");
 
   // The whole screen is meaningless without the address the code was sent to.
   // useEffect(() => {
@@ -391,7 +390,7 @@ const SignupVerifyOtpClient = () => {
           {/* Step Track */}
           <div className="relative z-10 space-y-6 my-auto">
             {/* Vertical Connector Line */}
-            <div className="absolute left-4 top-4 bottom-1 w-[1.5px] bg-white/30" />
+            <div className="absolute left-4 top-4 bottom-1 w-[1.5px] bg-[#FFFFFFD9]" />
 
             {/* Step 1: Account (Done) */}
             <div className="relative flex items-start gap-3.5">

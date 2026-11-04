@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
@@ -35,12 +34,9 @@ import SecureIcon from "@/components/Icons/PlanIcons/SecureIcon";
 import gdpr from "@/assets/gdpr.webp";
 import hipaa from "@/assets/hipaa.webp";
 import OnboardingBackdrop from "@/components/auth/CreateOrganization/OnboardingBackdrop";
+import { createAccount } from "@/actions/auth/action";
 
-interface SignUpProps {
-  onSubmit?: (data: { name: string; email: string; password: string }) => Promise<void>;
-}
-
-const SignUp = ({ onSubmit }: SignUpProps) => {
+const SignUp = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -51,7 +47,7 @@ const SignUp = ({ onSubmit }: SignUpProps) => {
     defaultValues: { name: "", email: "", password: "" },
   });
 
-  const passwordValue = form.watch("password");
+  const passwordValue = form.watch("password") || "";
   const passwordStrengthChecks = [
     passwordValue.length >= 8,
     /[A-Z]/.test(passwordValue),
@@ -90,15 +86,26 @@ const SignUp = ({ onSubmit }: SignUpProps) => {
 
     setLoading(true);
     try {
-      if (onSubmit) {
-        await onSubmit(values);
-      } else {
-        // Default navigation demo behavior
-        toast.success("Account created successfully!");
-        router.push(`/auth/verify-otp?email=${encodeURIComponent(values.email)}`);
+      const response = await createAccount({
+        full_name: values.name.trim(),
+        work_email: values.email.trim(),
+        password: values.password,
+      });
+
+      if (!response?.success) {
+        throw new Error(response?.message || "Unable to create your account. Please try again.");
       }
-    } catch (error: any) {
-      toast.error(error?.message || "Failed to create account");
+
+      toast.success(response.message || "Your account has been created successfully.");
+      router.push(`/auth/verify-otp?email=${encodeURIComponent(values.email.trim())}`);
+    } catch (error) {
+      let errorMsg = error instanceof Error
+        ? error.message
+        : "Unable to create your account. Please try again.";
+      if (errorMsg.includes("Failed to fetch") || errorMsg.includes("fetch failed")) {
+        errorMsg = "Unable to connect to the server. Please try again.";
+      }
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -106,10 +113,9 @@ const SignUp = ({ onSubmit }: SignUpProps) => {
 
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-center p-4 lg:p-8">
-      <OnboardingBackdrop/>
+      <OnboardingBackdrop />
       {/* Main Container Card */}
       <div className="w-full max-w-[940px] bg-white dark:bg-zinc-900 rounded-[28px] shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex flex-col lg:flex-row min-h-[620px] overflow-hidden">
-        
         {/* Left Column: Create Account Form */}
         <div className="w-full lg:w-1/2 p-6 lg:p-10 flex flex-col justify-between">
           <div>
@@ -144,124 +150,173 @@ const SignUp = ({ onSubmit }: SignUpProps) => {
             {/* Form */}
             <Form {...form}>
               <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-5">
-              {/* Full Name Input */}
-              <FormField control={form.control} name="name" render={({ field }) => (
-                <FormItem className="space-y-1.5">
-                  <FormLabel className="font-semibold text-slate-700 dark:text-slate-300">Full Name</FormLabel>
-                  <FormControl><div className="relative">
-                    <User className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                    <Input placeholder="Full Name" className="h-12.5 rounded-xl border-slate-200 bg-white pl-10 text-slate-900 placeholder:text-slate-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" {...field} />
-                  </div></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-
-              {/* Work Email Input */}
-              <FormField control={form.control} name="email" render={({ field }) => (
-                <FormItem className="space-y-1.5">
-                  <FormLabel className="font-semibold text-slate-700 dark:text-slate-300">Work email</FormLabel>
-                  <FormControl><div className="relative">
-                    <Mail className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                    <Input type="email" placeholder="name@company.com" className="h-12.5 rounded-xl border-slate-200 bg-white pl-10 text-slate-900 placeholder:text-slate-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" {...field} />
-                  </div></FormControl>
-                  <FormMessage />
-                </FormItem>
-              )} />
-
-              {/* Password Input */}
-              <FormField control={form.control} name="password" render={({ field }) => (
-                <FormItem className="space-y-1.5">
-                  <FormLabel className="font-semibold text-slate-700 dark:text-slate-300">Password</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Lock className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                      <Input type={showPassword ? "text" : "password"} placeholder="Password" className="h-12.5 rounded-xl border-slate-200 bg-white pl-10 pr-10 text-slate-900 placeholder:text-slate-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" {...field} />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        aria-label={showPassword ? "Hide password" : "Show password"}
-                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
-                      >
-                        {showPassword ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
-                      </button>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-
-                <div className="pt-1.5">
-                  <div className="mb-1 grid grid-cols-4 gap-1.5">
-                    {[1, 2, 3, 4].map((bar) => (
-                      <div
-                        key={bar}
-                        className={`h-1 rounded-full transition-colors ${
-                          passwordStrength >= bar
-                            ? "bg-gradient-to-r from-[#0160F1] to-[#7B61FF]"
-                            : "bg-slate-200 dark:bg-zinc-700"
-                        }`}
-                      />
-                    ))}
-                  </div>
-                  <div className="flex items-center justify-between text-xs">
-                  <p className="mt-1 text-xs text-slate-600">
-                    <span className="w-0.5 h-0.5 rounded-full bg-slate-600"></span> {passwordStrengthHint}
-                  </p>
-                    <span
-                      className={`font-semibold ${passwordStrength >= 4 ? "text-emerald-600 dark:text-emerald-400" : "text-slate-500 dark:text-slate-400"}`}
-                    >
-                      {passwordStrengthLabel}
-                    </span>
-                  </div>
-
-                </div>
-                </FormItem>
-              )} />
-
-              {/* Checkbox Terms Agreement */}
-              <div className="pt-1 flex items-center gap-2.5">
-                <input
-                  type="checkbox"
-                  id="agreeTerms"
-                  checked={agreeTerms}
-                  onChange={(e) => setAgreeTerms(e.target.checked)}
-                  className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                {/* Full Name Input */}
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem className="space-y-1.5">
+                      <FormLabel className="font-semibold text-slate-700 dark:text-slate-300">
+                        Full Name
+                      </FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <User className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                          <Input
+                            placeholder="Full Name"
+                            className="h-12.5 rounded-xl border-slate-200 bg-white pl-10 text-slate-900 placeholder:text-slate-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-                <label
-                  htmlFor="agreeTerms"
-                  className="text-sm text-slate-600 dark:text-slate-400 cursor-pointer select-none"
-                >
-                  I agree to the{" "}
-                  <Link href="/terms" className="text-blue-600 hover:underline dark:text-blue-400 font-medium">
-                    Terms
-                  </Link>
-                  ,{" "}
-                  <Link href="/privacy" className="text-blue-600 hover:underline dark:text-blue-400 font-medium">
-                    Privacy policy
-                  </Link>{" "}
-                  and{" "}
-                  <Link href="/dpa" className="text-blue-600 hover:underline dark:text-blue-400 font-medium">
-                    DPA
-                  </Link>
-                </label>
-              </div>
 
-              {/* Submit Button */}
-              <button
-                type="submit"
-                disabled={loading}
-                className="mt-4 w-full h-12.5 cursor-pointer shadow-[0_20px_50px_rgba(0,0,0,0.2)] bg-gradient-to-r from-[#0160F1] to-[#7B61FF] text-white font-medium rounded-full shadow-lg shadow-blue-500/25 transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
-              >
-                {loading ? (
-                  "Creating account..."
-                ) : (
-                  <>
-                    Create my account <ArrowRight className="h-4 w-4" />
-                  </>
-                )}
-              </button>
+                {/* Work Email Input */}
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem className="space-y-1.5">
+                      <FormLabel className="font-semibold text-slate-700 dark:text-slate-300">
+                        Work email
+                      </FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Mail className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                          <Input
+                            type="email"
+                            placeholder="name@company.com"
+                            className="h-12.5 rounded-xl border-slate-200 bg-white pl-10 text-slate-900 placeholder:text-slate-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Password Input */}
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem className="space-y-1.5">
+                      <FormLabel className="font-semibold text-slate-700 dark:text-slate-300">
+                        Password
+                      </FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Lock className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                          <Input
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Password"
+                            className="h-12.5 rounded-xl border-slate-200 bg-white pl-10 pr-10 text-slate-900 placeholder:text-slate-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+                            {...field}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            aria-label={showPassword ? "Hide password" : "Show password"}
+                            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                          >
+                            {showPassword ? (
+                              <EyeOff className="h-4 w-4" />
+                            ) : (
+                              <Eye className="h-4 w-4" />
+                            )}
+                          </button>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+
+                      <div className="pt-1.5">
+                        <div className="mb-1 grid grid-cols-4 gap-1.5">
+                          {[1, 2, 3, 4].map((bar) => (
+                            <div
+                              key={bar}
+                              className={`h-1 rounded-full transition-colors ${
+                                passwordStrength >= bar
+                                  ? "bg-gradient-to-r from-[#0160F1] to-[#7B61FF]"
+                                  : "bg-slate-200 dark:bg-zinc-700"
+                              }`}
+                            />
+                          ))}
+                        </div>
+                        <div className="flex items-center justify-between text-xs">
+                          <p className="mt-1 text-xs text-slate-600">
+                            <span className="w-0.5 h-0.5 rounded-full bg-slate-600"></span>{" "}
+                            {passwordStrengthHint}
+                          </p>
+                          <span
+                            className={`font-semibold ${
+                              passwordStrength >= 4
+                                ? "text-emerald-600 dark:text-emerald-400"
+                                : "text-slate-500 dark:text-slate-400"
+                            }`}
+                          >
+                            {passwordStrengthLabel}
+                          </span>
+                        </div>
+                      </div>
+                    </FormItem>
+                  )}
+                />
+
+                {/* Checkbox Terms Agreement */}
+                <div className="pt-1 flex items-center gap-2.5">
+                  <input
+                    type="checkbox"
+                    id="agreeTerms"
+                    checked={agreeTerms}
+                    onChange={(e) => setAgreeTerms(e.target.checked)}
+                    className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                  />
+                  <label
+                    htmlFor="agreeTerms"
+                    className="text-sm text-slate-600 dark:text-slate-400 cursor-pointer select-none"
+                  >
+                    I agree to the{" "}
+                    <Link
+                      href="/terms"
+                      className="text-blue-600 hover:underline dark:text-blue-400 font-medium"
+                    >
+                      Terms
+                    </Link>
+                    ,{" "}
+                    <Link
+                      href="/privacy"
+                      className="text-blue-600 hover:underline dark:text-blue-400 font-medium"
+                    >
+                      Privacy policy
+                    </Link>{" "}
+                    and{" "}
+                    <Link
+                      href="/dpa"
+                      className="text-blue-600 hover:underline dark:text-blue-400 font-medium font-medium"
+                    >
+                      DPA
+                    </Link>
+                  </label>
+                </div>
+
+                {/* Submit Button */}
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="mt-4 w-full h-12.5 cursor-pointer shadow-[0_20px_50px_rgba(0,0,0,0.2)] bg-gradient-to-r from-[#0160F1] to-[#7B61FF] text-white font-medium rounded-full shadow-lg shadow-blue-500/25 transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  {loading ? (
+                    "Creating account..."
+                  ) : (
+                    <>
+                      Create my account <ArrowRight className="h-4 w-4" />
+                    </>
+                  )}
+                </button>
               </form>
             </Form>
           </div>
