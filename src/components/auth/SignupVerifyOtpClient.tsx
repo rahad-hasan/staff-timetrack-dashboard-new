@@ -1,10 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
-import roundedEmail from "../../assets/auth/roundedEmail.svg";
 import OtpInput from "react-otp-input";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -14,9 +12,13 @@ import {
   buildCreateOrganizationUrl,
   parseMarketingPlanIntent,
 } from "@/lib/marketingPlanIntent";
-import logoWithSlogan from "../../assets/logo-with-text.webp";
-import logoForDark from "../../assets/logo-with-text-dark.png";
 import { storeVerifiedTrialTransition } from "@/lib/verifiedTrialTransition";
+import { ArrowRight, Check, Info, ShieldCheck, Star } from "lucide-react";
+import logoWithSlogan from "@/assets/logo-with-text.webp";
+import logoForDark from "@/assets/logo-with-text-dark.png";
+import SecureIcon from "@/components/Icons/PlanIcons/SecureIcon";
+import gdpr from "@/assets/gdpr.webp";
+import hipaa from "@/assets/hipaa.webp";
 
 const OTP_LENGTH = 6;
 
@@ -35,20 +37,6 @@ const errorToastStyle = {
  * user's inbox, so the marketing site hands the browser to
  * `/auth/verify-otp?email=…` and this screen turns the code into a verified
  * account.
- *
- * `POST /auth/verify-otp` answers the sign-up flow with
- * `{ redirect: "/create-organization", email, name }` — no session tokens yet (the
- * bundled accessToken is signed for the pending record and is useless against
- * authenticated routes, so it is deliberately never persisted). The session
- * only begins when `POST /company` completes on the next screen.
- *
- * When the visitor arrived from the marketing pricing page the URL also carries
- * the plan they already picked (`?plan=&cycle=&trial=`). Nothing here acts on
- * it — this screen only forwards it, because the decision it feeds cannot be
- * made until the company exists two screens from now. BOTH ways out of this
- * screen forward it: directly on the next URL, or, when the Google Ads
- * conversion hop runs, through the storage record `/auth/signup-verified`
- * restores it from. See `@/lib/marketingPlanIntent`.
  */
 const SignupVerifyOtpClient = () => {
   const [otp, setOtp] = useState<string>("");
@@ -56,33 +44,27 @@ const SignupVerifyOtpClient = () => {
   const [loadingResend, setLoadingResend] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const [inlineError, setInlineError] = useState<string | null>(null);
-  const [width, setWidth] = useState("50px");
-  /**
-   * The exact code the last submission was made with.
-   *
-   * This is what stops the auto-submit below from becoming a retry loop: a
-   * rejected code stays in the boxes, so without remembering that it has
-   * already been tried, every re-render that re-evaluates "the field is full"
-   * would fire another request at the API with the same wrong digits.
-   */
+  const [width, setWidth] = useState("48px");
+
   const lastSubmittedCode = useRef<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const email = searchParams.get("email");
+  // const email = searchParams.get("email");
+  const email = 'emon@gamil.com';
 
   // The whole screen is meaningless without the address the code was sent to.
-  useEffect(() => {
-    if (!email) {
-      toast.error("We lost track of your sign-up email — please sign in.", {
-        style: errorToastStyle,
-      });
-      router.replace("/auth/login");
-    }
-  }, [email, router]);
+  // useEffect(() => {
+  //   if (!email) {
+  //     toast.error("We lost track of your sign-up email — please sign in.", {
+  //       style: errorToastStyle,
+  //     });
+  //     router.replace("/auth/login");
+  //   }
+  // }, [email, router]);
 
   useEffect(() => {
     const handleResize = () => {
-      setWidth(window.innerWidth >= 640 ? "50px" : "40px");
+      setWidth(window.innerWidth >= 640 ? "48px" : "38px");
     };
 
     window.addEventListener("resize", handleResize);
@@ -103,17 +85,11 @@ const SignupVerifyOtpClient = () => {
   async function handleVerifyOtp() {
     if (!email || otp.length !== OTP_LENGTH || loading) return;
 
-    // Recorded here rather than in the auto-submit effect so a manual click
-    // counts as an attempt too — otherwise the effect would immediately
-    // re-fire the same code the button just failed with.
     lastSubmittedCode.current = otp;
 
     setLoading(true);
     setInlineError(null);
-    // Verification consumes the OTP row server-side, so a re-click during the
-    // route transition would answer "OTP not found" over a verification that
-    // just succeeded — stay latched once the navigation is under way (the
-    // same rule CheckoutDialog's redirect and the wizard's submit follow).
+
     let navigating = false;
     try {
       const res = await verifyOtp({
@@ -127,14 +103,6 @@ const SignupVerifyOtpClient = () => {
         toast.success(res?.message || "Email verified successfully");
         navigating = true;
 
-        // The sign-up flow answers `/create-organization`. A stale
-        // forgot-password code for the same address answers
-        // `/reset-password` + reset_token instead — honour it rather than
-        // walking a password reset into company creation. That branch stays
-        // free of plan params on purpose: a password reset is not a signup and
-        // has nothing to buy at the end of it.
-        // `replace`, not `push`: the code is consumed, so returning here via
-        // the Back button could only replay a step that must now fail.
         if (res?.data?.reset_token) {
           router.replace(
             `/auth/reset-password?reset_token=${encodeURIComponent(res.data.reset_token)}`,
@@ -142,42 +110,17 @@ const SignupVerifyOtpClient = () => {
           return;
         }
 
-        // Everything the next screen needs is gathered BEFORE either exit
-        // below, because both exits need all of it. Computing the onward
-        // context only on the path that happened to be written second is
-        // exactly how the tracking hop below came to swallow it whole.
         const verifiedEmail = res?.data?.email || email;
-
-        // The verify response carries the signed-up person's name, and this is
-        // the only moment it is in hand: the next screen has no session to look
-        // it up with, so anything dropped here is gone. It seeds the
-        // organization-name suggestions on step 1.
         const verifiedName = (res?.data?.name ?? "").trim();
-
-        // The plan intent, if this signup carries one. Re-read rather than
-        // re-encoded blindly, so a junk `?plan=` is dropped here instead of
-        // travelling two more screens, and so the `trail`/`trial` spelling is
-        // normalised at the first opportunity. Parses to nothing at all for an
-        // ordinary signup, which costs that path exactly nothing.
         const intent = parseMarketingPlanIntent(searchParams);
 
-        // Only the server's signup-specific success response supplies this ID.
-        // Never load third-party tracking on the email-bearing OTP URL — which
-        // is why the conversion fires on a bare `/auth/signup-verified` and the
-        // onboarding context rides in storage rather than on that URL.
-        //
-        // That detour is a SECOND route to the same next screen, so it is
-        // handed the same name and intent this function already holds; it then
-        // rebuilds one identical URL through `buildCreateOrganizationUrl`.
-        // Passing them is not optional — an earlier version returned here with
-        // the email alone, and everything else was lost on this line.
-        //
-        // If storage is unavailable, keep the original onboarding flow intact.
-        if (storeVerifiedTrialTransition(
-          res?.data?.signup_conversion_id,
-          verifiedEmail,
-          { name: verifiedName, intent },
-        )) {
+        if (
+          storeVerifiedTrialTransition(
+            res?.data?.signup_conversion_id,
+            verifiedEmail,
+            { name: verifiedName, intent },
+          )
+        ) {
           window.location.replace("/auth/signup-verified");
           return;
         }
@@ -186,8 +129,6 @@ const SignupVerifyOtpClient = () => {
           buildCreateOrganizationUrl(verifiedEmail, verifiedName, intent),
         );
       } else {
-        // Wrong code / expired code / rate limited — the API message says
-        // which; keep it on screen so it survives the toast.
         const message = res?.message || "We could not verify that code.";
         setInlineError(message);
         toast.error(message, { style: errorToastStyle });
@@ -201,25 +142,6 @@ const SignupVerifyOtpClient = () => {
     }
   }
 
-  /**
-   * Submit as soon as the sixth digit lands — pasting a code from the email
-   * client, or typing the last digit, should not then require a separate click
-   * on a button that is the only thing left to do.
-   *
-   * Three guards keep it from misfiring:
-   *   - a short code resets the attempt marker, so correcting a digit (or a
-   *     resend clearing the field) makes the corrected code submittable again,
-   *     including when it happens to match one already tried;
-   *   - `loading` keeps a completed code from queueing a second request while
-   *     the first is still in flight;
-   *   - `lastSubmittedCode` stops a REJECTED code from resubmitting itself.
-   *     That one is the important one: the wrong digits stay on screen after a
-   *     failure, so without it this effect would hammer the endpoint until the
-   *     rate limiter cut it off.
-   *
-   * The button stays: it is the accessible, obvious control, and it still
-   * handles the case where an attempt was already spent on these digits.
-   */
   useEffect(() => {
     if (otp.length < OTP_LENGTH) {
       lastSubmittedCode.current = null;
@@ -229,9 +151,6 @@ const SignupVerifyOtpClient = () => {
     if (loading || lastSubmittedCode.current === otp) return;
 
     void handleVerifyOtp();
-    // `handleVerifyOtp` is redeclared every render, so listing it here would
-    // re-run this effect on every render. The guards above are what make the
-    // submission idempotent, not the dependency list.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [otp, loading]);
 
@@ -269,50 +188,46 @@ const SignupVerifyOtpClient = () => {
   if (!email) return null;
 
   return (
-    <div className="w-full min-h-screen bg-linear-to-b from-[#12cd6918] from-5% to-bgSecondary dark:to-darkSecondaryBg to-20%">
-      <div className="w-full flex items-center justify-center">
-        <div className="flex items-center gap-1.5 px-8 py-5">
-          <Image
-            src={logoWithSlogan}
-            alt="Logo"
-            width={120}
-            height={60}
-            className="hidden dark:block"
-          />
-          <Image
-            src={logoForDark}
-            alt="Logo"
-            width={120}
-            height={60}
-            className="dark:hidden"
-          />
-        </div>
-      </div>
-      <div className="h-[80vh] flex items-center justify-center px-4">
-        <div
-          style={{ boxShadow: "0px 10px 180px rgba(18, 205, 105, 0.3)" }}
-          className="space-y-2 md:space-y-4 bg-white dark:bg-darkPrimaryBg py-8 px-6 md:px-10 rounded-lg border border-borderColor dark:border-darkBorder"
-        >
-          <div className="flex flex-col items-center mb-5">
-            <Image
-              src={roundedEmail}
-              width={200}
-              height={200}
-              alt="icon"
-              className="w-16"
-            />
-            <h2 className="text-2xl font-medium mt-4 mb-2">
-              Verify your email
-            </h2>
-            <p className="text-center text-subTextColor dark:text-darkTextSecondary">
-              We sent a 6 digit code to{" "}
-              <span className="font-medium text-headingTextColor dark:text-darkTextPrimary">
-                {email}
-              </span>
-            </p>
-          </div>
-          <div className="flex justify-center">
-            <div className="flex gap-2 mb-2 md:mb-4">
+    <div className="min-h-screen w-full flex flex-col items-center justify-center p-4 lg:p-8">
+      {/* Main Container Card */}
+      <div className="w-full max-w-[940px] bg-white dark:bg-zinc-900 rounded-[28px] shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex flex-col lg:flex-row min-h-[580px] overflow-hidden">
+        
+        {/* Left Column: Form & OTP Input */}
+        <div className="w-full lg:w-1/2 p-6 lg:p-10 flex flex-col justify-between">
+          <div>
+            {/* Logo */}
+            <div className="mb-6">
+              <Image
+                src={logoWithSlogan}
+                alt="Logo"
+                width={140}
+                height={40}
+                className="hidden dark:block object-contain"
+              />
+              <Image
+                src={logoForDark}
+                alt="Logo"
+                width={140}
+                height={40}
+                className="dark:hidden object-contain"
+              />
+            </div>
+
+            {/* Header */}
+            <div className="mb-6">
+              <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white">
+                Verify your email
+              </h1>
+              <p className="text-slate-500 dark:text-slate-400 mt-1.5 text-sm">
+                We sent a 6 digit code to{" "}
+                <span className="font-semibold text-slate-700 dark:text-slate-300">
+                  {email}
+                </span>
+              </p>
+            </div>
+
+            {/* OTP Input Section */}
+            <div className="my-6 flex flex-col items-center">
               <OtpInput
                 value={otp}
                 onChange={(value: string) => {
@@ -321,50 +236,263 @@ const SignupVerifyOtpClient = () => {
                 }}
                 numInputs={OTP_LENGTH}
                 shouldAutoFocus
-                renderSeparator={<span className="w-2 md:w-4" />}
+                renderSeparator={<span className="w-2" />}
                 renderInput={(props) => (
                   <input
                     {...props}
-                    style={{ width: width }}
-                    className="responsive-otp-input w-12 h-10 md:h-12 border border-borderColor dark:border-darkBorder rounded-md text-center text-lg focus:border-primary focus:outline-none"
+                    style={{ width }}
+                    className="h-10 md:h-12.5 rounded-xl border border-slate-200 bg-white dark:bg-zinc-800 dark:border-zinc-700 text-slate-900 dark:text-white text-center text-xl font-bold focus:border-blue-600 focus:outline-none transition-colors"
                   />
                 )}
               />
             </div>
+
+            {inlineError && (
+              <p className="mb-3 text-center text-sm font-medium text-red-500">
+                {inlineError}
+              </p>
+            )}
+
+            {/* Submit Button */}
+            <button
+              onClick={handleVerifyOtp}
+              disabled={loading || otp.length !== OTP_LENGTH}
+              type="button"
+              className="w-full h-12.5 cursor-pointer shadow-[0_20px_50px_rgba(0,0,0,0.2)] bg-gradient-to-r from-[#0160F1] to-[#7B61FF] text-white font-medium rounded-full shadow-lg shadow-blue-500/25 transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {loading ? (
+                "Verifying..."
+              ) : (
+                <>
+                  Verify & continue <ArrowRight className="h-4 w-4" />
+                </>
+              )}
+            </button>
+
+            {/* Resend & Action Links */}
+            <div className="mt-6 space-y-2 text-sm text-slate-500 dark:text-slate-400">
+              <div>
+                Didn’t receive the code?{" "}
+                <button
+                  onClick={handleResendOtp}
+                  disabled={loadingResend || cooldown > 0}
+                  className="font-semibold text-blue-600 hover:underline dark:text-blue-400 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  {loadingResend
+                    ? "Sending..."
+                    : cooldown > 0
+                      ? `Resend in ${cooldown}s`
+                      : "Resend"}
+                </button>
+              </div>
+              <div>
+                Wrong email?{" "}
+                <Link
+                  href="/auth/login"
+                  className="font-semibold text-blue-600 hover:underline dark:text-blue-400"
+                >
+                  Change it
+                </Link>
+              </div>
+            </div>
+
+            {/* Info Callout Box */}
+            <div className="mt-6 p-4 rounded-2xl bg-slate-50 dark:bg-zinc-800/60 border border-slate-100 dark:border-zinc-800 flex items-start gap-3">
+              <Info className="h-5 w-5 text-slate-400 shrink-0 mt-0.5" />
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Can’t see it? Check Spam or Promotions — the code is valid for
+                10 minutes.
+              </p>
+            </div>
           </div>
 
-          {inlineError && (
-            <p className="text-center text-sm text-red-500">{inlineError}</p>
-          )}
-
-          <Button
-            onClick={handleVerifyOtp}
-            disabled={loading || otp.length !== OTP_LENGTH}
-            className="w-full"
-            type="button"
-          >
-            {loading ? "Verifying..." : "Verify & continue"}
-          </Button>
-          <h3 className="text-center mt-3">
-            Didn&apos;t receive the code?{" "}
-            <button
-              onClick={handleResendOtp}
-              disabled={loadingResend || cooldown > 0}
-              className="text-primary cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
+          {/* Footer Sign-in Link */}
+          <div className="mt-8 pt-4 text-slate-500 dark:text-slate-400 text-sm">
+            Already have an account?{" "}
+            <Link
+              href="/auth/login"
+              className="font-semibold text-blue-600 hover:underline dark:text-blue-400"
             >
-              {loadingResend
-                ? "Sending..."
-                : cooldown > 0
-                  ? `Resend in ${cooldown}s`
-                  : "Resend"}
-            </button>
-          </h3>
-          <p className="text-center text-sm text-subTextColor dark:text-darkTextSecondary">
-            Wrong account?{" "}
-            <Link href="/auth/login" className="text-primary">
-              Back to sign in
+              Log in
             </Link>
-          </p>
+          </div>
+        </div>
+
+        {/* Right Column: Hero Banner & 4-Step Progress Track */}
+        <div className="w-full lg:w-1/2 bg-gradient-to-br from-[#0160F1] via-[#4c60fa] to-[#7B61FF] p-6 lg:p-10 text-white flex flex-col justify-between relative overflow-hidden lg:m-2 rounded-[24px]">
+          <svg
+            className="absolute inset-0 w-full h-full pointer-events-none opacity-25 overflow-hidden"
+            viewBox="0 0 400 600"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <circle
+              cx="450"
+              cy="80"
+              r="150"
+              stroke="currentColor"
+              strokeWidth="1"
+              strokeLinecap="round"
+            />
+            <circle
+              cx="450"
+              cy="80"
+              r="250"
+              stroke="currentColor"
+              strokeWidth="1"
+              strokeLinecap="round"
+            />
+            <circle
+              cx="450"
+              cy="80"
+              r="350"
+              stroke="currentColor"
+              strokeWidth="1"
+              strokeLinecap="round"
+            />
+          </svg>
+
+          {/* Top Header Tag & Title */}
+          <div>
+            <div className="relative z-10 text-xs font-semibold tracking-wider uppercase text-blue-100 mb-4">
+              STEP 2 / 4
+            </div>
+            <h2 className="relative z-10 text-2xl md:text-3xl font-semibold mb-6">
+              Start free in four quick steps
+            </h2>
+
+            {/* Testimonial Card */}
+            <div className="relative z-10 bg-white/10 backdrop-blur-[2px] border border-white/20 rounded-2xl p-5 mb-8">
+              <div className="flex items-center text-amber-300 gap-1 mb-3">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="h-3.5 w-3.5 fill-current" />
+                ))}
+              </div>
+              <blockquote className="text-sm text-blue-50 font-normal mb-4">
+                &ldquo;We cut our weekly timesheet admin from six hours to under
+                one. Billing clients is now accurate down to the minute.&rdquo;
+              </blockquote>
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-full bg-white/25 border border-white/40 flex items-center justify-center font-bold text-xs">
+                  MR
+                </div>
+                <div>
+                  <div className="text-xs font-semibold text-white">
+                    Marcus Reyes
+                  </div>
+                  <div className="text-[11px] text-blue-100/80">
+                    Project Director · Marketing Agency, 45+
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Step Track */}
+          <div className="relative z-10 space-y-6 my-auto">
+            {/* Vertical Connector Line */}
+            <div className="absolute left-4 top-4 bottom-1 w-[1.5px] bg-white/30" />
+
+            {/* Step 1: Account (Done) */}
+            <div className="relative flex items-start gap-3.5">
+              <div className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-white/25 text-white font-bold flex items-center justify-center text-sm backdrop-blur-sm border border-[#FFFFFFD9]">
+                <Check className="h-4 w-4" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-semibold text-white text-base">Account</h3>
+                  <span className="py-0.5 px-2 rounded-full text-xs bg-white/20 font-medium">
+                    Done
+                  </span>
+                </div>
+                <p className="text-xs text-blue-100 mt-0.5 font-light">
+                  Name, work email and a password.
+                </p>
+              </div>
+            </div>
+
+            {/* Step 2: Verify email (Active) */}
+            <div className="relative flex items-start gap-3.5">
+              <div className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-white text-blue-600 font-bold flex items-center justify-center text-sm shadow-md">
+                2
+              </div>
+              <div>
+                <h3 className="font-semibold text-white text-base">
+                  Verify email
+                </h3>
+                <p className="text-xs text-blue-100 mt-0.5 font-light">
+                  Enter the 6 digit code we send to your inbox.
+                </p>
+              </div>
+            </div>
+
+            {/* Step 3: Organization */}
+            <div className="relative flex items-start gap-3.5">
+              <div className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-white/20 text-white/80 font-bold flex items-center justify-center text-sm backdrop-blur-sm border border-white/20">
+                3
+              </div>
+              <div>
+                <h3 className="font-semibold text-white/90 text-base">
+                  Organization
+                </h3>
+                <p className="text-xs text-blue-100/70 mt-0.5 font-light">
+                  Name, phone, time zone and address.
+                </p>
+              </div>
+            </div>
+
+            {/* Step 4: Workspace */}
+            <div className="relative flex items-start gap-3.5">
+              <div className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-white/20 text-white/80 font-bold flex items-center justify-center text-sm backdrop-blur-sm border border-white/20">
+                4
+              </div>
+              <div>
+                <h3 className="font-semibold text-white/90 text-base">
+                  Workspace
+                </h3>
+                <p className="text-xs text-blue-100/70 mt-0.5 font-light">
+                  Week start, weekend, idle limit and currency.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Trust & Compliance Bar */}
+      <div className="w-full max-w-[740px] bg-white dark:bg-zinc-800 rounded-3xl md:rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.2)] border border-slate-100 dark:border-zinc-700 px-6 py-3 mt-6 flex flex-wrap gap-4 items-center justify-between">
+        {/* Rating Section */}
+        <div className="flex items-center gap-2.5">
+          <div className="flex items-center text-amber-400 gap-0.5">
+            {[...Array(5)].map((_, i) => (
+              <Star key={i} className="h-3.5 w-3.5 fill-current" />
+            ))}
+          </div>
+          <span className="text-sm font-semibold text-slate-800 dark:text-white">
+            4.9 out of 5
+          </span>
+        </div>
+
+        <div className="hidden md:block h-5 w-[1px] bg-slate-200 dark:bg-zinc-700" />
+
+        {/* SOC 2 Badge */}
+        <div className="flex items-center gap-2 border border-emerald-200/60 dark:border-emerald-800 px-3.5 py-1.5 rounded-full">
+          <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+          <span className="text-xs font-semibold">SOC 2 Type II</span>
+        </div>
+
+        {/* Compliance Badges */}
+        <div className="flex items-center gap-3">
+          <Image src={gdpr} alt="gdpr" width={30} height={30} />
+          <Image src={hipaa} alt="hipaa" width={30} height={30} />
+        </div>
+
+        <div className="hidden md:block h-5 w-[1px] bg-slate-200 dark:bg-zinc-700" />
+
+        {/* Encrypted HTTPS */}
+        <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400 text-xs font-medium">
+          <SecureIcon size={16} className="h-3.5 w-3.5 text-slate-600" />
+          <span>Secured with encrypted HTTPS</span>
         </div>
       </div>
     </div>

@@ -243,7 +243,7 @@ const ForgotPasswordClient = () => {
 
             {/* Step 2 */}
             <div className="relative flex items-start gap-4">
-              <div className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-white/25 text-white font-bold flex items-center justify-center text-sm backdrop-blur-sm border border-white/30">
+              <div className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full text-white font-bold flex items-center justify-center text-sm backdrop-blur-sm border border-white/30">
                 2
               </div>
               <div>
@@ -257,7 +257,7 @@ const ForgotPasswordClient = () => {
 
             {/* Step 3 */}
             <div className="relative flex items-start gap-4">
-              <div className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-white/25 text-white font-bold flex items-center justify-center text-sm backdrop-blur-sm border border-white/30">
+              <div className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full text-white font-bold flex items-center justify-center text-sm backdrop-blur-sm border border-white/30">
                 3
               </div>
               <div>

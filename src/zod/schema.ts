@@ -46,6 +46,15 @@ export const loginSchema = z.object({
     }),
 });
 
+export const signUpSchema = z.object({
+  name: z.string().trim().min(2, "Name must be at least 2 characters long"),
+  email: z.string().trim().email("Invalid email address"),
+  password: z
+    .string()
+    .min(6, "Password must be at least 6 characters long")
+    .max(100, "Password cannot exceed 100 characters"),
+});
+
 export const forgetPasswordSchema = z.object({
   email: z.string().email("Invalid email address"),
 });

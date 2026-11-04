@@ -282,11 +282,11 @@ const ResetPasswordClient = () => {
           {/* Steps List */}
           <div className="relative z-10 space-y-5 my-auto">
             {/* Vertical Connector Line */}
-            <div className="absolute left-4 top-4 bottom-12 sm:bottom-6 w-[1.5px] bg-white/40" />
+            <div className="absolute left-4 top-4 bottom-12 sm:bottom-6 w-[1.5px] bg-[#FFFFFFD9]" />
 
             {/* Step 1 (Done) */}
             <div className="relative flex items-start gap-4">
-              <div className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-white/25 text-white font-bold flex items-center justify-center text-sm backdrop-blur-sm border border-white/30">
+              <div className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-white/25 text-white font-bold flex items-center justify-center text-sm backdrop-blur-sm border border-[#FFFFFFD9]">
                 <Check className="h-4 w-4 stroke-[3]" />
               </div>
               <div>
@@ -302,7 +302,7 @@ const ResetPasswordClient = () => {
 
             {/* Step 2 (Done) */}
             <div className="relative flex items-start gap-4">
-              <div className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-white/25 text-white font-bold flex items-center justify-center text-sm backdrop-blur-sm border border-white/30">
+              <div className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-white/25 text-white font-bold flex items-center justify-center text-sm backdrop-blur-sm border border-[#FFFFFFD9]">
                 <Check className="h-4 w-4 stroke-[3]" />
               </div>
               <div>

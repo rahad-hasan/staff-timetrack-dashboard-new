@@ -1,3 +1,4 @@
+import OnboardingBackdrop from "@/components/auth/CreateOrganization/OnboardingBackdrop";
 import SignupVerifyOtpClient from "@/components/auth/SignupVerifyOtpClient";
 import { Metadata } from "next";
 import { Suspense } from "react";
@@ -16,6 +17,7 @@ export const metadata: Metadata = {
 export default function SignupVerifyOtpPage() {
   return (
     <Suspense fallback={null}>
+      <OnboardingBackdrop />
       <SignupVerifyOtpClient />
     </Suspense>
   );

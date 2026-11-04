@@ -177,7 +177,7 @@ const VerificationCode = () => {
                   <input
                     {...props}
                     style={{ width: width }}
-                    className="h-12.5 rounded-xl border border-slate-200 bg-white dark:bg-zinc-800 dark:border-zinc-700 text-slate-900 dark:text-white text-center text-xl font-bold focus:border-blue-600 focus:outline-none transition-colors"
+                    className="h-10 md:h-12.5 rounded-xl border border-slate-200 bg-white dark:bg-zinc-800 dark:border-zinc-700 text-slate-900 dark:text-white text-center text-xl font-bold focus:border-blue-600 focus:outline-none transition-colors"
                   />
                 )}
               />
@@ -284,11 +284,11 @@ const VerificationCode = () => {
           {/* Steps List */}
           <div className="relative z-10 space-y-5 my-auto">
             {/* Vertical Connector Line */}
-            <div className="absolute left-4 top-4 bottom-12 sm:bottom-6 w-[1.5px] bg-white/40" />
+            <div className="absolute left-4 top-4 bottom-12 sm:bottom-6 w-[1.5px] bg-[#FFFFFFD9]" />
 
             {/* Step 1 */}
             <div className="relative flex items-start gap-4">
-              <div className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-white/25 text-white font-bold flex items-center justify-center text-sm backdrop-blur-sm border border-white/30">
+              <div className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-white/25 text-white font-bold flex items-center justify-center text-sm backdrop-blur-sm border border-[#FFFFFFD9]">
                 1
               </div>
               <div>
@@ -320,7 +320,7 @@ const VerificationCode = () => {
 
             {/* Step 3 */}
             <div className="relative flex items-start gap-4">
-              <div className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-white/25 text-white font-bold flex items-center justify-center text-sm backdrop-blur-sm border border-white/30">
+              <div className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full text-white font-bold flex items-center justify-center text-sm backdrop-blur-sm border border-white/30">
                 3
               </div>
               <div>
