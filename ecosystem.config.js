@@ -8,7 +8,7 @@ module.exports = {
       cwd: "/var/www/dashboard",
 
       script: "node_modules/next/dist/bin/next",
-      args: "start",
+      args: "start -H 127.0.0.1",
 
       exec_mode: "fork",
       instances: 1,
