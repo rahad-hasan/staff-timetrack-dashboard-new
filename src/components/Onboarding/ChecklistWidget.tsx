@@ -18,6 +18,11 @@ import { IOnboardingTask, OnboardingTaskId } from "@/types/onboarding";
  * Sits below the tour overlay (`z-[80]` against the spotlight's `z-[9990]`) so
  * a running tour dims it along with everything else instead of leaving it
  * floating brightly over the backdrop.
+ *
+ * Shares the bottom-right corner with the live chat launcher. It stacks above
+ * the launcher by reading `--live-chat-launcher-offset`, which is 0 when chat
+ * is off, and `data-onboarding-checklist` tells the chat's teaser card to step
+ * aside while this is up (globals.css).
  */
 
 interface ChecklistWidgetProps {
@@ -58,7 +63,8 @@ export default function ChecklistWidget({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 16 }}
       transition={{ type: "spring", stiffness: 320, damping: 30 }}
-      className="fixed bottom-4 right-4 z-[80] w-[min(21rem,calc(100vw-2rem))]"
+      data-onboarding-checklist=""
+      className="fixed bottom-[calc(1rem+var(--live-chat-launcher-offset,0px))] right-4 z-[80] w-[min(21rem,calc(100vw-2rem))] transition-[bottom] duration-200"
     >
       <div className="overflow-hidden rounded-[12px] border border-borderColor dark:border-darkBorder bg-bgPrimary dark:bg-darkPrimaryBg shadow-[0_16px_40px_-12px_rgba(6,10,20,0.35)]">
         {/* ── header: doubles as the collapse toggle ── */}

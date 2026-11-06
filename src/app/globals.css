@@ -49,6 +49,27 @@
   --color-support-hero-glass-hover: rgb(15 47 122 / 0.2);
   --color-support-hero-glass-active: rgb(15 47 122 / 0.28);
   --color-support-stats-glass: rgb(15 47 122 / 0.46);
+
+  /* Live chat (components/LiveChat): the marketing site's chat palette, so
+     the prompt looks the same before and after sign-in. Gradients are the
+     `bg-live-chat-*` utilities at the end of this file. */
+  --color-live-chat-from: #0160f1;
+  --color-live-chat-to: #7b61ff;
+  --color-live-chat-online: #16c47f;
+  --shadow-live-chat-card: 0 2px 3px rgb(7 26 63 / 0.06), 0 12px 16px rgb(7 26 63 / 0.14);
+  --shadow-live-chat-fab: 0 2px 3px rgb(7 26 63 / 0.06), 0 10px 12px rgb(7 26 63 / 0.28);
+  --animate-live-chat-pulse: live-chat-pulse 2s ease-out infinite;
+
+  @keyframes live-chat-pulse {
+    from {
+      transform: scale(0.5);
+      opacity: 0.5;
+    }
+    to {
+      transform: scale(1.3);
+      opacity: 0;
+    }
+  }
 }
 
 @plugin "tailwindcss-animate";
@@ -429,4 +450,47 @@
 
 .tour-spotlight-pulse {
   animation: tour-spotlight-pulse 1.8s ease-out infinite;
+}
+
+/* ---- Live chat (components/LiveChat, lib/liveChat) ---- */
+
+@utility bg-live-chat-card {
+  background-image: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-live-chat-from) 8%, transparent) 0%,
+    transparent 55%
+  );
+}
+
+@utility bg-live-chat-action {
+  background-image: linear-gradient(9deg, var(--color-live-chat-from), var(--color-live-chat-to));
+}
+
+@utility bg-live-chat-fab {
+  background-image: linear-gradient(45deg, var(--color-live-chat-from), var(--color-live-chat-to));
+}
+
+/* The dock is the launcher, so Crisp's own bubble and its message previews
+   never show by themselves. `chat:hide` handles the steady state. This rule
+   covers the frames around every Crisp (re)load, before the queued hide is
+   replayed. It also keeps Crisp invisible outside the authenticated shell,
+   where nothing sets the attribute. `useCrispSession` sets it only while a
+   conversation is open. */
+html:not([data-live-chat-open]) .crisp-client {
+  display: none !important;
+}
+
+@media print {
+  .crisp-client {
+    display: none !important;
+  }
+}
+
+/* The onboarding checklist and the chat dock share the bottom-right corner.
+   The checklist stacks above the launcher (it reads
+   --live-chat-launcher-offset, which LiveChatDock sets), and the teaser card
+   steps aside while the checklist is up. Two prompts stacked in one corner
+   would cover too much of the page. */
+html:has([data-onboarding-checklist]) [data-live-chat-teaser] {
+  display: none;
 }

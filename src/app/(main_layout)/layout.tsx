@@ -12,7 +12,7 @@ import SocketProvider from "@/socket/SocketProvider";
 import OnboardingGate from "@/components/Onboarding/OnboardingGate";
 import { TUTORIAL_VIDEO_ORIGIN } from "@/lib/onboarding/tutorialVideos";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
-// import TrackerChatBot from "@/components/Chats/TrackerChatBot";
+import LiveChat from "@/components/LiveChat/LiveChat";
 
 export default async function RootLayout({
   children,
@@ -80,8 +80,21 @@ export default async function RootLayout({
           </div>
         </div>
 
-        {/* <TrackerChatBot></TrackerChatBot> */}
-
+        {/* Crisp live chat: the bottom-right launcher, bound to the signed-in
+            user so a shared browser never shows one person's conversation
+            to the next. */}
+        <LiveChat
+          user={
+            currentUser
+              ? {
+                  id: currentUser.id,
+                  email: currentUser.email,
+                  role: currentUser.role,
+                }
+              : null
+          }
+          companyName={company?.data?.name}
+        />
       </div>
     </SocketProvider>
   );
