@@ -52,10 +52,15 @@ const CreateOrganizationDialog = ({
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-center p-4 lg:p-8">
       {/* Main Container Card matching the design system style */}
-      <div className="w-full max-w-[940px] bg-white dark:bg-zinc-900 rounded-[28px] shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex flex-col lg:flex-row mb-5 overflow-hidden">
+      {/* Wider than the other auth cards (1040 vs 940): this is the only step
+          with two inputs side by side, and at 50/50 the phone field's number
+          box was left ~90px wide. The extra width goes to the form column; the
+          right panel keeps the size it has on the earlier steps. */}
+      <div className="w-full max-w-[1040px] bg-white dark:bg-zinc-900 rounded-[28px] shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex flex-col lg:flex-row mb-5 overflow-hidden">
 
-        {/* Left Column: Form Content */}
-        <div className="w-full lg:w-1/2 p-6 lg:p-10 flex flex-col justify-between">
+        {/* Left Column: Form Content. `@container` so the steps lay their
+            fields out by the room this column actually has, not by viewport. */}
+        <div className="@container w-full lg:flex-1 lg:min-w-0 p-6 lg:p-10 flex flex-col justify-between">
           <div>
             {/* Logo */}
             <div className="mb-6">
@@ -155,7 +160,10 @@ const CreateOrganizationDialog = ({
         </div>
 
         {/* Right Column: Hero Banner with Testimonial and 4-Step Progress Tracker */}
-        <div className="w-full lg:w-1/2 bg-gradient-to-br from-[#0160F1] via-[#4c60fa] to-[#7B61FF] p-6 lg:p-10 text-white flex flex-col justify-between relative overflow-hidden lg:m-2 rounded-[24px]">
+        {/* `m-2` at every width (inset inside the white card on phones too,
+            like the other auth pages); no `w-full`, which plus the margin
+            would overflow the stacked column. */}
+        <div className="lg:w-110 lg:shrink-0 m-2 bg-gradient-to-br from-[#0160F1] via-[#4c60fa] to-[#7B61FF] p-6 sm:p-8 lg:p-10 text-white flex flex-col justify-between relative overflow-hidden rounded-[20px] lg:rounded-[24px]">
           <svg
             className="absolute inset-0 w-full h-full pointer-events-none opacity-25 overflow-hidden"
             viewBox="0 0 400 600"
@@ -173,7 +181,7 @@ const CreateOrganizationDialog = ({
           </div>
 
           <div className="relative z-10 my-3">
-            <h2 className="text-2xl mb-1 ">
+            <h2 className="text-2xl md:text-3xl font-semibold mb-1 text-balance">
               Set up your organization
             </h2>
           </div>
@@ -207,11 +215,13 @@ const CreateOrganizationDialog = ({
 
           {/* 4-Step Tracker List with Connectors */}
           <div className="relative z-10 space-y-6 my-auto">
-            {/* Vertical Connector Line */}
-            <div className="absolute left-4 top-4 bottom-1 w-[1.5px] bg-[#FFFFFFD9]" />
+            {/* Each step but the last draws its own segment, from the bottom of its
+                bubble to the top of the next one (`-bottom-6` matches `space-y-6`),
+                so the line stops at the last bubble however the text wraps. */}
 
             {/* Step 1: Account (Done) */}
             <div className="relative flex items-start gap-3">
+              <div aria-hidden="true" className="absolute left-4 top-8 -bottom-6 w-[1.5px] -translate-x-1/2 bg-[#FFFFFFD9]" />
               <div className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-[#5383f6] text-white font-bold flex items-center justify-center text-sm backdrop-blur-sm border border-[#FFFFFFD9]">
                 <Check className="h-4 w-4 stroke-[3]" />
               </div>
@@ -226,6 +236,7 @@ const CreateOrganizationDialog = ({
 
             {/* Step 2: Verify email (Done) */}
             <div className="relative flex items-start gap-3">
+              <div aria-hidden="true" className="absolute left-4 top-8 -bottom-6 w-[1.5px] -translate-x-1/2 bg-[#FFFFFFD9]" />
               <div className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-[#5383f6] text-white font-bold flex items-center justify-center backdrop-blur-sm border border-[#FFFFFFD9]">
                 <Check className="h-4 w-4 stroke-[3]" />
               </div>
@@ -240,6 +251,7 @@ const CreateOrganizationDialog = ({
 
             {/* Step 3: Organization */}
             <div className="relative flex items-start gap-3">
+              <div aria-hidden="true" className="absolute left-4 top-8 -bottom-6 w-[1.5px] -translate-x-1/2 bg-[#FFFFFFD9]" />
               <div className={`relative z-10 flex-shrink-0 w-8 h-8 rounded-full font-bold flex items-center justify-center ${stepIndex === 0 ? "bg-white text-blue-600 shadow-md" : "bg-[#5383f6] text-white backdrop-blur-sm border border-[#FFFFFFD9]"}`}>
                 {stepIndex > 0 ? <Check className="h-4 w-4 stroke-[3]" /> : "3"}
               </div>

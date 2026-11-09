@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -35,14 +35,46 @@ import gdpr from "@/assets/gdpr.webp";
 import hipaa from "@/assets/hipaa.webp";
 import OnboardingBackdrop from "@/components/auth/CreateOrganization/OnboardingBackdrop";
 import { createAccount } from "@/actions/auth/action";
+import {
+  appendMarketingPlanIntent,
+  parseMarketingPlanIntent,
+} from "@/lib/marketingPlanIntent";
+
+type SignUpValues = z.infer<typeof signUpSchema>;
+
+const SIGN_UP_FIELDS = ["name", "email", "password"] as const;
+type SignUpField = (typeof SIGN_UP_FIELDS)[number];
+
+/** The shape `baseApi` hands back for `POST /auth/create-account`. */
+type CreateAccountResponse = {
+  success?: boolean;
+  message?: string;
+  statusCode?: number;
+  /** Backend Zod issues, e.g. `{ path: "body.email", message: "…" }`. */
+  errorMessages?: Array<{ path?: unknown; message?: unknown }>;
+};
+
+/** `"body.email"` → `"email"`, or null when the issue is not about a field on this form. */
+const toFormField = (path: unknown): SignUpField | null => {
+  if (typeof path !== "string") return null;
+  const key = path.replace(/^body\./, "");
+  return (SIGN_UP_FIELDS as readonly string[]).includes(key)
+    ? (key as SignUpField)
+    : null;
+};
+
+const GENERIC_ERROR = "Unable to create your account. Please try again.";
 
 const SignUp = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(true);
+  // The address already belongs to a real account: show a way to log in.
+  const [emailTaken, setEmailTaken] = useState(false);
 
-  const form = useForm<z.infer<typeof signUpSchema>>({
+  const form = useForm<SignUpValues>({
     resolver: zodResolver(signUpSchema),
     defaultValues: { name: "", email: "", password: "" },
   });
@@ -78,7 +110,7 @@ const SignUp = () => {
                 ? "use at least 8 characters"
                 : "add uppercase letters, numbers & symbols";
 
-  const handleSubmit = async (values: z.infer<typeof signUpSchema>) => {
+  const handleSubmit = async (values: SignUpValues) => {
     if (!agreeTerms) {
       toast.error(
         "Please agree to the Terms, Privacy Policy, and DPA to continue.",
@@ -86,41 +118,68 @@ const SignUp = () => {
       return;
     }
 
+    const email = values.email.trim();
+    setEmailTaken(false);
     setLoading(true);
+
+    // Stays true once we head to the code screen, so the button cannot be
+    // pressed again mid-navigation: a second submit would email a fresh code
+    // and silently invalidate the one the user is about to type.
+    let navigating = false;
     try {
-      const response = await createAccount({
-        full_name: values.name.trim(),
-        work_email: values.email.trim(),
+      const response = (await createAccount({
+        name: values.name.trim(),
+        email,
         password: values.password,
-      });
+      })) as CreateAccountResponse | undefined;
 
-      if (!response?.success) {
-        throw new Error(
-          response?.message ||
-            "Unable to create your account. Please try again.",
+      if (response?.success) {
+        toast.success("We sent a 6 digit code to your email.");
+        navigating = true;
+        // A plan picked on the marketing site rides along to the code screen,
+        // which forwards it to create-organization (see marketingPlanIntent).
+        router.push(
+          appendMarketingPlanIntent(
+            `/auth/verify-otp?email=${encodeURIComponent(email)}`,
+            parseMarketingPlanIntent(searchParams),
+          ),
         );
+        return;
       }
 
-      toast.success(
-        response.message || "Your account has been created successfully.",
-      );
-      router.push(
-        `/auth/verify-otp?email=${encodeURIComponent(values.email.trim())}`,
-      );
-    } catch (error) {
-      let errorMsg =
-        error instanceof Error
-          ? error.message
-          : "Unable to create your account. Please try again.";
-      if (
-        errorMsg.includes("Failed to fetch") ||
-        errorMsg.includes("fetch failed")
-      ) {
-        errorMsg = "Unable to connect to the server. Please try again.";
+      // 409 = a real (non-pending) account already owns this address.
+      if (response?.statusCode === 409) {
+        setEmailTaken(true);
+        form.setError(
+          "email",
+          {
+            type: "server",
+            message: "An account with this email already exists.",
+          },
+          { shouldFocus: true },
+        );
+        return;
       }
-      toast.error(errorMsg);
+
+      // Validation errors from the API go under the field they belong to.
+      let shownOnField = false;
+      for (const issue of response?.errorMessages ?? []) {
+        const field = toFormField(issue?.path);
+        if (!field || typeof issue.message !== "string") continue;
+        form.setError(
+          field,
+          { type: "server", message: issue.message },
+          { shouldFocus: !shownOnField },
+        );
+        shownOnField = true;
+      }
+
+      if (!shownOnField) toast.error(response?.message || GENERIC_ERROR);
+    } catch {
+      // The server action itself failed to reach the Next server.
+      toast.error("Unable to connect to the server. Please try again.");
     } finally {
-      setLoading(false);
+      if (!navigating) setLoading(false);
     }
   };
 
@@ -180,6 +239,8 @@ const SignUp = () => {
                           <User className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                           <Input
                             placeholder="Full Name"
+                            autoComplete="name"
+                            maxLength={30}
                             className="h-12.5 rounded-xl border-slate-200 bg-white pl-10 text-slate-900 placeholder:text-slate-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
                             {...field}
                           />
@@ -205,12 +266,34 @@ const SignUp = () => {
                           <Input
                             type="email"
                             placeholder="name@company.com"
+                            autoComplete="email"
                             className="h-12.5 rounded-xl border-slate-200 bg-white pl-10 text-slate-900 placeholder:text-slate-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
                             {...field}
+                            onChange={(event) => {
+                              field.onChange(event);
+                              if (emailTaken) setEmailTaken(false);
+                            }}
                           />
                         </div>
                       </FormControl>
                       <FormMessage />
+                      {emailTaken && (
+                        <p className="text-sm text-slate-600 dark:text-slate-400">
+                          <Link
+                            href={`/auth/login?email=${encodeURIComponent(field.value.trim())}`}
+                            className="font-semibold text-blue-600 hover:underline dark:text-blue-400"
+                          >
+                            Log in instead
+                          </Link>{" "}
+                          or{" "}
+                          <Link
+                            href="/auth/forgot-password"
+                            className="font-semibold text-blue-600 hover:underline dark:text-blue-400"
+                          >
+                            reset your password
+                          </Link>
+                        </p>
+                      )}
                     </FormItem>
                   )}
                 />
@@ -230,6 +313,7 @@ const SignUp = () => {
                           <Input
                             type={showPassword ? "text" : "password"}
                             placeholder="Password"
+                            autoComplete="new-password"
                             className="h-12.5 rounded-xl border-slate-200 bg-white pl-10 pr-10 text-slate-900 placeholder:text-slate-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
                             {...field}
                           />
@@ -297,27 +381,35 @@ const SignUp = () => {
                     htmlFor="agreeTerms"
                     className="text-sm text-slate-600 dark:text-slate-400 cursor-pointer select-none"
                   >
+                    {/* New tab: following a legal link must not throw away
+                        what the user has already typed into this form. */}
                     I agree to the{" "}
-                    <Link
+                    <a
                       href="https://stafftimetracker.org/terms-and-conditions/"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="text-blue-600 hover:underline dark:text-blue-400 font-medium"
                     >
                       Terms
-                    </Link>
+                    </a>
                     ,{" "}
-                    <Link
+                    <a
                       href="https://stafftimetracker.org/privacy-policy/"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="text-blue-600 hover:underline dark:text-blue-400 font-medium"
                     >
                       Privacy policy
-                    </Link>{" "}
+                    </a>{" "}
                     and{" "}
-                    <Link
+                    <a
                       href="https://stafftimetracker.org/data-processing-agreement/"
-                      className="text-blue-600 hover:underline dark:text-blue-400 font-medium font-medium"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline dark:text-blue-400 font-medium"
                     >
                       DPA
-                    </Link>
+                    </a>
                   </label>
                 </div>
 
@@ -533,4 +625,12 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+// `useSearchParams` (for a carried-over plan intent) needs a Suspense boundary,
+// or Next bails this route out of static prerendering at build time.
+export default function SignUpPage() {
+  return (
+    <Suspense fallback={null}>
+      <SignUp />
+    </Suspense>
+  );
+}

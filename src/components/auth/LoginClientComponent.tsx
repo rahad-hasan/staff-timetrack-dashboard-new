@@ -30,8 +30,10 @@ import {
   buildLogInUserData,
   requiresOrganizationOnboarding,
 } from "@/lib/authSession";
-import { CreateOrganizationDialog } from "./CreateOrganization";
-import { useEnterPlanSelection } from "./CreateOrganization/useEnterPlanSelection";
+import {
+  buildCreateOrganizationUrl,
+  EMPTY_MARKETING_PLAN_INTENT,
+} from "@/lib/marketingPlanIntent";
 import EmailIcon from "../Icons/EmailIcon";
 import SecureIcon from "../Icons/PlanIcons/SecureIcon";
 import gdpr from "../../assets/gdpr.webp";
@@ -60,11 +62,6 @@ const LoginClientComponent = () => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
-
-  const [onboardingUser, setOnboardingUser] = useState<{
-    email: string;
-    name?: string;
-  } | null>(null);
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -103,18 +100,23 @@ const LoginClientComponent = () => {
     [router, setLogInUserData, setOpenMenu],
   );
 
-  const enterPlanSelection = useEnterPlanSelection();
-
   async function onSubmit(values: z.infer<typeof loginSchema>) {
     setLoading(true);
     try {
       const res: any = await logIn(values);
 
+      // Verified email, no organization yet: finish onboarding on its own
+      // page, the same screen the signup funnel lands on. `CreateOrganizationDialog`
+      // is a full-page layout now, not a modal, so rendering it here stacked a
+      // second card under this one, below the fold.
       if (requiresOrganizationOnboarding(res)) {
-        setOnboardingUser({
-          email: res.data.email || values.email,
-          name: res.data.name?.trim() || undefined,
-        });
+        router.push(
+          buildCreateOrganizationUrl(
+            res.data.email || values.email,
+            res.data.name,
+            EMPTY_MARKETING_PLAN_INTENT,
+          ),
+        );
         return;
       }
 
@@ -436,18 +438,6 @@ const LoginClientComponent = () => {
           <span>Secured with encrypted HTTPS</span>
         </div>
       </div>
-      {/* Onboarding Dialog */}
-      {onboardingUser && (
-        <CreateOrganizationDialog
-          open
-          email={onboardingUser.email}
-          userName={onboardingUser.name}
-          onOpenChange={(next) => {
-            if (!next) setOnboardingUser(null);
-          }}
-          onCompleted={enterPlanSelection}
-        />
-      )}
     </div>
   );
 };

@@ -10,9 +10,17 @@ import {
   writeSessionCookies,
 } from "@/lib/sessionCookies";
 
+/**
+ * `POST /auth/create-account` — saves a PendingUser and emails a 6-digit code.
+ *
+ * The keys must be exactly `name`, `email`, `password`: the backend's
+ * `createAccountSchema` is `.strict()`, so anything else (this used to send
+ * `full_name` / `work_email`) fails validation with "Name is required" even
+ * when the form is filled in.
+ */
 export const createAccount = async (data: {
-  full_name: string;
-  work_email: string;
+  name: string;
+  email: string;
   password: string;
 }) => {
   return await baseApi("/auth/create-account", {

@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { useRouter, useSearchParams } from "next/navigation";
 import { resetOtp, verifyOtp } from "@/actions/auth/action";
 import {
+  appendMarketingPlanIntent,
   buildCreateOrganizationUrl,
   parseMarketingPlanIntent,
 } from "@/lib/marketingPlanIntent";
@@ -286,8 +287,13 @@ const SignupVerifyOtpClient = () => {
               </div>
               <div>
                 Wrong email?{" "}
+                {/* Back to the form, not to login: an unverified address has
+                    no account to sign in to. Any plan intent comes along. */}
                 <Link
-                  href="/auth/login"
+                  href={appendMarketingPlanIntent(
+                    "/auth/sign-up",
+                    parseMarketingPlanIntent(searchParams),
+                  )}
                   className="font-semibold text-blue-600 hover:underline dark:text-blue-400"
                 >
                   Change it

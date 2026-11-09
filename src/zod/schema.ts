@@ -46,11 +46,24 @@ export const loginSchema = z.object({
     }),
 });
 
+// Mirrors the backend's `UserValidation.createAccountSchema` (name 3–30 after
+// trimming, password 6–100) so a value this form accepts is never bounced by
+// the API with a message the user never saw coming.
 export const signUpSchema = z.object({
-  name: z.string().trim().min(2, "Name must be at least 2 characters long"),
-  email: z.string().trim().email("Invalid email address"),
+  name: z
+    .string()
+    .trim()
+    .min(1, "Full name is required")
+    .min(3, "Name must be at least 3 characters long")
+    .max(30, "Name cannot exceed 30 characters"),
+  email: z
+    .string()
+    .trim()
+    .min(1, "Work email is required")
+    .email("Invalid email address"),
   password: z
     .string()
+    .min(1, "Password is required")
     .min(6, "Password must be at least 6 characters long")
     .max(100, "Password cannot exceed 100 characters"),
 });

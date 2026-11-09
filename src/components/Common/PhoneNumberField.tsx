@@ -3,8 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
 import parsePhoneNumberFromString, {
+  getExampleNumber,
   type CountryCode,
 } from "libphonenumber-js";
+import mobileExamples from "libphonenumber-js/mobile/examples";
 import { Control, FieldPath, FieldValues } from "react-hook-form";
 
 import {
@@ -123,6 +125,17 @@ const toNationalDigits = (value: string, country: CountryDialCode) => {
 const toStoredValue = (country: CountryDialCode, digits: string) =>
   digits ? `+${country.dialCode}${digits}` : "";
 
+/**
+ * A typical mobile number for `country`, written the way this input holds it:
+ * bare national digits with no trunk prefix (Bangladesh → "1812345678", not
+ * "01812-345678"). Showing the trunk "0" would invite typing it, and that is
+ * only cleaned up on blur — an Enter-key submit skips the blur.
+ *
+ * Used only when a caller passes no `placeholder`.
+ */
+const exampleNationalNumber = (country: CountryDialCode): string | undefined =>
+  getExampleNumber(country.iso2, mobileExamples)?.nationalNumber;
+
 interface PhoneNumberInputProps
   extends Omit<
     React.ComponentProps<"input">,
@@ -158,7 +171,7 @@ export const PhoneNumberInput = ({
   onChange,
   onBlur,
   disabled,
-  placeholder = "Enter Phone Number",
+  placeholder,
   defaultCountry,
   invalid,
   className,
@@ -341,7 +354,7 @@ export const PhoneNumberInput = ({
         inputMode="tel"
         autoComplete="tel-national"
         disabled={disabled}
-        placeholder={placeholder}
+        placeholder={placeholder ?? exampleNationalNumber(country) ?? "Enter Phone Number"}
         value={nationalDigits}
         onBlur={handleBlur}
         onChange={(event) => handleInputChange(event.target.value)}
