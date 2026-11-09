@@ -2,6 +2,7 @@
 
 import { Building2, Globe, MapPin } from "lucide-react";
 import { Control } from "react-hook-form";
+import Link from "next/link";
 
 import ComboboxField from "@/components/Common/ComboboxField";
 import PhoneNumberField from "@/components/Common/PhoneNumberField";
@@ -19,48 +20,41 @@ import OrgNameSuggestions from "./OrgNameSuggestions";
 
 interface OrganizationProfileStepProps {
   control: Control<CreateOrganizationFormValues>;
-  /**
-   * Built once by the form hook, because its first entry is also the field's
-   * default value — recomputing them here would let the two drift apart.
-   */
   suggestions: string[];
-  /** Writes the picked suggestion through the form, validation included. */
   onPickSuggestion: (name: string) => void;
   disabled?: boolean;
+  email?: string;
 }
 
-/**
- * Step 1 — the only fields `POST /company` accepts. Everything here is
- * required by the API, so the user cannot advance without it.
- */
 const OrganizationProfileStep = ({
   control,
   suggestions,
   onPickSuggestion,
   disabled,
+  email,
 }: OrganizationProfileStepProps) => {
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div className="space-y-4">
       <FormField
         control={control}
         name="name"
         render={({ field }) => (
-          <FormItem className="sm:col-span-2">
-            <FormLabel required>Organization Name</FormLabel>
+          <FormItem className="space-y-1.5">
+            <FormLabel className="font-semibold text-slate-700 dark:text-slate-300">
+              Organization name
+            </FormLabel>
             <FormControl>
               <div className="relative flex items-center">
-                <Building2 className="pointer-events-none absolute left-3 h-6 w-6 text-primary bg-[#edf4fe] dark:bg-[#77777738] p-1 rounded-md" />
+                <Building2 className="pointer-events-none absolute left-3.5 h-4 w-4 text-slate-400" />
                 <Input
                   autoFocus
-                  placeholder="Enter Your Organization Name"
+                  placeholder="Northwind"
                   disabled={disabled}
-                  className="pl-11 dark:bg-darkPrimaryBg dark:border-darkBorder"
+                  className="pl-10 h-12.5 rounded-xl border-slate-200 bg-white dark:bg-zinc-800 dark:border-zinc-700 text-slate-900 dark:text-white placeholder:text-slate-400"
                   {...field}
                 />
               </div>
             </FormControl>
-            {/* Under the input and above the message: a picked chip always
-                validates, so the two can never be on screen together. */}
             <OrgNameSuggestions
               suggestions={suggestions}
               onPick={onPickSuggestion}
@@ -70,50 +64,65 @@ const OrganizationProfileStep = ({
           </FormItem>
         )}
       />
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <PhoneNumberField
           control={control}
           name="phone"
-          label="Phone Number"
-          placeholder="Enter Phone Number"
+          label="Phone number"
+          placeholder="07700 900123"
           required
           disabled={disabled}
-          className="w-full"
+          inputClassName="w-full h-12.5 rounded-xl"
         />
 
         <ComboboxField
           control={control}
           name="time_zone"
-          label="Time Zone"
+          label="Time zone"
           options={popularTimeZoneList}
           icon={Globe}
-          placeholder="Select time zone"
+          placeholder="London"
           searchPlaceholder="Search time zone..."
           emptyMessage="No time zone found."
           required
           disabled={disabled}
+          className=" h-12.5 rounded-xl"
         />
+      </div>
 
-    <FormField
-      control={control}
-      name="address"
-      render={({ field }) => (
-        <FormItem className="sm:col-span-2 pt-2">
-          <FormLabel required>Address</FormLabel>
-          <FormControl>
-            <div className="relative flex items-center">
-              <MapPin className="pointer-events-none absolute left-3 h-6 w-6 text-primary bg-[#edf4fe] dark:bg-[#77777738] p-1 rounded-md" />
-              <Input
-                placeholder="e.g. London, United Kingdom"
-                disabled={disabled}
-                className="pl-11 dark:bg-darkPrimaryBg dark:border-darkBorder"
-                {...field}
-              />
-            </div>
-          </FormControl>
-          <FormMessage />
-        </FormItem>
+      <FormField
+        control={control}
+        name="address"
+        render={({ field }) => (
+          <FormItem className="space-y-1.5">
+            <FormLabel className="font-semibold text-slate-700 dark:text-slate-300">
+              Address
+            </FormLabel>
+            <FormControl>
+              <div className="relative flex items-center">
+                <MapPin className="pointer-events-none absolute left-3.5 h-4 w-4 text-slate-400" />
+                <Input
+                  placeholder="e.g. London, United Kingdom"
+                  disabled={disabled}
+                  className="pl-10 h-12.5 rounded-xl border-slate-200 bg-white dark:bg-zinc-800 dark:border-zinc-700 text-slate-900 dark:text-white placeholder:text-slate-400"
+                  {...field}
+                />
+              </div>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      {email && (
+        <div className=" text-xs text-slate-500 dark:text-slate-400">
+          Signed up as <span className="font-medium text-slate-700 dark:text-slate-300">{email}</span> &bull;{" "}
+          <Link href="/auth/login" className="font-semibold text-blue-600 hover:underline dark:text-blue-400">
+            Not you?
+          </Link>
+        </div>
       )}
-    />
     </div>
   );
 };

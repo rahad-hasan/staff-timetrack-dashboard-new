@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+import sparkle from "../../../assets/sparkle.svg";
 interface OrgNameSuggestionsProps {
   /** Already clamped to the schema's 2–50 bound by `buildOrgNameSuggestions`. */
   suggestions: string[];
@@ -28,12 +30,14 @@ const OrgNameSuggestions = ({
   if (!suggestions.length) return null;
 
   return (
-    <div className="pt-1.5">
-      <p className="text-sm text-subTextColor dark:text-darkTextSecondary">
+    <div className="">
+      {/* <p className="text-sm text-subTextColor dark:text-darkTextSecondary">
         Need inspiration? Try one of these
-      </p>
+      </p> */}
 
-      <div className="mt-2 flex flex-wrap gap-2">
+      <div className=" flex flex-wrap items-center text-subTextColor gap-2">
+        <Image src={sparkle} width={20} height={20} alt='icon' />
+         <span className="text-sm -ml-1">Try</span>
         {suggestions.map((suggestion) => (
           <button
             key={suggestion}
@@ -58,7 +62,7 @@ const OrgNameSuggestions = ({
             // correct — Enter then fills it and clears the message.
             onMouseDown={(event) => event.preventDefault()}
             onClick={() => onPick(suggestion)}
-            className="cursor-pointer rounded-lg bg-primary/10 px-3 py-1.5 text-sm font-medium text-primary transition-colors outline-none hover:bg-primary/20 focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 dark:bg-primary/20 dark:hover:bg-primary/30"
+            className="cursor-pointer rounded-full bg-[#f0f4f9] px-4 py-1.5 text-xs font-medium text-black transition-colors outline-none hover:bg-primary/20 focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 dark:bg-primary/20 dark:hover:bg-primary/30"
           >
             {suggestion}
           </button>

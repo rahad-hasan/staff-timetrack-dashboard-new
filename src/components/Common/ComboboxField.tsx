@@ -54,6 +54,7 @@ interface ComboboxFieldProps<TValues extends FieldValues> {
   emptyMessage?: string;
   required?: boolean;
   disabled?: boolean;
+  className?: string;
 }
 
 /**
@@ -79,6 +80,7 @@ const ComboboxField = <TValues extends FieldValues>({
   emptyMessage = "No match found.",
   required = false,
   disabled,
+  className,
 }: ComboboxFieldProps<TValues>) => {
   const [open, setOpen] = useState(false);
 
@@ -101,7 +103,7 @@ const ComboboxField = <TValues extends FieldValues>({
                     role="combobox"
                     aria-expanded={open}
                     disabled={disabled}
-                    className="flex justify-between font-normal dark:text-darkTextPrimary hover:dark:bg-darkPrimaryBg  "
+                    className={`flex justify-between font-normal dark:text-darkTextPrimary hover:dark:bg-darkPrimaryBg ${className}`}
                   >
                     <span className="flex items-center gap-2 truncate">
                       {Icon && (

@@ -10,6 +10,18 @@ import {
   writeSessionCookies,
 } from "@/lib/sessionCookies";
 
+export const createAccount = async (data: {
+  full_name: string;
+  work_email: string;
+  password: string;
+}) => {
+  return await baseApi("/auth/create-account", {
+    method: "POST",
+    body: data,
+    cache: "no-cache",
+  });
+};
+
 // export const logIn = async (data: any) => {
 //   return await baseApi("/auth/signin", {
 //     method: "POST",
