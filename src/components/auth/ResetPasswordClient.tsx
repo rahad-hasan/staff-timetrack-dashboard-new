@@ -255,7 +255,7 @@ const ResetPasswordClient = () => {
         </div>
 
         {/* Right Column: Hero Banner Steps Guide (Step 3 Active) */}
-        <div className="w-full lg:w-1/2 bg-gradient-to-br from-[#0160F1] via-[#4c60fa] to-[#7B61FF] p-6 lg:p-10 text-white flex flex-col justify-between relative overflow-hidden lg:m-2 rounded-[24px]">
+        <div className="lg:w-1/2 m-2 bg-gradient-to-br from-[#0160F1] via-[#4c60fa] to-[#7B61FF] p-6 sm:p-8 lg:p-10 text-white flex flex-col justify-between relative overflow-hidden rounded-[20px] lg:rounded-[24px]">
           <svg
             className="absolute inset-0 w-full h-full pointer-events-none opacity-25 overflow-hidden"
             viewBox="0 0 400 600"
@@ -274,18 +274,21 @@ const ResetPasswordClient = () => {
 
           {/* Main Hero Title */}
           <div className="relative z-10 my-4">
-            <h2 className="text-2xl md:text-3xl font-bold mb-2 leading-tight">
+            <h2 className="text-2xl md:text-3xl font-bold mb-2 leading-tight text-balance">
               Reset your password in three quick steps
             </h2>
           </div>
 
           {/* Steps List */}
           <div className="relative z-10 space-y-5 my-auto">
-            {/* Vertical Connector Line */}
-            <div className="absolute left-4 top-4 bottom-12 sm:bottom-6 w-[1.5px] bg-[#FFFFFFD9]" />
+            {/* Each step but the last draws its own segment, from the bottom of its
+                bubble to the top of the next one (`-bottom-5` matches `space-y-5`). One
+                line for the whole list overshot the last bubble whenever the
+                descriptions wrapped, which they do on phones. */}
 
             {/* Step 1 (Done) */}
             <div className="relative flex items-start gap-4">
+              <div aria-hidden="true" className="absolute left-4 top-8 -bottom-5 w-[1.5px] -translate-x-1/2 bg-[#FFFFFFD9]" />
               <div className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-white/25 text-white font-bold flex items-center justify-center text-sm backdrop-blur-sm border border-[#FFFFFFD9]">
                 <Check className="h-4 w-4 stroke-[3]" />
               </div>
@@ -302,6 +305,7 @@ const ResetPasswordClient = () => {
 
             {/* Step 2 (Done) */}
             <div className="relative flex items-start gap-4">
+              <div aria-hidden="true" className="absolute left-4 top-8 -bottom-5 w-[1.5px] -translate-x-1/2 bg-[#FFFFFFD9]" />
               <div className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-white/25 text-white font-bold flex items-center justify-center text-sm backdrop-blur-sm border border-[#FFFFFFD9]">
                 <Check className="h-4 w-4 stroke-[3]" />
               </div>

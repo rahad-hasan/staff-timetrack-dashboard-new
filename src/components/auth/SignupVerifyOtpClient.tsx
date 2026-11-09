@@ -318,7 +318,7 @@ const SignupVerifyOtpClient = () => {
         </div>
 
         {/* Right Column: Hero Banner & 4-Step Progress Track */}
-        <div className="w-full lg:w-1/2 bg-gradient-to-br from-[#0160F1] via-[#4c60fa] to-[#7B61FF] p-6 lg:p-10 text-white flex flex-col justify-between relative overflow-hidden lg:m-2 rounded-[24px]">
+        <div className="lg:w-1/2 m-2 bg-gradient-to-br from-[#0160F1] via-[#4c60fa] to-[#7B61FF] p-6 sm:p-8 lg:p-10 text-white flex flex-col justify-between relative overflow-hidden rounded-[20px] lg:rounded-[24px]">
           <svg
             className="absolute inset-0 w-full h-full pointer-events-none opacity-25 overflow-hidden"
             viewBox="0 0 400 600"
@@ -356,7 +356,7 @@ const SignupVerifyOtpClient = () => {
             <div className="relative z-10 text-xs font-semibold tracking-wider uppercase text-blue-100 mb-4">
               STEP 2 / 4
             </div>
-            <h2 className="relative z-10 text-2xl md:text-3xl font-semibold mb-6">
+            <h2 className="relative z-10 text-2xl md:text-3xl font-semibold mb-6 text-balance">
               Start free in four quick steps
             </h2>
 
@@ -389,11 +389,14 @@ const SignupVerifyOtpClient = () => {
 
           {/* Step Track */}
           <div className="relative z-10 space-y-6 my-auto">
-            {/* Vertical Connector Line */}
-            <div className="absolute left-4 top-4 bottom-1 w-[1.5px] bg-[#FFFFFFD9]" />
+            {/* Each step but the last draws its own segment, from the bottom of its
+                bubble to the top of the next one (`-bottom-6` matches `space-y-6`). One
+                line for the whole list overshot the last bubble whenever the
+                descriptions wrapped, which they do on phones. */}
 
             {/* Step 1: Account (Done) */}
             <div className="relative flex items-start gap-3.5">
+              <div aria-hidden="true" className="absolute left-4 top-8 -bottom-6 w-[1.5px] -translate-x-1/2 bg-[#FFFFFFD9]" />
               <div className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-white/25 text-white font-bold flex items-center justify-center text-sm backdrop-blur-sm border border-[#FFFFFFD9]">
                 <Check className="h-4 w-4" />
               </div>
@@ -412,6 +415,7 @@ const SignupVerifyOtpClient = () => {
 
             {/* Step 2: Verify email (Active) */}
             <div className="relative flex items-start gap-3.5">
+              <div aria-hidden="true" className="absolute left-4 top-8 -bottom-6 w-[1.5px] -translate-x-1/2 bg-[#FFFFFFD9]" />
               <div className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-white text-blue-600 font-bold flex items-center justify-center text-sm shadow-md">
                 2
               </div>
@@ -427,6 +431,7 @@ const SignupVerifyOtpClient = () => {
 
             {/* Step 3: Organization */}
             <div className="relative flex items-start gap-3.5">
+              <div aria-hidden="true" className="absolute left-4 top-8 -bottom-6 w-[1.5px] -translate-x-1/2 bg-[#FFFFFFD9]" />
               <div className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-white/20 text-white/80 font-bold flex items-center justify-center text-sm backdrop-blur-sm border border-white/20">
                 3
               </div>

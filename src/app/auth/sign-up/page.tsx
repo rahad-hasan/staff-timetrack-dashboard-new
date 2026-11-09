@@ -80,7 +80,9 @@ const SignUp = () => {
 
   const handleSubmit = async (values: z.infer<typeof signUpSchema>) => {
     if (!agreeTerms) {
-      toast.error("Please agree to the Terms, Privacy Policy, and DPA to continue.");
+      toast.error(
+        "Please agree to the Terms, Privacy Policy, and DPA to continue.",
+      );
       return;
     }
 
@@ -93,16 +95,27 @@ const SignUp = () => {
       });
 
       if (!response?.success) {
-        throw new Error(response?.message || "Unable to create your account. Please try again.");
+        throw new Error(
+          response?.message ||
+            "Unable to create your account. Please try again.",
+        );
       }
 
-      toast.success(response.message || "Your account has been created successfully.");
-      router.push(`/auth/verify-otp?email=${encodeURIComponent(values.email.trim())}`);
+      toast.success(
+        response.message || "Your account has been created successfully.",
+      );
+      router.push(
+        `/auth/verify-otp?email=${encodeURIComponent(values.email.trim())}`,
+      );
     } catch (error) {
-      let errorMsg = error instanceof Error
-        ? error.message
-        : "Unable to create your account. Please try again.";
-      if (errorMsg.includes("Failed to fetch") || errorMsg.includes("fetch failed")) {
+      let errorMsg =
+        error instanceof Error
+          ? error.message
+          : "Unable to create your account. Please try again.";
+      if (
+        errorMsg.includes("Failed to fetch") ||
+        errorMsg.includes("fetch failed")
+      ) {
         errorMsg = "Unable to connect to the server. Please try again.";
       }
       toast.error(errorMsg);
@@ -149,7 +162,10 @@ const SignUp = () => {
 
             {/* Form */}
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-5">
+              <form
+                onSubmit={form.handleSubmit(handleSubmit)}
+                className="space-y-5"
+              >
                 {/* Full Name Input */}
                 <FormField
                   control={form.control}
@@ -220,7 +236,9 @@ const SignUp = () => {
                           <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            aria-label={showPassword ? "Hide password" : "Show password"}
+                            aria-label={
+                              showPassword ? "Hide password" : "Show password"
+                            }
                             className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
                           >
                             {showPassword ? (
@@ -281,21 +299,21 @@ const SignUp = () => {
                   >
                     I agree to the{" "}
                     <Link
-                      href="/terms"
+                      href="https://stafftimetracker.org/terms-and-conditions/"
                       className="text-blue-600 hover:underline dark:text-blue-400 font-medium"
                     >
                       Terms
                     </Link>
                     ,{" "}
                     <Link
-                      href="/privacy"
+                      href="https://stafftimetracker.org/privacy-policy/"
                       className="text-blue-600 hover:underline dark:text-blue-400 font-medium"
                     >
                       Privacy policy
                     </Link>{" "}
                     and{" "}
                     <Link
-                      href="/dpa"
+                      href="https://stafftimetracker.org/data-processing-agreement/"
                       className="text-blue-600 hover:underline dark:text-blue-400 font-medium font-medium"
                     >
                       DPA
@@ -334,7 +352,7 @@ const SignUp = () => {
         </div>
 
         {/* Right Column: Hero Banner & 4-Step Progress Track (Step 1 Active) */}
-        <div className="w-full lg:w-1/2 bg-gradient-to-br from-[#0160F1] via-[#4c60fa] to-[#7B61FF] p-6 lg:p-10 text-white flex flex-col justify-between relative overflow-hidden lg:m-2 rounded-[24px]">
+        <div className="lg:w-1/2 m-2 bg-gradient-to-br from-[#0160F1] via-[#4c60fa] to-[#7B61FF] p-6 sm:p-8 lg:p-10 text-white flex flex-col justify-between relative overflow-hidden rounded-[20px] lg:rounded-[24px]">
           <svg
             className="absolute inset-0 w-full h-full pointer-events-none opacity-25 overflow-hidden"
             viewBox="0 0 400 600"
@@ -372,7 +390,7 @@ const SignUp = () => {
             <div className="relative z-10 text-xs font-semibold tracking-wider uppercase text-blue-100 mb-2">
               STEP 1 / 4
             </div>
-            <h2 className="relative z-10 text-2xl md:text-3xl font-bold mb-6 leading-tight">
+            <h2 className="relative z-10 text-2xl md:text-3xl font-bold mb-6 leading-tight text-balance">
               Start free in four quick steps
             </h2>
 
@@ -406,11 +424,14 @@ const SignUp = () => {
 
           {/* Step Track */}
           <div className="relative z-10 space-y-6 my-auto">
-            {/* Vertical Connector Line */}
-            <div className="absolute left-4 top-4 bottom-1 w-[1.5px] bg-white/30" />
+            {/* Each step but the last draws its own segment, from the bottom of its
+                bubble to the top of the next one (`-bottom-6` matches `space-y-6`). One
+                line for the whole list overshot the last bubble whenever the
+                descriptions wrapped, which they do on phones. */}
 
             {/* Step 1: Account (Active) */}
             <div className="relative flex items-start gap-3.5">
+              <div aria-hidden="true" className="absolute left-4 top-8 -bottom-6 w-[1.5px] -translate-x-1/2 bg-white/30" />
               <div className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-white text-blue-600 font-bold flex items-center justify-center text-sm shadow-md">
                 1
               </div>
@@ -424,6 +445,7 @@ const SignUp = () => {
 
             {/* Step 2: Verify email */}
             <div className="relative flex items-start gap-3.5">
+              <div aria-hidden="true" className="absolute left-4 top-8 -bottom-6 w-[1.5px] -translate-x-1/2 bg-white/30" />
               <div className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-white/20 text-white/80 font-bold flex items-center justify-center text-sm backdrop-blur-sm border border-white/20">
                 2
               </div>
@@ -439,6 +461,7 @@ const SignUp = () => {
 
             {/* Step 3: Organization */}
             <div className="relative flex items-start gap-3.5">
+              <div aria-hidden="true" className="absolute left-4 top-8 -bottom-6 w-[1.5px] -translate-x-1/2 bg-white/30" />
               <div className="relative z-10 flex-shrink-0 w-8 h-8 rounded-full bg-white/20 text-white/80 font-bold flex items-center justify-center text-sm backdrop-blur-sm border border-white/20">
                 3
               </div>

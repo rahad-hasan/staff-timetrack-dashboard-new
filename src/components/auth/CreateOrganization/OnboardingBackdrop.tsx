@@ -62,8 +62,13 @@ import { cn } from "@/lib/utils";
  *
  * Entirely decorative: `aria-hidden` and `pointer-events-none`. Every figure is
  * invented and blurred past legibility — they exist to give the shapes
- * realistic proportions, nothing more. No scrim of its own: `DialogOverlay`
- * already paints `black/50`, and a second dim layer crushed this to flat grey.
+ * realistic proportions, nothing more.
+ *
+ * `dim` paints the same `black/50` scrim `DialogOverlay` does, so the plain
+ * auth pages (login, sign-up, password reset…) match the dialog-hosted
+ * create-organization page. That page passes `dim={false}`: its
+ * `DialogOverlay` already dims, and stacking two scrims crushes this to flat
+ * near-black.
  */
 
 type IconComponent = ({ size }: { size: number }) => React.JSX.Element;
@@ -96,11 +101,36 @@ const OTHER_NAV: ReadonlyArray<NavItem> = [
   { Icon: SettingsColoredIcon, label: "Settings" },
 ];
 
-const STATS: ReadonlyArray<{ Icon: IconComponent; value: string; label: string; change: string }> = [
-  { Icon: WeeklyActivityColoredIcon, value: "78%", label: "Daily Activity", change: "+5.2%" },
-  { Icon: WeeklyWorkColoredIcon, value: "05:24:36", label: "Daily Work", change: "+1.2h" },
-  { Icon: TotalProjectColoredIcon, value: "4", label: "Total Projects", change: "+1.0" },
-  { Icon: TeamMemberColoredIcon, value: "5", label: "Team Members", change: "+25%" },
+const STATS: ReadonlyArray<{
+  Icon: IconComponent;
+  value: string;
+  label: string;
+  change: string;
+}> = [
+  {
+    Icon: WeeklyActivityColoredIcon,
+    value: "78%",
+    label: "Daily Activity",
+    change: "+5.2%",
+  },
+  {
+    Icon: WeeklyWorkColoredIcon,
+    value: "05:24:36",
+    label: "Daily Work",
+    change: "+1.2h",
+  },
+  {
+    Icon: TotalProjectColoredIcon,
+    value: "4",
+    label: "Total Projects",
+    change: "+1.0",
+  },
+  {
+    Icon: TeamMemberColoredIcon,
+    value: "5",
+    label: "Team Members",
+    change: "+25%",
+  },
 ];
 
 const MEMBERS = [
@@ -111,7 +141,12 @@ const MEMBERS = [
 
 /** The real card's sparkline is a hand-drawn SVG stroked in `currentColor`. */
 const Sparkline = () => (
-  <svg viewBox="0 0 72 46" width="100%" height="100%" className="text-green-600">
+  <svg
+    viewBox="0 0 72 46"
+    width="100%"
+    height="100%"
+    className="text-green-600"
+  >
     <path
       d="M0 38 L8 33 L16 35 L24 24 L32 28 L40 15 L48 21 L56 9 L64 17 L72 6"
       fill="none"
@@ -122,7 +157,12 @@ const Sparkline = () => (
 );
 
 /** Mirrors `SidebarItem`'s row: same padding, radius and active treatment. */
-const NavRow = ({ Icon, label, collapsible, active }: NavItem & { active?: boolean }) => (
+const NavRow = ({
+  Icon,
+  label,
+  collapsible,
+  active,
+}: NavItem & { active?: boolean }) => (
   <div className="mb-0.5">
     <div
       className={cn(
@@ -140,26 +180,31 @@ const NavRow = ({ Icon, label, collapsible, active }: NavItem & { active?: boole
   </div>
 );
 
-export default function OnboardingBackdrop() {
+export default function OnboardingBackdrop({
+  dim = true,
+}: {
+  /** Paint a `black/50` scrim over the mock. Off when a dialog overlay already dims. */
+  dim?: boolean;
+} = {}) {
   return (
     <div
       aria-hidden="true"
       className="pointer-events-none fixed inset-0 -z-10 overflow-hidden select-none"
     >
-      {/* Oversized by 24px on every side AND padded back by the same amount.
+      {/* Oversized by 48px on every side AND padded back by the same amount.
           The bleed is what keeps the blur's soft edge off-screen (otherwise it
           draws a pale halo around the border); the matching padding is what
           keeps the content itself at its true position — without it the whole
-          dashboard sat 24px left and up, clipping the sidebar so "MAIN MENU"
+          dashboard sat 48px left and up, clipping the sidebar so "MAIN MENU"
           read as "AIN MENU". The band is filled with the page's own ground so
           the bleed is invisible. */}
-      <div className="absolute -inset-6 bg-bgSecondary p-6 blur-[6px] dark:bg-darkSecondaryBg">
+      <div className="absolute -inset-12 bg-bgSecondary p-12 blur-sm dark:bg-darkSecondaryBg">
         {/* Pinned to a desktop width so the mock always shows the layout the
             product is recognised by, and so the `2xl:` steps the real shell
             uses resolve the same way. */}
         <div className="flex h-full w-full min-w-[1600px] bg-bgSecondary dark:bg-darkSecondaryBg">
           {/* ── sidebar: transparent, only the logo block is a card ─────── */}
-          <div className="flex h-screen w-[260px] shrink-0 flex-col py-5">
+          <div className="flex h-screen w-65 shrink-0 flex-col py-5">
             <div className="mx-4 flex flex-row items-center justify-between rounded-2xl border border-borderColor bg-bgPrimary px-3 py-2.5 dark:border-darkBorder/70 dark:bg-darkPrimaryBg">
               <Image
                 src={logoWithText}
@@ -458,6 +503,8 @@ export default function OnboardingBackdrop() {
           </div>
         </div>
       </div>
+
+      {dim && <div className="absolute inset-0 bg-black/20" />}
     </div>
   );
 }

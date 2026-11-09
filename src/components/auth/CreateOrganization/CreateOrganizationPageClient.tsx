@@ -58,7 +58,8 @@ const CreateOrganizationPageClient = () => {
     // `relative` so the backdrop's own `fixed` layer can sit behind this
     // content via its negative z-index without escaping the stacking context.
     <div className="min-h-screen w-full flex flex-col items-center justify-center relative overflow-y-auto">
-      <OnboardingBackdrop />
+      {/* The dialog's own overlay already dims the page — no second scrim. */}
+      <OnboardingBackdrop dim={false} />
 
       {/* No logo header: the backdrop now carries the product framing (its own
           sidebar wordmark is right there), and a crisp logo floating over a
