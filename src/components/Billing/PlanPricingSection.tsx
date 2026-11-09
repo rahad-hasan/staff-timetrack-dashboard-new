@@ -157,7 +157,6 @@ export default function PlanPricingSection({
       {/* {visiblePlans.length > 0 && (
         <PlanComparisonTable
           plans={visiblePlans}
-          cycle={effectiveCycle}
           className="mt-10"
         />
       )} */}

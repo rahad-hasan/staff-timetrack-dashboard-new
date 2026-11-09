@@ -433,7 +433,6 @@ export default function OnboardingPlanSelection({
           table. The strip follows it so the page keeps one footer block. */}
       <PlanComparisonTable
         plans={visiblePlans}
-        cycle={effectiveCycle}
         className="mt-10 "
       />
 

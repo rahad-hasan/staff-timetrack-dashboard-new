@@ -1,12 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  CreditCard,
-  Receipt,
-  RefreshCw,
-  ShieldCheck,
-} from "lucide-react";
+import { Receipt, RefreshCw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 

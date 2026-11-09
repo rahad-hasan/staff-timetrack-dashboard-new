@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { BillingCycle, IBillingPlan } from "@/types/billing";
+import { IBillingPlan } from "@/types/billing";
 import CompareFeaturesPlan from "./CompareFeaturesPlan";
 
 /** One plan's answer for one feature row. `null` = the plan never lists it. */
@@ -72,11 +72,9 @@ const formatLimitValue = (key: string, value: number): string => {
  */
 export default function PlanComparisonTable({
   plans,
-  cycle,
   className,
 }: {
   plans: IBillingPlan[];
-  cycle: BillingCycle;
   className?: string;
 }) {
   const [open, setOpen] = useState(false);

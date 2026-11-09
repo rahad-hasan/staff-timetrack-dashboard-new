@@ -6,7 +6,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import SegmentedPills, {
   type SegmentedPillOption,
 } from "@/components/Common/SegmentedPills";
-import { CreditCard, Package, Receipt, Undo2 } from "lucide-react";
+import { Undo2 } from "lucide-react";
 import PlanIcon from "../Icons/PlanIcons/PlanIcon";
 import InvoiceIcon from "../Icons/PlanIcons/InvoiceIcon";
 import CardIcon from "../Icons/PlanIcons/CardIcon";

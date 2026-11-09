@@ -2,6 +2,7 @@
 
 import { Check, ArrowRight, ShieldCheck, Star } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import logoWithSlogan from "@/assets/logo-with-text.webp";
 import logoForDark from "@/assets/logo-with-text-dark.png";
 import gdpr from "../../../assets/gdpr.webp";
@@ -9,17 +10,13 @@ import hipaa from "../../../assets/hipaa.webp";
 import SecureIcon from "@/components/Icons/PlanIcons/SecureIcon";
 import OnboardingBackdrop from "@/components/auth/CreateOrganization/OnboardingBackdrop";
 
-interface OnboardingSuccessClientProps {
-  userName?: string;
-  organizationName?: string;
-  onEnterDashboard: () => void;
-}
+// A route's default export only ever receives `params` / `searchParams` from
+// Next.js, so this page can't take props — the CTA navigates on its own.
+// TODO: replace these design placeholders with the real user/org data.
+const userName = "Sarah";
+const organizationName = "Northwind";
 
-const OnboardingSuccessClient = ({
-  userName = "Sarah",
-  organizationName = "Northwind",
-  onEnterDashboard,
-}: OnboardingSuccessClientProps) => {
+const OnboardingSuccessPage = () => {
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-center p-4 lg:p-8 overflow-y-auto">
       <OnboardingBackdrop />
@@ -126,12 +123,12 @@ const OnboardingSuccessClient = ({
             </div>
 
             {/* Primary Action Button */}
-            <button
-              onClick={onEnterDashboard}
+            <Link
+              href="/dashboard"
               className="w-full h-12.5 cursor-pointer shadow-[0_20px_50px_rgba(0,0,0,0.2)] bg-gradient-to-r from-[#0160F1] to-[#7B61FF] text-white font-medium rounded-full shadow-lg shadow-blue-500/25 transition-all flex items-center justify-center gap-2"
             >
               Go to my dashboard <ArrowRight className="size-4" />
-            </button>
+            </Link>
           </div>
 
           {/* Subtext Footer Info */}
@@ -328,4 +325,4 @@ const OnboardingSuccessClient = ({
   );
 };
 
-export default OnboardingSuccessClient;
+export default OnboardingSuccessPage;
