@@ -2,9 +2,7 @@
 
 import type { Ref } from "react";
 import { MessageSquare } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { LIVE_CHAT_COPY } from "@/lib/liveChat/config";
-import { LIVE_CHAT_ACTION } from "./styles";
 
 interface LiveChatLauncherProps {
   ref?: Ref<HTMLButtonElement>;
@@ -29,10 +27,7 @@ export default function LiveChatLauncher({
       type="button"
       onClick={onClick}
       aria-label={label}
-      className={cn(
-        LIVE_CHAT_ACTION,
-        "pointer-events-auto relative grid size-14 shrink-0 place-items-center rounded-full bg-live-chat-fab shadow-live-chat-fab",
-      )}
+      className="relative grid size-14 shrink-0 cursor-pointer place-items-center rounded-full bg-live-chat-fab text-white shadow-live-chat-fab transition-[filter] duration-150 hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-live-chat-from"
     >
       <MessageSquare
         className="size-6 fill-current"

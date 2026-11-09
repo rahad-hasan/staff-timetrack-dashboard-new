@@ -39,7 +39,6 @@ export interface CrispEventArgs {
   "chat:opened": [];
   "chat:closed": [];
   "message:received": [message: unknown];
-  "website:availability:changed": [isAvailable: boolean];
 }
 
 export type CrispEvent = keyof CrispEventArgs;
@@ -49,7 +48,6 @@ const CRISP_EVENTS = [
   "chat:opened",
   "chat:closed",
   "message:received",
-  "website:availability:changed",
 ] as const satisfies readonly CrispEvent[];
 
 type CrispAction =
@@ -72,7 +70,7 @@ interface CrispConfigs {
   "color:mode": [mode: "light" | "dark" | "auto"];
 }
 
-type CrispState = "chat:opened" | "website:available";
+type CrispState = "chat:opened";
 
 type CrispCommand = [string, ...unknown[]];
 

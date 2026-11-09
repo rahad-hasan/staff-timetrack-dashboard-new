@@ -22,7 +22,6 @@ export function useLiveChat() {
     useShallow((store) => ({
       isReady: store.status === "ready",
       isOpen: store.isOpen,
-      isAvailable: store.isAvailable,
       unreadCount: store.unreadCount,
     })),
   );

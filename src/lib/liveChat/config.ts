@@ -26,28 +26,12 @@ export const LIVE_CHAT_LOCALE = "en";
  */
 export const LIVE_CHAT_SEGMENT = "dashboard";
 
-/**
- * How long the "Talk to a real human" card stays away after its X. Long
- * enough not to nag someone who uses the dashboard every day, short enough
- * that the way to a human comes back.
- */
-export const LIVE_CHAT_TEASER_SNOOZE_MS = 7 * 24 * 60 * 60 * 1000;
-
 const unread = (count: number) =>
   `${count} unread ${count === 1 ? "message" : "messages"}`;
 
 export const LIVE_CHAT_COPY = {
   region: "Live chat",
-  title: "Talk to a real human",
-  online: "3 teammates online · ~2 min reply",
-  /**
-   * Shown when Crisp reports nobody available. "3 teammates online" while
-   * nobody is would be a promise the reply time then breaks.
-   */
-  away: "Leave a message · we'll reply soon",
-  start: "Start a chat",
   launcher: "Chat with us",
-  dismiss: "Hide chat prompt",
   /** Spoken only: the launcher's name while a reply is waiting. */
   launcherWithUnread: (count: number) => `Chat with us, ${unread(count)}`,
   /** Spoken only: announced when a reply arrives while the chat is closed. */

@@ -85,10 +85,7 @@ export function useCrispSession(visitor: LiveChatVisitor | null) {
         syncVisibility();
         markLoaded();
       }),
-      onCrispEvent("session:loaded", () => {
-        syncVisibility();
-        sync({ isAvailable: crispIs("website:available") });
-      }),
+      onCrispEvent("session:loaded", syncVisibility),
       onCrispEvent("chat:opened", showOpened),
       onCrispEvent("chat:closed", showClosed),
       // Crisp's bubble is hidden while the chat is closed, so a reply would
@@ -96,9 +93,6 @@ export function useCrispSession(visitor: LiveChatVisitor | null) {
       onCrispEvent("message:received", () => {
         if (!crispIs("chat:opened")) sync({ unreadCount: crispUnreadCount() });
       }),
-      onCrispEvent("website:availability:changed", (isAvailable) =>
-        sync({ isAvailable }),
-      ),
     ];
 
     sync({ status: "loading" });
