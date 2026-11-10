@@ -438,6 +438,30 @@
   animation: tour-spotlight-pulse 1.8s ease-out infinite;
 }
 
+/* ---- Signup source picker (auth/CreateOrganization/SignupSourcePicker) ----
+   A 3px sideways nudge on the chip row's "more" arrow, shown until the user
+   engages with the row. Transform-only, so it runs on the compositor. */
+@keyframes source-more-nudge {
+  0%,
+  60%,
+  100% {
+    transform: translateX(0);
+  }
+  30% {
+    transform: translateX(3px);
+  }
+}
+
+.source-more-nudge {
+  animation: source-more-nudge 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .source-more-nudge {
+    animation: none;
+  }
+}
+
 /* ---- Live chat (components/LiveChat, lib/liveChat) ---- */
 
 @utility bg-live-chat-fab {

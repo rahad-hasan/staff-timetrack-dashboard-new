@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import type { SignupSource } from "@/lib/signupSources";
+
 export interface IMeta {
   page: number;
   limit: number;
@@ -417,6 +419,10 @@ export interface ICreateOrganizationPayload extends IWorkspacePreferences {
   time_zone: string;
   /** Carried over from the sign-in response; never collected from the form. */
   email: string;
+  /** "How did you hear about us?" — write-once, sent with `POST /company`. */
+  signup_source: SignupSource;
+  /** Free text that only accompanies `signup_source: "other"`. */
+  signup_source_detail?: string;
 }
 
 export interface IOrganizationSubscription {

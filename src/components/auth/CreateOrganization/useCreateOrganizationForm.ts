@@ -41,6 +41,8 @@ export const ORGANIZATION_STEPS = [
       "weekly_leave_count",
       "idle_minutes_limit",
       "currency",
+      "signup_source",
+      "signup_source_detail",
     ],
   },
 ] as const satisfies ReadonlyArray<{
@@ -139,6 +141,10 @@ export const useCreateOrganizationForm = ({
       // here cannot desync a server-rendered pass.
       time_zone: resolveBrowserTimeZone(),
       ...DEFAULT_WORKSPACE_PREFERENCES,
+      // No pre-selected answer: a default here would be recorded as the
+      // customer's own and skew every channel report.
+      signup_source: undefined,
+      signup_source_detail: "",
     },
   });
 

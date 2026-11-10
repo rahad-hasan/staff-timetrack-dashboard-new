@@ -2,6 +2,10 @@ import { z } from "zod";
 import parsePhoneNumberFromString from "libphonenumber-js";
 import { LeaveTypeApplicableFor } from "@/types/type";
 import { WEEK_START_DAYS } from "@/lib/organization";
+import {
+  SIGNUP_SOURCE_DETAIL_MAX_LENGTH,
+  SIGNUP_SOURCE_VALUES,
+} from "@/lib/signupSources";
 
 /**
  * Phone number fields.
@@ -104,6 +108,10 @@ export const createNewPasswordSchema = z
  * `CompanyValidation.createSchema`, and week_start / weekly_leave_count /
  * idle_minutes_limit / currency from its update schema. Leave allowances are
  * not here on purpose — they belong to the LeaveType model, not to Company.
+ *
+ * `signup_source` is required here but optional on the API: the wizard always
+ * asks (with "Other" as the way out), while older clients that never send it
+ * must keep signing up. The detail only means something next to "Other".
  */
 export const createOrganizationSchema = z.object({
   name: z
@@ -146,6 +154,19 @@ export const createOrganizationSchema = z.object({
       "Currency must be a 3-letter ISO 4217 code (e.g. USD, BDT, EUR)",
     )
     .transform((value) => value.toUpperCase()),
+
+  signup_source: z.enum(SIGNUP_SOURCE_VALUES, {
+    message: "Let us know how you heard about us",
+  }),
+
+  signup_source_detail: z
+    .string()
+    .trim()
+    .max(
+      SIGNUP_SOURCE_DETAIL_MAX_LENGTH,
+      `Keep it under ${SIGNUP_SOURCE_DETAIL_MAX_LENGTH} characters`,
+    )
+    .optional(),
 });
 
 export type CreateOrganizationFormValues = z.infer<

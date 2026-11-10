@@ -110,6 +110,18 @@ const normalizeTrialPlanId = (value: number | null | undefined): number | null =
     ? value
     : null;
 
+/** The "Other" free text, only when it accompanies "Other" and says something. */
+const signupSourceDetail = (
+  payload: ICreateOrganizationPayload,
+): { signup_source_detail?: string } => {
+  const detail =
+    payload.signup_source === "other"
+      ? payload.signup_source_detail?.trim()
+      : undefined;
+
+  return detail ? { signup_source_detail: detail } : {};
+};
+
 export const createOrganization = async (
   payload: ICreateOrganizationPayload,
   /**
@@ -140,6 +152,12 @@ export const createOrganization = async (
         phone: payload.phone.trim(),
         address: payload.address.trim(),
         time_zone: payload.time_zone,
+        // Attribution rides on the create call because it is write-once:
+        // PATCH /company/:id deliberately does not accept it. An API that
+        // predates the field strips both keys as unknown, and a newer one
+        // drops a value it does not recognise, so neither can fail signup.
+        signup_source: payload.signup_source,
+        ...signupSourceDetail(payload),
         // Spread rather than `trial_plan_id: x ?? undefined` so an ordinary
         // signup's body is byte-identical to what it has always been: the key
         // is absent, not present-and-null. It only ever appears for a trial
