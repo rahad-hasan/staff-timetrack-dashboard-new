@@ -118,6 +118,44 @@ interface IGithubRelease {
 const isNonEmptyString = (value: unknown): value is string =>
   typeof value === "string" && value.trim().length > 0;
 
+const TRUSTED_HOST = "github.com";
+
+/**
+ * Every URL this page puts in an `href` must lead back into our own release
+ * repo on github.com. The API payload is the only thing between a visitor and
+ * an installer, so a value that points anywhere else — another host, another
+ * repo on github.com, plain `http:`, or a `javascript:` URL — is dropped
+ * rather than rendered.
+ *
+ * The check runs on the WHATWG-parsed URL, so `..` segments (raw or
+ * `%2e`-encoded) are already resolved and cannot climb out of the prefix, and
+ * `user@host` / `host:port` tricks fail the exact host and port comparison.
+ * The repo segment is compared case-insensitively because GitHub routes
+ * owner/repo case-insensitively; the tag and filename after it are untouched.
+ */
+const isTrustedReleaseUrl = (
+  value: string,
+  section: "download" | "tag",
+): boolean => {
+  let parsed: URL;
+  try {
+    parsed = new URL(value);
+  } catch {
+    return false;
+  }
+
+  return (
+    parsed.protocol === "https:" &&
+    parsed.hostname === TRUSTED_HOST &&
+    parsed.port === "" &&
+    parsed.username === "" &&
+    parsed.password === "" &&
+    parsed.pathname
+      .toLowerCase()
+      .startsWith(`/${REPO}/releases/${section}/`.toLowerCase())
+  );
+};
+
 /**
  * Pulls one asset out of the payload. Every field is treated as untrusted:
  * a release published mid-upload can carry an asset with no URL yet.
@@ -141,6 +179,11 @@ const extractAsset = (
   const url = match.browser_download_url;
 
   if (!isNonEmptyString(name) || !isNonEmptyString(url)) return null;
+
+  // An off-repo URL makes this slot unusable, exactly like a missing asset:
+  // the card falls back to "not available" and, if every slot is dropped,
+  // `parseRelease` serves the pinned release instead.
+  if (!isTrustedReleaseUrl(url, "download")) return null;
 
   const size = typeof match.size === "number" && match.size > 0 ? match.size : 0;
 
@@ -172,9 +215,11 @@ const parseRelease = (release: IGithubRelease): IReleaseInfo | null => {
 
   return {
     tag,
-    releaseUrl: isNonEmptyString(release.html_url)
-      ? release.html_url
-      : `${RELEASES_PAGE_URL}/tag/${tag}`,
+    releaseUrl:
+      isNonEmptyString(release.html_url) &&
+      isTrustedReleaseUrl(release.html_url, "tag")
+        ? release.html_url
+        : `${RELEASES_PAGE_URL}/tag/${encodeURIComponent(tag)}`,
     publishedAt: isNonEmptyString(release.published_at)
       ? release.published_at
       : null,
