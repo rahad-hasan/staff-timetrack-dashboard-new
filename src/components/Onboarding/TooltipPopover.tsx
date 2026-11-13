@@ -28,7 +28,8 @@ import BrandColorPreview from "./BrandColorPreview";
  * the sidebar's width transition without a second measurement loop.
  *
  * `animationFrame: true` is on because several targets move under animation
- * rather than under an event — a nav group expanding with framer-motion never
+ * rather than under an event — a nav group expanding (a CSS grid-rows
+ * transition) never
  * fires scroll or resize, so a listener-based autoUpdate would leave the
  * bubble behind while the spotlight moved.
  */

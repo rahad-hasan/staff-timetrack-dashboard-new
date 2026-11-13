@@ -6,6 +6,23 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /**
+ * 302 to /session-expired with a RELATIVE `Location`, which the browser
+ * resolves against the URL it actually requested.
+ *
+ * Not `NextResponse.redirect(new URL("/session-expired", request.url))`:
+ * production runs `next start -H 127.0.0.1` behind Cloudflare, so Next builds
+ * `request.url` from the bind address and the redirect sent real users to
+ * http://localhost:3000/session-expired (the bug `middleware.ts` documents for
+ * its own redirect). A relative reference needs no host at all — so it cannot
+ * be pointed anywhere by a spoofed Host or X-Forwarded-Host header either.
+ */
+const redirectToSessionExpired = () =>
+  new NextResponse(null, {
+    status: 302,
+    headers: { Location: "/session-expired", "Cache-Control": "no-store" },
+  });
+
+/**
  * `GET /api/support/attachments/open?key=…` → 302 to a freshly signed URL.
  *
  * The signed URLs embedded in a ticket page expire after a few minutes
@@ -32,7 +49,7 @@ export async function GET(request: NextRequest) {
   const token = cookieStore.get("accessToken")?.value;
 
   if (!token) {
-    return NextResponse.redirect(new URL("/session-expired", request.url), 302);
+    return redirectToSessionExpired();
   }
 
   const baseUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -60,7 +77,7 @@ export async function GET(request: NextRequest) {
   }
 
   if (upstream.status === 401) {
-    return NextResponse.redirect(new URL("/session-expired", request.url), 302);
+    return redirectToSessionExpired();
   }
 
   const payload = await upstream.json().catch(() => null);

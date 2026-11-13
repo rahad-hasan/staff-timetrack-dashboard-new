@@ -1,10 +1,8 @@
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import { ISearchParamsProps } from "@/types/type";
-import AttendanceServer from "@/components/Report/Attendance/AttendanceServer";
+import AttendanceListServer from "@/components/Report/Attendance/AttendanceListServer";
 import { Suspense } from "react";
 import { Metadata } from "next";
-import { format } from "date-fns";
-import { getAttendance } from "@/actions/report/action";
 import AttendanceTableSkeleton from "@/skeleton/report/Attendance/AttendanceTableSkeleton";
 
 export const metadata: Metadata = {
@@ -13,15 +11,6 @@ export const metadata: Metadata = {
 };
 const AttendancePage = async ({ searchParams }: ISearchParamsProps) => {
   const params = await searchParams;
-  // const user = await getDecodedUser();
-  const currentDate = format(new Date(), "yyyy-MM-dd");
-  // const allowedRoles = ['admin', 'manager', 'hr'];
-  // const isAdmin = role && allowedRoles.includes(role);
-  // const targetUserId = isAdmin ? params.user_id : user?.id;
-
-  const attendanceListData = await getAttendance({
-    date: params.date ?? currentDate,
-  });
 
   return (
     <div>
@@ -35,11 +24,7 @@ const AttendancePage = async ({ searchParams }: ISearchParamsProps) => {
         fallback={<AttendanceTableSkeleton />}
         key={JSON.stringify(params)}
       >
-        {
-          <AttendanceServer
-            attendanceListData={attendanceListData?.data}
-          ></AttendanceServer>
-        }
+        <AttendanceListServer searchParams={searchParams} />
       </Suspense>
     </div>
   );

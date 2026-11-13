@@ -2,10 +2,10 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@/components/ui/button";
-import { userBasicInfoSchema } from "@/zod/schema";
+import { userBasicInfoSchema } from "@/zod/phoneSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import z from "zod";
+import { z } from "zod";
 import {
     Form,
     FormControl,
@@ -25,7 +25,9 @@ import JobIcon from "../Icons/JobIcon";
 import EmailIcon from "../Icons/EmailIcon";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import { useProfileImage } from "@/hooks/useProfileImage";
+import { markProfileChanged } from "@/utils/profileImageRefresh";
 import { uploadProfileInfo, uploadProfileImage } from "@/actions/auth/action";
+import { actionErrorMessage } from "@/lib/actionErrors";
 import { toast } from "sonner";
 import {
     Command,
@@ -95,6 +97,14 @@ const Profile = () => {
         });
     }, [name, role, email, phone, timezone, form]);
 
+    // The store is a cache: name, role and zone are kept fresh by
+    // `SessionSync`, but the phone only by this profile read. An admin may
+    // have changed it since — and this form writes back whatever it shows.
+    // One read on open (it shares the avatar's cooldown and in-flight read).
+    useEffect(() => {
+        void syncProfileImage();
+    }, [syncProfileImage]);
+
 
     async function upLoadImage() {
         setImageLoading(true);
@@ -120,8 +130,8 @@ const Profile = () => {
                     },
                 });
             }
-        } catch (error: any) {
-            toast.error(error?.message || "Something went wrong!", {
+        } catch (error) {
+            toast.error(actionErrorMessage(error, "Something went wrong!"), {
                 style: {
                     backgroundColor: '#ef4444',
                     color: 'white',
@@ -145,13 +155,19 @@ const Profile = () => {
 
             if (res?.success) {
                 toast.success(res?.message || "Profile updated successfully");
-                if (logInUserData.role !== "admin") {
-                    updateUserData({
-                        name: values.name,
-                        phone: values.phone,
-                        timezone: values.time_zone,
-                    });
-                }
+                // A profile read still out (this page's read on open) was
+                // sent before the save and must not put the old phone back.
+                markProfileChanged();
+                // Every role, admins included: skipping admins here made an
+                // admin's saved name and phone revert in the header and in
+                // this form until the next sign-in. The zone is what was just
+                // saved too — for an admin, the hidden field still holding
+                // their current one.
+                updateUserData({
+                    name: values.name,
+                    phone: values.phone,
+                    timezone: values.time_zone,
+                });
             } else {
                 toast.error(res?.message || "Something went wrong!", {
                     style: {
@@ -161,8 +177,8 @@ const Profile = () => {
                     },
                 });
             }
-        } catch (error: any) {
-            toast.error(error?.message || "Something went wrong!", {
+        } catch (error) {
+            toast.error(actionErrorMessage(error, "Something went wrong!"), {
                 style: {
                     backgroundColor: '#ef4444',
                     color: 'white',

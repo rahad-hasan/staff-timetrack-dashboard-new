@@ -3,23 +3,22 @@
 import { useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-import { buildLogInUserData } from "@/lib/authSession";
+import { ICreatedOrganization } from "@/lib/authSession";
+import { beginClientSession } from "@/lib/clientSession";
 import {
   appendMarketingPlanIntent,
   hasPurchaseIntentShape,
   isTrialIntent,
   parseMarketingPlanIntent,
 } from "@/lib/marketingPlanIntent";
-import { ICreateOrganizationResponse } from "@/types/type";
-import { useLogInUserStore } from "@/store/logInUserStore";
-import { useSidebarStore } from "@/store/sidebarStore";
-import { resetProfileImageRefresh } from "@/utils/profileImageRefresh";
 
 /**
  * What happens the moment `POST /company` succeeds: the response's token pair
  * is already in cookies (the server action wrote them), so all that is left
- * client-side is seeding the persisted user store and routing into whatever the
- * last onboarding step is for THIS signup.
+ * client-side is the session hand-off every sign-in shares
+ * (`beginClientSession`: drop any earlier session's client state, seed the
+ * persisted user store) and routing into whatever the last onboarding step is
+ * for THIS signup.
  *
  * There are three of those, and which one applies was decided back on the
  * marketing site:
@@ -59,14 +58,10 @@ import { resetProfileImageRefresh } from "@/utils/profileImageRefresh";
 export const useEnterPlanSelection = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { setLogInUserData } = useLogInUserStore();
-  const { setOpenMenu } = useSidebarStore();
 
   return useCallback(
-    (data: ICreateOrganizationResponse) => {
-      resetProfileImageRefresh();
-      setLogInUserData(buildLogInUserData(data));
-      setOpenMenu("/dashboard");
+    (data: ICreatedOrganization) => {
+      beginClientSession(data);
 
       const intent = parseMarketingPlanIntent(searchParams);
 
@@ -88,6 +83,6 @@ export const useEnterPlanSelection = () => {
 
       router.replace("/onboarding/choose-plan");
     },
-    [router, searchParams, setLogInUserData, setOpenMenu],
+    [router, searchParams],
   );
 };

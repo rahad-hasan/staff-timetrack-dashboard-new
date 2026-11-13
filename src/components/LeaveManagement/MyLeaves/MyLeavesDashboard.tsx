@@ -14,6 +14,7 @@ import { YearPicker } from "@/components/Common/YearPicker";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { useLogInUserStore } from "@/store/logInUserStore";
+import { canViewTeamLeave } from "@/lib/leave";
 import {
   LeaveRecord,
   LeaveRequestTypeDropdownRecord,
@@ -60,8 +61,7 @@ const MyLeavesDashboard = ({
   const loader = useTopLoader();
   const logInUserRole = useLogInUserStore((state) => state.logInUserData?.role);
   const resolvedCanManageUsers =
-    canManageUsers ||
-    ["admin", "manager", "hr"].includes(logInUserRole ?? "");
+    canManageUsers || canViewTeamLeave(logInUserRole);
 
   const [selectedLeave, setSelectedLeave] = useState<LeaveRecord | null>(null);
   const [requestOpen, setRequestOpen] = useState(false);
@@ -116,15 +116,15 @@ const MyLeavesDashboard = ({
           }
         }}
         canManageLeaves={canManageLeaves}
-        onMutated={() => router.refresh()}
       />
+      {/* No refresh after a request is filed or changed: leave writes
+          revalidate, so the action's own response re-renders this page. */}
       <Dialog open={requestOpen} onOpenChange={setRequestOpen}>
         {requestOpen && canRequestLeave ? (
           <LeaveRequestModal
             leaveTypes={leaveTypes}
             defaultLeaveTypeId={selectedLeaveTypeId}
             onClose={() => setRequestOpen(false)}
-            onSuccess={() => router.refresh()}
           />
         ) : null}
       </Dialog>

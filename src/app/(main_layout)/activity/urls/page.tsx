@@ -1,6 +1,8 @@
 import { Settings } from "lucide-react";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import HeadingComponent from "@/components/Common/HeadingComponent";
+import LiveDataBoundary from "@/components/Common/LiveDataBoundary";
+import LiveRefresh from "@/components/Common/LiveRefresh";
 import UrlsTableServer from "@/components/Activity/Urls/UrlsTableServer";
 import UrlsTableSkeleton from "@/skeleton/activity/url/UrlsTableSkeleton";
 import { Suspense } from "react";
@@ -17,6 +19,7 @@ const Urls = async ({ searchParams }: ISearchParamsProps) => {
 
   return (
     <div>
+      <LiveRefresh section="activity" />
       <div className="flex justify-between gap-3 mb-5">
         <HeadingComponent
           heading="URLs Activity"
@@ -67,7 +70,9 @@ const Urls = async ({ searchParams }: ISearchParamsProps) => {
         </div>
       </Suspense>
       <Suspense fallback={<UrlsTableSkeleton />}>
-        <UrlsTableServer searchParams={searchParams} />
+        <LiveDataBoundary>
+          <UrlsTableServer searchParams={searchParams} />
+        </LiveDataBoundary>
       </Suspense>
       {/* <UrlsTableSkeleton></UrlsTableSkeleton> */}
     </div>

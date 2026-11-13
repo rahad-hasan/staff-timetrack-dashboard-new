@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
 import {
   formatAbsolute,
   formatRelativeTime,
@@ -59,18 +60,25 @@ interface RelativeTimeProps {
 /**
  * `<time>` with the user-portal vocabulary ("2 hours ago", "yesterday",
  * "about 1 month ago"), the absolute date as its tooltip and accessible
- * description, re-rendered every 30 s. Server and client may disagree by a
- * minute or a time zone at hydration; `suppressHydrationWarning` covers the
- * text and the first client tick corrects it.
+ * description, re-rendered every 30 s. Days and dates are the viewer's, as on
+ * the server. The clock can move on a minute between the server render and
+ * hydration; `suppressHydrationWarning` covers the text and the first client
+ * tick corrects it.
  */
 export const RelativeTime = ({ value, variant = "long", prefix, className }: RelativeTimeProps) => {
   const now = useRelativeNow();
+  const timeZone = useViewerTimeZone();
   const date = toDate(value);
   if (!date) return null;
   return (
-    <time dateTime={date.toISOString()} title={formatAbsolute(date)} className={className} suppressHydrationWarning>
+    <time
+      dateTime={date.toISOString()}
+      title={formatAbsolute(date, timeZone)}
+      className={className}
+      suppressHydrationWarning
+    >
       {prefix}
-      {formatRelativeTime(date, new Date(now), variant)}
+      {formatRelativeTime(date, timeZone, new Date(now), variant)}
     </time>
   );
 };

@@ -11,7 +11,11 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { formatPayrollHours, formatPayrollMoney } from "@/lib/payroll";
+import {
+  formatPayrollHours,
+  formatPayrollMoney,
+  PAYROLL_LOCALE,
+} from "@/lib/payroll";
 import { EmployeePayroll } from "@/types/payroll";
 import PayrollAdjustmentLines, {
   PayrollAmountRow,
@@ -236,7 +240,7 @@ const PayrollCalculationBreakdown = ({
             <FxCell label="From" value={fxFrom} />
             <FxCell
               label="Rate"
-              value={`1 ${fxFrom} = ${fxRate.toLocaleString(undefined, {
+              value={`1 ${fxFrom} = ${fxRate.toLocaleString(PAYROLL_LOCALE, {
                 maximumFractionDigits: 6,
               })} ${fxTo}`}
             />

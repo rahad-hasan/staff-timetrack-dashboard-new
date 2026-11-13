@@ -1,3 +1,5 @@
+import { format } from "date-fns";
+
 import {
   EmployeePayroll,
   PayrollAdjustment,
@@ -13,6 +15,15 @@ export const formatPayrollHours = (hours: number | null | undefined) => {
   return `${h}h ${m}m`;
 };
 
+/**
+ * The one locale payroll text is formatted in. Payroll pages are
+ * server-rendered: with the runtime's default locale the HTML carried the
+ * server's ("$30,000.00", "October") and a browser in any other locale
+ * re-rendered it ("30.000,00 $", "Oktober"), so React threw the page's server
+ * HTML away (#418). The app's copy is English; its numbers and months are too.
+ */
+export const PAYROLL_LOCALE = "en-US";
+
 export const formatPayrollMoney = (
   amount: number | null | undefined,
   currency: string | null | undefined,
@@ -24,7 +35,7 @@ export const formatPayrollMoney = (
       : "USD";
 
   try {
-    return new Intl.NumberFormat(undefined, {
+    return new Intl.NumberFormat(PAYROLL_LOCALE, {
       style: "currency",
       currency: safeCurrency,
       maximumFractionDigits: 2,
@@ -36,11 +47,25 @@ export const formatPayrollMoney = (
 
 export const monthName = (month: number) => {
   const idx = Math.max(1, Math.min(12, month)) - 1;
-  return new Date(2000, idx, 1).toLocaleString(undefined, { month: "long" });
+  return new Date(2000, idx, 1).toLocaleString(PAYROLL_LOCALE, { month: "long" });
 };
 
 export const formatPayrollPeriod = (month: number, year: number) =>
   `${monthName(month)} ${year}`;
+
+/**
+ * A run's pay period, its company-calendar month: "Nov 1, 2026 – Nov 30, 2026",
+ * on the run page and in both PDFs. period_start / period_end are that month's
+ * bounds as instants in the company's zone, the end exclusive: printed as
+ * instants they read "→ Dec 1, 2026 12:00 AM", and in any other zone
+ * "Oct 31 … → Nov 30 …". Joined with an en dash, not an arrow: jsPDF's
+ * built-in Helvetica is WinAnsi-encoded and renders U+2192 as garbage.
+ */
+export const payPeriodRange = (month: number, year: number) =>
+  `${format(new Date(year, month - 1, 1), "MMM d, yyyy")} – ${format(
+    new Date(year, month, 0),
+    "MMM d, yyyy",
+  )}`;
 
 const PAYROLL_ADMIN_ROLES = new Set(["admin", "hr"]);
 

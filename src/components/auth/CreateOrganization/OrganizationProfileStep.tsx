@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { popularTimeZoneList } from "@/utils/TimeZoneList";
-import { CreateOrganizationFormValues } from "@/zod/schema";
+import { CreateOrganizationFormValues } from "@/zod/phoneSchemas";
 import OrgNameSuggestions from "./OrgNameSuggestions";
 
 interface OrganizationProfileStepProps {

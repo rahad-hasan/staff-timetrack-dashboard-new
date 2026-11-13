@@ -1,14 +1,55 @@
 "use client";
-import { Plus } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
+import dynamic from "next/dynamic";
+import { loadOrReload } from "@/lib/lazyChunk";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
-import AddEventModal from "@/components/Event/AddEventModal";
+import {
+    Dialog,
+    DialogContent,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
 import { useState } from "react";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import GoogleConnectButton from "./GoogleConnectButton";
 import TeamsConnectButton from "./TeamsConnectButton";
 import CalendarIcon from "../Icons/CalendarIcon";
 import VideoIcon from "../Icons/VideoIcon";
+
+const importAddEventModal = () => import("@/components/Event/AddEventModal");
+const loadAddEventModal = loadOrReload(importAddEventModal);
+
+/**
+ * The create form carries the rich-text editor (TipTap/ProseMirror, ~124 KB
+ * gz) — downloaded only when someone is about to create an event, not by
+ * every visitor of the calendar. Hovering or focusing "New event" warms it.
+ *
+ * Until it arrives, the dialog opens with a spinner in it. Rendering nothing
+ * there looked like a click that did nothing — on a cold or slow connection,
+ * or on touch, where there is no hover to warm the chunk — and the second
+ * click it invited toggled the dialog shut before it ever appeared. With the
+ * placeholder up, its overlay takes that click, and an outside click does not
+ * close it (as with the real form).
+ */
+const AddEventModal = dynamic(loadAddEventModal, {
+    ssr: false,
+    loading: () => (
+        <DialogContent
+            aria-describedby={undefined}
+            onInteractOutside={(event) => event.preventDefault()}
+            className="w-full max-w-[calc(100vw-2rem)] sm:max-w-[760px] lg:max-w-[1120px]"
+        >
+            <DialogTitle>Create new event</DialogTitle>
+            <div className="flex justify-center py-10">
+                <Loader2 className="size-6 animate-spin text-primary" />
+            </div>
+        </DialogContent>
+    ),
+});
+
+const warmAddEventModal = () => {
+    importAddEventModal().catch(() => {});
+};
 
 const CalenderHeading = () => {
     const [open, setOpen] = useState(false);
@@ -58,16 +99,26 @@ const CalenderHeading = () => {
                     <TeamsConnectButton />
                     {canCreate && (
                         <Dialog open={open} onOpenChange={setOpen}>
+                            {/* The trigger alone opens it (through onOpenChange).
+                                A second onClick of our own made each click run
+                                "open" and then the trigger's toggle — which
+                                closed the dialog on any click that reached the
+                                button while it was already open. The trigger
+                                also gives focus back to this button on close. */}
                             <DialogTrigger asChild>
                                 <Button
-                                    onClick={() => setOpen(true)}
+                                    onPointerEnter={warmAddEventModal}
+                                    onFocus={warmAddEventModal}
                                     className="h-11 rounded-lg px-4"
                                 >
                                     <Plus className="size-4" />
                                     <span>New event</span>
                                 </Button>
                             </DialogTrigger>
-                            <AddEventModal onClose={() => setOpen(false)} />
+                            {/* Mounted per open: every open reads the attendee list and
+                                the Google / Teams connection state afresh, so a connect
+                                or disconnect done from the header buttons is reflected. */}
+                            {open && <AddEventModal onClose={() => setOpen(false)} />}
                         </Dialog>
                     )}
                 </div>

@@ -1,25 +1,12 @@
-import AppPagination from "@/components/Common/AppPagination";
 import ClientsTable from "./ClientsTable";
 import { getClients } from "@/actions/clients/action";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const ClientTableServer = async ({ query }: any) => {
-    const result = await getClients({
-        search: query.search,
-        project_id: query.project_id,
-        page: query.page,
-    });
+// The API returns every client in one response (it takes no page or search
+// parameters), so there is nothing to paginate and nothing in the URL to read.
+const ClientTableServer = async () => {
+    const result = await getClients();
 
-    return (
-        <>
-            <ClientsTable data={result.data} />
-            <AppPagination
-                total={result?.meta?.total ?? 1}
-                currentPage={query.page}
-                limit={result?.meta?.limit ?? 10}
-            />
-        </>
-    );
+    return <ClientsTable data={result?.data} />;
 };
 
 export default ClientTableServer;

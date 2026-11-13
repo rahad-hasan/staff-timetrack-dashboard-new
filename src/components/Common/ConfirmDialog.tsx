@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { ReactNode, useState } from "react";
 import { cn } from "@/lib/utils";
+import { unstable_rethrow } from "next/navigation";
 
 interface ConfirmDialogProps {
   trigger: ReactNode;
@@ -47,6 +48,8 @@ const ConfirmDialog = ({
     try {
       await onConfirm();
     } catch (error) {
+      // A redirect from the confirmed action is Next's to finish, not an error.
+      unstable_rethrow(error);
       console.error("Error confirming:", error);
     } finally {
       setIsLoading(false);

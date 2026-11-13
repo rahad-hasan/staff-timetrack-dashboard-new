@@ -1,14 +1,19 @@
 "use client";
 
-export default function Error() {
-  return (
-    <div className="flex flex-col items-center justify-center h-[60vh] text-center">
-      <h2 className="text-xl font-semibold mb-2">
-        {"Something Went Wrong"}
-      </h2>
+import AutoRecoveringError from "@/components/Common/AutoRecoveringError";
 
-      <p className="text-sm text-gray-500 dark:text-darkTextSecondary mb-4">Please try again later.</p>
-
-    </div>
-  );
+/**
+ * The net under the dashboard page. Each panel has a nearer boundary of its
+ * own (DashboardPanel), which draws a failure at the panel's size and leaves
+ * the others up; this one catches the rest (the sample-data banner, the
+ * page's own render) and heals itself once the API answers again (see
+ * useErrorAutoRecovery).
+ */
+export default function DashboardError({
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
+  return <AutoRecoveringError reset={reset} />;
 }

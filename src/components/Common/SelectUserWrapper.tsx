@@ -1,38 +1,29 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useEffect, useState } from "react";
-import { getMembersDashboard } from "@/actions/members/action";
+import { useMemo } from "react";
 import SelectUserDropDown from "./SelectUserDropDown";
 import { useSearchParams } from "next/navigation";
+import { useDashboardMembers } from "@/hooks/useDashboardMembers";
 
 const SelectUserWrapper = ({ defaultSelect }: { defaultSelect?: boolean }) => {
     const searchParams = useSearchParams();
-    const project_id = searchParams.get("project_id");
-    const [users, setUsers] = useState<{ id: string; label: any; avatar: string }[]>([]);
-    const [loading, setLoading] = useState(false);
-    
-    useEffect(() => {
-        const fetchMembers = async () => {
-            setLoading(true);
-            try {
-                const res = await getMembersDashboard({project_id: project_id});
-                if (res?.success) {
-                    const formatted = res?.data?.map((u: any) => ({
-                        id: String(u?.id),
-                        label: u?.name,
-                        avatar: u?.image || u?.avatar || "",
-                    }));
-                    setUsers(formatted);
-                }
-            } catch (err) {
-                console.error("Fetch members error:", err);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchMembers();
-    }, [project_id]);
+    // Narrowed to the URL's project when one is selected. The hook drops a
+    // response for a project the user has already switched away from.
+    const { members, loading } = useDashboardMembers(
+        searchParams.get("project_id"),
+    );
+
+    // Stable between renders so the memoised dropdown only re-renders when
+    // the list itself changes.
+    const users = useMemo(
+        () =>
+            members.map((member) => ({
+                id: String(member.id),
+                label: member.name,
+                avatar: member.image || "",
+            })),
+        [members],
+    );
 
     return <SelectUserDropDown users={users} defaultSelect={defaultSelect} loading={loading} />;
 };

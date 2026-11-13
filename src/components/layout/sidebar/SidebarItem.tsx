@@ -1,7 +1,7 @@
 import { Minus, Plus } from "lucide-react";
 import Link from "next/link";
 import clsx from "clsx";
-import { motion, AnimatePresence } from "framer-motion";
+import SidebarCollapse from "./SidebarCollapse";
 import DashboardIcon from "@/components/Icons/DashboardIcon";
 // import TimeSheetsIcon from "@/components/Icons/TimeSheetsIcon";
 // import ActivityIcon from "@/components/Icons/ActivityIcon";
@@ -55,26 +55,14 @@ const coloredIconMapping = {
   Settings: SettingsColoredIcon,
 }
 
-const containerVariants = {
-  collapsed: {
-    height: 0,
-    opacity: 0,
-    transition: {
-      height: { duration: 0.2 },
-      opacity: { duration: 0.15 },
-    },
-  },
-  open: {
-    height: "auto",
-    opacity: 1,
-    transition: {
-      height: { duration: 0.25 },
-      opacity: { duration: 0.2 },
-      staggerChildren: 0.06,
-      delayChildren: 0.03,
-    },
-  },
-};
+/**
+ * Group open/close timing, as two durations in SidebarCollapse's transition
+ * order (height, then fade): the fade finishes a little ahead of the height.
+ * CLOSE_MS is the longer close duration — the panel unmounts after it.
+ */
+const OPEN_TIMING = "duration-[250ms,200ms]";
+const CLOSE_TIMING = "duration-[200ms,150ms]";
+const CLOSE_MS = 200;
 
 const SidebarItem = ({
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -128,20 +116,18 @@ const SidebarItem = ({
     <div className="mb-0.5">
       {href ? <Link href={href}>{content}</Link> : content}
 
-      <AnimatePresence initial={false}>
-        {isOpen && children && (
-          <motion.div
-            key="content"
-            variants={containerVariants}
-            initial="collapsed"
-            animate="open"
-            exit="collapsed"
-            className="overflow-hidden"
-          >
-            {children}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {children ? (
+        <SidebarCollapse
+          open={isOpen}
+          exitMs={CLOSE_MS}
+          className={clsx(
+            "ease-[ease-in-out]",
+            isOpen ? OPEN_TIMING : CLOSE_TIMING,
+          )}
+        >
+          {children}
+        </SidebarCollapse>
+      ) : null}
     </div>
   );
 };

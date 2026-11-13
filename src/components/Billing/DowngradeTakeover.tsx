@@ -7,6 +7,7 @@ import { ArrowUpRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { IDowngradePreview } from "@/types/billing";
 import { getDowngradePreview } from "@/actions/billing/action";
+import { unstable_rethrow } from "next/navigation";
 import { BILLING_URL } from "@/lib/billing";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import DowngradeWizard from "./DowngradeWizard";
@@ -26,9 +27,17 @@ import { useBillingRefresh } from "./useBillingRefresh";
  */
 export default function DowngradeTakeover({
   variant = "overlay",
+  role: roleProp,
   onUpgradeClick,
 }: {
   variant?: "overlay" | "inline";
+  /**
+   * The viewer's role as the server rendered it. The inline variant is part
+   * of the billing page's server render, where the persisted login store is
+   * still empty — without this an admin's first paint said "Ask your company
+   * admin". Omitted, the persisted login store decides.
+   */
+  role?: string | null;
   /**
    * Billing-page override for the inline CTA. The pricing grid moved inside
    * the My Plan tab, so reaching it means switching tab first — and that needs
@@ -40,7 +49,7 @@ export default function DowngradeTakeover({
 }) {
   const refreshBilling = useBillingRefresh();
   const { logInUserData } = useLogInUserStore();
-  const role = logInUserData?.role as string | undefined;
+  const role = roleProp ?? (logInUserData?.role as string | undefined);
   const isAdmin = role === "admin";
   const canSeeBilling = role === "admin" || role === "manager" || role === "hr";
 
@@ -58,7 +67,8 @@ export default function DowngradeTakeover({
       } else {
         setError(res?.message || "Could not load your downgrade options.");
       }
-    } catch {
+    } catch (error) {
+      unstable_rethrow(error);
       setError("Something went wrong while loading your downgrade options.");
       toast.error("Something went wrong while loading your downgrade options.");
     } finally {

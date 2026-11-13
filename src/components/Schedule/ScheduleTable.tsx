@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import {
@@ -29,6 +28,7 @@ import EditScheduleModal from "./EditScheduleModal";
 import Link from "next/link";
 import DeleteIcon from "../Icons/DeleteIcon";
 import { deleteSchedule } from "@/actions/schedule/action";
+import { actionErrorMessage } from "@/lib/actionErrors";
 import { toast } from "sonner";
 import ConfirmDialog from "../Common/ConfirmDialog";
 
@@ -56,8 +56,8 @@ const ScheduleTable = ({ data }: { data: ISchedules[] }) => {
                     },
                 });
             }
-        } catch (error: any) {
-            toast.error(error?.message || "Something went wrong!", {
+        } catch (error) {
+            toast.error(actionErrorMessage(error, "Something went wrong!"), {
                 style: {
                     backgroundColor: '#ef4444',
                     color: 'white',

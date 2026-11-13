@@ -17,6 +17,9 @@ import {
   listSuspensionReasons,
   listSuspensionSummary,
 } from "@/actions/suspensions/action";
+import { useViewToday } from "@/hooks/useViewToday";
+import { actionErrorMessage } from "@/lib/actionErrors";
+import { calendarDateToLocal } from "@/lib/timezone";
 import type {
   IMeta,
   ISuspensionReasonOption,
@@ -47,19 +50,6 @@ function getBrowserTimezone() {
   } catch {
     return "UTC";
   }
-}
-
-function formatDateToISO(date: Date) {
-  const yyyy = date.getFullYear();
-  const mm = String(date.getMonth() + 1).padStart(2, "0");
-  const dd = String(date.getDate()).padStart(2, "0");
-  return `${yyyy}-${mm}-${dd}`;
-}
-
-function getCurrentMonthRange() {
-  const now = new Date();
-  const from = new Date(now.getFullYear(), now.getMonth(), 1);
-  return { from, to: now };
 }
 
 interface UrlState {
@@ -117,14 +107,19 @@ export default function SuspensionsPageClient() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const defaultTz = useMemo(() => getBrowserTimezone(), []);
-  const defaultRange = useMemo(() => getCurrentMonthRange(), []);
-  const defaultFromIso = useMemo(
-    () => formatDateToISO(defaultRange.from),
-    [defaultRange.from],
-  );
-  const defaultToIso = useMemo(
-    () => formatDateToISO(defaultRange.to),
-    [defaultRange.to],
+  // The month to date, with "today" as every other view means it (see
+  // useViewToday): one day for the server render and the browser. Taken from
+  // `new Date()`, the range differed whenever the two were on different
+  // calendar days, which is a hydration error and, until the first fetch, the
+  // wrong range in the picker.
+  const defaultToIso = useViewToday();
+  const defaultFromIso = `${defaultToIso.slice(0, 8)}01`;
+  const defaultRange = useMemo(
+    () => ({
+      from: calendarDateToLocal(defaultFromIso) ?? undefined,
+      to: calendarDateToLocal(defaultToIso) ?? undefined,
+    }),
+    [defaultFromIso, defaultToIso],
   );
   const state = useMemo(
     () =>
@@ -159,34 +154,11 @@ export default function SuspensionsPageClient() {
     [pathname, router, searchParams],
   );
 
-  // Seed default date range into URL on first mount when not present,
-  // so the picker label and shareable URL reflect the active filter.
-  useEffect(() => {
-    const current = new URLSearchParams(searchParams.toString());
-    if (current.get("from_date") || current.get("to_date")) return;
-    current.set("from_date", defaultFromIso);
-    current.set("to_date", defaultToIso);
-    router.replace(`${pathname}?${current.toString()}`, { scroll: false });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Fetch reasons once (cached for the session).
-  useEffect(() => {
-    if (reasonsCache) return;
-    let cancelled = false;
-    listSuspensionReasons()
-      .then((res) => {
-        if (cancelled) return;
-        if (res?.success && Array.isArray(res.data)) {
-          reasonsCache = res.data;
-          setReasons(res.data);
-        }
-      })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  // A visit without dates in the URL used to write this month's range into it
+  // first: a whole extra page navigation, queued ahead of the two reads below
+  // (Next runs a tab's navigations and server actions one at a time). The
+  // range is already the default — readUrlState falls back to it and the
+  // picker shows it — so the URL stays as it is.
 
   // Fetch summary whenever URL state changes (params that drive the request).
   const summaryParams: ISuspensionSummaryQuery = useMemo(
@@ -232,7 +204,7 @@ export default function SuspensionsPageClient() {
         }
       } catch (e) {
         if (reqId !== summaryRequestId.current) return;
-        setError((e as Error)?.message || "Unable to load summary.");
+        setError(actionErrorMessage(e, "Unable to load summary."));
       } finally {
         if (reqId === summaryRequestId.current && !silent) setLoading(false);
       }
@@ -243,6 +215,26 @@ export default function SuspensionsPageClient() {
   useEffect(() => {
     fetchSummary(false);
   }, [fetchSummary]);
+
+  // Fetch reasons once (cached for the session). Declared after the summary
+  // fetch so it queues behind it: the table and KPIs are what the visit is
+  // for, the reason filter's options can follow.
+  useEffect(() => {
+    if (reasonsCache) return;
+    let cancelled = false;
+    listSuspensionReasons()
+      .then((res) => {
+        if (cancelled) return;
+        if (res?.success && Array.isArray(res.data)) {
+          reasonsCache = res.data;
+          setReasons(res.data);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Polling for ongoing rows — 60s, paused when tab is hidden.
   useEffect(() => {

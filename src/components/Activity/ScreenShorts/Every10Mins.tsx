@@ -1,12 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { Circle, Keyboard, MousePointer2 } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
-import ScreenShortsModal from "./ScreenShortsModal";
+import { useMemo } from "react";
+import { useEvery10MinsLightbox } from "./ScreenshotLightbox";
 // import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 // import ScreenShortsDeleteReason from "./ScreenShortsDeleteReason";
-import { AnimatePresence } from "framer-motion";
 import DeleteIcon from "@/components/Icons/DeleteIcon";
 import {
   Tooltip,
@@ -16,13 +14,10 @@ import {
 import EmptyTableLogo from "@/assets/empty_table.svg";
 import ConfirmDialog from "@/components/Common/ConfirmDialog";
 import { deleteScreenshot } from "@/actions/screenshots/action";
+import { actionErrorMessage } from "@/lib/actionErrors";
 import { toast } from "sonner";
 import ScreenshotImage from "./ScreenshotImage";
-import {
-  TTimelineDataSlot,
-  TTimelineDetail,
-  TTimelineHourBlock,
-} from "@/types/type";
+import { TTimelineDataSlot, TTimelineHourBlock } from "@/types/type";
 // import emptyActivity from "../../../assets/empty_activity.png";
 
 // `canDelete` is resolved on the server from the decoded token role plus the
@@ -31,31 +26,26 @@ import {
 const Every10Mins = ({
   data,
   canDelete,
+  message,
 }: {
   data: TTimelineHourBlock[];
   canDelete: boolean;
+  /** Shown in place of the empty-day text: why the API refused the read. */
+  message?: string;
 }) => {
-  const [selectedSnapshot, setSelectedSnapshot] = useState<TTimelineDetail>();
-  const [daySnapshot, setDaySnapshot] = useState<TTimelineDetail[]>([]);
-  const [modalOpen, setModalOpen] = useState<boolean>(false);
-
-  const getDayScreenshots = () =>
-    (data ?? []).flatMap((hourGroup) =>
-      hourGroup.slots.flatMap((slot) =>
-        slot.type === "data" ? slot.details : [],
+  // The day's screenshots in order: the lightbox's carousel. The lightbox
+  // lives above this view's error boundary, so a failed refresh cannot close
+  // it (see ScreenshotLightbox). `data` is empty for a refused read.
+  const dayScreenshots = useMemo(
+    () =>
+      (data ?? []).flatMap((hourGroup) =>
+        hourGroup.slots.flatMap((slot) =>
+          slot.type === "data" ? slot.details : [],
+        ),
       ),
-    );
-
-  // Live data is preferred so an open modal picks up freshly signed image
-  // URLs when the route refreshes after a token expiry; the click-time
-  // snapshot keeps the modal alive if a refetch fails and the live payload
-  // comes back empty.
-  const liveDayScreenshots = getDayScreenshots();
-  const dayScreenshots =
-    liveDayScreenshots.length > 0 ? liveDayScreenshots : daySnapshot;
-  const selectedImage =
-    dayScreenshots.find((detail) => detail.id === selectedSnapshot?.id) ??
-    selectedSnapshot;
+    [data],
+  );
+  const openScreenshot = useEvery10MinsLightbox(dayScreenshots);
 
   const handleDeleteScreenShot = async (data: TTimelineDataSlot) => {
     const finalData = {
@@ -80,8 +70,8 @@ const Every10Mins = ({
           },
         });
       }
-    } catch (error: any) {
-      toast.error(error.message || "Something went wrong!", {
+    } catch (error) {
+      toast.error(actionErrorMessage(error, "Something went wrong!"), {
         style: {
           backgroundColor: "#ef4444",
           color: "white",
@@ -93,8 +83,12 @@ const Every10Mins = ({
 
   return (
     <>
-      {data?.map((hourGroup, groupIdx) => (
-        <div key={groupIdx}>
+      {/* Hours and slots are keyed by their start time, never by position:
+          the API only sends hours that have data, so a live re-render can
+          shift every later hour by one, and a delete confirmation left open
+          at an index was handed, and deleted, another 10-minute block. */}
+      {data?.map((hourGroup) => (
+        <div key={hourGroup?.slots?.[0]?.from_time ?? hourGroup?.hourLabel}>
           <div className="flex gap-2 sm:gap-3 justify-between items-center h-3">
             <div className="flex items-center gap-2 -ml-1.5">
               <Circle
@@ -111,9 +105,9 @@ const Every10Mins = ({
             </h2>
           </div>
           <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-4 pl-4 py-5 border-l dark:border-darkBorder">
-            {hourGroup?.slots?.map((block, blockIndex) =>
+            {hourGroup?.slots?.map((block) =>
               block.type === "empty" ? (
-                <div key={blockIndex} className=" ">
+                <div key={block.from_time} className=" ">
                   <div className="min-h-10 flex items-center justify-center border border-dashed border-borderColor dark:border-darkBorder rounded-lg bg-gray-50/50 dark:bg-darkSecondaryBg xl:mt-14">
                     {/* <Image src={emptyActivity} alt="No Activity" className="w-full rounded-lg" height={200} width={200} /> */}
                     <span className="text-gray-400 text-sm dark:text-darkTextSecondary">
@@ -122,7 +116,7 @@ const Every10Mins = ({
                   </div>
                 </div>
               ) : (
-                <div key={blockIndex} className="mb-5">
+                <div key={block.from_time} className="mb-5">
                   <div className="text-center space-y-1 mb-2">
                     <h2 className="bg-darkTextPrimary dark:bg-darkSecondaryBg py-1 rounded-full text-sm text-headingTextColor dark:text-darkTextPrimary">
                       {block?.details?.[0]?.project_name}
@@ -136,11 +130,7 @@ const Every10Mins = ({
                   <div className="relative dark:bg-darkSecondaryBg overflow-hidden rounded-lg">
                     <div
                       className="relative w-full aspect-[4/2.2] cursor-pointer"
-                      onClick={() => {
-                        setDaySnapshot(getDayScreenshots());
-                        setSelectedSnapshot(block?.details?.[0]);
-                        setModalOpen(true);
-                      }}
+                      onClick={() => openScreenshot(block?.details?.[0])}
                     >
                       <ScreenshotImage
                         src={block?.details?.[0]?.image}
@@ -288,21 +278,12 @@ const Every10Mins = ({
               width={120}
               height={120}
             />
-            <p className=" sm:text-lg">No Screenshots Available</p>
+            <p className=" sm:text-lg">
+              {message || "No Screenshots Available"}
+            </p>
           </div>
         </div>
       )}
-
-      <AnimatePresence>
-        {modalOpen && (
-          <ScreenShortsModal
-            screenShorts={dayScreenshots}
-            modalOpen={modalOpen}
-            setModalOpen={setModalOpen}
-            selectedImage={selectedImage}
-          ></ScreenShortsModal>
-        )}
-      </AnimatePresence>
     </>
   );
 };

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -35,13 +34,18 @@ import EditIcon from "@/components/Icons/FilterOptionIcon/EditIcon";
 import EditProjectModal from "./EditProjectModal";
 import { toast } from "sonner";
 import { editProject } from "@/actions/projects/action";
+import { actionErrorMessage } from "@/lib/actionErrors";
 import { useProjectFormStore } from "@/store/ProjectFormStore";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import { formatTZDayMonthYear } from "@/utils";
+import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
 import Link from "next/link";
 
 
 const ProjectTable = ({ data }: { data: IProject[] }) => {
+    // The layout's zone, not the helpers' store default: this renders on the
+    // server too, and both passes must print the same day.
+    const timeZone = useViewerTimeZone();
 
     const [open, setOpen] = useState(false)
     const [selectedProject, setSelectedProject] = useState<IProject | null>(null)
@@ -80,9 +84,10 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                     },
                 });
             }
-        } catch (error: any) {
+        } catch (error) {
+            const message = actionErrorMessage(error, "Something went wrong!");
             console.error("failed:", error);
-            toast.error(error?.message || "Something went wrong!", {
+            toast.error(message, {
                 style: {
                     backgroundColor: '#ef4444',
                     color: 'white',
@@ -145,7 +150,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
                         <Link href={`/project-management/projects/${row?.original?.id}`}>
                             <span className="font-bold text-base text-headingTextColor dark:text-darkTextPrimary capitalize hover:underline-offset-2 hover:underline">{project}</span>
                         </Link>
-                        <span className=" font-normal text-subTextColor dark:text-darkTextSecondary">{formatTZDayMonthYear(start_date)}</span>
+                        <span className=" font-normal text-subTextColor dark:text-darkTextSecondary">{formatTZDayMonthYear(start_date, timeZone)}</span>
                     </div>
                 )
             }
@@ -288,7 +293,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
             },
             cell: ({ row }) => {
                 const deadline = row.getValue("deadline") as string;
-                return <div className="">{formatTZDayMonthYear(deadline)}</div>;
+                return <div className="">{formatTZDayMonthYear(deadline, timeZone)}</div>;
             },
         },
         // {

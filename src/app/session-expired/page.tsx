@@ -1,16 +1,19 @@
 "use client"
-import { clearSessionCookie } from '@/actions/auth/action';
 import { Button } from '@/components/ui/button';
+import { endServerSession, resetClientSession } from '@/lib/clientSession';
 import { LogIn, ShieldAlert } from 'lucide-react';
 import { useEffect } from 'react';
 
 const SessionExpire = () => {
 
   useEffect(() => {
-    const performLogout = async () => {
-      await clearSessionCookie();
-    };
-    performLogout();
+    // Usually reached by a client-side redirect from a page whose session
+    // died, so that session's stores, billing poll and cached identity are
+    // all still in memory. Nothing of it may outlive this page: the client
+    // state is wiped here and the cookies are cleared server-side. Both
+    // buttons below leave with a full page load.
+    resetClientSession();
+    void endServerSession();
   }, []);
 
   const handleLoginRedirect = () => {

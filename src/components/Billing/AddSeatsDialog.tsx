@@ -15,7 +15,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { addSeats, getSeatQuote } from "@/actions/billing/action";
+import { unstable_rethrow } from "next/navigation";
 import { formatBillingDate, formatCents } from "@/lib/billing";
+import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
 import { useBillingStore } from "@/store/billingStore";
 import { IAddSeatsResult, ISeatQuote } from "@/types/billing";
 import PendingInvoiceNotice from "./PendingInvoiceNotice";
@@ -30,11 +32,11 @@ type Step = "input" | "review" | "pending";
  * proration — every amount shown is a server number via formatCents.
  */
 export default function AddSeatsDialog() {
+  const timeZone = useViewerTimeZone();
   const open = useBillingStore((s) => s.addSeatsOpen);
   const closeAddSeats = useBillingStore((s) => s.closeAddSeats);
   const refreshBilling = useBillingRefresh();
   const startPolling = useBillingStore((s) => s.startPolling);
-  const stopPolling = useBillingStore((s) => s.stopPolling);
   const seatLimit = useBillingStore(
     (s) => s.status?.entitlements?.seat_limit,
   );
@@ -58,8 +60,8 @@ export default function AddSeatsDialog() {
   /* Reset state fully whenever the dialog (re)opens. Resetting on open rather
      than close means anything a late response wrote while closed is wiped
      before it can be seen. Polling release is handled by the pending-step
-     effect's cleanup — no unmatched stopPolling here (the poll timer is
-     shared and reference-counted). */
+     effect's cleanup — no release here (the poll timer is shared and
+     reference-counted). */
   useEffect(() => {
     if (open) {
       sessionRef.current += 1;
@@ -76,11 +78,8 @@ export default function AddSeatsDialog() {
 
   /* Poll billing status (5s) while the pending-payment notice is shown. */
   useEffect(() => {
-    if (open && step === "pending") {
-      startPolling(5000);
-      return () => stopPolling();
-    }
-  }, [open, step, startPolling, stopPolling]);
+    if (open && step === "pending") return startPolling(5000);
+  }, [open, step, startPolling]);
 
   /* Seats apply automatically once the invoice is paid (webhook): when the
      polled status shows the seat limit grew to the quoted total, celebrate
@@ -97,8 +96,9 @@ export default function AddSeatsDialog() {
     ) {
       appliedNotifiedRef.current = true;
       toast.success(`${pendingResult.quote.seats_added} seat(s) added ✓`);
-      // The polled status is already fresh; this is for everything the poll
-      // does NOT touch — the invoice table and the server-rendered tree.
+      // The polled status is already fresh; this is for what the poll does
+      // NOT touch — the invoice table, where the proration invoice just
+      // turned paid.
       void refreshBilling();
       closeAddSeats();
     }
@@ -122,7 +122,8 @@ export default function AddSeatsDialog() {
       } else {
         setError(res?.message || "Could not fetch a quote. Please try again.");
       }
-    } catch {
+    } catch (error) {
+      unstable_rethrow(error);
       toast.error("Something went wrong while fetching the quote.");
     } finally {
       if (session === sessionRef.current) setQuoting(false);
@@ -162,7 +163,8 @@ export default function AddSeatsDialog() {
       } else {
         setError(res?.message || "Could not add seats. Please try again.");
       }
-    } catch {
+    } catch (error) {
+      unstable_rethrow(error);
       toast.error("Something went wrong while adding seats.");
     } finally {
       if (session === sessionRef.current) setConfirming(false);
@@ -261,10 +263,10 @@ export default function AddSeatsDialog() {
               <span className="font-semibold">
                 {formatCents(quote.amount_due_cents, quote.currency)}
               </span>{" "}
-              now, covering {formatBillingDate(coverStart)} →{" "}
-              {formatBillingDate(coverEnd)} (the rest of your current billing
+              now, covering {formatBillingDate(coverStart, timeZone)} →{" "}
+              {formatBillingDate(coverEnd, timeZone)} (the rest of your current billing
               period). Your renewal on{" "}
-              {formatBillingDate(quote.current_period_end)} will include all{" "}
+              {formatBillingDate(quote.current_period_end, timeZone)} will include all{" "}
               {quote.seats_after} users.
             </p>
 

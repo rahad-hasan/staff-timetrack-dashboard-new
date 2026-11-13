@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import { Button } from "@/components/ui/button";
 import {
@@ -10,7 +9,7 @@ import {
 import { ScheduleShiftSchema } from "@/zod/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import z from "zod";
+import { z } from "zod";
 import {
     Form,
     FormControl,
@@ -26,6 +25,7 @@ import ClockIcon from "../Icons/ClockIcon";
 import { Checkbox } from "../ui/checkbox";
 import { toast } from "sonner";
 import { addSchedule } from "@/actions/schedule/action";
+import { actionErrorMessage } from "@/lib/actionErrors";
 
 const AddScheduleModal = ({ onClose }: { onClose: () => void }) => {
     const [loading, setLoading] = useState(false);
@@ -71,8 +71,8 @@ const AddScheduleModal = ({ onClose }: { onClose: () => void }) => {
                     },
                 });
             }
-        } catch (error: any) {
-            toast.error(error.message || "Something went wrong!", {
+        } catch (error) {
+            toast.error(actionErrorMessage(error, "Something went wrong!"), {
                 style: {
                     backgroundColor: '#ef4444',
                     color: 'white',

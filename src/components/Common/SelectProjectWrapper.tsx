@@ -1,9 +1,8 @@
 "use client";
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { useCallback, useEffect, useState } from "react";
-import { getProjects } from "@/actions/projects/action";
+import { useEffect, useState } from "react";
 import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
 import { useDebounce } from "@/hooks/use-debounce";
+import { readLiveJson } from "@/lib/readLiveJson";
 
 type ProjectOption = {
   value: string;
@@ -11,39 +10,42 @@ type ProjectOption = {
   avatar?: string;
 };
 
+/** Served by src/app/api/projects/dropdown/route.ts. */
+const PROJECTS_URL = "/api/projects/dropdown";
+
 const SelectProjectWrapper = () => {
   const [projects, setProjects] = useState<ProjectOption[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchInput, setSearchInput] = useState("");
   const debouncedSearch = useDebounce(searchInput, 500);
-  const fetchProjects = useCallback(async (searchQuery: string) => {
+
+  // Trigger on Mount AND when debouncedSearch changes. The read for a search
+  // the user has already typed past is cancelled, so a slow earlier answer
+  // cannot replace the results for the current one.
+  useEffect(() => {
+    const controller = new AbortController();
     setLoading(true);
-    try {
-      const res = await getProjects({ search: searchQuery, dropdown: true });
 
-      if (res?.success) {
-        const apiProjects = res.data.map((p: any) => ({
-          value: String(p.id),
-          label: p.name,
-          avatar: p.image || "",
-        }));
-
+    readLiveJson<{ id: number; name: string; image?: string | null }[]>(
+      PROJECTS_URL,
+      { query: { search: debouncedSearch }, signal: controller.signal },
+    ).then((res) => {
+      if (controller.signal.aborted) return;
+      if (res?.success && Array.isArray(res.data)) {
         setProjects([
           { value: "all", label: "All Project", avatar: "" },
-          ...apiProjects,
+          ...res.data.map((p) => ({
+            value: String(p.id),
+            label: p.name,
+            avatar: p.image || "",
+          })),
         ]);
       }
-    } catch (err) {
-      console.error("Fetch projects error:", err);
-    } finally {
       setLoading(false);
-    }
-  }, []);
+    });
 
-  // Trigger on Mount AND when debouncedSearch changes
-  useEffect(() => {
-    fetchProjects(debouncedSearch);
-  }, [debouncedSearch, fetchProjects]);
+    return () => controller.abort();
+  }, [debouncedSearch]);
 
   return (
     <div className=" w-full">

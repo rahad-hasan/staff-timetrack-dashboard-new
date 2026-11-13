@@ -7,11 +7,28 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { useState } from "react";
-import AddNewMemberModal from "./AddNewMemberModal";
+import dynamic from "next/dynamic";
+import { loadOrReload } from "@/lib/lazyChunk";
 import SearchBar from "../Common/SearchBar";
 import HeadingComponent from "../Common/HeadingComponent";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCreateIntent } from "@/store/quickActionStore";
+
+// The add-member wizard (phone and time-zone pickers, date picker, project and
+// schedule lookups) only renders once the dialog opens: its own chunk, fetched
+// then, instead of with the members page.
+// Opened on demand only, never server-rendered.
+const importAddNewMemberModal = () => import("./AddNewMemberModal");
+const loadAddNewMemberModal = loadOrReload(importAddNewMemberModal);
+const AddNewMemberModal = dynamic(loadAddNewMemberModal, { ssr: false });
+
+// Fetched as soon as the pointer or focus reaches the button: with nothing on
+// screen while the chunk loads, a slow first click looked dead and a second
+// one toggled the dialog shut again. The raw import, not the loader above — a
+// warm-up must never reload the page.
+const warmAddNewMemberModal = () => {
+    importAddNewMemberModal().catch(() => {});
+};
 
 const MemberHeroSection = () => {
     const [open, setOpen] = useState(false)
@@ -39,7 +56,7 @@ const MemberHeroSection = () => {
                 <Dialog open={open} onOpenChange={setOpen}>
                     <form>
                         <DialogTrigger asChild>
-                            <Button data-tour={TOUR_ANCHORS.ctaAddMember} className=" text-sm md:text-base py-2"><Plus className="size-5" /> <span className=" hidden sm:block">Add Member</span></Button>
+                            <Button data-tour={TOUR_ANCHORS.ctaAddMember} onPointerEnter={warmAddNewMemberModal} onFocus={warmAddNewMemberModal} className=" text-sm md:text-base py-2"><Plus className="size-5" /> <span className=" hidden sm:block">Add Member</span></Button>
                         </DialogTrigger>
                         {/* remount on every open so the wizard restarts at step 1 —
                             and so its project/schedule lookups only run once the

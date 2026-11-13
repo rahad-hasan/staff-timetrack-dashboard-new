@@ -40,7 +40,7 @@ import { cn } from "@/lib/utils";
  * class, not an impression of it. The structure is copied from
  * `app/(main_layout)/layout.tsx`, `layout/SideBar.tsx`, `layout/Header.tsx`,
  * `Billing/TrialBanner.tsx`, `Dashboard/SampleDataBanner.tsx` and
- * `dashboard/@topCart`, and the sidebar and stat-card glyphs are the SAME icon
+ * `dashboard/_panels/Overview.tsx`, and the sidebar and stat-card glyphs are the SAME icon
  * components the app renders — so the tile colours cannot drift from the real
  * nav.
  *
@@ -65,7 +65,7 @@ import { cn } from "@/lib/utils";
  * realistic proportions, nothing more.
  *
  * `dim` paints the same `black/50` scrim `DialogOverlay` does, so the plain
- * auth pages (login, sign-up, password reset…) match the dialog-hosted
+ * auth pages (login, OTP, password reset…) match the dialog-hosted
  * create-organization page. That page passes `dim={false}`: its
  * `DialogOverlay` already dims, and stacking two scrims crushes this to flat
  * near-black.

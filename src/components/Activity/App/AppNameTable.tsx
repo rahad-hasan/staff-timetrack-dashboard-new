@@ -21,7 +21,14 @@ import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { IApp } from "@/types/type";
 import AppAvatar from "@/components/Activity/App/AppAvatar";
 
-const AppNameTable = ({ data }: { data: IApp[] }) => {
+const AppNameTable = ({
+  data,
+  message,
+}: {
+  data: IApp[];
+  /** Shown in place of the empty-table text: why the API refused the read. */
+  message?: string;
+}) => {
   // const logInUserData = useLogInUserStore(state => state.logInUserData);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState({});
@@ -174,7 +181,7 @@ const AppNameTable = ({ data }: { data: IApp[] }) => {
             <TableRow>
               <EmptyTableRow
                 columns={columns}
-                text="No App Activity found."
+                text={message || "No App Activity found."}
               ></EmptyTableRow>
             </TableRow>
           )}

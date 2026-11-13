@@ -1,4 +1,5 @@
 import { isFreePlan } from "@/lib/billing";
+import { MARKETING_SIGN_UP_URL } from "@/lib/siteLinks";
 import {
   BILLING_CYCLES,
   type BillingCycle,
@@ -29,19 +30,23 @@ import {
  * to a dead end or a checkout that cannot succeed.
  */
 
+/** The key the serialiser writes for the trial flag — the correct spelling. */
+const CANONICAL_TRIAL_KEY = "trial";
+
 /**
- * `trail` is the marketing site's typo for `trial`. Both spellings are accepted
- * and normalised to one boolean here so the typo never leaks past this module;
- * the marketing site should migrate to `trial`, after which the legacy key can
- * be deleted from this list and nothing else has to change.
+ * `trail` is the marketing site's typo for `trial` — its pricing page links
+ * `/sign-up/?trail=true` and its sign-up page reads nothing else. Both
+ * spellings are accepted and normalised to one boolean here so the typo never
+ * leaks past this module. The marketing site should migrate to `trial`, after
+ * which this key can be deleted (here and from `buildMarketingSignUpUrl`, the
+ * one place that writes it back out) and nothing else has to change.
  */
-const TRIAL_KEYS = ["trial", "trail"] as const;
+const LEGACY_TRIAL_KEY = "trail";
+
+const TRIAL_KEYS = [CANONICAL_TRIAL_KEY, LEGACY_TRIAL_KEY] as const;
 
 const PLAN_KEY = "plan";
 const CYCLE_KEY = "cycle";
-
-/** The key the serialiser writes for the trial flag — the correct spelling. */
-const CANONICAL_TRIAL_KEY = "trial";
 
 /**
  * Spellings of "yes", compared after trimming and lowercasing. Anything
@@ -264,6 +269,27 @@ export const marketingPlanIntentQuery = (
   if (intent.isTrial) params.set(CANONICAL_TRIAL_KEY, "true");
 
   return params.toString();
+};
+
+/**
+ * The marketing sign-up page, with the visitor's plan intent handed back to it
+ * — the way out of the funnel when they need to start over (e.g. a mistyped
+ * email on the OTP screen).
+ *
+ * Written in THAT page's dialect, not ours: it reads `plan` + `cycle` (and
+ * drops a plan without a cycle it sells) and only the `trail` spelling of the
+ * trial flag. The canonical `trial` goes out alongside it, so the link keeps
+ * working whichever side fixes the spelling first.
+ *
+ * That page also remembers the choice in sessionStorage, but only for the tab
+ * it was made in; the URL is what survives a new tab or blocked site data,
+ * which is exactly when losing the plan would go unnoticed.
+ */
+export const buildMarketingSignUpUrl = (intent: MarketingPlanIntent): string => {
+  const url = new URL(MARKETING_SIGN_UP_URL);
+  url.search = marketingPlanIntentQuery(intent);
+  if (intent.isTrial) url.searchParams.set(LEGACY_TRIAL_KEY, "true");
+  return url.toString();
 };
 
 /** `appendMarketingPlanIntent("/x?email=a", intent)` → `/x?email=a&plan=2`. */

@@ -3,6 +3,7 @@
 import { memo, useEffect, useState } from "react";
 import { Camera, ListTree } from "lucide-react";
 import { getSuspensionEventDetail } from "@/actions/suspensions/action";
+import { actionErrorMessage } from "@/lib/actionErrors";
 import type { ISuspensionEventDetail } from "@/types/trackingSuspension";
 import { EventTimeline } from "./EventTimeline";
 import { ScreenshotStrip } from "./ScreenshotStrip";
@@ -34,7 +35,7 @@ function EventDetailImpl({ eventId, timezone }: Props) {
       })
       .catch((err) => {
         if (cancelled) return;
-        setError((err as Error)?.message || "Failed to load event detail.");
+        setError(actionErrorMessage(err, "Failed to load event detail."));
       })
       .finally(() => {
         if (cancelled) return;

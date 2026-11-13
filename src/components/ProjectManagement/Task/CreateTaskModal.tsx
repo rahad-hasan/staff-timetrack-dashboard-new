@@ -9,7 +9,7 @@ import {
 import { newTaskCreationSchema } from "@/zod/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import z from "zod";
+import { z } from "zod";
 import {
     Form,
     FormControl,
@@ -36,11 +36,14 @@ import { ChevronDownIcon, Search } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getMembersDashboard } from "@/actions/members/action";
+import { useDashboardMembers } from "@/hooks/useDashboardMembers";
 import { useDebounce } from "@/hooks/use-debounce";
 import { getProjects } from "@/actions/projects/action";
 import { addTask } from "@/actions/task/action";
+import { actionErrorMessage } from "@/lib/actionErrors";
 import { toast } from "sonner";
+import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
+import { pickerDateToInstant } from "@/lib/timezone";
 type ProjectOption = {
     value: string;
     label: string;
@@ -49,13 +52,12 @@ type ProjectOption = {
 const CreateTaskModal = ({ handleCloseDialog }: { handleCloseDialog: () => void }) => {
     const [loading, setLoading] = useState(false);
     const [projectLoading, setProjectLoading] = useState(false);
-    const [members, setMembers] = useState<{ id: number; name: string; image?: string }[]>([]);
     const [projects, setProjects] = useState<ProjectOption[]>([]);
     const [memberSearch, setMemberSearch] = useState("");
     const [searchInput, setSearchInput] = useState("");
-    const filteredMembers = members.filter(m => m.name.toLowerCase().includes(memberSearch.toLowerCase()));
     const [openStartDate, setOpenStartDate] = useState(false);
     const [dateStartDate, setStartDate] = useState<Date | undefined>(undefined);
+    const timeZone = useViewerTimeZone();
 
     const form = useForm<z.infer<typeof newTaskCreationSchema>>({
         resolver: zodResolver(newTaskCreationSchema),
@@ -96,33 +98,24 @@ const CreateTaskModal = ({ handleCloseDialog }: { handleCloseDialog: () => void 
     }, [debouncedSearch]);
     const selectedProject = form.watch("project");
 
-    useEffect(() => {
-        if (!selectedProject) {
-            setMembers([]);
-            return;
-        }
-        const loadMembers = async () => {
-            setLoading(true);
-            try {
-                const res = await getMembersDashboard({ project_id: selectedProject });
-                if (res?.success) {
-                    setMembers(res.data);
-                }
-            } catch (err) {
-                console.error("Failed to fetch members", err);
-            } finally {
-                setLoading(false);
-            }
-        };
-        loadMembers();
-    }, [selectedProject]);
+    // Only the selected project's own list is ever offered: while another
+    // project's members are still on hand (switching, or a late response for
+    // the previous pick), the picker shows none rather than the wrong team.
+    const projectMembers = useDashboardMembers(selectedProject, { enabled: !!selectedProject });
+    const members =
+        selectedProject && projectMembers.loadedFor === String(selectedProject)
+            ? projectMembers.members
+            : [];
+    const filteredMembers = members.filter(m => m.name.toLowerCase().includes(memberSearch.toLowerCase()));
 
     async function onSubmit(values: z.infer<typeof newTaskCreationSchema>) {
         const finalData = {
             name: values.taskName,
             project_id: Number(values.project),
             assignee: Number(values.assignee),
-            deadline: values.deadline ? new Date(values.deadline).toISOString() : null,
+            // The picked day's midnight on the viewer's calendar, the day the
+            // task tables show — not the browser's midnight.
+            deadline: values.deadline ? pickerDateToInstant(values.deadline, timeZone).toISOString() : null,
             priority: values.priority,
             ...(values.details && { description: values.details }),
         }
@@ -146,9 +139,10 @@ const CreateTaskModal = ({ handleCloseDialog }: { handleCloseDialog: () => void 
                     },
                 });
             }
-        } catch (error: any) {
+        } catch (error) {
+            const message = actionErrorMessage(error, "Something went wrong!");
             console.error("failed:", error);
-            toast.error(error.message || "Something went wrong!", {
+            toast.error(message, {
                 style: {
                     backgroundColor: '#ef4444',
                     color: 'white',
@@ -178,7 +172,13 @@ const CreateTaskModal = ({ handleCloseDialog }: { handleCloseDialog: () => void 
                             <FormItem>
                                 <FormLabel required={true} className={""}>Project</FormLabel>
                                 <Select
-                                    onValueChange={field.onChange}
+                                    onValueChange={(value) => {
+                                        // Another project has another team:
+                                        // the assignee picked for the previous
+                                        // one may not be on it.
+                                        if (value !== field.value) form.setValue("assignee", "");
+                                        field.onChange(value);
+                                    }}
                                     defaultValue={field.value}
                                 // disabled={!selectedAssignee}
                                 >
@@ -232,7 +232,8 @@ const CreateTaskModal = ({ handleCloseDialog }: { handleCloseDialog: () => void 
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel required={true} className={!selectedProject ? "opacity-50" : ""}>Assignee</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!selectedProject}>
+                                {/* controlled, so the field empties with the value when the project changes */}
+                                <Select onValueChange={field.onChange} value={field.value} disabled={!selectedProject}>
                                     <FormControl>
                                         <SelectTrigger className="w-full dark:bg-darkSecondaryBg">
                                             <SelectValue placeholder="Select a member" />
@@ -251,7 +252,9 @@ const CreateTaskModal = ({ handleCloseDialog }: { handleCloseDialog: () => void 
                                             />
                                         </div>
                                         {filteredMembers.length === 0 ? (
-                                            <p className="text-xs text-center py-2 text-muted-foreground">No members found.</p>
+                                            <p className="text-xs text-center py-2 text-muted-foreground">
+                                                {projectMembers.loading ? "Loading..." : "No members found."}
+                                            </p>
                                         ) : (
                                             filteredMembers.map((member) => (
                                                 <SelectItem

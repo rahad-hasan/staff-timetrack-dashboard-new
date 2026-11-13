@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import type { Socket } from "socket.io-client";
-import { socket as defaultSocket } from "@/socket/socket";
+import { socket as defaultSocket, ticketAuth } from "@/socket/socket";
 import type {
   SupportSocketEventMap,
   SupportSocketEventName,
@@ -402,11 +402,8 @@ const acquireSupportNamespace = (wanted: boolean): Socket | null => {
   if (!wanted || namespaceMode === "unavailable") return null;
   if (!supportNamespaceSocket) {
     supportNamespaceSocket = defaultSocket.io.socket("/support", {
-      // read at every (re)connect: the token SocketProvider sets, and who is asking (step-5 §9)
-      auth: (cb: (data: object) => void) => {
-        const auth = defaultSocket.auth;
-        cb({ ...(typeof auth === "object" && auth !== null ? auth : {}), client_type: "dashboard" });
-      },
+      // asked at every (re)connect: a current socket ticket, and who is asking (step-5 §9)
+      auth: ticketAuth({ client_type: "dashboard" }),
     });
     supportNamespaceSocket.on("connect_error", onNamespaceRefused);
     supportNamespaceSocket.on("connect", () => {

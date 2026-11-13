@@ -29,7 +29,14 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-const UrlsTable = ({ data }: { data: IUrl[] }) => {
+const UrlsTable = ({
+  data,
+  message,
+}: {
+  data: IUrl[];
+  /** Shown in place of the empty-table text: why the API refused the read. */
+  message?: string;
+}) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState({});
 
@@ -192,7 +199,7 @@ const UrlsTable = ({ data }: { data: IUrl[] }) => {
             <TableRow>
               <EmptyTableRow
                 columns={columns}
-                text="No urls activity found."
+                text={message || "No urls activity found."}
               ></EmptyTableRow>
             </TableRow>
           )}

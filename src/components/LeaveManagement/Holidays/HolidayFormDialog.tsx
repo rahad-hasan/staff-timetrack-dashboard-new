@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format, isValid, parseISO } from "date-fns";
 import { useForm } from "react-hook-form";
-import z from "zod";
+import { z } from "zod";
 import { CalendarDays, Clock3, FileText, Loader2, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { createLeaveHoliday, updateLeaveHoliday } from "@/actions/leaves/action";
@@ -35,7 +35,8 @@ type HolidayFormDialogProps = {
   initialData?: LeaveHoliday | null;
   selectedYear: string;
   onClose: () => void;
-  onSuccess: () => void;
+  /** Not needed to refresh the page: holiday writes revalidate, so the action's own response re-renders it. */
+  onSuccess?: () => void;
 };
 
 const getDefaultValues = (
@@ -114,7 +115,7 @@ const HolidayFormDialog = ({
             : "Holiday updated successfully."),
       );
       form.reset(getDefaultValues(initialData));
-      onSuccess();
+      onSuccess?.();
       onClose();
       setLoading(false);
       return;

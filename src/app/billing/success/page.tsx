@@ -1,4 +1,5 @@
 import CheckoutSuccessClient from "@/components/Billing/CheckoutSuccessClient";
+import AccountSwitchWatcher from "@/components/Common/AccountSwitchWatcher";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -41,6 +42,9 @@ const CheckoutSuccessPage = async ({
 
     return (
         <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-b from-[#e8f2ff] via-[#f4f9ff] to-bgSecondary p-4 dark:from-darkSecondaryBg dark:via-darkSecondaryBg dark:to-darkSecondaryBg">
+            {/* Outside (main_layout), so no SessionSync: hands the tab over
+                when another account signs in on this browser. */}
+            <AccountSwitchWatcher />
             <CheckoutSuccessClient
                 sessionId={readParam(params.session_id)}
                 subscriptionId={readParam(params.subscription_id)}

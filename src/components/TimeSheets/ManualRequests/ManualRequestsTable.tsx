@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import {
   ColumnDef,
@@ -9,7 +8,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   Table,
   TableBody,
@@ -25,16 +24,13 @@ import {
 } from "@/components/ui/popover";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import FilterButton from "@/components/Common/FilterButton";
-// import EditIcon from "@/components/Icons/FilterOptionIcon/EditIcon";
 import ApproveIcon from "@/components/Icons/FilterOptionIcon/ApproveIcon";
 import DenyIcon from "@/components/Icons/FilterOptionIcon/DenyIcon";
 import { IManualTimeEntry } from "@/types/type";
-// import EditManualTimeModal from "./EditManualTimeModal";
-// import { Dialog } from "@/components/ui/dialog";
-import { useLogInUserStore } from "@/store/logInUserStore";
 import ConfirmDialog from "@/components/Common/ConfirmDialog";
 import { toast } from "sonner";
 import { approveRejectManualTimeEntry } from "@/actions/timesheets/action";
+import { actionErrorMessage } from "@/lib/actionErrors";
 import { convertDecimalHoursToHMS } from "@/utils";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -45,14 +41,22 @@ import {
 } from "@/components/ui/tooltip";
 import Link from "next/link";
 
-const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
+// `canApprove` is resolved on the server from the viewer's role, so the
+// approve/deny menu is in the server HTML instead of flashing in (or
+// mismatching hydration) once the client user store rehydrates.
+const ManualRequestsTable = ({
+  data,
+  canApprove,
+}: {
+  data: IManualTimeEntry[];
+  canApprove: boolean;
+}) => {
   const [sorting, setSorting] = useState<SortingState>([]);
-  // const [open, setOpen] = useState(false)
-  // const [selectedItem, setSelectedItem] = useState<IManualTimeEntry | null>(null)
-  const logInUserData = useLogInUserStore((state) => state.logInUserData);
 
   // handle approve or reject manual request
-  const handleApproveReject = async ({
+  // (one identity for the component's life: the column definitions below
+  // depend on it and must stay stable)
+  const handleApproveReject = useCallback(async ({
     is_approved,
     id,
   }: {
@@ -85,9 +89,10 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
           },
         );
       }
-    } catch (error: any) {
+    } catch (error) {
+      const message = actionErrorMessage(error, "Something went wrong!");
       console.error("failed:", error);
-      toast.error(error.message || "Something went wrong!", {
+      toast.error(message, {
         style: {
           backgroundColor: "#ef4444",
           color: "white",
@@ -95,9 +100,16 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
         },
       });
     }
-  };
+  }, []);
 
-  const columns: ColumnDef<IManualTimeEntry>[] = [
+  // Memoised, and the rows below carry their request's id — the two belong
+  // together. flexRender mounts every `cell` function as a component type, so
+  // definitions rebuilt on each render remounted every cell: each live
+  // refresh closed an open row menu and its Approve / Deny confirmation.
+  // Stable definitions alone would keep that confirmation open over an
+  // index-keyed row, and a list that shifted under it would hand it another
+  // request to approve or reject; `getRowId` ties it to its own request.
+  const columns = useMemo<ColumnDef<IManualTimeEntry>[]>(() => [
     {
       accessorKey: "user.name",
       header: ({ column }) => {
@@ -316,9 +328,7 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
               </p>
             </div>
             <>
-              {(logInUserData?.role === "admin" ||
-                logInUserData?.role === "manager" ||
-                logInUserData?.role === "hr") && (
+              {canApprove && (
                 <Popover>
                   <PopoverTrigger asChild>
                     <div>
@@ -332,17 +342,6 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
                   >
                     <div className="">
                       <div className="space-y-2">
-                        {/* <div
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setSelectedItem(row?.original);
-                                                setOpen(true);
-                                            }}
-                                            className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
-                                            <EditIcon size={20} />
-                                            <p>Edit Time</p>
-                                        </div> */}
-
                         <ConfirmDialog
                           trigger={
                             <div className=" flex items-center gap-2 w-full py-2 rounded-lg hover:bg-gray-100 hover:dark:bg-darkPrimaryBg px-3 cursor-pointer">
@@ -390,11 +389,13 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
         );
       },
     },
-  ];
+  ], [canApprove, handleApproveReject]);
 
   const table = useReactTable({
     data: data ?? [],
     columns,
+    // The request's id, not its position (see `columns`).
+    getRowId: (row) => String(row.id),
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
@@ -446,15 +447,6 @@ const ManualRequestsTable = ({ data }: { data: IManualTimeEntry[] }) => {
           )}
         </TableBody>
       </Table>
-      {/* edit modal here */}
-      {/* <Dialog open={open} onOpenChange={setOpen}>
-                {selectedItem && (
-                    <EditManualTimeModal
-                        onClose={() => setOpen(false)}
-                        selectedItem={selectedItem}
-                    />
-                )}
-            </Dialog> */}
     </div>
   );
 };

@@ -201,40 +201,7 @@ export const RichTextEditor = ({
     );
 };
 
-export const RichTextViewer = ({
-    html,
-    className,
-    fallback = "No description provided.",
-}: {
-    html?: string | null;
-    className?: string;
-    fallback?: string;
-}) => {
-    const isEmpty = !html || html.trim() === "" || html === "<p></p>";
-    if (isEmpty) {
-        return (
-            <p
-                className={cn(
-                    "text-sm leading-relaxed text-subTextColor dark:text-darkTextSecondary",
-                    className,
-                )}
-            >
-                {fallback}
-            </p>
-        );
-    }
-
-    return (
-        <div
-            className={cn(
-                "tiptap-viewer text-sm leading-relaxed text-headingTextColor dark:text-darkTextPrimary",
-                "[&_p]:my-1 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-2",
-                "[&_blockquote]:border-l-2 [&_blockquote]:border-borderColor [&_blockquote]:pl-3 [&_blockquote]:text-subTextColor [&_blockquote]:italic dark:[&_blockquote]:border-darkBorder dark:[&_blockquote]:text-darkTextSecondary [&_strong]:font-semibold",
-                className,
-            )}
-            dangerouslySetInnerHTML={{ __html: html }}
-        />
-    );
-};
+// The read-only viewer lives in ./RichTextViewer: it must not pull TipTap
+// into pages that only display rich text, and it sanitizes what it renders.
 
 export default RichTextEditor;

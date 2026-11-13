@@ -17,25 +17,24 @@ import { baseApi } from "../baseApi";
  * `providerAuthPrefix` follows the base-spec provider-401 rule: a 401 whose
  * message starts with "Slack" means Slack revoked a token, not that the app
  * session expired — baseApi returns the envelope instead of logging out.
+ *
+ * No cache tags: Slack state lives in client components that apply each
+ * write's answer (or re-read /slack/status) themselves, so a tag would only
+ * make every toggle re-render the whole settings route into its response.
  */
 const BASE = "/slack";
-const TAG = "slack-integration";
 const AUTH_PREFIX = "Slack";
 
 export const getSlackStatus = async (): Promise<
     IResponse<SlackStatusResponse>
 > =>
     await baseApi(`${BASE}/status`, {
-        tag: TAG,
-        cache: "no-cache",
         providerAuthPrefix: AUTH_PREFIX,
     });
 
 /** Admin only — 201, `data` is the workspace authorize URL (§2.1). */
 export const getSlackWorkspaceAuthUrl = async (): Promise<IResponse<string>> =>
     await baseApi(`${BASE}/connect`, {
-        tag: TAG,
-        cache: "no-cache",
         providerAuthPrefix: AUTH_PREFIX,
     });
 
@@ -46,8 +45,6 @@ export const getSlackWorkspaceAuthUrl = async (): Promise<IResponse<string>> =>
  */
 export const getSlackPersonalAuthUrl = async (): Promise<IResponse<string>> =>
     await baseApi(`${BASE}/connect/personal`, {
-        tag: TAG,
-        cache: "no-cache",
         providerAuthPrefix: AUTH_PREFIX,
     });
 
@@ -60,8 +57,6 @@ export const disconnectSlackWorkspace = async (): Promise<
 > =>
     await baseApi(`${BASE}/disconnect`, {
         method: "DELETE",
-        tag: TAG,
-        cache: "no-cache",
         providerAuthPrefix: AUTH_PREFIX,
     });
 
@@ -71,8 +66,6 @@ export const disconnectSlackPersonal = async (): Promise<
 > =>
     await baseApi(`${BASE}/disconnect/personal`, {
         method: "DELETE",
-        tag: TAG,
-        cache: "no-cache",
         providerAuthPrefix: AUTH_PREFIX,
     });
 
@@ -86,8 +79,6 @@ export const updateSlackSettings = async (
     await baseApi(`${BASE}/settings`, {
         method: "PATCH",
         body: payload,
-        tag: TAG,
-        cache: "no-cache",
         providerAuthPrefix: AUTH_PREFIX,
     });
 
@@ -98,7 +89,5 @@ export const updateSlackPersonalSettings = async (payload: {
     await baseApi(`${BASE}/settings/personal`, {
         method: "PATCH",
         body: payload,
-        tag: TAG,
-        cache: "no-cache",
         providerAuthPrefix: AUTH_PREFIX,
     });

@@ -1,11 +1,14 @@
 "use client";
 
 import { Fragment, memo, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { addDays, parseISO } from "date-fns";
 import { ChevronUp, RotateCw } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
 import { CountPill, SupportButton } from "@/components/Support/primitives";
 import { formatDaySeparator } from "@/lib/supportFormat";
 import { formatFileSize } from "@/lib/supportAttachments";
+import { instantDay, pickerDateTimeToInstant } from "@/lib/timezone";
 import type { AttachmentDTO, TicketSource } from "@/types/support";
 import { BubbleFrame, MessageBubble } from "./MessageBubble";
 import { EventLine } from "./EventLine";
@@ -60,13 +63,14 @@ interface TimelineProps {
  * TD-01 timeline geometry (measured at 2×): 36px avatar column, content 14px
  * to its right, rows 18px apart, event rows 36px tall, day pill 24px / 12px.
  */
-const DayPill = ({ at, now }: { at: string; now: Date }) => (
+const DayPill = ({ at, now, timeZone }: { at: string; now: Date; timeZone: string }) => (
   <div className="grid grid-cols-[36px_minmax(0,1fr)] items-center gap-3 sm:gap-3.5" role="presentation">
     <span aria-hidden="true" />
     <div className="flex items-center gap-3">
       <CountPill className="shrink-0 font-medium">
+        {/* "Today" / "Yesterday" can turn over between the server render and hydration. */}
         <time dateTime={at} suppressHydrationWarning>
-          {formatDaySeparator(at, now)}
+          {formatDaySeparator(at, timeZone, now)}
         </time>
       </CountPill>
       <span aria-hidden="true" className="h-px flex-1 bg-support-divider dark:bg-darkBorder" />
@@ -107,17 +111,6 @@ const rowClass = "[content-visibility:auto] [contain-intrinsic-size:auto_96px]";
 /** DOM id of the conversation list (lookups walk back from its end instead of querying the document). */
 export const CONVERSATION_LIST_ID = "ticket-conversation";
 
-/**
- * Local calendar day of an API timestamp, for "new day → pill" comparisons only. Native Date
- * instead of date-fns parseISO + format: a long thread computes thousands of these per render.
- */
-const localDay = (iso: string): string => {
-  const time = Date.parse(iso);
-  if (!Number.isFinite(time)) return "";
-  const date = new Date(time);
-  return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-};
-
 /** The row element of `key`, found by walking back from the end of the list (new rows sit at the end). */
 export const findConversationRow = (key: string, maxSteps = 400): HTMLElement | null => {
   let node = document.getElementById(CONVERSATION_LIST_ID)?.lastElementChild ?? null;
@@ -139,6 +132,8 @@ interface RowListProps {
   /** a pill above the first row even on the same day (right after the "earlier messages" gap) */
   pillFirst: boolean;
   now: Date;
+  /** the viewer's zone: the days the thread is split into */
+  timeZone: string;
   context: EventContext;
   requesterName: string;
   onOpenImage: OpenImageHandler;
@@ -149,6 +144,7 @@ const RowList = memo(function RowList({
   startDay,
   pillFirst,
   now,
+  timeZone,
   context,
   requesterName,
   onOpenImage,
@@ -157,14 +153,14 @@ const RowList = memo(function RowList({
   return (
     <>
       {rows.map((entry, index) => {
-        const day = localDay(entry.item.at);
+        const day = instantDay(entry.item.at, timeZone);
         const showDay = day !== previousDay || (pillFirst && index === 0);
         previousDay = day;
         return (
           <Fragment key={entry.key}>
             {showDay ? (
               <li className={rowClass}>
-                <DayPill at={entry.item.at} now={now} />
+                <DayPill at={entry.item.at} now={now} timeZone={timeZone} />
               </li>
             ) : null}
             <li data-entry={entry.key} className={rowClass}>
@@ -177,15 +173,15 @@ const RowList = memo(function RowList({
   );
 });
 
-/** "Today" / "Yesterday" stay right when the page is left open past midnight (one timer per day). */
-const useToday = () => {
+/** "Today" / "Yesterday" stay right when the page is left open past the viewer's midnight (one timer per day). */
+const useToday = (timeZone: string) => {
   const [now, setNow] = useState(() => new Date());
   useEffect(() => {
-    const next = new Date(now);
-    next.setHours(24, 0, 1, 0);
-    const timer = setTimeout(() => setNow(new Date()), Math.max(1_000, next.getTime() - Date.now()));
+    // One second into the viewer's next day.
+    const tick = pickerDateTimeToInstant(addDays(parseISO(instantDay(now, timeZone)), 1), "00:00:01", timeZone);
+    const timer = setTimeout(() => setNow(new Date()), Math.max(1_000, tick.getTime() - Date.now()));
     return () => clearTimeout(timer);
-  }, [now]);
+  }, [now, timeZone]);
   return now;
 };
 
@@ -204,7 +200,12 @@ export const Timeline = ({
   newestRef,
   newestKey,
 }: TimelineProps) => {
-  const now = useToday();
+  // The thread is split into the VIEWER's days, not the runtime's: it is
+  // server-rendered, and the runtime's day put two messages on one day in the
+  // browser but on two on the server, a different number of day pills, which
+  // no hydration can reconcile (#418).
+  const timeZone = useViewerTimeZone();
+  const now = useToday(timeZone);
   const olderErrorId = useId();
   const openingLine = useMemo<EventLineCopy>(
     () => ({ tone: "created", segments: [{ kind: "text", text: `You opened this ticket ${SOURCE_PHRASE[opening.source]}` }] }),
@@ -214,9 +215,9 @@ export const Timeline = ({
   const pagedRows = useMemo(() => pagedEntries.filter((entry) => renderable(entry, eventContext)), [pagedEntries, eventContext]);
   const liveRows = useMemo(() => liveEntries.filter((entry) => renderable(entry, eventContext)), [liveEntries, eventContext]);
 
-  const openingDay = localDay(opening.createdAt);
-  const pagedLastDay = pagedRows.length > 0 ? localDay(pagedRows[pagedRows.length - 1].item.at) : openingDay;
-  const lastDay = liveRows.length > 0 ? localDay(liveRows[liveRows.length - 1].item.at) : pagedLastDay;
+  const openingDay = instantDay(opening.createdAt, timeZone);
+  const pagedLastDay = pagedRows.length > 0 ? instantDay(pagedRows[pagedRows.length - 1].item.at, timeZone) : openingDay;
+  const lastDay = liveRows.length > 0 ? instantDay(liveRows[liveRows.length - 1].item.at, timeZone) : pagedLastDay;
 
   // The read-receipt observer watches the newest message row. It is attached here, by walking back
   // from the end of the list, so neither row list re-renders when the newest message changes.
@@ -238,7 +239,7 @@ export const Timeline = ({
       />
       <ol id={CONVERSATION_LIST_ID} className="relative flex flex-col gap-[18px]" aria-label="Conversation">
         <li>
-          <DayPill at={opening.createdAt} now={now} />
+          <DayPill at={opening.createdAt} now={now} timeZone={timeZone} />
         </li>
         <li>
           <EventLine copy={openingLine} at={opening.createdAt} />
@@ -288,6 +289,7 @@ export const Timeline = ({
           startDay={openingDay}
           pillFirst={hasMore}
           now={now}
+          timeZone={timeZone}
           context={eventContext}
           requesterName={opening.requesterName}
           onOpenImage={onOpenImage}
@@ -297,6 +299,7 @@ export const Timeline = ({
           startDay={pagedLastDay}
           pillFirst={hasMore && pagedRows.length === 0}
           now={now}
+          timeZone={timeZone}
           context={eventContext}
           requesterName={opening.requesterName}
           onOpenImage={onOpenImage}
@@ -304,7 +307,9 @@ export const Timeline = ({
 
         {pending ? (
           <li data-entry="pending">
-            {localDay(pending.createdAt) !== lastDay ? <DayPill at={pending.createdAt} now={now} /> : null}
+            {instantDay(pending.createdAt, timeZone) !== lastDay ? (
+              <DayPill at={pending.createdAt} now={now} timeZone={timeZone} />
+            ) : null}
             <BubbleFrame
               role="requester"
               name={opening.requesterName}

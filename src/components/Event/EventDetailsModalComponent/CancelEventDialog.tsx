@@ -11,6 +11,7 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { cancelEvent } from "@/actions/calendarEvent/action";
+import { actionErrorMessage } from "@/lib/actionErrors";
 import { useState } from "react";
 import { toast } from "sonner";
 import { AlertTriangle } from "lucide-react";
@@ -44,8 +45,8 @@ const CancelEventDialog = ({
                     style: { backgroundColor: "#ef4444", color: "white", border: "none" },
                 });
             }
-        } catch (err: any) {
-            toast.error(err?.message || "Something went wrong!");
+        } catch (err) {
+            toast.error(actionErrorMessage(err, "Something went wrong!"));
         } finally {
             setLoading(false);
         }

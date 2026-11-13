@@ -1,30 +1,26 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import { Search } from "lucide-react";
-import {
-  CommandDialog,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
-  CommandShortcut,
-} from "@/components/ui/command";
-import { useLogInUserStore } from "@/store/logInUserStore";
+import { toast } from "sonner";
 import { TOUR_ANCHORS } from "@/lib/onboarding/anchors";
-import { visibleTasksForRole } from "@/lib/onboarding/registry";
-import { CreateActionKind, createActionsForRole } from "@/lib/quickActions";
-import { MANAGEMENT_ROLES, hasRole } from "@/lib/roles";
-import { useQuickActionStore } from "@/store/quickActionStore";
-import {
-  employeeOthersSidebarItems,
-  othersSidebarItems,
-  sidebarItems,
-  sidebarItemsEmployee,
-} from "@/utils/SidebarItems";
+import { useLatched } from "@/lib/onboarding/useLatched";
+import OverlayErrorBoundary from "@/components/Common/OverlayErrorBoundary";
+
+/**
+ * The palette (cmdk, the dialog, the result lists) loads the first time it
+ * opens and then stays mounted, so closing it still animates. Hovering or
+ * focusing the trigger starts the download early.
+ */
+const CommandPalette = dynamic(() => import("./CommandPalette"), {
+  ssr: false,
+});
+
+const preloadPalette = () => {
+  // A failed warm-up is harmless: opening the palette retries the chunk.
+  import("./CommandPalette").catch(() => undefined);
+};
 
 /**
  * Global search / quick actions (⌘K, Ctrl+K).
@@ -34,92 +30,37 @@ import {
  * `CommandDialog` was already in `components/ui`, but nothing in the app ever
  * imported it and no global shortcut existed.
  *
- * Destinations come from `SidebarItems.ts` rather than a second hand-written
- * list, so a nav item added there is searchable here for free — and cannot
- * drift out of sync with what the sidebar actually shows a given role.
+ * This file is only what every page needs: the trigger button — the tour's
+ * `globalSearch` anchor, so it always renders — and the shortcut. The palette
+ * itself lives in `CommandPalette`.
  */
-
-interface CommandEntry {
-  label: string;
-  href: string;
-  /** Parent group, shown as a subtitle so two "Settings" rows are tellable apart. */
-  group?: string;
-}
-
-interface QuickAction {
-  key: string;
-  label: string;
-  /** Subtitle, shown right-aligned — the row's context in one word or phrase. */
-  hint: string;
-  href: string;
-  /**
-   * Create dialog to open on arrival. Without it the row is a bare
-   * navigation and the user has to press the page's own "Add ..." button —
-   * the click they just made.
-   */
-  intent?: CreateActionKind;
-}
-
 export default function CommandBar() {
-  const router = useRouter();
   const [open, setOpen] = useState(false);
-
-  const logInUserData = useLogInUserStore((state) => state.logInUserData);
-  const role = logInUserData?.role as string | undefined;
-
-  const isManagement = hasRole(MANAGEMENT_ROLES, role);
-
-  const requestCreate = useQuickActionStore((state) => state.requestCreate);
-
-  const destinations = useMemo<CommandEntry[]>(() => {
-    const main = isManagement ? sidebarItems : sidebarItemsEmployee;
-    const others = isManagement ? othersSidebarItems : employeeOthersSidebarItems;
-
-    return [...main, ...others].flatMap<CommandEntry>((item) =>
-      item.subItems.length > 0
-        ? // A collapsible parent's own `key` is a group slug, not a route
-          // ("project-management", "Activity") — only its children navigate.
-          item.subItems.map((sub) => ({
-            label: sub.label,
-            href: sub.key,
-            group: item.label,
-          }))
-        : [{ label: item.label, href: item.key }],
-    );
-  }, [isManagement]);
+  const paletteMounted = useLatched(open);
 
   /**
-   * The getting-started checklist's actions first — those are the ones a new
-   * workspace is actively being nagged about — then any remaining create
-   * action the checklist has no row for (creating a task is everyday work, not
-   * a setup milestone). Both halves are role-filtered by their own source, so
-   * nobody is offered a dialog they cannot open.
+   * Set when the palette's chunk failed to load (see OverlayErrorBoundary):
+   * from then on, until the next full page load, it cannot render.
    */
-  const quickActions = useMemo<QuickAction[]>(() => {
-    const fromChecklist: QuickAction[] = visibleTasksForRole(role)
-      .filter((task) => task.id !== "TOUR_COMPLETED")
-      .map((task) => ({
-        key: task.id,
-        label: task.ctaLabel,
-        hint: task.label,
-        href: task.href,
-        intent: task.createIntent,
-      }));
+  const [paletteFailed, setPaletteFailed] = useState(false);
+  const handlePaletteError = useCallback(() => setPaletteFailed(true), []);
 
-    const covered = new Set(fromChecklist.map((action) => action.intent));
+  /**
+   * A palette that cannot render must not open silently: the shortcut and the
+   * button used to flip `open` with nothing on screen, for the rest of the
+   * page's life. Close it again and say why, with the way out — at the
+   * failure and on every later try, as OnboardingGate does for its overlays.
+   */
+  useEffect(() => {
+    if (!paletteFailed || !open) return;
 
-    const rest: QuickAction[] = createActionsForRole(role)
-      .filter((action) => !covered.has(action.kind))
-      .map((action) => ({
-        key: action.kind,
-        label: action.label,
-        hint: action.hint,
-        href: action.href,
-        intent: action.kind,
-      }));
-
-    return [...fromChecklist, ...rest];
-  }, [role]);
+    toast.error("Search couldn't load", {
+      id: "command-palette-failed",
+      description: "Reload the page to try again.",
+      action: { label: "Reload", onClick: () => window.location.reload() },
+    });
+    setOpen(false);
+  }, [paletteFailed, open]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -134,37 +75,14 @@ export default function CommandBar() {
     return () => document.removeEventListener("keydown", onKeyDown);
   }, []);
 
-  const go = useCallback(
-    (href: string) => {
-      setOpen(false);
-      // Deliberately NOT touching the sidebar store here: `setOpenMenu`
-      // TOGGLES (`sidebarStore.ts`), so nudging it can close the group the
-      // user is navigating into. `SidebarRouteSync` syncs the rail from the
-      // pathname anyway.
-      router.push(href);
-    },
-    [router],
-  );
-
-  /**
-   * "Add client" has to add a client, not show the page that has an Add Client
-   * button on it. The intent is raised before the navigation so it is already
-   * in the store when the destination's hero section mounts and claims it.
-   */
-  const run = useCallback(
-    (action: QuickAction) => {
-      if (action.intent) requestCreate(action.intent);
-      go(action.href);
-    },
-    [go, requestCreate],
-  );
-
   return (
     <>
       <button
         type="button"
         data-tour={TOUR_ANCHORS.globalSearch}
         onClick={() => setOpen(true)}
+        onPointerEnter={preloadPalette}
+        onFocus={preloadPalette}
         aria-label="Search and quick actions"
         className="flex h-10 items-center gap-2 rounded-[8px] border border-borderColor px-3 text-sm text-subTextColor transition-colors hover:text-headingTextColor dark:border-darkBorder dark:text-darkTextSecondary dark:hover:text-darkTextPrimary cursor-pointer"
       >
@@ -175,50 +93,14 @@ export default function CommandBar() {
         </kbd>
       </button>
 
-      <CommandDialog
-        open={open}
-        onOpenChange={setOpen}
-        title="Search and quick actions"
-        description="Jump to any page or start a setup task"
-      >
-        <CommandInput placeholder="Search pages and actions…" />
-        <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
-
-          {quickActions.length > 0 && (
-            <>
-              <CommandGroup heading="Quick actions">
-                {quickActions.map((action) => (
-                  <CommandItem
-                    key={action.key}
-                    // cmdk matches on `value`, so folding the hint in makes
-                    // "add member" find "Add a team member".
-                    value={`${action.label} ${action.hint}`}
-                    onSelect={() => run(action)}
-                  >
-                    {action.label}
-                    <CommandShortcut>{action.hint}</CommandShortcut>
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-              <CommandSeparator />
-            </>
-          )}
-
-          <CommandGroup heading="Go to">
-            {destinations.map((entry) => (
-              <CommandItem
-                key={entry.href}
-                value={`${entry.group ? `${entry.group} ` : ""}${entry.label} ${entry.href}`}
-                onSelect={() => go(entry.href)}
-              >
-                {entry.label}
-                {entry.group && <CommandShortcut>{entry.group}</CommandShortcut>}
-              </CommandItem>
-            ))}
-          </CommandGroup>
-        </CommandList>
-      </CommandDialog>
+      {paletteMounted && (
+        <OverlayErrorBoundary
+          label="command-palette"
+          onError={handlePaletteError}
+        >
+          <CommandPalette open={open} onOpenChange={setOpen} />
+        </OverlayErrorBoundary>
+      )}
     </>
   );
 }

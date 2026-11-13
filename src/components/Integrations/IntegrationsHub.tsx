@@ -1,8 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { getIntegrationStatus } from "@/actions/integrations/appIntegrationAction";
-import { getSlackStatus } from "@/actions/integrations/slackIntegrationAction";
+import { getIntegrationStatuses } from "@/actions/integrations/appIntegrationAction";
 import {
     IntegrationConnectionStatus,
     IntegrationStatusResponse,
@@ -60,37 +58,25 @@ const IntegrationsHub = ({ onOpen }: IntegrationsHubProps) => {
     const loadStatuses = useCallback(async () => {
         lastFetchRef.current = Date.now();
         const available = INTEGRATIONS.filter((def) => def.available);
-        const results = await Promise.all(
-            available.map(async (def) => {
-                try {
-                    if (def.key === "slack") {
-                        // /slack/status is two-section (workspace + personal),
-                        // not the flat provider shape — this admin-facing chip
-                        // reflects the company workspace connection
-                        const res: any = await getSlackStatus();
-                        const workspace = res?.data?.workspace;
-                        if (!workspace) return [def.key, null] as const;
-                        const payload: IntegrationStatusResponse = {
-                            provider: "slack",
-                            type: "messaging",
-                            status: workspace.status,
-                            connected: workspace.connected === true,
-                        };
-                        return [def.key, payload] as const;
-                    }
-                    const res: any = await getIntegrationStatus(def.key);
-                    const payload = res?.data ?? null;
-                    return [def.key, payload] as const;
-                } catch {
-                    return [def.key, null] as const;
-                }
-            }),
-        );
-        if (unmountedRef.current) return;
         const next: Partial<Record<IntegrationKey, IntegrationStatusResponse>> = {};
-        results.forEach(([key, payload]) => {
-            if (payload) next[key] = payload;
-        });
+        try {
+            // ONE server action for every chip. Next runs a tab's server
+            // actions one at a time, so a client-side Promise.all over one
+            // action per provider was six sequential round trips; the server
+            // runs these reads in parallel instead (Slack's two-section
+            // status is reduced to the workspace connection there too).
+            const byKey = await getIntegrationStatuses(
+                available.map((def) => def.key),
+            );
+            available.forEach((def) => {
+                const payload = byKey?.[def.key];
+                if (payload) next[def.key] = payload;
+            });
+        } catch {
+            // transport failure — every chip falls back to "Not connected",
+            // as each did when its own read failed
+        }
+        if (unmountedRef.current) return;
         setStatuses(next);
         setLoadingStatuses(false);
     }, []);

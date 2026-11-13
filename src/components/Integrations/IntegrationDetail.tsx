@@ -5,12 +5,12 @@ import {
     disconnectIntegration,
     getIntegrationItems,
     getIntegrationStatus,
-    importIntegrationItems,
-    syncIntegration,
 } from "@/actions/integrations/appIntegrationAction";
 import ConfirmDialog from "@/components/Common/ConfirmDialog";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { APP_UPDATED_MESSAGE } from "@/lib/appUpdated";
+import { isAccountSwitchReload } from "@/lib/clientSession";
 import { cn } from "@/lib/utils";
 import {
     IntegrationImportPayload,
@@ -36,12 +36,13 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { unstable_isUnrecognizedActionError, unstable_rethrow, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import IntegrationPickerDialog from "./IntegrationPickerDialog";
 import IntegrationResultDialog from "./IntegrationResultDialog";
 import { describeImport, IntegrationDef } from "./registry";
+import { refreshAfterRun, runIntegration } from "./runIntegration";
 import { useIntegrationConnectFlow } from "./useIntegrationConnectFlow";
 
 const statusMeta = {
@@ -97,6 +98,17 @@ const mergeResults = (
 const sameIds = (a: string[], b: string[]) =>
     a.length === b.length && a.every((id) => b.includes(id));
 
+/**
+ * What to say when a server action call throws. Next throws "server action not
+ * found" when the server was redeployed since this tab loaded and that build
+ * has no such action: retrying cannot help, a reload does. A redirect from the
+ * action is not a failure: it is rethrown, for Next to finish.
+ */
+const actionFailure = (error: unknown, fallback: string) => {
+    unstable_rethrow(error);
+    return unstable_isUnrecognizedActionError(error) ? APP_UPDATED_MESSAGE : fallback;
+};
+
 interface ResultView {
     mode: "import" | "sync";
     result: IntegrationImportResult;
@@ -129,6 +141,10 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
 
     const prevRemainingRef = useRef<string[] | null>(null);
     const cooldownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    /** Import and sync never overlap (`blocking`), so one controller covers both. */
+    const runAbortRef = useRef<AbortController | null>(null);
+    /** Set when the run itself leaves for /session-expired or billing. */
+    const leavingRef = useRef(false);
     const lastStatusFetchRef = useRef(0);
     /**
      * Boards imported via a pasted link can sit beyond the provider's list
@@ -154,8 +170,10 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
                 } else {
                     setStatusError(res?.message || "Failed to load integration status");
                 }
-            } catch {
-                setStatusError("Failed to load integration status");
+            } catch (error) {
+                setStatusError(
+                    actionFailure(error, "Failed to load integration status"),
+                );
             } finally {
                 setStatusLoading(false);
             }
@@ -201,8 +219,12 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
                     // ate the provider's rate limit) keeps showing the stale
                     // list instead of replacing it with an error box
                 }
-            } catch {
-                if (!silent) setItemsError(`Failed to load ${def.noun.plural}`);
+            } catch (error) {
+                if (!silent) {
+                    setItemsError(
+                        actionFailure(error, `Failed to load ${def.noun.plural}`),
+                    );
+                }
             } finally {
                 setItemsLoading(false);
             }
@@ -243,6 +265,10 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
     useEffect(() => {
         if (!blocking) return;
         const handler = (event: BeforeUnloadEvent) => {
+            // The app's own navigation, not the user leaving: a run's 401/402
+            // hand-off, or the reload that hands this tab to the account
+            // another tab just signed in. The run itself finishes on the API.
+            if (leavingRef.current || isAccountSwitchReload()) return;
             event.preventDefault();
             event.returnValue = "";
         };
@@ -253,6 +279,8 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
     useEffect(() => {
         return () => {
             if (cooldownTimerRef.current) clearTimeout(cooldownTimerRef.current);
+            // nobody is left to show a pending run's answer to
+            runAbortRef.current?.abort();
         };
     }, []);
 
@@ -318,23 +346,41 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
     const afterMutationSuccess = () => {
         fetchStatus({ silent: true });
         fetchItems({ silent: true });
-        // imported boards/lists are ordinary projects/tasks — refresh those screens
-        router.refresh();
+        // imported boards/lists are projects/tasks: re-render the route and
+        // drop the router cache, as the revalidating action used to
+        refreshAfterRun(router);
+    };
+
+    const startRun = (
+        run: "import" | "sync",
+        payload?: IntegrationImportPayload,
+    ) => {
+        runAbortRef.current = new AbortController();
+        leavingRef.current = false;
+        return runIntegration(def.key, run, {
+            payload,
+            signal: runAbortRef.current.signal,
+            beforeLeave: () => {
+                leavingRef.current = true;
+            },
+        });
     };
 
     const handleImport = async (payload: IntegrationImportPayload) => {
         if (blocking) return;
         setImporting(true);
         try {
-            const res: any = await importIntegrationItems(def.key, payload);
-            if (res?.success) {
+            const res = await startRun("import", payload);
+            // the view is gone, or the browser is leaving for another page
+            if (!res) return;
+            if (res.success) {
                 setPickerOpen(false);
                 setReconnectHint(false);
                 prevRemainingRef.current = null;
                 recordOffListImports(res.data);
                 setResultView({ mode: "import", result: res.data, stalled: false });
                 afterMutationSuccess();
-            } else if (res?.statusCode === 401) {
+            } else if (res.statusCode === 401) {
                 setPickerOpen(false);
                 handleMutationError(res, "Import failed");
             } else {
@@ -355,8 +401,9 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
         if (kind === "fresh") setSyncing(true);
         else setContinuing(true);
         try {
-            const res: any = await syncIntegration(def.key);
-            if (res?.success) {
+            const res = await startRun("sync");
+            if (!res) return;
+            if (res.success) {
                 const data: IntegrationImportResult = res.data;
                 const nextRemaining = data.remaining_ids ?? [];
                 setReconnectHint(false);
@@ -406,12 +453,21 @@ const IntegrationDetail = ({ def, onBack }: IntegrationDetailProps) => {
                 setItemsError(null);
                 setReconnectHint(false);
                 offListImportsRef.current = new Map();
-                await fetchStatus({ silent: true });
+                if (res?.data) {
+                    // The disconnect answers with the post-disconnect status —
+                    // the same serializer `/status` uses — so there is nothing
+                    // to read again.
+                    lastStatusFetchRef.current = Date.now();
+                    setStatus(res.data);
+                    setStatusError(null);
+                } else {
+                    await fetchStatus({ silent: true });
+                }
             } else {
                 toast.error(res?.message || `Failed to disconnect ${def.name}`);
             }
-        } catch {
-            toast.error(`Failed to disconnect ${def.name}`);
+        } catch (error) {
+            toast.error(actionFailure(error, `Failed to disconnect ${def.name}`));
         }
     };
 

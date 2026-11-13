@@ -1,6 +1,5 @@
 "use server";
 
-import { buildQuery } from "@/utils/buildQuery";
 import { baseApi } from "../baseApi";
 import { IResponse } from "@/types/type";
 import {
@@ -12,11 +11,8 @@ import {
   IBillingStatus,
   ICancelPayload,
   ICheckoutConfirmResult,
-  ICheckoutPayload,
   ICheckoutQuote,
-  ICheckoutSession,
   IConfirmSubscriptionResult,
-  IDiscountCode,
   IInvoicePayResult,
   IPaymentMethodList,
   ISetupIntentResult,
@@ -39,53 +35,49 @@ import {
  * `{ success: false, message, errorMessages }` (+ `statusCode` from baseApi) —
  * billing dialogs surface `message` inline rather than throwing.
  *
- * The status endpoint is the billing state machine: refetch it after EVERY
- * billing action — never cache it.
+ * The status endpoint is the billing state machine: re-read it after EVERY
+ * billing action (`useBillingRefresh`).
+ *
+ * ## Freshness
+ *
+ * Every read here is live, like every `baseApi` read without `cacheFor` —
+ * Stripe webhooks change billing state with nobody touching this app.
+ *
+ * Writes come in two kinds, and the split is deliberate:
+ *
+ * - `SUBSCRIPTION_WRITE` — writes that change the subscription itself. They
+ *   revalidate the `billing` tag, which makes Next re-render the current
+ *   route, layouts included, into the action's own response: whatever page
+ *   the dialog sits on (a members list a downgrade just parked, the billing
+ *   page's server props) comes back fresh in the same round trip, and Next
+ *   drops its client router cache, so Back cannot restore a pre-write page.
+ *   Callers follow up with `useBillingRefresh` for the client-held state that
+ *   render does not reach — never with `router.refresh()`, which would render
+ *   the whole route a second time.
+ * - Everything else — card management, the checkout steps, refund requests,
+ *   the price quotes — owns its client state and often runs mid-flow, where a
+ *   whole-route re-render is pure cost (on /billing/checkout it re-ran the
+ *   plans, status and quote reads between `subscribe` and `confirmPayment`).
+ *   These carry no tag.
  */
 const BASE = "/packages";
-const TAG = "billing";
+const SUBSCRIPTION_WRITE = { tag: "billing" } as const;
 
 export const getBillingStatus = async (): Promise<IResponse<IBillingStatus>> =>
-  await baseApi(`${BASE}/billing/status`, {
-    tag: TAG,
-    cache: "no-cache",
-  });
+  await baseApi(`${BASE}/billing/status`);
 
 /** Public pricing list — active plans with display pricing (dollars). */
 export const getPlans = async (): Promise<IResponse<IBillingPlan[]>> =>
-  await baseApi(`${BASE}`, {
-    tag: TAG,
-    cache: "no-cache",
-  });
-
-export const getDiscountList = async (
-  planId: number,
-): Promise<IResponse<IDiscountCode[]>> =>
-  await baseApi(`${BASE}/discount/list?plan=${planId}`, {
-    tag: TAG,
-    cache: "no-cache",
-  });
-
-/**
- * First purchase — returns a Stripe-hosted checkout URL to redirect to.
- * Stripe returns the browser to /billing/success?session_id=… or /billing/cancel.
- * 400s to surface inline: seats below active users, subscription already exists
- * (route to switch-plan / add-seats instead).
- */
-export const createCheckoutSession = async (
-  payload: ICheckoutPayload,
-): Promise<IResponse<ICheckoutSession>> =>
-  await baseApi(`${BASE}/payment/url`, {
-    method: "POST",
-    body: payload,
-    tag: TAG,
-    cache: "no-cache",
-  });
+  await baseApi(`${BASE}`);
 
 /**
  * Post-checkout activation — /billing/success passes the session_id from the
  * Stripe redirect; the backend pulls the session from Stripe and runs the same
  * sync the webhook would. Makes activation independent of webhook delivery.
+ *
+ * Untagged: the success page retries this every few seconds and is entirely
+ * client-driven, so a route re-render per attempt would buy nothing. The page
+ * hands the activated status to the billing store itself.
  */
 export const confirmCheckout = async (
   sessionId: string,
@@ -93,8 +85,6 @@ export const confirmCheckout = async (
   await baseApi(`${BASE}/checkout/confirm`, {
     method: "POST",
     body: { session_id: sessionId },
-    tag: TAG,
-    cache: "no-cache",
   });
 
 /** Step 1 of add-seats — read-only proration preview, no charge. ALWAYS quote first. */
@@ -104,11 +94,9 @@ export const getSeatQuote = async (
   await baseApi(`${BASE}/subscription/seat-quote`, {
     method: "POST",
     body: { seats },
-    tag: TAG,
-    cache: "no-cache",
     // Same shape as the checkout quote: a POST that only reads. Today it is
     // only ever called from the client, but marking it keeps it safe to
-    // server-render and stops it evicting the billing tag for nothing.
+    // server-render should anyone ever give it a tag.
     skipRevalidate: true,
   });
 
@@ -119,8 +107,7 @@ export const addSeats = async (
   await baseApi(`${BASE}/subscription/add-seats`, {
     method: "PATCH",
     body: { seats },
-    tag: TAG,
-    cache: "no-cache",
+    ...SUBSCRIPTION_WRITE,
   });
 
 /**
@@ -133,38 +120,27 @@ export const switchPlan = async (
   await baseApi(`${BASE}/subscription/switch-plan`, {
     method: "PATCH",
     body: payload,
-    tag: TAG,
-    cache: "no-cache",
+    ...SUBSCRIPTION_WRITE,
   });
 
 export const getBillingInvoices = async (
   query: { page?: number; limit?: number } = {},
-): Promise<IResponse<IBillingInvoice[]>> => {
-  const queryString = buildQuery(query);
-  return await baseApi(
-    `${BASE}/billing/invoices${queryString ? `?${queryString}` : ""}`,
-    {
-      tag: TAG,
-      cache: "no-cache",
-    },
-  );
-};
+): Promise<IResponse<IBillingInvoice[]>> =>
+  await baseApi(`${BASE}/billing/invoices`, { query });
 
 /**
  * `GET /packages/billing/invoices/:id` — the invoice document payload.
  *
  * Tenant-scoped server-side: another company's id answers 404, so there is no
- * ownership check to duplicate here. Uncached like every other billing read —
- * an invoice that is still settling must not be served from a stale snapshot;
- * settled ones are memoised per id on the client instead.
+ * ownership check to duplicate here. Live like every other billing read — an
+ * invoice that is still settling must never be served from a stale snapshot.
+ * Nothing memoises it on the client either: each visit to the invoice page
+ * reads it again.
  */
 export const getBillingInvoiceDetail = async (
   id: number,
 ): Promise<IResponse<IBillingInvoiceDetail>> =>
-  await baseApi(`${BASE}/billing/invoices/${id}`, {
-    tag: TAG,
-    cache: "no-cache",
-  });
+  await baseApi(`${BASE}/billing/invoices/${id}`);
 
 /** 5xx and transport failures are the only statuses worth a second attempt. */
 const isRetryableStatus = (statusCode: number | undefined): boolean =>
@@ -195,18 +171,14 @@ export const switchToFreePlan = async (): Promise<
   await baseApi(`${BASE}/downgrade/switch-to-free`, {
     method: "POST",
     body: {},
-    tag: TAG,
-    cache: "no-cache",
+    ...SUBSCRIPTION_WRITE,
   });
 
 /** Over-limit trial expiry — what the owner must choose between. */
 export const getDowngradePreview = async (): Promise<
   IResponse<IDowngradePreview>
 > =>
-  await baseApi(`${BASE}/downgrade/preview`, {
-    tag: TAG,
-    cache: "no-cache",
-  });
+  await baseApi(`${BASE}/downgrade/preview`);
 
 export const resolveDowngrade = async (
   payload: IDowngradeResolvePayload,
@@ -214,8 +186,7 @@ export const resolveDowngrade = async (
   await baseApi(`${BASE}/downgrade/resolve`, {
     method: "POST",
     body: payload,
-    tag: TAG,
-    cache: "no-cache",
+    ...SUBSCRIPTION_WRITE,
   });
 
 /** After a later upgrade — restores oldest-parked first, up to the new caps. */
@@ -223,8 +194,7 @@ export const restoreParked = async (): Promise<IResponse<IRestoreResult>> =>
   await baseApi(`${BASE}/downgrade/restore`, {
     method: "POST",
     body: {},
-    tag: TAG,
-    cache: "no-cache",
+    ...SUBSCRIPTION_WRITE,
   });
 
 /**
@@ -238,8 +208,7 @@ export const cancelSubscription = async (
   await baseApi(`${BASE}/subscription/cancel`, {
     method: "DELETE",
     body: payload,
-    tag: TAG,
-    cache: "no-cache",
+    ...SUBSCRIPTION_WRITE,
   });
 
 /* ---------------- payment methods + custom checkout ---------------- */
@@ -250,25 +219,24 @@ export const cancelSubscription = async (
  * them would eject the admin from a half-confirmed payment. They render the
  * envelope inline instead.
  *
+ * Untagged (see "Freshness" above): the card list answers every write with
+ * the full post-write list, and the checkout steps hand over to
+ * /billing/success, so none of them needs the route re-rendered — least of all
+ * between `subscribe` and `confirmPayment`.
+ *
  * NOTHING in this section ever carries card data. Card number, expiry and CVV
  * are entered into Stripe-hosted iframes and confirmed from the browser with
  * Stripe.js — a PAN must never reach a server action, which is what keeps the
  * API out of PCI scope.
  */
 const PAYMENT_OPTS = {
-  tag: TAG,
-  cache: "no-cache",
   skipPaymentRedirect: true,
 } as const;
 
 /** Saved cards, read live from Stripe — we store none of our own. */
 export const getPaymentMethods = async (): Promise<
   IResponse<IPaymentMethodList>
-> =>
-  await baseApi(`${BASE}/billing/payment-methods`, {
-    tag: TAG,
-    cache: "no-cache",
-  });
+> => await baseApi(`${BASE}/billing/payment-methods`);
 
 /**
  * Saving a card with no charge. The returned `client_secret` is single-use and
@@ -326,11 +294,12 @@ export const getCheckoutQuote = async (payload: {
     method: "POST",
     body: payload,
     ...PAYMENT_OPTS,
-    // POST only because it takes a body — it changes nothing, so there is no
-    // cache to invalidate. Load-bearing: the checkout page fetches this during
-    // its server render to paint the order summary on the first frame, and
-    // `revalidateTag` during a render is a hard error in Next 15 that took the
-    // whole route down with a server-side exception.
+    // POST only because it takes a body — it changes nothing, so there is
+    // nothing to revalidate. Kept although nothing here is tagged: the
+    // checkout page fetches this during its server render to paint the order
+    // summary on the first frame, and `revalidateTag` during a render is a
+    // hard error in Next 15 that once took the whole route down — a tag added
+    // here later must not bring that back.
     skipRevalidate: true,
   });
 
@@ -370,7 +339,11 @@ export const confirmSubscription = async (
     ...PAYMENT_OPTS,
   });
 
-/** In-app retry of a failed invoice — the alternative to Stripe's hosted page. */
+/**
+ * In-app retry of a failed invoice — the alternative to Stripe's hosted page.
+ * A payment surface (no 402 bounce) that is also a subscription write: paying
+ * is what lifts a lockout, so it re-renders the route like the other writes.
+ */
 export const payInvoice = async (
   invoiceId: number,
   paymentMethodId?: string,
@@ -379,4 +352,5 @@ export const payInvoice = async (
     method: "POST",
     body: paymentMethodId ? { payment_method_id: paymentMethodId } : {},
     ...PAYMENT_OPTS,
+    ...SUBSCRIPTION_WRITE,
   });

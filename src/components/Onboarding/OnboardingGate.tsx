@@ -1,21 +1,43 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import { usePathname, useRouter } from "next/navigation";
-import { AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import { useSidebarStore } from "@/store/sidebarStore";
 import { resumePoint, useOnboardingStore } from "@/store/onboardingStore";
 import { checklistProgress, stepsForTour } from "@/lib/onboarding/registry";
 import { useTourTarget } from "@/lib/onboarding/useTourTarget";
 import { useDialogOpen } from "@/lib/onboarding/useDialogOpen";
+import { useLatched } from "@/lib/onboarding/useLatched";
 import { useQuickActionStore } from "@/store/quickActionStore";
-import { IOnboardingTask } from "@/types/onboarding";
-import QuickSetupDialog from "./QuickSetupDialog";
-import SpotlightOverlay from "./SpotlightOverlay";
-import TooltipPopover from "./TooltipPopover";
-import ChecklistWidget from "./ChecklistWidget";
-import TourHandoffDialog from "./TourHandoffDialog";
+import { IOnboardingStatus, IOnboardingTask } from "@/types/onboarding";
+import OverlayErrorBoundary from "@/components/Common/OverlayErrorBoundary";
+
+/*
+ * The four presentational overlays are loaded on demand. They exist for a new
+ * user's first sessions, yet were in the bundle every dashboard page loads —
+ * along with framer-motion, which all of them animate with. Now each chunk is
+ * fetched the first time its overlay is needed (warmed early while onboarding
+ * is in progress — see the preload effect) and stays mounted once shown, so
+ * the gate itself imports neither them nor framer-motion.
+ */
+const QuickSetupDialog = dynamic(() => import("./QuickSetupDialog"), {
+  ssr: false,
+});
+const TourHandoffDialog = dynamic(() => import("./TourHandoffDialog"), {
+  ssr: false,
+});
+const SpotlightOverlay = dynamic(() => import("./SpotlightOverlay"), {
+  ssr: false,
+});
+const TooltipPopover = dynamic(() => import("./TooltipPopover"), {
+  ssr: false,
+});
+const ChecklistWidget = dynamic(() => import("./ChecklistWidget"), {
+  ssr: false,
+});
 
 /**
  * The single mounted orchestrator for everything onboarding — the counterpart
@@ -47,11 +69,17 @@ interface OnboardingGateProps {
    * source that works on a fresh browser is a prop from the layout.
    */
   workspaceName?: string;
+  /**
+   * `GET /user/onboarding-status` as the layout read it in this server render
+   * (null when that read failed) — seeds the store, see the load effect.
+   */
+  initialStatus?: IOnboardingStatus | null;
 }
 
 export default function OnboardingGate({
   role: serverRole,
   workspaceName,
+  initialStatus,
 }: OnboardingGateProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -61,7 +89,6 @@ export default function OnboardingGate({
 
   const status = useOnboardingStore((s) => s.status);
   const loaded = useOnboardingStore((s) => s.loaded);
-  const fetchStatus = useOnboardingStore((s) => s.fetchStatus);
   const welcomeOpen = useOnboardingStore((s) => s.welcomeOpen);
   const openWelcome = useOnboardingStore((s) => s.openWelcome);
   const closeWelcome = useOnboardingStore((s) => s.closeWelcome);
@@ -91,6 +118,12 @@ export default function OnboardingGate({
   const [handoffOpen, setHandoffOpen] = useState(false);
 
   /**
+   * Set when a lazy overlay failed to load (see OverlayErrorBoundary): from
+   * then on, until the next full page load, nothing below renders.
+   */
+  const [overlaysFailed, setOverlaysFailed] = useState(false);
+
+  /**
    * A dialog opened *during* a step (the user clicking the very button the
    * tour highlighted) must not be buried under the backdrop — see
    * `useDialogOpen`. The tour keeps its place and comes back on close.
@@ -108,9 +141,34 @@ export default function OnboardingGate({
 
   /* ---------------- load ---------------- */
 
+  /**
+   * Seed the store from the status the layout read during the server render,
+   * instead of asking again through a server action on every full load — a
+   * POST that waits in line behind every other action the tab sends, while
+   * the checklist and welcome modal wait on it.
+   *
+   * Only ever into a store that holds no status yet: a first load, a store
+   * reset at sign-out, or a first read that failed (a later render's snapshot
+   * then heals it with no request of its own). A store that has a status is
+   * the truth — it carries optimistic ticks and the live tour position — and
+   * the fresh snapshot every refresh of the layout hands down would roll them
+   * back. Explicit refreshes stay `fetchStatus({ force: true })`.
+   */
   useEffect(() => {
-    void fetchStatus();
-  }, [fetchStatus]);
+    const store = useOnboardingStore.getState();
+    if (store.status) return;
+
+    if (initialStatus) {
+      useOnboardingStore.setState({ status: initialStatus, loaded: true });
+    } else if (!store.loaded && !store.inFlight) {
+      // The server read failed — try once from the client, so the gate still
+      // settles (`loaded`) instead of waiting for the next server render.
+      // `fetchStatus` reads through a GET route handler: a server action sent
+      // from here, beside live views that failed in the same render, crashed
+      // the app at their next retry (React #310).
+      void store.fetchStatus();
+    }
+  }, [initialStatus]);
 
   useEffect(() => {
     setRole(role);
@@ -120,7 +178,8 @@ export default function OnboardingGate({
 
   useEffect(() => {
     if (!loaded || !status || welcomeShownRef.current) return;
-    if (activeTour) return;
+    // Nobody asked for it: no error toast for a guide that cannot render.
+    if (activeTour || overlaysFailed) return;
 
     // All three conditions, plus a real role to build a tour from.
     const eligible =
@@ -141,16 +200,49 @@ export default function OnboardingGate({
 
     welcomeShownRef.current = true;
     openWelcome();
-  }, [loaded, status, activeTour, role, pathname, openWelcome]);
+  }, [loaded, status, activeTour, overlaysFailed, role, pathname, openWelcome]);
+
+  /* ---------------- overlays that cannot load ---------------- */
+
+  /**
+   * With the overlays gone, a running tour is invisible but not idle: it
+   * would keep sending the user back to its step's page on every navigation,
+   * with no spotlight, tooltip or exit on screen. So whenever something asks
+   * for an overlay that can no longer render — the tour or guide that was up
+   * when the chunk failed, or a later "Restart tour" from the profile menu —
+   * end or close it straight away (through the store's own actions, so the
+   * resume point is saved as on any exit) and say why.
+   */
+  useEffect(() => {
+    if (!overlaysFailed || !(activeTour || welcomeOpen || handoffOpen)) return;
+
+    toast.error(
+      activeTour
+        ? "The product tour couldn't load"
+        : "The setup guide couldn't load",
+      {
+        id: "onboarding-overlays-failed",
+        description: "Reload the page to try again.",
+        action: { label: "Reload", onClick: () => window.location.reload() },
+      },
+    );
+    if (activeTour) endTour({ completed: false });
+    if (welcomeOpen) closeWelcome();
+    if (handoffOpen) setHandoffOpen(false);
+  }, [overlaysFailed, activeTour, welcomeOpen, handoffOpen, endTour, closeWelcome]);
+
+  const handleOverlayError = useCallback(() => setOverlaysFailed(true), []);
 
   /* ---------------- navigate to the step's route ---------------- */
 
   useEffect(() => {
+    // A tour that cannot render must not drive navigation (see above).
+    if (overlaysFailed) return;
     if (!step?.route || !pathname) return;
     if (pathname === step.route) return;
 
     router.push(step.route);
-  }, [step?.route, pathname, router]);
+  }, [step?.route, pathname, router, overlaysFailed]);
 
   /**
    * Expand the nav group a step's target lives inside.
@@ -159,11 +251,11 @@ export default function OnboardingGate({
    * already-open menu closes the very thing the step needs. Check first.
    */
   useEffect(() => {
-    if (!step?.expandsNavMenu) return;
+    if (overlaysFailed || !step?.expandsNavMenu) return;
 
     const { openMenu, setOpenMenu } = useSidebarStore.getState();
     if (openMenu !== step.expandsNavMenu) setOpenMenu(step.expandsNavMenu);
-  }, [step?.expandsNavMenu, pathname]);
+  }, [step?.expandsNavMenu, pathname, overlaysFailed]);
 
   /* ---------------- resolve the target ---------------- */
 
@@ -256,12 +348,18 @@ export default function OnboardingGate({
 
     // Nothing to come back to if they turned the guide off or finished, and
     // a running tour is a deliberate full-screen flow — do not interrupt it.
-    if (status.isDismissed || status.isOnboardingCompleted || activeTour) {
+    // Nor a guide that can no longer render (an error toast nobody asked for).
+    if (
+      status.isDismissed ||
+      status.isOnboardingCompleted ||
+      activeTour ||
+      overlaysFailed
+    ) {
       return;
     }
 
     openWelcome();
-  }, [pendingTask, status, dialogOpen, activeTour, openWelcome, setPendingTask]);
+  }, [pendingTask, status, dialogOpen, activeTour, overlaysFailed, openWelcome, setPendingTask]);
 
   /* ---------------- completion ---------------- */
 
@@ -385,45 +483,81 @@ export default function OnboardingGate({
     void finish();
   }, [finish]);
 
+  /* ---------------- lazy overlays ---------------- */
+
+  const showChecklist = Boolean(
+    status &&
+      !status.isOnboardingCompleted &&
+      !status.isDismissed &&
+      progress.total > 0 &&
+      progress.done < progress.total &&
+      // The widget is the dialog's own launcher and sits at z-[80], above
+      // ui/dialog's z-50 overlay. Left mounted it would float brightly over the
+      // guide it just opened — and because Radix puts `pointer-events: none` on
+      // the body, a click on that bright card lands on the overlay and closes
+      // the very dialog the user opened. It is also redundant: the dialog shows
+      // the same checklist, larger.
+      !welcomeOpen,
+  );
+
+  // Each lazy overlay mounts the first time it is needed and then stays
+  // mounted, so closing it still animates out (and Radix still returns focus).
+  const welcomeMounted = useLatched(welcomeOpen);
+  const handoffMounted = useLatched(handoffOpen);
+  const checklistMounted = useLatched(showChecklist);
+
+  /**
+   * Warm the guide and tour chunks while onboarding is in progress — the only
+   * sessions in which they can open — so the first guide, spotlight or
+   * hand-off never waits on a download. (The checklist loads by being shown.)
+   * Completed and dismissed accounts never fetch any of them; a restart from
+   * the profile menu loads them on demand.
+   */
+  const onboardingInProgress = Boolean(
+    status && !status.isOnboardingCompleted && !status.isDismissed,
+  );
+
+  useEffect(() => {
+    if (!onboardingInProgress) return;
+
+    // A failed warm-up is harmless: the overlay's own load retries the chunk.
+    const ignore = () => undefined;
+    import("./QuickSetupDialog").catch(ignore);
+    import("./SpotlightOverlay").catch(ignore);
+    import("./TooltipPopover").catch(ignore);
+    import("./TourHandoffDialog").catch(ignore);
+  }, [onboardingInProgress]);
+
   /* ---------------- render ---------------- */
 
   if (!loaded || !status) return null;
 
   const resumable = resumePoint(status) !== null;
 
-  const showChecklist =
-    !status.isOnboardingCompleted &&
-    !status.isDismissed &&
-    progress.total > 0 &&
-    progress.done < progress.total &&
-    // The widget is the dialog's own launcher and sits at z-[80], above
-    // ui/dialog's z-50 overlay. Left mounted it would float brightly over the
-    // guide it just opened — and because Radix puts `pointer-events: none` on
-    // the body, a click on that bright card lands on the overlay and closes
-    // the very dialog the user opened. It is also redundant: the dialog shows
-    // the same checklist, larger.
-    !welcomeOpen;
-
   return (
-    <>
-      <QuickSetupDialog
-        open={welcomeOpen}
-        userName={logInUserData?.name as string | undefined}
-        workspaceName={workspaceName}
-        tasks={progress.tasks}
-        completed={status.completedSteps}
-        tourResumable={resumable}
-        onClose={closeWelcome}
-        onDismissForever={() => void dismiss()}
-        onAction={handleQuickSetupAction}
-      />
+    <OverlayErrorBoundary label="onboarding" onError={handleOverlayError}>
+      {welcomeMounted && (
+        <QuickSetupDialog
+          open={welcomeOpen}
+          userName={logInUserData?.name as string | undefined}
+          workspaceName={workspaceName}
+          tasks={progress.tasks}
+          completed={status.completedSteps}
+          tourResumable={resumable}
+          onClose={closeWelcome}
+          onDismissForever={() => void dismiss()}
+          onAction={handleQuickSetupAction}
+        />
+      )}
 
-      <TourHandoffDialog
-        open={handoffOpen}
-        stepCount={stepsForTour("orientation", role).length}
-        onAccept={handleStartOrientation}
-        onDecline={handleDeclineOrientation}
-      />
+      {handoffMounted && (
+        <TourHandoffDialog
+          open={handoffOpen}
+          stepCount={stepsForTour("orientation", role).length}
+          onAccept={handleStartOrientation}
+          onDecline={handleDeclineOrientation}
+        />
+      )}
 
       {activeTour && step && !dialogOpen && (
         <>
@@ -456,21 +590,19 @@ export default function OnboardingGate({
         </>
       )}
 
-      <AnimatePresence>
-        {showChecklist && (
-          <ChecklistWidget
-            key="checklist"
-            tasks={progress.tasks}
-            completed={status.completedSteps}
-            expanded={checklistExpanded}
-            onExpandedChange={setChecklistExpanded}
-            onDismiss={() => void dismiss()}
-            onTaskAction={handleChecklistAction}
-            onStartTour={handleStartCore}
-            onOpenGuide={openWelcome}
-          />
-        )}
-      </AnimatePresence>
-    </>
+      {checklistMounted && (
+        <ChecklistWidget
+          visible={showChecklist}
+          tasks={progress.tasks}
+          completed={status.completedSteps}
+          expanded={checklistExpanded}
+          onExpandedChange={setChecklistExpanded}
+          onDismiss={() => void dismiss()}
+          onTaskAction={handleChecklistAction}
+          onStartTour={handleStartCore}
+          onOpenGuide={openWelcome}
+        />
+      )}
+    </OverlayErrorBoundary>
   );
 }

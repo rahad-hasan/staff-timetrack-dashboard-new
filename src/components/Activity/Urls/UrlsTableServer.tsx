@@ -1,22 +1,29 @@
 import { ISearchParamsProps } from "@/types/type";
 import { getUrls } from "@/actions/appsUrls/action";
 import UrlsTable from "./UrlsTable";
-import { format } from "date-fns";
-import { getDecodedUser } from "@/utils/decodedLogInUser";
+import { resolveViewFilters } from "@/components/TimeSheets/viewFilters";
+import { requireDataOrRefusal } from "@/lib/server/liveData";
 
 const UrlsTableServer = async ({ searchParams }: ISearchParamsProps) => {
-  const user = await getDecodedUser();
-  const userId = user?.id;
-  const currentDate = format(new Date(), "yyyy-MM-dd");
   const params = await searchParams;
+  const { userId, date } = await resolveViewFilters(params);
   const result = await getUrls({
-    date: params.date ?? currentDate,
-    user_id: params.user_id ?? userId,
+    date,
+    user_id: userId,
+    // The page's project picker writes this; GET /apps-url/urls filters on it
+    // exactly like /apps-url/apps does.
+    project_id: params.project_id,
   });
+  // A refusal (no access to the member, no such member) keeps the empty
+  // table; any other failure throws rather than passing for "no URLs".
+  requireDataOrRefusal(result, "URL usage");
 
   return (
     <>
-      <UrlsTable data={result?.data?.urls} />
+      <UrlsTable
+        data={result?.data?.urls}
+        message={result?.success === false ? result.message : undefined}
+      />
     </>
   );
 };

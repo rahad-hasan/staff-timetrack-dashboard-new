@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState, type KeyboardEvent } from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { ChevronLeft, ChevronRight, Download, ImageIcon, ImageOff, X, ZoomIn, ZoomOut } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
 import { Dialog, DialogDescription, DialogOverlay, DialogPortal, DialogTitle } from "@/components/ui/dialog";
 import { FOCUS_RING_ON_BLUE, notifySupport, useOpenerFocus } from "@/components/Support/primitives";
 import { formatDayAndClock } from "@/lib/supportFormat";
@@ -50,6 +51,7 @@ interface ViewState {
  */
 export const ImageLightbox = ({ images, index, onIndexChange }: ImageLightboxProps) => {
   const { hrefFor, ensureFresh, recover } = useAttachmentUrls();
+  const timeZone = useViewerTimeZone();
   const current = index !== null ? images[index] ?? null : null;
   const open = current !== null;
   // no Dialog.Trigger: focus goes back to the thumbnail that opened the preview
@@ -108,7 +110,7 @@ export const ImageLightbox = ({ images, index, onIndexChange }: ImageLightboxPro
   };
 
   const meta = current
-    ? [formatFileSize(current.file.byte_size), current.file.uploaded_by?.name, formatDayAndClock(current.file.created_at)]
+    ? [formatFileSize(current.file.byte_size), current.file.uploaded_by?.name, formatDayAndClock(current.file.created_at, timeZone)]
         .filter(Boolean)
         .join(" · ")
     : "";

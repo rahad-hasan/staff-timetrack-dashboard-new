@@ -143,34 +143,27 @@ const coreMember = (
   p: SamplePerson,
   activity: number,
   work: IDuration,
-  active: IDuration,
-  idle: IDuration,
   rank: number,
 ): ICoreMember => ({
   user_id: p.id,
   name: p.name,
-  email: p.email,
   image: "",
   work_duration: work,
-  idle_duration: idle,
-  active_duration: active,
   activity,
-  projects_count: 2,
-  tasks_count: 4,
   rank,
 });
 
 export const sampleCoreMembers = (type: string): ICoreMember[] =>
   type === "lowest"
     ? [
-        coreMember(PEOPLE[3], 48, dur(41, 12, 30), dur(28, 5, 0), dur(13, 7, 30), 3),
-        coreMember(PEOPLE[4], 55, dur(56, 40, 15), dur(39, 22, 0), dur(17, 18, 15), 2),
-        coreMember(PEOPLE[2], 61, dur(72, 8, 45), dur(52, 30, 0), dur(19, 38, 45), 1),
+        coreMember(PEOPLE[3], 48, dur(41, 12, 30), 3),
+        coreMember(PEOPLE[4], 55, dur(56, 40, 15), 2),
+        coreMember(PEOPLE[2], 61, dur(72, 8, 45), 1),
       ]
     : [
-        coreMember(PEOPLE[0], 94, dur(118, 24, 10), dur(104, 12, 0), dur(14, 12, 10), 1),
-        coreMember(PEOPLE[1], 89, dur(104, 45, 30), dur(89, 20, 0), dur(15, 25, 30), 2),
-        coreMember(PEOPLE[2], 83, dur(97, 12, 5), dur(81, 40, 0), dur(15, 32, 5), 3),
+        coreMember(PEOPLE[0], 94, dur(118, 24, 10), 1),
+        coreMember(PEOPLE[1], 89, dur(104, 45, 30), 2),
+        coreMember(PEOPLE[2], 83, dur(97, 12, 5), 3),
       ];
 
 const memberStats = (

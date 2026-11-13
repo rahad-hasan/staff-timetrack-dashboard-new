@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { switchPlan } from "@/actions/billing/action";
+import { unstable_rethrow } from "next/navigation";
 import { useBillingStore } from "@/store/billingStore";
 import {
   BillingCycle,
@@ -49,7 +50,6 @@ export default function SwitchPlanDialog({
   const entitlements = useBillingStore((s) => s.status?.entitlements ?? null);
   const refreshBilling = useBillingRefresh();
   const startPolling = useBillingStore((s) => s.startPolling);
-  const stopPolling = useBillingStore((s) => s.stopPolling);
 
   const [seatsInput, setSeatsInput] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -73,12 +73,9 @@ export default function SwitchPlanDialog({
      the switch applies via webhook once the proration invoice is paid
      (guide §5: same confirm-payment handling as add-seats §3). */
   useEffect(() => {
-    if (open && pending) {
-      startPolling(5000);
-      return () => stopPolling();
-    }
+    if (open && pending) return startPolling(5000);
     return undefined;
-  }, [open, pending, startPolling, stopPolling]);
+  }, [open, pending, startPolling]);
 
   /* When the polled status shows the target plan+cycle live, celebrate,
      close, and offer the parked-users restore. */
@@ -143,7 +140,8 @@ export default function SwitchPlanDialog({
       } else {
         setError(res?.message || "Could not switch plans. Please try again.");
       }
-    } catch {
+    } catch (error) {
+      unstable_rethrow(error);
       toast.error("Something went wrong switching plans. Please try again.");
     } finally {
       setSubmitting(false);

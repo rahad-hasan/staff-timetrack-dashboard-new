@@ -7,14 +7,18 @@ import {
   getPaymentMethods,
   setDefaultPaymentMethod,
 } from "@/actions/billing/action";
+import { unstable_rethrow } from "next/navigation";
 import { useBillingStore } from "@/store/billingStore";
 import { IPaymentMethod, IPaymentMethodList } from "@/types/billing";
 
 /**
- * Mutations resolve rather than throw. The server's refusal message is the
- * point — "you can't remove your only card while a subscription is live" has
- * to reach the user verbatim, so callers render `message` inline instead of
- * mapping a boolean onto generic copy.
+ * Mutations resolve rather than throw, except a Next redirect — only a dead
+ * session's, to /session-expired, as these actions skip the 402 bounce. That
+ * is rethrown for the router to finish, and a caller's own `catch` must pass
+ * it on too (`unstable_rethrow`). The server's refusal message is the point —
+ * "you can't remove your only card while a subscription is live" has to reach
+ * the user verbatim, so callers render `message` inline instead of mapping a
+ * boolean onto generic copy.
  */
 export interface PaymentMethodMutationResult {
   ok: boolean;
@@ -112,7 +116,8 @@ export const usePaymentMethods = (): PaymentMethodsState => {
         } else {
           setError(response?.message || "Failed to load payment methods.");
         }
-      } catch {
+      } catch (error) {
+        unstable_rethrow(error);
         if (latestRequest.current === requestId) {
           setError("Something went wrong while loading your saved cards.");
         }
@@ -139,7 +144,8 @@ export const usePaymentMethods = (): PaymentMethodsState => {
           ok: false,
           message: response?.message || "Could not update your default card.",
         };
-      } catch {
+      } catch (error) {
+        unstable_rethrow(error);
         return {
           ok: false,
           message: "Something went wrong while updating your default card.",
@@ -167,7 +173,8 @@ export const usePaymentMethods = (): PaymentMethodsState => {
           ok: false,
           message: response?.message || "Could not remove that card.",
         };
-      } catch {
+      } catch (error) {
+        unstable_rethrow(error);
         return {
           ok: false,
           message: "Something went wrong while removing that card.",

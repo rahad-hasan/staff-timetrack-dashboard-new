@@ -10,6 +10,7 @@ import EditMemberStep from "./EditProjectFormStep/EditMemberStep";
 import EditBudgetAndHoursStep from "./EditProjectFormStep/EditBudgetAndHoursStep";
 import { IProject } from "@/types/type";
 import { useProjectFormStore } from "@/store/ProjectFormStore";
+import { useDashboardMembers } from "@/hooks/useDashboardMembers";
 // import AddTasksStep from "./AddProjectFomStep/AddTasksStep";
 
 const EditProjectModal = ({ onClose, selectedProject }: { onClose: () => void; selectedProject: IProject }) => {
@@ -19,6 +20,9 @@ const EditProjectModal = ({ onClose, selectedProject }: { onClose: () => void; s
     // the store must outlive step navigation but not the wizard itself — clean it
     // on unmount so route changes can't leak values into the next wizard
     useEffect(() => resetData, [resetData]);
+    // Loaded once per wizard (it remounts per open) and shared by the member and
+    // manager steps, which mount and unmount on every Back/Next.
+    const { members } = useDashboardMembers();
 
     return (
         <DialogContent
@@ -36,11 +40,11 @@ const EditProjectModal = ({ onClose, selectedProject }: { onClose: () => void; s
             </DialogHeader>
             {
                 step === 1 &&
-                <EditGeneralInfoStep setStep={setStep} selectedProject={selectedProject}></EditGeneralInfoStep>
+                <EditGeneralInfoStep setStep={setStep} selectedProject={selectedProject} members={members}></EditGeneralInfoStep>
             }
             {
                 step === 2 &&
-                <EditMemberStep setStep={setStep} selectedProject={selectedProject}></EditMemberStep>
+                <EditMemberStep setStep={setStep} selectedProject={selectedProject} members={members}></EditMemberStep>
             }
             {
                 step === 3 &&

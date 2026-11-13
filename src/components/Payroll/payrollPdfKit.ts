@@ -1,6 +1,6 @@
-import { format, parseISO } from "date-fns";
 import type jsPDF from "jspdf";
 
+import { formatInstant } from "@/lib/timezone";
 import type { PayrollRunStatus } from "@/types/payroll";
 
 /**
@@ -37,27 +37,13 @@ export const PAGE_MARGIN = 40;
 
 /* ---------------- dates ---------------- */
 
-const formatOrRaw = (value: string | null | undefined, pattern: string) => {
-  if (!value) return "—";
-  try {
-    return format(parseISO(value), pattern);
-  } catch {
-    return value;
-  }
-};
-
-export const safeDate = (value?: string | null) =>
-  formatOrRaw(value, "MMM d, yyyy h:mm a");
-
-export const shortDate = (value?: string | null) =>
-  formatOrRaw(value, "MMM d, yyyy");
-
 /**
- * Joins two dates with an en dash, not an arrow: jsPDF's built-in Helvetica is
- * WinAnsi-encoded and renders U+2192 as garbage.
+ * An instant (approval, payment, generation) in `timeZone`, the viewer's: the
+ * zone every payroll page prints it in. The browser's own zone gave the PDF
+ * another day than the page whenever the two differ.
  */
-export const dateRange = (start?: string | null, end?: string | null) =>
-  `${shortDate(start)} – ${shortDate(end)}`;
+export const safeDate = (value: string | Date | null | undefined, timeZone: string) =>
+  formatInstant(value, timeZone, "MMM d, yyyy h:mm a");
 
 /* ---------------- text ---------------- */
 
@@ -199,14 +185,15 @@ export const drawNotesBlock = (
 };
 
 /**
- * Stamps every page with the generation time, an optional disclaimer and a
- * page counter. Call last — it walks pages that autoTable may have added.
+ * Stamps every page with the generation time (in `timeZone`, the viewer's), an
+ * optional disclaimer and a page counter. Call last — it walks pages that
+ * autoTable may have added.
  */
-export const drawFooter = (doc: jsPDF, disclaimer?: string) => {
+export const drawFooter = (doc: jsPDF, timeZone: string, disclaimer?: string) => {
   const pageCount = doc.getNumberOfPages();
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
-  const generated = format(new Date(), "MMM d, yyyy h:mm a");
+  const generated = safeDate(new Date(), timeZone);
 
   for (let page = 1; page <= pageCount; page += 1) {
     doc.setPage(page);

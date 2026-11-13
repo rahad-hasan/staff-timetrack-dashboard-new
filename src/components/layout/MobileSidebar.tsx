@@ -5,10 +5,10 @@ import {
     SheetTitle,
 } from "@/components/ui/sheet";
 import Image from "next/image";
-import { othersSidebarItems, sidebarItems, sidebarItemsEmployee } from "@/utils/SidebarItems";
 import { useSidebarStore } from "@/store/sidebarStore";
 import MobileSidebarItem from "./sidebar/MobileSidebarItem";
 import MobileSubItem from "./sidebar/MobileSubItem";
+import { sidebarSectionsFor } from "./sidebar/sidebarSections";
 import logoWithSlogan from '../../assets/logo-with-text.webp'
 import logoForDark from '../../assets/logo-with-text-dark.png'
 import { useLogInUserStore } from "@/store/logInUserStore";
@@ -22,9 +22,8 @@ const MobileSidebar = () => {
     } = useSidebarStore();
     const logInUserData = useLogInUserStore(state => state.logInUserData);
 
-    const roleBasedSidebarItems = (logInUserData?.role === 'admin' ||
-        logInUserData?.role === 'manager' ||
-        logInUserData?.role === 'hr') ? sidebarItems : sidebarItemsEmployee;
+    const { main: roleBasedSidebarItems, others: roleBasedOthersSidebarItems } =
+        sidebarSectionsFor(logInUserData?.role);
 
     return (
         <SheetContent className=" dark:bg-darkPrimaryBg">
@@ -82,7 +81,7 @@ const MobileSidebar = () => {
 
                     <div className="pt-3 border-t-2 border-borderColor dark:border-darkBorder mt-4 pb-8">
                         <span className="text-xs uppercase text-gray-400 mb-4">Others</span>
-                        {othersSidebarItems.map((item) => (
+                        {roleBasedOthersSidebarItems.map((item) => (
                             <div key={item.key}>
                                 <MobileSidebarItem
                                     icon={item.icon}

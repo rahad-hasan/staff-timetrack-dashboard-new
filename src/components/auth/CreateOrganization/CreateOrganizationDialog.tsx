@@ -4,7 +4,7 @@ import { ArrowLeft, ArrowRight, Check, Loader2, ShieldCheck, Star } from "lucide
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { ICreateOrganizationResponse } from "@/types/type";
+import { ICreatedOrganization } from "@/lib/authSession";
 import OrganizationProfileStep from "./OrganizationProfileStep";
 import WorkspacePreferencesStep from "./WorkspacePreferencesStep";
 import { useCreateOrganizationForm } from "./useCreateOrganizationForm";
@@ -24,7 +24,7 @@ interface CreateOrganizationDialogProps {
    */
   userName?: string;
   onOpenChange: (open: boolean) => void;
-  onCompleted: (organization: ICreateOrganizationResponse) => void;
+  onCompleted: (organization: ICreatedOrganization) => void;
 }
 
 const CreateOrganizationDialog = ({

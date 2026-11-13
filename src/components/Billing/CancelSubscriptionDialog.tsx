@@ -24,7 +24,9 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { formatBillingDate } from "@/lib/billing";
+import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
 import { cancelSubscription } from "@/actions/billing/action";
+import { unstable_rethrow } from "next/navigation";
 import { useBillingStore } from "@/store/billingStore";
 import { useBillingRefresh } from "./useBillingRefresh";
 
@@ -43,6 +45,7 @@ const REASON_OPTIONS = [
  * Renders its own quiet destructive-outline trigger button.
  */
 export default function CancelSubscriptionDialog() {
+  const timeZone = useViewerTimeZone();
   const currentPeriodEnd = useBillingStore(
     (s) => s.status?.entitlements?.current_period_end ?? null,
   );
@@ -94,7 +97,8 @@ export default function CancelSubscriptionDialog() {
       } else {
         setError(res?.message || "Could not cancel the subscription.");
       }
-    } catch {
+    } catch (error) {
+      unstable_rethrow(error);
       toast.error("Something went wrong. Please try again.");
     } finally {
       setSubmitting(false);
@@ -145,7 +149,7 @@ export default function CancelSubscriptionDialog() {
               </span>
               <span className="block text-sm text-subTextColor dark:text-darkTextSecondary">
                 Your plan stays active until{" "}
-                {formatBillingDate(currentPeriodEnd)}. No further charges.
+                {formatBillingDate(currentPeriodEnd, timeZone)}. No further charges.
               </span>
             </span>
           </label>

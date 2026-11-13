@@ -1,24 +1,27 @@
 "use client";
 
 import { useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { Loader2, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { dismissSampleData } from "@/actions/dashboard/sampleData";
+import { unstable_rethrow } from "next/navigation";
 
 const SampleDataBanner = () => {
-    const router = useRouter();
     const [pending, startTransition] = useTransition();
 
+    // No router.refresh() after the action: writing the cookie inside a
+    // server action already makes its response carry the re-rendered
+    // dashboard (live data, banner gone). A refresh on top rendered the
+    // layout, the gate and all seven panels a second time.
     const handleDismiss = () => {
         if (pending) return;
         startTransition(async () => {
             try {
                 await dismissSampleData();
                 toast.success("Sample data hidden. Your tracked data will appear here.");
-                router.refresh();
-            } catch {
+            } catch (error) {
+                unstable_rethrow(error);
                 toast.error("Could not hide sample data. Please try again.");
             }
         });

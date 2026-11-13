@@ -49,7 +49,41 @@ const APP_LOGOS: Record<string, any> = {
     acrobat: adobe_acrobat,
     illustrator: adobe_illustrator,
 };
-const AppsAndUrl = ({ data }: { data: IRowAppsUrls[] }) => {
+/**
+ * The dashboard's top apps and sites over the selected period.
+ *
+ * The API answers each tab with its own window (`daily` is today alone,
+ * `weekly` the last 7 days, `monthly` the last 30), so the totals column is
+ * headed with the period it actually covers. It used to say "This Week" over
+ * every window, the default Daily view included.
+ */
+const AppsAndUrl = ({
+    data,
+    rangeLabel,
+    showToday,
+}: {
+    data: IRowAppsUrls[];
+    /** Header of the totals column: "Today", "Last 7 Days" or "Last 30 Days". */
+    rangeLabel: string;
+    /**
+     * False when the period IS today: a "Today" column next to it would only
+     * repeat the totals.
+     */
+    showToday: boolean;
+}) => {
+
+    const todayColumn: ColumnDef<IRowAppsUrls> = {
+        accessorKey: "today_duration",
+        header: () => <div className="">Today</div>,
+        cell: ({ row }) => {
+            const today_duration = row?.original?.today_duration
+            return (
+                <div className="flex items-center gap-3">
+                    <span className="text-headingTextColor dark:text-darkTextPrimary">{today_duration}</span>
+                </div>
+            )
+        }
+    };
 
     const columns: ColumnDef<IRowAppsUrls>[] = [
         {
@@ -90,21 +124,10 @@ const AppsAndUrl = ({ data }: { data: IRowAppsUrls[] }) => {
                 )
             }
         },
-        {
-            accessorKey: "today_duration",
-            header: () => <div className="">Today</div>,
-            cell: ({ row }) => {
-                const today_duration = row?.original?.today_duration
-                return (
-                    <div className="flex items-center gap-3">
-                        <span className="text-headingTextColor dark:text-darkTextPrimary">{today_duration}</span>
-                    </div>
-                )
-            }
-        },
+        ...(showToday ? [todayColumn] : []),
         {
             accessorKey: "total_duration",
-            header: () => <div className="text-center">This Week</div>,
+            header: () => <div className="text-center">{rangeLabel}</div>,
             cell: ({ row }) => {
                 const total_duration = row?.original?.total_duration
                 return (
@@ -132,7 +155,7 @@ const AppsAndUrl = ({ data }: { data: IRowAppsUrls[] }) => {
                 <h2 className="text-base sm:text-lg text-headingTextColor dark:text-darkTextPrimary font-medium uppercase">APPS & URL</h2>
                 <div className="flex items-center gap-3">
                     <FilterButton />
-                    <Link href={`/activity/app`}>
+                    <Link href={`/activity/apps`}>
                         <Button className="py-[14px] px-[16px] sm:py-[18px] sm:px-[20px] rounded-[8px]" size={'sm'}>View Report</Button>
                     </Link>
                 </div>
@@ -177,9 +200,11 @@ const AppsAndUrl = ({ data }: { data: IRowAppsUrls[] }) => {
                                             </div>
                                         </div>
                                     </TableCell>
-                                    <TableCell>
-                                        <div className="h-4 w-16 rounded bg-slate-200 dark:bg-darkBorder/50" />
-                                    </TableCell>
+                                    {showToday && (
+                                        <TableCell>
+                                            <div className="h-4 w-16 rounded bg-slate-200 dark:bg-darkBorder/50" />
+                                        </TableCell>
+                                    )}
                                     <TableCell>
                                         <div className="flex justify-center">
                                             <div className="h-4 w-16 rounded bg-slate-200 dark:bg-darkBorder/50" />
@@ -189,8 +214,12 @@ const AppsAndUrl = ({ data }: { data: IRowAppsUrls[] }) => {
                             ))
                         }
 
+                        {/* A cell needs its row: straight in the body, the parser
+                            invents one and the server HTML no longer matches. */}
                         {actualRows?.length === 0 && (
-                            <EmptyTableRow columns={columns} text="No application data found." padding={10} />
+                            <TableRow>
+                                <EmptyTableRow columns={columns} text="No application data found." padding={10} />
+                            </TableRow>
                         )}
                     </TableBody>
                 </Table>

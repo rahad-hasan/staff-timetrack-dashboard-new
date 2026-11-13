@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -106,4 +106,8 @@ const SelectTimezoneDropDown = ({ timezones }: SelectTimezoneDropDownProps) => {
   );
 };
 
-export default React.memo(SelectTimezoneDropDown);
+// Not React.memo: a Server Component (TimezoneFilter) renders this, and React
+// remounts a memoised client component on every route re-render, closing the
+// open list (see SpecificDatePicker). `timezones` is a new object on each of
+// those renders anyway, so the memo never skipped one.
+export default SelectTimezoneDropDown;

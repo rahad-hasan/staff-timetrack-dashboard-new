@@ -2,7 +2,7 @@ import { EventMemberSyncOverview, EventMicrosoftSyncOverview } from "@/types/typ
 import Image from "next/image";
 import { SyncStatusPill } from "../eventHelpers";
 import { ExternalLink } from "lucide-react";
-import microsoftTeamsIcon from "../../../assets/events/microsoft-teams.svg";
+import microsoftTeamsIcon from "../assets/microsoft-teams.png";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 

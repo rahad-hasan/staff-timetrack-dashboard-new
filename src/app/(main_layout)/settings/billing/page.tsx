@@ -19,27 +19,38 @@ export const metadata: Metadata = {
  * admin-gated inside the components.
  */
 const BillingPage = async ({ searchParams }: ISearchParamsProps) => {
-    const params = await searchParams;
-    const currentUser = await getDecodedUser();
+    // Stamped before the read starts, so the snapshot is never older than its
+    // stamp: the client adopts a server snapshot only when it is newer than the
+    // last one it took (Back/Forward replays old ones — see
+    // adoptServerBillingStatus).
+    const statusFetchedAt = Date.now();
+    // One round trip: the billing reads do not wait on the role check. Nothing
+    // read is rendered before the gate below, and the API refuses billing
+    // status to every role the gate turns away anyway.
+    const [params, currentUser, statusRes, plansRes] = await Promise.all([
+        searchParams,
+        getDecodedUser(),
+        getBillingStatus(),
+        getPlans(),
+    ]);
     const role = currentUser?.role ?? "";
 
     if (!["admin", "manager", "hr"].includes(role)) {
         redirect("/settings");
     }
 
-    const [statusRes, plansRes] = await Promise.all([
-        getBillingStatus(),
-        getPlans(),
-    ]);
-
     // Billable head count comes from billing/status itself — same rule the
     // seat gate enforces, and no member-list payload on this page.
     const activeUserCount = statusRes?.data?.active_user_count ?? 0;
 
+    // `?tab=` is not read here: switching tabs never comes back to the server
+    // (see `useBillingTab`), and the client reads the param during its own
+    // server render, so the requested tab is already in the first HTML paint.
     return (
         <div>
             <BillingPageClient
                 initialStatus={statusRes?.success ? statusRes.data : null}
+                statusFetchedAt={statusFetchedAt}
                 plans={
                     plansRes?.success && Array.isArray(plansRes.data) ? plansRes.data : []
                 }
@@ -47,12 +58,6 @@ const BillingPage = async ({ searchParams }: ISearchParamsProps) => {
                 role={role}
                 blockedMessage={
                     typeof params.blocked === "string" ? params.blocked : undefined
-                }
-                // `?tab=` is read here purely so the requested tab is in the
-                // first HTML paint; the client hook validates it (and drops
-                // `change-card` for manager/hr) and owns it from then on.
-                initialTab={
-                    typeof params.tab === "string" ? params.tab : undefined
                 }
             ></BillingPageClient>
         </div>

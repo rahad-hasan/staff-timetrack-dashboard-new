@@ -301,17 +301,17 @@ export interface IDuration {
   formatted: string;
 }
 
+/**
+ * One row of GET /admin/core-member, exactly as the API answers it for every
+ * role (backend Admin/admin.query.ts, `shapeCoreMemberRanking`). It no longer
+ * sends the member's e-mail, idle / active hours or project / task counts.
+ */
 export interface ICoreMember {
   user_id: number;
   name: string;
-  email: string;
   image: string;
   work_duration: IDuration;
-  idle_duration: IDuration;
-  active_duration: IDuration;
   activity: number;
-  projects_count: number;
-  tasks_count: number;
   rank: number;
 }
 

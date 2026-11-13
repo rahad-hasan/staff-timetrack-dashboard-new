@@ -5,7 +5,13 @@ import { useState } from "react";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import AttendanceHeroSearch from "./AttendanceHeroSearch";
 
-const AttendanceServer = ({ attendanceListData }: any) => {
+const AttendanceServer = ({
+    attendanceListData,
+    canOpenMember,
+}: {
+    attendanceListData: any;
+    canOpenMember: boolean;
+}) => {
     const [searchTerm, setSearchTerm] = useState("");
 
     return (
@@ -16,7 +22,11 @@ const AttendanceServer = ({ attendanceListData }: any) => {
                     <AttendanceHeroSearch onSearchChange={setSearchTerm} />
                 </div>
             </div>
-            <AttendanceTable attendanceListData={attendanceListData} searchTerm={searchTerm}></AttendanceTable>
+            <AttendanceTable
+                attendanceListData={attendanceListData}
+                searchTerm={searchTerm}
+                canOpenMember={canOpenMember}
+            ></AttendanceTable>
         </div>
     );
 };

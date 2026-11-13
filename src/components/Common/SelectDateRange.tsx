@@ -1,6 +1,8 @@
 "use client"
+import { parseDateParam } from "@/lib/timezone";
 
-import { addDays, format } from "date-fns"
+import { addDays, format, parseISO } from "date-fns"
+import { useViewToday } from "@/hooks/useViewToday"
 import { type DateRange } from "react-day-picker"
 import { Calendar } from "@/components/ui/calendar"
 import {
@@ -32,18 +34,17 @@ const SelectDateRange = ({
         return `${yyyy}-${mm}-${dd}`
     }
 
-    const today = new Date()
+    const today = parseISO(useViewToday())
 
     // init from URL OR default
     const [date, setDate] = useState<DateRange | undefined>(() => {
         const fromParam = searchParams.get("from_date")
         const toParam = searchParams.get("to_date")
 
-        if (fromParam && toParam) {
-            return {
-                from: new Date(fromParam),
-                to: new Date(toParam),
-            }
+        const from = parseDateParam(fromParam)
+        const to = parseDateParam(toParam)
+        if (from && to) {
+            return { from, to }
         }
         if (defaultRange) {
             return defaultRange

@@ -20,6 +20,16 @@ type Props = Omit<ImageProps, "onError" | "onLoad"> & {
 // requesting route refreshes forever.
 const MAX_AUTO_RETRIES = 3;
 
+/**
+ * The object a signed URL names: the URL without its query, which holds only
+ * the signature and its expiry. Null for anything that is not a URL string.
+ */
+const objectOf = (src: Props["src"]): string | null => {
+  if (typeof src !== "string") return null;
+  const query = src.indexOf("?");
+  return query === -1 ? src : src.slice(0, query);
+};
+
 const ScreenshotImage = ({
   src,
   alt,
@@ -31,11 +41,17 @@ const ScreenshotImage = ({
   const [recovering, setRecovering] = useState(false);
   const [failed, setFailed] = useState(false);
   const [retryNonce, setRetryNonce] = useState(0);
+  // What the <Image> shows. It is the `src` prop, except while a picture
+  // that has already loaded is kept under the URL it loaded from (see below).
+  const [shownSrc, setShownSrc] = useState(src);
   const attemptsRef = useRef(0);
   const mountedRef = useRef(true);
+  const loadedRef = useRef(false);
   const srcRef = useRef(src);
+  const shownRef = useRef(shownSrc);
 
   srcRef.current = src;
+  shownRef.current = shownSrc;
 
   useEffect(() => {
     mountedRef.current = true;
@@ -44,15 +60,36 @@ const ScreenshotImage = ({
     };
   }, []);
 
-  // A refresh delivered a newly signed URL — give it a clean shot. The
-  // attempt budget intentionally survives (see MAX_AUTO_RETRIES).
   useEffect(() => {
+    // The same picture under a new signature, and it is already on screen:
+    // keep it. Every route re-render re-signs every URL (a live refresh, a
+    // revalidating action), and swapping the src made the browser download
+    // each visible screenshot again, for an image that cannot have changed.
+    // It stands in for the load that swap produced, so it re-arms recovery
+    // the same way: a re-signed URL is the proof that refreshes still work.
+    const object = objectOf(src);
+    if (loadedRef.current && object !== null && object === objectOf(shownRef.current)) {
+      noteScreenshotLoaded();
+      return;
+    }
+    // Another picture, or one that never loaded: a refresh delivered a newly
+    // signed URL, so give it a clean shot. The attempt budget intentionally
+    // survives (see MAX_AUTO_RETRIES).
+    loadedRef.current = false;
+    setShownSrc(src);
     setFailed(false);
     setRecovering(false);
     setRetryNonce(0);
   }, [src]);
 
   const handleError = () => {
+    loadedRef.current = false;
+    // A kept picture asked for again under the URL it was kept with, which
+    // may have expired since: the current one is at hand, no recovery needed.
+    if (shownRef.current !== srcRef.current) {
+      setShownSrc(srcRef.current);
+      return;
+    }
     if (attemptsRef.current >= MAX_AUTO_RETRIES) {
       setFailed(true);
       return;
@@ -120,11 +157,12 @@ const ScreenshotImage = ({
   return (
     <Image
       key={retryNonce}
-      src={src}
+      src={shownSrc}
       alt={alt}
       referrerPolicy="no-referrer"
       className={className}
       onLoad={() => {
+        loadedRef.current = true;
         attemptsRef.current = 0;
         noteScreenshotLoaded();
       }}

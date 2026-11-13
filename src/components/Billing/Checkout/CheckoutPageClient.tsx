@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
-import { useRouter } from "next/navigation";
+import { unstable_rethrow, useRouter } from "next/navigation";
 import { CreditCard, Loader2, Lock, RefreshCw, ShieldCheck } from "lucide-react";
 
 import { getCheckoutQuote, getPaymentMethods } from "@/actions/billing/action";
@@ -199,12 +199,13 @@ function CheckoutInner({
           cycle: next.cycle,
           ...(next.code ? { discount_code: next.code } : {}),
         });
-      } catch {
+      } catch (error) {
         // `baseApi`'s own try/catch runs on the SERVER, so a transport failure
         // (connection dropped, deployment skew, a 500 from the action
         // endpoint) REJECTS here instead of resolving to a `{success:false}`
         // envelope. Without this branch `quoting` stayed true forever and the
         // CTA was permanently dead with nothing on screen explaining why.
+        unstable_rethrow(error);
         if (latestQuote.current !== requestId) return false;
         setQuoting(false);
         const message = "We could not price this order. Please try again.";

@@ -1,3 +1,4 @@
+import { formatCalendarDate } from "@/lib/timezone";
 import {
   LeaveApplicableGender,
   LeaveStatus,
@@ -6,6 +7,30 @@ import {
   LeaveTypeSummary,
   UserScopedLeaveTypeRecord,
 } from "@/types/type";
+import { hasRole, MANAGEMENT_ROLES } from "@/lib/roles";
+
+/** Approve, reject, edit or delete leave, and manage leave types and holidays. */
+export const LEAVE_ADMIN_ROLES = ["admin", "hr"] as const;
+
+/** May look at other employees' leave: the employee filter on every leave page. */
+export const canViewTeamLeave = (role: string | undefined) =>
+  hasRole(MANAGEMENT_ROLES, role);
+
+export const canManageLeave = (role: string | undefined) =>
+  hasRole(LEAVE_ADMIN_ROLES, role);
+
+export type LeaveUserOption = { id: string; label: string; avatar: string };
+
+/** Members (`getMembersDashboard`) as options for the leave pages' employee filter. */
+export function toUserOptions(
+  members: { id: number; name: string; image?: string | null }[] | null | undefined,
+): LeaveUserOption[] {
+  return (members ?? []).map((member) => ({
+    id: String(member.id),
+    label: member.name,
+    avatar: member.image ?? "",
+  }));
+}
 
 const DEFAULT_LEAVE_COLOR = "#7c3aed";
 
@@ -96,16 +121,11 @@ export function formatLeaveMetric(value: number, suffix = "days") {
 }
 
 /**
- * Leave dates arrive as ISO strings at UTC midnight ("2026-09-14T00:00:00.000Z").
- * `new Date(iso)` would shift the calendar day in western timezones, so only the
- * `yyyy-MM-dd` prefix is read and turned into a local-midnight Date.
+ * A leave date for display ("Mon, Sep 14, 2026"). Leave dates arrive as UTC
+ * midnights but are calendar dates, not instants: see formatCalendarDate.
  */
-export function isoDateToLocalDate(iso: string): Date | null {
-  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
-  if (!match) return null;
-
-  const [, year, month, day] = match;
-  return new Date(Number(year), Number(month) - 1, Number(day));
+export function formatLeaveDate(iso: string | null | undefined): string {
+  return formatCalendarDate(iso, "EEE, MMM d, yyyy");
 }
 
 export function buildUserScopedLeaveTypes(

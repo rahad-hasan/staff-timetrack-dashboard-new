@@ -9,6 +9,17 @@ interface ColorState {
     updateUserData: (updates: any) => void;
 }
 
+/**
+ * The signed-in user, persisted to localStorage ("log-in-user").
+ *
+ * A CACHE of server identity, not its source: seeded at sign-in
+ * (`beginClientSession`), kept in step with the live session by `SessionSync`
+ * (role, name, email, time zone, company) and by the profile read in
+ * `useProfileImage` (avatar, phone), and wiped by `resetClientSession`. It can
+ * be empty — a fresh browser, blocked storage — until `SessionSync` fills it,
+ * so a reader must cope with `{}`. Server-side role gates use
+ * `getDecodedUser()`, never this.
+ */
 export const useLogInUserStore = create<ColorState>()(
     persist(
         (set) => ({

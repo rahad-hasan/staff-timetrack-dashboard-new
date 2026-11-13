@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 // import { Button } from "@/components/ui/button";
@@ -6,7 +5,7 @@ import { addBudgetAndHoursSchema } from "@/zod/schema";
 import { useOnboardingStore } from "@/store/onboardingStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, type Resolver } from "react-hook-form";
-import z from "zod";
+import { z } from "zod";
 import {
     Form,
     FormControl,
@@ -29,8 +28,11 @@ import { useProjectFormStore } from "@/store/ProjectFormStore";
 import { useState } from "react";
 import { toast } from "sonner";
 import { addProject } from "@/actions/projects/action";
+import { actionErrorMessage } from "@/lib/actionErrors";
 import { BILLING_URL, isProjectCapMessage } from "@/lib/billing";
 import { useRouter } from "next/navigation";
+import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
+import { pickerDateToInstant } from "@/lib/timezone";
 
 interface GeneralInfoStepProps {
     setStep: (step: number) => void,
@@ -41,6 +43,7 @@ const AddBudgetAndHoursStep = ({ setStep, onClose }: GeneralInfoStepProps) => {
     const [loading, setLoading] = useState(false);
     const router = useRouter();
     const { data } = useProjectFormStore(state => state);
+    const timeZone = useViewerTimeZone();
 
     const form = useForm<z.infer<typeof addBudgetAndHoursSchema>>({
         resolver: zodResolver(addBudgetAndHoursSchema) as Resolver<z.infer<typeof addBudgetAndHoursSchema>>,
@@ -63,8 +66,10 @@ const AddBudgetAndHoursStep = ({ setStep, onClose }: GeneralInfoStepProps) => {
             manager_ids: data?.manager,
             user_ids: data?.members.map((member: { id: number, name: string }) => member?.id),
             description: data?.description,
-            start_date: new Date(data?.startDate).toISOString(),
-            deadline: new Date(data?.deadline).toISOString(),
+            // The picked days' midnights on the viewer's calendar, the days
+            // the project tables show — not the browser's midnights.
+            start_date: pickerDateToInstant(new Date(data?.startDate), timeZone).toISOString(),
+            deadline: pickerDateToInstant(new Date(data?.deadline), timeZone).toISOString(),
             budget: values?.rate
         }
 
@@ -99,9 +104,10 @@ const AddBudgetAndHoursStep = ({ setStep, onClose }: GeneralInfoStepProps) => {
                     },
                 });
             }
-        } catch (error: any) {
+        } catch (error) {
+            const message = actionErrorMessage(error, "Something went wrong!");
             console.error("failed:", error);
-            toast.error(error.message || "Something went wrong!", {
+            toast.error(message, {
                 style: {
                     backgroundColor: '#ef4444',
                     color: 'white',

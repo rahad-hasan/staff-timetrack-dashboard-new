@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { addTasksSchema } from "@/zod/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Resolver, useForm } from "react-hook-form";
-import z from "zod";
+import { z } from "zod";
 
 
 interface GeneralInfoStepProps {

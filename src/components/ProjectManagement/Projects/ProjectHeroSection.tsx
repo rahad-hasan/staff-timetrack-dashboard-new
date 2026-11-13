@@ -33,6 +33,9 @@ const ProjectHeroSection = () => {
     const handleSearch = (query: string) => {
         const params = new URLSearchParams(searchParams.toString());
         params.set("search", query);
+        // The API paginates the filtered list: a new term starts from page 1,
+        // otherwise searching from page 3 finds nothing on a 1-page result.
+        params.delete("page");
         router.push(`?${params.toString()}`);
     };
 

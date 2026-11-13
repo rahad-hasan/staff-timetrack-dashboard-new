@@ -7,6 +7,7 @@ import {
     getSlackWorkspaceAuthUrl,
     updateSlackSettings,
 } from "@/actions/integrations/slackIntegrationAction";
+import { unstable_rethrow } from "next/navigation";
 import ConfirmDialog from "@/components/Common/ConfirmDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -146,7 +147,8 @@ const SlackIntegrationDetail = ({ def, onBack }: SlackIntegrationDetailProps) =>
                         res?.message || "Failed to load Slack status",
                     );
                 }
-            } catch {
+            } catch (error) {
+                unstable_rethrow(error);
                 if (fetchSeq === fetchSeqRef.current) {
                     setStatusError("Failed to load Slack status");
                 }
@@ -207,7 +209,8 @@ const SlackIntegrationDetail = ({ def, onBack }: SlackIntegrationDetailProps) =>
                     res?.message || "Failed to disconnect the Slack workspace",
                 );
             }
-        } catch {
+        } catch (error) {
+            unstable_rethrow(error);
             toast.error("Failed to disconnect the Slack workspace");
         } finally {
             await fetchStatus({ silent: true });
@@ -242,9 +245,10 @@ const SlackIntegrationDetail = ({ def, onBack }: SlackIntegrationDetailProps) =>
                     fetchStatus({ silent: true });
                 }
             }
-        } catch {
+        } catch (error) {
             settingsWriteSeqRef.current += 1;
             applyServerSettings(prev);
+            unstable_rethrow(error);
             toast.error("Could not update Slack settings");
         } finally {
             setSavingSetting(false);

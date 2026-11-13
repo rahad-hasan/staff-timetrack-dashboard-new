@@ -2,9 +2,9 @@
 
 import { Button } from "@/components/ui/button";
 import { daysUntil, formatBillingDate, isDatePast } from "@/lib/billing";
-import { useBillingStore } from "@/store/billingStore";
-import { useLogInUserStore } from "@/store/logInUserStore";
-import { IBillingPlan } from "@/types/billing";
+import { IBillingEntitlements, IBillingPlan } from "@/types/billing";
+import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
+import { useBillingNow } from "./useBillingNow";
 import BillingStatusChip from "./BillingStatusChip";
 import CancelSubscriptionDialog from "./CancelSubscriptionDialog";
 import { useScrollToPlans } from "./BillingTabs";
@@ -19,22 +19,37 @@ import TrailCalenderIcon from "../Icons/PlanIcons/TrailCalenderIcon";
  * CTA that jumps to the pricing grid, where the old plan's card re-buys via
  * checkout.
  *
+ * `entitlements` and `isAdmin` arrive as props, never from the billing or
+ * login stores: both stores are empty in the server and hydration renders, so
+ * reading them here painted "No subscription" (and no admin buttons) for a
+ * paying customer until the client caught up. BillingPageClient resolves them
+ * from the live store with the server snapshot as the first-paint fallback.
+ *
  * `plans` is passed only to recover the current plan's tagline: the entitlement
  * snapshot carries plan_id/plan_name/tier but no marketing copy, and it is
  * cached, so the description must come from the live plans list. A company
  * sitting on a retired plan simply finds no match and shows no tagline.
+ *
+ * The page server-renders it, so its dates and countdown follow the same rule
+ * as the trial banner: the viewer's zone, and the snapshot's stamp as "now"
+ * until hydration is over (`serverNow`, see `useBillingNow`).
  */
 export default function CurrentPlanCard({
   plans,
   activeUserCount,
+  entitlements,
+  isAdmin,
+  serverNow,
 }: {
   plans: IBillingPlan[];
   activeUserCount: number;
+  entitlements: IBillingEntitlements | null;
+  isAdmin: boolean;
+  /** Server `Date.now()` taken with the snapshot `entitlements` came from. */
+  serverNow?: number;
 }) {
-  const entitlements = useBillingStore((s) => s.status?.entitlements ?? null);
-  const role = useLogInUserStore((s) => s.logInUserData?.role);
-  const isAdmin = role === "admin";
-
+  const timeZone = useViewerTimeZone();
+  const now = useBillingNow(serverNow);
   // The pricing grid lives inside the My Plan tab body, so a bare
   // `getElementById("plans")` is a dead button from any other tab — the anchor
   // is not in the DOM. The shared hook switches tab first, then scrolls once
@@ -55,7 +70,7 @@ export default function CurrentPlanCard({
     );
   }
 
-  const trialDays = daysUntil(entitlements.trial_ends_at);
+  const trialDays = daysUntil(entitlements.trial_ends_at, now);
   const description =
     plans.find((p) => p.id === entitlements.plan_id)?.description ?? null;
 
@@ -95,7 +110,7 @@ export default function CurrentPlanCard({
               entitlements.current_period_end && (
                 <p className="flex items-center gap-1.5">
                   <TrailCalenderIcon size={28} className="bg-[#f3f5fa] dark:bg-[#ececec15] p-1 rounded" />
-                  Renews {formatBillingDate(entitlements.current_period_end)}
+                  Renews {formatBillingDate(entitlements.current_period_end, timeZone)}
                 </p>
               )}
             {entitlements.status === "trialing" && (
@@ -104,18 +119,18 @@ export default function CurrentPlanCard({
                 {/* An expired trial keeps status "trialing" until the worker
                     resolves it — future tense next to the red "trial has
                     ended" surfaces would contradict them. */}
-                {isDatePast(entitlements.trial_ends_at)
-                  ? `Trial ended ${formatBillingDate(entitlements.trial_ends_at)}`
-                  : `Trial ends ${formatBillingDate(entitlements.trial_ends_at)} (${trialDays} day${trialDays === 1 ? "" : "s"})`}
+                {isDatePast(entitlements.trial_ends_at, now)
+                  ? `Trial ended ${formatBillingDate(entitlements.trial_ends_at, timeZone)}`
+                  : `Trial ends ${formatBillingDate(entitlements.trial_ends_at, timeZone)} (${trialDays} day${trialDays === 1 ? "" : "s"})`}
               </p>
             )}
             {entitlements.status === "canceled" &&
               entitlements.current_period_end && (
                 <p className="flex items-center gap-1.5">
                   <TrailCalenderIcon size={28} className="bg-[#f3f5fa] dark:bg-[#ececec15] p-1 rounded" />
-                  {isDatePast(entitlements.current_period_end)
-                    ? `Ended ${formatBillingDate(entitlements.current_period_end)}`
-                    : `Access until ${formatBillingDate(entitlements.current_period_end)}`}
+                  {isDatePast(entitlements.current_period_end, now)
+                    ? `Ended ${formatBillingDate(entitlements.current_period_end, timeZone)}`
+                    : `Access until ${formatBillingDate(entitlements.current_period_end, timeZone)}`}
                 </p>
               )}
           </div>
@@ -148,7 +163,11 @@ export default function CurrentPlanCard({
         )}
       </div>
 
-      <SeatUsageCard activeUserCount={activeUserCount}></SeatUsageCard>
+      <SeatUsageCard
+        activeUserCount={activeUserCount}
+        entitlements={entitlements}
+        isAdmin={isAdmin}
+      />
     </div>
   );
 }

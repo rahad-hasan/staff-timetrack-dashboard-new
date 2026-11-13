@@ -1,19 +1,20 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import z from "zod";
+import { z } from "zod";
 import ClockIcon from "@/components/Icons/ClockIcon";
 import CalendarIcon from "@/components/Icons/CalendarIcon";
 import JobIcon from "@/components/Icons/JobIcon";
 import TaskListIcon from "@/components/Icons/TaskListIcon";
 import UserIcon from "@/components/Icons/UserIcon";
 import { addManualTimeEntry, addTimeEntry } from "@/actions/timesheets/action";
-import { getMembersDashboard } from "@/actions/members/action";
 import { getProjects } from "@/actions/projects/action";
-import { getTasks } from "@/actions/task/action";
+import { getTaskOptions, type ITaskOption } from "@/actions/task/action";
+import { actionErrorMessage } from "@/lib/actionErrors";
+import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
+import { pickerDateTimeToInstant } from "@/lib/timezone";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -46,7 +47,8 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useDebounce } from "@/hooks/use-debounce";
-import { IProject, ITask } from "@/types/type";
+import { useDashboardMembers } from "@/hooks/useDashboardMembers";
+import { IProject } from "@/types/type";
 import { addManualTimeSchema } from "@/zod/schema";
 import { toast } from "sonner";
 
@@ -55,11 +57,19 @@ interface TimePeriod {
   end: number;
 }
 
-interface MemberOption {
-  id: number;
-  name: string;
-  image?: string | null;
+interface TaskOptions {
+  tasks: ITaskOption[];
+  /** The API capped the list; the search box finds the rest. */
+  truncated: boolean;
+  /** The last load failed. A task is optional, so the form still saves. */
+  failed: boolean;
 }
+
+const NO_TASK_OPTIONS: TaskOptions = {
+  tasks: [],
+  truncated: false,
+  failed: false,
+};
 
 const createAddManualTimeFormSchema = (isAdmin: boolean) =>
   addManualTimeSchema
@@ -79,15 +89,6 @@ const createAddManualTimeFormSchema = (isAdmin: boolean) =>
 type AddManualTimeFormValues = z.infer<
   ReturnType<typeof createAddManualTimeFormSchema>
 >;
-
-const buildIsoDateTime = (date: Date, time: string) => {
-  const [hours, minutes, seconds] = time.split(":").map(Number);
-  const value = new Date(date);
-
-  value.setHours(hours, minutes, seconds || 0, 0);
-
-  return value.toISOString();
-};
 
 const errorToastStyle = {
   backgroundColor: "#ef4444",
@@ -123,27 +124,41 @@ const AddManualTimeModal = ({
   const [loading, setLoading] = useState(false);
   const [projectLoading, setProjectLoading] = useState(false);
   const [taskLoading, setTaskLoading] = useState(false);
-  const [memberLoading, setMemberLoading] = useState(false);
   const [projects, setProjects] = useState<IProject[]>([]);
-  const [tasks, setTasks] = useState<ITask[]>([]);
-  const [members, setMembers] = useState<MemberOption[]>([]);
+  const [taskOptions, setTaskOptions] = useState(NO_TASK_OPTIONS);
+  // The task last picked, kept apart from the options: the trigger can only
+  // name a value whose option is mounted, so a later search or a failed load
+  // left it blank while Save still sent the task.
+  const [pickedTask, setPickedTask] = useState<ITaskOption | null>(null);
+  const [taskReload, setTaskReload] = useState(0);
   const [taskSearch, setTaskSearch] = useState("");
   const [projectSearch, setProjectSearch] = useState("");
   const [userSearch, setUserSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState<Date | undefined>(undefined);
+  const timeZone = useViewerTimeZone();
   const [activePeriods, setActivePeriods] = useState<TimePeriod[] | undefined>(
     undefined,
   );
   const [totalTime, setTotalTime] = useState<string>("1:00:00");
   const projectSearchRef = useRef<HTMLInputElement>(null);
   const userSearchRef = useRef<HTMLInputElement>(null);
+  const taskTriggerRef = useRef<HTMLButtonElement>(null);
 
   const debouncedTaskSearch = useDebounce(taskSearch, 500);
   const selectedProject = form.watch("project");
   const selectedUserId = form.watch("userId");
   const timeFrom = form.watch("timeFrom");
   const timeTo = form.watch("timeTo");
+
+  // Only an admin picks the user, from the selected project's members.
+  const {
+    members,
+    loading: memberLoading,
+    error: membersError,
+    loadedFor: membersLoadedFor,
+  } = useDashboardMembers(selectedProject, { enabled: isAdmin });
+  const membersKey = selectedProject ? String(selectedProject) : "";
 
   const filteredMembers = useMemo(() => {
     const normalizedSearch = userSearch.trim().toLowerCase();
@@ -180,7 +195,11 @@ const AddManualTimeModal = ({
     });
   };
 
+  // Each loader below ignores a response that arrives after its inputs have
+  // changed again, so a slow earlier answer cannot overwrite a newer list.
   useEffect(() => {
+    let active = true;
+
     const loadProjects = async () => {
       setProjectLoading(true);
 
@@ -189,92 +208,97 @@ const AddManualTimeModal = ({
           user_id: selectedUserId,
           dropdown: true,
         });
-        setProjects(res?.success ? res.data : []);
+        if (active) setProjects(res?.success ? res.data : []);
       } catch (err) {
         console.error("Failed to fetch projects", err);
-        setProjects([]);
+        if (active) setProjects([]);
       } finally {
-        setProjectLoading(false);
+        if (active) setProjectLoading(false);
       }
     };
 
     loadProjects();
+
+    return () => {
+      active = false;
+    };
   }, [selectedUserId]);
 
   useEffect(() => {
     if (!selectedProject) {
-      setTasks([]);
+      setTaskOptions(NO_TASK_OPTIONS);
+      // A load still in flight for the previous project no longer clears it.
+      setTaskLoading(false);
       return;
     }
+
+    let active = true;
 
     const loadTasks = async () => {
       setTaskLoading(true);
 
       try {
-        const res = await getTasks({
+        const res = await getTaskOptions({
           project_id: selectedProject,
           search: debouncedTaskSearch,
         });
 
-        setTasks(res?.success ? res.data : []);
+        if (active) {
+          setTaskOptions(
+            res?.success && Array.isArray(res.data?.tasks)
+              ? {
+                  tasks: res.data.tasks,
+                  truncated: res.data.truncated === true,
+                  failed: false,
+                }
+              : { ...NO_TASK_OPTIONS, failed: true },
+          );
+        }
       } catch (err) {
         console.error("Failed to fetch tasks", err);
-        setTasks([]);
+        if (active) setTaskOptions({ ...NO_TASK_OPTIONS, failed: true });
       } finally {
-        setTaskLoading(false);
+        if (active) setTaskLoading(false);
       }
     };
 
     loadTasks();
-  }, [debouncedTaskSearch, selectedProject]);
 
-  useEffect(() => {
-    if (!isAdmin) {
-      return;
-    }
-
-    const loadMembers = async () => {
-      setMemberLoading(true);
-
-      try {
-        const res = await getMembersDashboard(
-          selectedProject ? { project_id: selectedProject } : {},
-        );
-
-        setMembers(
-          res?.success
-            ? res.data.map((member) => ({
-                id: member.id,
-                name: member.name,
-                image: member.image,
-              }))
-            : [],
-        );
-      } catch (err) {
-        console.error("Failed to fetch members", err);
-        setMembers([]);
-      } finally {
-        setMemberLoading(false);
-      }
+    return () => {
+      active = false;
     };
-
-    loadMembers();
-  }, [isAdmin, selectedProject]);
+  }, [debouncedTaskSearch, selectedProject, taskReload]);
 
   useEffect(() => {
     form.setValue("task", undefined);
     setTaskSearch("");
   }, [form, selectedProject]);
 
+  // Drop a selected user who is not a member of the newly selected project —
+  // but only judge against the list loaded for that project, never against
+  // the previous project's list mid-load or a list that failed to load.
   useEffect(() => {
     if (!isAdmin || !selectedUserId) {
+      return;
+    }
+
+    if (memberLoading || membersError || membersLoadedFor !== membersKey) {
       return;
     }
 
     if (!members.some((member) => member.id === selectedUserId)) {
       form.setValue("userId", undefined, { shouldValidate: true });
     }
-  }, [form, isAdmin, members, selectedUserId]);
+  }, [
+    form,
+    isAdmin,
+    members,
+    memberLoading,
+    membersError,
+    membersLoadedFor,
+    membersKey,
+    selectedUserId,
+  ]);
 
   useEffect(() => {
     if (timeFrom && timeTo) {
@@ -314,11 +338,14 @@ const AddManualTimeModal = ({
       return;
     }
 
+    // The picked day at the typed times on the viewer's clock, the zone the
+    // manual-requests list and the timesheets show entries in, not the
+    // browser's.
     const payload = {
       project_id: data.project,
       ...(data.task && { task_id: data.task }),
-      start_time: buildIsoDateTime(data.date, data.timeFrom),
-      end_time: buildIsoDateTime(data.date, data.timeTo),
+      start_time: pickerDateTimeToInstant(data.date, data.timeFrom, timeZone).toISOString(),
+      end_time: pickerDateTimeToInstant(data.date, data.timeTo, timeZone).toISOString(),
       note: data.message,
     };
 
@@ -354,9 +381,10 @@ const AddManualTimeModal = ({
             (isAdmin ? "Failed to add time" : "Failed to add manual time"),
         );
       }
-    } catch (error: any) {
+    } catch (error) {
+      const message = actionErrorMessage(error, "Something went wrong!");
       console.error("failed:", error);
-      showErrorToast(error.message || "Something went wrong!");
+      showErrorToast(message);
     } finally {
       setLoading(false);
     }
@@ -450,77 +478,130 @@ const AddManualTimeModal = ({
                 <FormField
                   control={form.control}
                   name="task"
-                  render={({ field }) => (
-                    <FormItem className="w-full">
-                      <FormLabel
-                        className={!selectedProject ? "opacity-50" : ""}
-                      >
-                        Task
-                      </FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Select
-                            value={field.value?.toString()}
-                            onValueChange={(value) =>
-                              field.onChange(Number(value))
-                            }
-                            disabled={!selectedProject}
-                          >
-                            <SelectTrigger className="w-full">
-                              <div className="flex gap-2 items-center">
-                                <TaskListIcon
-                                  size={20}
-                                  className="text-headingTextColor dark:text-darkTextPrimary"
-                                />
-                                <SelectValue
-                                  placeholder={
-                                    selectedProject
-                                      ? "Select Task"
-                                      : "Select Project First"
-                                  }
-                                />
-                              </div>
-                            </SelectTrigger>
-                            <SelectContent>
-                              <Input
-                                type="text"
-                                placeholder="Search task..."
-                                className="flex-1 border-none focus:ring-0 focus:outline-none"
-                                value={taskSearch}
-                                onChange={(event) =>
-                                  setTaskSearch(event.target.value)
-                                }
-                                onKeyDown={(event) => event.stopPropagation()}
-                              />
-                              {!selectedProject ? (
-                                <div className="p-2 text-sm text-center text-muted-foreground">
-                                  Select a project to load tasks
-                                </div>
-                              ) : taskLoading ? (
-                                <div className="p-2 text-sm text-muted-foreground">
-                                  Loading...
-                                </div>
-                              ) : tasks.length > 0 ? (
-                                tasks.map((task) => (
-                                  <SelectItem
-                                    key={task.id}
-                                    value={task.id.toString()}
+                  render={({ field }) => {
+                    // What Save sends, by name: undefined once the form's
+                    // task is another (a new project cleared it, a save reset it).
+                    const selectedTaskName =
+                      pickedTask && pickedTask.id === field.value
+                        ? pickedTask.name
+                        : undefined;
+
+                    return (
+                      <FormItem className="w-full">
+                        <FormLabel
+                          className={!selectedProject ? "opacity-50" : ""}
+                        >
+                          Task
+                        </FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Select
+                              value={field.value?.toString()}
+                              onValueChange={(value) => {
+                                const id = Number(value);
+                                field.onChange(id);
+                                setPickedTask(
+                                  taskOptions.tasks.find((task) => task.id === id) ??
+                                    null,
+                                );
+                              }}
+                              disabled={!selectedProject}
+                            >
+                              <SelectTrigger
+                                ref={taskTriggerRef}
+                                className="w-full"
+                              >
+                                <div className="flex gap-2 items-center">
+                                  <TaskListIcon
+                                    size={20}
+                                    className="text-headingTextColor dark:text-darkTextPrimary"
+                                  />
+                                  <SelectValue
+                                    placeholder={
+                                      selectedProject
+                                        ? "Select Task"
+                                        : "Select Project First"
+                                    }
                                   >
-                                    {task.name}
-                                  </SelectItem>
-                                ))
-                              ) : (
-                                <div className="p-2 text-sm text-center text-muted-foreground">
-                                  No tasks found
+                                    {selectedTaskName}
+                                  </SelectValue>
                                 </div>
-                              )}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                              </SelectTrigger>
+                              <SelectContent>
+                                <Input
+                                  type="text"
+                                  placeholder="Search task..."
+                                  className="flex-1 border-none focus:ring-0 focus:outline-none"
+                                  value={taskSearch}
+                                  onChange={(event) =>
+                                    setTaskSearch(event.target.value)
+                                  }
+                                  onKeyDown={(event) => event.stopPropagation()}
+                                />
+                                {!selectedProject ? (
+                                  <div className="p-2 text-sm text-center text-muted-foreground">
+                                    Select a project to load tasks
+                                  </div>
+                                ) : taskLoading ? (
+                                  <div className="p-2 text-sm text-muted-foreground">
+                                    Loading...
+                                  </div>
+                                ) : taskOptions.failed ? (
+                                  <div className="p-2 text-sm text-center text-muted-foreground">
+                                    Couldn&apos;t load tasks
+                                  </div>
+                                ) : taskOptions.tasks.length > 0 ? (
+                                  <>
+                                    {taskOptions.tasks.map((task) => (
+                                      <SelectItem
+                                        key={task.id}
+                                        value={task.id.toString()}
+                                      >
+                                        {task.name}
+                                      </SelectItem>
+                                    ))}
+                                    {taskOptions.truncated ? (
+                                      <div className="p-2 text-xs text-center text-muted-foreground">
+                                        Showing the first{" "}
+                                        {taskOptions.tasks.length} tasks. Search
+                                        to narrow the list.
+                                      </div>
+                                    ) : null}
+                                  </>
+                                ) : (
+                                  <div className="p-2 text-sm text-center text-muted-foreground">
+                                    No tasks found
+                                  </div>
+                                )}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </FormControl>
+                        {taskOptions.failed && !taskLoading ? (
+                          <p role="alert" className="text-destructive text-sm">
+                            Couldn&apos;t load this project&apos;s tasks.{" "}
+                            {selectedTaskName
+                              ? `“${selectedTaskName}” stays selected and is saved with the time.`
+                              : "You can still save the time without one."}{" "}
+                            <button
+                              type="button"
+                              className="font-medium underline underline-offset-2 cursor-pointer"
+                              onClick={() => {
+                                // The retry hides this line, button and all: move
+                                // focus to the picker first, or it falls back to
+                                // the dialog itself.
+                                taskTriggerRef.current?.focus();
+                                setTaskReload((count) => count + 1);
+                              }}
+                            >
+                              Try again
+                            </button>
+                          </p>
+                        ) : null}
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
                 />
 
                 {isAdmin ? (

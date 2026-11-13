@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import ClientsTableSkeleton from "@/skeleton/projectManagement/clients/ClientsTableSkeleton";
 import ClientTableServer from "@/components/ProjectManagement/Clients/ClientTableServer";
 import { Suspense } from "react";
@@ -10,15 +8,13 @@ export const metadata: Metadata = {
     title: "Staff Time Tracker Clients",
     description: "Staff Time Tracker Clients",
 };
-const ClientsPage = async ({ searchParams }: any) => {
-    const query = await searchParams;
-
+const ClientsPage = () => {
     return (
         <div>
             <ClientHereSection></ClientHereSection>
 
             <Suspense fallback={<ClientsTableSkeleton />}>
-                <ClientTableServer query={query} />
+                <ClientTableServer />
             </Suspense>
         </div>
     );

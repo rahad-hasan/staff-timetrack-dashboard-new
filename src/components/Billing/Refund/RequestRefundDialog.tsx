@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import z from "zod";
+import { z } from "zod";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { createRefundRequest, getRefundEligibility } from "@/actions/billing/refundAction";
+import { unstable_rethrow } from "next/navigation";
 import { useBillingRefresh } from "@/components/Billing/useBillingRefresh";
 import { formatCents } from "@/lib/billing";
 import {
@@ -125,7 +126,8 @@ export default function RequestRefundDialog({
         } else {
           setError(response?.message || "Could not check this invoice.");
         }
-      } catch {
+      } catch (error) {
+        unstable_rethrow(error);
         if (latestRequest.current === requestId) setError("Could not check this invoice.");
       } finally {
         if (latestRequest.current === requestId) setChecking(false);
@@ -171,7 +173,8 @@ export default function RequestRefundDialog({
       }
 
       setError(response?.message || "Could not send the refund request.");
-    } catch {
+    } catch (error) {
+      unstable_rethrow(error);
       setError("Something went wrong while sending the request.");
     } finally {
       submittingRef.current = false;

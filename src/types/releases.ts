@@ -1,6 +1,7 @@
 /**
- * Types for the desktop-app download page, which is fed by the public GitHub
- * Releases API of `staff-time-tracker/desktop-app-releases`.
+ * Types for the desktop-app download page. Its data comes from the public
+ * GitHub Releases API of `staff-time-tracker/desktop-app-releases`, read
+ * server-side and shared by every user through GET /api/releases.
  */
 
 /** The four artefacts the download page is allowed to hand a user. */

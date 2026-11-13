@@ -22,7 +22,7 @@ import {
   SIGNUP_SOURCE_OTHER,
 } from "@/lib/signupSources";
 import { currencies } from "@/utils/CurrencyList";
-import { CreateOrganizationFormValues } from "@/zod/schema";
+import { CreateOrganizationFormValues } from "@/zod/phoneSchemas";
 import SignupSourcePicker from "./SignupSourcePicker";
 
 const WEEK_START_PILLS = WEEK_START_DAYS.map((day) => ({

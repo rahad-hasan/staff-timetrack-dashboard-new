@@ -2,7 +2,7 @@
 import { addMemberSchema } from "@/zod/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import z from "zod";
+import { z } from "zod";
 import {
     Form,
     FormControl,
@@ -23,16 +23,16 @@ import {
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useProjectFormStore } from "@/store/ProjectFormStore";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useEffect, useState } from "react";
-import { getMembersDashboard } from "@/actions/members/action";
+import type { DashboardMember } from "@/hooks/useDashboardMembers";
 
 interface GeneralInfoStepProps {
     setStep: (step: number) => void;
+    /** Active members, loaded once by the wizard. */
+    members: DashboardMember[];
 }
 
-const AddMemberStep = ({ setStep }: GeneralInfoStepProps) => {
+const AddMemberStep = ({ setStep, members }: GeneralInfoStepProps) => {
     const data = useProjectFormStore(state => state.data);
-    const [members, setMembers] = useState<{ id: number; name: string; image?: string }[]>([]);
     const form = useForm<z.infer<typeof addMemberSchema>>({
         resolver: zodResolver(addMemberSchema),
         defaultValues: {
@@ -47,22 +47,6 @@ const AddMemberStep = ({ setStep }: GeneralInfoStepProps) => {
     }
 
     // const managersData = data?.members;
-
-        useEffect(() => {
-        const loadMembers = async () => {
-
-            try {
-                const res = await getMembersDashboard();
-                if (res?.success) {
-                    setMembers(res.data);
-                }
-            } catch (err) {
-                console.error("Failed to fetch clients", err);
-            }
-        };
-
-        loadMembers();
-    }, []);
 
     return (
         <div>

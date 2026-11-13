@@ -9,29 +9,36 @@ import { IOnboardingStatus, IOnboardingStatusUpdate } from "@/types/onboarding";
  * `/user`). Every authenticated role has a state — these are not admin-only.
  *
  * Follows the newer, typed action convention (see `src/actions/support/action.ts`):
- * explicit `IResponse<T>` returns and a hoisted tag constant.
+ * explicit `IResponse<T>` returns.
  *
- * `cache: "no-cache"` on the read is not optional. The status drives whether a
- * full-screen welcome modal opens, so a 60-second stale window would re-open a
- * modal the user had already dismissed — and the PATCH below shares the tag,
- * which means baseApi's auto-revalidate keeps server-rendered consumers honest.
+ * The read must stay live (baseApi's default — never give it `cacheFor`). The
+ * status drives whether a full-screen welcome modal opens, so any stale window
+ * would re-open a modal the user had already dismissed.
+ *
+ * `getOnboardingStatus` is for server renders only (the layout, the
+ * sample-data gate). The browser reads the status through
+ * `GET /api/onboarding-status` (`onboardingStore.fetchStatus`), never by
+ * calling this as a server action: see that route for what it crashed.
  */
-const TAG = "onboarding-status";
-
 export const getOnboardingStatus = async (): Promise<
   IResponse<IOnboardingStatus>
-> =>
-  await baseApi(`/user/onboarding-status`, {
-    tag: TAG,
-    cache: "no-cache",
-  });
+> => await baseApi(`/user/onboarding-status`);
 
+/**
+ * Deliberately untagged, and `skipRevalidate` so a tag added later cannot
+ * bring the cost back: a revalidating write makes the server action re-render
+ * the whole current route into its response — on /dashboard the layout plus
+ * all seven panels — and the tour PATCHes once per step. Nothing on the
+ * server needs that render: the store adopts the PATCH response itself, the
+ * layout's status read only seeds the store when the gate mounts, and the
+ * sample-data gate reads `isNewUser`, which the backend derives from
+ * `created_at` and no PATCH can change.
+ */
 export const updateOnboardingStatus = async (
   payload: IOnboardingStatusUpdate,
 ): Promise<IResponse<IOnboardingStatus>> =>
   await baseApi(`/user/onboarding-status`, {
     method: "PATCH",
     body: payload,
-    tag: TAG,
-    cache: "no-cache",
+    skipRevalidate: true,
   });

@@ -21,15 +21,12 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { logIn } from "@/actions/auth/action";
-import { useLogInUserStore } from "@/store/logInUserStore";
-import { resetProfileImageRefresh } from "@/utils/profileImageRefresh";
-import { useSidebarStore } from "@/store/sidebarStore";
+import { actionErrorMessage } from "@/lib/actionErrors";
+import { beginClientSession, resetClientSession } from "@/lib/clientSession";
 import logoWithSlogan from "../../assets/logo-with-text.webp";
 import logoForDark from "../../assets/logo-with-text-dark.png";
-import {
-  buildLogInUserData,
-  requiresOrganizationOnboarding,
-} from "@/lib/authSession";
+import { requiresOrganizationOnboarding } from "@/lib/authSession";
+import { MARKETING_SIGN_UP_URL, MARKETING_SITE_URL } from "@/lib/siteLinks";
 import {
   buildCreateOrganizationUrl,
   EMPTY_MARKETING_PLAN_INTENT,
@@ -67,9 +64,6 @@ const LoginClientComponent = () => {
   const searchParams = useSearchParams();
   const email = searchParams.get("email") ?? "";
 
-  const { setOpenMenu } = useSidebarStore();
-  const { setLogInUserData } = useLogInUserStore();
-
   // Auto-rotate hero slider
   useEffect(() => {
     const timer = setInterval(() => {
@@ -92,12 +86,10 @@ const LoginClientComponent = () => {
 
   const enterDashboard = useCallback(
     (data: any) => {
-      resetProfileImageRefresh();
-      setLogInUserData(buildLogInUserData(data));
-      setOpenMenu("/dashboard");
+      beginClientSession(data);
       router.push("/dashboard");
     },
-    [router, setLogInUserData, setOpenMenu],
+    [router],
   );
 
   async function onSubmit(values: z.infer<typeof loginSchema>) {
@@ -110,6 +102,9 @@ const LoginClientComponent = () => {
       // is a full-page layout now, not a modal, so rendering it here stacked a
       // second card under this one, below the fold.
       if (requiresOrganizationOnboarding(res)) {
+        // `logIn` cleared the session cookies for this answer; whatever an
+        // earlier session left in this browser goes with them.
+        resetClientSession();
         router.push(
           buildCreateOrganizationUrl(
             res.data.email || values.email,
@@ -132,8 +127,8 @@ const LoginClientComponent = () => {
           },
         });
       }
-    } catch (error: any) {
-      toast.error(error.message || "Server is not active", {
+    } catch (error) {
+      toast.error(actionErrorMessage(error, "Server is not active"), {
         style: {
           backgroundColor: "#ef4444",
           color: "white",
@@ -152,22 +147,29 @@ const LoginClientComponent = () => {
         {/* Left Column: Login Form */}
         <div className="w-full lg:w-1/2 p-6 lg:p-10 flex flex-col justify-between">
           <div>
-            {/* Logo */}
+            {/* Logo — back to the marketing site. A plain <a>: it leaves the
+                app, so there is nothing for next/link to prefetch. */}
             <div className="mb-8">
-              <Image
-                src={logoWithSlogan}
-                alt="Logo"
-                width={140}
-                height={40}
-                className="hidden dark:block object-contain"
-              />
-              <Image
-                src={logoForDark}
-                alt="Logo"
-                width={140}
-                height={40}
-                className="dark:hidden object-contain"
-              />
+              <a
+                href={MARKETING_SITE_URL}
+                aria-label="Staff Time Tracker home"
+                className="inline-block rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-zinc-900"
+              >
+                <Image
+                  src={logoWithSlogan}
+                  alt="Logo"
+                  width={140}
+                  height={40}
+                  className="hidden dark:block object-contain"
+                />
+                <Image
+                  src={logoForDark}
+                  alt="Logo"
+                  width={140}
+                  height={40}
+                  className="dark:hidden object-contain"
+                />
+              </a>
             </div>
 
             {/* Header */}
@@ -282,12 +284,12 @@ const LoginClientComponent = () => {
           {/* Footer Callout */}
           <div className="mt-8 pt-4  text-slate-500 dark:text-slate-400">
             New to Staff Time Tracker?{" "}
-            <Link
-              href="/auth/sign-up"
+            <a
+              href={MARKETING_SIGN_UP_URL}
               className="font-semibold text-blue-600 hover:underline dark:text-blue-400"
             >
               Try for Free
-            </Link>
+            </a>
           </div>
         </div>
 

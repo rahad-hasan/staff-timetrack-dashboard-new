@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import z from "zod";
+import { z } from "zod";
 import { toast } from "sonner";
 
 import { approveRejectLeave } from "@/actions/leaves/action";

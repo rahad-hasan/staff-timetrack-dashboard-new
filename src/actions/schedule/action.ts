@@ -1,12 +1,12 @@
 "use server";
 
-import { buildQuery } from "@/utils/buildQuery";
 import { baseApi } from "../baseApi";
+import type { QueryParams } from "@/utils/buildQuery";
 import { IResponse, ISchedules } from "@/types/type";
 
-export const getAllSchedule = async (query = {}): Promise<IResponse<ISchedules[]>> => {
-    const queryString = buildQuery(query);
-    return await baseApi(`/schedules${queryString ? `?${queryString}` : ""}`, {
+export const getAllSchedule = async (query: QueryParams = {}): Promise<IResponse<ISchedules[]>> => {
+    return await baseApi(`/schedules`, {
+        query,
         tag: "schedules",
     });
 };
@@ -22,7 +22,6 @@ export const addSchedule = async (data: ISchedules) => {
         method: "POST",
         body: data,
         tag: "schedules",
-        cache: "no-cache",
     });
 };
 
@@ -34,7 +33,6 @@ export const assignSchedule = async (data: {
         method: "POST",
         body: data,
         tag: "schedules",
-        cache: "no-cache",
     });
 };
 
@@ -46,7 +44,6 @@ export const editSchedule = async ({ data, id }: {
         method: "PATCH",
         body: data,
         tag: "schedules",
-        cache: "no-cache",
     });
 };
 

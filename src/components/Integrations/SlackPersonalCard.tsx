@@ -7,6 +7,7 @@ import {
     getSlackStatus,
     updateSlackPersonalSettings,
 } from "@/actions/integrations/slackIntegrationAction";
+import { unstable_rethrow } from "next/navigation";
 import ConfirmDialog from "@/components/Common/ConfirmDialog";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -137,7 +138,8 @@ const SlackPersonalCard = ({
                     refetch({ silent: true });
                 }
             }
-        } catch {
+        } catch (error) {
+            unstable_rethrow(error);
             toast.error("Could not update status sync");
         } finally {
             setTogglePending(null);
@@ -154,7 +156,8 @@ const SlackPersonalCard = ({
                     res?.message || "Failed to disconnect your Slack account",
                 );
             }
-        } catch {
+        } catch (error) {
+            unstable_rethrow(error);
             toast.error("Failed to disconnect your Slack account");
         } finally {
             await refetch({ silent: true });

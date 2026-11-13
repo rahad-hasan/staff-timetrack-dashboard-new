@@ -3,9 +3,11 @@
 import { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { derivePlanGridFlags, isFreePlan } from "@/lib/billing";
-import { useBillingStore } from "@/store/billingStore";
-import { useLogInUserStore } from "@/store/logInUserStore";
-import { BillingCycle, IBillingPlan } from "@/types/billing";
+import {
+  BillingCycle,
+  IBillingEntitlements,
+  IBillingPlan,
+} from "@/types/billing";
 import PlanCard from "./PlanCard";
 import FaqSection from "./FaqSection";
 import CheckoutDialog from "./CheckoutDialog";
@@ -24,19 +26,23 @@ import SecureIcon from "../Icons/PlanIcons/SecureIcon";
  *
  * It also closes with the same comparison table the onboarding picker uses, and
  * the billing FAQ.
+ *
+ * `entitlements` and `isAdmin` are props, not store reads, so the server and
+ * hydration renders already resolve every card's CTA (see CurrentPlanCard).
  */
 export default function PlanPricingSection({
   plans,
   activeUserCount,
+  entitlements,
+  isAdmin,
   sectionId,
 }: {
   plans: IBillingPlan[];
   activeUserCount: number;
+  entitlements: IBillingEntitlements | null;
+  isAdmin: boolean;
   sectionId?: string;
 }) {
-  const entitlements = useBillingStore((s) => s.status?.entitlements ?? null);
-  const role = useLogInUserStore((s) => s.logInUserData?.role);
-  const isAdmin = role === "admin";
   // The CTA state machine's subscription-wide inputs — shared with the
   // onboarding plan picker so both grids resolve every card identically (the
   // reasoning behind each flag lives on `derivePlanGridFlags`).

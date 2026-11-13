@@ -7,6 +7,8 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { createOrganization } from "@/actions/organization/action";
+import { actionErrorMessage } from "@/lib/actionErrors";
+import { ICreatedOrganization } from "@/lib/authSession";
 import { parseMarketingPlanIntent } from "@/lib/marketingPlanIntent";
 import {
   COMPANY_EMAIL_EXISTS_MESSAGE,
@@ -15,11 +17,7 @@ import {
   resolveBrowserTimeZone,
 } from "@/lib/organization";
 import { buildOrgNameSuggestions } from "@/lib/orgNameSuggestions";
-import { ICreateOrganizationResponse } from "@/types/type";
-import {
-  CreateOrganizationFormValues,
-  createOrganizationSchema,
-} from "@/zod/schema";
+import { CreateOrganizationFormValues, createOrganizationSchema } from "@/zod/phoneSchemas";
 
 export const ORGANIZATION_STEPS = [
   {
@@ -58,7 +56,7 @@ interface UseCreateOrganizationFormOptions {
   email: string;
   /** From `verify-otp`; absent on the login-page entry point into this dialog. */
   userName?: string;
-  onCompleted: (organization: ICreateOrganizationResponse) => void;
+  onCompleted: (organization: ICreatedOrganization) => void;
 }
 
 /**
@@ -264,7 +262,7 @@ export const useCreateOrganizationForm = ({
           onCompleted(result.data);
         } catch (error) {
           toast.error(
-            error instanceof Error ? error.message : "Something went wrong!",
+            actionErrorMessage(error, "Something went wrong!"),
             {
               style: {
                 backgroundColor: "#ef4444",

@@ -8,18 +8,12 @@ import {
 } from "@/components/ui/tooltip";
 import DailyTimeSheetsTable from "./DailyTimeSheetsTable";
 import { formatTZDate, getTZDecimalHour } from "@/utils";
-import { useSearchParams } from "next/navigation";
 import { ITimeSheetEntry } from "@/types/type";
 import TimeEntryTooltip from "@/components/Common/TimeEntryTooltip";
 import ConfirmDialog from "@/components/Common/ConfirmDialog";
-import { useLogInUserStore } from "@/store/logInUserStore";
 import { deleteTimeEntry } from "@/actions/report/action";
+import { actionErrorMessage } from "@/lib/actionErrors";
 import { toast } from "sonner";
-
-type TimezoneOption = {
-  value: string;
-  label: string;
-};
 
 type ActivePeriod = {
   id: number;
@@ -36,24 +30,27 @@ type ActivePeriod = {
   isManual: boolean;
 };
 
+// `selectedDate` and `timeZone` arrive resolved by the server (the day shown,
+// even on the default view, and the zone it was read in), so "today" here can
+// never disagree with the day the server loaded. `canDeleteManual` is resolved
+// there too, so the control is in the server HTML instead of appearing once
+// the client user store rehydrates.
 const DailyTimeSheets = ({
   data,
   timeLineData,
   selectedDate,
-  timezones,
+  timeZone,
+  canDeleteManual,
+  message,
 }: {
   data: any;
   timeLineData: ITimeSheetEntry[];
-  selectedDate: string | number | string[] | undefined;
-  timezones: { data: TimezoneOption[]; defaultValue: string };
+  selectedDate: string;
+  timeZone: string;
+  canDeleteManual: boolean;
+  /** Shown in place of the empty-day text: why the API refused the read. */
+  message?: string;
 }) => {
-  const logInUserData = useLogInUserStore((state) => state.logInUserData);
-  const searchParams = useSearchParams();
-  const selectedTimeZone = searchParams.get("timezone");
-  const currentTimeZone = selectedTimeZone
-    ? selectedTimeZone
-    : timezones?.defaultValue;
-
   const handleDeleteManualTimeEntry = async (timeEntryId: number) => {
     try {
       const res = await deleteTimeEntry(timeEntryId);
@@ -69,8 +66,8 @@ const DailyTimeSheets = ({
           },
         });
       }
-    } catch (error: any) {
-      toast.error(error?.message || "Something went wrong!", {
+    } catch (error) {
+      toast.error(actionErrorMessage(error, "Something went wrong!"), {
         style: {
           backgroundColor: "#ef4444",
           color: "white",
@@ -103,18 +100,18 @@ const DailyTimeSheets = ({
   // 2. Logic for Day Progress Line
   const getDayProgressPercentage = () => {
     const now = new Date();
-    const todayString = formatTZDate(now, currentTimeZone); // Match selectedDate format using TZ
+    const todayString = formatTZDate(now, timeZone); // Match selectedDate format using TZ
 
     if (selectedDate !== todayString) {
-      return selectedDate! < todayString ? 100 : 0;
+      return selectedDate < todayString ? 100 : 0;
     }
 
     // Get the current decimal hour in the user's timezone
-    const decimalHourNow = getTZDecimalHour(now, currentTimeZone);
+    const decimalHourNow = getTZDecimalHour(now, timeZone);
     return (decimalHourNow / 24) * 100;
   };
 
-  const isToday = selectedDate === formatTZDate(new Date(), currentTimeZone);
+  const isToday = selectedDate === formatTZDate(new Date(), timeZone);
 
   const dayProgress = getDayProgressPercentage();
 
@@ -123,7 +120,7 @@ const DailyTimeSheets = ({
       <div className="mb-5">
         <div className="flex gap-2 mb-2">
           <h1 className="font-bold text-headingTextColor dark:text-darkTextPrimary">
-            Today:
+            {isToday ? "Today:" : "Total:"}
           </h1>
           <p className="text-headingTextColor dark:text-darkTextPrimary">
             {data?.totals?.duration_formatted}
@@ -142,7 +139,7 @@ const DailyTimeSheets = ({
             ></p>
           )}
 
-          {activePeriods?.map((period, index: number) => {
+          {activePeriods?.map((period) => {
             const startPercent = (period.start / 24) * 100;
             const endPercent = (period.end / 24) * 100;
             const width = endPercent - startPercent;
@@ -155,8 +152,10 @@ const DailyTimeSheets = ({
             };
 
             return (
-              <Tooltip key={period.timeEntryId ?? index}>
-                {period?.is_manual_entry && logInUserData?.role === "admin" ? (
+              // One segment per time-entry detail: `timeEntryId` is the parent
+              // entry, shared by several segments, so it cannot be the key.
+              <Tooltip key={period.id}>
+                {period?.is_manual_entry && canDeleteManual ? (
                   <ConfirmDialog
                     trigger={
                       <TooltipTrigger asChild>
@@ -211,7 +210,10 @@ const DailyTimeSheets = ({
           })}
         </div>
       </div>
-      <DailyTimeSheetsTable data={data?.items}></DailyTimeSheetsTable>
+      <DailyTimeSheetsTable
+        data={data?.items}
+        message={message}
+      ></DailyTimeSheetsTable>
     </>
   );
 };

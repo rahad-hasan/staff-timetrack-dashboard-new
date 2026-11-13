@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 
 import SegmentedPills, {
   type SegmentedPillOption,
@@ -55,7 +55,6 @@ export const resolveBillingTab = (
  * default without also needing the viewer's role.
  */
 const useBillingTabNav = () => {
-  const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
@@ -70,12 +69,22 @@ const useBillingTabNav = () => {
         params.set("tab", next);
       }
       const query = params.toString();
-      // `scroll: false` — the tab bodies swap in place; yanking the viewport to
-      // the top would throw away the position of a user who scrolled down to
-      // the pricing grid and tapped Invoice to cross-check a charge.
-      router.push(query ? `${pathname}?${query}` : pathname, { scroll: false });
+      // A history entry, not a navigation. A tab only decides which panel is
+      // mounted, and every panel reads its own data (or the billing store), so
+      // `router.push` re-rendering this force-dynamic page — billing status
+      // and the plan list fetched again, the panel held back until they
+      // arrived — bought nothing. Next routes `pushState` through its router:
+      // `useSearchParams` follows, Back/Forward walk the tabs without a
+      // reload, and nothing is requested. It also keeps the viewport where it
+      // is, so a user who scrolled down to the pricing grid and tapped Invoice
+      // to cross-check a charge does not lose their place.
+      window.history.pushState(
+        null,
+        "",
+        query ? `${pathname}?${query}` : pathname,
+      );
     },
-    [pathname, router, searchParams],
+    [pathname, searchParams],
   );
 
   return { rawTab, setTab };
@@ -84,20 +93,15 @@ const useBillingTabNav = () => {
 /**
  * The billing page's active tab plus its setter.
  *
- * `initialTab` is the server-rendered `?tab=` value. It only ever seeds the
- * very first paint — `useSearchParams` is authoritative from then on — but
- * without it the page would flash My Plan before settling on the requested
- * tab after hydration.
+ * Read from `useSearchParams` alone, on every render including the server's:
+ * the page is dynamic, so the param is already there for the first HTML
+ * paint. There is deliberately no server-read fallback — tab switches never
+ * re-render the page (see `setTab`), so a value captured at the last server
+ * render would go stale the moment the param is deleted for the default tab.
  */
-export const useBillingTab = ({
-  isAdmin,
-  initialTab,
-}: {
-  isAdmin: boolean;
-  initialTab?: string | null;
-}) => {
+export const useBillingTab = ({ isAdmin }: { isAdmin: boolean }) => {
   const { rawTab, setTab } = useBillingTabNav();
-  const activeTab = resolveBillingTab(rawTab ?? initialTab, isAdmin);
+  const activeTab = resolveBillingTab(rawTab, isAdmin);
   return { activeTab, setTab };
 };
 
@@ -188,9 +192,9 @@ export default function BillingTabs({
       onChange={onChange}
       ariaLabel="Billing sections"
       // Manual activation: arrows move focus, Space/Enter switches the tab.
-      // `onChange` here is `router.push` into a `force-dynamic` page, so
-      // select-on-move would charge a keyboard user a history entry and a full
-      // RSC refetch for every arrow press spent reading the strip — and key
+      // `onChange` pushes a history entry and mounts a panel that loads its
+      // own data, so select-on-move would charge a keyboard user an entry and
+      // a panel fetch for every arrow press spent reading the strip — and key
       // auto-repeat (the row wraps, so it never ends) would fire them without
       // limit. It also keeps Back meaning "leave Settings" instead of walking
       // backwards through tabs the user only skimmed. This is a tab strip

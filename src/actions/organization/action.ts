@@ -4,12 +4,15 @@ import { revalidateTag } from "next/cache";
 import { unstable_rethrow } from "next/navigation";
 
 import { baseApi } from "../baseApi";
-import { writeSessionCookies } from "@/lib/sessionCookies";
+import { startSession } from "@/lib/sessionCookies";
+import {
+  ICreateOrganizationClientResult,
+  withoutSessionTokens,
+} from "@/lib/authSession";
 import {
   ICompany,
   ICreateOrganizationPayload,
   ICreateOrganizationResponse,
-  ICreateOrganizationResult,
   IResponse,
 } from "@/types/type";
 
@@ -85,7 +88,6 @@ const applyCompanyPreferences = async (
     baseApi<IResponse<ICompany>>(`/company/${company.id}`, {
       method: "PATCH",
       body: patch,
-      cache: "no-cache",
     }),
   );
 
@@ -130,7 +132,7 @@ export const createOrganization = async (
    * it is passed beside the payload instead of inside it.
    */
   trialPlanId?: number | null,
-): Promise<ICreateOrganizationResult> => {
+): Promise<ICreateOrganizationClientResult> => {
   if (!payload?.email) {
     return {
       success: false,
@@ -171,7 +173,6 @@ export const createOrganization = async (
           ? { trial_plan_id: requestedTrialPlanId }
           : {}),
       },
-      cache: "no-cache",
     },
   );
 
@@ -188,18 +189,7 @@ export const createOrganization = async (
 
   // From here the account exists and the user is signed in — no later failure
   // may be reported as "organization not created".
-  await writeSessionCookies(
-    {
-      accessToken: created.accessToken,
-      refreshToken: created.refreshToken,
-      timeZone: created.company?.time_zone ?? created.time_zone,
-    },
-    {
-      id: created.id,
-      email: created.email,
-      role: created.role,
-    },
-  );
+  const hasSession = await startSession(created);
 
   const warnings: string[] = [];
 
@@ -223,7 +213,8 @@ export const createOrganization = async (
   return {
     success: true,
     message: response.message || "Organization created successfully",
-    data: created,
+    // The token pair is in the httpOnly cookies now; the page gets the rest.
+    data: { ...withoutSessionTokens(created), hasSession },
     ...(warnings.length ? { warnings } : {}),
   };
 };

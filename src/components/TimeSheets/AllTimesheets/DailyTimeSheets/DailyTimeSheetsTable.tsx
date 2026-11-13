@@ -22,7 +22,14 @@ import FilterButton from "@/components/Common/FilterButton";
 import CheckIcon from "@/components/Icons/CheckIcon";
 import { IDailyTimeEntryItem } from "@/types/type";
 
-const DailyTimeSheetsTable = ({ data }: { data: IDailyTimeEntryItem[] }) => {
+const DailyTimeSheetsTable = ({
+  data,
+  message,
+}: {
+  data: IDailyTimeEntryItem[];
+  /** Shown in place of the empty-day text: why the API refused the read. */
+  message?: string;
+}) => {
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const getActivityBg = (score: number) => {
@@ -209,7 +216,7 @@ const DailyTimeSheetsTable = ({ data }: { data: IDailyTimeEntryItem[] }) => {
             <TableRow>
               <EmptyTableRow
                 columns={columns}
-                text="No time entry found."
+                text={message || "No time entry found."}
               ></EmptyTableRow>
             </TableRow>
           )}

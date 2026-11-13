@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { getLeaveTypes, updateLeaveRequest } from "@/actions/leaves/action";
+import { actionErrorMessage } from "@/lib/actionErrors";
 import {
   LeaveRecord,
   LeaveType,
@@ -25,8 +26,8 @@ import {
   formatApplicableGender,
   formatNoticeDays,
   getLeaveTypeTheme,
-  isoDateToLocalDate,
 } from "@/lib/leave";
+import { calendarDateToLocal } from "@/lib/timezone";
 import { Button } from "@/components/ui/button";
 import {
   DialogClose,
@@ -93,8 +94,8 @@ const LeaveEditDialog = ({
     resolver: zodResolver(leaveRequestEditSchema),
     defaultValues: {
       leaveTypeId: String(leave.leave_type_id),
-      startDate: isoDateToLocalDate(leave.start_date),
-      endDate: isoDateToLocalDate(leave.end_date),
+      startDate: calendarDateToLocal(leave.start_date),
+      endDate: calendarDateToLocal(leave.end_date),
       reason: leave.reason ?? "",
     },
   });
@@ -119,12 +120,9 @@ const LeaveEditDialog = ({
         if (cancelled) return;
 
         setTypesState("error");
-        toast.error(
-          error instanceof Error && error.message
-            ? error.message
-            : "Could not load leave types",
-          { style: ERROR_TOAST_STYLE },
-        );
+        toast.error(actionErrorMessage(error, "Could not load leave types"), {
+          style: ERROR_TOAST_STYLE,
+        });
       }
     };
 

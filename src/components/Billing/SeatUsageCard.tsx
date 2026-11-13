@@ -5,27 +5,29 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { getSeatUsage, hasPaidSubscription } from "@/lib/billing";
 import { useBillingStore } from "@/store/billingStore";
-import { useLogInUserStore } from "@/store/logInUserStore";
+import { IBillingEntitlements } from "@/types/billing";
 import Image from "next/image";
 import settingImage from "@/assets/settings/current_plan.png";
 
 /**
  * "Seats" card (guide §3). Purchased seats + effective cap come from
- * `getSeatUsage(entitlements)`; the active-user count comes from the members
- * list via props. "Add seats" is admin-only AND requires a paid subscription
- * (otherwise seats come from checkout / the plan instead).
+ * `getSeatUsage(entitlements)`; the active-user count is billing/status's own
+ * head count, via props. "Add seats" is admin-only AND requires a paid
+ * subscription (otherwise seats come from checkout / the plan instead).
+ * `entitlements` and `isAdmin` are props for the reason CurrentPlanCard gives.
  */
 export default function SeatUsageCard({
   activeUserCount,
+  entitlements,
+  isAdmin,
 }: {
   activeUserCount: number;
+  entitlements: IBillingEntitlements | null;
+  isAdmin: boolean;
 }) {
-  const entitlements = useBillingStore((s) => s.status?.entitlements ?? null);
   const openAddSeats = useBillingStore((s) => s.openAddSeats);
-  const role = useLogInUserStore((s) => s.logInUserData?.role);
 
   const usage = getSeatUsage(entitlements);
-  const isAdmin = role === "admin";
   const showAddSeats = isAdmin && hasPaidSubscription(entitlements);
 
   const cap = usage.cap;

@@ -1,14 +1,16 @@
 "use client";
 
-export default function ScreenShotsError() {
-  return (
-    <div className="flex flex-col items-center justify-center h-[60vh] text-center">
-      <h2 className="text-xl font-semibold mb-2">
-        {"Something Went Wrong"}
-      </h2>
+import AutoRecoveringError from "@/components/Common/AutoRecoveringError";
 
-      <p className="text-sm text-gray-500 dark:text-darkTextSecondary mb-4">Please try again later.</p>
-
-    </div>
-  );
+/**
+ * Activity pages refresh themselves in the background, so a failed read must
+ * heal itself rather than latch the page (see useErrorAutoRecovery).
+ */
+export default function ActivityError({
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
+  return <AutoRecoveringError reset={reset} />;
 }

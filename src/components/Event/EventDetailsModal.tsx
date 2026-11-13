@@ -21,7 +21,7 @@ import {
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import EditEventModal from "./EditEventModal";
-import { refreshEvents } from "@/actions/calendarEvent/action";
+import { useRouter } from "next/navigation";
 import {
     AlertCircle,
     ArrowLeft,
@@ -51,12 +51,13 @@ import {
 import {
     ProviderBadge,
 } from "./eventHelpers";
-import { RichTextViewer } from "@/components/Common/RichTextEditor";
+import { RichTextViewer } from "@/components/Common/RichTextViewer";
+import { checkBeforeRefresh } from "@/hooks/useLiveRefresh";
 import { cn } from "@/lib/utils";
 import AddMembersModal from "./AddMembersModal";
 import CancelEventDialog from "./EventDetailsModalComponent/CancelEventDialog";
 import googleMeetIcon from "../../assets/events/google_meet.svg";
-import microsoftTeamsIcon from "../../assets/events/microsoft-teams.svg";
+import microsoftTeamsIcon from "./assets/microsoft-teams.png";
 import Image from "next/image";
 import AttendeeRow from "./EventDetailsModalComponent/AttendeeRow";
 import AttendeeStatBlock from "./EventDetailsModalComponent/AttendeeStatBlock";
@@ -176,13 +177,20 @@ const ATTENDEE_FILTERS: {
 ];
 
 
+const SYNC_POLL_MS = 3000;
+const SYNC_POLL_MAX_ATTEMPTS = 30;
+
 const EventDetailsModal = ({
     handleCloseDialog,
     event: initialEvent,
+    pollMonth,
 }: {
     handleCloseDialog: () => void;
     event: IEvent;
+    /** The month bucket (viewer's zone) the calendar loaded this event from. */
+    pollMonth: { year: number; month: number };
 }) => {
+    const router = useRouter();
     const logInUserData = useLogInUserStore((state) => state.logInUserData);
     const role = logInUserData?.role;
     const canEdit =
@@ -276,44 +284,100 @@ const EventDetailsModal = ({
         [allMembers],
     );
 
+    const { year: pollYear, month: pollMonthNumber } = pollMonth;
+
+    // While the meeting link / calendar invites are still being created by
+    // background jobs, re-read the event every few seconds until it settles.
+    // Runs only while the drawer is mounted (it unmounts on close), through
+    // the /event/live route handler so it never queues ahead of this drawer's
+    // own server actions, and asks for the month the event was listed under —
+    // the API buckets months in the viewer's zone, not UTC.
+    //
+    // Stops for good on an answer that is not the route's own: /event/** is
+    // behind the auth middleware, so a session that ended (signed out in
+    // another tab, an expired cookie) gets a redirect to the HTML login page
+    // instead of a JSON 401. `redirect: "manual"` keeps fetch from following
+    // it — no login page rendered every 3s — and HTML is never parsed. Offline
+    // pauses without spending attempts and resumes on reconnect.
     useEffect(() => {
         if (!isEventLive(initialEvent)) return;
 
-        let cancelled = false;
+        const controller = new AbortController();
         let timer: ReturnType<typeof setTimeout> | undefined;
         let attempts = 0;
-        const MAX_ATTEMPTS = 30;
-        const POLL_MS = 3000;
+        const url = `/event/live?${new URLSearchParams({
+            year: String(pollYear),
+            month: String(pollMonthNumber),
+        })}`;
 
-        const startDate = new Date(initialEvent.start_time);
-        const query = {
-            year: startDate.getUTCFullYear(),
-            month: startDate.getUTCMonth() + 1,
+        const resumeOnline = () => {
+            if (!controller.signal.aborted) timer = setTimeout(tick, SYNC_POLL_MS);
         };
 
         const tick = async () => {
-            if (cancelled || attempts++ >= MAX_ATTEMPTS) return;
+            if (controller.signal.aborted) return;
+            if (navigator.onLine === false) {
+                window.addEventListener("online", resumeOnline, { once: true });
+                return;
+            }
+            if (attempts++ >= SYNC_POLL_MAX_ATTEMPTS) return;
             try {
-                const res = await refreshEvents(query);
-                const list = (res?.data ?? []) as IEvent[];
+                const res = await fetch(url, {
+                    cache: "no-store",
+                    redirect: "manual",
+                    signal: controller.signal,
+                });
+                // Redirected (the session is gone — middleware sends the login
+                // page), signed out, or not allowed: polling cannot succeed.
+                if (
+                    res.type === "opaqueredirect" ||
+                    res.redirected ||
+                    res.status === 401 ||
+                    res.status === 403
+                ) {
+                    return;
+                }
+                const isJson = (res.headers.get("content-type") ?? "").includes(
+                    "application/json",
+                );
+                // A 2xx that is not JSON did not come from the route: stop.
+                // (A non-2xx — a proxy's 502 during a deploy — is retried, unread.)
+                if (res.ok && !isJson) return;
+                const body = res.ok ? await res.json() : null;
+                const list = (body?.data ?? []) as IEvent[];
                 const found = list.find((item) => item.id === initialEvent.id);
-                if (found && !cancelled) {
+                if (found && !controller.signal.aborted) {
                     setEvent(found);
-                    if (!isEventLive(found)) return;
+                    if (!isEventLive(found)) {
+                        // The calendar behind the drawer still holds the
+                        // pre-sync snapshot; re-render it once so reopening
+                        // this event shows the settled state immediately.
+                        // Unattended, so only after the same check live
+                        // refresh makes: a refresh that cannot land (server
+                        // restarting, new build) becomes a full-page reload
+                        // under the open drawer. Not tied to the drawer — it
+                        // is the calendar behind it that needs the render.
+                        void checkBeforeRefresh().then((verdict) => {
+                            if (verdict === "refresh") router.refresh();
+                        });
+                        return;
+                    }
                 }
             } catch {
-                // ignore and keep polling until the sync settles
+                if (controller.signal.aborted) return;
+                // a failed read is not the end of the sync — keep polling
             }
-            if (!cancelled) timer = setTimeout(tick, POLL_MS);
+            if (!controller.signal.aborted) timer = setTimeout(tick, SYNC_POLL_MS);
         };
 
-        timer = setTimeout(tick, POLL_MS);
+        timer = setTimeout(tick, SYNC_POLL_MS);
 
         return () => {
-            cancelled = true;
+            controller.abort();
             if (timer) clearTimeout(timer);
+            window.removeEventListener("online", resumeOnline);
         };
-    }, [initialEvent]);
+    }, [initialEvent, pollYear, pollMonthNumber, router]);
 
     const handleCopy = (text: string) => {
         navigator.clipboard.writeText(text);

@@ -1,11 +1,12 @@
 "use server";
 
-import { buildQuery } from "@/utils/buildQuery";
 import { baseApi } from "../baseApi";
 
-export const getClients = async (query = {}) => {
-  const queryString = buildQuery(query);
-  return await baseApi(`/clients${queryString ? `?${queryString}` : ""}`, {
+// The API returns the company's whole client list and ignores query
+// parameters (no search, no pagination), so this takes none: one URL, one
+// read, for the table and the project wizard's picker alike.
+export const getClients = async () => {
+  return await baseApi(`/clients`, {
     tag: "clients",
   });
 };
@@ -20,7 +21,6 @@ export const addClient = async (data: {
     method: "POST",
     body: data,
     tag: "clients",
-    cache: "no-cache",
   });
 };
 
@@ -40,7 +40,6 @@ export const editClient = async ({
     method: "PATCH",
     body: data,
     tag: "clients",
-    cache: "no-cache",
   });
 };
 

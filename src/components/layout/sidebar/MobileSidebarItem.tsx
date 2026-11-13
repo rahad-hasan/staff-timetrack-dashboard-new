@@ -2,7 +2,10 @@ import { Minus, Plus } from "lucide-react";
 import Link from "next/link";
 import clsx from "clsx";
 import { SheetClose } from "@/components/ui/sheet";
-import { motion, AnimatePresence } from "framer-motion";
+import SidebarCollapse from "./SidebarCollapse";
+
+/** Opening and closing both take 250ms — keep in step with `duration-250`. */
+const TOGGLE_MS = 250;
 
 const MobileSidebarItem = ({
   icon: Icon,
@@ -60,23 +63,16 @@ const MobileSidebarItem = ({
   return (
     <div className="mb-2">
       {href ? <Link href={href}>{content}</Link> : content}
-      <AnimatePresence initial={false}>
-        {isOpen && children && (
-          <motion.div
-            key="content"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{
-              duration: 0.25,
-              ease: [0.4, 0, 0.2, 1],
-            }}
-            className="overflow-hidden"
-          >
-            {children}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {children ? (
+        <SidebarCollapse
+          open={isOpen}
+          exitMs={TOGGLE_MS}
+          // ease-in-out here is Tailwind's cubic-bezier(0.4, 0, 0.2, 1).
+          className="duration-250 ease-in-out"
+        >
+          {children}
+        </SidebarCollapse>
+      ) : null}
     </div>
   );
 };

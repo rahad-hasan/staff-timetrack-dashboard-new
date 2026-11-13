@@ -73,7 +73,7 @@ const isOffscreen = (rect: DOMRect): boolean => {
  * the box actually moves — so a still page costs one `getBoundingClientRect`
  * per frame and zero renders. The reason it has to be a frame loop is that
  * everything the spotlight follows moves *without* firing an event: the
- * sidebar's 300ms width transition, framer-motion's height animation on an
+ * sidebar's 300ms width transition, the grid-rows height transition on an
  * expanding nav group, and smooth-scrolling the target into view.
  */
 export function useTourTarget(

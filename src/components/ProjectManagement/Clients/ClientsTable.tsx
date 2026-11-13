@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import DeleteIcon from "@/components/Icons/DeleteIcon";
 import ConfirmDialog from "@/components/Common/ConfirmDialog";
 import { deleteClient } from "@/actions/clients/action";
+import { actionErrorMessage } from "@/lib/actionErrors";
 // import DeleteIcon from "@/components/Icons/DeleteIcon";
 
 const ClientsTable = ({ data }: any) => {
@@ -43,8 +44,8 @@ const ClientsTable = ({ data }: any) => {
                     },
                 });
             }
-        } catch (error: any) {
-            toast.error(error?.message || "Something went wrong!", {
+        } catch (error) {
+            toast.error(actionErrorMessage(error, "Something went wrong!"), {
                 style: {
                     backgroundColor: '#ef4444',
                     color: 'white',

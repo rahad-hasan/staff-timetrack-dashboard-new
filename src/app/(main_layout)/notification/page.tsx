@@ -9,28 +9,27 @@ import { getDecodedUser } from "@/utils/decodedLogInUser";
 
 const NotificationPage = async ({ searchParams }: ISearchParamsProps) => {
   const params = await searchParams;
-  const currentUser = await getDecodedUser();
+  const category =
+    params.read === "read" || params.read === "unread" ? params.read : "all";
+  const read = category === "all" ? undefined : category === "read";
+  const type =
+    typeof params.type === "string" && params.type !== "all"
+      ? params.type
+      : undefined;
+
+  // Independent reads: started together instead of one after the other.
+  const [currentUser, result, notificationCount] = await Promise.all([
+    getDecodedUser(),
+    getNotifications({
+      page: typeof params.page === "string" ? params.page : undefined,
+      limit: 10,
+      read,
+      type,
+    }),
+    getNotificationsCount({ read }),
+  ]);
   const canSeeUnusualActivity = ["admin", "hr"].includes(
     currentUser?.role ?? "",
-  );
-  const result = await getNotifications({
-    page: params.page,
-    limit: 10,
-    ...(params.read &&
-      params.read !== "all" && {
-        read: params.read === "read",
-      }),
-
-    ...(params.type &&
-      params.type !== "all" && {
-        type: params.type,
-      }),
-  });
-  const notificationCount = await getNotificationsCount(
-    params.read &&
-      params.read !== "all" && {
-        read: params.read === "read",
-      },
   );
 
   return (
@@ -39,7 +38,8 @@ const NotificationPage = async ({ searchParams }: ISearchParamsProps) => {
         data={result?.data}
         canSeeUnusualActivity={canSeeUnusualActivity}
         notificationCount={notificationCount?.data}
-        category={params.read as "all" | "read" | "unread"}
+        category={category}
+        type={type}
       ></AllNotification>
       <AppPagination
         total={result?.data?.meta?.total ?? 1}

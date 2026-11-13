@@ -20,10 +20,11 @@
  *     number of listeners here.
  *  2. `session:reset` re-runs the loader, which forgets those bindings. They
  *     are re-applied from `CRISP_READY_TRIGGER`, which fires on every (re)load.
- *  3. The script outlives the React tree, because a client-side sign-out keeps
- *     the page. Switching users therefore swaps `CRISP_TOKEN_ID` and resets,
- *     which is the sequence Crisp documents, instead of injecting the script
- *     a second time.
+ *  3. The script outlives the React tree whenever the signed-in shell is left
+ *     without a page load (a session expiry lands on /session-expired
+ *     client-side). Switching users therefore swaps `CRISP_TOKEN_ID` and
+ *     resets, which is the sequence Crisp documents, instead of injecting the
+ *     script a second time.
  */
 
 /** Where Crisp's loader and client bundle are served from. */
@@ -340,7 +341,9 @@ export function bootCrisp({ websiteId, tokenId, locale }: CrispBootOptions) {
 /**
  * Unbind the conversation from the current user: what Crisp requires on
  * sign-out so the next person on this browser cannot read it. Nothing is
- * deleted; the user's token restores it when they come back.
+ * deleted on Crisp's side; the user's token restores it when they come back,
+ * until an explicit sign-out, or another user's sign-in, forgets the token
+ * (see `sessionToken.ts`).
  *
  * Deferred one tick because React StrictMode (and any fast unmount→remount)
  * tears the tree down and straight back up. Resetting in between would

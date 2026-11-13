@@ -1,6 +1,8 @@
 import { Settings } from "lucide-react";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import HeadingComponent from "@/components/Common/HeadingComponent";
+import LiveDataBoundary from "@/components/Common/LiveDataBoundary";
+import LiveRefresh from "@/components/Common/LiveRefresh";
 import AppTableServer from "@/components/Activity/App/AppTableServer";
 import { ISearchParamsProps } from "@/types/type";
 import { Suspense } from "react";
@@ -17,6 +19,7 @@ export const metadata: Metadata = {
 const App = async ({ searchParams }: ISearchParamsProps) => {
   return (
     <div>
+      <LiveRefresh section="activity" />
       <div className="flex items-center justify-between gap-3 mb-5">
         <HeadingComponent
           heading="App Activity"
@@ -57,7 +60,9 @@ const App = async ({ searchParams }: ISearchParamsProps) => {
         </div>
       </Suspense>
       <Suspense fallback={<AppNameTableSkeleton />}>
-        <AppTableServer searchParams={searchParams} />
+        <LiveDataBoundary>
+          <AppTableServer searchParams={searchParams} />
+        </LiveDataBoundary>
       </Suspense>
     </div>
   );

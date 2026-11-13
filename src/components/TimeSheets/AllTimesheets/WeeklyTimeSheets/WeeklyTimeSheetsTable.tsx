@@ -10,12 +10,15 @@ type WeeklyTimeSheetsTableProps = {
     duration_formatted: string;
     per_day: Record<string, { formatted: string }>;
   };
+  /** Shown in place of the empty-week text, e.g. why the week failed to load. */
+  message?: string;
 };
 
 const WeeklyTimeSheetsTable = ({
   items,
   dayKeys,
   totals,
+  message,
 }: WeeklyTimeSheetsTableProps) => {
   if (!items || items.length === 0) {
     return (
@@ -26,7 +29,7 @@ const WeeklyTimeSheetsTable = ({
           width={120}
           height={120}
         />
-        <p className="text-lg">No data available for this week.</p>
+        <p className="text-lg">{message || "No data available for this week."}</p>
       </div>
     );
   }

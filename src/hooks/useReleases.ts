@@ -2,277 +2,21 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+import {
+  FALLBACK_RELEASE,
+  RELEASE_FEED_PATH,
+  buildReleaseError,
+  readReleaseError,
+  sanitizeReleaseInfo,
+} from "@/components/Download/releaseFeed";
 import type {
-  IReleaseAsset,
   IReleaseError,
   IReleaseInfo,
-  TDownloadTargetId,
-  TReleaseAssets,
-  TReleaseErrorKind,
   TReleaseState,
 } from "@/types/releases";
 
-const REPO = "staff-time-tracker/desktop-app-releases";
-
-/**
- * `/releases/latest` excludes drafts and prereleases server-side, but orders by
- * the release's `created_at` (the *commit* date), not `published_at` — so a
- * release cut from an older commit can outrank a newer one. That is exactly
- * what GitHub's own "Latest" badge shows, so the two stay consistent; switch to
- * `/releases` + a client-side `published_at` sort only if that ever diverges.
- */
-const LATEST_RELEASE_ENDPOINT = `https://api.github.com/repos/${REPO}/releases/latest`;
-
-const RELEASES_PAGE_URL = `https://github.com/${REPO}/releases`;
-
-/**
- * Filename patterns for the four artefacts the page offers. electron-builder
- * uploads `.blockmap`, `.zip`, `.deb`, `.rpm` and `latest*.yml` auto-updater
- * files to the same release, so every pattern is anchored at `$` to keep those
- * out — a `.dmg.blockmap` matching the macOS slot would hand users a 110 KB
- * stub. Case-insensitive because the release mixes `StaffTimeTracker-*` and
- * `staff-time-tracker*` casing across platforms.
- *
- * Linux is the versioned `.sh` self-extracting installer, not the raw
- * `.AppImage`. The name prefix is load-bearing: the release also carries a
- * bare `install.sh`, which is only the ~16 KB bootstrap header.
- */
-const PATTERNS: Record<TDownloadTargetId, RegExp> = {
-  win: /^StaffTimeTracker-Setup-.*\.exe$/i,
-  macArm: /-arm64\.dmg$/i,
-  macX64: /-x64\.dmg$/i,
-  linux: /^StaffTimeTracker-.*\.sh$/i,
-};
-
-const TARGET_IDS = Object.keys(PATTERNS) as TDownloadTargetId[];
-
-const BYTES_PER_MB = 1024 * 1024;
-
 /** Ceiling on one request; `fetch` has no built-in timeout. */
 const REQUEST_TIMEOUT_MS = 10_000;
-
-const formatMb = (bytes: number): string =>
-  `${(bytes / BYTES_PER_MB).toFixed(1)} MB`;
-
-const buildFallbackAsset = (
-  version: string,
-  name: string,
-  size: number,
-): IReleaseAsset => ({
-  name,
-  url: `${RELEASES_PAGE_URL}/download/v${version}/${name}`,
-  sizeLabel: formatMb(size),
-});
-
-/**
- * Pinned copy of v1.0.4 so the page still works when the API is rate-limited
- * or unreachable. These URLs are permanent: GitHub keeps release assets at
- * `/releases/download/<tag>/<name>` for the life of the tag.
- */
-const FALLBACK_VERSION = "1.0.4";
-
-export const FALLBACK_RELEASE: IReleaseInfo = {
-  tag: `v${FALLBACK_VERSION}`,
-  releaseUrl: `${RELEASES_PAGE_URL}/tag/v${FALLBACK_VERSION}`,
-  publishedAt: null,
-  assets: {
-    win: buildFallbackAsset(
-      FALLBACK_VERSION,
-      `StaffTimeTracker-Setup-${FALLBACK_VERSION}.exe`,
-      83_966_083,
-    ),
-    macArm: buildFallbackAsset(
-      FALLBACK_VERSION,
-      `StaffTimeTracker-${FALLBACK_VERSION}-arm64.dmg`,
-      104_743_620,
-    ),
-    macX64: buildFallbackAsset(
-      FALLBACK_VERSION,
-      `StaffTimeTracker-${FALLBACK_VERSION}-x64.dmg`,
-      113_357_533,
-    ),
-    linux: buildFallbackAsset(
-      FALLBACK_VERSION,
-      `StaffTimeTracker-${FALLBACK_VERSION}.sh`,
-      116_342_284,
-    ),
-  },
-};
-
-/** Only the fields of the GitHub payload this hook reads. */
-interface IGithubReleaseAsset {
-  name?: unknown;
-  browser_download_url?: unknown;
-  size?: unknown;
-  /** `"open"` while an upload is still in flight; only `"uploaded"` is usable. */
-  state?: unknown;
-}
-
-interface IGithubRelease {
-  tag_name?: unknown;
-  html_url?: unknown;
-  published_at?: unknown;
-  assets?: IGithubReleaseAsset[];
-}
-
-const isNonEmptyString = (value: unknown): value is string =>
-  typeof value === "string" && value.trim().length > 0;
-
-const TRUSTED_HOST = "github.com";
-
-/**
- * Every URL this page puts in an `href` must lead back into our own release
- * repo on github.com. The API payload is the only thing between a visitor and
- * an installer, so a value that points anywhere else — another host, another
- * repo on github.com, plain `http:`, or a `javascript:` URL — is dropped
- * rather than rendered.
- *
- * The check runs on the WHATWG-parsed URL, so `..` segments (raw or
- * `%2e`-encoded) are already resolved and cannot climb out of the prefix, and
- * `user@host` / `host:port` tricks fail the exact host and port comparison.
- * The repo segment is compared case-insensitively because GitHub routes
- * owner/repo case-insensitively; the tag and filename after it are untouched.
- */
-const isTrustedReleaseUrl = (
-  value: string,
-  section: "download" | "tag",
-): boolean => {
-  let parsed: URL;
-  try {
-    parsed = new URL(value);
-  } catch {
-    return false;
-  }
-
-  return (
-    parsed.protocol === "https:" &&
-    parsed.hostname === TRUSTED_HOST &&
-    parsed.port === "" &&
-    parsed.username === "" &&
-    parsed.password === "" &&
-    parsed.pathname
-      .toLowerCase()
-      .startsWith(`/${REPO}/releases/${section}/`.toLowerCase())
-  );
-};
-
-/**
- * Pulls one asset out of the payload. Every field is treated as untrusted:
- * a release published mid-upload can carry an asset with no URL yet.
- */
-const extractAsset = (
-  release: IGithubRelease,
-  target: TDownloadTargetId,
-): IReleaseAsset | null => {
-  const match = release.assets?.find(
-    (asset) =>
-      isNonEmptyString(asset?.name) &&
-      PATTERNS[target].test(asset.name) &&
-      // A half-uploaded asset already appears in the payload with a URL that
-      // 404s, so skip anything GitHub has not finished storing.
-      asset.state !== "open",
-  );
-
-  if (!match) return null;
-
-  const name = match.name;
-  const url = match.browser_download_url;
-
-  if (!isNonEmptyString(name) || !isNonEmptyString(url)) return null;
-
-  // An off-repo URL makes this slot unusable, exactly like a missing asset:
-  // the card falls back to "not available" and, if every slot is dropped,
-  // `parseRelease` serves the pinned release instead.
-  if (!isTrustedReleaseUrl(url, "download")) return null;
-
-  const size = typeof match.size === "number" && match.size > 0 ? match.size : 0;
-
-  return {
-    name,
-    url,
-    // A zero size means GitHub gave us no number; show nothing rather than
-    // an authoritative-looking "0.0 MB".
-    sizeLabel: size > 0 ? formatMb(size) : "",
-  };
-};
-
-const parseRelease = (release: IGithubRelease): IReleaseInfo | null => {
-  const tag = isNonEmptyString(release?.tag_name) ? release.tag_name : null;
-  if (!tag) return null;
-
-  // `IGithubRelease` is an assertion over untrusted JSON, not a guarantee.
-  if (!Array.isArray(release.assets)) return null;
-
-  const assets = TARGET_IDS.reduce((accumulator, target) => {
-    accumulator[target] = extractAsset(release, target);
-    return accumulator;
-  }, {} as TReleaseAssets);
-
-  // A release with none of our four artefacts is useless to this page; the
-  // pinned fallback is strictly better than four dead cards.
-  const hasAnyAsset = TARGET_IDS.some((target) => assets[target] !== null);
-  if (!hasAnyAsset) return null;
-
-  return {
-    tag,
-    releaseUrl:
-      isNonEmptyString(release.html_url) &&
-      isTrustedReleaseUrl(release.html_url, "tag")
-        ? release.html_url
-        : `${RELEASES_PAGE_URL}/tag/${encodeURIComponent(tag)}`,
-    publishedAt: isNonEmptyString(release.published_at)
-      ? release.published_at
-      : null,
-    assets,
-  };
-};
-
-const buildError = (
-  kind: TReleaseErrorKind,
-  status: number | null = null,
-  retryAt: number | null = null,
-): IReleaseError => ({ kind, status, retryAt });
-
-/**
- * When the caller may try again. GitHub exposes `X-RateLimit-*` and
- * `Retry-After` through `Access-Control-Expose-Headers`, so both are readable
- * on a cross-origin response.
- */
-const readRetryAt = (response: Response): number | null => {
-  const reset = Number(response.headers.get("x-ratelimit-reset"));
-  if (Number.isFinite(reset) && reset > 0) return reset;
-
-  // Secondary rate limits carry Retry-After (delta-seconds) instead.
-  const retryAfter = Number(response.headers.get("retry-after"));
-  if (Number.isFinite(retryAfter) && retryAfter > 0) {
-    return Math.floor(Date.now() / 1000) + retryAfter;
-  }
-
-  return null;
-};
-
-/**
- * Maps a failed response onto an error kind. A 403 on an unauthenticated public
- * read is effectively always the hourly quota, so it is folded in with 429
- * rather than checked against `x-ratelimit-remaining` — a proxy that strips the
- * header would otherwise turn a rate limit into a bare "server error".
- */
-const classifyResponse = (response: Response): IReleaseError => {
-  const { status } = response;
-  const retryAt = readRetryAt(response);
-
-  if (status === 403 || status === 429) {
-    return buildError("rate-limit", status, retryAt);
-  }
-
-  if (status === 404) {
-    // 404 here means any of: repo removed, repo made private, or no
-    // non-draft non-prerelease release published yet.
-    return buildError("not-found", status);
-  }
-
-  return buildError("server", status, retryAt);
-};
 
 const INITIAL_STATE: TReleaseState = { status: "idle", data: null, error: null };
 
@@ -288,7 +32,9 @@ export interface IUseReleasesResult {
 }
 
 /**
- * Loads the latest desktop release from the public GitHub API.
+ * Loads the latest desktop release from our own `/api/releases` route, which
+ * reads GitHub server-side and caches it for every visitor (see the route for
+ * why the browser no longer calls api.github.com itself).
  *
  * Never leaves the page without download links: on any failure it reports the
  * error *and* serves {@link FALLBACK_RELEASE}, so the UI can show a quiet
@@ -340,41 +86,52 @@ export const useReleases = (): IUseReleasesResult => {
       }
 
       try {
-        const response = await fetch(LATEST_RELEASE_ENDPOINT, {
+        // Same-origin and public: the route reads no cookie, but default
+        // credentials are kept so an edge proxy's own cookies (bot checks)
+        // still ride along.
+        const response = await fetch(RELEASE_FEED_PATH, {
           signal: controller.signal,
-          // `Accept` is CORS-safelisted, so this stays a simple request with
-          // no preflight round trip. `X-GitHub-Api-Version` is deliberately
-          // omitted for that reason — the default version serves every field
-          // this hook reads, all of them long-stable.
-          headers: { Accept: "application/vnd.github+json" },
-          // GitHub answers with `Access-Control-Allow-Origin: *` and no
-          // `Allow-Credentials`, so a credentialed request would fail CORS.
-          credentials: "omit",
-          // No `cache: "no-store"`: GitHub sends `max-age=60`, and letting the
-          // browser honour it keeps repeat visits off the 60/hour budget.
+          headers: { Accept: "application/json" },
         });
 
+        let body: unknown = null;
+        try {
+          body = await response.json();
+        } catch (error) {
+          // An abort mid-body is the timeout or a teardown — let the outer
+          // handler sort it out. Anything else is a body that is not JSON
+          // (e.g. an HTML error page from a proxy).
+          if (controller.signal.aborted) throw error;
+        }
+
         if (!response.ok) {
-          failWithFallback(classifyResponse(response));
+          failWithFallback(
+            readReleaseError(body) ?? buildReleaseError("server", response.status),
+          );
           return;
         }
 
-        const payload = (await response.json()) as IGithubRelease;
-        const parsed = parseRelease(payload);
+        // The route already allowlisted every URL; this re-check is what
+        // guarantees it in the browser that turns them into links.
+        const release = sanitizeReleaseInfo(
+          typeof body === "object" && body !== null && "release" in body
+            ? body.release
+            : null,
+        );
 
-        if (!parsed) {
-          failWithFallback(buildError("malformed", response.status));
+        if (!release) {
+          failWithFallback(buildReleaseError("malformed", response.status));
           return;
         }
 
-        commit({ status: "success", data: parsed, error: null });
+        commit({ status: "success", data: release, error: null });
       } catch {
         // An abort is either an unmount/retry — a deliberate teardown, whose
         // writes `commit` already drops — or the timeout above, which is a
         // real network failure and the only one worth reporting.
         if (controller.signal.aborted && !timedOut) return;
 
-        failWithFallback(buildError("network"));
+        failWithFallback(buildReleaseError("network"));
       } finally {
         // The request has settled one way or another; without this the timer
         // lives on for the full budget and aborts a controller nobody is

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import Image from "next/image";
@@ -8,9 +7,10 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useRouter, useSearchParams } from "next/navigation";
 import { resetOtp, verifyOtp } from "@/actions/auth/action";
+import { actionErrorMessage } from "@/lib/actionErrors";
 import {
-  appendMarketingPlanIntent,
   buildCreateOrganizationUrl,
+  buildMarketingSignUpUrl,
   parseMarketingPlanIntent,
 } from "@/lib/marketingPlanIntent";
 import { storeVerifiedTrialTransition } from "@/lib/verifiedTrialTransition";
@@ -133,8 +133,8 @@ const SignupVerifyOtpClient = () => {
         setInlineError(message);
         toast.error(message, { style: errorToastStyle });
       }
-    } catch (error: any) {
-      toast.error(error.message || "Server is not active", {
+    } catch (error) {
+      toast.error(actionErrorMessage(error, "Server is not active"), {
         style: errorToastStyle,
       });
     } finally {
@@ -176,8 +176,8 @@ const SignupVerifyOtpClient = () => {
           style: errorToastStyle,
         });
       }
-    } catch (error: any) {
-      toast.error(error.message || "Server is not active", {
+    } catch (error) {
+      toast.error(actionErrorMessage(error, "Server is not active"), {
         style: errorToastStyle,
       });
     } finally {
@@ -287,17 +287,17 @@ const SignupVerifyOtpClient = () => {
               </div>
               <div>
                 Wrong email?{" "}
-                {/* Back to the form, not to login: an unverified address has
-                    no account to sign in to. Any plan intent comes along. */}
-                <Link
-                  href={appendMarketingPlanIntent(
-                    "/auth/sign-up",
+                {/* Back to the marketing sign-up form (the dashboard has none
+                    of its own), not to login: an unverified address has no
+                    account to sign in to. Any plan intent comes along. */}
+                <a
+                  href={buildMarketingSignUpUrl(
                     parseMarketingPlanIntent(searchParams),
                   )}
                   className="font-semibold text-blue-600 hover:underline dark:text-blue-400"
                 >
                   Change it
-                </Link>
+                </a>
               </div>
             </div>
 

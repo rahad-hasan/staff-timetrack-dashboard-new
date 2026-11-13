@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
@@ -28,6 +27,7 @@ import EditIcon from "@/components/Icons/FilterOptionIcon/EditIcon";
 // import DeleteIcon from "@/components/Icons/DeleteIcon";
 import { toast } from "sonner";
 import { deleteTask, editTask } from "@/actions/task/action";
+import { actionErrorMessage } from "@/lib/actionErrors";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import DeleteIcon from "@/components/Icons/DeleteIcon";
 import ConfirmDialog from "@/components/Common/ConfirmDialog";
@@ -97,8 +97,8 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
                     },
                 });
             }
-        } catch (error: any) {
-            toast.error(error?.message || "Something went wrong!", {
+        } catch (error) {
+            toast.error(actionErrorMessage(error, "Something went wrong!"), {
                 style: {
                     backgroundColor: '#ef4444',
                     color: 'white',
@@ -126,8 +126,8 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
                     },
                 });
             }
-        } catch (error: any) {
-            toast.error(error?.message || "Something went wrong!", {
+        } catch (error) {
+            toast.error(actionErrorMessage(error, "Something went wrong!"), {
                 style: {
                     backgroundColor: '#ef4444',
                     color: 'white',

@@ -20,8 +20,16 @@ import TrialEndedOptions from "./TrialEndedOptions";
  * upgrade (keep everything) or switch to the Free plan right now
  * (TrialEndedOptions) — no waiting for the expiry worker.
  */
-export default function BlockedTakeover({ block }: { block: IBillingBlock }) {
-  const role = useLogInUserStore((s) => s.logInUserData?.role);
+export default function BlockedTakeover({
+  block,
+  role: roleProp,
+}: {
+  block: IBillingBlock;
+  /** The viewer's role from the server, when BillingGate was given one. */
+  role?: string | null;
+}) {
+  const storedRole = useLogInUserStore((s) => s.logInUserData?.role);
+  const role = roleProp ?? storedRole;
   const normalizedRole = String(role ?? "").toLowerCase();
   const canManageBilling = ["admin", "manager", "hr"].includes(normalizedRole);
   const showTrialOptions =

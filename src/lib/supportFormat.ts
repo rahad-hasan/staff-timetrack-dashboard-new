@@ -1,16 +1,17 @@
 /**
  * Date/number formatting for the support screens (blueprint Appendix B
- * §1.6). The API returns ISO-8601 UTC strings; every label here is computed
- * on the client, in the viewer's local time zone.
+ * §1.6). The API returns ISO-8601 UTC strings.
+ *
+ * Every date label is in `timeZone`, the viewer's (`useViewerTimeZone()`),
+ * never the runtime's: the ticket page is server-rendered, so a label in the
+ * runtime's zone kept the SERVER's zone in the HTML (React 19 does not patch
+ * text that suppressHydrationWarning covers) and showed the browser's after
+ * a client-side navigation, while the timeline split the thread into days
+ * differently on the two sides (#418).
  */
 
-import {
-  differenceInCalendarDays,
-  differenceInSeconds,
-  format,
-  isValid,
-  parseISO,
-} from "date-fns";
+import { differenceInCalendarDays, differenceInSeconds, isValid, parseISO } from "date-fns";
+import { formatInstant, instantDay } from "@/lib/timezone";
 
 export type DateInput = string | number | Date | null | undefined;
 
@@ -19,6 +20,10 @@ export const toDate = (value: DateInput): Date | null => {
   const date = typeof value === "string" ? parseISO(value) : new Date(value);
   return isValid(date) ? date : null;
 };
+
+/** Calendar days from `date` to `now` on `timeZone`'s calendar. */
+const calendarDaysBetween = (now: Date, date: Date, timeZone: string): number =>
+  differenceInCalendarDays(parseISO(instantDay(now, timeZone)), parseISO(instantDay(date, timeZone)));
 
 const plural = (n: number, unit: string) => `${n} ${unit}${n === 1 ? "" : "s"}`;
 
@@ -35,6 +40,7 @@ export type RelativeTimeStyle = "long" | "short";
  */
 export const formatRelativeTime = (
   value: DateInput,
+  timeZone: string,
   now: Date = new Date(),
   style: RelativeTimeStyle = "long",
 ): string => {
@@ -51,47 +57,47 @@ export const formatRelativeTime = (
     if (style === "short") return `${hours} ${hours === 1 ? "hr" : "hrs"} ago`;
     return `${plural(hours, "hour")} ago`;
   }
-  const days = Math.max(1, differenceInCalendarDays(now, date));
+  const days = Math.max(1, calendarDaysBetween(now, date, timeZone));
   if (days === 1) return "yesterday";
   if (days < 7) return `${plural(days, "day")} ago`;
   if (days < 30) {
     const weeks = Math.max(1, Math.round(days / 7));
     return style === "short" ? `${weeks} ${weeks === 1 ? "wk" : "wks"} ago` : `${plural(weeks, "week")} ago`;
   }
-  if (style === "short") return format(date, "MMM d");
+  if (style === "short") return formatInstant(date, timeZone, "MMM d");
   if (days < 365) return `about ${plural(Math.max(1, Math.round(days / 30)), "month")} ago`;
   return `about ${plural(Math.max(1, Math.round(days / 365)), "year")} ago`;
 };
 
 /** "Sep 2, 2026 at 10:12 AM" (detail header "Opened …", tooltips). */
-export const formatAbsolute = (value: DateInput): string => {
+export const formatAbsolute = (value: DateInput, timeZone: string): string => {
   const date = toDate(value);
-  return date ? format(date, "MMM d, yyyy 'at' h:mm a") : "";
+  return date ? formatInstant(date, timeZone, "MMM d, yyyy 'at' h:mm a") : "";
 };
 
 /** "10:12 AM" — message and event times. */
-export const formatClock = (value: DateInput): string => {
+export const formatClock = (value: DateInput, timeZone: string): string => {
   const date = toDate(value);
-  return date ? format(date, "h:mm a") : "";
+  return date ? formatInstant(date, timeZone, "h:mm a") : "";
 };
 
 /** "Today" | "Yesterday" | "Sep 2, 2026" — timeline date separators. */
-export const formatDaySeparator = (value: DateInput, now: Date = new Date()): string => {
+export const formatDaySeparator = (value: DateInput, timeZone: string, now: Date = new Date()): string => {
   const date = toDate(value);
   if (!date) return "";
-  const days = differenceInCalendarDays(now, date);
+  const days = calendarDaysBetween(now, date, timeZone);
   if (days === 0) return "Today";
   if (days === 1) return "Yesterday";
-  return format(date, "MMM d, yyyy");
+  return formatInstant(date, timeZone, "MMM d, yyyy");
 };
 
 /** "Today, 2:14 PM" or "Sep 2, 2:14 PM" — attachment / rating cards. */
-export const formatDayAndClock = (value: DateInput, now: Date = new Date()): string => {
+export const formatDayAndClock = (value: DateInput, timeZone: string, now: Date = new Date()): string => {
   const date = toDate(value);
   if (!date) return "";
-  const days = differenceInCalendarDays(now, date);
-  const day = days === 0 ? "Today" : days === 1 ? "Yesterday" : format(date, "MMM d");
-  return `${day}, ${format(date, "h:mm a")}`;
+  const days = calendarDaysBetween(now, date, timeZone);
+  const day = days === 0 ? "Today" : days === 1 ? "Yesterday" : formatInstant(date, timeZone, "MMM d");
+  return `${day}, ${formatInstant(date, timeZone, "h:mm a")}`;
 };
 
 /** The footer "Showing 1–5 of 7 tickets" pieces (en dash, REQ-U-06). */

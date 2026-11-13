@@ -244,6 +244,18 @@ const buildAppearance = (isDark: boolean): Appearance => {
         border: `1px solid ${PRIMARY}`,
         boxShadow: `0 0 0 3px ${PRIMARY}22`,
       },
+      /**
+       * The selected label has its own ink, readable on its tab in every state,
+       * instead of inheriting the tab's colour, which the themes vary by state.
+       * The night theme fills a selected tab with colorPrimary, where a PRIMARY
+       * label was blue on blue ("Card" vanished). The light theme keeps the tab
+       * white and turns a hovered one's label colorPrimary: 3.6:1, short of
+       * AA's 4.5:1 for this 12px text. In light the PRIMARY border, ring and
+       * icon still mark the selection.
+       */
+      ".TabLabel--selected": {
+        color: isDark ? c.bg : c.text,
+      },
     },
   };
 };

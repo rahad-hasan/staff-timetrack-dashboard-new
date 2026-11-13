@@ -2,6 +2,7 @@
 "use client";
 
 import { getSlackStatus } from "@/actions/integrations/slackIntegrationAction";
+import { unstable_rethrow } from "next/navigation";
 import { SlackStatusResponse } from "@/types/type";
 import { useCallback, useEffect, useRef, useState } from "react";
 import SlackPersonalCard from "./SlackPersonalCard";
@@ -28,7 +29,8 @@ const SlackConnectedApps = () => {
             } else {
                 setError(res?.message || "Failed to load Slack status");
             }
-        } catch {
+        } catch (error) {
+            unstable_rethrow(error);
             setError("Failed to load Slack status");
         } finally {
             setLoading(false);

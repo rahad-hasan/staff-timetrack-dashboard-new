@@ -1,109 +1,42 @@
 "use server";
 
-import { buildQuery } from "@/utils/buildQuery";
 import { baseApi } from "../baseApi";
+import type { QueryParams } from "@/utils/buildQuery";
 import { AdminLeaveHistoryFilters, CreateLeaveHolidayPayload, CreateLeaveTypePayload, ILeaveDetailsResponse, ILeaveRequest, IResponse, LeaveCalendarData, LeaveCalendarFilters, LeaveHoliday, LeaveHolidayListData, LeaveRecord, LeaveRequestTypeDropdownRecord, LeaveTypeListFilters, LeaveTypeRecord, MandatoryLeaveImportPayload, MandatoryLeaveParsePayload, MandatoryLeaveParseResult, UpdateLeaveHolidayPayload, UpdateLeaveRequestPayload, UpdateLeaveTypePayload, UserLeaveSummary } from "@/types/type";
-import { revalidatePath, revalidateTag } from "next/cache";
 
-// export const getLeave = async (query = {}): Promise<IResponse<ILeaveRequest[]>> => {
-//     const queryString = buildQuery(query);
-//     return await baseApi(`/leaves${queryString ? `?${queryString}` : ""}`, {
-//         tag: "leaves",
-//     });
-// };
-
-// export const getLeaveDetails = async (query = {}): Promise<IResponse<ILeaveDetailsResponse>> => {
-//     const queryString = buildQuery(query);
-//     return await baseApi(`/leaves/details${queryString ? `?${queryString}` : ""}`, {
-//         tag: "leaves",
-//     });
-// };
-
-// export const addLeave = async (data: {
-//     type: string;
-//     start_date: string;
-//     end_date: string;
-//     reason: string;
-// }) => {
-//     return await baseApi(`/leaves`, {
-//         method: "POST",
-//         body: data,
-//         tag: "leaves",
-//         cache: "no-cache",
-//     });
-// };
-
-// export const approveRejectLeave = async ({ data }: {
-//     data: {
-//         leave_id: number,
-//         approved: boolean,
-//         reject_reason?: string
-//     }
-// }) => {
-//     return await baseApi(`/leaves/update-status`, {
-//         method: "PATCH",
-//         body: data,
-//         tag: "leaves",
-//         cache: "no-cache",
-//     });
-// };
-
-// export const deleteLeave = async ({ data, id }: {
-//     data: {
-//         is_deleted: boolean,
-//     },
-//     id: number | undefined
-// }) => {
-//     return await baseApi(`/leaves/${id}`, {
-//         method: "PATCH",
-//         body: data,
-//         tag: "leaves",
-//     });
-// };
-
-
-// ======== new api ==========
-// ===========================
-
-const revalidateHolidayViews = () => {
-  revalidateTag("leave-holidays");
-  revalidateTag("leaves");
-  revalidatePath("/leave-management/holidays");
-  revalidatePath("/leave-management/calendar");
-  revalidatePath("/leave-management/my-leaves");
-};
-
-const revalidateLeaveViews = () => {
-  revalidateTag("leaves");
-  revalidateTag("leave-types");
-  revalidatePath("/leave-management/my-leaves");
-  revalidatePath("/leave-management/history");
-  revalidatePath("/leave-management/request-queue");
-  revalidatePath("/leave-management/calendar");
-};
+/**
+ * The tags every leave write revalidates — one list for every write, so no
+ * write can forget a view.
+ *
+ * The writes are entangled: a request moves balances and the leave-type usage
+ * counts, and a holiday changes the calendar and every employee's summary.
+ * baseApi revalidates these after a successful write, which is also what makes
+ * the action answer with a fresh render of the page it was called from (reads
+ * are live, so that render is current). There used to be a second, hand-kept
+ * list of revalidateTag/revalidatePath calls on top of it — two lists that had
+ * already drifted apart.
+ */
+const LEAVE_TAGS = ["leaves", "leave-types", "leave-holidays"] as const;
 
 export const getLeaveCalendar = async (query: LeaveCalendarFilters = {}): Promise<IResponse<LeaveCalendarData>> => {
-    const queryString = buildQuery(query);
-    return await baseApi(`/leaves/calendar${queryString ? `?${queryString}` : ""}`, {
-        tag: "leaves",
-        cache: "no-cache"
-    });
+  return await baseApi(`/leaves/calendar`, {
+    query,
+    tag: "leaves",
+  });
 };
 
 export const getLeaveHistory = async (query: AdminLeaveHistoryFilters = {}): Promise<IResponse<LeaveRecord[]>> => {
-    const queryString = buildQuery(query);
-    return await baseApi(`/leaves/history${queryString ? `?${queryString}` : ""}`, {
-        tag: "leaves",
-        cache: "no-cache"
-    });
+  return await baseApi(`/leaves/history`, {
+    query,
+    tag: "leaves",
+  });
 };
 
-export const getLeave = async (query={}): Promise<IResponse<ILeaveRequest[]>> => {
-    const queryString = buildQuery(query);
-    return await baseApi(`/leaves${queryString ? `?${queryString}` : ""}`, {
-        tag: "leaves",
-        cache: "no-cache"
-    });
+export const getLeave = async (query: QueryParams = {}): Promise<IResponse<ILeaveRequest[]>> => {
+  return await baseApi(`/leaves`, {
+    query,
+    tag: "leaves",
+  });
 };
 
 export const approveRejectLeave = async ({
@@ -115,38 +48,27 @@ export const approveRejectLeave = async ({
     reject_reason?: string;
   };
 }): Promise<IResponse<LeaveRecord>> => {
-  const response = await baseApi(`/leaves/update-status`, {
+  return await baseApi(`/leaves/update-status`, {
     method: "PATCH",
     body: data,
-    tag: "leaves",
-    cache: "no-cache",
+    tag: LEAVE_TAGS,
   });
-
-  if (response?.success) {
-    revalidateTag("leaves");
-    revalidateTag("leave-types");
-  }
-
-  return response;
 };
 
 export const getLeaveDetails = async (
-  query = {},
+  query: QueryParams = {},
 ): Promise<IResponse<ILeaveDetailsResponse>> => {
-  const queryString = buildQuery(query);
-  return await baseApi(
-    `/leaves/details${queryString ? `?${queryString}` : ""}`,
-    {
-      tag: "leaves",
-    },
-  );
+  return await baseApi(`/leaves/details`, {
+    query,
+    tag: "leaves",
+  });
 };
 
 export const getLeaveTypes = async (
   query: LeaveTypeListFilters = {},
 ): Promise<IResponse<LeaveTypeRecord[]>> => {
-  const queryString = buildQuery(query);
-  return await baseApi(`/leaves/types${queryString ? `?${queryString}` : ""}`, {
+  return await baseApi(`/leaves/types`, {
+    query,
     tag: "leave-types",
   });
 };
@@ -154,53 +76,29 @@ export const getLeaveTypes = async (
 export const createLeaveType = async (
   data: CreateLeaveTypePayload,
 ): Promise<IResponse<LeaveTypeRecord>> => {
-  const response = await baseApi(`/leaves/types`, {
+  return await baseApi(`/leaves/types`, {
     method: "POST",
     body: data,
-    tag: "leave-types",
-    cache: "no-cache",
+    tag: LEAVE_TAGS,
   });
-
-  if (response?.success) {
-    revalidateTag("leave-types");
-    revalidateTag("leaves");
-  }
-
-  return response;
 };
 
 export const updateLeaveType = async (
   id: number,
   data: UpdateLeaveTypePayload,
 ): Promise<IResponse<LeaveTypeRecord>> => {
-  const response = await baseApi(`/leaves/types/${id}`, {
+  return await baseApi(`/leaves/types/${id}`, {
     method: "PATCH",
     body: data,
-    tag: "leave-types",
-    cache: "no-cache",
+    tag: LEAVE_TAGS,
   });
-
-  if (response?.success) {
-    revalidateTag("leave-types");
-    revalidateTag("leaves");
-  }
-
-  return response;
 };
 
 export const deleteLeaveType = async (id: number): Promise<IResponse<null>> => {
-  const response = await baseApi(`/leaves/types/${id}`, {
+  return await baseApi(`/leaves/types/${id}`, {
     method: "DELETE",
-    tag: "leave-types",
-    cache: "no-cache",
+    tag: LEAVE_TAGS,
   });
-
-  if (response?.success) {
-    revalidateTag("leave-types");
-    revalidateTag("leaves");
-  }
-
-  return response;
 };
 
 export const getLeaveType = async (
@@ -215,94 +113,56 @@ export const getLeaveType = async (
 export const createLeaveHoliday = async (
   data: CreateLeaveHolidayPayload,
 ): Promise<IResponse<LeaveHoliday>> => {
-  const response = await baseApi(`/leaves/holidays`, {
+  return await baseApi(`/leaves/holidays`, {
     method: "POST",
     body: data,
-    tag: "leave-holidays",
-    cache: "no-cache",
+    tag: LEAVE_TAGS,
   });
-
-  if (response?.success) {
-    revalidateHolidayViews();
-  }
-
-  return response;
 };
 
 export const updateLeaveHoliday = async (
   id: number,
   data: UpdateLeaveHolidayPayload,
 ): Promise<IResponse<LeaveHoliday>> => {
-  const response = await baseApi(`/leaves/holidays/${id}`, {
+  return await baseApi(`/leaves/holidays/${id}`, {
     method: "PATCH",
     body: data,
-    tag: "leave-holidays",
-    cache: "no-cache",
+    tag: LEAVE_TAGS,
   });
-
-  if (response?.success) {
-    revalidateHolidayViews();
-  }
-
-  return response;
 };
 
 export const deleteLeaveHoliday = async (id: number): Promise<IResponse<null>> => {
-  const response = await baseApi(`/leaves/holidays/${id}`, {
+  return await baseApi(`/leaves/holidays/${id}`, {
     method: "DELETE",
-    tag: "leave-holidays",
-    cache: "no-cache",
+    tag: LEAVE_TAGS,
   });
-
-  if (response?.success) {
-    revalidateHolidayViews();
-  }
-
-  return response;
 };
 
 export const getLeaveHolidays = async (
   query: { year?: string | number, page?: string | number, limit?: string | number } = {},
 ): Promise<IResponse<LeaveHolidayListData>> => {
-  const queryString = buildQuery(query);
-  return await baseApi(
-    `/leaves/holidays${queryString ? `?${queryString}` : ""}`,
-    {
-      tag: "leave-holidays",
-    },
-  );
+  return await baseApi(`/leaves/holidays`, {
+    query,
+    tag: "leave-holidays",
+  });
 };
 
 export const deleteLeave = async (id: number): Promise<IResponse<null>> => {
-  const response = await baseApi(`/leaves/${id}`, {
+  return await baseApi(`/leaves/${id}`, {
     method: "DELETE",
-    tag: "leaves",
-    cache: "no-cache",
+    tag: LEAVE_TAGS,
   });
-
-  if (response?.success) {
-    revalidateLeaveViews();
-  }
-
-  return response;
 };
 
 export const updateLeaveRequest = async (
   id: number,
   data: UpdateLeaveRequestPayload,
 ): Promise<IResponse<LeaveRecord>> => {
-  const response = await baseApi(`/leaves/${id}`, {
+  return await baseApi(`/leaves/${id}`, {
     method: "PATCH",
     body: data,
-    tag: "leaves",
-    cache: "no-cache",
+    tag: LEAVE_TAGS,
   });
-
-  if (response?.success) {
-    revalidateLeaveViews();
-  }
-
-  return response;
 };
 
 export const addLeave = async (data: {
@@ -323,20 +183,12 @@ export const addLeave = async (data: {
     formData.append("document", data.document);
   }
 
-  const response = await baseApi(`/leaves`, {
+  return await baseApi(`/leaves`, {
     method: "POST",
     body: formData,
-    tag: "leaves",
-    cache: "no-cache",
+    tag: LEAVE_TAGS,
     isFormData: true,
   });
-
-  if (response?.success) {
-    revalidateTag("leaves");
-    revalidateTag("leave-types");
-  }
-
-  return response;
 };
 
 
@@ -345,50 +197,41 @@ export const getLeaveRequestTypeDropdown = async (): Promise<
 > => {
   return await baseApi(`/leaves/dropdown/types`, {
     tag: "leaves",
-    cache: "no-cache",
-    revalidate: 0,
   });
 };
 
 export const getUserLeaveSummary = async (
-  query = {},
+  query: QueryParams = {},
 ): Promise<IResponse<UserLeaveSummary>> => {
-  const queryString = buildQuery(query);
-  return await baseApi(
-    `/leaves/details/user${queryString ? `?${queryString}` : ""}`,
-    {
-      tag: "leaves",
-    },
-  );
+  return await baseApi(`/leaves/details/user`, {
+    query,
+    tag: "leaves",
+  });
 };
 
 export const insertParsedHolidays = async (
   data: MandatoryLeaveImportPayload,
-) => {
-  const response = (await baseApi(`/leaves/holidays/import`, {
-    method: "POST",
-    body: data,
-    cache: "no-cache",
-  })) as IResponse<{
+): Promise<
+  IResponse<{
     total_submitted: number;
     imported_count: number;
     skipped_count: number;
-  }>;
-
-  if (response.success) {
-    revalidateHolidayViews();
-  }
-
-  return response;
+  }>
+> => {
+  return await baseApi(`/leaves/holidays/import`, {
+    method: "POST",
+    body: data,
+    tag: LEAVE_TAGS,
+  });
 };
 
+// A POST that only reads (it previews the parsed file), so it carries no tag:
+// nothing changed, so nothing is revalidated and the page is not re-rendered.
 export const parseLeaveHolidayImport = async (
   data: MandatoryLeaveParsePayload,
 ): Promise<IResponse<MandatoryLeaveParseResult>> => {
   return await baseApi(`/leaves/holidays/import/parse`, {
     method: "POST",
     body: data,
-    cache: "no-cache",
   });
 };
-

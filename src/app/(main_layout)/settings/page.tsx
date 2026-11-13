@@ -3,6 +3,7 @@ import HeadingComponent from "@/components/Common/HeadingComponent";
 // import TimeTrackingIcon from "@/components/Icons/TimeTrackingIcon";
 // import UserRoleIcon from "@/components/Icons/UserRoleIcon";
 import SettingServer from "@/components/Settings/SettingServer";
+import SettingsPanelSkeleton from "@/components/Settings/SettingsPanelSkeleton";
 import SettingsTabs from "@/components/Settings/SettingsTabs";
 import { ISearchParamsProps } from "@/types/type";
 import { Metadata } from "next";
@@ -13,6 +14,7 @@ export const metadata: Metadata = {
     description: "Staff Time Tracker Settings",
 };
 const SettingsPage = async ({ searchParams }: ISearchParamsProps) => {
+    const params = await searchParams;
 
     return (
         <div>
@@ -25,7 +27,12 @@ const SettingsPage = async ({ searchParams }: ISearchParamsProps) => {
             <Suspense fallback={null}>
                 <SettingsTabs></SettingsTabs>
             </Suspense>
-            <SettingServer searchParams={searchParams}></SettingServer>
+            {/* A tab's reads (the company record, the session) happen inside
+                the boundary: opening a tab (a new key) shows the placeholder
+                at once instead of holding the previous tab. */}
+            <Suspense key={JSON.stringify(params.tab ?? "Profile")} fallback={<SettingsPanelSkeleton />}>
+                <SettingServer searchParams={searchParams}></SettingServer>
+            </Suspense>
         </div>
     );
 };

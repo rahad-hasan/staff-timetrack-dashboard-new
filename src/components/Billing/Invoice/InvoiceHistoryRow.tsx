@@ -5,6 +5,7 @@ import { ExternalLink, FileText, Receipt } from "lucide-react";
 
 import { TableCell, TableRow } from "@/components/ui/table";
 import { formatBillingDate } from "@/lib/billing";
+import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
 import { formatBillingReason, invoiceDetailHref } from "@/lib/invoice";
 import { IBillingInvoice } from "@/types/billing";
 
@@ -26,6 +27,7 @@ export default function InvoiceHistoryRow({
 }: {
   invoice: IBillingInvoice;
 }) {
+  const timeZone = useViewerTimeZone();
   const href = invoiceDetailHref(invoice);
   // Derived server-side and already 0 for a voided invoice — no client-side
   // compensation is applied on top of it.
@@ -46,13 +48,13 @@ export default function InvoiceHistoryRow({
         )}
       </TableCell>
 
-      <TableCell>{formatBillingDate(invoice.created_at)}</TableCell>
+      <TableCell>{formatBillingDate(invoice.created_at, timeZone)}</TableCell>
 
       <TableCell>{formatBillingReason(invoice.billing_reason) ?? "—"}</TableCell>
 
       <TableCell>
-        {formatBillingDate(invoice.period_start)} →{" "}
-        {formatBillingDate(invoice.period_end)}
+        {formatBillingDate(invoice.period_start, timeZone)} →{" "}
+        {formatBillingDate(invoice.period_end, timeZone)}
       </TableCell>
 
       <TableCell>

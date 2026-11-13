@@ -1,10 +1,21 @@
 "use client";
 
-import IntegrationDetail from "@/components/Integrations/IntegrationDetail";
+import dynamic from "next/dynamic";
 import IntegrationsHub from "@/components/Integrations/IntegrationsHub";
-import SlackIntegrationDetail from "@/components/Integrations/SlackIntegrationDetail";
 import { getIntegrationDef } from "@/components/Integrations/registry";
 import { useRouter } from "next/navigation";
+import SettingsPanelSkeleton from "./SettingsPanelSkeleton";
+
+// The provider screens (with their pickers and dialogs) only render once a
+// provider is opened from the hub: their own chunks, fetched then.
+const IntegrationDetail = dynamic(
+    () => import("@/components/Integrations/IntegrationDetail"),
+    { loading: () => <SettingsPanelSkeleton /> },
+);
+const SlackIntegrationDetail = dynamic(
+    () => import("@/components/Integrations/SlackIntegrationDetail"),
+    { loading: () => <SettingsPanelSkeleton /> },
+);
 
 const TAB_QUERY = `tab=${encodeURIComponent("App Integrations")}`;
 

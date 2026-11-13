@@ -4,6 +4,7 @@ import { memo, useEffect, useId, useRef, useState, type Ref } from "react";
 import Link from "next/link";
 import { ArrowLeft, CalendarDays, Check, Clock3, Copy, Mail, RotateCcw, Star, SquarePlus } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
 import { CATEGORY_ICON_MAP, FOCUS_RING, PRIORITY_TOKENS, CategoryTile, hexToRgba, PriorityBars, RelativeTime, resolveCategory, StatusPill, SupportButton } from "@/components/Support/primitives";
 import { SUPPORT_TICKETS_PATH, ticketHref } from "@/lib/support";
 import { formatAbsolute, formatDayAndClock } from "@/lib/supportFormat";
@@ -151,6 +152,7 @@ export const TicketHeaderCard = memo(function TicketHeaderCard({
   openingNew,
 }: TicketHeaderCardProps) {
   const titleId = useId();
+  const timeZone = useViewerTimeZone();
   const waiting = ticket.status === "pending_customer";
   const expected =
     ticket.expected_reply_by && (ticket.status === "open" || ticket.status === "in_progress")
@@ -184,7 +186,7 @@ export const TicketHeaderCard = memo(function TicketHeaderCard({
         <ul className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 text-[14px] leading-5 text-subTextColor dark:text-darkTextSecondary">
           <li className="inline-flex items-center gap-1.5">
             <CalendarDays aria-hidden="true" className="size-4 shrink-0 text-primary" />
-            <span suppressHydrationWarning>Opened {formatAbsolute(ticket.created_at)}</span>
+            <span>Opened {formatAbsolute(ticket.created_at, timeZone)}</span>
           </li>
           <li className="inline-flex items-center gap-1.5">
             <Mail aria-hidden="true" className="size-4 shrink-0 text-[#8e51ff]" />
@@ -260,8 +262,9 @@ export const TicketHeaderCard = memo(function TicketHeaderCard({
           <Clock3 aria-hidden="true" className="size-4 shrink-0 text-primary" />
           <span>
             Expected reply by{" "}
-            <time dateTime={expected} title={formatAbsolute(expected)} className="font-medium text-headingTextColor dark:text-darkTextPrimary" suppressHydrationWarning>
-              {formatDayAndClock(expected)}
+            {/* "Today" / "Yesterday" can turn over between the server render and hydration. */}
+            <time dateTime={expected} title={formatAbsolute(expected, timeZone)} className="font-medium text-headingTextColor dark:text-darkTextPrimary" suppressHydrationWarning>
+              {formatDayAndClock(expected, timeZone)}
             </time>
           </span>
         </div>

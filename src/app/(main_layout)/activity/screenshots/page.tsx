@@ -3,16 +3,20 @@ import { NotepadText } from "lucide-react";
 // import { Button } from "@/components/ui/button";
 import { Suspense } from "react";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
-import AllNotesModal from "@/components/Activity/ScreenShorts/AllNotes";
+import AllNotesModal, {
+  AllNotesFallback,
+} from "@/components/Activity/ScreenShorts/AllNotes";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import HeadingComponent from "@/components/Common/HeadingComponent";
+import LiveRefresh from "@/components/Common/LiveRefresh";
 import { ISearchParamsProps } from "@/types/type";
 import ScreenshotsToggle from "@/components/Activity/ScreenShorts/ScreenshotsToggle";
 import ScreenShotsServer from "@/components/Activity/ScreenShorts/ScreenShotsServer";
 import { Metadata } from "next";
 import SelectProjectWrapper from "@/components/Common/SelectProjectWrapper";
-import { getTimezones } from "@/actions/dashboard/action";
-import SelectTimezoneDropDown from "@/components/Common/SelectTimezoneDropDown";
+import TimezoneFilter, {
+  TimezoneFilterFallback,
+} from "@/components/TimeSheets/TimezoneFilter";
 import SelectUserWrapper from "@/components/Common/SelectUserWrapper";
 
 export const metadata: Metadata = {
@@ -20,10 +24,11 @@ export const metadata: Metadata = {
   description: "Staff Time Tracker Screenshot",
 };
 const ScreenShorts = async ({ searchParams }: ISearchParamsProps) => {
-  const timezones = await getTimezones();
+  const params = await searchParams;
 
   return (
     <div>
+      <LiveRefresh section="activity" />
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-5">
         <HeadingComponent
           heading="Screenshot"
@@ -38,7 +43,9 @@ const ScreenShorts = async ({ searchParams }: ISearchParamsProps) => {
           <div className=" flex flex-col lg:flex-row justify-between gap-3">
             <SpecificDatePicker></SpecificDatePicker>
             <div className=" flex gap-3 items-center">
-              <SelectTimezoneDropDown timezones={timezones} />
+              <Suspense fallback={<TimezoneFilterFallback />}>
+                <TimezoneFilter />
+              </Suspense>
               <SelectProjectWrapper></SelectProjectWrapper>
             </div>
           </div>
@@ -55,7 +62,11 @@ const ScreenShorts = async ({ searchParams }: ISearchParamsProps) => {
                   Notes
                 </Button>
               </DialogTrigger>
-              <AllNotesModal searchParams={searchParams}></AllNotesModal>
+              {/* Keyed like the screenshots below, so a filter change never
+                  waits on the notes read before the page can update. */}
+              <Suspense key={JSON.stringify(params)} fallback={<AllNotesFallback />}>
+                <AllNotesModal searchParams={searchParams}></AllNotesModal>
+              </Suspense>
             </form>
           </Dialog>
           <Suspense fallback={null}>

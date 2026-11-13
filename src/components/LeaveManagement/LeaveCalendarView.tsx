@@ -22,19 +22,26 @@ import MonthPicker from "../Common/MonthPicker";
 const dayHeaders = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 const LeaveCalendarView = ({
-  monthDate,
+  year,
+  month,
   days,
   retention,
   canManageUsers = false,
   users = [],
 }: {
-  monthDate: Date;
+  year: number;
+  /** 1–12 */
+  month: number;
   days: Record<string, LeaveCalendarDayItem[]>;
   retention?: LeaveRetentionMeta;
   canManageUsers?: boolean;
   users?: { id: string; label: string; avatar: string }[];
 }) => {
-
+  // Built here, in the viewer's own zone. A Date made on the server crosses to
+  // the browser as an instant: the server's local midnight on the 1st is still
+  // the previous month west of the server, so the heading and the whole grid
+  // showed the wrong month there.
+  const monthDate = new Date(year, month - 1, 1);
 
   const calendarDays = (() => {
     const start = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1);

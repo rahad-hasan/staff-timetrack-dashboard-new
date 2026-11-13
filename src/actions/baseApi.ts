@@ -1,20 +1,82 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use server";
+import "server-only";
 
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
+import { BILLING_URL, paymentBlockedMessageForMember } from "@/lib/billing";
+import { hasRole, MANAGEMENT_ROLES } from "@/lib/roles";
+import { LOG_REQUESTS, logRequest, SERVER_NOT_ACTIVE } from "@/lib/server/apiClient";
+import { buildQuery, type QueryParams } from "@/utils/buildQuery";
+import { getDecodedUser } from "@/utils/decodedLogInUser";
+
+/**
+ * The dashboard's one server-side client for the backend API.
+ *
+ * Deliberately NOT a "use server" module. Every export of a "use server" file
+ * is a public endpoint: as soon as a client bundle imports it, its action id
+ * ships to the browser and anyone can invoke it — and an exposed `baseApi` is
+ * an open proxy (any path, any method, sent from inside our network). Domain
+ * action files ("use server") wrap it with fixed paths; `server-only` turns a
+ * client import into a build error instead of a vulnerability.
+ *
+ * ## Caching contract
+ *
+ * Every request is LIVE (`cache: "no-store"`) unless a GET opts in with
+ * `cacheFor`. Do not change that default:
+ *
+ * - A time tracker's data changes with nobody touching this app — the desktop
+ *   tracker uploads time, activity and screenshots all day — so a shared cache
+ *   can only ever be wrong about it.
+ * - Next's Data Cache is stale-while-revalidate: once an entry's window passes,
+ *   the NEXT request is still answered with the old body while a refresh runs
+ *   in the background. An idle tab's first view could be days old.
+ * - Entries are keyed by URL + headers, Authorization included, so one only
+ *   ever serves the session that wrote it: near-zero reuse for per-user data,
+ *   one file on disk per token, forever.
+ * - Under `force-cache` Next also stores 200 responses to POST/PUT/PATCH/DELETE
+ *   (keyed by URL, method, headers and body) and answers a repeat of the same
+ *   write from disk — it never reaches the API.
+ *
+ * Writes stay read-your-own without any cache bookkeeping: a successful write
+ * revalidates its `tag`, which makes a server action re-render the current
+ * route — layouts included — into its own response, and with live reads that
+ * re-render is fresh by construction. No tag has to enumerate every view a
+ * write affects.
+ */
 
 type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
-interface BaseApiOptions {
+export interface BaseApiOptions {
   method?: Method;
   body?: any;
   isFormData?: boolean;
-  tag?: string;
-  headers?: HeadersInit;
-  cache?: RequestCache;
-  revalidate?: number;
+  /** Query string parameters, serialised by `buildQuery` (empty values are dropped). */
+  query?: QueryParams;
+  /**
+   * Cache tag(s). After a successful write each is revalidated (unless
+   * `skipRevalidate`), which is what makes a server action ship a fresh render
+   * of the current route. On a GET they label the Data Cache entry and only
+   * matter together with `cacheFor`.
+   */
+  tag?: string | readonly string[];
+  headers?: Record<string, string>;
+  /**
+   * GET only. Serve the response from Next's shared Data Cache for up to this
+   * many seconds (stale-while-revalidate; see the module comment).
+   *
+   * For STATIC reference data only — a fixed catalogue that changes with
+   * deploys, never with a tenant's actions or the time of day. Anything a user
+   * can edit, or the tracker can change, must stay live.
+   */
+  cacheFor?: number;
+  /**
+   * A 401 normally means the session is gone, so the user is sent to
+   * /session-expired. Route handlers set this to `false` to receive the 401
+   * envelope instead: they must answer their `fetch()` caller with JSON, not
+   * with a redirect to an HTML page.
+   */
+  redirectOnUnauthorized?: boolean;
   /**
    * Integration endpoints (e.g. /monday/*) answer 401 when the *provider*
    * revokes the company token — that is not a session expiry. When the 401
@@ -50,20 +112,38 @@ interface BaseApiOptions {
 
 /* ---------------- helpers ---------------- */
 
-async function getAccessToken() {
-  const cookieStore = await cookies();
-  return cookieStore.get("accessToken")?.value;
+/**
+ * The browser's address, for the API's IP-keyed rate limits.
+ *
+ * Every call here is made by this server, so without it the API counts all
+ * web users as ONE address: 50 failed sign-ins in 15 minutes locked sign-in
+ * for everybody. With API_RELAY_SECRET set (the API's DASHBOARD_RELAY_SECRET)
+ * the address this server's own proxy saw (nginx's X-Real-IP, which a browser
+ * cannot set) is passed along, and the API trusts it because of the secret.
+ * Unset, or with no such header (local runs), nothing is sent and the API
+ * behaves as before. Server-only, like this whole module: never NEXT_PUBLIC.
+ */
+async function relayHeaders(): Promise<Record<string, string>> {
+  const secret = process.env.API_RELAY_SECRET;
+  if (!secret) return {};
+  const address = (await headers()).get("x-real-ip")?.trim();
+  if (!address || address.length > 45) return {};
+  return { "X-Relay-Secret": secret, "X-Client-IP": address };
 }
 
 async function buildHeaders(
-  isFormData?: boolean,
-  customHeaders?: HeadersInit,
+  isFormData: boolean,
+  customHeaders: Record<string, string> | undefined,
+  cacheable: boolean,
 ): Promise<Record<string, string>> {
-  const token = await getAccessToken();
+  const token = (await cookies()).get("accessToken")?.value;
 
   const headers: Record<string, string> = {
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    ...(customHeaders as Record<string, string> | undefined),
+    // Not on a cached read: the Data Cache keys entries by their headers, so
+    // a per-visitor value would give every address an entry of its own.
+    ...(cacheable ? {} : await relayHeaders()),
+    ...customHeaders,
   };
 
   if (!isFormData) {
@@ -71,6 +151,32 @@ async function buildHeaders(
   }
 
   return headers;
+}
+
+/** API-relative path (+ query) → absolute URL. Only API paths are accepted. */
+function resolveUrl(path: string, query?: QueryParams) {
+  if (!path.startsWith("/") || path.startsWith("//")) {
+    // A programming error, never user input: every caller passes a literal
+    // API path. Refusing absolute URLs keeps this client from ever being
+    // turned into a request proxy, even by a future careless caller.
+    throw new Error(`baseApi only accepts API-relative paths, got "${path}"`);
+  }
+  const qs = query ? buildQuery(query) : "";
+  const pathWithQuery = qs
+    ? `${path}${path.includes("?") ? "&" : "?"}${qs}`
+    : path;
+  return {
+    url: `${process.env.NEXT_PUBLIC_API_URL}/api/v1${pathWithQuery}`,
+    pathWithQuery,
+  };
+}
+
+function messageOf(payload: any, status: number): string {
+  return (
+    payload?.message ||
+    payload?.errorMessages?.[0]?.message ||
+    `Request failed with ${status}`
+  );
 }
 
 /* ---------------- base api ---------------- */
@@ -83,98 +189,75 @@ export async function baseApi<T = any>(
     method = "GET",
     body,
     isFormData = false,
+    query,
     tag,
     headers: customHeaders,
-    cache = "force-cache",
-    // cache = "no-cache",
-    revalidate = 60,
+    cacheFor,
+    redirectOnUnauthorized = true,
     providerAuthPrefix,
     skipPaymentRedirect = false,
     skipRevalidate = false,
   } = options;
 
-  const fullUrl = url.startsWith("http")
-    ? url
-    : `${process.env.NEXT_PUBLIC_API_URL}/api/v1${url}`;
-  console.log(fullUrl)
-  const doFetch = async () =>
-    fetch(fullUrl, {
-      method,
-      headers: await buildHeaders(isFormData, customHeaders),
-      body: body ? (isFormData ? body : JSON.stringify(body)) : undefined,
-      credentials: "include",
-      cache,
-      ...(method === "GET" &&
-        (tag || revalidate) && {
-          next: {
-            ...(tag && { tags: [tag] }),
-            ...(revalidate !== undefined && { revalidate }),
-          },
-        }),
-    });
-  let res;
+  const { url: fullUrl, pathWithQuery } = resolveUrl(url, query);
+  const tags = tag === undefined ? [] : typeof tag === "string" ? [tag] : [...tag];
+  const cacheable =
+    method === "GET" && typeof cacheFor === "number" && cacheFor > 0;
+  const startedAt = LOG_REQUESTS ? performance.now() : 0;
+
+  let res: Response;
   try {
-    res = await doFetch();
+    res = await fetch(fullUrl, {
+      method,
+      headers: await buildHeaders(isFormData, customHeaders, cacheable),
+      body: body ? (isFormData ? body : JSON.stringify(body)) : undefined,
+      // Live unless explicitly cached (see the module comment). The two
+      // shapes never mix: `cache` together with `next.revalidate` is a
+      // conflicting config Next warns about and resolves on its own.
+      ...(cacheable
+        ? { next: { revalidate: cacheFor, ...(tags.length ? { tags } : {}) } }
+        : { cache: "no-store" as const }),
+    });
   } catch {
-    // 🌐 Network / server down / DNS / CORS errors land here
-    // throw new Error("Server is not active. Please try again later.");
+    // 🌐 Network / server down / DNS errors land here
+    if (LOG_REQUESTS) logRequest(method, pathWithQuery, "network-error", startedAt);
     return {
       success: false,
-      message: "Server is not active. Please try again later.",
+      message: SERVER_NOT_ACTIVE,
+    } as T;
+  }
+  if (LOG_REQUESTS) logRequest(method, pathWithQuery, res.status, startedAt);
+
+  // One read of the body serves every branch below (204 / non-JSON → null).
+  let payload: any = null;
+  try {
+    payload = await res.json();
+  } catch {
+    payload = null;
+  }
+
+  if (res.status === 401) {
+    if (
+      providerAuthPrefix &&
+      typeof payload?.message === "string" &&
+      payload.message.startsWith(providerAuthPrefix)
+    ) {
+      return {
+        success: false,
+        statusCode: 401,
+        message: payload.message,
+        errorMessages: payload?.errorMessages,
+      } as T;
+    }
+    if (redirectOnUnauthorized) redirect("/session-expired");
+    return {
+      success: false,
+      statusCode: 401,
+      message: messageOf(payload, 401),
     } as T;
   }
 
-  // if (res.status === 401) {
-  //     const headerList = await headers();
-  //     const referer = headerList.get("referer") || "";
-
-  //     // 🛑 STOP the loop if we already tried refreshing once
-  //     if (referer.includes("refreshed=true")) {
-  //         console.log("Refresh loop detected. Redirecting to login.");
-  //         redirect("/?reason=session_expired");
-  //     }
-
-  //     const urlObj = new URL(referer || "http://localhost:3000/");
-  //     // Add a flag to the redirect URL
-  //     urlObj.searchParams.set("refreshed", "true");
-  //     const currentPath = urlObj.pathname + urlObj.search;
-
-  //     redirect(`/api/auth/refresh?redirect=${encodeURIComponent(currentPath)}`);
-  // }
-  if (res.status === 401) {
-    if (providerAuthPrefix) {
-      let body401: any = null;
-      try {
-        body401 = await res.clone().json();
-      } catch {
-        body401 = null;
-      }
-      if (
-        typeof body401?.message === "string" &&
-        body401.message.startsWith(providerAuthPrefix)
-      ) {
-        return {
-          success: false,
-          statusCode: 401,
-          message: body401.message,
-          errorMessages: body401?.errorMessages,
-        } as T;
-      }
-    }
-    // const cookieStore = await cookies();
-    // cookieStore.delete("accessToken");
-    redirect("/session-expired");
-  }
-
-  await buildHeaders(isFormData, customHeaders);
-
   if (method !== "GET" && !res.ok) {
-    let errBody: any = null;
-    try {
-      errBody = await res.json();
-    } catch {
-      errBody = null;
-    }
     // Global billing rule (billing guide §1): a write rejected with 402 means
     // the company is payment-blocked — land the user on the billing page with
     // the backend's message instead of leaving each caller to handle it.
@@ -184,48 +267,36 @@ export async function baseApi<T = any>(
     // they are the resolution path, so bouncing them here would strand a
     // part-confirmed payment (see the option's doc comment).
     if (res.status === 402 && !skipPaymentRedirect) {
-      const msg =
-        typeof errBody?.message === "string" ? errBody.message : "";
-      redirect(
-        `/settings/billing${msg ? `?blocked=${encodeURIComponent(msg)}` : ""}`,
-      );
+      // Only roles the billing page admits go there, resolved as its gate
+      // resolves them (one session read: shared with the render, or made on
+      // this path alone inside an action). The gate bounced everyone else on
+      // to /settings and the message was lost; they have no billing banner
+      // either, as billing status is refused to them. They get the envelope,
+      // worded for them, which the calling form shows like any failure.
+      if (hasRole(MANAGEMENT_ROLES, (await getDecodedUser())?.role)) {
+        const msg =
+          typeof payload?.message === "string" ? payload.message : "";
+        redirect(
+          `${BILLING_URL}${msg ? `?blocked=${encodeURIComponent(msg)}` : ""}`,
+        );
+      }
+      // The block code is top-level from the tracker gate (enforceEntitlement),
+      // the first error's path from checkSubscriptionValidity.
+      return {
+        success: false,
+        ...payload,
+        statusCode: 402,
+        message: paymentBlockedMessageForMember(
+          payload?.code ?? payload?.errorMessages?.[0]?.path,
+        ),
+      } as T;
     }
     return {
       success: false,
-      message:
-        errBody?.message ||
-        errBody?.errorMessages?.[0]?.message ||
-        `Request failed with ${res.status}`,
-      ...errBody,
+      message: messageOf(payload, res.status),
+      ...payload,
       statusCode: res.status,
     } as T;
-  }
-
-  // if (!res.ok) {
-  //   // const text = await res.text();
-  //   // throw new Error(text || `Request failed with ${res.status}`);
-  //   return (
-  //     {
-  //       success: false,
-  //       message: `Request failed with ${res}`,
-  //     }
-  //   ) as T;
-  // }
-
-  // // 🔄 auto revalidate on mutations
-  // if (method !== "GET" && tag) {
-  //   revalidateTag(tag);
-  // }
-
-  // if (res.status === 204) return null as T;
-
-  // return res.json() as Promise<T>;
-
-  let data: any = null;
-  try {
-    data = await res.json();
-  } catch {
-    data = null;
   }
 
   if (!res.ok) {
@@ -235,43 +306,41 @@ export async function baseApi<T = any>(
     // provider-401 envelope above so every caller branch behaves identically.
     if (
       providerAuthPrefix &&
-      typeof data?.message === "string" &&
-      data.message.startsWith(providerAuthPrefix) &&
-      data.message.includes("access token is missing")
+      typeof payload?.message === "string" &&
+      payload.message.startsWith(providerAuthPrefix) &&
+      payload.message.includes("access token is missing")
     ) {
       return {
         success: false,
         statusCode: 401,
-        message: data.message,
-        errorMessages: data?.errorMessages,
+        message: payload.message,
+        errorMessages: payload?.errorMessages,
       } as T;
     }
     return {
       success: false,
       statusCode: res.status,
-      message:
-        data?.message ||
-        data?.errorMessages?.[0]?.message ||
-        `Request failed with ${res.status}`,
-      errorMessages: data?.errorMessages,
+      message: messageOf(payload, res.status),
+      errorMessages: payload?.errorMessages,
     } as T;
   }
 
-  // 🔄 auto revalidate on mutations
-  if (method !== "GET" && tag && !skipRevalidate) {
-    try {
-      revalidateTag(tag);
-    } catch (error) {
-      // Next 15 throws when this runs inside a render. Callers that fetch
-      // during render should pass `skipRevalidate` (a POST-shaped read has
-      // nothing to invalidate anyway) — but failing to refresh a cache must
-      // never take the page down with it, least of all a payment page. Log it
-      // and carry on: every billing read is `cache: "no-cache"` regardless.
-      console.warn(`revalidateTag("${tag}") skipped:`, error);
+  // 🔄 A successful write revalidates its tags (see the module comment).
+  if (method !== "GET" && !skipRevalidate) {
+    for (const t of tags) {
+      try {
+        revalidateTag(t);
+      } catch (error) {
+        // Next 15 throws when this runs inside a render. Callers that fetch
+        // during render should pass `skipRevalidate` (a POST-shaped read has
+        // nothing to invalidate anyway) — but failing to refresh must never
+        // take the page down with it, least of all a payment page.
+        console.warn(`revalidateTag("${t}") skipped:`, error);
+      }
     }
   }
 
   if (res.status === 204) return null as T;
 
-  return data as T;
+  return payload as T;
 }

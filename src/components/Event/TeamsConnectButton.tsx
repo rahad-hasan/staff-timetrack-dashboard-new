@@ -22,8 +22,8 @@ import {
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { MicrosoftConnectedResponse } from "@/types/type";
-import { useMicrosoftConnectFlow } from "../Integrations/useMicrosoftConnectFlow";
-import microsoftTeamsIcon from "../../assets/events/microsoft-teams.svg";
+import { useCalendarConnectFlow } from "../Integrations/useCalendarConnectFlow";
+import microsoftTeamsIcon from "./assets/microsoft-teams.png";
 import { disconnectMicrosoft, getMicrosoftConnected } from "@/actions/integrations/action";
 import Image from "next/image";
 
@@ -66,9 +66,11 @@ const TeamsConnectButton = () => {
         refresh();
     }, []);
 
-    const { start: startConnect, busy: connectBusy } = useMicrosoftConnectFlow(
-        () => refresh(),
-    );
+    const {
+        start: startConnect,
+        reconnect: startReconnect,
+        busy: connectBusy,
+    } = useCalendarConnectFlow("microsoft", () => refresh());
 
     const handleDisconnect = async () => {
         setBusy(true);
@@ -187,7 +189,9 @@ const TeamsConnectButton = () => {
                 <DropdownMenuItem
                     onSelect={(e) => {
                         e.preventDefault();
-                        startConnect();
+                        // already connected, so "connected" cannot be what
+                        // ends this sign-in — see useCalendarConnectFlow
+                        startReconnect();
                     }}
                     disabled={connectBusy}
                     className="cursor-pointer text-xs"

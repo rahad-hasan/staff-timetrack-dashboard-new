@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import {
@@ -11,7 +10,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import z from "zod";
+import { z } from "zod";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
 import { useState } from "react";
@@ -20,8 +19,8 @@ import { createNewPasswordSchema } from "@/zod/schema";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { resetPassword } from "@/actions/auth/action";
-import { useLogInUserStore } from "@/store/logInUserStore";
-import { resetProfileImageRefresh } from "@/utils/profileImageRefresh";
+import { actionErrorMessage } from "@/lib/actionErrors";
+import { beginClientSession } from "@/lib/clientSession";
 import logoWithSlogan from "../../assets/logo-with-text.webp";
 import logoForDark from "../../assets/logo-with-text-dark.png";
 import SecureIcon from "../Icons/PlanIcons/SecureIcon";
@@ -43,8 +42,6 @@ const ResetPasswordClient = () => {
     },
   });
 
-  const { setLogInUserData } = useLogInUserStore();
-
   async function onSubmit(values: z.infer<typeof createNewPasswordSchema>) {
     setLoading(true);
     try {
@@ -55,18 +52,9 @@ const ResetPasswordClient = () => {
         },
       });
       if (res?.success) {
-        resetProfileImageRefresh();
-        setLogInUserData({
-          id: res?.data?.id,
-          name: res?.data?.name,
-          email: res?.data?.email,
-          image: res?.data?.image,
-          imageSyncedAt: Date.now(),
-          role: res?.data?.role,
-          phone: res?.data?.phone,
-          timezone: res?.data?.time_zone,
-          company_id: res?.data?.company_id,
-        });
+        // The same hand-off as sign-in (this used to be a hand-made copy of
+        // it, minus the company time-zone fallback).
+        beginClientSession(res.data ?? {});
         router.push("/dashboard");
         toast.success(res?.message || "Password reset successfully");
       } else {
@@ -78,8 +66,8 @@ const ResetPasswordClient = () => {
           },
         });
       }
-    } catch (error: any) {
-      toast.error(error.message || "Server is not active", {
+    } catch (error) {
+      toast.error(actionErrorMessage(error, "Server is not active"), {
         style: {
           backgroundColor: "#ef4444",
           color: "white",

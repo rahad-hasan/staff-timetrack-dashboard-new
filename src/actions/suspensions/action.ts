@@ -1,6 +1,5 @@
 "use server";
 
-import { buildQuery } from "@/utils/buildQuery";
 import { baseApi } from "../baseApi";
 import type { IResponse } from "@/types/type";
 import type {
@@ -19,27 +18,27 @@ export const listSuspensionReasons = async (): Promise<
 > => {
   return await baseApi(`${BASE}/reasons`, {
     tag: "tracking-suspension-reasons",
-    revalidate: 60 * 60 * 24,
+    // A fixed backend catalogue (deploy-time data, identical for every
+    // tenant) — the one read that legitimately opts into the Data Cache.
+    cacheFor: 60 * 60 * 24,
   });
 };
 
 export const listSuspensionSummary = async (
   query: ISuspensionSummaryQuery = {},
 ): Promise<IResponse<ISuspensionSummary>> => {
-  const qs = buildQuery(query as Record<string, string | number | undefined>);
-  return await baseApi(`${BASE}/summary${qs ? `?${qs}` : ""}`, {
+  return await baseApi(`${BASE}/summary`, {
+    query: { ...query },
     tag: "tracking-suspension-summary",
-    cache: "no-cache",
   });
 };
 
 export const listSuspensionEvents = async (
   query: ISuspensionEventsQuery = {},
 ): Promise<IResponse<ISuspensionEvent[]>> => {
-  const qs = buildQuery(query as Record<string, string | number | undefined>);
-  return await baseApi(`${BASE}${qs ? `?${qs}` : ""}`, {
+  return await baseApi(`${BASE}`, {
+    query: { ...query },
     tag: "tracking-suspension-events",
-    cache: "no-cache",
   });
 };
 
@@ -47,9 +46,8 @@ export const getSuspensionEventDetail = async (
   id: number,
   query: { timezone?: string } = {},
 ): Promise<IResponse<ISuspensionEventDetail>> => {
-  const qs = buildQuery(query);
-  return await baseApi(`${BASE}/${id}${qs ? `?${qs}` : ""}`, {
+  return await baseApi(`${BASE}/${id}`, {
+    query,
     tag: `tracking-suspension-event-${id}`,
-    cache: "no-cache",
   });
 };

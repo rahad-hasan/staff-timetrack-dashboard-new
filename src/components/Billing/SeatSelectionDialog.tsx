@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { unstable_rethrow, useRouter } from "next/navigation";
 import { ArrowRight, Crown, Loader2, RefreshCw, Users } from "lucide-react";
 
 import { getCheckoutQuote } from "@/actions/billing/action";
@@ -21,6 +21,7 @@ import {
   MAX_ORDER_SEATS,
   seatCeilingFor,
 } from "@/lib/billing";
+import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
 import { cn } from "@/lib/utils";
 import {
   BillingCycle,
@@ -124,6 +125,7 @@ export default function SeatSelectionDialog({
    */
   onContinue?: (seats: number) => void;
 }) {
+  const timeZone = useViewerTimeZone();
   const router = useRouter();
 
   const floor = Math.max(1, activeUserCount);
@@ -228,11 +230,22 @@ export default function SeatSelectionDialog({
         latestQuote.current = requestId;
         setQuoting(true);
 
-        const res = await getCheckoutQuote({
-          plan_id: planId,
-          seats,
-          cycle,
-        });
+        let res: Awaited<ReturnType<typeof getCheckoutQuote>> | null;
+        try {
+          res = await getCheckoutQuote({
+            plan_id: planId,
+            seats,
+            cycle,
+          });
+        } catch (error) {
+          // The action itself REJECTS on a dropped connection or a deploy
+          // that retired its id (baseApi's envelope only covers failures on
+          // the server side). Without this the spinner and the dead CTA stayed
+          // forever: nothing this effect watches changes on its own. Recorded
+          // as a failure of this order, so "Try again" re-asks.
+          unstable_rethrow(error);
+          res = null;
+        }
 
         // A superseded response must not touch anything — least of all the price.
         if (latestQuote.current !== requestId) return;
@@ -448,7 +461,7 @@ export default function SeatSelectionDialog({
 
             {pricedQuote?.renews_at && (
               <p className="mt-2 text-xs text-subTextColor dark:text-darkTextSecondary">
-                Renews on {formatBillingDate(pricedQuote.renews_at)}
+                Renews on {formatBillingDate(pricedQuote.renews_at, timeZone)}
               </p>
             )}
           </div>

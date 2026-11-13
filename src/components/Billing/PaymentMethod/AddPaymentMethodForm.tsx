@@ -14,6 +14,7 @@ import { AlertTriangle, Globe, RefreshCw, User } from "lucide-react";
 import { z } from "zod";
 
 import { createSetupIntent } from "@/actions/billing/action";
+import { unstable_rethrow } from "next/navigation";
 import ComboboxField from "@/components/Common/ComboboxField";
 import StripeElementsProvider from "@/components/Billing/Checkout/StripeElementsProvider";
 import { Button } from "@/components/ui/button";
@@ -274,7 +275,9 @@ const SetupCardForm = ({
         ),
       );
       return null;
-    } catch {
+    } catch (error) {
+      // `onSaved` promotes the card through a server action.
+      unstable_rethrow(error);
       setFailure(
         mapSetupFailure(
           null,
@@ -546,7 +549,8 @@ export default function AddPaymentMethodForm({
               "Could not start a secure card session. Please try again.",
           );
         }
-      } catch {
+      } catch (error) {
+        unstable_rethrow(error);
         if (latestRequest.current === requestId) {
           setError("Could not reach our payment provider. Please try again.");
         }

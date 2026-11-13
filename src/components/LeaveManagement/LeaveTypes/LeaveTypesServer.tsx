@@ -1,4 +1,5 @@
 import { getLeaveDetails, getLeaveTypes } from "@/actions/leaves/action";
+import { canManageLeave } from "@/lib/leave";
 import { ILeaveDetailsResponse, ISearchParamsProps } from "@/types/type";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
 import LeaveTypesBoard from "./LeaveTypesBoard";
@@ -19,7 +20,6 @@ const normalizeLeaveDetails = (
 const LeaveTypesServer = async ({ searchParams }: ISearchParamsProps) => {
   const params = await searchParams;
   const currentUser = await getDecodedUser();
-  const role = currentUser?.role ?? "";
   const fallbackYear =
     typeof params.year === "string" ? Number(params.year) || new Date().getFullYear() : new Date().getFullYear();
 
@@ -35,7 +35,7 @@ const LeaveTypesServer = async ({ searchParams }: ISearchParamsProps) => {
       is_active: isActiveFilter,
     }),
     getLeaveDetails({
-      year: params.year,
+      year: typeof params.year === "string" ? params.year : undefined,
     }),
   ]);
 
@@ -43,7 +43,7 @@ const LeaveTypesServer = async ({ searchParams }: ISearchParamsProps) => {
     <LeaveTypesBoard
       leaveTypes={leaveTypesResponse?.data ?? []}
       detailsData={normalizeLeaveDetails(leaveDetailsResponse?.data, fallbackYear)}
-      canEditLeaveTypes={["admin", "hr"].includes(role)}
+      canEditLeaveTypes={canManageLeave(currentUser?.role)}
     />
   );
 };

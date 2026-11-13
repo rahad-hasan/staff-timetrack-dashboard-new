@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { MotionConfig, motion, type Variants } from "framer-motion";
 import { LIVE_CHAT_COPY } from "@/lib/liveChat/config";
 import { useLiveChat } from "@/lib/liveChat/useLiveChat";
 import { useDialogOpen } from "@/lib/onboarding/useDialogOpen";
+import { cn } from "@/lib/utils";
 import LiveChatLauncher from "./LiveChatLauncher";
 
 /**
@@ -14,11 +14,6 @@ import LiveChatLauncher from "./LiveChatLauncher";
  */
 const OFFSET_PROPERTY = "--live-chat-launcher-offset";
 const LAUNCHER_FOOTPRINT = "4.25rem";
-
-const DOCK_VARIANTS = {
-  visible: { opacity: 1, y: 0 },
-  hidden: { opacity: 0, y: 12 },
-} satisfies Variants;
 
 /**
  * The bottom-right launcher. Crisp's own UI stays hidden until a
@@ -68,24 +63,28 @@ export default function LiveChatDock() {
   if (!isReady) return null;
 
   return (
-    <MotionConfig reducedMotion="user">
+    <>
       {/* `inert` takes a hidden dock out of the tab order and the
           accessibility tree. */}
-      <motion.aside
+      <aside
         aria-label={LIVE_CHAT_COPY.region}
         inert={hidden}
-        initial="hidden"
-        animate={hidden ? "hidden" : "visible"}
-        variants={DOCK_VARIANTS}
-        transition={{ duration: 0.2, ease: "easeOut" }}
-        className="fixed right-4 bottom-4 z-110 print:hidden"
+        className={cn(
+          "fixed right-4 bottom-4 z-110 print:hidden",
+          // Fades and rises 12px into place when it first appears and when it
+          // comes back; plain CSS, so no animation library ships in the shell.
+          // Reduced motion keeps the fade and drops the movement.
+          "transition-[opacity,translate] duration-200 ease-out motion-reduce:transition-opacity",
+          "starting:translate-y-3 starting:opacity-0",
+          hidden && "translate-y-3 opacity-0",
+        )}
       >
         <LiveChatLauncher
           ref={launcherRef}
           unreadCount={unreadCount}
           onClick={handleOpen}
         />
-      </motion.aside>
+      </aside>
 
       {/* The badge is silent, so a screen reader hears replies here. It sits
           outside the dock because an `inert` dock (during a dialog) would
@@ -93,6 +92,6 @@ export default function LiveChatDock() {
       <p role="status" className="sr-only">
         {unreadCount > 0 ? LIVE_CHAT_COPY.unreadAnnouncement(unreadCount) : ""}
       </p>
-    </MotionConfig>
+    </>
   );
 }

@@ -5,6 +5,7 @@ import PayrollAccessDenied from "@/components/Payroll/PayrollAccessDenied";
 import PayrollGenerateForm from "@/components/Payroll/PayrollGenerateForm";
 import PayrollSubNav from "@/components/Payroll/PayrollSubNav";
 import { canManagePayroll } from "@/lib/payroll";
+import { ISearchParamsProps } from "@/types/type";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
 
 export const metadata: Metadata = {
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
   description: "Run monthly payroll calculation for the entire workspace.",
 };
 
-const GeneratePayrollPage = async () => {
+const GeneratePayrollPage = async ({ searchParams }: ISearchParamsProps) => {
   const currentUser = await getDecodedUser();
   const isAllowed = canManagePayroll(currentUser?.role);
 
@@ -26,7 +27,11 @@ const GeneratePayrollPage = async () => {
         <PayrollSubNav canManage={isAllowed} />
       </div>
 
-      {isAllowed ? <PayrollGenerateForm /> : <PayrollAccessDenied />}
+      {isAllowed ? (
+        <PayrollGenerateForm searchParams={searchParams} />
+      ) : (
+        <PayrollAccessDenied />
+      )}
     </div>
   );
 };

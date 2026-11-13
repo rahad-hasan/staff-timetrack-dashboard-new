@@ -14,6 +14,7 @@ import {
   UserRoundCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
 import { RatingStars, STATUS_TOKENS } from "@/components/Support/primitives";
 import { formatAbsolute, formatClock } from "@/lib/supportFormat";
 import type { TicketStatus } from "@/types/support";
@@ -58,6 +59,8 @@ interface EventLineProps {
  * right-aligned on that line.
  */
 export const EventLine = memo(function EventLine({ copy, at }: EventLineProps) {
+  // The viewer's zone, as the timeline's day pills (see MessageBubble).
+  const timeZone = useViewerTimeZone();
   const statusTone = copy.tone === "status";
   const Icon = statusTone ? STATUS_ICON[copy.status] : TONE_ICON[copy.tone];
   const tile = statusTone ? undefined : TONE_STYLE[copy.tone];
@@ -108,11 +111,10 @@ export const EventLine = memo(function EventLine({ copy, at }: EventLineProps) {
         </span>
         <time
           dateTime={at}
-          title={formatAbsolute(at)}
+          title={formatAbsolute(at, timeZone)}
           className="shrink-0 text-[13px] leading-[22px] text-support-muted-text dark:text-darkTextSecondary"
-          suppressHydrationWarning
         >
-          {formatClock(at)}
+          {formatClock(at, timeZone)}
         </time>
       </p>
     </div>

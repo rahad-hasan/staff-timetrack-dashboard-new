@@ -3,23 +3,20 @@ import Image from "next/image";
 // import logo from '../../assets/logo.svg'
 // import fit from '../../assets/fit.svg'
 // import { useEffect, useState } from 'react';
-import {
-  employeeOthersSidebarItems,
-  othersSidebarItems,
-  sidebarItems,
-  sidebarItemsEmployee,
-} from "@/utils/SidebarItems";
 import { useSidebarStore } from "@/store/sidebarStore";
 // import { usePathname } from 'next/navigation';
 import SidebarItem from "./sidebar/SidebarItem";
 import SubItem from "./sidebar/SubItem";
+import {
+  sidebarSectionsFor,
+  type SidebarNavItem,
+} from "./sidebar/sidebarSections";
 // import TrialCart from './sidebar/TrialCart';
 import logoWithText from "../../assets/logo-with-text.webp";
 import logoForDark from "../../assets/logo-with-text-dark.png";
 import logo from "../../assets/logo.png";
 import CollapsedIcon from "../Icons/CollapsedIcon";
 import clsx from "clsx";
-import React from "react";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import { TOUR_ANCHORS } from "@/lib/onboarding/anchors";
 
@@ -40,19 +37,46 @@ const SideBar = () => {
   // console.log('isCollapsed', isCollapsed);
   // console.log('openMenu', openMenu);
 
-  const roleBasedSidebarItems =
-    logInUserData?.role === "admin" ||
-    logInUserData?.role === "manager" ||
-    logInUserData?.role === "hr"
-      ? sidebarItems
-      : sidebarItemsEmployee;
+  const { main: roleBasedSidebarItems, others: roleBasedOthersSidebarItems } =
+    sidebarSectionsFor(logInUserData?.role);
 
-  const roleBasedOthersSidebarItems =
-    logInUserData?.role === "admin" ||
-    logInUserData?.role === "manager" ||
-    logInUserData?.role === "hr"
-      ? othersSidebarItems
-      : employeeOthersSidebarItems;
+  // Both sections render their items identically.
+  const renderItems = (items: readonly SidebarNavItem[]) =>
+    items.map((item) => (
+      <div key={item.key}>
+        <SidebarItem
+          icon={item.icon}
+          label={item.label}
+          href={item.subItems.length > 0 ? undefined : item.key}
+          collapsible={item.collapsible}
+          isOpen={openMenu === item.key}
+          activeMenu={activeMenu === item.key}
+          subMenuActive={item.subItems.some(
+            (subItem) => subItem.key === activeSubItem,
+          )}
+          onClick={() => setOpenMenu(item.key)}
+          isCollapsed={isCollapsed}
+        >
+          {item.subItems.length > 0 && (
+            <div
+              className={`${isCollapsed ? "absolute left-24 px-3 w-[180px] bg-white dark:bg-darkSecondaryBg shadow-2xl rounded-2xl" : "block"} py-2.5 flex flex-col gap-1 transition-all duration-300`}
+            >
+              {item.subItems.map((subItem, index) => (
+                <SubItem
+                  key={subItem.key}
+                  label={subItem.label}
+                  href={subItem.key}
+                  active={activeSubItem === subItem.key}
+                  isCollapsed={isCollapsed}
+                  index={index}
+                  onClick={() => setActiveSubItem(subItem.key)}
+                />
+              ))}
+            </div>
+          )}
+        </SidebarItem>
+      </div>
+    ));
 
   // const sidebarRef = useRef<HTMLDivElement>(null);
 
@@ -127,40 +151,7 @@ const SideBar = () => {
                 Main menu
               </h2>
             )}
-            {roleBasedSidebarItems.map((item) => (
-              <div key={item.key}>
-                <SidebarItem
-                  icon={item.icon}
-                  label={item.label}
-                  href={item.subItems.length > 0 ? undefined : item.key}
-                  collapsible={item.collapsible}
-                  isOpen={openMenu === item.key}
-                  activeMenu={activeMenu === item.key}
-                  subMenuActive={item.subItems.some(
-                    (subItem) => subItem.key === activeSubItem,
-                  )}
-                  onClick={() => setOpenMenu(item.key)}
-                  isCollapsed={isCollapsed}
-                >
-                  {item.subItems.length > 0 && (
-                    <div
-                      className={`${isCollapsed ? "absolute left-24 px-3 w-[180px] bg-white dark:bg-darkSecondaryBg shadow-2xl rounded-2xl" : "block"} py-2.5 flex flex-col gap-1 transition-all duration-300`}
-                    >
-                      {item.subItems.map((subItem) => (
-                        <SubItem
-                          key={subItem.key}
-                          label={subItem.label}
-                          href={subItem.key}
-                          active={activeSubItem === subItem.key}
-                          isCollapsed={isCollapsed}
-                          onClick={() => setActiveSubItem(subItem.key)}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </SidebarItem>
-              </div>
-            ))}
+            {renderItems(roleBasedSidebarItems)}
           </div>
 
           <div
@@ -174,40 +165,7 @@ const SideBar = () => {
                 Others
               </h2>
             )}
-            {roleBasedOthersSidebarItems.map((item) => (
-              <div key={item.key}>
-                <SidebarItem
-                  icon={item.icon}
-                  label={item.label}
-                  href={item.subItems.length > 0 ? undefined : item.key}
-                  collapsible={item.collapsible}
-                  isOpen={openMenu === item.key}
-                  activeMenu={activeMenu === item.key}
-                  subMenuActive={item.subItems.some(
-                    (subItem) => subItem.key === activeSubItem,
-                  )}
-                  onClick={() => setOpenMenu(item.key)}
-                  isCollapsed={isCollapsed}
-                >
-                  {item.subItems.length > 0 && (
-                    <div
-                      className={`${isCollapsed ? "absolute left-24 px-3 w-[180px] bg-white dark:bg-darkSecondaryBg shadow-2xl rounded-2xl" : "block"} py-2.5 flex flex-col gap-1 transition-all duration-300`}
-                    >
-                      {item.subItems.map((subItem) => (
-                        <SubItem
-                          key={subItem.key}
-                          label={subItem.label}
-                          href={subItem.key}
-                          active={activeSubItem === subItem.key}
-                          isCollapsed={isCollapsed}
-                          onClick={() => setActiveSubItem(subItem.key)}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </SidebarItem>
-              </div>
-            ))}
+            {renderItems(roleBasedOthersSidebarItems)}
           </div>
 
           {/* {!isCollapsed && <TrialCart />} */}
@@ -217,4 +175,7 @@ const SideBar = () => {
   );
 };
 
-export default React.memo(SideBar);
+// Not React.memo: the (main_layout) layout, a Server Component, renders this,
+// and React remounts a memoised client component on every route re-render —
+// each one re-registered every sidebar link and prefetched them all again.
+export default SideBar;

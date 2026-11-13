@@ -5,6 +5,7 @@ import {
   formatPayrollHours,
   formatPayrollMoney,
   formatPayrollPeriod,
+  payPeriodRange,
   splitAdjustments,
 } from "@/lib/payroll";
 import {
@@ -24,7 +25,6 @@ import {
   drawFooter,
   drawNotesBlock,
   drawText,
-  dateRange,
   drawTopBrandBar,
   lastTableBottom,
   loadPdfLibs,
@@ -104,6 +104,7 @@ const drawIdentityBlock = (
   doc: jsPDF,
   item: EmployeePayroll,
   employee: PayslipEmployee,
+  timeZone: string,
 ) => {
   const top = 88;
   const height = 74;
@@ -137,9 +138,9 @@ const drawIdentityBlock = (
 
   const run = item.payrollRun;
   const rows: Array<[string, string]> = [
-    ["Pay period", run ? dateRange(run.period_start, run.period_end) : "—"],
-    ["Payment date", run?.paid_at ? safeDate(run.paid_at) : "Pending"],
-    ["Approved on", run?.approved_at ? safeDate(run.approved_at) : "—"],
+    ["Pay period", run ? payPeriodRange(run.month, run.year) : "—"],
+    ["Payment date", run?.paid_at ? safeDate(run.paid_at, timeZone) : "Pending"],
+    ["Approved on", run?.approved_at ? safeDate(run.approved_at, timeZone) : "—"],
   ];
 
   drawText(doc, "PAY DETAILS", rightX + 14, top + 18, { size: 7.5, bold: true });
@@ -361,18 +362,20 @@ const buildEarningsRows = (item: EmployeePayroll): EarningsRow[] => {
  * Builds and downloads a single employee's payslip as an A4 portrait PDF.
  *
  * `employee` is passed in because `/payroll/history` does not embed the user
- * object — the caller supplies it from the logged-in user store.
+ * object — the caller supplies it from the logged-in user store. `timeZone`:
+ * the viewer's (`useViewerTimeZone()`), so the PDF's dates match the pages'.
  */
 export const downloadPayslipPdf = async (
   item: EmployeePayroll,
-  employee: PayslipEmployee = {},
+  employee: PayslipEmployee,
+  timeZone: string,
 ) => {
   try {
     const { JsPDF, autoTable } = await loadPdfLibs();
     const doc = new JsPDF({ orientation: "portrait", unit: "pt", format: "a4" });
 
     drawMasthead(doc, item);
-    const afterIdentity = drawIdentityBlock(doc, item, employee);
+    const afterIdentity = drawIdentityBlock(doc, item, employee, timeZone);
     const afterNet = drawNetPayBand(doc, item, afterIdentity + 16);
     const afterHours = drawHoursGrid(doc, item, afterNet + 26);
 
@@ -445,7 +448,7 @@ export const downloadPayslipPdf = async (
       y = drawNotesBlock(doc, item.notes, y) + 18;
     }
 
-    drawFooter(doc, DISCLAIMER);
+    drawFooter(doc, timeZone, DISCLAIMER);
 
     const period = item.payrollRun
       ? slugify(formatPayrollPeriod(item.payrollRun.month, item.payrollRun.year))

@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { unstable_rethrow } from "next/navigation";
 import { format } from "date-fns";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import z from "zod";
+import { z } from "zod";
 import {
   BriefcaseBusiness,
   ChevronDownIcon,
@@ -161,31 +162,47 @@ const LeaveRequestModal = ({
   async function onSubmit(values: LeaveRequestFormValues) {
     setLoading(true);
 
-    const response = await addLeave({
-      leave_type_id: Number(values.leaveTypeId),
-      start_date: format(new Date(values.startDate!), "yyyy-MM-dd"),
-      end_date: format(new Date(values.endDate!), "yyyy-MM-dd"),
-      reason: values.reason,
-      document: values.supportingDocument,
-    });
+    try {
+      const response = await addLeave({
+        leave_type_id: Number(values.leaveTypeId),
+        start_date: format(new Date(values.startDate!), "yyyy-MM-dd"),
+        end_date: format(new Date(values.endDate!), "yyyy-MM-dd"),
+        reason: values.reason,
+        document: values.supportingDocument,
+      });
 
-    if (response?.success) {
-      toast.success(response.message || "Leave request submitted");
-      form.reset(defaultFormValues);
-      onSuccess?.();
-      onClose();
+      if (response?.success) {
+        toast.success(response.message || "Leave request submitted");
+        form.reset(defaultFormValues);
+        onSuccess?.();
+        onClose();
+        return;
+      }
+
+      toast.error(response?.message || "Failed to request leave", {
+        style: {
+          backgroundColor: "#ef4444",
+          color: "white",
+          border: "none",
+        },
+      });
+    } catch (error) {
+      // The action call itself failed — the connection dropped, or Next
+      // refused the request before the action ran. react-hook-form rethrows
+      // from handleSubmit, so without this the button stayed on
+      // "Submitting..." and nothing was shown. Next's own redirects (an
+      // expired session) still have to propagate.
+      unstable_rethrow(error);
+      toast.error("Couldn't submit the leave request. Please try again.", {
+        style: {
+          backgroundColor: "#ef4444",
+          color: "white",
+          border: "none",
+        },
+      });
+    } finally {
       setLoading(false);
-      return;
     }
-
-    toast.error(response?.message || "Failed to request leave", {
-      style: {
-        backgroundColor: "#ef4444",
-        color: "white",
-        border: "none",
-      },
-    });
-    setLoading(false);
   }
 
   const theme = getLeaveTypeTheme(selectedLeaveType?.color_code);
@@ -458,15 +475,18 @@ const LeaveRequestModal = ({
                     className="mt-3 h-auto cursor-pointer py-2 dark:border-darkBorder dark:bg-darkSecondaryBg"
                     aria-required={isDocumentRequired}
                     onBlur={field.onBlur}
-                    onChange={(event) =>
-                      field.onChange(event.target.files?.[0] ?? null)
-                    }
+                    onChange={(event) => {
+                      const file = event.target.files?.[0] ?? null;
+                      field.onChange(file);
+                      // Report an oversized file now, not after Submit.
+                      if (file) void form.trigger("supportingDocument");
+                    }}
                   />
                 </FormControl>
 
                 <p className="mt-2 text-xs text-subTextColor dark:text-darkTextSecondary">
-                  Attach a PDF, image, or document file when extra proof is
-                  needed.
+                  Attach a PDF, image, or document file (up to 2 MB) when
+                  extra proof is needed.
                 </p>
                 <FormMessage />
               </FormItem>

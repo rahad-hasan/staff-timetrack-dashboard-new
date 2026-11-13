@@ -217,6 +217,18 @@ export interface UpdatePayrollProfilePayload {
   is_active?: boolean;
 }
 
+/** The successor profile; its employee is always the superseded profile's. */
+export type SupersedePayrollProfilePayload = Omit<
+  CreatePayrollProfilePayload,
+  "user_id"
+>;
+
+export interface SupersedePayrollProfileResult {
+  /** The profile that now ends the day before `successor.effective_from`. */
+  superseded: EmployeePayrollProfile;
+  successor: EmployeePayrollProfile;
+}
+
 export interface GeneratePayrollPayload {
   month: number;
   year: number;

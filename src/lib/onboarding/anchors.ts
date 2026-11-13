@@ -23,7 +23,7 @@ export const TOUR_ANCHORS = {
   themeToggle: "theme-toggle",
   /** Profile popover trigger — `src/components/layout/Header/ProfileDropDown.tsx`. */
   profileMenu: "profile-menu",
-  /** Metric card grid — `src/app/(main_layout)/dashboard/@topCart/page.tsx`. */
+  /** Metric card grid — `src/app/(main_layout)/dashboard/_panels/Overview.tsx`. */
   dashboardStats: "dashboard-stats",
   /** Installer surface (hero + platform grid) — `src/components/Download/DownloadPage.tsx`. */
   downloadApp: "download-app",

@@ -1,6 +1,9 @@
 "use client";
+import { parseDateParam } from "@/lib/timezone";
+import { useViewToday } from "@/hooks/useViewToday";
+import { parseISO } from "date-fns";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import React, { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   Popover,
   PopoverContent,
@@ -70,15 +73,11 @@ const SpecificDatePicker = () => {
   const [open, setOpen] = useState(false);
 
   const dateParam = searchParams.get("date");
-  const selectedDate = useMemo(() => {
-    if (!dateParam) return new Date();
-    // Parse yyyy-MM-dd as a local date; new Date("yyyy-MM-dd") is UTC midnight
-    // and shows the previous day in timezones behind UTC
-    const [year, month, day] = dateParam.slice(0, 10).split("-").map(Number);
-    if (!year || !month || !day) return new Date();
-    const d = new Date(year, month - 1, day);
-    return isNaN(d.getTime()) ? new Date() : d;
-  }, [dateParam]);
+  const today = useViewToday();
+  const selectedDate = useMemo(
+    () => parseDateParam(dateParam) ?? parseISO(today),
+    [dateParam, today],
+  );
 
   const toISODateString = (date: Date) => {
     const yyyy = date.getFullYear();
@@ -160,4 +159,8 @@ const SpecificDatePicker = () => {
   );
 };
 
-export default React.memo(SpecificDatePicker);
+// Not React.memo: Server Components render this, and a memoised client
+// component arrives there as a lazy reference React cannot match to the
+// mounted instance, so every route re-render (each live refresh) remounted it
+// and closed its open calendar. It takes no props; the memo saved nothing.
+export default SpecificDatePicker;

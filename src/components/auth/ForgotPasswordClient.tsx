@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import {
@@ -12,12 +11,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { forgetPasswordSchema } from "@/zod/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import z from "zod";
+import { z } from "zod";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
 import { forgetPassword } from "@/actions/auth/action";
+import { actionErrorMessage } from "@/lib/actionErrors";
+import { MARKETING_SIGN_UP_URL } from "@/lib/siteLinks";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, ShieldCheck, Star } from "lucide-react";
@@ -45,7 +46,11 @@ const ForgotPasswordClient = () => {
       const res = await forgetPassword({ data: values });
       if (res?.success) {
         toast.success(res?.message || "OTP sent to your email");
-        router.push(`/auth/${res?.data?.redirect}?email=${values.email}`);
+        // Encoded: a raw "+" (john+work@…) reads back as a space on the next
+        // page, and that address then fails every verify and resend.
+        router.push(
+          `/auth/${res?.data?.redirect}?email=${encodeURIComponent(values.email)}`,
+        );
       } else {
         toast.error(res?.message || "Invalid credentials", {
           style: {
@@ -55,8 +60,8 @@ const ForgotPasswordClient = () => {
           },
         });
       }
-    } catch (error: any) {
-      toast.error(error.message || "Server is not active", {
+    } catch (error) {
+      toast.error(actionErrorMessage(error, "Server is not active"), {
         style: {
           backgroundColor: "#ef4444",
           color: "white",
@@ -168,12 +173,12 @@ const ForgotPasswordClient = () => {
           {/* Footer Callout */}
           <div className="mt-8 pt-4 text-slate-500 dark:text-slate-400">
             New to Staff Time Tracker?{" "}
-            <Link
-              href="/auth/sign-up"
+            <a
+              href={MARKETING_SIGN_UP_URL}
               className="font-semibold text-blue-600 hover:underline dark:text-blue-400"
             >
               Try for Free
-            </Link>
+            </a>
           </div>
         </div>
 

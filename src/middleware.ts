@@ -33,22 +33,39 @@ function publicUrl(request: NextRequest, pathname: string): URL {
   return new URL(pathname, request.url);
 }
 
-export function middleware(request: NextRequest) {
-  const token = request.cookies.get("accessToken");
+/**
+ * Three base64url segments: the only shape the API's tokens come in. Anything
+ * else in the cookie (Express writes a null token as "j:null") can never
+ * authenticate, and letting it through rendered the protected layout only for
+ * every read on it to 401 and bounce the user to /session-expired.
+ */
+const JWT_SHAPE = /^[\w-]+\.[\w-]+\.[\w-]+$/;
 
-  if (!token) {
-    return NextResponse.redirect(publicUrl(request, "/auth/login"));
+export function middleware(request: NextRequest) {
+  const token = request.cookies.get("accessToken")?.value;
+
+  if (!token || !JWT_SHAPE.test(token)) {
+    const response = NextResponse.redirect(publicUrl(request, "/auth/login"));
+    // Drop a value that can never work rather than carry it on every request.
+    if (token) response.cookies.delete("accessToken");
+    return response;
   }
 
   return NextResponse.next();
 }
 
 export const config = {
+  // Every authenticated top-level segment: each `(main_layout)` child plus the
+  // standalone /billing and /onboarding pages. A new segment that is not
+  // listed here renders for signed-out visitors. Public by omission: /auth/**
+  // (OTP and the conversion landing pages included), /session-expired,
+  // /api/**, Next internals and static files.
   matcher: [
     "/dashboard/:path*",
     "/timesheets/:path*",
     "/activity/:path*",
-    "/calender/:path*",
+    "/event/:path*",
+    "/schedule/:path*",
     "/insights/:path*",
     "/members/:path*",
     "/project-management/:path*",

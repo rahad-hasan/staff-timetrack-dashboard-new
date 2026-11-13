@@ -1,4 +1,5 @@
-import { format } from "date-fns";
+import { formatInTimeZone } from "date-fns-tz";
+import { isValidTimeZone } from "@/lib/timezone";
 import {
   BillingBlockCode,
   BillingStatusValue,
@@ -42,24 +43,48 @@ export const formatDollars = (amount: number | null | undefined): string => {
   }).format(amount);
 };
 
-/** Billing dates are absolute calendar dates — "Feb 1, 2027". */
+/**
+ * Billing dates are calendar dates ("Feb 1, 2027") of an instant, read in an
+ * explicit zone: the viewer's (`useViewerTimeZone()` in client components).
+ *
+ * The zone is required on purpose. These used to be formatted in the
+ * runtime's own zone: the Node process's on the server, the browser's after
+ * hydration. Once the layout began server-rendering the trial banner, a trial
+ * ending at 20:00 UTC printed "Nov 20" in the HTML and "Nov 21" in a Dhaka
+ * browser, and React re-rendered the whole document on every load.
+ */
 export const formatBillingDate = (
   iso: string | null | undefined,
+  timeZone: string,
 ): string => {
   if (!iso) return "—";
   const d = new Date(iso);
-  return isNaN(d.getTime()) ? "—" : format(d, "MMM d, yyyy");
+  if (isNaN(d.getTime())) return "—";
+  return formatInTimeZone(
+    d,
+    isValidTimeZone(timeZone) ? timeZone : "UTC",
+    "MMM d, yyyy",
+  );
 };
 
-/** Whole days from now until `iso`, floored at 0 (trial countdown). */
-export const daysUntil = (iso: string | null | undefined): number => {
+/**
+ * Whole days from `now` until `iso`, floored at 0 (trial countdown). A render
+ * that must match its server HTML passes the server's `now` (see
+ * `useBillingNow`); everyone else gets the clock.
+ */
+export const daysUntil = (
+  iso: string | null | undefined,
+  now: number = Date.now(),
+): number => {
   if (!iso) return 0;
-  const diff = new Date(iso).getTime() - Date.now();
+  const diff = new Date(iso).getTime() - now;
   return Math.max(0, Math.ceil(diff / (24 * 60 * 60 * 1000)));
 };
 
-export const isDatePast = (iso: string | null | undefined): boolean =>
-  !!iso && new Date(iso).getTime() < Date.now();
+export const isDatePast = (
+  iso: string | null | undefined,
+  now: number = Date.now(),
+): boolean => !!iso && new Date(iso).getTime() < now;
 
 /* ---------------- exact backend messages the UI keys off ---------------- */
 
@@ -105,6 +130,14 @@ export const isProjectCapMessage = (message: string | undefined): boolean =>
 
 /** Where every blocked/upgrade CTA links (`block.webBillingUrl`). */
 export const BILLING_URL = "/settings/billing";
+
+/**
+ * Response header of `GET /api/billing/status`: the server's `Date.now()`
+ * taken just before its API read — the clock every server-rendered snapshot
+ * is stamped with too, so the billing store can order the two. A header
+ * keeps the JSON body the plain envelope.
+ */
+export const BILLING_STATUS_FETCHED_AT_HEADER = "X-Status-Fetched-At";
 
 /** Envelope check for the global 402 rule — writes during payment failure. */
 export const isPaymentRequired = (res: {
@@ -188,6 +221,22 @@ export const BLOCK_CODE_COPY: Record<
     description:
       "This company account has been deactivated. Contact support if you believe this is a mistake.",
   },
+};
+
+/**
+ * A write the API refused with 402, as told to a role that cannot manage
+ * billing (employee, project manager). The API's copy speaks to whoever can
+ * pay — "choose a plan", "settle your invoice" — and these roles have no
+ * billing page, banner or takeover to act on it. So they get the state in the
+ * app's words (for a known block code) and who can fix it.
+ */
+export const paymentBlockedMessageForMember = (code: unknown): string => {
+  const copy =
+    typeof code === "string" &&
+    Object.prototype.hasOwnProperty.call(BLOCK_CODE_COPY, code)
+      ? BLOCK_CODE_COPY[code as BillingBlockCode]
+      : null;
+  return `${copy ? `${copy.title}. ` : ""}Changes can't be saved until your company admin updates billing.`;
 };
 
 /* ---------------- seats ---------------- */

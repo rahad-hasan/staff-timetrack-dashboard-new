@@ -1,6 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { readNotifications } from "@/actions/notification/action";
+import {
+  readAllNotifications,
+  readNotifications,
+} from "@/actions/notification/action";
+import { unstable_rethrow } from "next/navigation";
 import { INotificationCount, INotificationItem } from "@/types/type";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import {
@@ -16,7 +20,6 @@ import {
   ReceiptText,
 } from "lucide-react";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import BellIcon from "../Icons/BellIcon";
 import NotificationTabs from "./NotificationTabs";
@@ -64,12 +67,17 @@ const REASON_CONFIG: Record<
   },
 };
 
+// What the header and filters show when the counts request fails: the list
+// still renders, with empty badges, instead of the whole page crashing.
+const EMPTY_COUNTS: INotificationCount = {
+  summary: { all: 0, read: 0, unread: 0 },
+  by_reason: { event: 0, leave: 0, project: 0, task: 0, unusual_activity: 0 },
+};
+
 const NotificationItem = ({
   notification,
-  onReadSuccess,
 }: {
   notification: INotificationItem;
-  onReadSuccess?: () => void;
 }) => {
   const createdAt = parseISO(notification?.created_at);
   const [loading, setLoading] = useState(false);
@@ -81,15 +89,17 @@ const NotificationItem = ({
   };
   const Icon = config.icon;
 
+  // No refresh afterwards: the write revalidates, so the action's own
+  // response re-renders the page with this notification read.
   async function handleReadNotification(id: number) {
     setLoading(true);
     try {
       const res = await readNotifications({ data: { ids: [id] } });
       if (res?.success) {
         toast.success("Marked as read");
-        onReadSuccess?.();
       }
-    } catch {
+    } catch (error) {
+      unstable_rethrow(error);
       toast.error("Something went wrong!");
     } finally {
       setLoading(false);
@@ -140,7 +150,10 @@ const NotificationItem = ({
 
         <div className="flex items-center gap-2 text-subTextColor dark:text-darkTextSecondary opacity-70">
           <Clock size={14} />
-          <span className="text-xs">
+          {/* Relative to "now", which moves on between the server render and
+              hydration: a label crossing a step ("less than a minute" → "1
+              minute") would otherwise throw the page's HTML away (#418). */}
+          <span className="text-xs" suppressHydrationWarning>
             {formatDistanceToNow(createdAt, { addSuffix: true })}
           </span>
         </div>
@@ -167,32 +180,52 @@ const AllNotification = ({
   canSeeUnusualActivity,
   notificationCount,
   category = "all",
+  type,
 }: {
   data: any;
   canSeeUnusualActivity: boolean;
-  notificationCount: INotificationCount;
+  notificationCount: INotificationCount | null | undefined;
   category: "all" | "read" | "unread";
+  /** The Subject filter the list was read with; undefined for every subject. */
+  type?: string;
 }) => {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const notifications = data?.data || [];
-  const unreadNotificationIds = notifications
-    .filter((notification: INotificationItem) => !notification.is_read)
-    .map((notification: INotificationItem) => notification.id);
+  const counts = notificationCount ?? EMPTY_COUNTS;
+  const summary = counts.summary ?? EMPTY_COUNTS.summary;
+  const byReason = counts.by_reason ?? EMPTY_COUNTS.by_reason;
+  // The counts can be missing (their request failed) while the page itself
+  // still shows unread rows.
+  const pageHasUnread = notifications.some(
+    (notification: INotificationItem) => !notification.is_read,
+  );
+  // Whether "Mark all read" has anything to mark in what it covers. With a
+  // subject selected that is the subject alone: its unread count is known
+  // only on the Unread tab (the chips count the tab's rows); on the other
+  // tabs the rows on screen decide. The global unread count kept the button
+  // enabled over a subject with nothing unread.
+  const hasUnread = type
+    ? pageHasUnread ||
+      (category === "unread" &&
+        ((byReason as Record<string, number>)[type] ?? 0) > 0)
+    : summary.unread > 0 || pageHasUnread;
 
+  // Every unread notification the list's Subject filter covers, not just the
+  // ten on this page, and none from a subject the filter keeps off it. The
+  // write revalidates, so the action's own response re-renders the page.
   async function handleReadAllNotifications() {
-    if (unreadNotificationIds.length === 0) return;
+    if (!hasUnread) return;
 
     setLoading(true);
     try {
-      const res = await readNotifications({
-        data: { ids: unreadNotificationIds },
-      });
+      const res = await readAllNotifications(type);
       if (res?.success) {
         toast.success("Marked all as read");
-        router.refresh();
+      } else {
+        toast.error(res?.message || "Something went wrong!");
       }
-    } catch {
+    } catch (error) {
+      unstable_rethrow(error);
       toast.error("Something went wrong!");
     } finally {
       setLoading(false);
@@ -217,7 +250,7 @@ const AllNotification = ({
           </div>
         </div>
         <button
-          disabled={loading || unreadNotificationIds.length === 0}
+          disabled={loading || !hasUnread}
           onClick={handleReadAllNotifications}
           className="flex items-center gap-2 px-5 py-2.5 bg-primary hover:opacity-90 text-white rounded-xl text-sm font-bold transition-all shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed"
         >
@@ -235,7 +268,7 @@ const AllNotification = ({
         </button>
       </div>
 
-      <NotificationTabs summary={notificationCount?.summary}></NotificationTabs>
+      <NotificationTabs summary={summary}></NotificationTabs>
 
       <div className="flex items-center gap-3 mb-6">
         <span className="text-xs font-bold text-subTextColor dark:text-darkTextSecondary uppercase tracking-widest mr-2 whitespace-nowrap">
@@ -243,8 +276,8 @@ const AllNotification = ({
         </span>
         <NotificationSubjectSelection
           canSeeUnusualActivity={canSeeUnusualActivity}
-          by_reason={notificationCount?.by_reason}
-          total={notificationCount.summary[category]}
+          by_reason={byReason}
+          total={summary[category] ?? 0}
         ></NotificationSubjectSelection>
       </div>
 
@@ -254,7 +287,6 @@ const AllNotification = ({
             <NotificationItem
               key={notification.id}
               notification={notification}
-              onReadSuccess={() => router.refresh()}
             />
           ))}
         </div>

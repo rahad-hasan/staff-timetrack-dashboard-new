@@ -6,20 +6,55 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Sheet } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useMemo, useState } from "react";
+import dynamic from "next/dynamic";
+import { loadOrReload } from "@/lib/lazyChunk";
+import { format, parse } from "date-fns";
 import { formatTZDate, formatTZFullDate, formatTZTime } from "@/utils";
-import EventDetailsModal from "./EventDetailsModal";
+import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
 import { cn } from "@/lib/utils";
 import { IEvent } from "@/types/type";
-import { CalendarClock, } from "lucide-react";
+import { CalendarClock, Loader2 } from "lucide-react";
 import googleMeetIcon from "../../assets/events/google_meet.svg"
-import microsoftTeamsIcon from "../../assets/events/microsoft-teams.svg"
+import microsoftTeamsIcon from "./assets/microsoft-teams.png"
 import Image from "next/image";
 import CalendarIcon from "../Icons/CalendarIcon";
 import TeamsIcon from "../Icons/TeamsIcon";
 import VideoIcon from "../Icons/VideoIcon";
+
+const importEventDetails = () => import("./EventDetailsModal");
+const loadEventDetails = loadOrReload(importEventDetails);
+
+/**
+ * The drawer (forms, date picker, sync views) is only needed once an event
+ * is opened; it downloads on the first hover/focus of an event chip.
+ */
+/*
+ * While the drawer's chunk downloads, the opened sheet shows its frame with a
+ * spinner (same width and side as the real one) instead of nothing — an empty
+ * moment invited a second click that closed the sheet before it appeared.
+ */
+const EventDetailsModal = dynamic(loadEventDetails, {
+  ssr: false,
+  loading: () => (
+    <SheetContent
+      side="right"
+      aria-describedby={undefined}
+      className="w-full border-borderColor px-0 dark:border-darkBorder dark:bg-darkSecondaryBg sm:max-w-[720px]"
+    >
+      <SheetTitle className="sr-only">Event details</SheetTitle>
+      <div className="flex justify-center py-10">
+        <Loader2 className="size-6 animate-spin text-primary" />
+      </div>
+    </SheetContent>
+  ),
+});
+
+const warmEventDetails = () => {
+    importEventDetails().catch(() => {});
+};
 
 const providerChip = (provider: string | null | undefined) => {
     if (provider === "google_meet") {
@@ -47,16 +82,22 @@ const CalenderTable = ({
     endMonth,
     eventData,
 }: {
-    startMonth: string | number | string[] | undefined;
-    endMonth: string | number | string[] | undefined;
+    /** First day of the month on screen, `yyyy-MM-dd`. */
+    startMonth: string;
+    /** Last day of the month on screen, `yyyy-MM-dd`. */
+    endMonth: string;
     eventData: IEvent[];
 }) => {
+    // Every event's day and time is read in the layout's zone, not the
+    // helpers' store default: the grid is rendered on the server too, and
+    // both passes must put each event on the same day.
+    const timeZone = useViewerTimeZone();
     const [open, setOpen] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState<IEvent | null>(null);
 
     const days = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
 
-    const todayKey = useMemo(() => formatTZDate(new Date()), []);
+    const todayKey = useMemo(() => formatTZDate(new Date(), timeZone), [timeZone]);
 
     const metrics = useMemo(() => {
         const items = [...(eventData ?? [])].sort(
@@ -64,7 +105,7 @@ const CalenderTable = ({
                 new Date(a.start_time).getTime() - new Date(b.start_time).getTime(),
         );
         const daysWithEvents = new Set(
-            items.map((event) => formatTZDate(new Date(event.start_time))),
+            items.map((event) => formatTZDate(new Date(event.start_time), timeZone)),
         ).size;
         const totalAttendees = items.reduce(
             (sum, event) => sum + (event.eventAssigns?.length ?? 0),
@@ -82,11 +123,18 @@ const CalenderTable = ({
             daysWithEvents,
             nextEvent,
         };
-    }, [eventData]);
+    }, [eventData, timeZone]);
+
+    // Calendar dates, so parsed as local midnight: `new Date("yyyy-MM-dd")`
+    // is UTC midnight, which west of UTC is the previous evening — the grid
+    // then started a day early and treated the previous month as current.
+    const start = parse(startMonth, "yyyy-MM-dd", new Date());
+    const end = parse(endMonth, "yyyy-MM-dd", new Date());
+    // The bucket the server loaded `eventData` from; the drawer's sync poll
+    // must re-read the same one.
+    const pollMonth = { year: start.getFullYear(), month: start.getMonth() + 1 };
 
     const generateCalendar = () => {
-        const start = new Date(startMonth as string);
-        const end = new Date(endMonth as string);
         const firstDayOfMonth = start.getDay();
         const paddingDays = firstDayOfMonth === 0 ? 6 : firstDayOfMonth - 1;
 
@@ -97,11 +145,13 @@ const CalenderTable = ({
         for (let i = 0; i < 42; i++) {
             const currentDate = new Date(displayStart);
             currentDate.setDate(displayStart.getDate() + i);
-            const dateString = formatTZDate(currentDate);
+            // The cell IS a calendar date (local-midnight arithmetic above); only
+            // the events are instants that need the viewer's zone to find their day.
+            const dateString = format(currentDate, "yyyy-MM-dd");
 
             const dayEvents = (eventData ?? []).filter(
                 (event: IEvent) =>
-                    formatTZDate(new Date(event.start_time)) === dateString,
+                    formatTZDate(new Date(event.start_time), timeZone) === dateString,
             );
 
             calendarGrid.push({
@@ -129,8 +179,16 @@ const CalenderTable = ({
         setOpen(true);
     };
 
+    // Closing unmounts the drawer instead of leaving it mounted under the
+    // closed sheet, where its sync poll kept running for up to 90 seconds.
+    // Every open therefore starts fresh from the clicked event.
+    const handleOpenChange = (nextOpen: boolean) => {
+        setOpen(nextOpen);
+        if (!nextOpen) setSelectedEvent(null);
+    };
+
     const handleCloseDialog = () => {
-        setOpen(false);
+        handleOpenChange(false);
     };
 
     return (
@@ -200,8 +258,8 @@ const CalenderTable = ({
                                             {metrics.nextEvent.name}
                                         </p>
                                         <p className="mt-1 text-xs text-subTextColor dark:text-darkTextSecondary">
-                                            {formatTZFullDate(metrics.nextEvent.start_time)} at{" "}
-                                            {formatTZTime(metrics.nextEvent.start_time)}
+                                            {formatTZFullDate(metrics.nextEvent.start_time, timeZone)} at{" "}
+                                            {formatTZTime(metrics.nextEvent.start_time, timeZone)}
                                         </p>
                                     </>
                                 ) : (
@@ -215,11 +273,12 @@ const CalenderTable = ({
                 </div>
 
                 <div className="overflow-hidden rounded-lg border border-borderColor/80 bg-white dark:border-darkBorder dark:bg-darkSecondaryBg">
-                    <Sheet open={open} onOpenChange={setOpen}>
+                    <Sheet open={open} onOpenChange={handleOpenChange}>
                         {selectedEvent && (
                             <EventDetailsModal
                                 handleCloseDialog={handleCloseDialog}
                                 event={selectedEvent}
+                                pollMonth={pollMonth}
                             />
                         )}
                     </Sheet>
@@ -329,6 +388,8 @@ const CalenderTable = ({
                                                                                 onClick={() =>
                                                                                     handleEventClick(event)
                                                                                 }
+                                                                                onPointerEnter={warmEventDetails}
+                                                                                onFocus={warmEventDetails}
                                                                                 className={cn(
                                                                                     "w-full rounded-md border px-2.5 py-2 cursor-pointer text-left  transition hover:-translate-y-0.5 hover:shadow-md",
                                                                                     providerChip(
@@ -362,10 +423,12 @@ const CalenderTable = ({
                                                                                         <p className="mt-1 text-[10px] opacity-80 sm:text-[11px]">
                                                                                             {formatTZTime(
                                                                                                 event.start_time,
+                                                                                                timeZone,
                                                                                             )}{" "}
                                                                                             -{" "}
                                                                                             {formatTZTime(
                                                                                                 event.end_time,
+                                                                                                timeZone,
                                                                                             )}
                                                                                         </p>
                                                                                     </div>
@@ -382,14 +445,17 @@ const CalenderTable = ({
                                                                             <p className="mt-0.5 text-[11px] text-subTextColor dark:text-darkTextSecondary">
                                                                                 {formatTZFullDate(
                                                                                     event.start_time,
+                                                                                    timeZone,
                                                                                 )}{" "}
                                                                                 ·{" "}
                                                                                 {formatTZTime(
                                                                                     event.start_time,
+                                                                                    timeZone,
                                                                                 )}{" "}
                                                                                 -{" "}
                                                                                 {formatTZTime(
                                                                                     event.end_time,
+                                                                                    timeZone,
                                                                                 )}
                                                                             </p>
                                                                             <p className="mt-1 text-[11px] text-subTextColor dark:text-darkTextSecondary">
@@ -472,6 +538,8 @@ const CalenderTable = ({
                                                                             cell.events[3],
                                                                         )
                                                                     }
+                                                                    onPointerEnter={warmEventDetails}
+                                                                    onFocus={warmEventDetails}
                                                                     className="rounded-md border border-dashed border-borderColor px-3 py-2 text-left text-[11px] font-medium text-primary transition hover:border-primary/40 hover:bg-primary/5 dark:border-darkBorder"
                                                                 >
                                                                     View {cell.events.length - 3} more

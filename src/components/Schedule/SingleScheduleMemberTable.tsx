@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
@@ -16,6 +15,7 @@ import FilterButton from "../Common/FilterButton";
 import ConfirmDialog from "../Common/ConfirmDialog";
 import DeleteIcon from "../Icons/DeleteIcon";
 import { deleteMemberFromSchedule } from "@/actions/schedule/action";
+import { actionErrorMessage } from "@/lib/actionErrors";
 import { toast } from "sonner";
 
 const SingleScheduleMemberTable = ({ id, data }: { id: number | undefined, data: [{ user: User; }] | undefined }) => {
@@ -51,8 +51,8 @@ const SingleScheduleMemberTable = ({ id, data }: { id: number | undefined, data:
                     },
                 });
             }
-        } catch (error: any) {
-            toast.error(error?.message || "Something went wrong!", {
+        } catch (error) {
+            toast.error(actionErrorMessage(error, "Something went wrong!"), {
                 style: {
                     backgroundColor: '#ef4444',
                     color: 'white',

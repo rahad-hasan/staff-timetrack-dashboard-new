@@ -22,7 +22,7 @@ import {
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { GoogleConnectedResponse } from "@/types/type";
-import { useGoogleConnectFlow } from "../Integrations/useGoogleConnectFlow";
+import { useCalendarConnectFlow } from "../Integrations/useCalendarConnectFlow";
 import googleIcon from "../../assets/events/google_logo.svg";
 import { disconnectGoogle, getGoogleConnected } from "@/actions/integrations/action";
 import Image from "next/image";
@@ -66,9 +66,11 @@ const GoogleConnectButton = () => {
         refresh();
     }, []);
 
-    const { start: startConnect, busy: connectBusy } = useGoogleConnectFlow(
-        () => refresh(),
-    );
+    const {
+        start: startConnect,
+        reconnect: startReconnect,
+        busy: connectBusy,
+    } = useCalendarConnectFlow("google", () => refresh());
 
     const handleDisconnect = async () => {
         setBusy(true);
@@ -187,7 +189,9 @@ const GoogleConnectButton = () => {
                 <DropdownMenuItem
                     onSelect={(e) => {
                         e.preventDefault();
-                        startConnect();
+                        // already connected, so "connected" cannot be what
+                        // ends this sign-in — see useCalendarConnectFlow
+                        startReconnect();
                     }}
                     disabled={connectBusy}
                     className="cursor-pointer text-xs"

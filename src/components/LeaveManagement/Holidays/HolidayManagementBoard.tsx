@@ -1,6 +1,7 @@
 "use client";
 
-import { format } from "date-fns";
+import dynamic from "next/dynamic";
+import { loadOrReload } from "@/lib/lazyChunk";
 import { useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTopLoader } from "nextjs-toploader";
@@ -15,14 +16,24 @@ import {
 import { toast } from "sonner";
 import { deleteLeaveHoliday } from "@/actions/leaves/action";
 import { YearPicker } from "@/components/Common/YearPicker";
+import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
+import { todayIn } from "@/lib/timezone";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { IMeta, LeaveHoliday } from "@/types/type";
-import MandatoryLeaveImportDialog from "./MandatoryLeaveImportDialog";
 import HolidayFormDialog from "./HolidayFormDialog";
 import HolidayTable from "./HolidayTable";
 import AppPagination from "@/components/Common/AppPagination";
 import CalendarIcon from "@/components/Icons/CalendarIcon";
+
+// A thousand-line wizard that only renders after "Import" is clicked: its own
+// chunk, fetched on first open instead of with the page.
+const loadMandatoryLeaveImportDialog = loadOrReload(
+  () => import("./MandatoryLeaveImportDialog"),
+);
+const MandatoryLeaveImportDialog = dynamic(loadMandatoryLeaveImportDialog, {
+  ssr: false,
+});
 
 type HolidayManagementBoardProps = {
   holidays: LeaveHoliday[];
@@ -30,8 +41,8 @@ type HolidayManagementBoardProps = {
   meta: IMeta
 };
 
-function getStatusVariant(holiday: LeaveHoliday, selectedYear: string) {
-  const today = format(new Date(), "yyyy-MM-dd");
+/** `today` is the viewer's `yyyy-MM-dd` (holiday dates are calendar dates in that form). */
+function getStatusVariant(holiday: LeaveHoliday, selectedYear: string, today: string) {
   const holidayYear = holiday.date.slice(0, 4);
 
   if (holidayYear > today.slice(0, 4)) {
@@ -77,7 +88,14 @@ const HolidayManagementBoard = ({
   const searchParams = useSearchParams();
   const loader = useTopLoader();
 
-  const selectedYear = searchParams.get("year") || String(new Date().getFullYear());
+  // The viewer's today, not the runtime's: this board is server-rendered, and
+  // `new Date()` is the server's day in the HTML and the browser's after
+  // hydration, so the Upcoming/Past badges and counts disagreed (#418)
+  // whenever the two were on different dates. The server loads its default
+  // year from the same zone.
+  const today = todayIn(useViewerTimeZone());
+  const currentYear = today.slice(0, 4);
+  const selectedYear = searchParams.get("year") || currentYear;
   const [manualOpen, setManualOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
   const [formMode, setFormMode] = useState<"create" | "edit">("create");
@@ -126,9 +144,6 @@ const HolidayManagementBoard = ({
   );
 
   const upcomingCount = useMemo(() => {
-    const today = format(new Date(), "yyyy-MM-dd");
-    const currentYear = today.slice(0, 4);
-
     if (selectedYear > currentYear) {
       return sortedHolidays.length;
     }
@@ -138,7 +153,7 @@ const HolidayManagementBoard = ({
     }
 
     return sortedHolidays.filter((holiday) => holiday.date >= today).length;
-  }, [selectedYear, sortedHolidays]);
+  }, [currentYear, selectedYear, sortedHolidays, today]);
 
   const pushWithYear = (year: string) => {
     loader.start();
@@ -146,10 +161,6 @@ const HolidayManagementBoard = ({
     params.set("year", year);
     const query = params.toString();
     router.push(query ? `${pathname}?${query}` : pathname, { scroll: false });
-  };
-
-  const handleMutated = () => {
-    router.refresh();
   };
 
   const handleOpenCreate = () => {
@@ -178,9 +189,10 @@ const HolidayManagementBoard = ({
 
     const response = await deleteLeaveHoliday(holiday.id);
 
+    // No refresh after holiday writes: they revalidate, so the action's own
+    // response re-renders this page.
     if (response?.success) {
       toast.success(response.message || "Holiday deleted successfully.");
-      handleMutated();
       return;
     }
 
@@ -205,7 +217,7 @@ const HolidayManagementBoard = ({
       label: "Upcoming",
       value: upcomingCount,
       helper:
-        selectedYear === String(new Date().getFullYear())
+        selectedYear === currentYear
           ? "Still ahead this year"
           : "Relative to today",
       accent: "#7c3aed",
@@ -250,7 +262,6 @@ const HolidayManagementBoard = ({
               setFormMode("create");
               setEditingHoliday(null);
             }}
-            onSuccess={handleMutated}
           />
         ) : null}
       </Dialog>
@@ -260,7 +271,6 @@ const HolidayManagementBoard = ({
           <MandatoryLeaveImportDialog
             onOpenChange={setImportOpen}
             selectedYear={selectedYear}
-            onImported={handleMutated}
           />
         ) : null}
       </Dialog>
@@ -286,8 +296,8 @@ const HolidayManagementBoard = ({
               <YearPicker
                 value={selectedYear}
                 onYearChange={pushWithYear}
-                startYear={new Date().getFullYear() - 1}
-                endYear={new Date().getFullYear() + 2}
+                startYear={Number(currentYear) - 1}
+                endYear={Number(currentYear) + 2}
               />
               {canManageHolidays ? (
                 <>
@@ -367,7 +377,7 @@ const HolidayManagementBoard = ({
           canManageHolidays={canManageHolidays}
           handleOpenEdit={handleOpenEdit}
           handleDeleteHoliday={handleDeleteHoliday}
-          getStatusVariant={getStatusVariant}
+          getStatusVariant={(holiday, year) => getStatusVariant(holiday, year, today)}
           getSourceTone={getSourceTone}
         />
 

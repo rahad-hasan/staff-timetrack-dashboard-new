@@ -3,8 +3,10 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
 import { FOCUS_RING, SupportAlert, SupportButton, SupportDialog, UserAvatar } from "@/components/Support/primitives";
 import { supportApi, supportErrorMessage, type SupportFail } from "@/lib/support";
+import { formatClock } from "@/lib/supportFormat";
 import { feedbackSchema, SUPPORT_LIMITS } from "@/zod/supportSchema";
 import {
   FEEDBACK_HIGHLIGHT_LABELS,
@@ -43,9 +45,6 @@ export interface FeedbackDialogProps {
 const COMMENT_COUNTER_FROM = 1_600;
 /** setTimeout's ceiling (≈ 24.8 days); a longer Retry-After re-arms on the next refusal */
 const MAX_TIMER_MS = 2_147_483_647;
-
-/** "3:45 PM" — an absolute time stays true however long the popup stays open or is reopened later */
-const clockTime = (epochMs: number) => new Date(epochMs).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
 
 /**
  * "Rate your agent" (Flow 3; the admin's Requester-rating card is its
@@ -86,6 +85,7 @@ export const FeedbackDialog = ({
    * (step-9c review). Kept across reopenings of the popup; cleared by its own timer.
    */
   const [heldUntil, setHeldUntil] = useState<number | null>(null);
+  const timeZone = useViewerTimeZone();
   const [wasOpen, setWasOpen] = useState(open);
   const id = useId();
   const labelId = `${id}-label`;
@@ -336,7 +336,9 @@ export const FeedbackDialog = ({
         ) : null}
         {heldUntil !== null ? (
           <SupportAlert id={heldId} role="alert" tone="error" className="py-2 text-[13.5px]">
-            Too many attempts. You can send your rating again at {clockTime(heldUntil)}.
+            {/* an absolute time stays true however long the popup stays open or is reopened later;
+                the viewer's clock, as every time on the ticket page */}
+            Too many attempts. You can send your rating again at {formatClock(heldUntil, timeZone)}.
           </SupportAlert>
         ) : null}
       </form>

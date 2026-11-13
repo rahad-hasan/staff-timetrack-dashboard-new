@@ -24,7 +24,34 @@ import AddPaymentMethodForm, {
   type AddPaymentMethodFormState,
 } from "./AddPaymentMethodForm";
 import { PaymentMethodMark } from "./SavedCardVisual";
-import type { PaymentMethodsState } from "./usePaymentMethods";
+import type {
+  PaymentMethodMutationResult,
+  PaymentMethodsState,
+} from "./usePaymentMethods";
+
+/** The card is attached at Stripe, yet the subscription still renews on the old one. */
+const SAVED_NOT_PROMOTED =
+  "Your payment method was saved, but we could not make it the one your subscription renews on.";
+
+/**
+ * Says so where no drawer is left to: it was closed while `confirmSetup` or 3D
+ * Secure ran, or the page itself is leaving. Longer than the default four
+ * seconds: unlike every other toast here this one asks for something to be
+ * done later, and it is the admin's only notice that their renewal card did
+ * not move.
+ */
+function toastSavedNotPromoted(reason: string | null) {
+  toast.error(
+    [
+      SAVED_NOT_PROMOTED,
+      reason,
+      "Reopen Change Payment Method and select it to try again.",
+    ]
+      .filter(Boolean)
+      .join(" "),
+    { duration: 10_000 },
+  );
+}
 
 /**
  * "Change Payment Method" — the right-hand sheet behind the Change Card button.
@@ -268,7 +295,17 @@ export default function ChangePaymentMethodSheet({
       return;
     }
 
-    const promoted = await setDefault(paymentMethodId);
+    let promoted: PaymentMethodMutationResult;
+    try {
+      promoted = await setDefault(paymentMethodId);
+    } catch (error) {
+      // Only the router's own errors get here (`setDefault` passes them on): a
+      // session that expired mid-save is on its way to /session-expired. The
+      // page is leaving, drawer open or not, and the toast — rendered by the
+      // root layout, which that page shares — is the only notice left.
+      toastSavedNotPromoted(null);
+      throw error;
+    }
     // The card is attached either way, and only a re-read shows it in the list
     // below — including on the failure path, where the admin needs to see it
     // to retry.
@@ -295,23 +332,14 @@ export default function ChangePaymentMethodSheet({
      * is far too consequential to drop on the floor: their card is attached
      * and is NOT the one the subscription renews on.
      */
-    const detail = [
-      "Your payment method was saved, but we could not make it the one your subscription renews on.",
-      promoted.message,
-    ]
-      .filter(Boolean)
-      .join(" ");
-
     if (!openRef.current) {
-      toast.error(
-        `${detail} Reopen Change Payment Method and select it to try again.`,
-        // Longer than the default four seconds: unlike every other toast here
-        // this one asks for something to be done later, and it is the admin's
-        // only notice that their renewal card did not move.
-        { duration: 10_000 },
-      );
+      toastSavedNotPromoted(promoted.message);
       return;
     }
+
+    const detail = [SAVED_NOT_PROMOTED, promoted.message]
+      .filter(Boolean)
+      .join(" ");
 
     // Selected so the button retries the promotion ALONE — no second card, no
     // second SetupIntent — and remembered so that retry stays pressable while

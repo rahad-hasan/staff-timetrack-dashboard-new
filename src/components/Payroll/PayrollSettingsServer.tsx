@@ -3,8 +3,10 @@ import {
   listEligibleUsers,
   listPayrollProfiles,
 } from "@/actions/payroll/action";
+import { getCompanyInfo } from "@/actions/settings/action";
 import { ISearchParamsProps } from "@/types/type";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
+import { currencies } from "@/utils/CurrencyList";
 import { canManagePayroll } from "@/lib/payroll";
 import PayrollAccessDenied from "./PayrollAccessDenied";
 import PayrollSettingsBoard from "./PayrollSettingsBoard";
@@ -29,7 +31,7 @@ const PayrollSettingsServer = async ({ searchParams }: ISearchParamsProps) => {
   const tab = typeof params.tab === "string" ? params.tab : "all";
   const search = typeof params.search === "string" ? params.search.trim() : "";
 
-  const [profilesResponse, summaryResponse, eligibleResponse, rosterResponse] =
+  const [profilesResponse, summaryResponse, eligibleResponse, rosterResponse, companyResponse] =
     await Promise.all([
       listPayrollProfiles({
         page: currentPage,
@@ -50,7 +52,34 @@ const PayrollSettingsServer = async ({ searchParams }: ISearchParamsProps) => {
       // Roster for the "Add payroll profile" dialog: every active user still
       // without an active profile, independent of the tab's pagination.
       listEligibleUsers({ has_profile: false, limit: 200 }),
+      // The company's zone and currency, for the profile dialog. The layout
+      // issues this very GET: rendered together (a hard load, a refresh, a
+      // write's re-render) the two share one request; a navigation that
+      // renders only this page makes it once.
+      getCompanyInfo(),
     ]);
+
+  // Optional: without it the dialog falls back, so it is not among the reads
+  // whose failure fails the board.
+  const company = companyResponse?.success ? companyResponse.data : null;
+  // Only a currency the dialog's list offers: its select would show nothing
+  // for any other, and still send it.
+  const companyCurrency = company?.currency?.toUpperCase();
+  const defaultCurrency =
+    companyCurrency && currencies.some((item) => item.value === companyCurrency)
+      ? companyCurrency
+      : "USD";
+
+  // A failed read is not an empty workspace: the board shows an error that
+  // retries by itself instead of "No payroll profiles yet" and zero counts.
+  // Not thrown into an error boundary: that would replace the whole board,
+  // and with it a profile dialog someone is typing in.
+  const loadFailed = [
+    profilesResponse,
+    summaryResponse,
+    eligibleResponse,
+    rosterResponse,
+  ].some((response) => !response?.success);
 
   const profiles =
     profilesResponse?.success && Array.isArray(profilesResponse.data)
@@ -93,7 +122,12 @@ const PayrollSettingsServer = async ({ searchParams }: ISearchParamsProps) => {
       }
       tab={tab}
       search={search}
-      currency={currentUser?.email ? "USD" : "USD"}
+      // The dialog sends the currency it shows, which overrides the API's own
+      // default (the company's): a hardcoded "USD" put a USD profile on every
+      // employee of a company paying in another currency unless it was changed.
+      currency={defaultCurrency}
+      companyTimeZone={company?.time_zone || null}
+      loadFailed={loadFailed}
     />
   );
 };

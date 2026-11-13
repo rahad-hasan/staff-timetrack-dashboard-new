@@ -1,14 +1,12 @@
 "use client";
 import { deleteLeave } from "@/actions/leaves/action";
 import ConfirmDialog from "@/components/Common/ConfirmDialog";
-import EmptyTableRow from "@/components/Common/EmptyTableRow";
+import { EmptyState } from "@/components/Common/EmptyTableRow";
 import DeleteIcon from "@/components/Icons/DeleteIcon";
 import EyeIcon from "@/components/Icons/EyeIcon";
 import { Button } from "@/components/ui/button";
-import { getLeaveStatusTheme, getLeaveTypeTheme } from "@/lib/leave";
+import { getLeaveStatusTheme, getLeaveTypeTheme, formatLeaveDate } from "@/lib/leave";
 import { LeaveRecord, UserLeaveSummary } from "@/types/type";
-import { formatTZDayMonthYear } from "@/utils";
-import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
@@ -26,7 +24,6 @@ const LeaveHistoryTable = ({
   canManageUsers,
   setSelectedLeave,
 }: LeaveHistoryTableProps) => {
-  const router = useRouter();
 
   type HistoryTab = "pending" | "approved" | "rejected";
 
@@ -61,9 +58,10 @@ const LeaveHistoryTable = ({
     const handleDeleteRequest = async (leaveId: number) => {
       const response = await deleteLeave(leaveId);
 
+      // No refresh: the delete revalidates, so the action's own response
+      // re-renders the page without this request.
       if (response?.success) {
         toast.success(response.message || "Leave request deleted");
-        router.refresh();
         return;
       }
 
@@ -117,8 +115,8 @@ const LeaveHistoryTable = ({
               <div>
                 <p className="text-xs uppercase tracking-[0.14em]">Dates</p>
                 <p className="mt-1 font-medium text-headingTextColor dark:text-darkTextPrimary">
-                  {formatTZDayMonthYear(request.start_date)} to{" "}
-                  {formatTZDayMonthYear(request.end_date)}
+                  {formatLeaveDate(request.start_date)} to{" "}
+                  {formatLeaveDate(request.end_date)}
                 </p>
               </div>
               <div>
@@ -227,10 +225,9 @@ const LeaveHistoryTable = ({
           historyItems.map(renderRequestCard)
         ) : (
           <div className=" flex justify-center h-68">
-            <EmptyTableRow
-              columns={2}
+            <EmptyState
               text={`No ${activeTab} leave requests found for this year.`}
-            ></EmptyTableRow>
+            />
           </div>
         )}
       </div>

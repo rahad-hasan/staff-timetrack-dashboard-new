@@ -3,7 +3,7 @@ import BlockLogo from '../../../assets/activity/blockAppUrl.svg'
 import Image from "next/image";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Resolver, useForm } from "react-hook-form";
-import z from "zod";
+import { z } from "zod";
 import {
     Form,
     FormControl,

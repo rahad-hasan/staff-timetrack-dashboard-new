@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ArrowLeft, Clock, ExternalLink, Loader2, XCircle } from "lucide-react";
 
 import {
@@ -9,9 +10,11 @@ import {
   confirmSubscription,
   getBillingStatus,
 } from "@/actions/billing/action";
+import { checkBeforeRefresh } from "@/hooks/useLiveRefresh";
 import { BILLING_URL } from "@/lib/billing";
 import { storeVerifiedSubscriptionTransition } from "@/lib/verifiedSubscriptionTransition";
-import type { IBillingEntitlements } from "@/types/billing";
+import { useBillingStore } from "@/store/billingStore";
+import type { IBillingEntitlements, IBillingStatus } from "@/types/billing";
 import { Button } from "@/components/ui/button";
 import SuccessCelebration from "./SuccessCelebration";
 
@@ -125,6 +128,20 @@ const isPurchasedEntitlement = (
   entitlements?.has_billing_subscription === true;
 
 /**
+ * Hands a post-purchase billing/status snapshot to the billing store.
+ *
+ * This page has no store of its own to feed, but the store is module state
+ * that outlives it: a checkout started from the dashboard returns there with
+ * the store still holding the pre-purchase snapshot (the trial, the old plan),
+ * and BillingGate's trial banner and every plan surface read it until
+ * something re-fetches. Nothing on this standalone page reads the store or
+ * polls it, so a plain write cannot race an older in-flight read.
+ */
+const shareWithBillingStore = (status: IBillingStatus | null | undefined) => {
+  if (status) useBillingStore.setState({ status, loaded: true });
+};
+
+/**
  * Client for the standalone /billing/success page (rendered OUTSIDE the main
  * layout — no billing store here). Two entry shapes land here and exactly one
  * of them is present:
@@ -167,6 +184,7 @@ export default function CheckoutSuccessClient({
   // billing/status (the conversion detour's return trip, or a stray link), so
   // confirm is skipped and the wait is the short status-only budget.
   const hasReference = Boolean(sessionId || subscriptionId);
+  const router = useRouter();
 
   const [phase, setPhase] = useState<Phase>("verifying");
   const [planName, setPlanName] = useState<string | null>(null);
@@ -218,12 +236,38 @@ export default function CheckoutSuccessClient({
     // already reading, which is not worth a rare analytics event.
     let confirmRetriedAfterActive = false;
 
-    function finish(next: Phase) {
+    /**
+     * The purchase is committed, and everything this tab's router cached
+     * before it still shows the old plan: a dashboard layout the checkout
+     * page prefetched, with the trial banner or the block in it, which the
+     * celebration's exits would apply as it is; the pages Back restores. The
+     * confirm actions revalidate nothing (a re-render mid-payment is worse),
+     * so one refresh does it: it rebuilds the cache from this route alone and
+     * empties the prefetch cache. It renders this page only, which reads
+     * nothing from the API.
+     *
+     * Asked first: a refresh that cannot land makes Next reload the document,
+     * and the celebration with it.
+     */
+    function dropRouterCache() {
+      void checkBeforeRefresh().then((verdict) => {
+        if (verdict === "refresh") router.refresh();
+      });
+    }
+
+    /**
+     * `leavingDocument`: the caller navigates the document away at once (the
+     * conversion hand-off). Its full navigations empty the router cache by
+     * themselves, and a refresh still in flight when the document goes could
+     * fail into a navigation of its own, over the hand-off's.
+     */
+    function finish(next: Phase, leavingDocument = false) {
       if (finished) return;
       finished = true;
       clearInterval(timer);
       clearTimeout(deadlineTimer);
       setPhase(next);
+      if (next === "active" && !leavingDocument) dropRouterCache();
     }
 
     function fail(reason: FailureReason) {
@@ -254,6 +298,7 @@ export default function CheckoutSuccessClient({
       }
       try {
         const res = await getBillingStatus();
+        if (res?.success) shareWithBillingStore(res.data);
         if (!cancelled) setPlanName(res?.data?.entitlements?.plan_name ?? null);
       } catch {
         // Generic headline it is.
@@ -280,7 +325,7 @@ export default function CheckoutSuccessClient({
     function handOffForConversion(confirmed: unknown): boolean {
       if (finished || leavingRef.current) return false;
       if (!storeVerifiedSubscriptionTransition(confirmed)) return false;
-      finish("active");
+      finish("active", true);
       window.location.replace(CONVERSION_URL);
       return true;
     }
@@ -422,6 +467,7 @@ export default function CheckoutSuccessClient({
         if (res?.success) statusAnswered = true;
         const entitlements = res?.success ? res.data?.entitlements : null;
         if (isPurchasedEntitlement(entitlements)) {
+          shareWithBillingStore(res.data);
           activeObserved = true;
           observedPlanName = entitlements?.plan_name ?? null;
           // Session path with confirm still pending: paint the celebration now
@@ -470,7 +516,7 @@ export default function CheckoutSuccessClient({
       clearInterval(timer);
       clearTimeout(deadlineTimer);
     };
-  }, [sessionId, subscriptionId, hasReference]);
+  }, [sessionId, subscriptionId, hasReference, router]);
 
   if (phase === "active") {
     return (

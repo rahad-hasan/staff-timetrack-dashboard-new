@@ -19,9 +19,9 @@ import {
 } from "@/components/ui/multi-select";
 import { addEventMembersSchema } from "@/zod/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import z from "zod";
+import { z } from "zod";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { addEventMembers, getMembersEventDropdown } from "@/actions/calendarEvent/action";
@@ -38,7 +38,7 @@ const AddMembersModal = ({
     event: any;
 }) => {
     const [loading, setLoading] = useState(false);
-    const [members, setMembers] = useState<
+    const [eligibleMembers, setEligibleMembers] = useState<
         { id: number; name: string; image?: string | null }[]
     >([]);
     const [conflicts, setConflicts] = useState<string[]>([]);
@@ -48,24 +48,36 @@ const AddMembersModal = ({
         defaultValues: { members: [] },
     });
 
+    const eventId = event?.id;
+    // Fetched once per event, not per `event` object: while a sync is running
+    // the drawer's poll hands this component a new event every few seconds.
     useEffect(() => {
+        let current = true;
         const load = async () => {
             try {
                 const res = await getMembersEventDropdown();
-                if (res?.success) {
-                    const assigned = new Set(
-                        (event?.eventAssigns ?? []).map((a: any) => a?.user?.id),
-                    );
-                    setMembers(
-                        (res.data ?? []).filter((m: any) => !assigned.has(m.id)),
-                    );
+                if (current && res?.success) {
+                    setEligibleMembers(res.data ?? []);
                 }
             } catch (err) {
                 console.error("Failed to fetch members", err);
             }
         };
         load();
-    }, [event]);
+        return () => {
+            current = false;
+        };
+    }, [eventId]);
+
+    // Filtered on render, so attendees the poll reports as newly assigned
+    // drop out of the options without another request.
+    const eventAssigns = event?.eventAssigns;
+    const members = useMemo(() => {
+        const assigned = new Set(
+            (eventAssigns ?? []).map((a: any) => a?.user?.id),
+        );
+        return eligibleMembers.filter((m) => !assigned.has(m.id));
+    }, [eligibleMembers, eventAssigns]);
 
     const submitWith = async (values: FormValues, force: boolean) => {
         const res = await addEventMembers({

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Fragment, useState } from "react";
-import { format, parseISO } from "date-fns";
+import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
 import {
   AlertTriangle,
   BadgeCheck,
@@ -47,8 +47,11 @@ import {
   formatPayrollMoney,
   formatPayrollPeriod,
   isRunLocked,
+  payPeriodRange,
   splitAdjustments,
 } from "@/lib/payroll";
+import { actionErrorMessage } from "@/lib/actionErrors";
+import { formatInstant } from "@/lib/timezone";
 import { EmployeePayroll, PayrollRun } from "@/types/payroll";
 import { IMeta } from "@/types/type";
 import PayrollAdjustmentsDialog from "./PayrollAdjustmentsDialog";
@@ -70,14 +73,14 @@ interface PayrollRunDetailViewProps {
 /** Keep in step with the <TableHead> count below. */
 const RUN_TABLE_COL_SPAN = 14;
 
-const tryDate = (value?: string | null) => {
-  if (!value) return null;
-  try {
-    return format(parseISO(value), "MMM d, yyyy h:mm a");
-  } catch {
-    return value;
-  }
-};
+/**
+ * A run's instant (its approval) in the viewer's zone. Formatting it in the
+ * runtime's own zone printed the server's clock during the server render and
+ * the browser's after hydration (#418 whenever they differ). The period is a
+ * calendar month, not a pair of instants: payPeriodRange.
+ */
+const formatRunInstant = (value: string | null | undefined, timeZone: string) =>
+  formatInstant(value, timeZone, "MMM d, yyyy h:mm a");
 
 const PayrollRunDetailView = ({
   run,
@@ -89,6 +92,7 @@ const PayrollRunDetailView = ({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const timeZone = useViewerTimeZone();
 
   const [searchDraft, setSearchDraft] = useState(initialSearch);
   const [approveOpen, setApproveOpen] = useState(false);
@@ -120,18 +124,26 @@ const PayrollRunDetailView = ({
 
   const handleApprove = async () => {
     setApproving(true);
-    const response = await approvePayrollRun(run.id, {
-      notes: approveNotes.trim() ? approveNotes.trim() : undefined,
-    });
-    if (response?.success) {
-      toast.success(response.message ?? "Payroll run approved.");
-      setApproveOpen(false);
-      setApproveNotes("");
-      router.refresh();
-    } else {
-      toast.error(response?.message ?? "Failed to approve the run.");
+    try {
+      const response = await approvePayrollRun(run.id, {
+        notes: approveNotes.trim() ? approveNotes.trim() : undefined,
+      });
+      // No refresh: the approval revalidates, so the action's own response
+      // re-renders the run as approved.
+      if (response?.success) {
+        toast.success(response.message ?? "Payroll run approved.");
+        setApproveOpen(false);
+        setApproveNotes("");
+      } else {
+        toast.error(response?.message ?? "Failed to approve the run.");
+      }
+    } catch (error) {
+      // The action call itself failed: uncaught, `approving` never fell and
+      // the dialog could not be closed.
+      toast.error(actionErrorMessage(error, "Failed to approve the run."));
+    } finally {
+      setApproving(false);
     }
-    setApproving(false);
   };
 
   const handleExport = async () => {
@@ -142,7 +154,7 @@ const PayrollRunDetailView = ({
 
   const handleDownloadPdf = async () => {
     setDownloadingPdf(true);
-    await downloadPayrollPdf(run.id);
+    await downloadPayrollPdf(run.id, timeZone);
     setDownloadingPdf(false);
   };
 
@@ -173,12 +185,12 @@ const PayrollRunDetailView = ({
             <PayrollRunStatusBadge status={run.status} />
             <div className="flex items-center gap-2 text-sm text-subTextColor dark:text-darkTextSecondary">
               <CalendarDays className="size-4" />
-              {tryDate(run.period_start)} → {tryDate(run.period_end)}
+              {payPeriodRange(run.month, run.year)}
             </div>
             {run.approved_at ? (
               <div className="flex items-center gap-2 text-sm text-emerald-700 dark:text-emerald-300">
                 <BadgeCheck className="size-4" />
-                Approved {tryDate(run.approved_at)}
+                Approved {formatRunInstant(run.approved_at, timeZone)}
                 {run.approvedBy ? ` by ${run.approvedBy.name}` : ""}
               </div>
             ) : null}
@@ -553,7 +565,6 @@ const PayrollRunDetailView = ({
         }}
         runId={run.id}
         item={adjustTarget}
-        onSaved={() => router.refresh()}
         onRunStale={() => {
           setAdjustTarget(null);
           router.refresh();

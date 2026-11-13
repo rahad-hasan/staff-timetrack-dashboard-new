@@ -4,44 +4,13 @@
 import { baseApi } from "../baseApi";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
 import { verifiedTrialConversionId } from "@/lib/verifiedTrialResponse";
-import {
-  clearSessionCookies,
-  hasSessionTokens,
-  writeSessionCookies,
-} from "@/lib/sessionCookies";
-
-/**
- * `POST /auth/create-account` — saves a PendingUser and emails a 6-digit code.
- *
- * The keys must be exactly `name`, `email`, `password`: the backend's
- * `createAccountSchema` is `.strict()`, so anything else (this used to send
- * `full_name` / `work_email`) fails validation with "Name is required" even
- * when the form is filled in.
- */
-export const createAccount = async (data: {
-  name: string;
-  email: string;
-  password: string;
-}) => {
-  return await baseApi("/auth/create-account", {
-    method: "POST",
-    body: data,
-    cache: "no-cache",
-  });
-};
-
-// export const logIn = async (data: any) => {
-//   return await baseApi("/auth/signin", {
-//     method: "POST",
-//     body: data,
-//   });
-// };
+import { startSession, writeSessionCookies } from "@/lib/sessionCookies";
+import { withoutSessionTokens } from "@/lib/authSession";
 
 export const logIn = async (data: any) => {
   const res = await baseApi("/auth/signin", {
     method: "POST",
     body: data,
-    cache: "no-cache", // login should not be cached
   });
 
   if (res?.success) {
@@ -49,24 +18,13 @@ export const logIn = async (data: any) => {
     // successfully but with null tokens and a `/create-organization` redirect.
     // Persisting those would satisfy `middleware.ts` while every API call came
     // back 401 — which is how this case used to land on /session-expired.
-    if (hasSessionTokens(res.data)) {
-      await writeSessionCookies(
-        {
-          accessToken: res.data.accessToken,
-          refreshToken: res.data.refreshToken,
-          timeZone: res.data.time_zone,
-        },
-        {
-          id: res.data.id,
-          email: res.data.email,
-          role: res.data.role,
-        },
-      );
-    } else {
-      // Drop anything left over from an earlier session so the onboarding
-      // dialog is the only way forward.
-      await clearSessionCookies();
-    }
+    // `startSession` writes nothing for it and drops whatever an earlier
+    // session left behind, so the onboarding page is the only way forward.
+    const hasSession = await startSession(res.data);
+
+    // The tokens are for the httpOnly cookies only. The client is told which
+    // of the two answers this was instead of reading it off them.
+    return { ...res, data: { ...withoutSessionTokens(res.data), hasSession } };
   }
 
   return res;
@@ -89,9 +47,7 @@ export const getMyProfile = async () => {
     return { success: false, message: "No active session" };
   }
 
-  return await baseApi(`/auth/employees/${user.id}`, {
-    cache: "no-cache",
-  });
+  return await baseApi(`/auth/employees/${user.id}`);
 };
 
 export const uploadProfileImage = async ({ data }: {
@@ -103,7 +59,6 @@ export const uploadProfileImage = async ({ data }: {
     method: "PATCH",
     body: data,
     tag: "profile",
-    cache: "no-cache"
   });
 };
 
@@ -114,12 +69,22 @@ export const uploadProfileInfo = async ({ data }: {
     time_zone: string;
   }
 }) => {
-  return await baseApi(`/auth/update-profile`, {
+  const res = await baseApi(`/auth/update-profile`, {
     method: "PATCH",
     body: data,
     tag: "profile",
-    cache: "no-cache"
   });
+
+  if (res?.success) {
+    // The `timeZone` cookie is the server's fallback zone (`getViewerTimeZone`,
+    // the screenshot buckets). Written only at sign-in, it kept the old zone
+    // for up to 30 days after the user changed theirs here.
+    await writeSessionCookies({
+      timeZone: res.data?.time_zone ?? data.time_zone,
+    });
+  }
+
+  return res;
 };
 
 export const changePassword = async ({
@@ -134,19 +99,17 @@ export const changePassword = async ({
     method: "PATCH",
     body: data,
     tag: "profile",
-    cache: "no-cache",
   });
 
   if (res?.success) {
     await writeSessionCookies({ accessToken: res.data.accessToken });
+
+    // The rotated token goes to the cookie, not to the page.
+    return { ...res, data: withoutSessionTokens(res.data) };
   }
 
   return res;
 };
-
-export async function clearSessionCookie() {
-  await clearSessionCookies();
-}
 
 export const forgetPassword = async ({ data }: {
   data: {
@@ -156,7 +119,6 @@ export const forgetPassword = async ({ data }: {
   return await baseApi(`/auth/forget-password`, {
     method: "POST",
     body: data,
-    cache: "no-cache",
   });
 };
 
@@ -169,12 +131,20 @@ export const verifyOtp = async ({ data }: {
   const res = await baseApi(`/auth/verify-otp`, {
     method: "POST",
     body: data,
-    cache: "no-cache",
   });
   const conversionId = verifiedTrialConversionId(res);
-  return conversionId
-    ? { ...res, data: { ...res.data, signup_conversion_id: conversionId } }
-    : res;
+
+  if (!res?.success) return res;
+
+  // A sign-up verification answers with an access token signed for the
+  // PendingUser. Nothing in the browser uses it (the conversion id above is
+  // derived from it here), so it stays on the server. The `reset_token` of a
+  // forgot-password verification is kept: the next screen sends it back.
+  const safe = withoutSessionTokens(res.data);
+  return {
+    ...res,
+    data: conversionId ? { ...safe, signup_conversion_id: conversionId } : safe,
+  };
 };
 
 /**
@@ -192,7 +162,6 @@ export const resetOtp = async ({ data }: {
   return await baseApi(`/auth/resend-otp`, {
     method: "POST",
     body: data,
-    cache: "no-cache",
   });
 };
 
@@ -202,22 +171,18 @@ export const resetPassword = async ({ data }: {
     password: string,
   }
 }) => {
-  // return await baseApi(`/auth/reset-password`, {
-  //   method: "POST",
-  //   body: data,
-  // });
   const res = await baseApi("/auth/reset-password", {
     method: "POST",
     body: data,
-    cache: "no-cache",
   });
 
   if (res?.success) {
-    await writeSessionCookies({
-      accessToken: res.data.accessToken,
-      refreshToken: res.data.refreshToken,
-      timeZone: res.data.time_zone,
-    });
+    // Signs the user straight in, exactly like `logIn`: the identity cookies
+    // go with the tokens. Without them every server-side role gate read an
+    // undefined role (or a previous session's) until the next sign-in.
+    const hasSession = await startSession(res.data);
+
+    return { ...res, data: { ...withoutSessionTokens(res.data), hasSession } };
   }
 
   return res;

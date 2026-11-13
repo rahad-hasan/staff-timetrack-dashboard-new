@@ -1,12 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { formatTZDayMonthYear } from "@/utils";
-import { getLeaveStatusTheme, getLeaveTypeTheme } from "@/lib/leave";
+import { getLeaveStatusTheme, getLeaveTypeTheme, formatLeaveDate } from "@/lib/leave";
 import { LeaveRecord } from "@/types/type";
 import LeaveRequestDetailsSheet from "./LeaveRequestDetailsSheet";
 import LeaveRequestHeroCart from "./LeaveRequestHeroCart";
@@ -29,7 +27,6 @@ const LeaveRequestTable = ({
   users = [],
   total,
 }: LeaveRequestTableProps) => {
-  const router = useRouter();
   const [selectedLeave, setSelectedLeave] = useState<LeaveRecord | null>(null);
   useEffect(() => {
     setSelectedLeave(null);
@@ -43,7 +40,6 @@ const LeaveRequestTable = ({
         open={Boolean(selectedLeave)}
         canManageUsers={canManageUsers}
         canTakeAction={canTakeAction}
-        onMutated={() => router.refresh()}
         onOpenChange={(open) => {
           if (!open) {
             setSelectedLeave(null);
@@ -125,8 +121,8 @@ const LeaveRequestTable = ({
                         {leave.leaveType?.title}
                       </div>
                     </TableCell>
-                    <TableCell>{formatTZDayMonthYear(leave.start_date)}</TableCell>
-                    <TableCell>{formatTZDayMonthYear(leave.end_date)}</TableCell>
+                    <TableCell>{formatLeaveDate(leave.start_date)}</TableCell>
+                    <TableCell>{formatLeaveDate(leave.end_date)}</TableCell>
                     <TableCell>{leave.leave_count}</TableCell>
                     <TableCell>{leave.approved_hours_formatted}</TableCell>
                     <TableCell>

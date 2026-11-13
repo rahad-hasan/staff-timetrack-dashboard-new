@@ -10,7 +10,7 @@ import {
 import { addNewEventSchema } from "@/zod/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import z from "zod";
+import { z } from "zod";
 import {
   Form,
   FormControl,
@@ -50,29 +50,25 @@ import {
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { addEvent, getMembersEventDropdown } from "@/actions/calendarEvent/action";
+import { actionErrorMessage } from "@/lib/actionErrors";
 import {
   getGoogleConnected,
   getMicrosoftConnected,
 } from "@/actions/integrations/action";
 import ClockIcon from "../Icons/ClockIcon";
 import { cn } from "@/lib/utils";
-import { useGoogleConnectFlow } from "../Integrations/useGoogleConnectFlow";
-import { useMicrosoftConnectFlow } from "../Integrations/useMicrosoftConnectFlow";
+import { parseISO } from "date-fns";
+import { pickerDateTimeToInstant, todayIn } from "@/lib/timezone";
+import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
+import { useCalendarConnectFlow } from "../Integrations/useCalendarConnectFlow";
 import RichTextEditor from "../Common/RichTextEditor";
 import { isConflictResponse, parseConflictMessage } from "./eventHelpers";
 import Image from "next/image";
 import googleMeetIcon from '../../assets/events/google_meet.svg'
-import microsoftTeamsIcon from '../../assets/events/microsoft-teams.svg'
+import microsoftTeamsIcon from './assets/microsoft-teams.png'
 
 type FormInput = z.input<typeof addNewEventSchema>;
 type FormValues = z.output<typeof addNewEventSchema>;
-
-const buildIsoFromDateAndTime = (date: Date, time: string) => {
-  const [h, m, s] = time.split(":").map((v) => Number(v) || 0);
-  const dt = new Date(date);
-  dt.setHours(h, m, s ?? 0, 0);
-  return dt;
-};
 
 const formatDuration = (start: string, end: string) => {
   const [startHours = 0, startMinutes = 0] = start
@@ -132,6 +128,10 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
   const loadingStepTimersRef = useRef<ReturnType<typeof window.setTimeout>[]>(
     [],
   );
+  // The picked date and times are the viewer's wall clock, the one the
+  // calendar shows events in — not the browser's.
+  const timeZone = useViewerTimeZone();
+  const viewerToday = parseISO(todayIn(timeZone));
 
   const form = useForm<FormInput, any, FormValues>({
     resolver: zodResolver(addNewEventSchema),
@@ -170,12 +170,13 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
     }
   };
 
-  const { start: startGoogleConnect, busy: connectBusy } = useGoogleConnectFlow(
+  const { start: startGoogleConnect, busy: connectBusy } = useCalendarConnectFlow(
+    "google",
     () => refreshGoogleConnected(),
   );
 
   const { start: startMicrosoftConnect, busy: microsoftConnectBusy } =
-    useMicrosoftConnectFlow(() => refreshMicrosoftConnected());
+    useCalendarConnectFlow("microsoft", () => refreshMicrosoftConnected());
 
   useEffect(() => {
     const loadMembers = async () => {
@@ -246,8 +247,8 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
     values: FormValues,
     force: boolean,
   ): Promise<{ ok: boolean; res: any }> => {
-    const startDt = buildIsoFromDateAndTime(values.date, values.start_time);
-    const endDt = buildIsoFromDateAndTime(values.date, values.end_time);
+    const startDt = pickerDateTimeToInstant(values.date, values.start_time, timeZone);
+    const endDt = pickerDateTimeToInstant(values.date, values.end_time, timeZone);
 
     const memberIds = values.members.includes("all")
       ? "all"
@@ -310,9 +311,9 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
       toast.error(res?.message || "Failed to create event", {
         style: { backgroundColor: "#ef4444", color: "white", border: "none" },
       });
-    } catch (error: any) {
+    } catch (error) {
       stopLoadingProgress();
-      toast.error(error?.message || "Something went wrong!", {
+      toast.error(actionErrorMessage(error, "Something went wrong!"), {
         style: { backgroundColor: "#ef4444", color: "white", border: "none" },
       });
     } finally {
@@ -343,9 +344,9 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
       toast.error(res?.message || "Failed to create event", {
         style: { backgroundColor: "#ef4444", color: "white", border: "none" },
       });
-    } catch (error: any) {
+    } catch (error) {
       stopLoadingProgress();
-      toast.error(error?.message || "Something went wrong!", {
+      toast.error(actionErrorMessage(error, "Something went wrong!"), {
         style: { backgroundColor: "#ef4444", color: "white", border: "none" },
       });
     } finally {
@@ -496,11 +497,11 @@ const AddEventModal = ({ onClose }: { onClose: () => void }) => {
                                 mode="single"
                                 selected={field.value}
                                 captionLayout="dropdown"
-                                disabled={(d) => {
-                                  const today = new Date();
-                                  today.setHours(0, 0, 0, 0);
-                                  return d < today;
-                                }}
+                                // The picked day is a viewer-calendar day:
+                                // today and the days before it are the
+                                // viewer's, not the browser's.
+                                today={viewerToday}
+                                disabled={(d) => d < viewerToday}
                                 onSelect={(date) => {
                                   field.onChange(date);
                                   setOpenStartDate(false);

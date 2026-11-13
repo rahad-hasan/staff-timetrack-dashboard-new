@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { generalInfoSchema } from "@/zod/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import z from "zod";
+import { z } from "zod";
 import {
     Form,
     FormControl,
@@ -33,18 +33,21 @@ import { Calendar } from "@/components/ui/calendar";
 import { MultiSelect, MultiSelectContent, MultiSelectGroup, MultiSelectItem, MultiSelectTrigger, MultiSelectValue } from "@/components/ui/multi-select";
 import { useProjectFormStore } from "@/store/ProjectFormStore";
 import { getClients } from "@/actions/clients/action";
-import { getMembersDashboard } from "@/actions/members/action";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { IProject } from "@/types/type";
+import type { DashboardMember } from "@/hooks/useDashboardMembers";
+import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
+import { instantToPickerDate } from "@/lib/timezone";
 
 interface GeneralInfoStepProps {
     setStep: (step: number) => void;
     selectedProject: IProject;
+    /** Active members, loaded once by the wizard. */
+    members: DashboardMember[];
 }
 
-const EditGeneralInfoStep = ({ setStep, selectedProject }: GeneralInfoStepProps) => {
+const EditGeneralInfoStep = ({ setStep, selectedProject, members }: GeneralInfoStepProps) => {
     const [clients, setClients] = useState<{ id: number; name: string }[]>([]);
-    const [members, setMembers] = useState<{ id: number; name: string; image?: string }[]>([]);
 
 
     useEffect(() => {
@@ -61,22 +64,6 @@ const EditGeneralInfoStep = ({ setStep, selectedProject }: GeneralInfoStepProps)
         };
 
         loadClients();
-    }, []);
-
-    useEffect(() => {
-        const loadMembers = async () => {
-
-            try {
-                const res = await getMembersDashboard();
-                if (res?.success) {
-                    setMembers(res.data);
-                }
-            } catch (err) {
-                console.error("Failed to fetch clients", err);
-            }
-        };
-
-        loadMembers();
     }, []);
 
     const data = useProjectFormStore(state => state.data);
@@ -99,14 +86,19 @@ const EditGeneralInfoStep = ({ setStep, selectedProject }: GeneralInfoStepProps)
         c.name.toLowerCase().includes(clientSearch.toLowerCase())
     );
 
+    // start_date / deadline are instants. The project's own values are shown
+    // and picked on the viewer's calendar, the day the project tables show;
+    // EditBudgetAndHoursStep turns them back with pickerDateToInstant. Values
+    // already in the store came from this step, so they are picker dates.
+    const timeZone = useViewerTimeZone();
     const [openStartDate, setOpenStartDate] = useState(false);
     const [dateStartDate, setStartDate] = useState<Date | undefined>(
-        data.startDate ? new Date(data.startDate) : selectedProject?.start_date ? new Date(selectedProject?.start_date) : undefined
+        data.startDate ? new Date(data.startDate) : instantToPickerDate(selectedProject?.start_date, timeZone)
     );
 
     const [openDeadLine, setDeadLineOpen] = useState(false);
     const [dateDeadLine, setDeadLineDate] = useState<Date | undefined>(
-        data.deadline ? new Date(data.deadline) : selectedProject?.deadline ? new Date(selectedProject?.deadline) : undefined
+        data.deadline ? new Date(data.deadline) : instantToPickerDate(selectedProject?.deadline, timeZone)
     );
 
     const form = useForm<z.infer<typeof generalInfoSchema>>({
@@ -116,8 +108,8 @@ const EditGeneralInfoStep = ({ setStep, selectedProject }: GeneralInfoStepProps)
             client: data.client ? data.client : selectedProject?.client_id,
             members: data.members ? data.members : selectedProject?.projectAssigns?.map(p => ({ id: p?.user?.id, name: p?.user?.name })),
             description: data.description ? data?.description : selectedProject?.description,
-            startDate: data.startDate ? data.startDate : selectedProject?.start_date ? new Date(selectedProject?.start_date) : null,
-            deadline: data.deadline ? data.deadline : selectedProject?.deadline ? new Date(selectedProject?.deadline) : null,
+            startDate: data.startDate ? data.startDate : instantToPickerDate(selectedProject?.start_date, timeZone) ?? null,
+            deadline: data.deadline ? data.deadline : instantToPickerDate(selectedProject?.deadline, timeZone) ?? null,
             // phone: data.phone ?? "",
         },
     })

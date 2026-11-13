@@ -1,6 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useRef } from "react";
+import {
+  isOtherAccount,
+  isSameAccount,
+  reloadIfAccountSwitched,
+} from "@/lib/clientSession";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import { isRenderableImageSrc } from "@/utils/imageSrc";
 import { refreshProfileImage } from "@/utils/profileImageRefresh";
@@ -37,16 +42,34 @@ export const useProfileImage = () => {
 
   const sync = useCallback(
     async ({ force = false }: { force?: boolean } = {}) => {
+      // The account this read is for: its answer may land on that one only.
+      const accountId = useLogInUserStore.getState().logInUserData?.id;
       const result = await refreshProfileImage({ force });
 
       if (result.status !== "ok") return false;
 
+      // While the read was out, this tab may have been handed to another
+      // account: reloading into it (or starting to, when storage names one
+      // this store never saw), its store reset or replaced in place — or the
+      // server answered for whoever holds the session cookie now. Merging
+      // then would put one account's photo and phone on another's identity,
+      // and persist it.
+      if (
+        reloadIfAccountSwitched() ||
+        !isSameAccount(useLogInUserStore.getState().logInUserData?.id, accountId) ||
+        isOtherAccount(result.userId, accountId)
+      ) {
+        return false;
+      }
+
       // Stamp the sync time even when the user has no photo, otherwise the
       // "needs syncing" check below stays true forever and re-reads on every
-      // mount.
+      // mount. The phone comes from the same read: nothing else refreshes it,
+      // and a stale one in the store is written back by the profile form.
       updateUserData({
         image: result.image,
         imageSyncedAt: Date.now(),
+        ...(result.phone !== undefined ? { phone: result.phone } : {}),
       });
 
       return true;

@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { AlertTriangle, ExternalLink } from "lucide-react";
 import { BILLING_URL } from "@/lib/billing";
 import { useBillingStore } from "@/store/billingStore";
+import type { IBillingStatus } from "@/types/billing";
 import { Button } from "@/components/ui/button";
 
 /**
@@ -13,22 +14,38 @@ import { Button } from "@/components/ui/button";
  * every page while status is past_due / payment_failed. Polls billing/status
  * every 5s while mounted; when `blocked` flips back to false (webhook after
  * the invoice is paid) it toasts "Payment received — access restored."
+ *
+ * Renders the status BillingGate decided on (the store's, else the layout's
+ * server snapshot), not the store directly: the store is still empty in the
+ * server and hydration renders, which painted the generic message without the
+ * "Pay now" button until the snapshot reached the store.
  */
-export default function PaymentFailureBanner() {
-  const status = useBillingStore((s) => s.status);
+export default function PaymentFailureBanner({
+  status,
+}: {
+  status: IBillingStatus | null;
+}) {
   const startPolling = useBillingStore((s) => s.startPolling);
-  const stopPolling = useBillingStore((s) => s.stopPolling);
 
-  const prevBlockedRef = useRef<boolean>(
-    useBillingStore.getState().status?.blocked ?? false,
-  );
+  // From the status on screen: on a fresh load the store is still empty here
+  // (the snapshot reaches it after this mount), and a first poll that already
+  // found the invoice paid then passed without the recovery toast.
+  const prevBlockedRef = useRef<boolean>(status?.blocked ?? false);
 
   useEffect(() => {
-    startPolling(5000);
+    const releasePoll = startPolling(5000);
     // Store-level subscription so the recovery toast fires even if the banner
     // is unmounted in the same commit the status flips.
     const unsubscribe = useBillingStore.subscribe((state) => {
-      const blocked = state.status?.blocked ?? false;
+      // No status means the store was reset (sign-out, or another account
+      // signing in under this open tab), not that anything was paid. That
+      // reset can land while this banner is still subscribed, before its
+      // cleanup runs, so it must not read as "unblocked".
+      if (!state.status) {
+        prevBlockedRef.current = false;
+        return;
+      }
+      const blocked = state.status.blocked ?? false;
       if (prevBlockedRef.current && !blocked) {
         toast.success("Payment received — access restored.");
       }
@@ -36,9 +53,9 @@ export default function PaymentFailureBanner() {
     });
     return () => {
       unsubscribe();
-      stopPolling();
+      releasePoll();
     };
-  }, [startPolling, stopPolling]);
+  }, [startPolling]);
 
   const message = status?.block?.message || "Your last payment failed.";
   const invoiceUrl = status?.latest_unpaid_invoice?.hosted_invoice_url ?? null;

@@ -11,6 +11,7 @@ import SingleProjectTask from "./SingleProjectTask";
 import { Dialog } from "@/components/ui/dialog";
 import EditProjectModal from "@/components/ProjectManagement/Projects/EditProjectModal";
 import { formatTZDateDMY } from "@/utils";
+import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import { useProjectFormStore } from "@/store/ProjectFormStore";
 import AppPagination from "@/components/Common/AppPagination";
@@ -19,6 +20,9 @@ import SearchBar from "@/components/Common/SearchBar";
 import EditIcon from "@/components/Icons/FilterOptionIcon/EditIcon";
 
 const SingleProject = ({ data, task, page }: { data: ISingleProjectData, task: any, page: string | number | string[] | undefined }) => {
+    // The layout's zone, not the helpers' store default: this renders on the
+    // server too, and both passes must print the same day.
+    const timeZone = useViewerTimeZone();
     const logInUserData = useLogInUserStore(state => state.logInUserData);
     const [activeTab, setActiveTab] = useState<"Members" | "Tasks">("Members");
     const [searchTerm, setSearchTerm] = useState("");
@@ -91,9 +95,9 @@ const SingleProject = ({ data, task, page }: { data: ISingleProjectData, task: a
                             <tr className="">
                                 <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary">{data?.client?.name}</td>
                                 <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary">{data?.client?.phone}</td>
-                                <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary">{data?.start_date ? formatTZDateDMY(data.start_date) : "N/A"}</td>
+                                <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary">{data?.start_date ? formatTZDateDMY(data.start_date, timeZone) : "N/A"}</td>
 
-                                <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary">{data?.deadline ? formatTZDateDMY(data?.deadline) : "N/A"}</td>
+                                <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary">{data?.deadline ? formatTZDateDMY(data?.deadline, timeZone) : "N/A"}</td>
                                 <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary">${data?.budget}</td>
                                 <td className="py-0.5 whitespace-nowrap text-subTextColor dark:text-darkTextSecondary">${data?.summary?.spend}</td>
                             </tr>

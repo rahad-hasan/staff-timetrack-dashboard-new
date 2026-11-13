@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { Button } from "@/components/ui/button";
@@ -10,7 +9,7 @@ import {
 import { newTaskCreationSchema } from "@/zod/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import z from "zod";
+import { z } from "zod";
 import {
     Form,
     FormControl,
@@ -37,12 +36,15 @@ import { ChevronDownIcon, Search } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getMembersDashboard } from "@/actions/members/action";
+import { useDashboardMembers } from "@/hooks/useDashboardMembers";
 import { useDebounce } from "@/hooks/use-debounce";
 import { getProjects } from "@/actions/projects/action";
 import { editTask } from "@/actions/task/action";
+import { actionErrorMessage } from "@/lib/actionErrors";
 import { toast } from "sonner";
 import { ITask } from "@/types/type";
+import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
+import { instantToPickerDate, pickerDateToInstant } from "@/lib/timezone";
 type ProjectOption = {
     value: string;
     label: string;
@@ -51,16 +53,14 @@ type ProjectOption = {
 const EditTaskModal = ({ handleCloseDialog, selectedProject }: { handleCloseDialog: () => void; selectedProject: ITask }) => {
     const [loading, setLoading] = useState(false);
     const [taskLoading, setTaskLoading] = useState(false);
-    const [members, setMembers] = useState<{ id: number; name: string; image?: string }[]>([{ id: selectedProject.user.id, name: selectedProject.user.name, image: selectedProject.user.image ?? "" }]);
     const [projects, setProjects] = useState<ProjectOption[]>([{ value: String(selectedProject.project.id), label: selectedProject.project.name, avatar: '' }]);
     const [memberSearch, setMemberSearch] = useState("");
     const [searchInput, setSearchInput] = useState("");
-    const filteredMembers = useMemo(
-        () => members.filter(m => m.name.toLowerCase().includes(memberSearch.toLowerCase())),
-        [members, memberSearch]
-    );
     const [openStartDate, setOpenStartDate] = useState(false);
-    const [dateStartDate, setStartDate] = useState<Date | undefined>(selectedProject?.deadline ? new Date(selectedProject?.deadline) : undefined);
+    // The deadline is an instant: picked, labelled and sent back on the
+    // viewer's calendar — the day the task tables show — not the browser's.
+    const timeZone = useViewerTimeZone();
+    const [dateStartDate, setStartDate] = useState<Date | undefined>(() => instantToPickerDate(selectedProject?.deadline, timeZone));
 
     const form = useForm<z.infer<typeof newTaskCreationSchema>>({
         resolver: zodResolver(newTaskCreationSchema),
@@ -68,7 +68,7 @@ const EditTaskModal = ({ handleCloseDialog, selectedProject }: { handleCloseDial
             assignee: String(selectedProject?.user?.id) ?? "",
             project: String(selectedProject?.project_id) ?? "",
             taskName: selectedProject?.name ?? "",
-            deadline: selectedProject?.deadline ? new Date(selectedProject?.deadline) : null,
+            deadline: instantToPickerDate(selectedProject?.deadline, timeZone) ?? null,
             priority: selectedProject?.priority ?? "",
             details: selectedProject?.description ?? "",
         },
@@ -80,15 +80,10 @@ const EditTaskModal = ({ handleCloseDialog, selectedProject }: { handleCloseDial
                 assignee: String(selectedProject?.user?.id) ?? "",
                 project: String(selectedProject?.project_id) ?? "",
                 taskName: selectedProject?.name ?? "",
-                deadline: selectedProject?.deadline ? new Date(selectedProject?.deadline) : null,
+                deadline: instantToPickerDate(selectedProject?.deadline, timeZone) ?? null,
                 priority: selectedProject?.priority ?? "",
                 details: selectedProject?.description ?? "",
             });
-            setMembers([{
-                id: selectedProject.user.id,
-                name: selectedProject.user.name,
-                image: selectedProject.user.image ?? ""
-            }]);
             setProjects([{
                 value: String(selectedProject.project.id),
                 label: selectedProject.project.name,
@@ -97,9 +92,9 @@ const EditTaskModal = ({ handleCloseDialog, selectedProject }: { handleCloseDial
             setMemberSearch("");
             setSearchInput("");
             setOpenStartDate(false);
-            setStartDate(selectedProject?.deadline ? new Date(selectedProject?.deadline) : undefined);
+            setStartDate(instantToPickerDate(selectedProject?.deadline, timeZone));
         }
-    }, [form, selectedProject]);
+    }, [form, selectedProject, timeZone]);
 
     // const selectedAssignee = form.watch("assignee");
     const debouncedSearch = useDebounce(searchInput, 500);
@@ -128,39 +123,59 @@ const EditTaskModal = ({ handleCloseDialog, selectedProject }: { handleCloseDial
     }, [debouncedSearch]);
 
     const watchedProjectId = form.watch("project");
+    const projectKey = watchedProjectId ? String(watchedProjectId) : "";
+    const originalProjectKey = String(selectedProject?.project_id);
 
-    useEffect(() => {
-        const loadMembers = async () => {
-            if (!watchedProjectId) return;
-            setLoading(true);
-            try {
-                const res = await getMembersDashboard({ project_id: watchedProjectId });
-                if (res?.success) {
-                    setMembers(res.data);
+    const projectMembers = useDashboardMembers(watchedProjectId, { enabled: !!watchedProjectId });
+    // True once `projectMembers.members` belongs to the project now selected —
+    // never to one the user has already switched away from.
+    const membersCurrent = projectKey !== "" && projectMembers.loadedFor === projectKey;
 
-                    // ONLY reset assignee if the project ID actually changed 
-                    // and doesn't match the original project ID.
-                    if (watchedProjectId !== String(selectedProject?.project_id)) {
-                        form.setValue("assignee", "");
-                    } else {
-                        form.setValue("assignee", String(selectedProject?.user?.id) ?? "");
-                    }
-                }
-            } catch (err) {
-                console.error("Failed to fetch members", err);
-            } finally {
-                setLoading(false);
-            }
+    const members = useMemo(() => {
+        const assignee = {
+            id: selectedProject.user.id,
+            name: selectedProject.user.name,
+            image: selectedProject.user.image ?? "",
         };
-        loadMembers();
-    }, [watchedProjectId]);
+        // Until the selected project's members arrive, offer the task's own
+        // assignee so the field isn't blank.
+        if (!membersCurrent) return [assignee];
+        // On the task's own project, keep its assignee selectable even when
+        // /dashboard/members (active users only) leaves them out — a value
+        // with no matching option renders as an empty field.
+        if (
+            projectKey === originalProjectKey &&
+            !projectMembers.members.some((m) => m.id === assignee.id)
+        ) {
+            return [assignee, ...projectMembers.members];
+        }
+        return projectMembers.members;
+    }, [membersCurrent, projectKey, originalProjectKey, projectMembers.members, selectedProject.user]);
+
+    const filteredMembers = useMemo(
+        () => members.filter(m => m.name.toLowerCase().includes(memberSearch.toLowerCase())),
+        [members, memberSearch]
+    );
+
+    // Once the selected project's members are in: back on the task's own
+    // project the original assignee is restored, on any other project the
+    // assignee is cleared (they may not belong to it).
+    useEffect(() => {
+        if (!membersCurrent) return;
+        if (projectKey !== originalProjectKey) {
+            form.setValue("assignee", "");
+        } else {
+            form.setValue("assignee", String(selectedProject?.user?.id) ?? "");
+        }
+    }, [membersCurrent, projectKey, originalProjectKey, form, selectedProject?.user?.id]);
 
     async function onSubmit(values: z.infer<typeof newTaskCreationSchema>) {
         const finalData = {
             name: values.taskName,
             project_id: Number(values.project),
             assignee: Number(values.assignee),
-            deadline: values.deadline ? new Date(values.deadline).toISOString() : null,
+            // An untouched deadline goes back as exactly the instant it came from.
+            deadline: values.deadline ? pickerDateToInstant(values.deadline, timeZone, selectedProject?.deadline).toISOString() : null,
             priority: values.priority,
             ...(values.details && { description: values.details }),
         }
@@ -183,8 +198,8 @@ const EditTaskModal = ({ handleCloseDialog, selectedProject }: { handleCloseDial
                     },
                 });
             }
-        } catch (error: any) {
-            toast.error(error.message || "Something went wrong!", {
+        } catch (error) {
+            toast.error(actionErrorMessage(error, "Something went wrong!"), {
                 style: {
                     backgroundColor: '#ef4444',
                     color: 'white',

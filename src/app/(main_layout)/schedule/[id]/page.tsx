@@ -5,14 +5,34 @@ import {
     Calendar,
 } from "lucide-react";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { getDuration } from "@/utils";
 import SingleScheduleMemberTable from "@/components/Schedule/SingleScheduleMemberTable";
 import AssignMemberModal from "@/components/Schedule/AssignMemberModal";
 
+/** A schedule id the API can look up: a positive 32-bit integer. */
+const isScheduleId = (id: string) =>
+    /^[1-9]\d{0,9}$/.test(id) && Number(id) <= 2_147_483_647;
+
 const SingleSchedulePage = async ({ params }: { params: Promise<{ id: string }> }) => {
     const { id } = await params;
+    // A malformed id names no schedule. Settled here: the API answers it with
+    // a 400 rather than a 404, and it never goes into the request path.
+    if (!isScheduleId(id)) notFound();
+
     const result = await getSingleSchedule({ id });
     const schedule = result?.data;
+    // Only a real miss is a 404: a deleted schedule (e.g. reached with Back
+    // after deleting it), another company's, or one an employee is not on.
+    if (result?.statusCode === 404 || (result?.success && !schedule)) {
+        notFound();
+    }
+    // Anything else (the API restarting, a 5xx, a refused read) is an outage,
+    // not a missing page: schedule/error.tsx shows it instead of claiming the
+    // schedule does not exist.
+    if (!result?.success || !schedule) {
+        throw new Error(result?.message || "Failed to load the schedule");
+    }
 
     return (
         <div className="min-h-screen bg-gray-50/50 dark:bg-darkSecondaryBg/20 pb-5 rounded-b-lg">

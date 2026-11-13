@@ -1,12 +1,12 @@
 "use server";
 
-import { buildQuery } from "@/utils/buildQuery";
 import { baseApi } from "../baseApi";
+import type { QueryParams } from "@/utils/buildQuery";
 import { ICreateProjectPayload, IProject, IResponse, ISingleProjectData } from "@/types/type";
 
-export const getProjects = async (query = {}): Promise<IResponse<IProject[]>> => {
-    const queryString = buildQuery(query);
-    return await baseApi(`/projects${queryString ? `?${queryString}` : ""}`, {
+export const getProjects = async (query: QueryParams = {}): Promise<IResponse<IProject[]>> => {
+    return await baseApi(`/projects`, {
+        query,
         tag: "projects",
     });
 };
@@ -22,7 +22,6 @@ export const addProject = async (data: ICreateProjectPayload) => {
         method: "POST",
         body: data,
         tag: "projects",
-        cache: "no-cache",
     });
 };
 
@@ -33,7 +32,6 @@ export const editProject = async ({ data, id }: {
     return await baseApi(`/projects/${id}`, {
         method: "PATCH",
         body: data,
-        cache: "no-cache",
         tag: "projects",
     });
 };
@@ -42,6 +40,5 @@ export const deleteProject = async (id: number | undefined) => {
     return await baseApi(`/projects/${id}`, {
         method: "DELETE",
         tag: "projects",
-        cache: "no-cache",
     });
 };

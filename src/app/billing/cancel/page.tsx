@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { XCircle } from "lucide-react";
+import AccountSwitchWatcher from "@/components/Common/AccountSwitchWatcher";
 
 export const metadata: Metadata = {
     title: "Checkout Canceled",
@@ -11,6 +12,9 @@ export const metadata: Metadata = {
 const CheckoutCancelPage = () => {
     return (
         <div className="min-h-screen flex items-center justify-center bg-bgSecondary dark:bg-darkSecondaryBg p-4">
+            {/* Outside (main_layout), so no SessionSync: hands the tab over
+                when another account signs in on this browser. */}
+            <AccountSwitchWatcher />
             <div className="w-full max-w-md border border-borderColor rounded-lg p-6 sm:p-8 bg-white dark:bg-darkPrimaryBg dark:border-darkBorder text-center">
                 <XCircle className="h-12 w-12 mx-auto text-subTextColor dark:text-darkTextSecondary mb-4" />
                 <h1 className="text-xl font-medium text-headingTextColor dark:text-darkTextPrimary mb-2">
@@ -21,8 +25,12 @@ const CheckoutCancelPage = () => {
                     you&apos;re ready.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                    {/* Not prefetched: from outside (main_layout) that renders
+                        the whole dashboard layout (five API reads) for a
+                        link that may never be clicked. */}
                     <Link
                         href="/settings/billing"
+                        prefetch={false}
                         className="px-4 py-2 rounded-md bg-primary text-white text-sm font-medium hover:opacity-90"
                     >
                         Back to plans

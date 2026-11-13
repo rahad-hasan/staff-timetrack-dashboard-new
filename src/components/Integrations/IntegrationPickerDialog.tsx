@@ -33,6 +33,8 @@ import {
     X,
 } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
+import { pickerDateToInstant, pickerDayEndToInstant } from "@/lib/timezone";
 import { capitalize, describeImport, IntegrationDef } from "./registry";
 
 const SELECTION_CAP = 25;
@@ -82,6 +84,9 @@ const IntegrationPickerDialog = ({
     const [deadline, setDeadline] = useState<Date | undefined>(undefined);
     const [openStartDate, setOpenStartDate] = useState(false);
     const [openDeadline, setOpenDeadline] = useState(false);
+    // Picked days are the viewer's calendar days: the imported projects'
+    // dates then show as picked in every project table.
+    const timeZone = useViewerTimeZone();
 
     const noun = def.noun;
 
@@ -232,19 +237,20 @@ const IntegrationPickerDialog = ({
         if (startDate && deadlineEnd < startDate) {
             return "Deadline must be on or after the start date.";
         }
-        if (!startDate && deadlineEnd < new Date()) {
+        if (!startDate && pickerDayEndToInstant(deadline, timeZone) < new Date()) {
             return "Deadline can't be in the past when no start date is set.";
         }
         return null;
-    }, [deadline, startDate]);
+    }, [deadline, startDate, timeZone]);
 
     const handleImport = () => {
         if (selected.size === 0 || deadlineError || importing || importCooldown) return;
         const payload: IntegrationImportPayload = { ids: [...selected] };
         // the API only accepts UTC ISO datetimes ending in `Z` —
-        // always produced via toISOString()
-        if (startDate) payload.start_date = startDate.toISOString();
-        if (deadline) payload.deadline = endOfDay(deadline).toISOString();
+        // always produced via toISOString(), of the picked day's start / end
+        // in the viewer's zone (not the browser's)
+        if (startDate) payload.start_date = pickerDateToInstant(startDate, timeZone).toISOString();
+        if (deadline) payload.deadline = pickerDayEndToInstant(deadline, timeZone).toISOString();
         onImport(payload);
     };
 

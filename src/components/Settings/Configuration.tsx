@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { Switch } from "@/components/ui/switch";
-import { leaveSettingsSchema } from "@/zod/schema";
+import { leaveSettingsSchema } from "@/zod/phoneSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import z from "zod";
+import { z } from "zod";
 import {
   Form,
   FormControl,
@@ -28,6 +27,7 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 import { updateCompanyInfo } from "@/actions/settings/action";
+import { actionErrorMessage } from "@/lib/actionErrors";
 import {
   Command,
   CommandEmpty,
@@ -59,7 +59,6 @@ import {
 } from "lucide-react";
 import { popularTimeZoneList } from "@/utils/TimeZoneList";
 import { currencies } from "@/utils/CurrencyList";
-import { useLogInUserStore } from "@/store/logInUserStore";
 import { weekendPreview } from "@/lib/payroll";
 
 const daysOfWeek = [
@@ -113,7 +112,6 @@ const SectionHeader = ({
 
 const Configuration = ({ data }: { data: ICompany }) => {
   const [loading, setLoading] = useState(false);
-  const { updateUserData } = useLogInUserStore();
 
   const [switches, setSwitches] = useState({
     app_notify: data?.app_notify || false,
@@ -154,10 +152,13 @@ const Configuration = ({ data }: { data: ICompany }) => {
       const res = await updateCompanyInfo({ data: finalData, id: data?.id });
 
       if (res?.success) {
+        // Deliberately no write of the company zone into the signed-in
+        // user's own zone in the client store: it is not theirs. The API
+        // moves only the admins who followed the old company zone, and an
+        // admin on a zone of their own keeps it. The save revalidates, so its
+        // response re-renders the layout and SessionSync copies whichever
+        // zone the session now has.
         toast.success(res?.message || "Updated company info successfully");
-        updateUserData({
-          timezone: values.time_zone,
-        });
       } else {
         toast.error(res?.message || "Failed to update", {
           style: {
@@ -167,9 +168,10 @@ const Configuration = ({ data }: { data: ICompany }) => {
           },
         });
       }
-    } catch (error: any) {
+    } catch (error) {
+      const message = actionErrorMessage(error, "Something went wrong!");
       console.error("failed:", error);
-      toast.error(error.message || "Something went wrong!", {
+      toast.error(message, {
         style: {
           backgroundColor: "#ef4444",
           color: "white",

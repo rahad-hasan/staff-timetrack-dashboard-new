@@ -15,8 +15,10 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { formatBillingDate, formatCents } from "@/lib/billing";
+import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
 import { invoiceDetailHref, isInvoicePayable } from "@/lib/invoice";
 import { payInvoice } from "@/actions/billing/action";
+import { unstable_rethrow } from "next/navigation";
 import { IBillingInvoice } from "@/types/billing";
 import InvoiceStatusBadge from "@/components/Billing/Invoice/InvoiceStatusBadge";
 import { useBillingRefresh } from "@/components/Billing/useBillingRefresh";
@@ -51,6 +53,7 @@ export default function PayNowCard({
   invoice: IBillingInvoice;
   blocking?: boolean;
 }) {
+  const timeZone = useViewerTimeZone();
   const refreshBilling = useBillingRefresh();
   const [paying, setPaying] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -113,7 +116,8 @@ export default function PayNowCard({
       }
 
       setError(res?.message || "Could not take the payment. Please try again.");
-    } catch {
+    } catch (error) {
+      unstable_rethrow(error);
       setError("Something went wrong while taking the payment.");
     } finally {
       setPaying(false);
@@ -171,8 +175,8 @@ export default function PayNowCard({
           </p>
 
           <p className="text-sm text-subTextColor dark:text-darkTextSecondary">
-            Billing period: {formatBillingDate(invoice.period_start)} →{" "}
-            {formatBillingDate(invoice.period_end)}
+            Billing period: {formatBillingDate(invoice.period_start, timeZone)} →{" "}
+            {formatBillingDate(invoice.period_end, timeZone)}
           </p>
 
           <p className="mt-3 text-sm text-subTextColor dark:text-darkTextSecondary">

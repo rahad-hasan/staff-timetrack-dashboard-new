@@ -1,79 +1,38 @@
 "use server";
 
-import { buildQuery } from "@/utils/buildQuery";
 import { baseApi } from "../baseApi";
 import { popularTimeZoneList } from "@/utils/TimeZoneList";
+import type { QueryParams } from "@/utils/buildQuery";
+import type { IResponse } from "@/types/type";
 
-export const getDashboardStats = async (query = {}) => {
-  const queryString = buildQuery(query);
-  return await baseApi(
-    `/dashboard/stats${queryString ? `?${queryString}` : ""}`,
-    {
-      tag: "dashboardStats",
-    },
-  );
-};
+/*
+ * Every read here is live (baseApi's default) and carries no cache tag: a tag
+ * only labels a Data Cache entry, and these responses are never stored. Fresh
+ * numbers after a write come from the action's own re-render, not a purge.
+ */
 
-export const getCoreMembers = async (query = {}) => {
-  const queryString = buildQuery(query);
-  return await baseApi(
-    `/admin/core-member${queryString ? `?${queryString}` : ""}`,
-    {
-      tag: "coreMember",
-    },
-  );
-};
+export const getDashboardStats = async (query: QueryParams = {}) =>
+  await baseApi(`/dashboard/stats`, { query });
 
-export const getDashboardMembersStats = async (query = {}) => {
-  const queryString = buildQuery(query);
-  return await baseApi(
-    `/admin/members/activity-report${queryString ? `?${queryString}` : ""}`,
-    {
-      tag: "memberStats",
-    },
-  );
-};
+export const getCoreMembers = async (query: QueryParams = {}) =>
+  await baseApi(`/admin/core-member`, { query });
 
-export const getDashboardAppsUrls = async (query = {}) => {
-  const queryString = buildQuery(query);
-  return await baseApi(
-    `/admin/recent-app-url${queryString ? `?${queryString}` : ""}`,
-    {
-      tag: "recentAppUrl",
-    },
-  );
-};
+export const getDashboardMembersStats = async (query: QueryParams = {}) =>
+  await baseApi(`/admin/members/activity-report`, { query });
 
-export const getDashboardInsights = async (query = {}) => {
-  const queryString = buildQuery(query);
-  return await baseApi(
-    `/dashboard/insights${queryString ? `?${queryString}` : ""}`,
-    {
-      tag: "insightsDashboard",
-    },
-  );
-};
+export const getDashboardInsights = async (query: QueryParams = {}) =>
+  await baseApi(`/dashboard/insights`, { query });
 
-export const getDashboardAppsAndUrls = async (query = {}) => {
-  const queryString = buildQuery(query);
-  return await baseApi(
-    `/admin/recent-app-url${queryString ? `?${queryString}` : ""}`,
-    {
-      tag: "appUrlDashboard",
-    },
-  );
-};
+export const getDashboardAppsAndUrls = async (query: QueryParams = {}) =>
+  await baseApi(`/admin/recent-app-url`, { query });
 
-export const getTodayWorkTime = async () => {
-  return await baseApi(`/dashboard/work-time`, {
-    tag: "todayWorkTime",
-    cache: "no-cache",
-  });
-};
+/** The viewer's own tracked time today, as `{ duration: "HH:MM:SS" }`. */
+export const getTodayWorkTime = async (): Promise<
+  IResponse<{ duration: string }>
+> => await baseApi(`/dashboard/work-time`);
 
 export const getTimezones = async () => {
-  const res = await baseApi("/dashboard/timezone-list", {
-  });
+  const res = await baseApi("/dashboard/timezone-list");
   return {
     data: res?.data?.data
       ? popularTimeZoneList.filter((item) =>

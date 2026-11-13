@@ -9,9 +9,11 @@ import {
 } from "@/components/ui/select";
 import { IDailyReportResponse, TLeaveType } from "@/types/type";
 import { getDay, parseISO } from "date-fns";
+import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
+import EmptyTableLogo from "@/assets/empty_table.svg";
 
 function getTextColor(HMS: string, leave_type: TLeaveType) {
   if (
@@ -26,16 +28,127 @@ function getTextColor(HMS: string, leave_type: TLeaveType) {
   }
 }
 
+// Module scope on purpose: declared inside the calendar, every render (e.g.
+// switching Hours/Activity) created new component types, so React unmounted
+// and remounted all ~40 cells and their links instead of updating them.
+const DateCell = ({
+  viewType,
+  userId,
+  dayFilters,
+  dateString,
+  dayNumber,
+  formattedTime,
+  activity, // Changed from duration to match new data key
+  isPadding,
+  leave_type,
+  is_manual_entry,
+  is_manual_entry_approved,
+}: {
+  viewType: string;
+  /** Whose day the cell links to. */
+  userId: string;
+  /** The month's project / zone filters as `&…`, for the daily link ("" without any). */
+  dayFilters: string;
+  dateString?: string;
+  dayNumber?: number;
+  formattedTime?: string;
+  activity?: number;
+  isPadding?: boolean;
+  leave_type?: TLeaveType;
+  is_manual_entry?: boolean;
+  is_manual_entry_approved?: boolean;
+}) => {
+  const content = (
+    <div
+      className={`hover:bg-slate-500/5 relative p-3 h-28 md:h-24 flex flex-col justify-center items-center border text-headingTextColor dark:text-darkTextPrimary ${leave_type ? "border-yellow-300/70 dark:border-yellow-300/50" : "border-gray-200 dark:border-darkBorder"}`}
+    >
+      {is_manual_entry && (
+        <div
+          className={`w-2.5 h-2.5 rounded-full absolute left-1 top-1 ${is_manual_entry_approved ? "bg-green-600" : "bg-amber-600 animate-pulse"}`}
+        ></div>
+      )}
+      {/* Render nothing for padding cells to keep your original layout empty */}
+      {!isPadding && (
+        <>
+          <span className="font-thin text-lg mb-1 text-headingTextColor/60 dark:text-darkTextSecondary/70">
+            {dayNumber}
+          </span>
+          {viewType === "Hours" ? (
+            <div>
+              {formattedTime && (
+                <div
+                  className={`px-2 py-1 text-sm font-medium ${getTextColor(formattedTime, leave_type as TLeaveType)}`}
+                >
+                  {leave_type ? leave_type + " leave" : formattedTime}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div>
+              {/* Using 'activity' from new data format */}
+              <div
+                className={`w-fit px-3 text-center py-1 text-sm font-medium bg-gray-50 rounded-lg dark:bg-gray-900/25 ${leave_type ? "text-primary/60" : "text-primary"}`}
+              >
+                {leave_type ? leave_type + " leave" : `${activity || 0}%`}
+              </div>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+
+  return is_manual_entry && !is_manual_entry_approved ? (
+    <Link
+      href={`/timesheets/manual-requests?user_id=${userId}&date=${dateString}`}
+    >
+      {content}
+    </Link>
+  ) : formattedTime === "00:00:00" || isPadding ? (
+    content
+  ) : (
+    <Link
+      href={`/timesheets/daily?user_id=${userId}&date=${dateString}${dayFilters}`}
+    >
+      {content}
+    </Link>
+  );
+};
+
+const DayHeader = ({ day, className }: { day: string; className?: string }) => (
+  <div
+    className={`p-3 flex items-center justify-center font-bold text-sm h-14 bg-bgSecondary  dark:bg-darkSecondaryBg text-headingTextColor dark:text-darkTextPrimary ${className}`}
+  >
+    {day}
+  </div>
+);
+
 const MonthlyTimeSheetsCalendar = ({
   logInUserId,
   data,
+  message,
 }: {
   logInUserId: number | undefined;
   data: IDailyReportResponse;
+  /** Shown in place of the empty-month text: why the API refused the read. */
+  message?: string;
 }) => {
   const searchParams = useSearchParams();
 
   const userId = searchParams.get("user_id");
+  const linkUserId = userId || String(logInUserId);
+
+  // A day opened from its cell keeps the filters the cell's hours were read
+  // under: the month honours ?project_id and ?timezone, and the daily sheet
+  // without them showed a different total for the same day. Only on the
+  // daily link: the manual-requests list ignores the zone, and a project
+  // there would narrow an approval queue.
+  const carried = new URLSearchParams();
+  const projectId = searchParams.get("project_id");
+  const timeZone = searchParams.get("timezone");
+  if (projectId) carried.set("project_id", projectId);
+  if (timeZone) carried.set("timezone", timeZone);
+  const dayFilters = projectId || timeZone ? `&${carried.toString()}` : "";
 
   const [viewType, setViewType] = useState("Hours");
 
@@ -56,95 +169,23 @@ const MonthlyTimeSheetsCalendar = ({
   const paddingCells = getPaddingCells();
   const dayHeaders = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
 
-  const DateCell = ({
-    dateString,
-    dayNumber,
-    formattedTime,
-    activity, // Changed from duration to match new data key
-    isPadding,
-    leave_type,
-    is_manual_entry,
-    is_manual_entry_approved,
-  }: {
-    dateString?: string;
-    dayNumber?: number;
-    formattedTime?: string;
-    activity?: number;
-    isPadding?: boolean;
-    leave_type?: TLeaveType;
-    is_manual_entry?: boolean;
-    is_manual_entry_approved?: boolean;
-  }) => {
-    const content = (
-      <div
-        className={`hover:bg-slate-500/5 relative p-3 h-28 md:h-24 flex flex-col justify-center items-center border text-headingTextColor dark:text-darkTextPrimary ${leave_type ? "border-yellow-300/70 dark:border-yellow-300/50" : "border-gray-200 dark:border-darkBorder"}`}
-      >
-        {is_manual_entry && (
-          <div
-            className={`w-2.5 h-2.5 rounded-full absolute left-1 top-1 ${is_manual_entry_approved ? "bg-green-600" : "bg-amber-600 animate-pulse"}`}
-          ></div>
-        )}
-        {/* Render nothing for padding cells to keep your original layout empty */}
-        {!isPadding && (
-          <>
-            <span className="font-thin text-lg mb-1 text-headingTextColor/60 dark:text-darkTextSecondary/70">
-              {dayNumber}
-            </span>
-            {viewType === "Hours" ? (
-              <div>
-                {formattedTime && (
-                  <div
-                    className={`px-2 py-1 text-sm font-medium ${getTextColor(formattedTime, leave_type as TLeaveType)}`}
-                  >
-                    {leave_type ? leave_type + " leave" : formattedTime}
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div>
-                {/* Using 'activity' from new data format */}
-                <div
-                  className={`w-fit px-3 text-center py-1 text-sm font-medium bg-gray-50 rounded-lg dark:bg-gray-900/25 ${leave_type ? "text-primary/60" : "text-primary"}`}
-                >
-                  {leave_type ? leave_type + " leave" : `${activity || 0}%`}
-                </div>
-              </div>
-            )}
-          </>
-        )}
+  // A refused read has no month to draw: say why, as the weekly sheet does,
+  // instead of blank totals over an empty grid.
+  if (!data) {
+    return (
+      <div className="py-16 flex flex-col items-center justify-between gap-4">
+        <Image
+          src={EmptyTableLogo}
+          alt="table empty"
+          width={120}
+          height={120}
+        />
+        <p className="text-lg">
+          {message || "No data available for this month."}
+        </p>
       </div>
     );
-    
-    return is_manual_entry && !is_manual_entry_approved ? (
-      <Link
-        href={`/timesheets/manual-requests?user_id=${userId || String(logInUserId)}&date=${dateString}`}
-      >
-        {content}
-      </Link>
-    ) : formattedTime === "00:00:00" || isPadding ? (
-      content
-    ) : (
-      <Link
-        href={`/timesheets/daily?user_id=${userId || String(logInUserId)}&date=${dateString}`}
-      >
-        {content}
-      </Link>
-    );
-  };
-
-  const DayHeader = ({
-    day,
-    className,
-  }: {
-    day: string;
-    className?: string;
-  }) => (
-    <div
-      className={`p-3 flex items-center justify-center font-bold text-sm h-14 bg-bgSecondary  dark:bg-darkSecondaryBg text-headingTextColor dark:text-darkTextPrimary ${className}`}
-    >
-      {day}
-    </div>
-  );
+  }
 
   return (
     <div>
@@ -211,7 +252,13 @@ const MonthlyTimeSheetsCalendar = ({
 
           {/* Empty Padding Cells */}
           {paddingCells.map((_, index) => (
-            <DateCell key={`pad-${index}`} isPadding={true} />
+            <DateCell
+              key={`pad-${index}`}
+              viewType={viewType}
+              userId={linkUserId}
+              dayFilters={dayFilters}
+              isPadding={true}
+            />
           ))}
 
           {/* Mapping through new daily_data array */}
@@ -220,6 +267,9 @@ const MonthlyTimeSheetsCalendar = ({
             return (
               <DateCell
                 key={dayItem?.date}
+                viewType={viewType}
+                userId={linkUserId}
+                dayFilters={dayFilters}
                 dateString={dayItem?.date}
                 dayNumber={dateObj.getDate()}
                 formattedTime={dayItem?.duration}

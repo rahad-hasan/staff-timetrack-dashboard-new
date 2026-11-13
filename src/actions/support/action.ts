@@ -1,7 +1,6 @@
 "use server";
 
 import { baseApi } from "../baseApi";
-import { buildQuery } from "@/utils/buildQuery";
 import { IResponse } from "@/types/type";
 import {
   narrowCategories,
@@ -31,12 +30,12 @@ import type {
  * Next, cannot be aborted and cannot carry an `Idempotency-Key`. There are
  * no support mutations here (the v1 ones were removed with the v1
  * components, step 9a integration).
+ *
+ * The reads are live (`baseApi` never caches without `cacheFor`) and carry no
+ * tags: nothing on the server invalidates support data. After the first paint
+ * the pages stay current through the socket events and the browser client's
+ * refetches, never through a server re-render.
  */
-
-const TICKETS_TAG = "support-tickets";
-const COUNTS_TAG = "support-ticket-counts";
-const CATEGORIES_TAG = "support-categories";
-const ticketTag = (id: number | string) => `support-ticket-${id}`;
 
 /** A first-paint read: `data` exists — narrowed — only on success. */
 export type SupportEnvelope<T> =
@@ -81,40 +80,26 @@ const narrowEnvelope = <T,>(
 export const getTickets = async (
   query: TicketListFilters = {},
 ): Promise<SupportEnvelope<TicketRequesterSummary[]>> => {
-  const queryString = buildQuery(query as Record<string, string | number | undefined>);
-  const response = await baseApi<IResponse<unknown>>(
-    `/tickets${queryString ? `?${queryString}` : ""}`,
-    {
-      tag: TICKETS_TAG,
-      cache: "no-cache",
-    },
-  );
+  const response = await baseApi<IResponse<unknown>>(`/tickets`, {
+    query: { ...query },
+  });
   return narrowEnvelope(response, narrowTicketList);
 };
 
 /** `GET /tickets/counts` — hero card + status dropdown counts (global for the user). */
 export const getTicketCounts = async (): Promise<SupportEnvelope<TicketCounts>> => {
-  const response = await baseApi<IResponse<unknown>>(`/tickets/counts`, {
-    tag: COUNTS_TAG,
-    cache: "no-cache",
-  });
+  const response = await baseApi<IResponse<unknown>>(`/tickets/counts`);
   return narrowEnvelope(response, narrowCounts);
 };
 
 /** `GET /tickets/categories` — visible categories in sort order. */
 export const getSupportCategories = async (): Promise<SupportEnvelope<SupportCategory[]>> => {
-  const response = await baseApi<IResponse<unknown>>(`/tickets/categories`, {
-    tag: CATEGORIES_TAG,
-    cache: "no-cache",
-  });
+  const response = await baseApi<IResponse<unknown>>(`/tickets/categories`);
   return narrowEnvelope(response, narrowCategories);
 };
 
 /** `GET /tickets/:id` — the latest thread page (older pages: `supportApi.getTicket(id, { before })`). Not the owner → 404 (anti-enumeration). */
 export const getTicketById = async (id: number | string): Promise<SupportEnvelope<TicketRequesterDetail>> => {
-  const response = await baseApi<IResponse<unknown>>(`/tickets/${id}`, {
-    tag: ticketTag(id),
-    cache: "no-cache",
-  });
+  const response = await baseApi<IResponse<unknown>>(`/tickets/${id}`);
   return narrowEnvelope(response, narrowTicketDetail);
 };

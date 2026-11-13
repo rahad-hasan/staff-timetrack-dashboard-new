@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -17,15 +16,20 @@ import { ArrowUpDown, Check, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import FilterButton from "@/components/Common/FilterButton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { format } from "date-fns";
+import { formatTZDayMonthYear } from "@/utils";
+import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
 import { IProject } from "@/types/type";
 import { toast } from "sonner";
 import { editProject } from "@/actions/projects/action";
+import { actionErrorMessage } from "@/lib/actionErrors";
 import Link from "next/link";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { useLogInUserStore } from "@/store/logInUserStore";
 
 const DashboardProjectTable = ({ data, isSample = false }: { data: IProject[], isSample?: boolean }) => {
+    // Server and browser must format in the same zone (the viewer's), or the
+    // server HTML shows another day than hydration does and React re-renders.
+    const timeZone = useViewerTimeZone();
     const logInUserData = useLogInUserStore(state => state.logInUserData);
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
@@ -50,9 +54,10 @@ const DashboardProjectTable = ({ data, isSample = false }: { data: IProject[], i
                     },
                 });
             }
-        } catch (error: any) {
+        } catch (error) {
+            const message = actionErrorMessage(error, "Something went wrong!");
             console.error("failed:", error);
-            toast.error(error?.message || "Something went wrong!", {
+            toast.error(message, {
                 style: {
                     backgroundColor: '#ef4444',
                     color: 'white',
@@ -86,7 +91,7 @@ const DashboardProjectTable = ({ data, isSample = false }: { data: IProject[], i
                 return (
                     <div className="flex flex-col">
                         <span className="font-bold text-base text-headingTextColor dark:text-darkTextPrimary">{task}</span>
-                        <span className=" font-normal text-subTextColor dark:text-darkTextSecondary">{format(new Date(start_date), "EEE, MMM d, yyyy")}</span>
+                        <span className=" font-normal text-subTextColor dark:text-darkTextSecondary">{formatTZDayMonthYear(start_date, timeZone)}</span>
                     </div>
                 )
             }
@@ -229,7 +234,7 @@ const DashboardProjectTable = ({ data, isSample = false }: { data: IProject[], i
             },
             cell: ({ row }) => {
                 const deadline = row.getValue("deadline") as string;
-                return <div className="">{format(new Date(deadline), "EEE, MMM d, yyyy")}</div>;
+                return <div className="">{formatTZDayMonthYear(deadline, timeZone)}</div>;
             },
         },
         {

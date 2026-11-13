@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { IRestoreResult } from "@/types/billing";
 import { restoreParked } from "@/actions/billing/action";
+import { unstable_rethrow } from "next/navigation";
 import { useBillingRefresh } from "./useBillingRefresh";
 
 /**
@@ -59,7 +60,8 @@ export default function RestoreParkedDialog({
           res?.message || "Could not restore parked members and projects.",
         );
       }
-    } catch {
+    } catch (error) {
+      unstable_rethrow(error);
       toast.error("Something went wrong while restoring. Please try again.");
     } finally {
       setPending(false);

@@ -1,10 +1,7 @@
 import { Metadata } from "next";
-import { getLeaveHistory } from "@/actions/leaves/action";
-import { getMembersDashboard } from "@/actions/members/action";
 import HeadingComponent from "@/components/Common/HeadingComponent";
-import LeaveHistoryReport from "@/components/LeaveManagement/LeaveHistory/LeaveHistoryReport";
-import { ISearchParamsProps, LeaveStatus } from "@/types/type";
-import { getDecodedUser } from "@/utils/decodedLogInUser";
+import LeaveHistoryServer from "@/components/LeaveManagement/LeaveHistory/LeaveHistoryServer";
+import { ISearchParamsProps } from "@/types/type";
 import HistorySkeleton from "@/skeleton/leaveManagement/HistorySkeleton";
 import { Suspense } from "react";
 
@@ -15,36 +12,9 @@ export const metadata: Metadata = {
 
 const LeaveHistoryPage = async ({ searchParams }: ISearchParamsProps) => {
   const params = await searchParams;
-  const currentUser = await getDecodedUser();
-  const canManageUsers = ["admin", "manager", "hr"].includes(
-    currentUser?.role ?? "",
-  );
-  const canManageLeaves = ["admin", "hr"].includes(currentUser?.role ?? "");
-  const currentPage =
-    typeof params.page === "string" ? Number(params.page) || 1 : 1;
 
-  const [historyResponse, membersResponse] = await Promise.all([
-    getLeaveHistory({
-      page: currentPage,
-      user_id: canManageUsers ? Number(params.user_id) || undefined : undefined,
-      start_date:
-        typeof params.from_date === "string" ? params.from_date : undefined,
-      end_date: typeof params.to_date === "string" ? params.to_date : undefined,
-      status:
-        typeof params.status === "string"
-          ? (params.status as LeaveStatus)
-          : undefined,
-    }),
-    canManageUsers ? getMembersDashboard() : Promise.resolve(null),
-  ]);
-
-  const users =
-    membersResponse?.data?.map((member) => ({
-      id: String(member.id),
-      label: member.name,
-      avatar: member.image ?? "",
-    })) ?? [];
-
+  // The reads happen inside the boundary, so a visit or a filter change (a new
+  // key) shows the skeleton at once instead of freezing the previous screen.
   return (
     <div className="space-y-5">
       <HeadingComponent
@@ -52,15 +22,7 @@ const LeaveHistoryPage = async ({ searchParams }: ISearchParamsProps) => {
         subHeading="Audit leave decisions with employee, date range, and status filters."
       />
       <Suspense fallback={<HistorySkeleton />} key={JSON.stringify(params)}>
-        <LeaveHistoryReport
-          data={historyResponse.data ?? []}
-          canManageUsers={canManageUsers}
-          canManageLeaves={canManageLeaves}
-          users={users}
-          total={(historyResponse.meta?.total as number) ?? 0}
-          currentPage={currentPage}
-          limit={(historyResponse.meta?.limit as number) ?? 10}
-        />
+        <LeaveHistoryServer searchParams={searchParams} />
       </Suspense>
     </div>
   );

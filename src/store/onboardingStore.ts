@@ -1,8 +1,6 @@
 import { create } from "zustand";
-import {
-  getOnboardingStatus,
-  updateOnboardingStatus,
-} from "@/actions/onboarding/action";
+import { updateOnboardingStatus } from "@/actions/onboarding/action";
+import { readLiveJson } from "@/lib/readLiveJson";
 import {
   IOnboardingStatus,
   IOnboardingStatusUpdate,
@@ -98,6 +96,14 @@ interface OnboardingStore {
   prevStep: () => void;
   endTour: (options?: { completed?: boolean }) => void;
   setChecklistExpanded: (expanded: boolean) => void;
+
+  /**
+   * Back to a signed-out store (part of `resetClientSession`), so the next
+   * user's welcome modal and checklist are never decided by this user's
+   * progress. Cancels a debounced step write too: fired after sign-out it
+   * would 401 and send the browser to /session-expired mid-navigation.
+   */
+  reset: () => void;
 }
 
 export const useOnboardingStore = create<OnboardingStore>()((set, get) => ({
@@ -118,7 +124,15 @@ export const useOnboardingStore = create<OnboardingStore>()((set, get) => ({
 
     const request = (async () => {
       try {
-        const res = await getOnboardingStatus();
+        // A GET route handler, never the `getOnboardingStatus` server action:
+        // the gate asks while the page hydrates, and only after the layout's
+        // read failed, when the page's live reads are failing too. An action
+        // settling then crashed the whole app at the next recovery refresh
+        // (React #310; see src/app/api/onboarding-status/route.ts). Any
+        // failure, a 401 included, comes back null.
+        const res = await readLiveJson<IOnboardingStatus>(
+          "/api/onboarding-status",
+        );
         // Superseded by a newer (forced) request — drop this result rather
         // than overwriting fresher data with it.
         if (get().requestId !== requestId) return get().status;
@@ -331,6 +345,24 @@ export const useOnboardingStore = create<OnboardingStore>()((set, get) => ({
   },
 
   setChecklistExpanded: (expanded) => set({ checklistExpanded: expanded }),
+
+  reset: () => {
+    flushStepTimer();
+    set({
+      role: undefined,
+      status: null,
+      loaded: false,
+      inFlight: null,
+      // Bumped, never rewound, so a read still in flight is dropped on arrival.
+      requestId: get().requestId + 1,
+      welcomeOpen: false,
+      activeTour: null,
+      steps: [],
+      stepIndex: 0,
+      checklistExpanded: true,
+      pendingTask: null,
+    });
+  },
 }));
 
 /* ------------------------------------------------------------------ *

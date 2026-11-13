@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import dynamic from "next/dynamic";
+import { loadOrReload } from "@/lib/lazyChunk";
 import { useRouter } from "next/navigation";
 import { CircleX, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -24,7 +25,8 @@ import { TicketTable, TicketTableSkeleton } from "./TicketTable";
 import { categoryLabelFor, hasAnyFilter, hasDropdownFilter, type ListFilters, type ListPage } from "./listState";
 import { useCooldownSeconds, useTicketList } from "./useTicketList";
 
-const loadCreateDialog = () => import("@/components/Support/create/CreateTicketDialog");
+const importCreateDialog = () => import("@/components/Support/create/CreateTicketDialog");
+const loadCreateDialog = loadOrReload(importCreateDialog);
 
 /** The create modal (form, uploader, pickers) only downloads when it is about to open. */
 const CreateTicketDialog = dynamic(loadCreateDialog, { ssr: false, loading: () => null });
@@ -159,7 +161,7 @@ export const TicketsPage = (props: TicketsPageProps) => {
   }, []);
 
   const warmCreate = useCallback(() => {
-    void loadCreateDialog();
+    importCreateDialog().catch(() => {});
   }, []);
 
   const backgroundRefetch = socketHandlers.refetch;

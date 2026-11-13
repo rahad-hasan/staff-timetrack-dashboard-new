@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { format, parseISO } from "date-fns";
+import { useEffect, useRef, useState } from "react";
+import { formatCalendarDate } from "@/lib/timezone";
 import {
   AlertTriangle,
   Calendar,
@@ -22,6 +22,7 @@ import { useTopLoader } from "nextjs-toploader";
 
 import { updatePayrollProfile } from "@/actions/payroll/action";
 import AppPagination from "@/components/Common/AppPagination";
+import AutoRecoveringError from "@/components/Common/AutoRecoveringError";
 import ConfirmDialog from "@/components/Common/ConfirmDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,6 +35,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useDebounce } from "@/hooks/use-debounce";
+import { actionErrorMessage } from "@/lib/actionErrors";
 import { cn } from "@/lib/utils";
 import { formatPayrollMoney } from "@/lib/payroll";
 import {
@@ -57,17 +59,20 @@ interface PayrollSettingsBoardProps {
   meta: IMeta;
   tab: string;
   search: string;
+  /** A new profile's default currency: the company's. */
   currency: string;
+  /** The company's IANA zone, for the profile dialog's dates; null when unknown. */
+  companyTimeZone: string | null;
+  /** A read failed: the lists and counts are unknown, not empty or zero. */
+  loadFailed: boolean;
 }
 
-const tryFormatDate = (value?: string | null) => {
-  if (!value) return "—";
-  try {
-    return format(parseISO(value), "MMM d, yyyy");
-  } catch {
-    return value;
-  }
-};
+/**
+ * AutoRecoveringError's reset for a failure that arrives as a prop rather than
+ * a caught error: its retry's router.refresh() alone brings fresh props.
+ * Module-level, so the recovery it enrols stays the same across renders.
+ */
+const KEEP_VIEW = () => {};
 
 const rateText = (profile: EmployeePayrollProfile) =>
   profile.salary_type === "monthly_fixed"
@@ -91,6 +96,8 @@ const PayrollSettingsBoard = ({
   tab,
   search: initialSearch,
   currency,
+  companyTimeZone,
+  loadFailed,
 }: PayrollSettingsBoardProps) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -104,6 +111,8 @@ const PayrollSettingsBoard = ({
   const [presetUser, setPresetUser] = useState<EligibleUser | null>(null);
 
   const activeTab: Tab = (TABS.find((t) => t.id === tab)?.id ?? "all") as Tab;
+  // The pages of the list on show: the setup queue's, or the profiles'.
+  const listMeta = activeTab === "not-configured" ? eligibleMeta : meta;
 
   const setTab = (nextTab: Tab) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -112,6 +121,17 @@ const PayrollSettingsBoard = ({
     } else {
       params.set("tab", nextTab);
     }
+    // The box's text goes along. `searchParams` is the committed URL: text
+    // typed just before the click is not in it yet (its own push is still
+    // debouncing, or in flight and superseded by this one), and the tab would
+    // open unfiltered under a box that still shows the text.
+    const typed = search.trim();
+    if (typed) {
+      params.set("search", typed);
+    } else {
+      params.delete("search");
+    }
+    ownSearchRef.current = typed;
     params.delete("page");
     const query = params.toString();
     loader.start();
@@ -120,15 +140,32 @@ const PayrollSettingsBoard = ({
 
   // Debounce the raw input, then reflect it into the URL as `?search=` so the
   // server component refetches profiles / eligible users filtered by the backend.
-  // Comparing against the current URL value keeps this from pushing on mount or
-  // looping once our own navigation lands.
   const debouncedSearch = useDebounce(search.trim(), 400);
+  const urlSearch = searchParams.get("search") ?? "";
+  // The `?search=` value this board last wrote, or last adopted from the URL.
+  const ownSearchRef = useRef(urlSearch);
 
+  // Back/Forward (or any link) can change `?search=` under the board: adopt it,
+  // so the box shows what the list is filtered by. The push below used to see
+  // its stale text differ from the new URL and push it right back, which broke
+  // Back. Our own push landing matches ownSearchRef and is left alone, so text
+  // typed meanwhile is kept. Checked on every committed navigation, not only
+  // when `?search=` changes: a push of ours that another navigation superseded
+  // never lands, so `?search=` stays as it was while ownSearchRef already
+  // holds the text. The list is filtered by the URL, and the box follows it.
   useEffect(() => {
-    const current = searchParams.get("search") ?? "";
-    if (debouncedSearch === current) return;
+    const committed = searchParams.get("search") ?? "";
+    if (committed === ownSearchRef.current) return;
+    ownSearchRef.current = committed;
+    setSearch(committed);
+  }, [searchParams]);
 
-    const params = new URLSearchParams(searchParams.toString());
+  // Pushes on typing only — keyed on the debounced text, never on the URL.
+  useEffect(() => {
+    if (debouncedSearch === ownSearchRef.current) return;
+    ownSearchRef.current = debouncedSearch;
+
+    const params = new URLSearchParams(window.location.search);
     if (debouncedSearch) {
       params.set("search", debouncedSearch);
     } else {
@@ -138,7 +175,7 @@ const PayrollSettingsBoard = ({
     const query = params.toString();
     // loader.start();
     router.push(query ? `${pathname}?${query}` : pathname, { scroll: false });
-  }, [debouncedSearch, pathname, router, searchParams]);
+  }, [debouncedSearch, pathname, router]);
 
   const stats = [
     {
@@ -191,24 +228,36 @@ const PayrollSettingsBoard = ({
     }
   };
 
-  const handleSuccess = () => {
-    router.refresh();
-  };
-
+  // No router.refresh() after profile writes: they revalidate, so the action's
+  // own response re-renders this page.
   const handleToggleActive = async (profile: EmployeePayrollProfile) => {
     const nextActive = !profile.is_active;
-    const response = await updatePayrollProfile(
-      profile.id,
-      { is_active: nextActive },
-      profile.user_id,
-    );
+    let response: Awaited<ReturnType<typeof updatePayrollProfile>>;
+    try {
+      response = await updatePayrollProfile(
+        profile.id,
+        { is_active: nextActive },
+        profile.user_id,
+      );
+    } catch (error) {
+      // The action call itself failed (offline, or an action id from before a
+      // deploy). The confirm dialog only logs what it catches, so say it here.
+      toast.error(
+        actionErrorMessage(
+          error,
+          nextActive
+            ? "Failed to activate profile."
+            : "Failed to deactivate profile.",
+        ),
+      );
+      throw error;
+    }
 
     if (response?.success) {
       toast.success(
         response.message ??
           (nextActive ? "Profile activated." : "Profile deactivated."),
       );
-      router.refresh();
     } else {
       toast.error(
         response?.message ??
@@ -225,12 +274,12 @@ const PayrollSettingsBoard = ({
       <PayrollProfileFormDialog
         open={dialogOpen}
         onOpenChange={handleDialogChange}
-        onSuccess={handleSuccess}
         mode={editingProfile ? "edit" : "create"}
         profile={editingProfile}
         presetUser={presetUser}
         members={setupRoster}
         defaultCurrency={currency}
+        companyTimeZone={companyTimeZone}
       />
 
       <div className="space-y-6">
@@ -250,7 +299,8 @@ const PayrollSettingsBoard = ({
               </p>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <Button onClick={() => handleOpenCreate()}>
+              {/* Its employee list is one of the reads that failed. */}
+              <Button onClick={() => handleOpenCreate()} disabled={loadFailed}>
                 <Plus className="size-4" />
                 Add payroll profile
               </Button>
@@ -284,7 +334,7 @@ const PayrollSettingsBoard = ({
                   className="text-3xl font-semibold"
                   style={{ color: item.accent }}
                 >
-                  {item.value}
+                  {loadFailed ? "—" : item.value}
                 </p>
                 <p className="mt-0.5 text-sm text-subTextColor dark:text-darkTextSecondary">
                   {item.helper}
@@ -329,7 +379,9 @@ const PayrollSettingsBoard = ({
           </div>
 
           <div className="mt-5">
-            {activeTab === "not-configured" ? (
+            {loadFailed ? (
+              <AutoRecoveringError compact reset={KEEP_VIEW} />
+            ) : activeTab === "not-configured" ? (
               eligibleUsers.length ? (
                 <Table>
                   <TableHeader>
@@ -453,9 +505,9 @@ const PayrollSettingsBoard = ({
                             <TableCell className="text-sm text-subTextColor dark:text-darkTextSecondary">
                               <span className="inline-flex items-center gap-1">
                                 <Calendar className="size-3.5" />
-                                {tryFormatDate(profile.effective_from)}
+                                {formatCalendarDate(profile.effective_from)}
                                 {" → "}
-                                {tryFormatDate(profile.effective_to)}
+                                {formatCalendarDate(profile.effective_to)}
                               </span>
                             </TableCell>
                             <TableCell>
@@ -591,8 +643,8 @@ const PayrollSettingsBoard = ({
                               Effective
                             </p>
                             <p className="text-subTextColor dark:text-darkTextSecondary">
-                              {tryFormatDate(profile.effective_from)} →{" "}
-                              {tryFormatDate(profile.effective_to)}
+                              {formatCalendarDate(profile.effective_from)} →{" "}
+                              {formatCalendarDate(profile.effective_to)}
                             </p>
                           </div>
                         </div>
@@ -675,21 +727,13 @@ const PayrollSettingsBoard = ({
           </div>
         </div>
 
-        {activeTab === "not-configured"
-          ? eligibleMeta?.total > eligibleMeta?.limit && (
-              <AppPagination
-                total={eligibleMeta.total}
-                currentPage={eligibleMeta.page}
-                limit={eligibleMeta.limit}
-              />
-            )
-          : meta?.total > meta?.limit && (
-              <AppPagination
-                total={meta.total}
-                currentPage={meta.page}
-                limit={meta.limit}
-              />
-            )}
+        {!loadFailed && listMeta?.total > listMeta?.limit && (
+          <AppPagination
+            total={listMeta.total}
+            currentPage={listMeta.page}
+            limit={listMeta.limit}
+          />
+        )}
       </div>
     </>
   );

@@ -1,6 +1,7 @@
 import { getLeave } from "@/actions/leaves/action";
 import { getMembersDashboard } from "@/actions/members/action";
 import AppPagination from "@/components/Common/AppPagination";
+import { canManageLeave, canViewTeamLeave, toUserOptions } from "@/lib/leave";
 import { ISearchParamsProps } from "@/types/type";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
 import LeaveRequestTable from "./LeaveRequestTable";
@@ -8,8 +9,8 @@ import LeaveRequestTable from "./LeaveRequestTable";
 const LeaveRequestServer = async ({ searchParams }: ISearchParamsProps) => {
   const params = await searchParams;
   const currentUser = await getDecodedUser();
-  const canManageUsers = ["admin", "manager", "hr"].includes(currentUser?.role ?? "");
-  const canTakeAction = ["admin", "hr"].includes(currentUser?.role ?? "");
+  const canManageUsers = canViewTeamLeave(currentUser?.role);
+  const canTakeAction = canManageLeave(currentUser?.role);
 
   const approved =
     params.approved === "true" ? true : canManageUsers ? false : undefined;
@@ -18,21 +19,17 @@ const LeaveRequestServer = async ({ searchParams }: ISearchParamsProps) => {
 
   const [leaveResponse, membersResponse] = await Promise.all([
     getLeave({
-      search: params.search,
-      page: params.page,
-      user_id: canManageUsers ? params.user_id : undefined,
+      search: typeof params.search === "string" ? params.search : undefined,
+      page: typeof params.page === "string" ? params.page : undefined,
+      user_id:
+        canManageUsers && typeof params.user_id === "string"
+          ? params.user_id
+          : undefined,
       approved,
       rejected,
     }),
     canManageUsers ? getMembersDashboard() : Promise.resolve(null),
   ]);
-
-  const users =
-    membersResponse?.data?.map((member) => ({
-      id: String(member.id),
-      label: member.name,
-      avatar: member.image ?? "",
-    })) ?? [];
 
   return (
     <>
@@ -40,7 +37,7 @@ const LeaveRequestServer = async ({ searchParams }: ISearchParamsProps) => {
         data={leaveResponse?.data ?? []}
         canManageUsers={canManageUsers}
         canTakeAction={canTakeAction}
-        users={users}
+        users={toUserOptions(membersResponse?.data)}
         total={leaveResponse?.meta?.total}
       />
       <AppPagination

@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
+import { formatInTimeZone } from "date-fns-tz";
+import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import * as z from "zod";
+import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import {
@@ -47,8 +49,9 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import PhoneNumberField from "@/components/Common/PhoneNumberField";
-import { singleMemberSchema } from "@/zod/schema";
-import { editSingleDetailsMember } from "@/actions/members/action";
+import { singleMemberSchema } from "@/zod/phoneSchemas";
+import { editMember } from "@/actions/members/action";
+import { actionErrorMessage } from "@/lib/actionErrors";
 import {
     Popover,
     PopoverContent,
@@ -73,6 +76,7 @@ const SingleMemberPage = ({
 }: {
     data: any;
 }) => {
+    const timeZone = useViewerTimeZone();
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const logInUserData = useLogInUserStore((state) => state.logInUserData);
@@ -113,11 +117,10 @@ const SingleMemberPage = ({
         if (!raw) return "N/A";
         const d = new Date(raw);
         if (isNaN(d.getTime())) return "N/A";
-        return d.toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-        });
+        // In the viewer's zone, identical on the server and in the browser:
+        // toLocaleDateString used the runtime's zone on each side, so the
+        // server HTML and hydration could disagree on the day.
+        return formatInTimeZone(d, timeZone, "MMM d, yyyy");
     };
 
     const initialBirthDay = parseBirthDay(data?.birth_day);
@@ -238,7 +241,7 @@ const SingleMemberPage = ({
                 return;
             }
 
-            const res = await editSingleDetailsMember({
+            const res = await editMember({
                 data: payload,
                 id: data?.id,
             });
@@ -254,8 +257,8 @@ const SingleMemberPage = ({
                     },
                 });
             }
-        } catch (error: any) {
-            toast.error(error?.message || "Something went wrong!", {
+        } catch (error) {
+            toast.error(actionErrorMessage(error, "Something went wrong!"), {
                 style: {
                     backgroundColor: "#ef4444",
                     color: "white",

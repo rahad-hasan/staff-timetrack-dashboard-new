@@ -2,7 +2,6 @@
 
 import { revalidateTag } from "next/cache";
 import { baseApi } from "../baseApi";
-import { buildQuery } from "@/utils/buildQuery";
 import { IResponse } from "@/types/type";
 import {
   CreatePayrollProfilePayload,
@@ -21,6 +20,8 @@ import {
   RunDetailParams,
   SaveAdjustmentsPayload,
   SaveAdjustmentsResult,
+  SupersedePayrollProfilePayload,
+  SupersedePayrollProfileResult,
   UpdatePayrollProfilePayload,
 } from "@/types/payroll";
 
@@ -62,7 +63,6 @@ export const createPayrollProfile = async (
     {
       method: "POST",
       body: payload,
-      cache: "no-cache",
     },
   );
 
@@ -76,14 +76,11 @@ export const createPayrollProfile = async (
 export const listPayrollProfiles = async (
   query: ListProfilesParams = {},
 ): Promise<IResponse<EmployeePayrollProfile[]>> => {
-  const queryString = buildQuery(
-    query as Record<string, string | number | boolean | undefined>,
-  );
   return await baseApi<IResponse<EmployeePayrollProfile[]>>(
-    `/payroll/profile${queryString ? `?${queryString}` : ""}`,
+    `/payroll/profile`,
     {
+      query: { ...query },
       tag: PROFILES_TAG,
-      cache: "no-cache",
     },
   );
 };
@@ -93,21 +90,17 @@ export const getPayrollSummary = async (): Promise<
 > => {
   return await baseApi<IResponse<PayrollSummary>>(`/payroll/summary`, {
     tag: SUMMARY_TAG,
-    cache: "no-cache",
   });
 };
 
 export const listEligibleUsers = async (
   query: EligibleUsersParams = {},
 ): Promise<IResponse<EligibleUser[]>> => {
-  const queryString = buildQuery(
-    query as Record<string, string | number | boolean | undefined>,
-  );
   return await baseApi<IResponse<EligibleUser[]>>(
-    `/payroll/eligible-users${queryString ? `?${queryString}` : ""}`,
+    `/payroll/eligible-users`,
     {
+      query: { ...query },
       tag: ELIGIBLE_USERS_TAG,
-      cache: "no-cache",
     },
   );
 };
@@ -119,7 +112,6 @@ export const getPayrollProfileForUser = async (
     `/payroll/profile/${userId}`,
     {
       tag: userProfileTag(userId),
-      cache: "no-cache",
     },
   );
 };
@@ -134,12 +126,35 @@ export const updatePayrollProfile = async (
     {
       method: "PUT",
       body: payload,
-      cache: "no-cache",
     },
   );
 
   if (response?.success) {
     invalidateProfileCaches(userId);
+  }
+
+  return response;
+};
+
+/**
+ * A salary raise in ONE backend transaction: profile `id` ends the day before
+ * `payload.effective_from` and the successor starts on it — both or neither,
+ * so a failure can never leave the employee without a profile.
+ */
+export const supersedePayrollProfile = async (
+  id: number,
+  payload: SupersedePayrollProfilePayload,
+): Promise<IResponse<SupersedePayrollProfileResult>> => {
+  const response = await baseApi<IResponse<SupersedePayrollProfileResult>>(
+    `/payroll/profile/${id}/supersede`,
+    {
+      method: "POST",
+      body: payload,
+    },
+  );
+
+  if (response?.success) {
+    invalidateProfileCaches(response.data?.successor?.user_id);
   }
 
   return response;
@@ -155,7 +170,6 @@ export const generatePayroll = async (
     {
       method: "POST",
       body: payload,
-      cache: "no-cache",
     },
   );
 
@@ -169,14 +183,11 @@ export const generatePayroll = async (
 export const listPayrollRuns = async (
   query: ListRunsParams = {},
 ): Promise<IResponse<PayrollRun[]>> => {
-  const queryString = buildQuery(
-    query as Record<string, string | number | undefined>,
-  );
   return await baseApi<IResponse<PayrollRun[]>>(
-    `/payroll/runs${queryString ? `?${queryString}` : ""}`,
+    `/payroll/runs`,
     {
+      query: { ...query },
       tag: RUNS_TAG,
-      cache: "no-cache",
     },
   );
 };
@@ -185,16 +196,68 @@ export const getPayrollRun = async (
   id: number | string,
   query: RunDetailParams = {},
 ): Promise<IResponse<PayrollRunDetail>> => {
-  const queryString = buildQuery(
-    query as Record<string, string | number | undefined>,
-  );
   return await baseApi<IResponse<PayrollRunDetail>>(
-    `/payroll/run/${id}${queryString ? `?${queryString}` : ""}`,
+    `/payroll/run/${id}`,
     {
+      query: { ...query },
       tag: runTag(id),
-      cache: "no-cache",
     },
   );
+};
+
+/** The API's largest page for a run's employee rows. */
+const RUN_EXPORT_PAGE_SIZE = 500;
+
+/**
+ * Every employee row of a run, for a document that must contain all of them
+ * (the PDF export).
+ *
+ * The pages are read here, in parallel, in one server action — a browser
+ * running one action per page would have them queued one at a time. Any page
+ * that fails fails the whole read: an export missing employees must never look
+ * like a finished one.
+ */
+export const getPayrollRunForExport = async (
+  id: number,
+): Promise<IResponse<PayrollRunDetail>> => {
+  const first = await getPayrollRun(id, { page: 1, limit: RUN_EXPORT_PAGE_SIZE });
+  if (!first?.success || !first.data) return first;
+
+  const firstItems = first.data.items ?? [];
+  const total = first.meta?.total ?? firstItems.length;
+  const pageCount = Math.max(1, Math.ceil(total / RUN_EXPORT_PAGE_SIZE));
+
+  const rest = await Promise.all(
+    Array.from({ length: pageCount - 1 }, (_, index) =>
+      getPayrollRun(id, { page: index + 2, limit: RUN_EXPORT_PAGE_SIZE }),
+    ),
+  );
+  const failed = rest.find((page) => !page?.success || !page.data);
+  if (failed) {
+    return {
+      ...failed,
+      success: false,
+      message:
+        failed.message ||
+        "Some employees of this run could not be loaded. Please try again.",
+    };
+  }
+
+  const items = [
+    ...firstItems,
+    ...rest.flatMap((page) => page.data.items ?? []),
+  ];
+  // The pages only disagree with the first page's total if the run was
+  // regenerated between the reads — the rows would then mix two runs.
+  if (items.length !== total) {
+    return {
+      ...first,
+      success: false,
+      message: "This payroll run changed while it was being exported. Please try again.",
+    };
+  }
+
+  return { ...first, data: { run: first.data.run, items } };
 };
 
 export const approvePayrollRun = async (
@@ -206,7 +269,6 @@ export const approvePayrollRun = async (
     {
       method: "PATCH",
       body: payload,
-      cache: "no-cache",
     },
   );
 
@@ -248,12 +310,11 @@ export const savePayrollAdjustments = async (
             amount: bonus.amount,
           })),
         },
-        cache: "no-cache",
       },
     );
   } catch (error) {
-    // baseApi parses the non-GET error body without a guard, so an HTML 502 or
-    // an empty response rejects out of it. A session expiry redirect throws
+    // baseApi answers API failures with an envelope; anything that still
+    // throws reaches the dialog as one too. A session expiry redirect throws
     // through the same path and must survive.
     if (isNextRedirectError(error)) throw error;
     return {
@@ -275,14 +336,11 @@ export const savePayrollAdjustments = async (
 export const getMyPayrollHistory = async (
   query: PayrollHistoryParams = {},
 ): Promise<IResponse<EmployeePayroll[]>> => {
-  const queryString = buildQuery(
-    query as Record<string, string | number | undefined>,
-  );
   return await baseApi<IResponse<EmployeePayroll[]>>(
-    `/payroll/history${queryString ? `?${queryString}` : ""}`,
+    `/payroll/history`,
     {
+      query: { ...query },
       tag: HISTORY_TAG,
-      cache: "no-cache",
     },
   );
 };

@@ -1,27 +1,22 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
-import { AnimatePresence } from "framer-motion";
 import { IAllScreenshot } from "@/types/type";
-import AllScreenShortsModal from "./AllScreenShortsModal";
 import EmptyTableLogo from "@/assets/empty_table.svg";
 import ScreenshotImage from "./ScreenshotImage";
+import { useAllScreenshotsLightbox } from "./ScreenshotLightbox";
 
-const AllScreenShorts = ({ data }: { data: IAllScreenshot[] | undefined }) => {
-  const [selectedSnapshot, setSelectedSnapshot] = useState<IAllScreenshot>();
-  const [listSnapshot, setListSnapshot] = useState<IAllScreenshot[]>([]);
-  const [modalOpen, setModalOpen] = useState<boolean>(false);
-
-  // Prefer live data so an open modal picks up freshly signed image URLs when
-  // the route refreshes after a token expiry; fall back to the click-time
-  // snapshots so a failed refetch (or a remotely deleted screenshot) doesn't
-  // slam the modal shut or empty its carousel mid-browse.
-  const modalScreenshots = data && data.length > 0 ? data : listSnapshot;
-  const selectedImage =
-    modalScreenshots.find(
-      (screenShort) => screenShort.id === selectedSnapshot?.id,
-    ) ?? selectedSnapshot;
+const AllScreenShorts = ({
+  data,
+  message,
+}: {
+  data: IAllScreenshot[] | undefined;
+  /** Shown in place of the empty-grid text: why the API refused the read. */
+  message?: string;
+}) => {
+  // The lightbox lives above this view's error boundary, so a failed refresh
+  // cannot close it (see ScreenshotLightbox).
+  const openScreenshot = useAllScreenshotsLightbox(data);
 
   return (
     <>
@@ -39,11 +34,7 @@ const AllScreenShorts = ({ data }: { data: IAllScreenshot[] | undefined }) => {
             <div className="relative flex-nowrap rounded-lg dark:bg-darkSecondaryBg ">
               <div
                 className="relative w-full aspect-[4/2.3] overflow-hidden rounded-t-lg bg-gray-100 dark:bg-darkSecondaryBg cursor-pointer"
-                onClick={() => {
-                  setListSnapshot(data ?? []);
-                  setSelectedSnapshot(screenShort);
-                  setModalOpen(true);
-                }}
+                onClick={() => openScreenshot(screenShort)}
               >
                 <ScreenshotImage
                   src={screenShort?.image}
@@ -88,24 +79,14 @@ const AllScreenShorts = ({ data }: { data: IAllScreenshot[] | undefined }) => {
               width={120}
               height={120}
             />
-            <p className=" sm:text-lg">No Screenshots Available</p>
+            <p className=" sm:text-lg">
+              {message || "No Screenshots Available"}
+            </p>
           </div>
         </div>
       )}
       {/* </div>
             ))} */}
-
-      {/* Wrap the modal with AnimatePresence for exit animation */}
-      <AnimatePresence>
-        {modalOpen && selectedImage && (
-          <AllScreenShortsModal
-            screenShorts={modalScreenshots}
-            modalOpen={modalOpen}
-            setModalOpen={setModalOpen}
-            selectedImage={selectedImage}
-          ></AllScreenShortsModal>
-        )}
-      </AnimatePresence>
     </>
   );
 };

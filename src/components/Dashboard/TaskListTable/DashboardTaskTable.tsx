@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import { ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
@@ -22,6 +21,7 @@ import { ITask } from "@/types/type";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { editTask } from "@/actions/task/action";
+import { actionErrorMessage } from "@/lib/actionErrors";
 import Link from "next/link";
 import FilterButton from "@/components/Common/FilterButton";
 import { useLogInUserStore } from "@/store/logInUserStore";
@@ -48,9 +48,10 @@ const DashboardTaskTable = ({ data, isSample = false }: { data: ITask[], isSampl
                     },
                 });
             }
-        } catch (error: any) {
+        } catch (error) {
+            const message = actionErrorMessage(error, "Something went wrong!");
             console.error("failed:", error);
-            toast.error(error?.message || "Something went wrong!", {
+            toast.error(message, {
                 style: {
                     backgroundColor: '#ef4444',
                     color: 'white',

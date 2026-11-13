@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import { Button } from "@/components/ui/button";
 import {
@@ -9,7 +8,7 @@ import {
 } from "@/components/ui/dialog"
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import z from "zod";
+import { z } from "zod";
 import {
     Form,
     FormControl,
@@ -31,6 +30,7 @@ import { ITeamMembers } from "@/global/globalTypes";
 import { editMemberSchema } from "@/zod/schema";
 import { toast } from "sonner";
 import { editMember } from "@/actions/members/action";
+import { actionErrorMessage } from "@/lib/actionErrors";
 
 interface EditNewMemberModalProps {
     onClose: () => void
@@ -93,9 +93,9 @@ const EditNewMemberModal = ({ onClose, selectedUser }: EditNewMemberModalProps) 
                     },
                 });
             }
-        } catch (error: any) {
+        } catch (error) {
 
-            toast.error(error?.message || "Something went wrong!", {
+            toast.error(actionErrorMessage(error, "Something went wrong!"), {
                 style: {
                     backgroundColor: '#ef4444',
                     color: 'white',

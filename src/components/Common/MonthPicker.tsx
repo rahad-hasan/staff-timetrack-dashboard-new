@@ -1,11 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client"
+import { parseDateParam } from "@/lib/timezone";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import CalendarIcon from "../Icons/CalendarIcon";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { format, startOfMonth, endOfMonth, addMonths, setMonth, setYear } from "date-fns";
+import { format, startOfMonth, endOfMonth, addMonths, setMonth, setYear, parseISO } from "date-fns";
+import { useViewToday } from "@/hooks/useViewToday";
 import { useTopLoader } from "nextjs-toploader";
 import {
     Popover,
@@ -20,12 +22,12 @@ const MonthPicker = () => {
     const pathname = usePathname();
     const [isOpen, setIsOpen] = useState(false);
     const startParam = searchParams.get("start_month");
+    const today = useViewToday();
 
-    const selectedDate = useMemo(() => {
-        if (!startParam) return new Date();
-        const d = new Date(startParam);
-        return isNaN(d.getTime()) ? new Date() : d;
-    }, [startParam]);
+    const selectedDate = useMemo(
+        () => parseDateParam(startParam) ?? parseISO(today),
+        [startParam, today],
+    );
 
     const [gridYear, setGridYear] = useState<number>(selectedDate.getFullYear());
 

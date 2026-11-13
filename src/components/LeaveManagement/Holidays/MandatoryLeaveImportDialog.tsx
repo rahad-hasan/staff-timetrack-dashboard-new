@@ -1,10 +1,10 @@
 "use client";
 
-import axios from "axios";
 import {
   insertParsedHolidays,
   parseLeaveHolidayImport,
 } from "@/actions/leaves/action";
+import { actionErrorMessage } from "@/lib/actionErrors";
 import {
   CheckCircle2,
   FileSpreadsheet,
@@ -44,8 +44,21 @@ import {
 type MandatoryLeaveImportDialogProps = {
   onOpenChange: (open: boolean) => void;
   selectedYear: string;
-  onImported: () => void | Promise<void>;
+  /** Not needed to refresh the page: the import revalidates, so the action's own response re-renders it. */
+  onImported?: () => void | Promise<void>;
 };
+
+/*
+ * The file is sent inside a server action, and Next rejects a server action
+ * body over 2 MB (next.config.ts) before the action runs — the user only got
+ * a generic "unexpected response" error. A PDF grows by a third on the way (it
+ * is base64-encoded first), and both limits leave room for the JSON around
+ * the content.
+ */
+const MAX_IMPORT_BYTES = {
+  text: 1.7 * 1024 * 1024,
+  pdf: 1.3 * 1024 * 1024,
+} as const;
 
 const SUPPORTED_TEXT_EXTENSIONS = new Set(["csv", "tsv", "txt", "text", "psv"]);
 const SUPPORTED_TEXT_MIME_TYPES = new Set([
@@ -134,23 +147,6 @@ async function buildParsePayload(
     file_content: await file.text(),
     file_encoding: "text",
   };
-}
-
-function getErrorMessage(error: unknown, fallbackMessage: string) {
-  if (axios.isAxiosError(error)) {
-    const responseMessage =
-      typeof error.response?.data?.message === "string"
-        ? error.response.data.message
-        : null;
-
-    return responseMessage || error.message || fallbackMessage;
-  }
-
-  if (error instanceof Error) {
-    return error.message;
-  }
-
-  return fallbackMessage;
 }
 
 function showErrorToast(message: string) {
@@ -368,10 +364,21 @@ const MandatoryLeaveImportDialog = ({
       return;
     }
 
-    if (!getFileKind(file)) {
+    const fileKind = getFileKind(file);
+
+    if (!fileKind) {
       event.target.value = "";
       setSelectedFile(null);
       showErrorToast("Unsupported file type. Upload CSV, TSV, TXT, or PDF.");
+      return;
+    }
+
+    if (file.size > MAX_IMPORT_BYTES[fileKind]) {
+      event.target.value = "";
+      setSelectedFile(null);
+      showErrorToast(
+        "This file is too large to import. Use a CSV or text file up to 1.7 MB, or a PDF up to 1.3 MB.",
+      );
       return;
     }
 
@@ -404,7 +411,7 @@ const MandatoryLeaveImportDialog = ({
     } catch (error) {
       setParseResult(null);
       showErrorToast(
-        getErrorMessage(error, "Failed to parse the uploaded file."),
+        actionErrorMessage(error, "Failed to parse the uploaded file."),
       );
     } finally {
       setIsParsing(false);
@@ -432,11 +439,11 @@ const MandatoryLeaveImportDialog = ({
       toast.success(
         response.message || "Mandatory leave imported successfully.",
       );
-      await onImported();
+      await onImported?.();
       shouldClose = true;
     } catch (error) {
       showErrorToast(
-        getErrorMessage(error, "Failed to import mandatory leave data."),
+        actionErrorMessage(error, "Failed to import mandatory leave data."),
       );
     } finally {
       setIsImporting(false);

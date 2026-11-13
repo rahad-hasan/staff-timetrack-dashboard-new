@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import { Button } from "@/components/ui/button";
 import {
@@ -6,10 +5,10 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog"
-import { newClientSchema } from "@/zod/schema";
+import { newClientSchema } from "@/zod/phoneSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Resolver, useForm } from "react-hook-form";
-import z from "zod";
+import { z } from "zod";
 import {
     Form,
     FormControl,
@@ -25,6 +24,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 // import { useClientsStore } from "@/api/features/clients/clientsCSRStore";
 import { editClient } from "@/actions/clients/action";
+import { actionErrorMessage } from "@/lib/actionErrors";
 interface EditClientModalProps {
     onClose: () => void
     selectedClient: IClients | null
@@ -72,9 +72,10 @@ const EditClientModal = ({ onClose, selectedClient }: EditClientModalProps) => {
                     },
                 });
             }
-        } catch (error: any) {
+        } catch (error) {
+            const message = actionErrorMessage(error, "Something went wrong!");
             console.error("failed:", error);
-            toast.error(error?.message || "Something went wrong!", {
+            toast.error(message, {
                 style: {
                     backgroundColor: '#ef4444',
                     color: 'white',

@@ -30,7 +30,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { getLeaveStatusTheme, getLeaveTypeTheme } from "@/lib/leave";
+import { getLeaveStatusTheme, getLeaveTypeTheme, formatLeaveDate } from "@/lib/leave";
 import { LeaveRecord, LeaveStatus } from "@/types/type";
 import { formatTZDayMonthYear } from "@/utils";
 
@@ -40,7 +40,7 @@ type LeaveRequestDetailsSheetProps = {
   onOpenChange: (open: boolean) => void;
   canManageUsers: boolean;
   canTakeAction: boolean;
-  onMutated: () => void;
+  onMutated?: () => void;
 };
 
 type AttachmentInfo = {
@@ -192,7 +192,7 @@ const LeaveRequestDetailsSheet = ({
     if (response?.success) {
       toast.success(response.message || "Leave request approved");
       resetActionState();
-      onMutated();
+      onMutated?.();
       handleOpenChange(false);
       return;
     }
@@ -236,7 +236,7 @@ const LeaveRequestDetailsSheet = ({
     if (response?.success) {
       toast.success(response.message || "Leave request rejected");
       resetActionState();
-      onMutated();
+      onMutated?.();
       handleOpenChange(false);
       return;
     }
@@ -346,7 +346,7 @@ const LeaveRequestDetailsSheet = ({
                     Start date
                   </p>
                   <p className="mt-2 text-base font-medium text-headingTextColor dark:text-darkTextPrimary">
-                    {formatTZDayMonthYear(leave.start_date)}
+                    {formatLeaveDate(leave.start_date)}
                   </p>
                 </div>
                 <div className="rounded-[12px] border border-borderColor bg-white px-4 py-4 dark:border-darkBorder dark:bg-darkPrimaryBg">
@@ -354,7 +354,7 @@ const LeaveRequestDetailsSheet = ({
                     End date
                   </p>
                   <p className="mt-2 text-base font-medium text-headingTextColor dark:text-darkTextPrimary">
-                    {formatTZDayMonthYear(leave.end_date)}
+                    {formatLeaveDate(leave.end_date)}
                   </p>
                 </div>
               </div>

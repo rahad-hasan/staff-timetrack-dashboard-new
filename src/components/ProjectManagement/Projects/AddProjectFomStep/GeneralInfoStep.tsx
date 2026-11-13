@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { generalInfoSchema } from "@/zod/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import z from "zod";
+import { z } from "zod";
 import {
     Form,
     FormControl,
@@ -33,17 +33,18 @@ import { Calendar } from "@/components/ui/calendar";
 import { MultiSelect, MultiSelectContent, MultiSelectGroup, MultiSelectItem, MultiSelectTrigger, MultiSelectValue } from "@/components/ui/multi-select";
 import { useProjectFormStore } from "@/store/ProjectFormStore";
 import { getClients } from "@/actions/clients/action";
-import { getMembersDashboard } from "@/actions/members/action";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import type { DashboardMember } from "@/hooks/useDashboardMembers";
 
 interface GeneralInfoStepProps {
     setStep: (step: number) => void;
+    /** Active members, loaded once by the wizard. */
+    members: DashboardMember[];
 }
 
-const GeneralInfoStep = ({ setStep }: GeneralInfoStepProps) => {
+const GeneralInfoStep = ({ setStep, members }: GeneralInfoStepProps) => {
 
     const [clients, setClients] = useState<{ id: number; name: string }[]>([]);
-    const [members, setMembers] = useState<{ id: number; name: string; image?: string }[]>([]);
 
     useEffect(() => {
         const loadClients = async () => {
@@ -58,22 +59,6 @@ const GeneralInfoStep = ({ setStep }: GeneralInfoStepProps) => {
         };
 
         loadClients();
-    }, []);
-
-    useEffect(() => {
-        const loadMembers = async () => {
-
-            try {
-                const res = await getMembersDashboard();
-                if (res?.success) {
-                    setMembers(res.data);
-                }
-            } catch (err) {
-                console.error("Failed to fetch clients", err);
-            }
-        };
-
-        loadMembers();
     }, []);
 
     const data = useProjectFormStore(state => state.data);

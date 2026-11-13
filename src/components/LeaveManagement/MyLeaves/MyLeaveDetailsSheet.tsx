@@ -23,7 +23,7 @@ import {
     SheetTitle,
 } from "@/components/ui/sheet";
 import LeaveAdminActions from "@/components/LeaveManagement/Common/LeaveAdminActions";
-import { getLeaveStatusTheme, getLeaveTypeTheme } from "@/lib/leave";
+import { getLeaveStatusTheme, getLeaveTypeTheme, formatLeaveDate } from "@/lib/leave";
 import { LeaveRecord, LeaveStatus } from "@/types/type";
 import { formatTZDayMonthYear } from "@/utils";
 
@@ -33,7 +33,7 @@ type LeaveHistoryDetailsSheetProps = {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     canManageLeaves: boolean;
-    onMutated: () => void;
+    onMutated?: () => void;
 };
 type AttachmentInfo = {
     url: string;
@@ -244,7 +244,7 @@ const MyLeaveDetailsSheet = ({
                                         Start date
                                     </p>
                                     <p className="mt-2 text-base font-medium text-headingTextColor dark:text-darkTextPrimary">
-                                        {formatTZDayMonthYear(leave.start_date)}
+                                        {formatLeaveDate(leave.start_date)}
                                     </p>
                                 </div>
                                 <div className="rounded-[12px] border border-borderColor bg-white px-4 py-4 dark:border-darkBorder dark:bg-darkPrimaryBg">
@@ -252,7 +252,7 @@ const MyLeaveDetailsSheet = ({
                                         End date
                                     </p>
                                     <p className="mt-2 text-base font-medium text-headingTextColor dark:text-darkTextPrimary">
-                                        {formatTZDayMonthYear(leave.end_date)}
+                                        {formatLeaveDate(leave.end_date)}
                                     </p>
                                 </div>
                             </div>

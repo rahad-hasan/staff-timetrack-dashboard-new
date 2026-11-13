@@ -6,6 +6,7 @@ import { ArrowUpDown } from "lucide-react";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { Button } from "@/components/ui/button";
 import { formatTZDayMonthYear } from "@/utils";
+import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export type TUserBasic = {
@@ -40,6 +41,9 @@ export type TTask = {
 };
 
 const SingleMemberTaskTable = ({ data }: { data: TTask[] }) => {
+    // The layout's zone, not the helpers' store default: this renders on the
+    // server too, and both passes must print the same day.
+    const timeZone = useViewerTimeZone();
     const [sorting, setSorting] = useState<SortingState>([])
     const [rowSelection, setRowSelection] = useState({})
 
@@ -197,7 +201,7 @@ const SingleMemberTaskTable = ({ data }: { data: TTask[] }) => {
                 const deadline = row?.original?.deadline
                 return (
                     <div className="flex items-center gap-2 min-w-[180px]">
-                        <span>{deadline ? formatTZDayMonthYear(deadline) : "No Deadline"}</span>
+                        <span>{deadline ? formatTZDayMonthYear(deadline, timeZone) : "No Deadline"}</span>
                     </div>
                 )
             }

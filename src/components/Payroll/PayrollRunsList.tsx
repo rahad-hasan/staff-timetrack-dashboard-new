@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { format, formatDistanceToNow, parseISO } from "date-fns";
+import { formatDistanceToNow, parseISO } from "date-fns";
 import { Eye, FileDown, Plus } from "lucide-react";
 
 import AppPagination from "@/components/Common/AppPagination";
+import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -27,6 +28,7 @@ import {
   formatPayrollPeriod,
   monthName,
 } from "@/lib/payroll";
+import { formatInstant, todayIn } from "@/lib/timezone";
 import {
   PayrollRun,
   PayrollRunStatus,
@@ -54,8 +56,10 @@ const PayrollRunsList = ({ runs, meta, filters }: PayrollRunsListProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const timeZone = useViewerTimeZone();
 
-  const currentYear = new Date().getFullYear();
+  // The viewer's year: the runtime's is another zone's around New Year.
+  const currentYear = Number(todayIn(timeZone, "yyyy"));
   const years = Array.from({ length: 6 }, (_, i) => currentYear - 3 + i);
 
   const setParam = (key: string, value?: string) => {
@@ -196,7 +200,11 @@ const PayrollRunsList = ({ runs, meta, filters }: PayrollRunsListProps) => {
                             <p className="text-headingTextColor dark:text-darkTextPrimary">
                               {run.generatedBy.name}
                             </p>
-                            <p className="text-xs">
+                            {/* Relative to "now", which moves on between the
+                                server render and hydration: a label crossing
+                                a step ("44 minutes" → "about 1 hour") would
+                                otherwise throw the page's HTML away (#418). */}
+                            <p className="text-xs" suppressHydrationWarning>
                               {formatDistanceToNow(parseISO(run.created_at), {
                                 addSuffix: true,
                               })}
@@ -213,7 +221,9 @@ const PayrollRunsList = ({ runs, meta, filters }: PayrollRunsListProps) => {
                               {run.approvedBy.name}
                             </p>
                             <p className="text-xs">
-                              {format(parseISO(run.approved_at), "MMM d, yyyy")}
+                              {/* An instant: in the viewer's zone, not the
+                                  runtime's (server vs browser, #418). */}
+                              {formatInstant(run.approved_at, timeZone)}
                             </p>
                           </div>
                         ) : (

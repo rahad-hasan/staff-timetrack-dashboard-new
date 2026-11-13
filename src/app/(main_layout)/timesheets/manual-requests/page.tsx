@@ -1,4 +1,6 @@
 import HeadingComponent from "@/components/Common/HeadingComponent";
+import LiveDataBoundary from "@/components/Common/LiveDataBoundary";
+import LiveRefresh from "@/components/Common/LiveRefresh";
 import ManualRequestTableServer from "@/components/TimeSheets/ManualRequests/ManualRequestTableServer";
 import { ISearchParamsProps } from "@/types/type";
 import ManualRequestsHeroSection from "@/components/TimeSheets/ManualRequests/ManualRequestsHeroSection";
@@ -7,6 +9,7 @@ import { Metadata } from "next";
 import SelectProjectWrapper from "@/components/Common/SelectProjectWrapper";
 import SelectUserWrapper from "@/components/Common/SelectUserWrapper";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
+import ManualRequestsSkeleton from "@/skeleton/timesheets/manualRequest/ManualRequestsSkeleton";
 
 export const metadata: Metadata = {
   title: "Staff Time Tracker Manual Requests",
@@ -14,11 +17,18 @@ export const metadata: Metadata = {
 };
 
 const ManualRequests = async ({ searchParams }: ISearchParamsProps) => {
-  const currentUser = await getDecodedUser();
-  const isAdmin = currentUser?.role === "admin";
+  const [params, currentUser] = await Promise.all([
+    searchParams,
+    getDecodedUser(),
+  ]);
+  const role = currentUser?.role;
+  const isAdmin = role === "admin";
+  // Mirrors the backend: PATCH /time-entries/approved/:id admits these roles.
+  const canApprove = role === "admin" || role === "manager" || role === "hr";
 
   return (
     <div>
+      <LiveRefresh section="timesheets" />
       <div className="flex items-center justify-between gap-3 md:gap-0 mb-5">
         <HeadingComponent
           heading="Manual Requests"
@@ -38,8 +48,17 @@ const ManualRequests = async ({ searchParams }: ISearchParamsProps) => {
         </div>
       </Suspense>
 
-      <ManualRequestTableServer searchParams={searchParams} />
-      {/* <ManualRequestsSkeleton></ManualRequestsSkeleton> */}
+      <Suspense
+        key={JSON.stringify(params)}
+        fallback={<ManualRequestsSkeleton />}
+      >
+        <LiveDataBoundary>
+          <ManualRequestTableServer
+            searchParams={searchParams}
+            canApprove={canApprove}
+          />
+        </LiveDataBoundary>
+      </Suspense>
     </div>
   );
 };

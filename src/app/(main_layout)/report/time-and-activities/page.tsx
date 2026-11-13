@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import SpecificDatePicker from "@/components/Common/SpecificDatePicker";
 import TotalHoursPerDayChart from "@/components/Report/TimeAndActivities/TotalHoursPerDayChart";
 import TimeAndActivitiesTable from "@/components/Report/TimeAndActivities/TimeAndActivitiesTable";
-import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
+import SelectProjectWrapper from "@/components/Common/SelectProjectWrapper";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 // import TimeAndActivitiesTableSkeleton from "@/skeleton/report/timeAndActivities/TimeAndActivitiesTableSkeleton";
 
@@ -19,7 +19,8 @@ const TimeAndActivitiesPage = () => {
                 <div className=" flex items-center justify-between">
                     <div className=" w-full flex flex-col sm:flex-row gap-4 sm:gap-4">
                         <SpecificDatePicker></SpecificDatePicker>
-                        <SelectProjectDropDown></SelectProjectDropDown>
+                        {/* the wrapper loads the projects the bare dropdown needs as props */}
+                        <SelectProjectWrapper />
                     </div>
                 </div>
             </Suspense>

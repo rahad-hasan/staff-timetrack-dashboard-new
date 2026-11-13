@@ -3,6 +3,7 @@
 import { memo, type ReactNode } from "react";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
 import { UserAvatar } from "@/components/Support/primitives";
 import { formatAbsolute, formatClock } from "@/lib/supportFormat";
 import type { AttachmentDTO } from "@/types/support";
@@ -66,7 +67,10 @@ export const BubbleFrame = ({
   label,
 }: BubbleFrameProps) => {
   const badge = BADGE[role];
-  const absolute = formatAbsolute(createdAt);
+  // The viewer's zone, as the timeline's day pills, so the server and the
+  // browser print the same clock (in the runtime's, they printed their own).
+  const timeZone = useViewerTimeZone();
+  const absolute = formatAbsolute(createdAt, timeZone);
   return (
     <div className="grid grid-cols-[36px_minmax(0,1fr)] gap-3 sm:gap-3.5">
       <UserAvatar
@@ -109,8 +113,8 @@ export const BubbleFrame = ({
             ) : (
               <>
                 {edited ? <span>Edited ·</span> : null}
-                <time dateTime={createdAt} title={absolute} suppressHydrationWarning>
-                  {formatClock(createdAt)}
+                <time dateTime={createdAt} title={absolute}>
+                  {formatClock(createdAt, timeZone)}
                 </time>
               </>
             )}

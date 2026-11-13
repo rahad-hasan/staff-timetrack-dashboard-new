@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useLogInUserStore } from "@/store/logInUserStore";
+import { canManageLeave } from "@/lib/leave";
 import { ILeaveDetailsResponse, LeaveTypeRecord } from "@/types/type";
 import LeaveTypeDetailsSheet from "./LeaveTypeDetailsSheet";
 import LeaveTypeFormDialog from "./LeaveTypeFormDialog";
@@ -54,7 +55,7 @@ const LeaveTypesBoard = ({
   const currentFilter = searchParams.get("is_active") ?? "all";
   const selectedYear = searchParams.get("year") || String(resolvedDetails.year);
   const resolvedCanEditLeaveTypes =
-    canEditLeaveTypes || ["admin", "hr"].includes(logInUserRole ?? "");
+    canEditLeaveTypes || canManageLeave(logInUserRole);
 
   const [teamSearch, setTeamSearch] = useState("");
   const [formMode, setFormMode] = useState<"create" | "edit">("create");
@@ -115,9 +116,11 @@ const LeaveTypesBoard = ({
     setDetailsOpen(true);
   };
 
+  // The page itself needs no refresh — leave writes revalidate, so the
+  // action's own response re-renders it. The details sheet holds its record
+  // in state, which that render does not reach, so it is told to re-read.
   const handleMutationSuccess = () => {
     setDetailsRefreshKey((value) => value + 1);
-    router.refresh();
   };
 
   const handleDeleteType = async (leaveType: LeaveTypeRecord) => {

@@ -35,9 +35,17 @@ interface PageProps {
  * button rather than a half-empty document.
  */
 const InvoiceDetailPage = async ({ params }: PageProps) => {
-  const [{ id: rawId }, currentUser] = await Promise.all([
-    params,
+  const { id: rawId } = await params;
+  // A non-numeric or out-of-range id is a 400 at the API — the guide says to
+  // treat it as not found, so it never reaches the network.
+  const invoiceId = parseInvoiceRouteId(rawId);
+
+  // The document read does not wait on the role check: nothing it returns is
+  // rendered before the gate below, and the API refuses it to every role the
+  // gate turns away anyway.
+  const [currentUser, response] = await Promise.all([
     getDecodedUser(),
+    invoiceId === null ? null : getBillingInvoiceDetailWithRetry(invoiceId),
   ]);
 
   const role = currentUser?.role ?? "";
@@ -63,9 +71,6 @@ const InvoiceDetailPage = async ({ params }: PageProps) => {
     </div>
   );
 
-  // A non-numeric or out-of-range id is a 400 at the API — the guide says to
-  // treat it as not found, so it never reaches the network.
-  const invoiceId = parseInvoiceRouteId(rawId);
   if (invoiceId === null) {
     return (
       <div>
@@ -74,8 +79,6 @@ const InvoiceDetailPage = async ({ params }: PageProps) => {
       </div>
     );
   }
-
-  const response = await getBillingInvoiceDetailWithRetry(invoiceId);
 
   if (!response?.success || !response.data) {
     const statusCode = response?.statusCode;

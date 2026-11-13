@@ -8,6 +8,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import Link from "next/link";
+import { unstable_rethrow, usePathname } from "next/navigation";
 import { useState, useRef } from "react";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { readNotifications } from "@/actions/notification/action";
@@ -37,6 +38,7 @@ const CATEGORY_MAP: Record<string, string> = {
 const Notification = ({ unreadCount, notificationsList }: any) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const pathname = usePathname();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Get Icon based on reason
@@ -80,11 +82,16 @@ const Notification = ({ unreadCount, notificationsList }: any) => {
 
       if (visibleIds.length === 0) return;
 
-      const res = await readNotifications({ data: { ids: visibleIds } });
+      const res = await readNotifications({
+        data: { ids: visibleIds },
+        // Only /notification renders read-state on the server.
+        revalidate: pathname.startsWith("/notification"),
+      });
       if (res?.success) {
         toast.success(res?.message || "Notifications marked as read");
       }
-    } catch {
+    } catch (error) {
+      unstable_rethrow(error);
       toast.error("Something went wrong!");
     } finally {
       setLoading(false);

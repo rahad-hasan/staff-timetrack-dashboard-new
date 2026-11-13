@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { editEventSchema } from "@/zod/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import z from "zod";
+import { z } from "zod";
 import {
     Form,
     FormControl,
@@ -22,60 +22,76 @@ import { useState } from "react";
 import { AlertTriangle, ChevronDownIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { rescheduleEvent } from "@/actions/calendarEvent/action";
+import { actionErrorMessage } from "@/lib/actionErrors";
 import { toast } from "sonner";
-import { toZonedTime } from "date-fns-tz";
-import { useLogInUserStore } from "@/store/logInUserStore";
+import { addDays, differenceInCalendarDays, parseISO } from "date-fns";
+import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
+import {
+    formatInstant,
+    instantDay,
+    instantToPickerDate,
+    pickerDateTimeToInstant,
+    todayIn,
+} from "@/lib/timezone";
 import ClockIcon from "../Icons/ClockIcon";
 import { Input } from "../ui/input";
 import { isConflictResponse, parseConflictMessage } from "./eventHelpers";
 import CalendarIcon from "../Icons/CalendarIcon";
-
-const formatToTimeString = (date: Date) => {
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    const seconds = String(date.getSeconds()).padStart(2, "0");
-    return `${hours}:${minutes}:${seconds}`;
-};
-
-const buildIsoFromDateAndTime = (date: Date, time: string) => {
-    const [h, m, s] = time.split(":").map((v) => Number(v) || 0);
-    const dt = new Date(date);
-    dt.setHours(h, m, s ?? 0, 0);
-    return dt;
-};
 
 const EditEventModal = ({ handleCloseDialog, event }: any) => {
     const [loading, setLoading] = useState(false);
     const [openStartDate, setOpenStartDate] = useState(false);
     const [conflicts, setConflicts] = useState<string[]>([]);
 
-    const logInUserData = useLogInUserStore((state) => state.logInUserData);
-    const tz = logInUserData?.timezone || logInUserData?.time_zone;
-
-    const utcToUserDate = (date: string | Date) =>
-        tz ? toZonedTime(new Date(date), tz) : new Date(date);
-    const zonedDate = event?.start_time && utcToUserDate(event.start_time);
-    const zonedStartTime = event?.start_time && utcToUserDate(event.start_time);
-    const zonedEndTime = event?.end_time && utcToUserDate(event.end_time);
+    // The event's date and times on the viewer's calendar — the one the
+    // calendar shows it on — and sent back from that same zone. They were
+    // read in the stored zone but written back in the browser's, so saving an
+    // untouched event moved it by the difference between the two.
+    const timeZone = useViewerTimeZone();
+    const viewerToday = parseISO(todayIn(timeZone));
 
     type FormInput = z.input<typeof editEventSchema>;
     type FormOutput = z.output<typeof editEventSchema>;
 
+    const defaultValues = {
+        date: instantToPickerDate(event?.start_time, timeZone),
+        start_time: formatInstant(event?.start_time, timeZone, "HH:mm:ss", "09:00:00"),
+        end_time: formatInstant(event?.end_time, timeZone, "HH:mm:ss", "09:30:00"),
+    };
+    // Days from the event's start to its end on the viewer's calendar: one a
+    // member set for their own morning can end past the viewer's midnight.
+    const spanDays =
+        differenceInCalendarDays(
+            parseISO(instantDay(event?.end_time, timeZone)),
+            parseISO(instantDay(event?.start_time, timeZone)),
+        ) || 0;
+
     const form = useForm<FormInput, any, FormOutput>({
         resolver: zodResolver(editEventSchema),
-        defaultValues: {
-            date: zonedDate,
-            start_time: zonedStartTime ? formatToTimeString(zonedStartTime) : "09:00:00",
-            end_time: zonedEndTime ? formatToTimeString(zonedEndTime) : "09:30:00",
-        },
+        defaultValues,
     });
 
     const submitWith = async (
         values: z.infer<typeof editEventSchema>,
         force: boolean,
     ) => {
-        const startDt = buildIsoFromDateAndTime(values.date!, values.start_time);
-        const endDt = buildIsoFromDateAndTime(values.date!, values.end_time);
+        // The dialog picks the start's day only. The end keeps the event's
+        // span of days while its times are the ones shown or it is not after
+        // the start (an overnight event): building it on the start's day sent
+        // an end before the start, refused even for an untouched event. A new
+        // end after the start puts it on the start's day. An untouched start
+        // or end goes back as exactly the instant it was.
+        const keepSpan =
+            values.end_time <= values.start_time ||
+            (values.start_time === defaultValues.start_time &&
+                values.end_time === defaultValues.end_time);
+        const startDt = pickerDateTimeToInstant(values.date!, values.start_time, timeZone, event?.start_time);
+        const endDt = pickerDateTimeToInstant(
+            addDays(values.date!, keepSpan ? spanDays : 0),
+            values.end_time,
+            timeZone,
+            event?.end_time,
+        );
 
         const res = await rescheduleEvent({
             id: event?.id,
@@ -105,8 +121,8 @@ const EditEventModal = ({ handleCloseDialog, event }: any) => {
             toast.error(res?.message || "Failed to reschedule", {
                 style: { backgroundColor: "#ef4444", color: "white", border: "none" },
             });
-        } catch (error: any) {
-            toast.error(error?.message || "Something went wrong!", {
+        } catch (error) {
+            toast.error(actionErrorMessage(error, "Something went wrong!"), {
                 style: { backgroundColor: "#ef4444", color: "white", border: "none" },
             });
         } finally {
@@ -198,11 +214,11 @@ const EditEventModal = ({ handleCloseDialog, event }: any) => {
                                                 field.onChange(date);
                                                 setOpenStartDate(false);
                                             }}
-                                            disabled={(d) => {
-                                                const today = new Date();
-                                                today.setHours(0, 0, 0, 0);
-                                                return d < today;
-                                            }}
+                                            // The picked day is a viewer-calendar day:
+                                            // today and the days before it are the
+                                            // viewer's, not the browser's.
+                                            today={viewerToday}
+                                            disabled={(d) => d < viewerToday}
                                             initialFocus
                                         />
                                     </PopoverContent>

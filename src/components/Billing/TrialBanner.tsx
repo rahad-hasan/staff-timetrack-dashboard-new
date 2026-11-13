@@ -8,29 +8,42 @@ import {
   formatBillingDate,
   isDatePast,
 } from "@/lib/billing";
+import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
+import { useBillingNow } from "./useBillingNow";
 
 /**
  * Slim full-width trial banner (contract §2, guide §1/§6). Blue countdown
  * while the trial is running; red "Your trial has ended" variant once
  * `trial_ends_at` has passed (the backend worker blocks within the hour).
  * Renders nothing when `trialEndsAt` is null.
+ *
+ * Server-rendered from the layout's billing snapshot, so everything it prints
+ * must come out the same in the server pass and the hydration pass: the end
+ * date is read in the viewer's zone, and the countdown runs from the
+ * snapshot's own stamp until hydration is over (see `useBillingNow`).
  */
 export default function TrialBanner({
   trialEndsAt,
+  serverNow,
 }: {
   trialEndsAt: string | null;
+  /** Server `Date.now()` taken with the snapshot `trialEndsAt` came from. */
+  serverNow?: number;
 }) {
+  const timeZone = useViewerTimeZone();
+  const now = useBillingNow(serverNow);
+
   if (!trialEndsAt) return null;
 
-  if (isDatePast(trialEndsAt)) {
+  if (isDatePast(trialEndsAt, now)) {
     return (
       <div className="w-full border-b border-red-200 bg-red-50 px-4 py-2.5 dark:border-red-500/30 dark:bg-red-500/15">
         <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5 text-sm text-red-800 dark:text-red-200">
           <AlertTriangle className="h-4 w-4 shrink-0" />
           <span className="font-medium">Your trial has ended</span>
           <span className="hidden text-red-700/80 sm:inline dark:text-red-200/80">
-            Ended {formatBillingDate(trialEndsAt)} — choose a plan to keep your
-            team tracking.
+            Ended {formatBillingDate(trialEndsAt, timeZone)} — choose a plan to
+            keep your team tracking.
           </span>
           <Link
             href={BILLING_URL}
@@ -43,7 +56,7 @@ export default function TrialBanner({
     );
   }
 
-  const days = daysUntil(trialEndsAt);
+  const days = daysUntil(trialEndsAt, now);
 
   return (
     <div className="w-full border-b border-blue-200 bg-blue-50 px-4 py-2.5 dark:border-blue-500/30 dark:bg-blue-500/15">
@@ -53,7 +66,7 @@ export default function TrialBanner({
           Free trial — {days} day{days === 1 ? "" : "s"} left
         </span>
         <span className="hidden text-blue-700/80 sm:inline dark:text-blue-200/80">
-          Ends {formatBillingDate(trialEndsAt)}
+          Ends {formatBillingDate(trialEndsAt, timeZone)}
         </span>
         <Link
           href={BILLING_URL}

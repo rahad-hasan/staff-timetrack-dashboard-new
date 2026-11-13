@@ -1,9 +1,22 @@
 import { useLogInUserStore } from "@/store/logInUserStore";
 import { formatInTimeZone, fromZonedTime } from "date-fns-tz";
 
-const getUserTimeZone = () => {
-  const logInUserData = useLogInUserStore.getState().logInUserData;
-  return logInUserData?.timezone;
+/**
+ * The zone the helpers below format in when the caller passes none: the
+ * signed-in user's, from the client store — in the BROWSER only.
+ *
+ * On the server that store is one object shared by every request the process
+ * serves. It holds nobody (the persisted copy lives in localStorage), so the
+ * default was silently UTC for every tenant, and anything ever written to it
+ * would leak one user's zone into everyone's render. Server components must
+ * pass the zone explicitly (`getViewerTimeZone()`); without one they get UTC,
+ * as before, now said out loud.
+ */
+const getUserTimeZone = (): string => {
+  if (typeof window === "undefined") return "UTC";
+  const zone = useLogInUserStore.getState().logInUserData?.timezone;
+  // date-fns-tz formats an empty zone as UTC as well.
+  return typeof zone === "string" && zone ? zone : "UTC";
 };
 
 export const convertDecimalHoursToHMS = (decimalHours: number | null | undefined) => {

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 
 const ReportWeeklyTimeSheet = ({ dateBasedTimeEntry }: any) => {
   type Row = {
@@ -66,11 +66,13 @@ const ReportWeeklyTimeSheet = ({ dateBasedTimeEntry }: any) => {
               key={time.date}
               className=" border rounded-lg dark:border-darkBorder p-4 flex flex-col justify-center items-center gap-1.5"
             >
+              {/* parseISO reads `yyyy-MM-dd` as a local date; `new Date()` reads
+                  it as UTC midnight, the previous day west of UTC. */}
               <h2 className="font-bold text-headingTextColor/70 dark:text-darkTextPrimary/60">
-                {format(new Date(time.date), "EEE").toUpperCase()}
+                {format(parseISO(time.date), "EEE").toUpperCase()}
               </h2>
               <p className=" text-textGray dark:text-darkTextSecondary">
-                {format(time.date, "dd")}
+                {format(parseISO(time.date), "dd")}
               </p>
               <h2
                 className={`${time.duration === "00:00:00" ? "text-textGray dark:text-darkTextSecondary" : "text-primary"} font-bold`}

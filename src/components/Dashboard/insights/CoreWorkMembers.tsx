@@ -36,6 +36,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { ICoreMember } from "@/types/type";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { useTopLoader } from "nextjs-toploader";
+import { parseCoreMemberSort } from "@/components/Dashboard/dashboardParams";
 
 const CoreWorkMembers = ({ data = [] }: { data: ICoreMember[] }) => {
   const router = useRouter();
@@ -95,7 +96,22 @@ const CoreWorkMembers = ({ data = [] }: { data: ICoreMember[] }) => {
   });
 
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("highest");
+
+  /*
+   * The label follows the URL, because the rows do: the server ranks by
+   * `?type=`. A local-only value drifted from the data — pick "Low Activity",
+   * switch Daily → Weekly (which drops `type`) and the list came back as top
+   * members under a "Low Activity" label; reloading ?type=lowest showed the
+   * opposite. Local state still flips the label the moment it is picked; a
+   * URL change (tab switch, back/forward) re-syncs it.
+   */
+  const sortInUrl = parseCoreMemberSort(searchParams.get("type"));
+  const [value, setValue] = useState<string>(sortInUrl);
+  const [syncedSort, setSyncedSort] = useState(sortInUrl);
+  if (syncedSort !== sortInUrl) {
+    setSyncedSort(sortInUrl);
+    setValue(sortInUrl);
+  }
 
   const menuItems = [
     { value: "highest", label: "Top Activity" },

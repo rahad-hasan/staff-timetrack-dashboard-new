@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { CalendarClock, ArrowUpRight, Users2 } from "lucide-react";
 import { getLeaveTypeTheme } from "@/lib/leave";
-import EmptyTableRow from "@/components/Common/EmptyTableRow";
+import { EmptyState } from "@/components/Common/EmptyTableRow";
 
 type Props = {
     filteredUsers: any[];
@@ -135,7 +135,7 @@ const EmployeeLeaveCoverageList = ({ filteredUsers }: Props) => {
                 ))
             ) : (
                 <div className=" flex justify-center h-68">
-                    <EmptyTableRow columns={2} text={`No employees matched the current search.`}></EmptyTableRow>
+                    <EmptyState text="No employees matched the current search." />
                 </div>
             )}
         </div>

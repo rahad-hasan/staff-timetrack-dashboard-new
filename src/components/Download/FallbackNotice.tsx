@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { RefreshCw, TriangleAlert } from "lucide-react";
 
+import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
+import { formatInstant } from "@/lib/timezone";
 import { cn } from "@/lib/utils";
 import type { IReleaseError } from "@/types/releases";
 
@@ -14,23 +16,25 @@ interface IFallbackNoticeProps {
   onRetry: () => void;
 }
 
-const formatResetTime = (retryAt: number | null): string | null => {
-  if (!retryAt) return null;
+/**
+ * The reset time on the viewer's clock (their profile zone, like every other
+ * time in the app), not the browser's. formatInstant, not
+ * toLocaleTimeString({ timeZone }): that throws for a zone the browser does
+ * not know, and the server-validated profile zone can be one.
+ */
+const formatResetTime = (
+  retryAt: number | null,
+  timeZone: string,
+): string | null =>
+  retryAt ? formatInstant(retryAt * 1000, timeZone, "h:mm a", "") || null : null;
 
-  const resetDate = new Date(retryAt * 1000);
-  if (Number.isNaN(resetDate.getTime())) return null;
-
-  return resetDate.toLocaleTimeString(undefined, {
-    hour: "numeric",
-    minute: "2-digit",
-  });
-};
-
-const describe = (error: IReleaseError): string => {
+const describe = (error: IReleaseError, timeZone: string): string => {
   switch (error.kind) {
     case "rate-limit": {
-      const resetsAt = formatResetTime(error.retryAt);
-      return `GitHub's hourly request limit for this network was reached${
+      // GitHub is read server-side (/api/releases), so an exhausted quota is
+      // the server's, not something about the visitor's network.
+      const resetsAt = formatResetTime(error.retryAt, timeZone);
+      return `GitHub's hourly request limit was reached${
         resetsAt ? `, and resets around ${resetsAt}` : ""
       }.`;
     }
@@ -68,6 +72,7 @@ const FallbackNotice = ({
   // the button live. Safe to read the clock here: this component only ever
   // renders after a client-side fetch has already failed.
   const [canRetry, setCanRetry] = useState(() => msUntilRetry(error) === 0);
+  const timeZone = useViewerTimeZone();
 
   useEffect(() => {
     const msRemaining = msUntilRetry(error);
@@ -90,7 +95,7 @@ const FallbackNotice = ({
     >
       <TriangleAlert aria-hidden className="mt-0.5 size-3.5 shrink-0" />
       <p className="flex-1">
-        {describe(error)} Showing the last known links for{" "}
+        {describe(error, timeZone)} Showing the last known links for{" "}
         <span className="font-semibold">{tag}</span> — a newer version may be
         available.
       </p>

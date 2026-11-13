@@ -3,35 +3,53 @@ import { ISearchParamsProps } from "@/types/type";
 import Every10Mins from "./Every10Mins";
 import FirstChart from "@/components/Icons/HeadingChartIcon/FirstChart";
 import SecondChart from "@/components/Icons/HeadingChartIcon/SecondChart";
-import { format } from "date-fns";
 import WeeklyActivityColoredIcon from "@/components/ColoredIcon/HeroSectionIcon/WeeklyActivityColoredIcon";
 import WeeklyWorkColoredIcon from "@/components/ColoredIcon/HeroSectionIcon/WeeklyWorkColoredIcon";
 import TotalProjectColoredIcon from "@/components/ColoredIcon/HeroSectionIcon/TotalProjectColoredIcon";
 import TeamMemberColoredIcon from "@/components/ColoredIcon/HeroSectionIcon/TeamMemberColoredIcon";
 import ScreenshotActivityCard from "./ScreenshotActivityCard";
-import { getDecodedUser } from "@/utils/decodedLogInUser";
-import { cookies } from "next/headers";
 import { getCompanyInfo } from "@/actions/settings/action";
+import { resolveViewFilters } from "@/components/TimeSheets/viewFilters";
+import { requireDataOrRefusal } from "@/lib/server/liveData";
 // import AllScreenShortsSkeleton from "@/skeleton/activity/screenShorts/AllScreenShortsSkeleton";
 
 const Every10MinsServer = async ({ searchParams }: ISearchParamsProps) => {
-  const user = await getDecodedUser();
-  const userId = user?.id;
   const params = await searchParams;
-  const currentDate = format(new Date(), "yyyy-MM-dd");
-  const cookieStore = await cookies();
-  const cookieTimeZone = cookieStore.get("timeZone")?.value;
-  const targetUserId = params.user_id ?? userId;
 
+  const filters = await resolveViewFilters(params);
+  const { user, userId: targetUserId } = filters;
+  const userId = user?.id;
+
+  // Only a project manager's or an employee's delete permission depends on
+  // the company setting (see canDeleteScreenshot below), so only they pay for
+  // the company read: alongside the screenshots read, never before it.
+  const needsCompany =
+    user?.role === "project_manager" || user?.role === "employee";
   const [result, company] = await Promise.all([
     getScreenshots10Min({
-      date: params.date ?? currentDate,
-      user_id: targetUserId,
+      date: filters.date,
+      user_id: filters.userId,
       project_id: params?.project_id,
-      timezone: params?.timezone ?? cookieTimeZone,
+      // Without ?timezone this view always named a zone (it used to be the
+      // login-time cookie); the resolved zone is the viewer's live one.
+      timezone: params?.timezone ?? filters.zone,
     }),
-    getCompanyInfo(),
+    needsCompany ? getCompanyInfo() : null,
   ]);
+  // A refusal (no access to the member, no such member, a plan that no longer
+  // admits the read) keeps the empty day; any other failure throws rather
+  // than showing a day without activity.
+  requireDataOrRefusal(result, "the screenshot timeline");
+  // A refused read has no `data`: the empty day is zeroed cards and the empty
+  // state with the API's reason, not "undefined%" over a blank grid.
+  const day = result?.data ?? {
+    interval_rows: [],
+    score: 0,
+    mouse_activity: 0,
+    keyboard_activity: 0,
+    work_time: "00:00:00",
+    delete_time: "00:00:00",
+  };
 
   // Admin / HR / manager always may. The two roles the backend newly admits
   // only once the company turns `screenshot_delete_enabled` on — an employee
@@ -52,7 +70,7 @@ const Every10MinsServer = async ({ searchParams }: ISearchParamsProps) => {
       <div className="mb-5 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
         <ScreenshotActivityCard
           icon={WeeklyActivityColoredIcon}
-          value={result?.data?.score + "%"}
+          value={day.score + "%"}
           level="AVG ACTIVITY"
           chart={FirstChart}
           is_improved={true}
@@ -60,16 +78,16 @@ const Every10MinsServer = async ({ searchParams }: ISearchParamsProps) => {
         />
         <ScreenshotActivityCard
           icon={WeeklyWorkColoredIcon}
-          value={result?.data?.work_time}
+          value={day.work_time}
           level="WORKED TIME"
           chart={SecondChart}
           is_improved={true}
-          deleted_time={result?.data?.delete_time}
+          deleted_time={day.delete_time}
           //   improved_value={"+30m"}
         />
         <ScreenshotActivityCard
           icon={TotalProjectColoredIcon}
-          value={result?.data?.mouse_activity + "%"}
+          value={day.mouse_activity + "%"}
           level="MOUSE ACTIVITY"
           chart={FirstChart}
           is_improved={false}
@@ -77,7 +95,7 @@ const Every10MinsServer = async ({ searchParams }: ISearchParamsProps) => {
         />
         <ScreenshotActivityCard
           icon={TeamMemberColoredIcon}
-          value={result?.data?.keyboard_activity + "%"}
+          value={day.keyboard_activity + "%"}
           level="KEYBOARD ACTIVITY"
           chart={SecondChart}
           is_improved={true}
@@ -86,8 +104,9 @@ const Every10MinsServer = async ({ searchParams }: ISearchParamsProps) => {
       </div>
       {
         <Every10Mins
-          data={result?.data?.interval_rows}
+          data={day.interval_rows}
           canDelete={canDeleteScreenshot}
+          message={result?.success === false ? result.message : undefined}
         />
       }
     </div>

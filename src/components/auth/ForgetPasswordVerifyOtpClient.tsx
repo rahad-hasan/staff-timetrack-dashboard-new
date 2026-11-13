@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import Image from "next/image";
@@ -7,6 +6,8 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useRouter, useSearchParams } from "next/navigation";
 import { resetOtp, verifyOtp } from "@/actions/auth/action";
+import { actionErrorMessage } from "@/lib/actionErrors";
+import { MARKETING_SIGN_UP_URL } from "@/lib/siteLinks";
 import Link from "next/link";
 import { ArrowRight, ShieldCheck, Star } from "lucide-react";
 import logoWithSlogan from "@/assets/logo-with-text.webp";
@@ -70,8 +71,8 @@ const VerificationCode = () => {
           },
         });
       }
-    } catch (error: any) {
-      toast.error(error.message || "Server is not active", {
+    } catch (error) {
+      toast.error(actionErrorMessage(error, "Server is not active"), {
         style: {
           backgroundColor: "#ef4444",
           color: "white",
@@ -115,8 +116,8 @@ const VerificationCode = () => {
           },
         });
       }
-    } catch (error: any) {
-      toast.error(error.message || "Server is not active", {
+    } catch (error) {
+      toast.error(actionErrorMessage(error, "Server is not active"), {
         style: {
           backgroundColor: "#ef4444",
           color: "white",
@@ -226,12 +227,12 @@ const VerificationCode = () => {
           {/* Footer Callout */}
           <div className="mt-8 pt-4 text-slate-500 dark:text-slate-400 text-sm">
             New to Staff Time Tracker?{" "}
-            <Link
-              href="/auth/sign-up"
+            <a
+              href={MARKETING_SIGN_UP_URL}
               className="font-semibold text-blue-600 hover:underline dark:text-blue-400"
             >
               Try for Free
-            </Link>
+            </a>
           </div>
         </div>
 

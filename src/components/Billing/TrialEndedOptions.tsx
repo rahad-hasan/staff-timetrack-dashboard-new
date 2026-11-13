@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { ArrowUpRight, Loader2, PackageOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getPlans, switchToFreePlan } from "@/actions/billing/action";
+import { unstable_rethrow } from "next/navigation";
 import { isFreePlan } from "@/lib/billing";
 import { IBillingPlan } from "@/types/billing";
 import { useBillingRefresh } from "./useBillingRefresh";
@@ -89,7 +90,8 @@ export default function TrialEndedOptions({
         // Covers the race where a payment webhook changed the status meanwhile.
         void refreshBilling();
       }
-    } catch {
+    } catch (error) {
+      unstable_rethrow(error);
       toast.error("Something went wrong. Please try again.");
     } finally {
       setSubmitting(false);

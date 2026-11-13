@@ -3,11 +3,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
-import z from "zod";
+import { z } from "zod";
 import { AlertTriangle, Loader2, Plus, RotateCcw, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { savePayrollAdjustments } from "@/actions/payroll/action";
+import { unstable_rethrow } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -43,8 +44,6 @@ interface PayrollAdjustmentsDialogProps {
   onOpenChange: (open: boolean) => void;
   runId: number;
   item: EmployeePayroll | null;
-  /** Saved successfully — the parent refetches. */
-  onSaved: () => void;
   /** The run moved on under us (locked / gone / forbidden) — close and refetch. */
   onRunStale: () => void;
 }
@@ -70,7 +69,6 @@ const PayrollAdjustmentsDialog = ({
   onOpenChange,
   runId,
   item,
-  onSaved,
   onRunStale,
 }: PayrollAdjustmentsDialogProps) => {
   const [loading, setLoading] = useState(false);
@@ -148,12 +146,13 @@ const PayrollAdjustmentsDialog = ({
           amount: Number(bonus.amount),
         })),
       });
-    } catch {
+    } catch (error) {
       // The Server Action RPC itself failed — the browser went offline, or a
       // redeploy invalidated the action id. The action's own try/catch only
       // covers server-side execution. react-hook-form re-throws from
       // handleSubmit, so without this the rejection escapes unhandled and the
       // user sees nothing at all. Retrying is safe: the endpoint is a REPLACE.
+      unstable_rethrow(error);
       toast.error("Couldn't reach the payroll service. Please try again.");
       setRetryable(true);
       setLoading(false);
@@ -163,7 +162,6 @@ const PayrollAdjustmentsDialog = ({
     try {
       if (response?.success) {
         toast.success(response.message ?? "Payroll adjustments saved.");
-        onSaved();
         onOpenChange(false);
         return;
       }

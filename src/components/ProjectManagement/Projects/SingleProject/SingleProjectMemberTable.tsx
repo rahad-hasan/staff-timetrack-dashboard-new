@@ -22,6 +22,7 @@ import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { ProjectAssign } from "@/types/type";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatTZDateDMY, formatTZTime } from "@/utils";
+import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
 
 const SingleProjectMemberTable = ({
   data,
@@ -30,6 +31,9 @@ const SingleProjectMemberTable = ({
   data: ProjectAssign[];
   searchTerm: string;
 }) => {
+  // The layout's zone, not the helpers' store default: this renders on the
+  // server too, and both passes must print the same day.
+  const timeZone = useViewerTimeZone();
   console.log(data);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState({});
@@ -130,7 +134,7 @@ const SingleProjectMemberTable = ({
         return (
           <div className="">
             {row?.original?.assigned_at
-              ? formatTZDateDMY(row?.original?.assigned_at)
+              ? formatTZDateDMY(row?.original?.assigned_at, timeZone)
               : "N/A"}
           </div>
         );
@@ -155,7 +159,7 @@ const SingleProjectMemberTable = ({
       },
       cell: ({ row }) => {
         return (
-          <div className="">{formatTZTime(row?.original?.assigned_at)}</div>
+          <div className="">{formatTZTime(row?.original?.assigned_at, timeZone)}</div>
         );
       },
     },

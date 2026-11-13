@@ -18,12 +18,20 @@ import CommandBar from "@/components/Onboarding/CommandBar";
 import { useOnboardingStore } from "@/store/onboardingStore";
 import { TOUR_ANCHORS } from "@/lib/onboarding/anchors";
 import Notification from "./Header/Notification";
+import HeaderWorkTime from "./HeaderWorkTime";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { socket } from "@/socket/socket";
 // import bellIcon from '../../assets/header/bell.svg'
 
-const Header = ({ data }: { data: { duration: string } }) => {
+interface HeaderProps {
+  /** Today's tracked time ("HH:MM:SS") as of this server render; undefined when that read failed. */
+  workTime?: string;
+  /** Stamped by the layout on every server render — see HeaderWorkTime. */
+  renderedAt: number;
+}
+
+const Header = ({ workTime, renderedAt }: HeaderProps) => {
   // const [open, setOpen] = useState(false);
   const [notificationsList, setNotificationsList] = useState<any[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -58,7 +66,7 @@ const Header = ({ data }: { data: { duration: string } }) => {
           variant={"filter"}
         >
           <CirclePlay className="text-primary size-5.5 sm:size-5.5" />
-          <span className="  dark:text-darkTextPrimary">{data?.duration}</span>
+          <HeaderWorkTime duration={workTime} renderedAt={renderedAt} />
         </Button>
       </div>
 
@@ -105,7 +113,12 @@ const Header = ({ data }: { data: { duration: string } }) => {
         </div>
 
         <div className="">
-          <Notification></Notification>
+          {/* Same socket-fed state as the desktop bell — without it the
+              mobile bell never showed a badge or a notification. */}
+          <Notification
+            unreadCount={unreadCount}
+            notificationsList={notificationsList}
+          ></Notification>
         </div>
 
         <ProfileDropDown></ProfileDropDown>

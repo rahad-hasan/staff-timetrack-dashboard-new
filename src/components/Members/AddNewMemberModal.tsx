@@ -9,10 +9,10 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog"
-import { addNewMemberSchema } from "@/zod/schema";
+import { addNewMemberSchema } from "@/zod/phoneSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import z from "zod";
+import { z } from "zod";
 import {
     Form,
     FormControl,
@@ -33,6 +33,7 @@ import { useEffect, useState } from "react";
 import { Check, ChevronLeft, ChevronsUpDown, Eye, EyeOff, Search } from "lucide-react";
 import { toast } from "sonner";
 import { addMember } from "@/actions/members/action";
+import { actionErrorMessage } from "@/lib/actionErrors";
 import { useRouter } from "next/navigation";
 import { BILLING_URL, hasPaidSubscription, SEAT_CAP_MESSAGE } from "@/lib/billing";
 import { useBillingStore } from "@/store/billingStore";
@@ -203,8 +204,8 @@ const AddNewMemberModal = ({ onClose }: { onClose: () => void }) => {
                     },
                 });
             }
-        } catch (error: any) {
-            toast.error(error.message || "Something went wrong!", {
+        } catch (error) {
+            toast.error(actionErrorMessage(error, "Something went wrong!"), {
                 style: {
                     backgroundColor: '#ef4444',
                     color: 'white',

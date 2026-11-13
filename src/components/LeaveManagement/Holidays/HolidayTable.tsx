@@ -17,7 +17,7 @@ import ConfirmDialog from "@/components/Common/ConfirmDialog";
 import DeleteIcon from "@/components/Icons/DeleteIcon";
 import EditIcon from "@/components/Icons/FilterOptionIcon/EditIcon";
 import { LeaveHoliday } from "@/types/type";
-import EmptyTableRow from "@/components/Common/EmptyTableRow";
+import { EmptyState } from "@/components/Common/EmptyTableRow";
 
 function formatHolidayDate(date: string) {
   try {
@@ -240,8 +240,7 @@ const HolidayTable = ({
         </>
       ) : (
         <div className="flex justify-center h-68">
-          <EmptyTableRow
-            columns={2}
+          <EmptyState
             text={
               noMatches
                 ? `No holiday matched "${searchDraft.trim()}". Try a different holiday name, source label, or description keyword.`

@@ -11,6 +11,7 @@ import { canMutateSubscription, daysUntil } from "@/lib/billing";
 import { parseMarketingPlanIntent } from "@/lib/marketingPlanIntent";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
 import OnboardingPlanSelection from "@/components/Billing/OnboardingPlanSelection";
+import AccountSwitchWatcher from "@/components/Common/AccountSwitchWatcher";
 import logoWithSlogan from "@/assets/logo-with-text.webp";
 import logoForDark from "@/assets/logo-with-text-dark.png";
 
@@ -47,24 +48,23 @@ const ChoosePlanPage = async ({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) => {
-  const [params, currentUser] = await Promise.all([
+  // One round trip: the billing reads do not wait on the role check. Only an
+  // admin ever gets past it, and this page sits in the admin's own signup
+  // funnel, so the reads are almost never wasted — while a check-then-read
+  // order would put the session read in front of every paint.
+  const [params, currentUser, statusRes, plansRes] = await Promise.all([
     searchParams,
     getDecodedUser(),
+    getBillingStatus(),
+    getPlans(),
   ]);
 
   if ((currentUser?.role ?? "") !== "admin") {
     redirect("/dashboard");
   }
 
-  const [statusRes, plansRes] = await Promise.all([
-    getBillingStatus(),
-    getPlans(),
-  ]);
-
   const plans = plansRes?.data ?? [];
   const entitlements = statusRes?.data?.entitlements ?? null;
-
-  console.log(plans)
 
   if (canMutateSubscription(entitlements, plans)) {
     redirect("/dashboard");
@@ -90,6 +90,9 @@ const ChoosePlanPage = async ({
   // the app still uses.
   return (
     <div className="min-h-screen w-full bg-bgSecondary dark:bg-darkSecondaryBg">
+      {/* Outside (main_layout), so no SessionSync: hands the tab over when
+          another account signs in, before a plan is bought with its cookie. */}
+      <AccountSwitchWatcher userId={currentUser?.id} />
       <header className="flex items-center justify-between px-6 py-5 sm:px-8">
         <div className="flex items-center gap-1.5">
           <Image

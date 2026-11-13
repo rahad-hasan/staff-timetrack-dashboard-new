@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { changePasswordSchema } from "@/zod/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import z from "zod";
+import { z } from "zod";
 import {
     Form,
     FormControl,
@@ -17,6 +16,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { changePassword } from "@/actions/auth/action";
+import { actionErrorMessage } from "@/lib/actionErrors";
 import { Eye, EyeOff } from "lucide-react";
 
 const ChangePassword = () => {
@@ -48,8 +48,8 @@ const ChangePassword = () => {
                     },
                 });
             }
-        } catch (error: any) {
-            toast.error(error.message || "Something went wrong!", {
+        } catch (error) {
+            toast.error(actionErrorMessage(error, "Something went wrong!"), {
                 style: {
                     backgroundColor: '#ef4444',
                     color: 'white',

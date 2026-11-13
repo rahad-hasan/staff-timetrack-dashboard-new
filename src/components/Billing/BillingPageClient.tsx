@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { ChevronLeft, X } from "lucide-react";
 import { toast } from "sonner";
 
@@ -22,43 +22,43 @@ import BillingTabs, {
 import InvoiceTab from "@/components/Billing/InvoiceTab";
 import RefundsTab from "@/components/Billing/Refund/RefundsTab";
 import ChangeCardTab from "@/components/Billing/PaymentMethod/ChangeCardTab";
+import { adoptServerBillingStatus } from "@/components/Billing/adoptServerBillingStatus";
 import Link from "next/link";
 
 /**
- * /settings/billing orchestrator (contract §21). Seeds the billing store with
- * the server-rendered snapshot, refreshes it on mount, and lays out the page
- * surfaces in the contract order. The pending_downgrade takeover is handled
- * globally by BillingGate — nothing extra here.
+ * /settings/billing orchestrator (contract §21). Hands the server-rendered
+ * snapshot to the billing store and lays out the page surfaces in the contract
+ * order. The pending_downgrade takeover is handled globally by BillingGate —
+ * nothing extra here.
  *
  * The page is split into My Plan / Invoice / Change Card tabs driven by
  * `?tab=`, but only the *informational* surfaces moved into them.
  */
 export default function BillingPageClient({
   initialStatus,
+  statusFetchedAt,
   plans,
   activeUserCount,
   role,
   blockedMessage,
-  initialTab,
 }: {
   initialStatus: IBillingStatus | null;
+  /** Server `Date.now()` taken with `initialStatus` — see `adoptServerBillingStatus`. */
+  statusFetchedAt: number;
   plans: IBillingPlan[];
   activeUserCount: number;
   role: string;
   blockedMessage?: string;
-  /** Server-read `?tab=`; only seeds the first paint (see `useBillingTab`). */
-  initialTab?: string;
 }) {
   const status = useBillingStore((s) => s.status);
   const startPolling = useBillingStore((s) => s.startPolling);
-  const stopPolling = useBillingStore((s) => s.stopPolling);
 
   const [blockedDismissed, setBlockedDismissed] = useState(false);
   const [restoreOpen, setRestoreOpen] = useState(false);
 
   const isAdmin = role === "admin";
 
-  const { activeTab, setTab } = useBillingTab({ isAdmin, initialTab });
+  const { activeTab, setTab } = useBillingTab({ isAdmin });
 
   /**
    * Handed to the recovery surfaces above the strip. They are billing-page
@@ -68,20 +68,39 @@ export default function BillingPageClient({
    */
   const scrollToPlans = useScrollToPlans();
 
-  // Prefer the live store status; fall back to the server snapshot for the
-  // very first paint (the store is seeded in the mount effect below).
+  // The store once it holds anything, else the server snapshot. The server
+  // and hydration renders always take the second branch: they read the
+  // store's initial state (zustand's server snapshot), never a live one — so
+  // the first paint is exactly what the server fetched. Everything below,
+  // children included, renders from `effective` rather than from the store,
+  // which is what keeps a paying customer from flashing "No subscription".
   const effective = status ?? initialStatus;
-  const st = effective?.entitlements?.status;
+  const entitlements = effective?.entitlements ?? null;
+  const st = entitlements?.status;
   // Live head count from the refreshed status; the server-rendered prop is the
   // first-paint fallback, so seat usage stays correct after every refetch
   // without re-rendering the page.
   const seatCount = effective?.active_user_count ?? activeUserCount;
 
-  // Seed the store when it hasn't loaded yet, then refresh from the API.
-  useEffect(() => {
-    if (!useBillingStore.getState().loaded) {
-      useBillingStore.setState({ status: initialStatus, loaded: true });
+  // Every server render of this page is the freshest snapshot there is — the
+  // first visit, a tab revisited after checkout, the re-render a billing
+  // write ships with its response — so it goes into the store (unless it is a
+  // Back/Forward restore of one already adopted). Before paint, so a client
+  // navigation never shows a frame of the store's older copy.
+  //
+  // A restore is the one mount without a fresh snapshot: the router replays
+  // the page as first rendered, with no request at all, so whatever changed
+  // since (a co-admin's purchase, a failed renewal) is in neither the props
+  // nor, unless something else read it, the store. Read it then.
+  useLayoutEffect(() => {
+    if (adoptServerBillingStatus(initialStatus, statusFetchedAt) === "replayed") {
+      void useBillingStore.getState().fetchStatus();
     }
+  }, [initialStatus, statusFetchedAt]);
+
+  // Otherwise only a failed server read leaves anything to fetch here.
+  useEffect(() => {
+    if (initialStatus) return;
     (async () => {
       try {
         await useBillingStore.getState().fetchStatus();
@@ -91,7 +110,7 @@ export default function BillingPageClient({
         );
       }
     })();
-    // Seed + initial refresh run once on mount.
+    // A failed first read is retried once, on mount.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -103,11 +122,10 @@ export default function BillingPageClient({
   const hasUnpaidInvoice = Boolean(effective?.latest_unpaid_invoice);
   useEffect(() => {
     if (st === "past_due" || st === "payment_failed" || hasUnpaidInvoice) {
-      startPolling(5000);
-      return () => stopPolling();
+      return startPolling(5000);
     }
     return undefined;
-  }, [st, hasUnpaidInvoice, startPolling, stopPolling]);
+  }, [st, hasUnpaidInvoice, startPolling]);
 
   return (
     <div className="mt-4 space-y-4 sm:space-y-6">
@@ -186,7 +204,11 @@ export default function BillingPageClient({
 
       {st === "pending_downgrade_selection" && (
         <div className="border border-borderColor rounded-lg p-4 sm:p-6 bg-white dark:bg-darkPrimaryBg dark:border-darkBorder">
-          <DowngradeTakeover variant="inline" onUpgradeClick={scrollToPlans} />
+          <DowngradeTakeover
+            variant="inline"
+            role={role}
+            onUpgradeClick={scrollToPlans}
+          />
         </div>
       )}
 
@@ -198,16 +220,23 @@ export default function BillingPageClient({
           "View plans" scroll. `useScrollToPlans` handles the tab swap. */}
       {activeTab === "my-plan" && (
         <div className="space-y-4 sm:space-y-6">
- 
-          <CurrentPlanCard plans={plans} activeUserCount={seatCount} />
+          <CurrentPlanCard
+            plans={plans}
+            activeUserCount={seatCount}
+            entitlements={entitlements}
+            isAdmin={isAdmin}
+            serverNow={statusFetchedAt}
+          />
 
           <PlanPricingSection
             plans={plans}
             activeUserCount={seatCount}
+            entitlements={entitlements}
+            isAdmin={isAdmin}
             sectionId="plans"
           />
 
-          {isAdmin && canMutateSubscription(effective?.entitlements, plans) && (
+          {isAdmin && canMutateSubscription(entitlements, plans) && (
             <div>
               <Button
                 type="button"

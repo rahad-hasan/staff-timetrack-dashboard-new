@@ -12,12 +12,13 @@ import ReferFriendIcon from "@/components/Icons/ReferFriendIcon";
 import SubscriptionIcon from "@/components/Icons/SubscriptionIcon";
 import PauseNotificationIcon from "@/components/Icons/PauseNotificationIcon";
 import SignOutIcon from "@/components/Icons/SignOutIcon";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { clearSessionCookie } from "@/actions/auth/action";
+import { toast } from "sonner";
+import { signOut } from "@/lib/clientSession";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import { useProfileImage } from "@/hooks/useProfileImage";
 import Link from "next/link";
-import { useSidebarStore } from "@/store/sidebarStore";
 import TourMenuItem from "@/components/Onboarding/TourMenuItem";
 import { useQuickActionStore } from "@/store/quickActionStore";
 import { CREATE_ACTIONS } from "@/lib/quickActions";
@@ -31,7 +32,7 @@ const MENU_ITEM_CLASS =
 
 const ProfilePopoverContent = ({ side, align }: { side: "top" | "right" | "bottom" | "left", align: "center" | "end" | "start" }) => {
     const router = useRouter();
-    const { resetSidebar } = useSidebarStore();
+    const [signingOut, setSigningOut] = useState(false);
     const logInUserData = useLogInUserStore(state => state.logInUserData);
     const requestCreate = useQuickActionStore(state => state.requestCreate);
     const { src: profileImageSrc, handleLoadingStatusChange } = useProfileImage();
@@ -42,15 +43,25 @@ const ProfilePopoverContent = ({ side, align }: { side: "top" | "right" | "botto
     const role = logInUserData?.role as string | undefined;
     const isManagement = (MANAGEMENT_ROLES as readonly string[]).includes(role ?? "");
 
+    // A full sign-out (see `signOut`): the server clears the session cookies,
+    // then this browser's per-user state is wiped and the page is replaced by
+    // the login page. It used to be a cookie delete inside a server action,
+    // which re-rendered this protected page without a token — a burst of
+    // 401s whose /session-expired redirect raced the push to /auth/login —
+    // and kept every other store, the socket and the router cache alive.
     const handleLogOut = async () => {
-        try {
-            await clearSessionCookie();
-            resetSidebar();
-            router.push('/auth/login');
-            router.refresh();
-        } catch (error) {
-            console.error("Logout failed:", error);
-        }
+        if (signingOut) return;
+        setSigningOut(true);
+        // On success the page is being replaced: stay disabled.
+        if (await signOut()) return;
+        setSigningOut(false);
+        toast.error("Couldn't sign you out. Check your connection and try again.", {
+            style: {
+                backgroundColor: '#ef4444',
+                color: 'white',
+                border: 'none'
+            },
+        });
     }
 
     // Leave the intent in the store and navigate: `MemberHeroSection` claims it
@@ -126,8 +137,8 @@ const ProfilePopoverContent = ({ side, align }: { side: "top" | "right" | "botto
                 <button type="button" className="flex items-center text-headingTextColor dark:text-darkTextPrimary border-borderColor dark:border-darkBorder gap-2 text-sm font-medium border w-full px-3.5 hover:bg-gray-100 hover:dark:bg-darkPrimaryBg py-2 rounded-md cursor-pointer">
                     <PauseNotificationIcon size={18} /> Pause notification
                 </button>
-                <button type="button" onClick={handleLogOut} className="flex items-center font-medium gap-2 border border-borderColor dark:border-darkBorder w-full px-3.5 text-sm hover:bg-gray-100 hover:dark:bg-darkPrimaryBg text-red-500 py-2 rounded-md cursor-pointer">
-                    <SignOutIcon size={18} /> Sign out
+                <button type="button" onClick={handleLogOut} disabled={signingOut} aria-busy={signingOut} className="flex items-center font-medium gap-2 border border-borderColor dark:border-darkBorder w-full px-3.5 text-sm hover:bg-gray-100 hover:dark:bg-darkPrimaryBg text-red-500 py-2 rounded-md cursor-pointer disabled:cursor-wait disabled:opacity-70">
+                    <SignOutIcon size={18} /> {signingOut ? "Signing out..." : "Sign out"}
                 </button>
             </div>
         </PopoverContent>

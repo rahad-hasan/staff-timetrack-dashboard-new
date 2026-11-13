@@ -3,6 +3,7 @@
 import { memo, useState, type ReactNode } from "react";
 import { Check, ChevronDown, Download, Paperclip, Star, UsersRound } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
 import { CountPill, FOCUS_RING, RatingStars, SupportButton, UnassignedAvatar, UserAvatar } from "@/components/Support/primitives";
 import { formatAbsolute, formatDayAndClock } from "@/lib/supportFormat";
 import { isImageAttachmentDTO } from "@/lib/supportAttachments";
@@ -103,6 +104,7 @@ export const RatingCard = memo(function RatingCard({
   canRate: boolean;
   onRate: () => void;
 }) {
+  const timeZone = useViewerTimeZone();
   if (!feedback && !canRate) return null;
   return (
     <AsideCard
@@ -114,11 +116,11 @@ export const RatingCard = memo(function RatingCard({
         feedback ? (
           <time
             dateTime={feedback.created_at}
-            title={formatAbsolute(feedback.created_at)}
+            title={formatAbsolute(feedback.created_at, timeZone)}
             className="shrink-0 text-[13px] leading-5 text-support-muted-text dark:text-darkTextSecondary"
             suppressHydrationWarning
           >
-            {formatDayAndClock(feedback.created_at)}
+            {formatDayAndClock(feedback.created_at, timeZone)}
           </time>
         ) : null
       }
@@ -198,6 +200,7 @@ const FileRow = ({
 }) => {
   const urls = useAttachmentUrls();
   const download = useDownload();
+  const timeZone = useViewerTimeZone();
   const image = isImageAttachmentDTO(file);
   const href = urls.hrefFor(file, obtainedAt);
   const [thumbFailed, setThumbFailed] = useState(false);
@@ -235,7 +238,7 @@ const FileRow = ({
           {file.file_name}
         </p>
         <p className="truncate text-[12px] leading-[18px] text-support-muted-text dark:text-darkTextSecondary">
-          {fileMeta(file)} · <span suppressHydrationWarning>{formatDayAndClock(file.created_at)}</span>
+          {fileMeta(file)} · <span suppressHydrationWarning>{formatDayAndClock(file.created_at, timeZone)}</span>
         </p>
       </div>
       <DownloadControl

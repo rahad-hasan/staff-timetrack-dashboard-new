@@ -15,8 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { formatTZDayMonthYear } from "@/utils";
-import { getLeaveStatusTheme, getLeaveTypeTheme } from "@/lib/leave";
+import { getLeaveStatusTheme, getLeaveTypeTheme, formatLeaveDate } from "@/lib/leave";
 import { LeaveRecord, LeaveStatus } from "@/types/type";
 import LeaveHistoryDetailsSheet from "./LeaveHistoryDetailsSheet";
 import SelectDateRange from "@/components/Common/SelectDateRange";
@@ -83,7 +82,6 @@ const LeaveHistoryReport = ({
           }
         }}
         canManageLeaves={canManageLeaves}
-        onMutated={() => router.refresh()}
       />
 
       <div className="rounded-[12px] border border-borderColor p-3 sm:p-5 dark:border-darkBorder dark:bg-darkSecondaryBg">
@@ -193,8 +191,8 @@ const LeaveHistoryReport = ({
                         {leave.leaveType?.title}
                       </div>
                     </TableCell>
-                    <TableCell>{formatTZDayMonthYear(leave.start_date)}</TableCell>
-                    <TableCell>{formatTZDayMonthYear(leave.end_date)}</TableCell>
+                    <TableCell>{formatLeaveDate(leave.start_date)}</TableCell>
+                    <TableCell>{formatLeaveDate(leave.end_date)}</TableCell>
                     <TableCell>{leave.leave_count}</TableCell>
                     <TableCell>{leave.approved_hours_formatted}</TableCell>
                     <TableCell>

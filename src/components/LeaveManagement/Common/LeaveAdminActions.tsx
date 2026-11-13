@@ -14,7 +14,8 @@ import LeaveEditDialog from "./LeaveEditDialog";
 type LeaveAdminActionsProps = {
   leave: LeaveRecord;
   canManage: boolean;
-  onMutated: () => void;
+  /** Not needed to refresh the page: leave writes revalidate, so the action's own response re-renders it. */
+  onMutated?: () => void;
   onClose?: () => void;
   owner?: { name?: string; gender?: string | null };
 };
@@ -62,7 +63,7 @@ const LeaveAdminActions = ({
 
     if (response?.success) {
       toast.success(response.message || "Leave request deleted");
-      onMutated();
+      onMutated?.();
       onClose?.();
       return;
     }
@@ -145,7 +146,7 @@ const LeaveAdminActions = ({
             ownerName={ownerName}
             onClose={() => setEditOpen(false)}
             onSuccess={() => {
-              onMutated();
+              onMutated?.();
               onClose?.();
             }}
           />

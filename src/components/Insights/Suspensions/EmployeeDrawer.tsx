@@ -23,6 +23,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { listSuspensionEvents } from "@/actions/suspensions/action";
+import { actionErrorMessage } from "@/lib/actionErrors";
 import type {
   ISuspensionEvent,
   ISuspensionEventsQuery,
@@ -35,6 +36,8 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const PAGE_SIZE = 15;
+/** The events endpoint's largest page (backend validation). */
+const MAX_POLL_LIMIT = 100;
 
 interface Props {
   open: boolean;
@@ -102,7 +105,15 @@ export default function EmployeeDrawer({
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Bumped by every page load. A newer load discards an older one's result,
+  // and a poll that started before a load discards its own. Polls never bump
+  // it: a poll used to, which threw away an in-flight load and left the
+  // drawer stuck on its spinner.
   const requestIdRef = useRef(0);
+  // The row object is replaced every time the page re-reads its summary, so
+  // the drawer keys its loads on the user's id — not the object, which used
+  // to reload the list (and drop "Load more" pages) on every summary poll.
+  const userId = user?.user.id ?? null;
 
   const stableFilters = useMemo(
     () => ({
@@ -125,14 +136,14 @@ export default function EmployeeDrawer({
 
   const fetchEvents = useCallback(
     async (pageNum: number, append: boolean) => {
-      if (!user) return;
+      if (userId === null) return;
       const reqId = ++requestIdRef.current;
       if (append) setLoadingMore(true);
       else setLoading(true);
       setError(null);
 
       const query: ISuspensionEventsQuery = {
-        user_id: user.user.id,
+        user_id: userId,
         page: pageNum,
         limit: PAGE_SIZE,
         timezone,
@@ -147,8 +158,10 @@ export default function EmployeeDrawer({
 
         if (res?.success && Array.isArray(res.data)) {
           setEvents((prev) => (append ? [...prev, ...res.data] : res.data));
+          // Pages are fixed-size, so what is loaded follows from the page
+          // number — no stale read of `events` from this callback's closure.
           const total = res.meta?.total ?? 0;
-          const loadedSoFar = (append ? events.length : 0) + res.data.length;
+          const loadedSoFar = (pageNum - 1) * PAGE_SIZE + res.data.length;
           setHasMore(loadedSoFar < total && res.data.length === PAGE_SIZE);
           setPage(pageNum);
         } else {
@@ -156,7 +169,7 @@ export default function EmployeeDrawer({
         }
       } catch (e) {
         if (reqId !== requestIdRef.current) return;
-        setError((e as Error)?.message || "Unable to load events.");
+        setError(actionErrorMessage(e, "Unable to load events."));
       } finally {
         if (reqId === requestIdRef.current) {
           setLoading(false);
@@ -164,42 +177,47 @@ export default function EmployeeDrawer({
         }
       }
     },
-    // events.length intentionally not a dep — fetchEvents reads latest via closure on (append, page) call site
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [user, timezone, stableFilters],
+    [userId, timezone, stableFilters],
   );
 
   useEffect(() => {
-    if (!open || !user) return;
+    if (!open || userId === null) return;
     setEvents([]);
     setPage(1);
     setHasMore(false);
     fetchEvents(1, false);
-  }, [open, user, fetchEvents]);
+  }, [open, userId, fetchEvents]);
 
   // Polling for ongoing events while drawer open — 30s, paused when tab hidden.
+  // Keyed on these two values, not the list: a poll that only refreshes rows
+  // leaves both unchanged and so does not restart the timer.
+  const hasOngoing = events.some((e) => e.ongoing);
+  const loadedCount = events.length;
   useEffect(() => {
-    if (!open || !user) return;
-    const hasOngoing = (user.ongoing_count ?? 0) > 0 || events.some((e) => e.ongoing);
-    if (!hasOngoing) return;
+    if (!open || userId === null || !hasOngoing) return;
 
     let cancelled = false;
     const tick = async () => {
       if (cancelled) return;
       if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
-      const reqId = ++requestIdRef.current;
+      const startedFor = requestIdRef.current;
       try {
+        // The loaded window re-read WITHOUT any status filter. The API's
+        // "ongoing" filter only returns events that are still open, so a poll
+        // filtered by it never saw an event resume: the row stayed "ongoing"
+        // forever and kept this timer running. Rows are replaced by id, so a
+        // resumed event flips to ended in place.
         const res = await listSuspensionEvents({
-          user_id: user.user.id,
+          user_id: userId,
           page: 1,
-          limit: Math.max(PAGE_SIZE, events.length || PAGE_SIZE),
+          limit: Math.min(MAX_POLL_LIMIT, Math.max(PAGE_SIZE, loadedCount)),
           timezone,
           sort: "suspended_at",
           order: "desc",
           ...stableFilters,
-          status: "ongoing",
+          status: undefined,
         });
-        if (cancelled || reqId !== requestIdRef.current) return;
+        if (cancelled || startedFor !== requestIdRef.current) return;
         if (res?.success && Array.isArray(res.data)) {
           const liveById = new Map(res.data.map((e) => [e.id, e]));
           setEvents((prev) => prev.map((e) => liveById.get(e.id) ?? e));
@@ -219,7 +237,7 @@ export default function EmployeeDrawer({
       window.clearInterval(id);
       document.removeEventListener("visibilitychange", onVisibility);
     };
-  }, [open, user, events, stableFilters, timezone]);
+  }, [open, userId, hasOngoing, loadedCount, stableFilters, timezone]);
 
   const handleLoadMore = useCallback(() => {
     if (loading || loadingMore || !hasMore) return;

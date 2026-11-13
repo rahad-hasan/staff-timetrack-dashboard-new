@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { format, parseISO } from "date-fns";
+import { formatCalendarDate } from "@/lib/timezone";
 import { ChevronLeft, Clock, User } from "lucide-react";
 
 import { getPayrollProfileForUser } from "@/actions/payroll/action";
@@ -18,15 +18,6 @@ import { getDecodedUser } from "@/utils/decodedLogInUser";
 export const metadata: Metadata = {
   title: "Payroll Profile History",
   description: "Historical salary profiles for an employee.",
-};
-
-const tryDate = (value?: string | null) => {
-  if (!value) return "—";
-  try {
-    return format(parseISO(value), "MMM d, yyyy");
-  } catch {
-    return value;
-  }
 };
 
 interface PageProps {
@@ -101,7 +92,7 @@ const PayrollProfileHistoryPage = async ({ params }: PageProps) => {
                       Effective
                     </p>
                     <p className="font-semibold text-headingTextColor dark:text-darkTextPrimary">
-                      {tryDate(profile.effective_from)} → {tryDate(profile.effective_to)}
+                      {formatCalendarDate(profile.effective_from)} → {formatCalendarDate(profile.effective_to)}
                     </p>
                   </div>
                   <div className="flex flex-wrap items-center gap-2">

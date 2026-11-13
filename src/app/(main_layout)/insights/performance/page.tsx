@@ -1,11 +1,10 @@
 
-import { getMonthlyWorkReport } from "@/actions/insights/action";
+import { Suspense } from "react";
 import MonthPicker from "@/components/Common/MonthPicker";
 import SelectUserWrapper from "@/components/Common/SelectUserWrapper";
-import PerformanceCharts from "@/components/Insights/Performance/PerformanceCharts";
+import MonthlyReportServer from "@/components/Insights/Performance/MonthlyReportServer";
+import MonthlyReportSkeleton from "@/components/Insights/Performance/MonthlyReportSkeleton";
 import { ISearchParamsProps } from "@/types/type";
-import { getDecodedUser } from "@/utils/decodedLogInUser";
-import { format } from "date-fns";
 import { CalendarRange } from "lucide-react";
 import { Metadata } from "next";
 
@@ -14,49 +13,8 @@ export const metadata: Metadata = {
   description: "Staff Time Tracker Monthly Report",
 };
 
-const resolveTargetMonth = async (
-  searchParams: ISearchParamsProps["searchParams"],
-) => {
-  const params = await searchParams;
-  const today = new Date();
-  const startMonth =
-    typeof params.start_month === "string" ? params.start_month : undefined;
-  const directMonth =
-    typeof params.month === "string" ? params.month : undefined;
-  const directYear = typeof params.year === "string" ? params.year : undefined;
-
-
-  if (startMonth) {
-    const parsed = new Date(startMonth);
-
-    if (!Number.isNaN(parsed.getTime())) {
-      return {
-        params,
-        month: format(parsed, "MM"),
-        year: format(parsed, "yyyy"),
-      };
-    }
-  }
-
-  return {
-    params,
-    month: directMonth || format(today, "MM"),
-    year: directYear || format(today, "yyyy"),
-  };
-};
-
 const MonthlyReportPage = async ({ searchParams }: ISearchParamsProps) => {
-  const user = await getDecodedUser();
-  const { params, month, year } = await resolveTargetMonth(searchParams);
-  const targetUserId = params.user_id ?? String(user?.id ?? "");
-
-  const response = await getMonthlyWorkReport({
-    user_id: targetUserId,
-    month,
-    year,
-  });
-
-  const report = response?.data;
+  const params = await searchParams;
 
   return (
     <div className="space-y-6">
@@ -83,14 +41,12 @@ const MonthlyReportPage = async ({ searchParams }: ISearchParamsProps) => {
         </div>
       </div>
 
-      {report ? (
-        <PerformanceCharts data={report} />
-      ) : (
-        <div className="rounded-[12px] border border-dashed border-borderColor bg-white p-8 text-center text-sm text-subTextColor  dark:border-darkBorder dark:bg-darkSecondaryBg dark:text-darkTextSecondary">
-          {response?.message ||
-            "Monthly report data is not available for the selected user and month."}
-        </div>
-      )}
+      {/* The report is read inside the boundary, so a visit, a month change
+          or a user switch (a new key) shows the skeleton at once instead of
+          freezing the previous report. */}
+      <Suspense key={JSON.stringify(params)} fallback={<MonthlyReportSkeleton />}>
+        <MonthlyReportServer searchParams={searchParams} />
+      </Suspense>
     </div>
   );
 };

@@ -15,6 +15,7 @@ import {
   MAX_ORDER_SEATS,
   seatCeilingFor,
 } from "@/lib/billing";
+import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
 import { cn } from "@/lib/utils";
 import type {
   BillingCycle,
@@ -73,6 +74,7 @@ export default function OrderSummaryPanel({
    */
   disabled?: boolean;
 }) {
+  const timeZone = useViewerTimeZone();
   const currency = quote?.currency ?? "usd";
   const features = (quote?.plan.features ?? [])
     .filter((f) => f.included)
@@ -337,7 +339,7 @@ export default function OrderSummaryPanel({
 
           {quote?.renews_at && (
             <p className="mt-1 text-xs text-subTextColor dark:text-darkTextSecondary">
-              Renews on {formatBillingDate(quote.renews_at)}
+              Renews on {formatBillingDate(quote.renews_at, timeZone)}
             </p>
           )}
         </div>

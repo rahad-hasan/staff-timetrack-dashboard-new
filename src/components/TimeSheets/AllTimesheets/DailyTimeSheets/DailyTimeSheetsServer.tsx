@@ -1,42 +1,32 @@
 import { getDailyTimeEntry } from "@/actions/timesheets/action";
-import { ISearchParams } from "@/types/type";
+import { ISearchParamsProps } from "@/types/type";
 import DailyTimeSheets from "./DailyTimeSheets";
 import AppPagination from "@/components/Common/AppPagination";
 import { getTimeEntry } from "@/actions/report/action";
-import { format } from "date-fns";
-import { getDecodedUser } from "@/utils/decodedLogInUser";
+import { resolveViewFilters } from "@/components/TimeSheets/viewFilters";
+import { requireDataOrRefusal } from "@/lib/server/liveData";
 
-type TimezoneOption = {
-  value: string;
-  label: string;
-};
-
-const DailyTimeSheetsServer = async ({
-  searchParams,
-  timezones,
-}: {
-  searchParams: ISearchParams;
-  timezones: { data: TimezoneOption[]; defaultValue: string };
-}) => {
+const DailyTimeSheetsServer = async ({ searchParams }: ISearchParamsProps) => {
   const params = await searchParams;
-  const user = await getDecodedUser();
-  const userId = user?.id;
-  const currentDate = format(new Date(), "yyyy-MM-dd");
+  const { user, userId, zone, date } = await resolveViewFilters(params);
 
-  const result = await getDailyTimeEntry({
-    search: params.search,
-    date: params.date ?? currentDate,
-    user_id: params.user_id ?? userId,
+  const filters = {
+    date,
+    user_id: userId,
     project_id: params.project_id,
-    timezone: params?.timezone,
-  });
+    timezone: params.timezone,
+  };
 
-  const timeLineData = await getTimeEntry({
-    date: params.date ?? currentDate,
-    user_id: params.user_id ?? userId,
-    project_id: params.project_id,
-    timezone: params?.timezone,
-  });
+  // The table and the timeline bar are independent reads of the same day.
+  const [result, timeLineData] = await Promise.all([
+    getDailyTimeEntry({ ...filters, search: params.search }),
+    getTimeEntry(filters),
+  ]);
+  // A refusal (no access to the member, no such member, a filter the API
+  // cannot read) keeps the empty day below, with the API's reason in its
+  // empty state; any other failure must not pass for a day without work.
+  requireDataOrRefusal(result, "the daily timesheet");
+  requireDataOrRefusal(timeLineData, "the daily timeline");
 
   const dailyData = result?.data ?? {
     items: [],
@@ -48,8 +38,11 @@ const DailyTimeSheetsServer = async ({
       <DailyTimeSheets
         data={dailyData}
         timeLineData={timeLineData?.data}
-        selectedDate={params.date}
-        timezones={timezones}
+        selectedDate={date}
+        timeZone={zone}
+        // Mirrors the backend: DELETE /time-entries/remove-manual-time is admin-only.
+        canDeleteManual={user?.role === "admin"}
+        message={result?.success === false ? result.message : undefined}
       ></DailyTimeSheets>
       <AppPagination
         total={result?.meta?.total ?? 1}

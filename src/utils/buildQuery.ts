@@ -1,6 +1,9 @@
-export function buildQuery(
-  params: Record<string, string | number | boolean | undefined | null>
-) {
+export type QueryParams = Record<
+  string,
+  string | number | boolean | undefined | null
+>;
+
+export function buildQuery(params: QueryParams) {
   const searchParams = new URLSearchParams();
 
   Object.entries(params).forEach(([key, value]) => {

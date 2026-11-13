@@ -19,7 +19,9 @@ import {
   IDowngradeResolveResult,
 } from "@/types/billing";
 import { resolveDowngrade } from "@/actions/billing/action";
+import { unstable_rethrow } from "next/navigation";
 import { formatBillingDate } from "@/lib/billing";
+import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
 import { useLogInUserStore } from "@/store/logInUserStore";
 
 type WizardStep = "users" | "projects" | "review";
@@ -37,6 +39,7 @@ export default function DowngradeWizard({
   preview: IDowngradePreview;
   onResolved: () => void;
 }) {
+  const timeZone = useViewerTimeZone();
   const { logInUserData } = useLogInUserStore();
 
   const actingId = useMemo(() => {
@@ -121,7 +124,8 @@ export default function DowngradeWizard({
           res?.message || "Could not apply your selection. Please try again.",
         );
       }
-    } catch {
+    } catch (error) {
+      unstable_rethrow(error);
       toast.error("Something went wrong while applying your selection.");
     } finally {
       setSubmitting(false);
@@ -306,7 +310,7 @@ export default function DowngradeWizard({
                         {project.name}
                       </span>
                       <span className="block truncate text-xs text-subTextColor dark:text-darkTextSecondary">
-                        Deadline: {formatBillingDate(project.deadline)}
+                        Deadline: {formatBillingDate(project.deadline, timeZone)}
                       </span>
                     </span>
                     <span className="shrink-0 rounded-full bg-bgSecondary px-2 py-0.5 text-[11px] font-medium capitalize text-subTextColor dark:bg-darkSecondaryBg dark:text-darkTextSecondary">

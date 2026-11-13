@@ -23,18 +23,19 @@ import { IAttendance } from "@/global/globalTypes";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
-import { useLogInUserStore } from "@/store/logInUserStore";
 
-// const AttendanceTable = ({ attendanceListData, searchTerm }: any) => {
-const AttendanceTable = ({ attendanceListData, searchTerm }: any) => {
-  const logInUserData = useLogInUserStore((state) => state.logInUserData);
+// `canOpenMember` comes from the server's view of the viewer's role, so the
+// profile links are in the server HTML rather than appearing (and mismatching
+// hydration) once the client user store rehydrates.
+const AttendanceTable = ({ attendanceListData, searchTerm, canOpenMember }: any) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState({});
 
   const filteredData = useMemo(() => {
     if (!searchTerm) return attendanceListData;
 
-    return attendanceListData.filter((row: IAttendance) => {
+    // A failed read leaves no list at all; searching it must not throw.
+    return (attendanceListData ?? []).filter((row: IAttendance) => {
       return row.name.toLowerCase().includes(searchTerm.toLowerCase());
     });
   }, [attendanceListData, searchTerm]);
@@ -66,9 +67,7 @@ const AttendanceTable = ({ attendanceListData, searchTerm }: any) => {
               <AvatarImage src={img ? img : ""} alt={name} />
               <AvatarFallback>{name?.charAt(0)}</AvatarFallback>
             </Avatar>
-            {logInUserData?.role === "admin" ||
-            logInUserData?.role === "manager" ||
-            logInUserData?.role === "hr" ? (
+            {canOpenMember ? (
               <Link href={`/members/${row?.original?.id}`}>
                 <span className="capitalize hover:underline-offset-2 hover:underline">
                   {name}

@@ -1,10 +1,8 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client"
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import { TOUR_ANCHORS } from "@/lib/onboarding/anchors";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 // import SelectProjectDropDown from "@/components/Common/SelectProjectDropDown";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import {
@@ -16,22 +14,6 @@ import { useCreateIntent } from "@/store/quickActionStore";
 
 const ClientHereSection = () => {
     const [open, setOpen] = useState(false)
-    const pathname = usePathname();
-    const searchParams = useSearchParams();
-    const router = useRouter();
-    useEffect(() => {
-        const params = new URLSearchParams(searchParams.toString());
-        params.set("page", "1");
-
-        router.push(`?${params.toString()}`);
-    }, [searchParams, router]);
-
-    useEffect(() => {
-        // If there are any search params at all, clear them on mount
-        if (searchParams.toString()) {
-            router.replace(pathname, { scroll: false });
-        }
-    }, []);
 
     // "Add client" pressed elsewhere (Quick Setup, the checklist widget, ⌘K)
     // navigates here and leaves the intent in the store; claim it and open the

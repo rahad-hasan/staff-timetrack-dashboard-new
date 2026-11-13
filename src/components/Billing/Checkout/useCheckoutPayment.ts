@@ -4,6 +4,7 @@ import { useCallback, useRef, useState } from "react";
 import { useElements, useStripe } from "@stripe/react-stripe-js";
 
 import { confirmSubscription, subscribeToPlan } from "@/actions/billing/action";
+import { actionErrorMessage } from "@/lib/actionErrors";
 import {
   mapPaymentFailure,
   mapRequestFailure,
@@ -301,9 +302,10 @@ export const useCheckoutPayment = ({
       } catch (error) {
         fail(
           mapRequestFailure(
-            error instanceof Error
-              ? error.message
-              : "Something went wrong completing your payment.",
+            actionErrorMessage(
+              error,
+              "Something went wrong completing your payment.",
+            ),
           ),
         );
       }

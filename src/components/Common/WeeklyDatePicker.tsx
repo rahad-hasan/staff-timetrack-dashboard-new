@@ -1,6 +1,9 @@
 "use client";
+import { parseDateParam } from "@/lib/timezone";
+import { useViewToday } from "@/hooks/useViewToday";
+import { parseISO } from "date-fns";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import React, { useCallback } from "react";
+import { useCallback } from "react";
 import CalendarIcon from "../Icons/CalendarIcon";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useTopLoader } from "nextjs-toploader";
@@ -133,7 +136,8 @@ const WeeklyDatePicker = () => {
   };
 
   const fromParam = searchParams.get("from_date");
-  const currentBaseDate = fromParam ? new Date(fromParam) : new Date();
+  const today = useViewToday();
+  const currentBaseDate = parseDateParam(fromParam) ?? parseISO(today);
   const { start, end } = getWeekRange(currentBaseDate);
 
   const handleNavigate = useCallback(
@@ -186,4 +190,6 @@ const WeeklyDatePicker = () => {
   );
 };
 
-export default React.memo(WeeklyDatePicker);
+// Not React.memo: a Server Component renders this, and React remounts a
+// memoised client component on every route re-render (see SpecificDatePicker).
+export default WeeklyDatePicker;

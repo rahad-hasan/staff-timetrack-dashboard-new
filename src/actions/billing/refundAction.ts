@@ -1,6 +1,5 @@
 "use server";
 
-import { buildQuery } from "@/utils/buildQuery";
 import { baseApi } from "../baseApi";
 import { IResponse } from "@/types/type";
 import {
@@ -11,33 +10,28 @@ import {
   TRefundStatus,
 } from "@/types/billing";
 
-// Refund requests are billing data: share the billing tag so a request
-// revalidates the cached billing reads along with it.
-const BASE = "/refunds";
-const TAG = "billing";
-
 /**
- * Like the other billing actions these never throw: a failure comes back as
- * `{ success: false, message }` and the dialogs show `message` inline.
+ * Refund requests. Like the other billing actions these never throw: a
+ * failure comes back as `{ success: false, message }` and the dialogs show
+ * `message` inline.
+ *
+ * Untagged on purpose (see "Freshness" in ./action.ts). A request only asks
+ * the billing team for money back — nothing about the subscription changes
+ * until they process it, and that decision arrives over the `refunds:changed`
+ * socket ping. The lists live in client state and re-read on the billing
+ * store's `dataVersion`, so a whole-route re-render per request would refresh
+ * nothing anyone is looking at.
  */
+const BASE = "/refunds";
 
 export const getRefundEligibility = async (
   invoiceId: number,
 ): Promise<IResponse<IRefundEligibility>> =>
-  await baseApi(`${BASE}/invoices/${invoiceId}/eligibility`, {
-    tag: TAG,
-    cache: "no-cache",
-  });
+  await baseApi(`${BASE}/invoices/${invoiceId}/eligibility`);
 
 export const getRefundRequests = async (
   query: { page?: number; limit?: number; status?: TRefundStatus } = {},
-): Promise<IResponse<IRefundRequest[]>> => {
-  const queryString = buildQuery(query);
-  return await baseApi(`${BASE}${queryString ? `?${queryString}` : ""}`, {
-    tag: TAG,
-    cache: "no-cache",
-  });
-};
+): Promise<IResponse<IRefundRequest[]>> => await baseApi(BASE, { query });
 
 export const createRefundRequest = async (
   payload: ICreateRefundPayload,
@@ -45,8 +39,6 @@ export const createRefundRequest = async (
   await baseApi(BASE, {
     method: "POST",
     body: payload,
-    tag: TAG,
-    cache: "no-cache",
   });
 
 export const cancelRefundRequest = async (
@@ -55,6 +47,4 @@ export const cancelRefundRequest = async (
   await baseApi(`${BASE}/${id}/cancel`, {
     method: "POST",
     body: {},
-    tag: TAG,
-    cache: "no-cache",
   });

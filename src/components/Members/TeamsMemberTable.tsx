@@ -36,6 +36,7 @@ import DeleteIcon from "../Icons/DeleteIcon";
 import { ITeamMembers } from "@/global/globalTypes";
 import { toast } from "sonner";
 import { deleteMember } from "@/actions/members/action";
+import { actionErrorMessage } from "@/lib/actionErrors";
 import ConfirmDialog from "../Common/ConfirmDialog";
 import Link from "next/link";
 import CheckIcon from "../Icons/CheckIcon";
@@ -62,8 +63,8 @@ const TeamsMemberTable = ({ data }: any) => {
           },
         });
       }
-    } catch (error: any) {
-      toast.error(error?.message || "Something went wrong!", {
+    } catch (error) {
+      toast.error(actionErrorMessage(error, "Something went wrong!"), {
         style: {
           backgroundColor: "#ef4444",
           color: "white",

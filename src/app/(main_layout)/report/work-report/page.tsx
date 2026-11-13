@@ -72,13 +72,14 @@ const WorkReport = async ({ searchParams }: ISearchParamsProps) => {
                     </div> */}
           <MonthPicker></MonthPicker>
         </div>
-        <div className=" hidden xl:flex flex-col md:flex-row md:items-center gap-4">
-          <AllowOvertimeCheckbox overTime={data?.schedule?.allow_overtime} />
+        {/* One instance of each control: the checkbox moves ahead of the user
+            picker from xl up with CSS order, instead of a second, hidden copy
+            of both (which mounted — and fetched members — twice). */}
+        <div className=" flex flex-col md:flex-row md:items-center gap-4">
           <SelectUserWrapper />
-        </div>
-        <div className=" flex xl:hidden flex-col md:flex-row md:items-center gap-4">
-          <SelectUserWrapper />
-          <AllowOvertimeCheckbox overTime={data?.schedule?.allow_overtime} />
+          <div className="xl:order-first">
+            <AllowOvertimeCheckbox overTime={data?.schedule?.allow_overtime} />
+          </div>
         </div>
       </div>
 

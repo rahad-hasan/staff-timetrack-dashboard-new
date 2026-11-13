@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 import { YearPicker } from "@/components/Common/YearPicker";
+import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -25,6 +26,7 @@ import {
   monthName,
   splitAdjustments,
 } from "@/lib/payroll";
+import { formatInstant, todayIn } from "@/lib/timezone";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import { EmployeePayroll } from "@/types/payroll";
 import PayrollAdjustmentLines, {
@@ -47,19 +49,23 @@ const MyPayslipsView = ({ items, selectedYear }: MyPayslipsViewProps) => {
   // download only disables its own button.
   const [downloadingId, setDownloadingId] = useState<number | null>(null);
   const logInUserData = useLogInUserStore((state) => state.logInUserData);
+  const timeZone = useViewerTimeZone();
+  // The viewer's year, as MyPayslipsServer picks the default one.
+  const currentYear = Number(todayIn(timeZone, "yyyy"));
 
   // /payroll/history doesn't embed the user object, so identity comes from the
   // logged-in user — these payslips are always the viewer's own.
   const handleDownload = useCallback(
     async (item: EmployeePayroll) => {
       setDownloadingId(item.id);
-      await downloadPayslipPdf(item, {
-        name: logInUserData?.name,
-        email: logInUserData?.email,
-      });
+      await downloadPayslipPdf(
+        item,
+        { name: logInUserData?.name, email: logInUserData?.email },
+        timeZone,
+      );
       setDownloadingId(null);
     },
-    [logInUserData?.name, logInUserData?.email],
+    [logInUserData?.name, logInUserData?.email, timeZone],
   );
 
   const filtered = useMemo(
@@ -261,8 +267,8 @@ const MyPayslipsView = ({ items, selectedYear }: MyPayslipsViewProps) => {
           <YearPicker
             value={String(selectedYear)}
             onYearChange={pushYear}
-            startYear={new Date().getFullYear() - 5}
-            endYear={new Date().getFullYear() + 1}
+            startYear={currentYear - 5}
+            endYear={currentYear + 1}
           />
         </div>
 
@@ -323,10 +329,11 @@ const MyPayslipsView = ({ items, selectedYear }: MyPayslipsViewProps) => {
                 <div className="mt-4 flex items-center justify-between text-xs text-subTextColor dark:text-darkTextSecondary">
                   <span className="inline-flex items-center gap-1">
                     <Calendar className="size-3.5" />
+                    {/* An instant, in the viewer's zone: toLocaleDateString()
+                        printed the server's zone and locale in the HTML and
+                        the browser's after hydration (#418). */}
                     {item.payrollRun?.approved_at
-                      ? new Date(
-                          item.payrollRun.approved_at,
-                        ).toLocaleDateString()
+                      ? formatInstant(item.payrollRun.approved_at, timeZone)
                       : ""}
                   </span>
                   <span className="inline-flex items-center gap-1 font-medium text-primary group-hover:translate-x-0.5 group-hover:transition">

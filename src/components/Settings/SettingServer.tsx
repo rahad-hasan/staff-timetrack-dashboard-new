@@ -1,41 +1,52 @@
 import { ISearchParamsProps } from "@/types/type";
-import Configuration from "@/components/Settings/Configuration";
-import Profile from "@/components/Settings/Profile";
 // import Subscription from "@/components/Settings/Subscription";
 import { getCompanyInfo } from "@/actions/settings/action";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
-import SlackConnectedApps from "@/components/Integrations/SlackConnectedApps";
-import AppIntegrations from "./AppIntegrations";
-import ChangePassword from "./ChangePassword";
+import {
+    AppIntegrationsTab,
+    ChangePasswordTab,
+    ConfigurationTab,
+    ProfileTab,
+    SlackConnectedAppsPanel,
+} from "./SettingsTabPanels";
+
+/** The only tab that renders company data — so the only one that reads it. */
+const CompanyConfiguration = async () => {
+    const result = await getCompanyInfo();
+    return <ConfigurationTab data={result?.data}></ConfigurationTab>;
+};
+
+const AdminAppIntegrations = async ({ app }: { app?: string }) => {
+    const currentUser = await getDecodedUser();
+    if (currentUser?.role !== "admin") return null;
+    return <AppIntegrationsTab app={app}></AppIntegrationsTab>;
+};
 
 const SettingServer = async ({ searchParams }: ISearchParamsProps) => {
     const params = await searchParams
     const activeTab = params.tab ?? "Profile";
-    const result = await getCompanyInfo();
-    const currentUser = await getDecodedUser();
-    const isAdmin = currentUser?.role === "admin";
 
     return (
         <div>
             {
                 activeTab === "Profile" &&
                 <>
-                    <Profile></Profile>
+                    <ProfileTab></ProfileTab>
                     {/* member-facing Slack surface — every role, incl. employee */}
-                    <SlackConnectedApps></SlackConnectedApps>
+                    <SlackConnectedAppsPanel></SlackConnectedAppsPanel>
                 </>
             }
             {
                 activeTab === "Configuration" &&
-                <Configuration data={result?.data}></Configuration>
+                <CompanyConfiguration></CompanyConfiguration>
             }
             {
-                activeTab === "App Integrations" && isAdmin &&
-                <AppIntegrations app={typeof params.app === "string" ? params.app : undefined}></AppIntegrations>
+                activeTab === "App Integrations" &&
+                <AdminAppIntegrations app={typeof params.app === "string" ? params.app : undefined}></AdminAppIntegrations>
             }
             {
                 activeTab === "Change Password" &&
-                <ChangePassword></ChangePassword>
+                <ChangePasswordTab></ChangePasswordTab>
             }
             {/* {
                 activeTab === "Subscription Management" &&

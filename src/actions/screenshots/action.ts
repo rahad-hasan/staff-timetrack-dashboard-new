@@ -1,21 +1,22 @@
 "use server";
 
 import { revalidateTag } from "next/cache";
-import { buildQuery } from "@/utils/buildQuery";
 import { baseApi } from "../baseApi";
 import { IAllScreenshot, INotes, IResponse } from "@/types/type";
 
-// Screenshot URLs are signed and expire; when the client detects dead image
-// tokens it calls this so the next render re-fetches freshly signed URLs
-// instead of serving the cached (expired) payload for the revalidate window.
+// Screenshot URLs are signed and expire. When the client sees dead image
+// tokens it calls this: revalidating inside a server action makes Next answer
+// the action with a fresh render of the current route, and because every
+// screenshot read is live that render carries freshly signed URLs. No cache
+// entry is involved — the tags only trigger that render.
 export const refreshScreenshotUrls = async () => {
   revalidateTag("screenshots");
   revalidateTag("allScreenshots");
 };
 
 export const getScreenshots10Min = async (query = {}) => {
-  const queryString = buildQuery(query);
-  return await baseApi(`/activities${queryString ? `?${queryString}` : ""}`, {
+  return await baseApi("/activities", {
+    query,
     tag: "screenshots",
   });
 };
@@ -23,24 +24,17 @@ export const getScreenshots10Min = async (query = {}) => {
 export const getAllScreenshots = async (
   query = {},
 ): Promise<IResponse<IAllScreenshot[]>> => {
-  const queryString = buildQuery(query);
-  return await baseApi(
-    `/activities/all-screenshots${queryString ? `?${queryString}` : ""}`,
-    {
-      tag: "allScreenshots",
-      revalidate: 30,
-    },
-  );
+  return await baseApi("/activities/all-screenshots", {
+    query,
+    tag: "allScreenshots",
+  });
 };
 
 export const getNotes = async (query = {}): Promise<IResponse<INotes[]>> => {
-  const queryString = buildQuery(query);
-  return await baseApi(
-    `/activities/notes${queryString ? `?${queryString}` : ""}`,
-    {
-      tag: "screenshots",
-    },
-  );
+  return await baseApi("/activities/notes", {
+    query,
+    tag: "screenshots",
+  });
 };
 
 export const deleteScreenshot = async ({
@@ -57,6 +51,5 @@ export const deleteScreenshot = async ({
     method: "DELETE",
     body: data,
     tag: "screenshots",
-    cache: "no-cache",
   });
 };

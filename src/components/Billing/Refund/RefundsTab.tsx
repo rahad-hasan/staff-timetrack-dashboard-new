@@ -24,7 +24,9 @@ import {
 } from "@/components/ui/table";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { cancelRefundRequest } from "@/actions/billing/refundAction";
+import { unstable_rethrow } from "next/navigation";
 import { formatBillingDate, formatCents } from "@/lib/billing";
+import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
 import { REFUND_REASON_LABELS } from "@/lib/refund";
 import { useBillingStore } from "@/store/billingStore";
 import { socket } from "@/socket/socket";
@@ -42,9 +44,9 @@ const amountOf = (refund: IRefundRequest) =>
     ? refund.refunded_amount_cents
     : (refund.approved_amount_cents ?? refund.requested_amount_cents);
 
-const responseText = (refund: IRefundRequest) => {
+const responseText = (refund: IRefundRequest, timeZone: string) => {
   if (refund.status === "processed") {
-    const refunded = `Refunded ${formatCents(refund.refunded_amount_cents, refund.currency)} on ${formatBillingDate(refund.processed_at)}`;
+    const refunded = `Refunded ${formatCents(refund.refunded_amount_cents, refund.currency)} on ${formatBillingDate(refund.processed_at, timeZone)}`;
     return refund.subscription_canceled_at ? `${refunded} · subscription ended` : refunded;
   }
   if (refund.source !== "request") return "Issued by our billing team";
@@ -52,15 +54,22 @@ const responseText = (refund: IRefundRequest) => {
 };
 
 export default function RefundsTab({ isAdmin }: { isAdmin: boolean }) {
+  const timeZone = useViewerTimeZone();
   const { rows, page, setPage, totalPages, loading, error, retry } = useRefundRequests(LIMIT);
   const [withdrawingId, setWithdrawingId] = useState<number | null>(null);
   const [confirming, setConfirming] = useState<IRefundRequest | null>(null);
 
   // A console decision arrives as a socket ping; one bump refetches this list.
   // Pings sent while the socket was down are not replayed, so a reconnect
-  // refetches too.
+  // refetches too. The billing status is re-read alongside: a processed
+  // refund can end the subscription (`subscription_canceled_at`), and the
+  // plan card and banners must not keep showing a plan that is gone.
   useEffect(() => {
-    const onChanged = () => useBillingStore.getState().bumpDataVersion();
+    const onChanged = () => {
+      const { bumpDataVersion, fetchStatus } = useBillingStore.getState();
+      bumpDataVersion();
+      void fetchStatus({ force: true });
+    };
     socket.on(REFUNDS_CHANGED, onChanged);
     socket.on("connect", onChanged);
     return () => {
@@ -80,7 +89,8 @@ export default function RefundsTab({ isAdmin }: { isAdmin: boolean }) {
       } else {
         toast.error(response?.message || "Could not withdraw the request.");
       }
-    } catch {
+    } catch (error) {
+      unstable_rethrow(error);
       toast.error("Something went wrong while withdrawing the request.");
     } finally {
       setWithdrawingId(null);
@@ -139,7 +149,7 @@ export default function RefundsTab({ isAdmin }: { isAdmin: boolean }) {
           ) : (
             rows.map((refund) => (
               <TableRow key={refund.id}>
-                <TableCell className="whitespace-nowrap">{formatBillingDate(refund.created_at)}</TableCell>
+                <TableCell className="whitespace-nowrap">{formatBillingDate(refund.created_at, timeZone)}</TableCell>
                 <TableCell className="whitespace-nowrap font-medium">{refund.invoice.invoice_number}</TableCell>
                 <TableCell className="whitespace-nowrap tabular-nums">
                   {formatCents(amountOf(refund), refund.currency)}
@@ -153,8 +163,8 @@ export default function RefundsTab({ isAdmin }: { isAdmin: boolean }) {
                   <RefundStatusBadge status={refund.status} />
                 </TableCell>
                 <TableCell className="max-w-[260px] text-sm text-subTextColor dark:text-darkTextSecondary">
-                  <p className="line-clamp-2 break-words" title={responseText(refund)}>
-                    {responseText(refund)}
+                  <p className="line-clamp-2 break-words" title={responseText(refund, timeZone)}>
+                    {responseText(refund, timeZone)}
                   </p>
                 </TableCell>
                 <TableCell>
