@@ -27,16 +27,27 @@ process.env.NEXT_PUBLIC_BUILD_STAMP ||= `${Date.now().toString(36)}-${Math.rando
   .toString(36)
   .slice(2, 10)}`;
 
+// Build/dev output folder. Defaults to .next (what `npm run start` serves under pm2);
+// automated tooling sets NEXT_DIST_DIR=.next-agent so its builds and dev servers never
+// overwrite the folder a running `next start` is serving.
+const distDir = process.env.NEXT_DIST_DIR || ".next";
+
 const nextConfig: NextConfig = {
   // NEXT_PUBLIC_ variables are inlined anyway; listing it here states the
   // contract next to its only producer.
   env: {
     NEXT_PUBLIC_BUILD_STAMP: process.env.NEXT_PUBLIC_BUILD_STAMP,
   },
-  // Build/dev output folder. Defaults to .next (what `npm run start` serves under pm2);
-  // automated tooling sets NEXT_DIST_DIR=.next-agent so its builds and dev servers never
-  // overwrite the folder a running `next start` is serving.
-  distDir: process.env.NEXT_DIST_DIR || ".next",
+  distDir,
+  // Each output folder gets its own tsconfig. Next type-checks against this file and adds
+  // `<distDir>/types/**/*.ts` to its `include` when that line is missing. With a single
+  // tsconfig.json, an agent build added `.next-agent/types` beside `.next/types`, so a
+  // production build also checked the leftover types of an older tree. Those types still
+  // named the since-deleted /dashboard layout, so `pnpm build` failed on the VPS. Both
+  // folders declare the same global PageProps/LayoutProps, so they must never share a program.
+  typescript: {
+    tsconfigPath: distDir === ".next" ? "tsconfig.json" : "tsconfig.agent.json",
+  },
   output: "standalone",
   experimental: {
     serverActions: {
