@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { IAllScreenshot } from "@/types/type";
 import EmptyTableLogo from "@/assets/empty_table.svg";
-import ScreenshotImage from "./ScreenshotImage";
+import ScreenshotImage, { EAGER_SCREENSHOT_TILES } from "./ScreenshotImage";
 import { useAllScreenshotsLightbox } from "./ScreenshotLightbox";
 
 const AllScreenShorts = ({
@@ -21,7 +21,7 @@ const AllScreenShorts = ({
   return (
     <>
       <div className="mt-3 grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
-        {data?.map((screenShort) => (
+        {data?.map((screenShort, index) => (
           <div key={screenShort?.id} className="mb-5">
             <div className="text-center space-y-1 mb-3">
               <h2 className="bg-[#F3F4F6] dark:bg-darkSecondaryBg py-1 rounded-full text-sm text-headingTextColor dark:text-darkTextPrimary">
@@ -40,7 +40,9 @@ const AllScreenShorts = ({
                   src={screenShort?.image}
                   alt="screenshot"
                   fill
-                  sizes="(max-width: 768px) 20vw, (max-width: 1200px) 18vw, 15vw"
+                  // The first rows fetch at once, the rest as they near the
+                  // viewport (see ScreenshotImage `load`).
+                  load={index < EAGER_SCREENSHOT_TILES ? "eager" : "near"}
                   className="object-cover transition-transform duration-300 hover:scale-[1.01]"
                 />
               </div>

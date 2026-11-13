@@ -16,7 +16,7 @@ import ConfirmDialog from "@/components/Common/ConfirmDialog";
 import { deleteScreenshot } from "@/actions/screenshots/action";
 import { actionErrorMessage } from "@/lib/actionErrors";
 import { toast } from "sonner";
-import ScreenshotImage from "./ScreenshotImage";
+import ScreenshotImage, { EAGER_SCREENSHOT_TILES } from "./ScreenshotImage";
 import { TTimelineDataSlot, TTimelineHourBlock } from "@/types/type";
 // import emptyActivity from "../../../assets/empty_activity.png";
 
@@ -46,6 +46,19 @@ const Every10Mins = ({
     [data],
   );
   const openScreenshot = useEvery10MinsLightbox(dayScreenshots);
+  // The first image tiles in page order fetch at once; the rest as they near
+  // the viewport (see ScreenshotImage `load`).
+  const eagerSlots = useMemo(
+    () =>
+      new Set(
+        (data ?? [])
+          .flatMap((hourGroup) => hourGroup.slots)
+          .filter((slot) => slot.type === "data")
+          .slice(0, EAGER_SCREENSHOT_TILES)
+          .map((slot) => slot.from_time),
+      ),
+    [data],
+  );
 
   const handleDeleteScreenShot = async (data: TTimelineDataSlot) => {
     const finalData = {
@@ -136,7 +149,7 @@ const Every10Mins = ({
                         src={block?.details?.[0]?.image}
                         alt="screenshot"
                         fill
-                        sizes="(max-width: 768px) 20vw, (max-width: 1200px) 18vw, 15vw"
+                        load={eagerSlots.has(block.from_time) ? "eager" : "near"}
                         className="object-cover transition-transform duration-300 hover:scale-[1.05]"
                       />
                     </div>

@@ -61,6 +61,9 @@ function Thumb({ shot }: ThumbProps) {
               sizes="176px"
               loading="lazy"
               decoding="async"
+              // Signed screenshot: load it from the CDN, not through the VPS
+              // optimizer (see ScreenshotImage for why).
+              unoptimized
               className="object-cover transition group-hover:scale-[1.02]"
             />
           )}
@@ -87,6 +90,7 @@ function Thumb({ shot }: ThumbProps) {
             width={1600}
             height={900}
             className="h-auto w-full rounded-md object-contain"
+            unoptimized
           />
         </div>
       </DialogContent>
