@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useState } from "react";
-import { ChevronLeft, X } from "lucide-react";
+import dynamic from "next/dynamic";
+import { ChevronLeft, Loader2, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { IBillingPlan, IBillingStatus } from "@/types/billing";
@@ -19,11 +20,47 @@ import BillingTabs, {
   useBillingTab,
   useScrollToPlans,
 } from "@/components/Billing/BillingTabs";
-import InvoiceTab from "@/components/Billing/InvoiceTab";
-import RefundsTab from "@/components/Billing/Refund/RefundsTab";
-import ChangeCardTab from "@/components/Billing/PaymentMethod/ChangeCardTab";
 import { adoptServerBillingStatus } from "@/components/Billing/adoptServerBillingStatus";
+import { loadOrReload } from "@/lib/lazyChunk";
 import Link from "next/link";
+
+/*
+ * The three tabs that are not the page's opening tab, each its own chunk.
+ *
+ * Only one tab body is ever mounted, and the page opens on My Plan, yet all
+ * of them used to ship with it: Change Card alone brought Stripe Elements,
+ * zod, react-hook-form and the country tables (about 73 kB gzipped), and
+ * Refunds the socket client. They are fetched when their tab is first shown;
+ * pointing at or focusing the tab strip starts the downloads. Server
+ * rendering is left on, so a link straight to `?tab=invoice` still arrives
+ * with its content.
+ */
+const TabLoading = () => (
+  <div role="status" aria-label="Loading" className="flex justify-center py-16">
+    <Loader2 className="size-6 animate-spin text-primary" />
+  </div>
+);
+
+const importInvoiceTab = () => import("@/components/Billing/InvoiceTab");
+const loadInvoiceTab = loadOrReload(importInvoiceTab);
+const InvoiceTab = dynamic(loadInvoiceTab, { loading: TabLoading });
+
+const importRefundsTab = () => import("@/components/Billing/Refund/RefundsTab");
+const loadRefundsTab = loadOrReload(importRefundsTab);
+const RefundsTab = dynamic(loadRefundsTab, { loading: TabLoading });
+
+const importChangeCardTab = () =>
+  import("@/components/Billing/PaymentMethod/ChangeCardTab");
+const loadChangeCardTab = loadOrReload(importChangeCardTab);
+const ChangeCardTab = dynamic(loadChangeCardTab, { loading: TabLoading });
+
+// The raw imports, never the loaders above: a warm-up must not reload the
+// page. Change Card is only offered to admins, so only they fetch it early.
+const warmBillingTabs = (isAdmin: boolean) => {
+  importInvoiceTab().catch(() => {});
+  importRefundsTab().catch(() => {});
+  if (isAdmin) importChangeCardTab().catch(() => {});
+};
 
 /**
  * /settings/billing orchestrator (contract §21). Hands the server-rendered
@@ -130,11 +167,18 @@ export default function BillingPageClient({
   return (
     <div className="mt-4 space-y-4 sm:space-y-6">
       <div className=" flex justify-between">
-        <BillingTabs
-          activeTab={activeTab}
-          onChange={setTab}
-          isAdmin={isAdmin}
-        />
+        {/* `contents`: no box of its own, so the strip stays the flex item. */}
+        <div
+          className="contents"
+          onPointerEnter={() => warmBillingTabs(isAdmin)}
+          onFocus={() => warmBillingTabs(isAdmin)}
+        >
+          <BillingTabs
+            activeTab={activeTab}
+            onChange={setTab}
+            isAdmin={isAdmin}
+          />
+        </div>
         <Link
           href="/settings"
           className="inline-flex items-center gap-1 mt-3 sm:mt-0 text-sm text-subTextColor hover:text-headingTextColor dark:text-darkTextSecondary dark:hover:text-darkTextPrimary"

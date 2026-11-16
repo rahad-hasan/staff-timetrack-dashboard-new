@@ -9,7 +9,9 @@ import { IClients } from "@/global/globalTypes";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 // import Link from "next/link";
 import { Dialog } from "@/components/ui/dialog";
-import EditClientModal from "./EditClientModal";
+import dynamic from "next/dynamic";
+import { loadOrReload } from "@/lib/lazyChunk";
+import { DialogChunkPlaceholder } from "@/components/Common/DialogChunkPlaceholder";
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import FilterButton from "@/components/Common/FilterButton";
 // import EyeIcon from "@/components/Icons/EyeIcon";
@@ -19,6 +21,29 @@ import DeleteIcon from "@/components/Icons/DeleteIcon";
 import ConfirmDialog from "@/components/Common/ConfirmDialog";
 import { deleteClient } from "@/actions/clients/action";
 import { actionErrorMessage } from "@/lib/actionErrors";
+
+// The edit form (zod, react-hook-form, the phone field with libphonenumber-js
+// and the country tables) opens from a row, so it is its own chunk instead of
+// part of the client list's first load. Opening a row's action menu starts the
+// download; the placeholder covers a click that beats it.
+const importEditClientModal = () => import("./EditClientModal");
+const loadEditClientModal = loadOrReload(importEditClientModal);
+const EditClientModal = dynamic(loadEditClientModal, {
+    ssr: false,
+    loading: () => (
+        <DialogChunkPlaceholder
+            title="Edit Client"
+            titleClassName=" mb-4"
+            className="sm:max-w-[525px]"
+        />
+    ),
+});
+
+// The raw import, never the loader above: a warm-up must not reload the page.
+const warmEditClientModal = () => {
+    importEditClientModal().catch(() => {});
+};
+
 // import DeleteIcon from "@/components/Icons/DeleteIcon";
 
 const ClientsTable = ({ data }: any) => {
@@ -156,7 +181,7 @@ const ClientsTable = ({ data }: any) => {
             header: () => <div className="">Action</div>,
             cell: (row) => {
                 return <div className="">
-                    <Popover>
+                    <Popover onOpenChange={(menuOpen) => { if (menuOpen) warmEditClientModal(); }}>
                         <PopoverTrigger asChild>
                             <div>
                                 <FilterButton></FilterButton>

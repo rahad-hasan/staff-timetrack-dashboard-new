@@ -7,8 +7,12 @@ import {
 } from "@/types/type";
 import { ORGANIZATION_ONBOARDING_REDIRECT } from "./organization";
 
-/** The fields of a sign-in style answer that hold a JWT. */
-const SESSION_TOKEN_FIELDS = ["accessToken", "refreshToken"] as const;
+/**
+ * The fields of a sign-in style answer that hold a JWT. `signup_token` is the
+ * proof `POST /company` asks for (lib/sessionCookies.ts `writeSignupProof`):
+ * like the session tokens it goes to an httpOnly cookie, never to the page.
+ */
+const SESSION_TOKEN_FIELDS = ["accessToken", "refreshToken", "signup_token"] as const;
 
 type SessionTokenField = (typeof SESSION_TOKEN_FIELDS)[number];
 

@@ -18,9 +18,33 @@ import { useLogInUserStore } from "@/store/logInUserStore";
 import { canManageLeave } from "@/lib/leave";
 import { ILeaveDetailsResponse, LeaveTypeRecord } from "@/types/type";
 import LeaveTypeDetailsSheet from "./LeaveTypeDetailsSheet";
-import LeaveTypeFormDialog from "./LeaveTypeFormDialog";
+import dynamic from "next/dynamic";
+import { loadOrReload } from "@/lib/lazyChunk";
+import { DialogChunkPlaceholder } from "@/components/Common/DialogChunkPlaceholder";
 import LeaveTypeCard from "./PolicyCatalogCard";
 import EmployeeLeaveCoverageList from "./EmployeeLeaveCoverageList";
+
+// The create/edit form (zod, react-hook-form) is its own chunk, fetched when
+// it is first opened instead of with every visit to the leave types. Hovering
+// or focusing a "Create" button starts the download; the placeholder covers a
+// click that beats it.
+const importLeaveTypeFormDialog = () => import("./LeaveTypeFormDialog");
+const loadLeaveTypeFormDialog = loadOrReload(importLeaveTypeFormDialog);
+const LeaveTypeFormDialog = dynamic(loadLeaveTypeFormDialog, {
+  ssr: false,
+  loading: () => (
+    <DialogChunkPlaceholder
+      title="Leave type"
+      hideTitle
+      className="max-h-[95vh] w-full max-w-[calc(100vw-1rem)] overflow-y-auto border-borderColor p-4 sm:max-w-[920px] sm:p-5 dark:border-darkBorder dark:bg-darkSecondaryBg"
+    />
+  ),
+});
+
+// The raw import, never the loader above: a warm-up must not reload the page.
+const warmLeaveTypeFormDialog = () => {
+  importLeaveTypeFormDialog().catch(() => {});
+};
 
 type LeaveTypesBoardProps = {
   leaveTypes: LeaveTypeRecord[];
@@ -246,7 +270,11 @@ const LeaveTypesBoard = ({
               endYear={new Date().getFullYear() + 1}
             />
             {resolvedCanEditLeaveTypes ? (
-              <Button onClick={handleCreate}>
+              <Button
+                onClick={handleCreate}
+                onPointerEnter={warmLeaveTypeFormDialog}
+                onFocus={warmLeaveTypeFormDialog}
+              >
                 <Plus className="size-4" />
                 New type
               </Button>
@@ -324,7 +352,12 @@ const LeaveTypesBoard = ({
                 : "Leave types will appear here as soon as an admin or HR user creates them."}
             </p>
             {resolvedCanEditLeaveTypes && !noResults ? (
-              <Button className="mt-5" onClick={handleCreate}>
+              <Button
+                className="mt-5"
+                onClick={handleCreate}
+                onPointerEnter={warmLeaveTypeFormDialog}
+                onFocus={warmLeaveTypeFormDialog}
+              >
                 <Plus className="size-4" />
                 Create leave type
               </Button>

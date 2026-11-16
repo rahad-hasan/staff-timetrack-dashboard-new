@@ -31,7 +31,9 @@ import EditIcon from "@/components/Icons/FilterOptionIcon/EditIcon";
 // import ArchiveIcon from "@/components/Icons/FilterOptionIcon/ArchiveIcon";
 // import MemberIcon from "@/components/Icons/FilterOptionIcon/MemberIcon";
 // import DeleteIcon from "@/components/Icons/DeleteIcon";
-import EditProjectModal from "./EditProjectModal";
+import dynamic from "next/dynamic";
+import { loadOrReload } from "@/lib/lazyChunk";
+import { DialogChunkPlaceholder } from "@/components/Common/DialogChunkPlaceholder";
 import { toast } from "sonner";
 import { editProject } from "@/actions/projects/action";
 import { actionErrorMessage } from "@/lib/actionErrors";
@@ -41,6 +43,27 @@ import { formatTZDayMonthYear } from "@/utils";
 import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
 import Link from "next/link";
 
+
+// The edit wizard (zod, react-hook-form, the calendar, Radix Select, the member
+// multi-select) is its own chunk, fetched when it is first opened instead of
+// with the page. Opening a row's action menu starts the download.
+const importEditProjectModal = () => import("./EditProjectModal");
+const loadEditProjectModal = loadOrReload(importEditProjectModal);
+const EditProjectModal = dynamic(loadEditProjectModal, {
+    ssr: false,
+    loading: () => (
+        <DialogChunkPlaceholder
+            title="Edit Project"
+            hideTitle
+            className=" w-full sm:max-w-[525px] max-h-[95vh] overflow-y-auto"
+        />
+    ),
+});
+
+// The raw import, never the loader above: a warm-up must not reload the page.
+const warmEditProjectModal = () => {
+    importEditProjectModal().catch(() => {});
+};
 
 const ProjectTable = ({ data }: { data: IProject[] }) => {
     // The layout's zone, not the helpers' store default: this renders on the
@@ -464,7 +487,7 @@ const ProjectTable = ({ data }: { data: IProject[] }) => {
             header: () => <div className="">Action</div>,
             cell: ({ row }) => {
                 return <div className="">
-                    <Popover>
+                    <Popover onOpenChange={(menuOpen) => { if (menuOpen) warmEditProjectModal(); }}>
                         <PopoverTrigger asChild>
                             <div>
                                 <FilterButton></FilterButton>

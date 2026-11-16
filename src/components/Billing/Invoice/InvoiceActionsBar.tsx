@@ -6,7 +6,31 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { IBillingInvoiceDetail } from "@/types/billing";
-import RequestRefundDialog from "../Refund/RequestRefundDialog";
+import dynamic from "next/dynamic";
+import { loadOrReload } from "@/lib/lazyChunk";
+import { useLatched } from "@/lib/onboarding/useLatched";
+import { StandaloneDialogChunkPlaceholder } from "@/components/Common/DialogChunkPlaceholder";
+
+// The refund form (zod, react-hook-form, Radix Select) was nine tenths of this
+// page's own JavaScript although only an admin on a paid invoice can open it.
+// Its own chunk now, fetched on first open; hovering or focusing "Request
+// refund" starts the download and the placeholder covers a click that beats it.
+const importRequestRefundDialog = () => import("../Refund/RequestRefundDialog");
+const loadRequestRefundDialog = loadOrReload(importRequestRefundDialog);
+const RequestRefundDialog = dynamic(loadRequestRefundDialog, {
+  ssr: false,
+  loading: () => (
+    <StandaloneDialogChunkPlaceholder
+      title="Request a refund"
+      className="w-full max-w-[calc(100vw-1rem)] sm:max-w-[520px] dark:bg-darkSecondaryBg"
+    />
+  ),
+});
+
+// The raw import, never the loader above: a warm-up must not reload the page.
+const warmRequestRefundDialog = () => {
+  importRequestRefundDialog().catch(() => {});
+};
 
 /**
  * Everything the user can do with an invoice document.
@@ -31,6 +55,10 @@ export default function InvoiceActionsBar({
 }) {
   const [building, setBuilding] = useState(false);
   const [refundOpen, setRefundOpen] = useState(false);
+  // Mounted with the first open and kept from then on, as when it shipped
+  // with the page: it reloads eligibility each time it opens, and staying
+  // mounted keeps its close animation.
+  const refundDialogMounted = useLatched(refundOpen);
 
   const handleDownload = async () => {
     if (building) return;
@@ -95,16 +123,24 @@ export default function InvoiceActionsBar({
 
       {canRequestRefund && (
         <>
-          <Button type="button" variant="outline2" onClick={() => setRefundOpen(true)}>
+          <Button
+            type="button"
+            variant="outline2"
+            onClick={() => setRefundOpen(true)}
+            onPointerEnter={warmRequestRefundDialog}
+            onFocus={warmRequestRefundDialog}
+          >
             <Undo2 className="h-4 w-4" />
             Request refund
           </Button>
-          <RequestRefundDialog
-            open={refundOpen}
-            onOpenChange={setRefundOpen}
-            invoiceId={invoice.id}
-            invoiceNumber={invoice.invoice_number}
-          />
+          {refundDialogMounted ? (
+            <RequestRefundDialog
+              open={refundOpen}
+              onOpenChange={setRefundOpen}
+              invoiceId={invoice.id}
+              invoiceNumber={invoice.invoice_number}
+            />
+          ) : null}
         </>
       )}
     </div>

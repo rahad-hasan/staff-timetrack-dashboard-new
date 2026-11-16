@@ -5,9 +5,9 @@ import { AlertTriangle, Clock } from "lucide-react";
 import {
   BILLING_URL,
   daysUntil,
-  formatBillingDate,
   isDatePast,
 } from "@/lib/billing";
+import { formatBillingDate } from "@/lib/billingDates";
 import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
 import { useBillingNow } from "./useBillingNow";
 

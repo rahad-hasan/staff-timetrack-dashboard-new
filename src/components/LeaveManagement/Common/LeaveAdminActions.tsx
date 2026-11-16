@@ -9,7 +9,32 @@ import DeleteIcon from "@/components/Icons/DeleteIcon";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { LeaveRecord } from "@/types/type";
-import LeaveEditDialog from "./LeaveEditDialog";
+import dynamic from "next/dynamic";
+import { loadOrReload } from "@/lib/lazyChunk";
+import { DialogChunkPlaceholder } from "@/components/Common/DialogChunkPlaceholder";
+
+// The edit form (zod, react-hook-form, the calendar, Radix Select) is its own
+// chunk: this card sits inside the details sheets of three leave pages, and
+// the form used to ship with each of them although it only opens from "Edit
+// request". Hovering or focusing that button starts the download; the
+// placeholder covers a click that beats it.
+const importLeaveEditDialog = () => import("./LeaveEditDialog");
+const loadLeaveEditDialog = loadOrReload(importLeaveEditDialog);
+const LeaveEditDialog = dynamic(loadLeaveEditDialog, {
+  ssr: false,
+  loading: () => (
+    <DialogChunkPlaceholder
+      title="Edit leave request"
+      titleClassName="text-headingTextColor dark:text-darkTextPrimary"
+      className="max-h-[95vh] w-full max-w-[calc(100vw-1rem)] overflow-y-auto border-borderColor p-4 sm:max-w-[640px] sm:p-6 dark:border-darkBorder dark:bg-darkSecondaryBg"
+    />
+  ),
+});
+
+// The raw import, never the loader above: a warm-up must not reload the page.
+const warmLeaveEditDialog = () => {
+  importLeaveEditDialog().catch(() => {});
+};
 
 type LeaveAdminActionsProps = {
   leave: LeaveRecord;
@@ -102,6 +127,8 @@ const LeaveAdminActions = ({
           disabled={isRejected || isDeleting}
           aria-describedby={isRejected ? hintId : undefined}
           onClick={() => setEditOpen(true)}
+          onPointerEnter={warmLeaveEditDialog}
+          onFocus={warmLeaveEditDialog}
         >
           <Pencil className="size-4" aria-hidden />
           Edit request

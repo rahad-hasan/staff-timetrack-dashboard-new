@@ -10,11 +10,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
-  formatBillingDate,
   formatCents,
   MAX_ORDER_SEATS,
   seatCeilingFor,
 } from "@/lib/billing";
+import { formatBillingDate } from "@/lib/billingDates";
 import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
 import { cn } from "@/lib/utils";
 import type {

@@ -35,7 +35,10 @@ function readFailed(what: string, res: LiveRead): Error {
  * The data of a live read, for a view that has nothing honest to show without
  * it. Anything else throws: an error status, no answer, or a 2xx without data.
  */
-export function requireLiveData<R extends LiveRead>(res: R, what: string): DataOf<R> {
+export function requireLiveData<R extends LiveRead>(
+  res: R,
+  what: string,
+): DataOf<R> {
   if (res?.success === true && res.data != null) return res.data as DataOf<R>;
   throw readFailed(what, res);
 }
@@ -71,4 +74,36 @@ export function requireDataOrRefusal(res: LiveRead, what: string): void {
     status !== 429 &&
     !CATCH_ALL_MESSAGES.has(res?.message ?? "");
   if (!refused) requireLiveData(res, what);
+}
+
+/**
+ * `{ value }` when `read` is fulfilled within `ms`, null when it is still
+ * pending by then or has rejected. Never rejects: the caller still awaits
+ * `read` itself wherever its failure belongs.
+ *
+ * For a server component that starts a read and renders a Suspense boundary
+ * around what the read feeds. Once a boundary has shown its fallback React
+ * keeps it up for ~300 ms, so a read that answers in 60 ms still cost a third
+ * of a second of skeleton on every filter change. Holding the render for a
+ * moment lets a fast read's content be rendered with the boundary instead:
+ * it is drawn at once, and the skeleton is only shown for a read that really
+ * is slow. `ms` is the most this adds to a slow one.
+ */
+export async function fulfilledWithin<T>(
+  read: Promise<T>,
+  ms: number,
+): Promise<{ value: T } | null> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const deadline = new Promise<null>((resolve) => {
+    timer = setTimeout(() => resolve(null), ms);
+  });
+  const fulfilled = read.then(
+    (value) => ({ value }),
+    () => null,
+  );
+  try {
+    return await Promise.race([fulfilled, deadline]);
+  } finally {
+    clearTimeout(timer);
+  }
 }

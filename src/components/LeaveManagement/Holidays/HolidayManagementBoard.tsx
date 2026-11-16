@@ -21,7 +21,7 @@ import { todayIn } from "@/lib/timezone";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { IMeta, LeaveHoliday } from "@/types/type";
-import HolidayFormDialog from "./HolidayFormDialog";
+import { DialogChunkPlaceholder } from "@/components/Common/DialogChunkPlaceholder";
 import HolidayTable from "./HolidayTable";
 import AppPagination from "@/components/Common/AppPagination";
 import CalendarIcon from "@/components/Icons/CalendarIcon";
@@ -34,6 +34,27 @@ const loadMandatoryLeaveImportDialog = loadOrReload(
 const MandatoryLeaveImportDialog = dynamic(loadMandatoryLeaveImportDialog, {
   ssr: false,
 });
+
+// The manual add/edit form (zod, react-hook-form) likewise: fetched when it is
+// first opened. Hovering or focusing "Add manually" starts the download; the
+// placeholder covers a click that beats it.
+const importHolidayFormDialog = () => import("./HolidayFormDialog");
+const loadHolidayFormDialog = loadOrReload(importHolidayFormDialog);
+const HolidayFormDialog = dynamic(loadHolidayFormDialog, {
+  ssr: false,
+  loading: () => (
+    <DialogChunkPlaceholder
+      title="Holiday"
+      hideTitle
+      className="max-h-[95vh] w-full max-w-[calc(100vw-1rem)] overflow-y-auto border-borderColor p-4 sm:max-w-[920px] sm:p-5 dark:border-darkBorder dark:bg-darkSecondaryBg"
+    />
+  ),
+});
+
+// The raw import, never the loader above: a warm-up must not reload the page.
+const warmHolidayFormDialog = () => {
+  importHolidayFormDialog().catch(() => {});
+};
 
 type HolidayManagementBoardProps = {
   holidays: LeaveHoliday[];
@@ -304,6 +325,8 @@ const HolidayManagementBoard = ({
                   <Button
                     variant="outline2"
                     onClick={handleOpenCreate}
+                    onPointerEnter={warmHolidayFormDialog}
+                    onFocus={warmHolidayFormDialog}
                     className="dark:bg-darkPrimaryBg dark:text-darkTextPrimary"
                   >
                     <Plus className="size-4" />

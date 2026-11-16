@@ -1,5 +1,3 @@
-import { formatInTimeZone } from "date-fns-tz";
-import { isValidTimeZone } from "@/lib/timezone";
 import {
   BillingBlockCode,
   BillingStatusValue,
@@ -43,29 +41,14 @@ export const formatDollars = (amount: number | null | undefined): string => {
   }).format(amount);
 };
 
-/**
- * Billing dates are calendar dates ("Feb 1, 2027") of an instant, read in an
- * explicit zone: the viewer's (`useViewerTimeZone()` in client components).
- *
- * The zone is required on purpose. These used to be formatted in the
- * runtime's own zone: the Node process's on the server, the browser's after
- * hydration. Once the layout began server-rendering the trial banner, a trial
- * ending at 20:00 UTC printed "Nov 20" in the HTML and "Nov 21" in a Dhaka
- * browser, and React re-rendered the whole document on every load.
+/*
+ * `formatBillingDate` lives in ./billingDates. This module is imported by
+ * things that are loaded everywhere and early — the billing store, the client
+ * session helpers behind the sign-in page, the marketing plan intent — for a
+ * constant or a predicate, and a module is bundled whole: while the date
+ * formatter was here, each of them carried date-fns-tz, date-fns' formatter
+ * and the time-zone helpers along. Keep this file free of date libraries.
  */
-export const formatBillingDate = (
-  iso: string | null | undefined,
-  timeZone: string,
-): string => {
-  if (!iso) return "—";
-  const d = new Date(iso);
-  if (isNaN(d.getTime())) return "—";
-  return formatInTimeZone(
-    d,
-    isValidTimeZone(timeZone) ? timeZone : "UTC",
-    "MMM d, yyyy",
-  );
-};
 
 /**
  * Whole days from `now` until `iso`, floored at 0 (trial countdown). A render

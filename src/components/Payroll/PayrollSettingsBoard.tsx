@@ -45,8 +45,32 @@ import {
 } from "@/types/payroll";
 import { IMeta } from "@/types/type";
 import PayrollEmptyState from "./PayrollEmptyState";
-import PayrollProfileFormDialog from "./PayrollProfileFormDialog";
+import dynamic from "next/dynamic";
+import { loadOrReload } from "@/lib/lazyChunk";
+import { useLatched } from "@/lib/onboarding/useLatched";
+import { StandaloneDialogChunkPlaceholder } from "@/components/Common/DialogChunkPlaceholder";
 import { ProfileActiveBadge, SalaryTypeBadge } from "./PayrollBadges";
+
+// The profile form (zod, react-hook-form, Radix Select, the currency list) is
+// its own chunk, fetched when it is first opened instead of with every visit
+// to the payroll settings. Hovering or focusing a button that opens it starts
+// the download; the placeholder covers a click that beats it.
+const importPayrollProfileFormDialog = () => import("./PayrollProfileFormDialog");
+const loadPayrollProfileFormDialog = loadOrReload(importPayrollProfileFormDialog);
+const PayrollProfileFormDialog = dynamic(loadPayrollProfileFormDialog, {
+  ssr: false,
+  loading: () => (
+    <StandaloneDialogChunkPlaceholder
+      title="Payroll profile"
+      className="max-h-[95vh] w-full max-w-[calc(100vw-1rem)] overflow-y-auto sm:max-w-[720px] dark:bg-darkSecondaryBg"
+    />
+  ),
+});
+
+// The raw import, never the loader above: a warm-up must not reload the page.
+const warmPayrollProfileFormDialog = () => {
+  importPayrollProfileFormDialog().catch(() => {});
+};
 
 type Tab = "all" | "active" | "inactive" | "not-configured";
 
@@ -208,6 +232,11 @@ const PayrollSettingsBoard = ({
     },
   ];
 
+  // Mounted with the first open and kept from then on, as when it shipped
+  // with the page: it resets itself each time `open` turns true, and staying
+  // mounted keeps its close animation.
+  const profileDialogMounted = useLatched(dialogOpen);
+
   const handleOpenCreate = (member?: EligibleUser) => {
     setEditingProfile(null);
     setPresetUser(member ?? null);
@@ -271,16 +300,18 @@ const PayrollSettingsBoard = ({
 
   return (
     <>
-      <PayrollProfileFormDialog
-        open={dialogOpen}
-        onOpenChange={handleDialogChange}
-        mode={editingProfile ? "edit" : "create"}
-        profile={editingProfile}
-        presetUser={presetUser}
-        members={setupRoster}
-        defaultCurrency={currency}
-        companyTimeZone={companyTimeZone}
-      />
+      {profileDialogMounted ? (
+        <PayrollProfileFormDialog
+          open={dialogOpen}
+          onOpenChange={handleDialogChange}
+          mode={editingProfile ? "edit" : "create"}
+          profile={editingProfile}
+          presetUser={presetUser}
+          members={setupRoster}
+          defaultCurrency={currency}
+          companyTimeZone={companyTimeZone}
+        />
+      ) : null}
 
       <div className="space-y-6">
         <div className="rounded-[12px] border border-borderColor bg-[linear-gradient(135deg,#ffffff_0%,#f7fafc_45%,#fdf4ff_100%)] p-3 sm:p-5 dark:border-darkBorder dark:bg-[linear-gradient(135deg,rgba(50,57,71,0.2)_0%,rgba(33,39,51,1)_100%)]">
@@ -300,7 +331,12 @@ const PayrollSettingsBoard = ({
             </div>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
               {/* Its employee list is one of the reads that failed. */}
-              <Button onClick={() => handleOpenCreate()} disabled={loadFailed}>
+              <Button
+                onClick={() => handleOpenCreate()}
+                onPointerEnter={warmPayrollProfileFormDialog}
+                onFocus={warmPayrollProfileFormDialog}
+                disabled={loadFailed}
+              >
                 <Plus className="size-4" />
                 Add payroll profile
               </Button>
@@ -426,6 +462,8 @@ const PayrollSettingsBoard = ({
                             size="sm"
                             variant="outline2"
                             onClick={() => handleOpenCreate(member)}
+                            onPointerEnter={warmPayrollProfileFormDialog}
+                            onFocus={warmPayrollProfileFormDialog}
                           >
                             <Plus className="size-4" />
                             Set up payroll
@@ -522,6 +560,8 @@ const PayrollSettingsBoard = ({
                                   variant="ghost"
                                   size="icon-sm"
                                   onClick={() => handleOpenEdit(profile)}
+                                  onPointerEnter={warmPayrollProfileFormDialog}
+                                  onFocus={warmPayrollProfileFormDialog}
                                   aria-label={`Edit profile for ${profile.user?.name ?? profile.user_id}`}
                                   className="text-primary hover:text-primary"
                                 >
@@ -654,6 +694,8 @@ const PayrollSettingsBoard = ({
                             variant="outline2"
                             size="sm"
                             onClick={() => handleOpenEdit(profile)}
+                            onPointerEnter={warmPayrollProfileFormDialog}
+                            onFocus={warmPayrollProfileFormDialog}
                           >
                             <PencilLine className="size-4" />
                             Edit

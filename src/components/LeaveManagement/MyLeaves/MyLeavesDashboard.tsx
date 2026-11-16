@@ -20,11 +20,35 @@ import {
   LeaveRequestTypeDropdownRecord,
   UserLeaveSummary,
 } from "@/types/type";
-import LeaveRequestModal from "./LeaveRequestModal";
+import dynamic from "next/dynamic";
+import { loadOrReload } from "@/lib/lazyChunk";
+import { DialogChunkPlaceholder } from "@/components/Common/DialogChunkPlaceholder";
 import LeaveHistoryTable from "./LeaveHistoryTable";
 import LeaveBalances from "./LeaveBalances";
 import LeaveOverview from "./LeaveOverview";
 import MyLeaveDetailsSheet from "./MyLeaveDetailsSheet";
+
+// The request form (zod, react-hook-form, the calendar, Radix Select) is its
+// own chunk, fetched when the dialog first opens instead of with every visit
+// to the leave page. Hovering or focusing "New request" starts the download;
+// the placeholder covers a click that beats it.
+const importLeaveRequestModal = () => import("./LeaveRequestModal");
+const loadLeaveRequestModal = loadOrReload(importLeaveRequestModal);
+const LeaveRequestModal = dynamic(loadLeaveRequestModal, {
+  ssr: false,
+  loading: () => (
+    <DialogChunkPlaceholder
+      title="Request leave"
+      titleClassName="text-headingTextColor dark:text-darkTextPrimary"
+      className="max-h-[95vh] w-full max-w-[calc(100vw-1rem)] overflow-y-auto border-borderColor p-4 sm:max-w-[640px] sm:p-6 dark:border-darkBorder dark:bg-darkSecondaryBg"
+    />
+  ),
+});
+
+// The raw import, never the loader above: a warm-up must not reload the page.
+const warmLeaveRequestModal = () => {
+  importLeaveRequestModal().catch(() => {});
+};
 
 type MyLeavesDashboardProps = {
   data: UserLeaveSummary;
@@ -160,7 +184,11 @@ const MyLeavesDashboard = ({
             <SelectUserDropDown users={users} defaultSelect={false} />
           ) : null}
           {canRequestLeave ? (
-            <Button onClick={() => handleOpenRequest()}>
+            <Button
+              onClick={() => handleOpenRequest()}
+              onPointerEnter={warmLeaveRequestModal}
+              onFocus={warmLeaveRequestModal}
+            >
               <Plus className="size-4" />
               New request
             </Button>

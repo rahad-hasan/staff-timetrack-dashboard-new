@@ -4,7 +4,12 @@
 import { baseApi } from "../baseApi";
 import { getDecodedUser } from "@/utils/decodedLogInUser";
 import { verifiedTrialConversionId } from "@/lib/verifiedTrialResponse";
-import { startSession, writeSessionCookies } from "@/lib/sessionCookies";
+import {
+  rotateSessionTokens,
+  startSession,
+  writeSessionCookies,
+  writeSignupProof,
+} from "@/lib/sessionCookies";
 import { withoutSessionTokens } from "@/lib/authSession";
 
 export const logIn = async (data: any) => {
@@ -21,6 +26,11 @@ export const logIn = async (data: any) => {
     // `startSession` writes nothing for it and drops whatever an earlier
     // session left behind, so the onboarding page is the only way forward.
     const hasSession = await startSession(res.data);
+
+    // The onboarding answer carries the proof `POST /company` asks for: the
+    // password just matched the pending sign-up. Written AFTER `startSession`,
+    // which clears the session cookies for this answer.
+    if (!hasSession) await writeSignupProof(res.data?.signup_token);
 
     // The tokens are for the httpOnly cookies only. The client is told which
     // of the two answers this was instead of reading it off them.
@@ -102,9 +112,16 @@ export const changePassword = async ({
   });
 
   if (res?.success) {
-    await writeSessionCookies({ accessToken: res.data.accessToken });
+    // Both tokens: the change ends every session issued before it, and the
+    // refresh token this browser held is one of them. (An API that predates
+    // the rotated refresh token answers with the access token alone, which
+    // is then all that is written.)
+    await rotateSessionTokens({
+      accessToken: res.data?.accessToken,
+      refreshToken: res.data?.refreshToken,
+    });
 
-    // The rotated token goes to the cookie, not to the page.
+    // The rotated tokens go to the cookies, not to the page.
     return { ...res, data: withoutSessionTokens(res.data) };
   }
 
@@ -136,10 +153,15 @@ export const verifyOtp = async ({ data }: {
 
   if (!res?.success) return res;
 
-  // A sign-up verification answers with an access token signed for the
-  // PendingUser. Nothing in the browser uses it (the conversion id above is
-  // derived from it here), so it stays on the server. The `reset_token` of a
-  // forgot-password verification is kept: the next screen sends it back.
+  // A sign-up verification answers with a sign-up token (`signup_token`, and
+  // under `accessToken` as before; the conversion id above is derived from
+  // the latter). It is the proof `POST /company` asks for, so it is kept, in
+  // an httpOnly cookie: nothing in the browser needs to read it. An API that
+  // predates it sends none and requires none. The `reset_token` of a
+  // forgot-password verification stays in the answer: the next screen sends
+  // it back.
+  await writeSignupProof(res.data?.signup_token);
+
   const safe = withoutSessionTokens(res.data);
   return {
     ...res,

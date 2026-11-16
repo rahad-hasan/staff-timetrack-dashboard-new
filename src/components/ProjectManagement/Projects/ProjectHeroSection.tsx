@@ -7,13 +7,39 @@ import {
     Dialog,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import AddProjectModal from "@/components/ProjectManagement/Projects/AddProjectModal";
+import dynamic from "next/dynamic";
+import { loadOrReload } from "@/lib/lazyChunk";
+import { DialogChunkPlaceholder } from "@/components/Common/DialogChunkPlaceholder";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import { useProjectFormStore } from "@/store/ProjectFormStore";
 import { useCreateIntent } from "@/store/quickActionStore";
+
+// The three-step wizard (zod, react-hook-form, the calendar, Radix Select, the
+// member multi-select) is its own chunk, fetched when the dialog first opens
+// instead of with every visit to the project list. Hovering or focusing the
+// button starts the download; the placeholder covers a click that beats it
+// and keeps `[data-slot=dialog-content]` present for the onboarding tour.
+const importAddProjectModal = () =>
+    import("@/components/ProjectManagement/Projects/AddProjectModal");
+const loadAddProjectModal = loadOrReload(importAddProjectModal);
+const AddProjectModal = dynamic(loadAddProjectModal, {
+    ssr: false,
+    loading: () => (
+        <DialogChunkPlaceholder
+            title="Add Project"
+            hideTitle
+            className=" w-full sm:max-w-[525px] max-h-[95vh] overflow-y-auto"
+        />
+    ),
+});
+
+// The raw import, never the loader above: a warm-up must not reload the page.
+const warmAddProjectModal = () => {
+    importAddProjectModal().catch(() => {});
+};
 
 const ProjectHeroSection = () => {
     const logInUserData = useLogInUserStore(state => state.logInUserData);
@@ -64,7 +90,7 @@ const ProjectHeroSection = () => {
                         <Dialog open={open} onOpenChange={handleOpenChange}>
                             <form>
                                 <DialogTrigger asChild>
-                                    <Button data-tour={TOUR_ANCHORS.ctaAddProject} className=""><Plus className="size-5" /> <span className=" hidden sm:block">Add Project</span></Button>
+                                    <Button data-tour={TOUR_ANCHORS.ctaAddProject} onPointerEnter={warmAddProjectModal} onFocus={warmAddProjectModal} className=""><Plus className="size-5" /> <span className=" hidden sm:block">Add Project</span></Button>
                                 </DialogTrigger>
                                 {/* remount on every open so the wizard restarts at step 1 */}
                                 {open && <AddProjectModal onClose={() => setOpen(false)}></AddProjectModal>}

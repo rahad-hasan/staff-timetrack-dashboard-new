@@ -15,7 +15,7 @@ import { useForm } from "react-hook-form";
 import Image from "next/image";
 import { useState } from "react";
 import { ArrowRight, Check, Eye, EyeOff, ShieldCheck, Star } from "lucide-react";
-import { createNewPasswordSchema } from "@/zod/schema";
+import { createNewPasswordSchema } from "@/zod/authSchemas";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { resetPassword } from "@/actions/auth/action";

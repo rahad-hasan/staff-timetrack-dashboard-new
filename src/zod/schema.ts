@@ -1,45 +1,15 @@
 import { z } from "zod";
 import { LeaveTypeApplicableFor } from "@/types/type";
 
-export const loginSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z
-    .string()
-    .min(6, {
-      message: "Password must be at least 6 characters long",
-    })
-    .max(100, {
-      message: "Password cannot exceed 100 characters",
-    }),
-});
-
-export const forgetPasswordSchema = z.object({
-  email: z.string().email("Invalid email address"),
-});
-
-export const createNewPasswordSchema = z
-  .object({
-    password: z
-      .string()
-      .min(6, {
-        message: "Password must be at least 6 characters long",
-      })
-      .max(100, {
-        message: "Password cannot exceed 100 characters",
-      }),
-    confirmPassword: z
-      .string()
-      .min(6, {
-        message: "Password must be at least 6 characters long",
-      })
-      .max(100, {
-        message: "Password cannot exceed 100 characters",
-      }),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Confirm passwords do not match",
-    path: ["confirmPassword"],
-  });
+/*
+ * Not here, on purpose: the sign-in / password schemas (./authSchemas) and the
+ * payroll-run schema (./payrollGenerateSchema). This module is one list of
+ * top-level `z.object(...)` calls, so importing any one schema builds all of
+ * them; the forms that are on screen as their page loads (sign-in, forgot and
+ * reset password, change password, generate payroll) import a module that
+ * builds only their own. Everything left here belongs to dialogs that load on
+ * demand.
+ */
 
 export const addManualTimeSchema = z.object({
   // project: z.string().min(1, "Project is required"),
@@ -243,23 +213,6 @@ export const screenDeleteReasonSchema = z.object({
   reason: z.string().min(1, "Reason is required"),
 });
 
-export const changePasswordSchema = z.object({
-  oldPassword: z
-    .string()
-    .min(8, "Minimum 8 characters")
-    .regex(/[a-z]/, "At least one lowercase letter")
-    .regex(/[A-Z]/, "At least one uppercase letter")
-    .regex(/\d/, "At least one number")
-    .regex(/[!@#$%^&*(),.?":{}|<>]/, "At least one special character"),
-  newPassword: z
-    .string()
-    .min(8, "Minimum 8 characters")
-    .regex(/[a-z]/, "At least one lowercase letter")
-    .regex(/[A-Z]/, "At least one uppercase letter")
-    .regex(/\d/, "At least one number")
-    .regex(/[!@#$%^&*(),.?":{}|<>]/, "At least one special character"),
-});
-
 export const ScheduleShiftSchema = z.object({
   name: z
     .string({ message: "Schedule name is required" })
@@ -420,25 +373,6 @@ export const payrollProfileFormSchema = z
       });
     }
   });
-
-export const generatePayrollSchema = z.object({
-  month: z
-    .number({ message: "Month is required" })
-    .int()
-    .min(1, "Month must be between 1 and 12")
-    .max(12, "Month must be between 1 and 12"),
-  year: z
-    .number({ message: "Year is required" })
-    .int()
-    .min(2000, "Year must be 2000 or later")
-    .max(2100, "Year must be 2100 or earlier"),
-  notes: z
-    .string()
-    .trim()
-    .max(2000, "Notes must be 2000 characters or less")
-    .optional()
-    .or(z.literal("")),
-});
 
 /**
  * The largest supporting document a leave request can carry. The file travels

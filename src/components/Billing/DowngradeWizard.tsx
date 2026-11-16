@@ -20,7 +20,7 @@ import {
 } from "@/types/billing";
 import { resolveDowngrade } from "@/actions/billing/action";
 import { unstable_rethrow } from "next/navigation";
-import { formatBillingDate } from "@/lib/billing";
+import { formatBillingDate } from "@/lib/billingDates";
 import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
 import { useLogInUserStore } from "@/store/logInUserStore";
 

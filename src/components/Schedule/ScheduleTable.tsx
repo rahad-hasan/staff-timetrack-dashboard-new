@@ -24,13 +24,37 @@ import FilterButton from "../Common/FilterButton";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import EditIcon from "../Icons/FilterOptionIcon/EditIcon";
 import { Dialog } from "../ui/dialog";
-import EditScheduleModal from "./EditScheduleModal";
+import dynamic from "next/dynamic";
+import { loadOrReload } from "@/lib/lazyChunk";
+import { DialogChunkPlaceholder } from "@/components/Common/DialogChunkPlaceholder";
 import Link from "next/link";
 import DeleteIcon from "../Icons/DeleteIcon";
 import { deleteSchedule } from "@/actions/schedule/action";
 import { actionErrorMessage } from "@/lib/actionErrors";
 import { toast } from "sonner";
 import ConfirmDialog from "../Common/ConfirmDialog";
+
+// The edit form (zod, react-hook-form) opens from a row, so it is its own
+// chunk instead of part of the schedule list's first load. Opening a row's
+// action menu starts the download; the placeholder covers a click that beats
+// it.
+const importEditScheduleModal = () => import("./EditScheduleModal");
+const loadEditScheduleModal = loadOrReload(importEditScheduleModal);
+const EditScheduleModal = dynamic(loadEditScheduleModal, {
+    ssr: false,
+    loading: () => (
+        <DialogChunkPlaceholder
+            title="Edit Schedule"
+            titleClassName=" mb-4"
+            className="sm:max-w-[525px] max-h-[95vh] overflow-y-auto"
+        />
+    ),
+});
+
+// The raw import, never the loader above: a warm-up must not reload the page.
+const warmEditScheduleModal = () => {
+    importEditScheduleModal().catch(() => {});
+};
 
 const ScheduleTable = ({ data }: { data: ISchedules[] }) => {
     const [sorting, setSorting] = useState<SortingState>([]);
@@ -244,7 +268,7 @@ const ScheduleTable = ({ data }: { data: ISchedules[] }) => {
             cell: (row) => {
                 return (
                     <div className="">
-                        <Popover>
+                        <Popover onOpenChange={(menuOpen) => { if (menuOpen) warmEditScheduleModal(); }}>
                             <PopoverTrigger asChild>
                                 <div>
                                     <FilterButton></FilterButton>

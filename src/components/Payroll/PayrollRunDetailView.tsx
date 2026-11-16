@@ -54,13 +54,37 @@ import { actionErrorMessage } from "@/lib/actionErrors";
 import { formatInstant } from "@/lib/timezone";
 import { EmployeePayroll, PayrollRun } from "@/types/payroll";
 import { IMeta } from "@/types/type";
-import PayrollAdjustmentsDialog from "./PayrollAdjustmentsDialog";
+import dynamic from "next/dynamic";
+import { loadOrReload } from "@/lib/lazyChunk";
+import { useLatched } from "@/lib/onboarding/useLatched";
+import { StandaloneDialogChunkPlaceholder } from "@/components/Common/DialogChunkPlaceholder";
 import PayrollCalculationBreakdown from "./PayrollCalculationBreakdown";
 import PayrollEmptyState from "./PayrollEmptyState";
 import PayrollSubNav from "./PayrollSubNav";
 import { PayrollRunStatusBadge, SalaryTypeBadge } from "./PayrollBadges";
 import { downloadPayrollExport } from "./payrollExport";
 import { downloadPayrollPdf } from "./payrollPdfExport";
+
+// The adjustments form (zod, react-hook-form) is its own chunk, fetched when
+// it is first opened instead of with every visit to a payroll run. Hovering or
+// focusing a row's "Adjust" button starts the download; the placeholder covers
+// a click that beats it.
+const importPayrollAdjustmentsDialog = () => import("./PayrollAdjustmentsDialog");
+const loadPayrollAdjustmentsDialog = loadOrReload(importPayrollAdjustmentsDialog);
+const PayrollAdjustmentsDialog = dynamic(loadPayrollAdjustmentsDialog, {
+  ssr: false,
+  loading: () => (
+    <StandaloneDialogChunkPlaceholder
+      title="Adjust payroll"
+      className="max-h-[95vh] w-full max-w-[calc(100vw-1rem)] overflow-y-auto sm:max-w-[720px] dark:bg-darkSecondaryBg"
+    />
+  ),
+});
+
+// The raw import, never the loader above: a warm-up must not reload the page.
+const warmPayrollAdjustmentsDialog = () => {
+  importPayrollAdjustmentsDialog().catch(() => {});
+};
 
 interface PayrollRunDetailViewProps {
   run: PayrollRun;
@@ -102,6 +126,10 @@ const PayrollRunDetailView = ({
   const [exporting, setExporting] = useState(false);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
   const [adjustTarget, setAdjustTarget] = useState<EmployeePayroll | null>(null);
+  // Mounted with the first adjustment and kept from then on, as when it
+  // shipped with the page: it resets itself each time it opens, and staying
+  // mounted keeps its close animation.
+  const adjustDialogMounted = useLatched(!!adjustTarget);
 
   const locked = isRunLocked(run.status);
   // PayrollRunStatus is a closed union and isRunLocked covers approved|paid, so
@@ -514,6 +542,8 @@ const PayrollRunDetailView = ({
                                   event.stopPropagation();
                                   setAdjustTarget(item);
                                 }}
+                                onPointerEnter={warmPayrollAdjustmentsDialog}
+                                onFocus={warmPayrollAdjustmentsDialog}
                               >
                                 Adjust
                               </Button>
@@ -558,18 +588,20 @@ const PayrollRunDetailView = ({
         />
       )}
 
-      <PayrollAdjustmentsDialog
-        open={!!adjustTarget}
-        onOpenChange={(open) => {
-          if (!open) setAdjustTarget(null);
-        }}
-        runId={run.id}
-        item={adjustTarget}
-        onRunStale={() => {
-          setAdjustTarget(null);
-          router.refresh();
-        }}
-      />
+      {adjustDialogMounted ? (
+        <PayrollAdjustmentsDialog
+          open={!!adjustTarget}
+          onOpenChange={(open) => {
+            if (!open) setAdjustTarget(null);
+          }}
+          runId={run.id}
+          item={adjustTarget}
+          onRunStale={() => {
+            setAdjustTarget(null);
+            router.refresh();
+          }}
+        />
+      ) : null}
 
       <Dialog
         open={approveOpen}

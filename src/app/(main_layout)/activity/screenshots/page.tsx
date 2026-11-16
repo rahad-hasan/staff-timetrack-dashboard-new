@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { NotepadText } from "lucide-react";
 // import { Button } from "@/components/ui/button";
 import { Suspense } from "react";
+import { preconnect } from "react-dom";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import AllNotesModal, {
   AllNotesFallback,
@@ -18,6 +19,8 @@ import TimezoneFilter, {
   TimezoneFilterFallback,
 } from "@/components/TimeSheets/TimezoneFilter";
 import SelectUserWrapper from "@/components/Common/SelectUserWrapper";
+import { screenshotDayKey } from "@/components/Activity/ScreenShorts/screenshotTabs";
+import { SCREENSHOT_CDN_ORIGIN } from "@/lib/assetOrigins";
 
 export const metadata: Metadata = {
   title: "Staff Time Tracker Screenshot",
@@ -25,6 +28,12 @@ export const metadata: Metadata = {
 };
 const ScreenShorts = async ({ searchParams }: ISearchParamsProps) => {
   const params = await searchParams;
+
+  // The screenshots come straight from the CDN, whose address the browser
+  // only learns with the grid's data. Naming it in the first bytes of the
+  // page lets the connection (DNS, TCP, TLS) open while that data loads, so
+  // the first tiles do not wait for it.
+  preconnect(SCREENSHOT_CDN_ORIGIN);
 
   return (
     <div>
@@ -64,7 +73,10 @@ const ScreenShorts = async ({ searchParams }: ISearchParamsProps) => {
               </DialogTrigger>
               {/* Keyed like the screenshots below, so a filter change never
                   waits on the notes read before the page can update. */}
-              <Suspense key={JSON.stringify(params)} fallback={<AllNotesFallback />}>
+              <Suspense
+                key={screenshotDayKey(params)}
+                fallback={<AllNotesFallback />}
+              >
                 <AllNotesModal searchParams={searchParams}></AllNotesModal>
               </Suspense>
             </form>

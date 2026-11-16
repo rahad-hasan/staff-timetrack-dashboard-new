@@ -9,7 +9,9 @@ import { useState } from "react";
 import SingleProjectMemberTable from "./SingleProjectMemberTable";
 import SingleProjectTask from "./SingleProjectTask";
 import { Dialog } from "@/components/ui/dialog";
-import EditProjectModal from "@/components/ProjectManagement/Projects/EditProjectModal";
+import dynamic from "next/dynamic";
+import { loadOrReload } from "@/lib/lazyChunk";
+import { DialogChunkPlaceholder } from "@/components/Common/DialogChunkPlaceholder";
 import { formatTZDateDMY } from "@/utils";
 import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
 import { useLogInUserStore } from "@/store/logInUserStore";
@@ -18,6 +20,27 @@ import AppPagination from "@/components/Common/AppPagination";
 import { StatusSelector } from "@/components/Common/StatusSelector";
 import SearchBar from "@/components/Common/SearchBar";
 import EditIcon from "@/components/Icons/FilterOptionIcon/EditIcon";
+
+// The edit wizard (zod, react-hook-form, the calendar, Radix Select, the member
+// multi-select) is its own chunk, fetched when it is first opened instead of
+// with the page. Hovering or focusing the button starts the download.
+const importEditProjectModal = () => import("@/components/ProjectManagement/Projects/EditProjectModal");
+const loadEditProjectModal = loadOrReload(importEditProjectModal);
+const EditProjectModal = dynamic(loadEditProjectModal, {
+    ssr: false,
+    loading: () => (
+        <DialogChunkPlaceholder
+            title="Edit Project"
+            hideTitle
+            className=" w-full sm:max-w-[525px] max-h-[95vh] overflow-y-auto"
+        />
+    ),
+});
+
+// The raw import, never the loader above: a warm-up must not reload the page.
+const warmEditProjectModal = () => {
+    importEditProjectModal().catch(() => {});
+};
 
 const SingleProject = ({ data, task, page }: { data: ISingleProjectData, task: any, page: string | number | string[] | undefined }) => {
     // The layout's zone, not the helpers' store default: this renders on the
@@ -68,7 +91,7 @@ const SingleProject = ({ data, task, page }: { data: ISingleProjectData, task: a
                         (logInUserData?.role === 'admin' ||
                             logInUserData?.role === 'manager' ||
                             logInUserData?.role === 'hr') &&
-                        <Button className=" text-sm md:text-base dark:text-darkTextPrimary" onClick={() => setOpen(true)} variant={'outline2'}><EditIcon size={20} /> Edit Project</Button>
+                        <Button className=" text-sm md:text-base dark:text-darkTextPrimary" onClick={() => setOpen(true)} onPointerEnter={warmEditProjectModal} onFocus={warmEditProjectModal} variant={'outline2'}><EditIcon size={20} /> Edit Project</Button>
                     }
                 </div>
             </div>

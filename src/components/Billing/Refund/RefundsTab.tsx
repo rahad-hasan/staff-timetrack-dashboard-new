@@ -25,7 +25,8 @@ import {
 import EmptyTableRow from "@/components/Common/EmptyTableRow";
 import { cancelRefundRequest } from "@/actions/billing/refundAction";
 import { unstable_rethrow } from "next/navigation";
-import { formatBillingDate, formatCents } from "@/lib/billing";
+import { formatCents } from "@/lib/billing";
+import { formatBillingDate } from "@/lib/billingDates";
 import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
 import { REFUND_REASON_LABELS } from "@/lib/refund";
 import { useBillingStore } from "@/store/billingStore";

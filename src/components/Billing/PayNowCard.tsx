@@ -14,7 +14,8 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { formatBillingDate, formatCents } from "@/lib/billing";
+import { formatCents } from "@/lib/billing";
+import { formatBillingDate } from "@/lib/billingDates";
 import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
 import { invoiceDetailHref, isInvoicePayable } from "@/lib/invoice";
 import { payInvoice } from "@/actions/billing/action";

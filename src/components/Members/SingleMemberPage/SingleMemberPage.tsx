@@ -67,7 +67,7 @@ import {
 } from "@/components/ui/command";
 import { cn } from "@/lib/utils";
 import { popularTimeZoneList } from "@/utils/TimeZoneList";
-import { CustomCalendarForDOB } from "@/components/ui/customCalendarForDOB";
+import { LazyCalendarForDOB, warmCalendarForDOB } from "@/components/ui/lazy-calendar";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import { EmploymentStatus } from "@/types/type";
 
@@ -603,6 +603,8 @@ const SingleMemberPage = ({
                                                         <FormControl>
                                                             <button
                                                                 type="button"
+                                                                onPointerEnter={warmCalendarForDOB}
+                                                                onFocus={warmCalendarForDOB}
                                                                 className={cn(
                                                                     "flex h-10 w-full items-center justify-between rounded-lg border border-input bg-transparent px-3 py-2 text-left text-sm dark:border-darkBorder dark:bg-darkPrimaryBg",
                                                                     "!h-[52px] min-h-[52px] py-0",
@@ -616,7 +618,8 @@ const SingleMemberPage = ({
                                                         </FormControl>
                                                     </PopoverTrigger>
                                                     <PopoverContent className="w-auto overflow-hidden p-0" align="start">
-                                                        <CustomCalendarForDOB
+                                                        {/* react-day-picker loads with the first open (see lazy-calendar). */}
+                                                        <LazyCalendarForDOB
                                                             mode="single"
                                                             selected={dobDate}
                                                             defaultMonth={dobDate}

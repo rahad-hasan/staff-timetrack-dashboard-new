@@ -32,6 +32,46 @@ process.env.NEXT_PUBLIC_BUILD_STAMP ||= `${Date.now().toString(36)}-${Math.rando
 // overwrite the folder a running `next start` is serving.
 const distDir = process.env.NEXT_DIST_DIR || ".next";
 
+/*
+ * One shared chunk for zustand, in the browser's production build.
+ *
+ * Every entry — the root layout, each page, each lazily loaded dialog — imports
+ * a store, so all of them need zustand (about 7 kB with `persist`). Next only
+ * moves a module into a shared chunk when the group it would form reaches
+ * 20 kB, which this never does on its own: whether it is shared or copied into
+ * every chunk that uses it depends on which other modules happen to have the
+ * same set of importers. After the form dialogs became chunks of their own
+ * (2026-11-16) it tipped the wrong way and 21 chunks carried a copy each, so a
+ * page downloaded it two or three times. `enforce` skips the size check; one
+ * request, always already in the browser's cache after the first page.
+ *
+ * Nothing wider on purpose: a group like this is loaded by every entry that
+ * uses ANY module in it, and the root layout uses nothing else that small and
+ * universal.
+ */
+const shareZustandChunk: NonNullable<NextConfig["webpack"]> = (
+  config,
+  { dev, isServer },
+) => {
+  if (dev || isServer) return config;
+
+  const splitChunks = config.optimization?.splitChunks;
+  if (splitChunks && typeof splitChunks === "object") {
+    splitChunks.cacheGroups = {
+      ...splitChunks.cacheGroups,
+      zustand: {
+        // pnpm: node_modules/.pnpm/zustand@x/node_modules/zustand/…
+        test: /[\\/]node_modules[\\/]zustand[\\/]/,
+        name: "zustand",
+        // Above Next's own `lib` group (30), below `framework` (40).
+        priority: 35,
+        enforce: true,
+      },
+    };
+  }
+  return config;
+};
+
 const nextConfig: NextConfig = {
   // NEXT_PUBLIC_ variables are inlined anyway; listing it here states the
   // contract next to its only producer.
@@ -49,6 +89,10 @@ const nextConfig: NextConfig = {
     tsconfigPath: distDir === ".next" ? "tsconfig.json" : "tsconfig.agent.json",
   },
   output: "standalone",
+  // Not under `next dev --turbopack`: Turbopack ignores a webpack hook and
+  // warns about one on every start. (The CLI sets TURBOPACK before this file
+  // is loaded.)
+  webpack: process.env.TURBOPACK ? undefined : shareZustandChunk,
   experimental: {
     serverActions: {
       bodySizeLimit: "2mb",

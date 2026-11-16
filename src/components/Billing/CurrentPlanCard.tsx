@@ -1,7 +1,8 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { daysUntil, formatBillingDate, isDatePast } from "@/lib/billing";
+import { daysUntil, isDatePast } from "@/lib/billing";
+import { formatBillingDate } from "@/lib/billingDates";
 import { IBillingEntitlements, IBillingPlan } from "@/types/billing";
 import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
 import { useBillingNow } from "./useBillingNow";

@@ -2,7 +2,7 @@
 
 import { revalidateTag } from "next/cache";
 import { baseApi } from "../baseApi";
-import { IAllScreenshot, INotes, IResponse } from "@/types/type";
+import { INotes, IResponse } from "@/types/type";
 
 // Screenshot URLs are signed and expire. When the client sees dead image
 // tokens it calls this: revalidating inside a server action makes Next answer
@@ -11,22 +11,15 @@ import { IAllScreenshot, INotes, IResponse } from "@/types/type";
 // entry is involved — the tags only trigger that render.
 export const refreshScreenshotUrls = async () => {
   revalidateTag("screenshots");
-  revalidateTag("allScreenshots");
 };
 
+// The day as hours of 10-minute slots, each with its screenshots. Both views
+// of the screenshots page are drawn from this one read (see
+// ScreenshotsDayServer); there is no separate read for "All Screenshots".
 export const getScreenshots10Min = async (query = {}) => {
   return await baseApi("/activities", {
     query,
     tag: "screenshots",
-  });
-};
-
-export const getAllScreenshots = async (
-  query = {},
-): Promise<IResponse<IAllScreenshot[]>> => {
-  return await baseApi("/activities/all-screenshots", {
-    query,
-    tag: "allScreenshots",
   });
 };
 

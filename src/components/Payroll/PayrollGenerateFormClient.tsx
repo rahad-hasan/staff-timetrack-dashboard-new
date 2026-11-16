@@ -39,7 +39,7 @@ import {
 } from "@/lib/payroll";
 import { PayrollRun } from "@/types/payroll";
 import { PayrollRunStatusBadge } from "./PayrollBadges";
-import { generatePayrollSchema } from "@/zod/schema";
+import { generatePayrollSchema } from "@/zod/payrollGenerateSchema";
 
 type FormValues = z.infer<typeof generatePayrollSchema>;
 

@@ -4,13 +4,38 @@ import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import SearchBar from "@/components/Common/SearchBar";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
-import CreateTaskModal from "@/components/ProjectManagement/Task/CreateTaskModal";
+import dynamic from "next/dynamic";
+import { loadOrReload } from "@/lib/lazyChunk";
+import { DialogChunkPlaceholder } from "@/components/Common/DialogChunkPlaceholder";
 import HeadingComponent from "@/components/Common/HeadingComponent";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import SelectProjectWrapper from "@/components/Common/SelectProjectWrapper";
 import SelectUserWrapper from "@/components/Common/SelectUserWrapper";
 import { useCreateIntent } from "@/store/quickActionStore";
+
+// The create form (zod, react-hook-form, the calendar, Radix Select) is its
+// own chunk, fetched when the dialog first opens instead of with every visit
+// to the task list. Hovering or focusing the button starts the download; the
+// placeholder covers a click that beats it.
+const importCreateTaskModal = () =>
+  import("@/components/ProjectManagement/Task/CreateTaskModal");
+const loadCreateTaskModal = loadOrReload(importCreateTaskModal);
+const CreateTaskModal = dynamic(loadCreateTaskModal, {
+  ssr: false,
+  loading: () => (
+    <DialogChunkPlaceholder
+      title="Create New Task"
+      titleClassName="mb-4"
+      className="w-full sm:max-w-[525px] max-h-[95vh] overflow-y-auto"
+    />
+  ),
+});
+
+// The raw import, never the loader above: a warm-up must not reload the page.
+const warmCreateTaskModal = () => {
+  importCreateTaskModal().catch(() => {});
+};
 
 const TaskHeroSection = () => {
   const [open, setOpen] = useState(false);
@@ -71,7 +96,10 @@ const TaskHeroSection = () => {
             <Dialog open={open} onOpenChange={setOpen}>
               {/* <Button onClick={() => setOpen(true)} className=""><Plus className="size-5" /> <span className=" hidden sm:block">Create Task</span></Button> */}
               <DialogTrigger asChild>
-                <Button>
+                <Button
+                  onPointerEnter={warmCreateTaskModal}
+                  onFocus={warmCreateTaskModal}
+                >
                   <Plus className="size-5" />
                   <span className="hidden sm:block">Create Task</span>
                 </Button>

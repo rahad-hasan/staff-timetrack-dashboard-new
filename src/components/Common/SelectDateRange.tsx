@@ -4,7 +4,7 @@ import { parseDateParam } from "@/lib/timezone";
 import { addDays, format, parseISO } from "date-fns"
 import { useViewToday } from "@/hooks/useViewToday"
 import { type DateRange } from "react-day-picker"
-import { Calendar } from "@/components/ui/calendar"
+import { LazyRangeCalendar, warmCalendar } from "@/components/ui/lazy-calendar"
 import {
     Popover,
     PopoverContent,
@@ -86,7 +86,11 @@ const SelectDateRange = ({
     return (
         <Popover>
             <PopoverTrigger asChild>
-                <div className="flex h-10 items-center font-medium cursor-pointer gap-2 border dark:border-darkBorder dark:bg-darkPrimaryBg rounded-md px-2 sm:px-4">
+                <div
+                    onPointerEnter={warmCalendar}
+                    onFocus={warmCalendar}
+                    className="flex h-10 items-center font-medium cursor-pointer gap-2 border dark:border-darkBorder dark:bg-darkPrimaryBg rounded-md px-2 sm:px-4"
+                >
                     <CalendarIcon className="text-primary" size={20} />
 
                     {date?.from ? (
@@ -105,7 +109,8 @@ const SelectDateRange = ({
             </PopoverTrigger>
 
             <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
+                {/* react-day-picker loads with the first open (see lazy-calendar). */}
+                <LazyRangeCalendar
                     mode="range"
                     defaultMonth={date?.from}
                     selected={date}

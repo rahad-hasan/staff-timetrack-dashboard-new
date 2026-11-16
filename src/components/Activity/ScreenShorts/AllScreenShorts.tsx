@@ -1,10 +1,23 @@
 "use client";
 
 import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 import { IAllScreenshot } from "@/types/type";
 import EmptyTableLogo from "@/assets/empty_table.svg";
 import ScreenshotImage, { EAGER_SCREENSHOT_TILES } from "./ScreenshotImage";
 import { useAllScreenshotsLightbox } from "./ScreenshotLightbox";
+
+/**
+ * Tiles drawn at first, and added each time the end of the grid nears the
+ * viewport: ten rows of the widest grid. A day is up to 1440 screenshots, and
+ * drawing all of them at once was 2.6 MB of HTML and 16,000 elements to
+ * hydrate for a page that shows eighteen. The lightbox still gets the whole
+ * day, so its carousel is not limited to the tiles drawn so far.
+ */
+const TILE_WINDOW = 60;
+
+/** How far below the viewport the next tiles are drawn: about five rows. */
+const NEXT_TILES_MARGIN = "1200px 0px";
 
 const AllScreenShorts = ({
   data,
@@ -18,10 +31,38 @@ const AllScreenShorts = ({
   // cannot close it (see ScreenshotLightbox).
   const openScreenshot = useAllScreenshotsLightbox(data);
 
+  const total = data?.length ?? 0;
+  const [drawn, setDrawn] = useState(TILE_WINDOW);
+  const hasMore = drawn < total;
+  const moreRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!hasMore) return;
+    const marker = moreRef.current;
+    if (!marker) return;
+    if (typeof IntersectionObserver === "undefined") {
+      setDrawn(total);
+      return;
+    }
+    // Observed anew after every step (`drawn` is a dependency): an observer
+    // reports once when it starts, so a marker still in range after the new
+    // tiles are in keeps the grid growing until it is out of range.
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setDrawn((count) => count + TILE_WINDOW);
+        }
+      },
+      { rootMargin: NEXT_TILES_MARGIN },
+    );
+    observer.observe(marker);
+    return () => observer.disconnect();
+  }, [hasMore, drawn, total]);
+
   return (
     <>
       <div className="mt-3 grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 2xl:grid-cols-6 gap-4">
-        {data?.map((screenShort, index) => (
+        {data?.slice(0, drawn).map((screenShort, index) => (
           <div key={screenShort?.id} className="mb-5">
             <div className="text-center space-y-1 mb-3">
               <h2 className="bg-[#F3F4F6] dark:bg-darkSecondaryBg py-1 rounded-full text-sm text-headingTextColor dark:text-darkTextPrimary">
@@ -69,6 +110,7 @@ const AllScreenShorts = ({
           </div>
         ))}
       </div>
+      {hasMore && <div ref={moreRef} aria-hidden className="h-px" />}
 
       {data?.length === 0 && (
         <div className="h-24 text-center">

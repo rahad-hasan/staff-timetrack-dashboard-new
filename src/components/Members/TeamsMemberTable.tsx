@@ -26,7 +26,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Dialog } from "../ui/dialog";
-import EditNewMemberModal from "./EditNewMemberModal";
+import dynamic from "next/dynamic";
+import { loadOrReload } from "@/lib/lazyChunk";
+import { DialogChunkPlaceholder } from "@/components/Common/DialogChunkPlaceholder";
 import EmptyTableRow from "../Common/EmptyTableRow";
 import FilterButton from "../Common/FilterButton";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
@@ -40,6 +42,28 @@ import { actionErrorMessage } from "@/lib/actionErrors";
 import ConfirmDialog from "../Common/ConfirmDialog";
 import Link from "next/link";
 import CheckIcon from "../Icons/CheckIcon";
+
+// The edit form (zod, react-hook-form, Radix Select) opens from a row, so it is
+// its own chunk instead of part of the member list's first load. Opening a
+// row's action menu starts the download; the placeholder covers a click that
+// beats it.
+const importEditNewMemberModal = () => import("./EditNewMemberModal");
+const loadEditNewMemberModal = loadOrReload(importEditNewMemberModal);
+const EditNewMemberModal = dynamic(loadEditNewMemberModal, {
+  ssr: false,
+  loading: () => (
+    <DialogChunkPlaceholder
+      title="Edit Member"
+      titleClassName=" mb-4"
+      className="sm:max-w-[525px]"
+    />
+  ),
+});
+
+// The raw import, never the loader above: a warm-up must not reload the page.
+const warmEditNewMemberModal = () => {
+  importEditNewMemberModal().catch(() => {});
+};
 
 const TeamsMemberTable = ({ data }: any) => {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -296,7 +320,7 @@ const TeamsMemberTable = ({ data }: any) => {
       cell: (row) => {
         return (
           <div className="">
-            <Popover>
+            <Popover onOpenChange={(menuOpen) => { if (menuOpen) warmEditNewMemberModal(); }}>
               <PopoverTrigger asChild>
                 <div>
                   <FilterButton></FilterButton>

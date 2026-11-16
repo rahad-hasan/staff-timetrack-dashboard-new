@@ -31,10 +31,50 @@ import { actionErrorMessage } from "@/lib/actionErrors";
 import { useLogInUserStore } from "@/store/logInUserStore";
 import DeleteIcon from "@/components/Icons/DeleteIcon";
 import ConfirmDialog from "@/components/Common/ConfirmDialog";
-import EditTaskModal from "./EditTaskModal";
-import SingleTaskModal from "./SingleTaskModal";
+import dynamic from "next/dynamic";
+import { loadOrReload } from "@/lib/lazyChunk";
+import { DialogChunkPlaceholder } from "@/components/Common/DialogChunkPlaceholder";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Checkbox } from "@/components/ui/checkbox";
+
+// Both dialogs open from a row, so neither belongs to the list's first load:
+// the edit form brings zod, react-hook-form, the calendar and Radix Select.
+// Each is its own chunk, warmed when a row's action menu opens (edit) or the
+// pointer reaches a task name (details); the placeholders cover a click that
+// beats the download.
+const importEditTaskModal = () => import("./EditTaskModal");
+const loadEditTaskModal = loadOrReload(importEditTaskModal);
+const EditTaskModal = dynamic(loadEditTaskModal, {
+    ssr: false,
+    loading: () => (
+        <DialogChunkPlaceholder
+            title="Edit Task"
+            titleClassName="mb-4"
+            className="w-full sm:max-w-[525px] max-h-[95vh] overflow-y-auto"
+        />
+    ),
+});
+const importSingleTaskModal = () => import("./SingleTaskModal");
+const loadSingleTaskModal = loadOrReload(importSingleTaskModal);
+const SingleTaskModal = dynamic(loadSingleTaskModal, {
+    ssr: false,
+    // The modal's own loading state, which follows this one while it reads the task.
+    loading: () => (
+        <DialogChunkPlaceholder
+            title="Loading Task Details"
+            hideTitle
+            className="sm:max-w-[550px] h-[300px] flex flex-col items-center justify-center"
+        />
+    ),
+});
+
+// The raw imports, never the loaders above: a warm-up must not reload the page.
+const warmEditTaskModal = () => {
+    importEditTaskModal().catch(() => {});
+};
+const warmSingleTaskModal = () => {
+    importSingleTaskModal().catch(() => {});
+};
 
 const TaskTable = ({ data }: { data: ITask[] }) => {
     const [sorting, setSorting] = useState<SortingState>([])
@@ -166,6 +206,7 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
                     <div className="flex flex-col min-w-[200px] xl:max-w-[160px] 2xl:max-w-full">
                         <span
                             className="font-bold text-base text-headingTextColor dark:text-darkTextPrimary cursor-pointer capitalize hover:underline break-words whitespace-normal"
+                            onPointerEnter={warmSingleTaskModal}
                             onClick={() => {
                                 setViewTaskId(row.original.id);
                                 setViewTaskOpen(true);
@@ -393,7 +434,7 @@ const TaskTable = ({ data }: { data: ITask[] }) => {
                                 logInUserData?.role === 'project_manager'
                             ) &&
                             <div className="">
-                                <Popover>
+                                <Popover onOpenChange={(menuOpen) => { if (menuOpen) warmEditTaskModal(); }}>
                                     <PopoverTrigger asChild>
                                         <div>
                                             <FilterButton></FilterButton>

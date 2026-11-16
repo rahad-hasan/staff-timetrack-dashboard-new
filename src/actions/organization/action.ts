@@ -4,7 +4,11 @@ import { revalidateTag } from "next/cache";
 import { unstable_rethrow } from "next/navigation";
 
 import { baseApi } from "../baseApi";
-import { startSession } from "@/lib/sessionCookies";
+import {
+  clearSignupProof,
+  readSignupProof,
+  startSession,
+} from "@/lib/sessionCookies";
 import {
   ICreateOrganizationClientResult,
   withoutSessionTokens,
@@ -142,6 +146,14 @@ export const createOrganization = async (
 
   const requestedTrialPlanId = normalizeTrialPlanId(trialPlanId);
 
+  // Proof that this browser verified the sign-up (or knows its password): the
+  // endpoint has no session to go by, and without it anyone who knew the
+  // e-mail of a verified sign-up could finish it and be handed the account.
+  // Read from the httpOnly cookie the verify-otp / sign-in actions wrote; the
+  // page never holds it. Absent (an hour passed, another browser), the API
+  // answers with how to get a new one, and that message is shown as it is.
+  const signupProof = await readSignupProof();
+
   const response = await baseApi<IResponse<ICreateOrganizationResponse>>(
     "/company",
     {
@@ -172,6 +184,9 @@ export const createOrganization = async (
         ...(requestedTrialPlanId !== null
           ? { trial_plan_id: requestedTrialPlanId }
           : {}),
+        // Same reasoning for the key: absent rather than empty when there is
+        // no proof to send. An API that predates it strips the unknown key.
+        ...(signupProof ? { signup_token: signupProof } : {}),
       },
     },
   );
@@ -190,6 +205,9 @@ export const createOrganization = async (
   // From here the account exists and the user is signed in — no later failure
   // may be reported as "organization not created".
   const hasSession = await startSession(created);
+
+  // The sign-up it proved is finished; the proof has nothing left to open.
+  await clearSignupProof();
 
   const warnings: string[] = [];
 

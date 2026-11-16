@@ -9,7 +9,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
+import { LazyCalendar, warmCalendar } from "@/components/ui/lazy-calendar";
 import CalendarIcon from "../Icons/CalendarIcon";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useTopLoader } from "nextjs-toploader";
@@ -122,7 +122,11 @@ const SpecificDatePicker = () => {
 
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
-            <div className="flex h-10 items-center text-primary gap-2 border border-borderColor dark:border-darkBorder rounded-md px-4 mx-2 cursor-pointer w-full sm:w-auto dark:bg-darkPrimaryBg">
+            <div
+              onPointerEnter={warmCalendar}
+              onFocus={warmCalendar}
+              className="flex h-10 items-center text-primary gap-2 border border-borderColor dark:border-darkBorder rounded-md px-4 mx-2 cursor-pointer w-full sm:w-auto dark:bg-darkPrimaryBg"
+            >
               <CalendarIcon size={20} />
               <span className="text-sm 2xl:text-base text-headingTextColor font-medium dark:text-darkTextPrimary whitespace-nowrap">
                 {formatDateForDisplay(selectedDate)}
@@ -130,7 +134,8 @@ const SpecificDatePicker = () => {
             </div>
           </PopoverTrigger>
           <PopoverContent className="w-auto p-0" align="start">
-            <Calendar
+            {/* react-day-picker loads with the first open (see lazy-calendar). */}
+            <LazyCalendar
               mode="single"
               selected={selectedDate}
               onSelect={(date) => {

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { loginSchema } from "@/zod/schema";
+import { loginSchema } from "@/zod/authSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import {

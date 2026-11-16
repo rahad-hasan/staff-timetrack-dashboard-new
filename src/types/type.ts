@@ -611,7 +611,8 @@ export interface IAllScreenshot {
   duration: number;
   anomaly: AnomalyDetails;
   project_name: string;
-  task_name: string;
+  /** Null for a capture with no task. */
+  task_name: string | null;
 }
 
 export interface INotificationItem {

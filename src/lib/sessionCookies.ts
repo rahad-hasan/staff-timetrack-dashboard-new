@@ -143,9 +143,68 @@ export async function startSession(
   return true;
 }
 
+/**
+ * A password change continues the current session with a NEW token pair: the
+ * API ends every session issued before the change, this one's old tokens
+ * included, and answers with the pair that replaces them. Only the two tokens
+ * are written; who the session belongs to has not changed.
+ *
+ * Not `writeSessionCookies`: handed a full pair, that starts a session and
+ * drops the identity cookies it was not given.
+ */
+export async function rotateSessionTokens(tokens: {
+  accessToken?: string | null;
+  refreshToken?: string | null;
+}) {
+  const cookieStore = await cookies();
+  const options = buildOptions();
+
+  if (tokens.accessToken) cookieStore.set("accessToken", tokens.accessToken, options);
+  if (tokens.refreshToken) cookieStore.set("refreshToken", tokens.refreshToken, options);
+}
+
 /** Ends the session in this browser. (The sample-data dismissal stays: it
  * names the user who made it, so it cannot leak to the next one.) */
 export async function clearSessionCookies() {
   const cookieStore = await cookies();
   SESSION_COOKIES.forEach((name) => cookieStore.delete(name));
+}
+
+/* -------------------------------------------------------------------------- */
+/* Sign-up proof                                                               */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * The sign-up token: proof that this browser is the one that verified the
+ * sign-up code (or knows the password chosen at sign-up). `POST /auth/verify-otp`
+ * and a sign-in for an account that has no organization yet both answer with
+ * it, and `POST /company` — which has no session to go by — requires it before
+ * it turns the verified sign-up into an admin account.
+ *
+ * Kept apart from the session cookies on purpose: it is not a session, the
+ * API refuses it everywhere else, and a sign-in that finds no organization
+ * clears the session cookies while this one has to survive. httpOnly, like
+ * the session: the page never needs to read it.
+ */
+const SIGNUP_PROOF_COOKIE = "signupToken";
+
+/** The API issues it for an hour; the cookie does not outlive it. */
+const SIGNUP_PROOF_MAX_AGE = 60 * 60;
+
+export async function writeSignupProof(token: string | null | undefined) {
+  if (typeof token !== "string" || token.length === 0) return;
+
+  const cookieStore = await cookies();
+  cookieStore.set(SIGNUP_PROOF_COOKIE, token, {
+    ...buildOptions(),
+    maxAge: SIGNUP_PROOF_MAX_AGE,
+  });
+}
+
+export async function readSignupProof(): Promise<string | undefined> {
+  return (await cookies()).get(SIGNUP_PROOF_COOKIE)?.value || undefined;
+}
+
+export async function clearSignupProof() {
+  (await cookies()).delete(SIGNUP_PROOF_COOKIE);
 }

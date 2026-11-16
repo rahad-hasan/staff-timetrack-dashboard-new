@@ -1,51 +1,58 @@
 import { ISearchParamsProps } from "@/types/type";
 import LiveDataBoundary from "@/components/Common/LiveDataBoundary";
-// import AllScreenShortsSkeleton from "@/skeleton/activity/screenShorts/AllScreenShortsSkeleton";
-import Every10MinsServer from "./Every10MinsServer";
-import AllScreenShortsServer from "./AllScreenShortsServer";
+import ScreenshotsDayServer, {
+  readScreenshotsDay,
+  ScreenshotsDayView,
+} from "./ScreenshotsDayServer";
+import { fulfilledWithin } from "@/lib/server/liveData";
 import {
   AllScreenshotsLightbox,
   Every10MinsLightbox,
 } from "./ScreenshotLightbox";
-import Every10MinsSkeleton from "@/skeleton/activity/screenShorts/Every10MinsSkeleton";
 import { Suspense } from "react";
-import AllScreenShortsSkeleton from "@/skeleton/activity/screenShorts/AllScreenShortsSkeleton";
+import ScreenshotsSkeleton from "./ScreenshotsSkeleton";
+import { screenshotDayKey } from "./screenshotTabs";
+
+/**
+ * How long the page waits for the day's read before it renders the skeleton
+ * instead (see fulfilledWithin). The read takes 40-160 ms, so in the usual
+ * case the grid arrives with the page, and with the answer to a filter
+ * change, and no skeleton is shown at all. This is the most a slow read adds
+ * before the skeleton appears.
+ */
+const FAST_READ_MS = 200;
 
 const ScreenShotsServer = async ({ searchParams }: ISearchParamsProps) => {
   const params = await searchParams;
-  type Tab = "Every 10 min" | "All Screenshots";
-  const activeTab = (params?.tab as Tab) ?? "Every 10 min";
+  const day = readScreenshotsDay(params);
+  // Null for a read that is slow, and for one that failed: both are awaited
+  // under the boundary below, which is where a failure belongs.
+  const ready = await fulfilledWithin(day, FAST_READ_MS);
 
-  // Each lightbox wraps its view's boundary: a failed refresh swaps the grid
-  // for an error card but leaves an open screenshot open.
+  // Nothing here depends on the tab: both views come from the one read
+  // above, and the client switches between them without a request.
+  //
+  // Each lightbox wraps the boundary: a failed refresh swaps the grid for an
+  // error card but leaves an open screenshot open. Both are mounted whichever
+  // tab is showing, so switching tabs keeps them.
   return (
     <div>
-      {activeTab === "Every 10 min" && (
-        <Suspense
-          key={JSON.stringify(params)}
-          fallback={<Every10MinsSkeleton />}
-        >
-          <Every10MinsLightbox>
-            <LiveDataBoundary>
-              <Every10MinsServer searchParams={searchParams}></Every10MinsServer>
-            </LiveDataBoundary>
-          </Every10MinsLightbox>
-        </Suspense>
-      )}
-      {activeTab === "All Screenshots" && (
-        <Suspense
-          key={JSON.stringify(params)}
-          fallback={<AllScreenShortsSkeleton />}
-        >
+      <Suspense
+        key={screenshotDayKey(params)}
+        fallback={<ScreenshotsSkeleton />}
+      >
+        <Every10MinsLightbox>
           <AllScreenshotsLightbox>
             <LiveDataBoundary>
-              <AllScreenShortsServer
-                searchParams={searchParams}
-              ></AllScreenShortsServer>
+              {ready ? (
+                <ScreenshotsDayView read={ready.value} />
+              ) : (
+                <ScreenshotsDayServer day={day} />
+              )}
             </LiveDataBoundary>
           </AllScreenshotsLightbox>
-        </Suspense>
-      )}
+        </Every10MinsLightbox>
+      </Suspense>
     </div>
   );
 };

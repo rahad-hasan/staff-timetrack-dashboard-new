@@ -21,7 +21,7 @@ import Notification from "./Header/Notification";
 import HeaderWorkTime from "./HeaderWorkTime";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { socket } from "@/socket/socket";
+import { loadSocket } from "@/socket/loadSocket";
 // import bellIcon from '../../assets/header/bell.svg'
 
 interface HeaderProps {
@@ -43,9 +43,23 @@ const Header = ({ workTime, renderedAt }: HeaderProps) => {
       setUnreadCount(data ? data?.meta?.total : 0);
       setNotificationsList(newList);
     };
-    socket.on("notifications", handleIncomingData);
+    // The socket client loads after the header has hydrated (see loadSocket).
+    // Subscribed as soon as it is there, which is before SocketProvider
+    // connects it, so the feed's first event is always received.
+    let unsubscribe: (() => void) | undefined;
+    let cancelled = false;
+    loadSocket().then(
+      ({ socket }) => {
+        if (cancelled) return;
+        socket.on("notifications", handleIncomingData);
+        unsubscribe = () => socket.off("notifications", handleIncomingData);
+      },
+      // Reported by SocketProvider; the bell simply stays empty.
+      () => undefined,
+    );
     return () => {
-      socket.off("notifications", handleIncomingData);
+      cancelled = true;
+      unsubscribe?.();
     };
   }, []);
 

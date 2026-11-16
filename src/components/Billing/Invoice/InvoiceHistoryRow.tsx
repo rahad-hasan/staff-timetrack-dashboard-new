@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ExternalLink, FileText, Receipt } from "lucide-react";
 
 import { TableCell, TableRow } from "@/components/ui/table";
-import { formatBillingDate } from "@/lib/billing";
+import { formatBillingDate } from "@/lib/billingDates";
 import { useViewerTimeZone } from "@/components/Common/ViewerTimeZone";
 import { formatBillingReason, invoiceDetailHref } from "@/lib/invoice";
 import { IBillingInvoice } from "@/types/billing";
