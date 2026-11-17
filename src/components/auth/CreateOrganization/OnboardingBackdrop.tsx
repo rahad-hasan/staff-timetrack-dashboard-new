@@ -226,18 +226,18 @@ export default function OnboardingBackdrop({
             </div>
 
             <div className="mt-6 mb-3 px-4">
-              <h2 className="mb-3 text-xs uppercase text-subTextColor dark:text-darkTextSecondary">
+              <p className="mb-3 text-xs uppercase text-subTextColor dark:text-darkTextSecondary">
                 Main menu
-              </h2>
+              </p>
               {MAIN_NAV.map((item, index) => (
                 <NavRow key={item.label} {...item} active={index === 0} />
               ))}
             </div>
 
             <div className="mx-4 border-t border-borderColor pt-3 dark:border-darkBorder">
-              <h2 className="mb-2 text-xs uppercase text-subTextColor dark:text-darkTextSecondary">
+              <p className="mb-2 text-xs uppercase text-subTextColor dark:text-darkTextSecondary">
                 Others
-              </h2>
+              </p>
               {OTHER_NAV.map((item) => (
                 <NavRow key={item.label} {...item} />
               ))}
@@ -353,9 +353,9 @@ export default function OnboardingBackdrop({
                           <Icon size={36} />
                         </div>
                         <div>
-                          <h2 className="text-xl font-medium text-headingTextColor 2xl:text-2xl dark:text-darkTextPrimary">
+                          <p className="text-xl font-medium text-headingTextColor 2xl:text-2xl dark:text-darkTextPrimary">
                             {value}
-                          </h2>
+                          </p>
                           <h3 className="text-sm uppercase text-subTextColor 2xl:text-[15px] dark:text-darkTextSecondary">
                             {label}
                           </h3>
