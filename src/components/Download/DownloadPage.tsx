@@ -10,6 +10,10 @@ import { useReleases } from "@/hooks/useReleases";
 import DownloadPageSkeleton from "@/skeleton/download/DownloadPageSkeleton";
 
 import FallbackNotice from "./FallbackNotice";
+import {
+  MICROSOFT_STORE_LISTING_URL,
+  isTrustedStoreUrl,
+} from "./downloadSources";
 import MacArchitectureHelp from "./MacArchitectureHelp";
 import PlatformCard from "./PlatformCard";
 import RecommendedDownload from "./RecommendedDownload";
@@ -123,9 +127,27 @@ const DownloadPage = () => {
         </div>
       </div>
 
-      <p className="mt-4 flex items-center gap-1.5 text-xs text-subTextColor dark:text-darkTextSecondary">
-        <ShieldCheck aria-hidden className="size-3.5 shrink-0 text-primary" />
-        Every installer is served directly from our official GitHub release.
+      <p className="mt-4 flex items-start gap-1.5 text-xs text-subTextColor dark:text-darkTextSecondary">
+        <ShieldCheck aria-hidden className="mt-px size-3.5 shrink-0 text-primary" />
+        <span>
+          The Windows installer comes from Microsoft for our official{" "}
+          {/* Lets anyone confirm the installer's origin on Microsoft's own
+              site. Allowlisted like every download link on the page. */}
+          {isTrustedStoreUrl(MICROSOFT_STORE_LISTING_URL, "listing") ? (
+            <a
+              href={MICROSOFT_STORE_LISTING_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-emerald-700 underline-offset-4 hover:underline dark:text-emerald-300"
+            >
+              Microsoft Store listing
+            </a>
+          ) : (
+            "Microsoft Store listing"
+          )}
+          ; macOS and Linux installers come straight from our official GitHub
+          release.
+        </span>
       </p>
     </div>
   );

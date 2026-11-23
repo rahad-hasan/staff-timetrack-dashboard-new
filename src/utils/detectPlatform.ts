@@ -63,8 +63,8 @@ export const detectPlatformSync = (): IDetectedPlatform => {
   if (/CrOS/.test(ua) || uaPlatform === "Chrome OS") return UNKNOWN_PLATFORM;
 
   if (uaPlatform === "Windows" || /Win/i.test(plat) || /Windows NT/i.test(ua)) {
-    // Windows on ARM emulates x64 installers, so the single .exe is the right
-    // answer for every Windows machine and needs no architecture split.
+    // Windows has a single target — the Microsoft Store installer, which works
+    // out per device what it can install — so it needs no architecture split.
     return { os: "windows", recommendedTarget: "win" };
   }
 

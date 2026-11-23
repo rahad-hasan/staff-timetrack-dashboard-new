@@ -5,9 +5,12 @@ import { Download } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { useOnboardingStore } from "@/store/onboardingStore";
+import type { TResolvedDownload } from "@/types/releases";
+
+import { isTrustedDownload } from "./downloadSources";
 
 interface IDownloadButtonProps {
-  href: string;
+  download: TResolvedDownload;
   /**
    * Overrides the accessible name when the visible label alone is ambiguous —
    * e.g. two macOS buttons that both read "Download for macOS".
@@ -24,12 +27,15 @@ interface IDownloadButtonProps {
 }
 
 /**
- * The one place a release asset is linked.
+ * The one place an installer is linked, whether a GitHub release file or the
+ * Microsoft Store installer.
  *
  * Every download on this page goes through here so the external-link
- * attributes cannot be forgotten on a fourth copy. Note the browser ignores a
- * `download` attribute cross-origin — GitHub's `Content-Disposition:
- * attachment` is what actually forces the save.
+ * attributes cannot be forgotten on another copy, and so the source allowlist
+ * runs right where the `href` is created, whatever path the URL took to get
+ * here. Note the browser ignores a `download` attribute cross-origin — the
+ * `Content-Disposition: attachment` that both GitHub and Microsoft send is
+ * what actually forces the save.
  */
 // Starting a real download is an even more honest signal than the Header
 // link's "headed to the download page" — without it, a user the tour (or
@@ -40,28 +46,41 @@ const markDownloaded = () =>
   void useOnboardingStore.getState().completeTask("DESKTOP_APP_DOWNLOADED");
 
 const DownloadButton = ({
-  href,
+  download,
   accessibleName,
   children,
   variant,
   size = "lg",
   className,
-}: IDownloadButtonProps) => (
-  <Button asChild variant={variant} size={size} className={className}>
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label={accessibleName}
-      onClick={markDownloaded}
-      onAuxClick={(event) => {
-        if (event.button === 1) markDownloaded();
-      }}
-    >
-      <Download aria-hidden className="size-4" />
-      {children}
-    </a>
-  </Button>
-);
+}: IDownloadButtonProps) => {
+  // Callers pass links from `resolveDownload`, which has already checked
+  // them. Checked again here so a future caller that skips the resolver gets
+  // a dead button, never an untrusted link.
+  if (!isTrustedDownload(download)) {
+    return (
+      <Button size={size} variant="download" className={className} disabled>
+        Not available yet
+      </Button>
+    );
+  }
+
+  return (
+    <Button asChild variant={variant} size={size} className={className}>
+      <a
+        href={download.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={accessibleName}
+        onClick={markDownloaded}
+        onAuxClick={(event) => {
+          if (event.button === 1) markDownloaded();
+        }}
+      >
+        <Download aria-hidden className="size-4" />
+        {children}
+      </a>
+    </Button>
+  );
+};
 
 export default DownloadButton;

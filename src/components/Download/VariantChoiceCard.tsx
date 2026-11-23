@@ -6,6 +6,7 @@ import type { IReleaseInfo } from "@/types/releases";
 
 import DownloadButton from "./DownloadButton";
 import RecommendedCard from "./RecommendedCard";
+import { resolveDownload } from "./downloadSources";
 import type { IPlatformGroup } from "./downloadTargets";
 
 interface IVariantChoiceCardProps {
@@ -33,9 +34,10 @@ const VariantChoiceCard = ({
   helpPanelId,
   isHelpOpen,
 }: IVariantChoiceCardProps) => {
-  const available = group.variants.filter(
-    (variant) => release.assets[variant.id]?.url,
-  );
+  const available = group.variants.flatMap((variant) => {
+    const download = resolveDownload(variant.id, release.assets);
+    return download ? [{ variant, download }] : [];
+  });
 
   if (available.length === 0) return null;
 
@@ -48,18 +50,19 @@ const VariantChoiceCard = ({
       ) : null}
 
       <div className="mt-4 flex flex-col gap-2 sm:flex-row">
-        {available.map((variant, index) => {
-          const asset = release.assets[variant.id];
-          if (!asset?.url) return null;
+        {available.map(({ variant, download }, index) => {
+          // Only GitHub files carry a size; a store listing has none.
+          const sizeLabel =
+            download.source === "github-release" ? download.sizeLabel : "";
 
           return (
             <DownloadButton
               key={variant.id}
-              href={asset.url}
+              download={download}
               // WCAG 2.5.3: the visible text is "{label} · {size}", so the
               // accessible name has to contain that whole string verbatim.
               accessibleName={`Download ${variant.label}${
-                asset.sizeLabel ? ` · ${asset.sizeLabel}` : ""
+                sizeLabel ? ` · ${sizeLabel}` : ""
               } for ${group.osLabel}`}
               // The leading variant carries the primary style; PLATFORM_GROUPS
               // decides which one leads.
@@ -67,8 +70,8 @@ const VariantChoiceCard = ({
               className="flex-1"
             >
               {variant.label}
-              {asset.sizeLabel ? (
-                <span className="opacity-70">· {asset.sizeLabel}</span>
+              {sizeLabel ? (
+                <span className="opacity-70">· {sizeLabel}</span>
               ) : null}
             </DownloadButton>
           );

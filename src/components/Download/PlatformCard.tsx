@@ -9,6 +9,7 @@ import type { TDownloadTargetId, TReleaseAssets } from "@/types/releases";
 import ArchitectureToggle from "./ArchitectureToggle";
 import DownloadButton from "./DownloadButton";
 import TargetIcon from "./TargetIcon";
+import { resolveDownload } from "./downloadSources";
 import { VARIANTS, getFileType } from "./downloadTargets";
 import type { IPlatformGroup } from "./downloadTargets";
 
@@ -30,15 +31,14 @@ const PlatformCard = ({
   isRecommended,
 }: IPlatformCardProps) => {
   const variant = VARIANTS[selectedId];
-  const asset = assets[selectedId];
-  const href = asset?.url;
+  const download = resolveDownload(selectedId, assets);
   const hasChoice = group.variants.length > 1;
 
   return (
     <div
       className={cn(
         "relative flex h-full flex-col rounded-[12px] border border-borderColor bg-white p-5 transition-all duration-200 dark:border-darkBorder dark:bg-darkPrimaryBg",
-        href && "hover:shadow-lg",
+        download && "hover:shadow-lg",
         isRecommended &&
           "border-primary/60 shadow-sm ring-1 ring-primary/20 dark:border-primary/60",
       )}
@@ -80,9 +80,9 @@ const PlatformCard = ({
           </div>
         ) : null}
 
-        {href ? (
+        {download ? (
           <DownloadButton
-            href={href}
+            download={download}
             // Only needed when the card offers a choice: otherwise the
             // visible label already names the platform uniquely.
             accessibleName={
@@ -102,8 +102,14 @@ const PlatformCard = ({
         )}
 
         <p className="mt-2.5 text-center text-xs text-subTextColor dark:text-darkTextSecondary">
-          <span className="font-mono">{getFileType(group, asset?.name)}</span>
-          {asset?.sizeLabel ? ` · ${asset.sizeLabel}` : ""}
+          <span className="font-mono">
+            {getFileType(group, download?.name)}
+          </span>
+          {download?.source === "microsoft-store"
+            ? " · Microsoft Store installer"
+            : download?.sizeLabel
+              ? ` · ${download.sizeLabel}`
+              : ""}
           {hasChoice ? ` · ${variant.label}` : ""}
         </p>
       </div>

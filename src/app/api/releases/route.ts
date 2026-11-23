@@ -4,7 +4,7 @@ import {
   ASSET_PATTERNS,
   RELEASE_REPO,
   RELEASES_PAGE_URL,
-  TARGET_IDS,
+  RELEASE_TARGET_IDS,
   buildReleaseError,
   formatMb,
   isNonEmptyString,
@@ -15,8 +15,8 @@ import type {
   IReleaseAsset,
   IReleaseError,
   IReleaseInfo,
-  TDownloadTargetId,
   TReleaseAssets,
+  TReleaseTargetId,
 } from "@/types/releases";
 
 export const runtime = "nodejs";
@@ -102,7 +102,7 @@ const isGithubAsset = (value: unknown): value is IGithubReleaseAsset =>
  */
 const extractAsset = (
   assets: readonly unknown[],
-  target: TDownloadTargetId,
+  target: TReleaseTargetId,
 ): IReleaseAsset | null => {
   const match = assets.find(
     (asset): asset is IGithubReleaseAsset =>
@@ -148,14 +148,17 @@ const parseRelease = (payload: unknown): IReleaseInfo | null => {
   if (!Array.isArray(release.assets)) return null;
   const rawAssets: readonly unknown[] = release.assets;
 
-  const assets = TARGET_IDS.reduce((accumulator, target) => {
+  const assets = RELEASE_TARGET_IDS.reduce((accumulator, target) => {
     accumulator[target] = extractAsset(rawAssets, target);
     return accumulator;
   }, {} as TReleaseAssets);
 
-  // A release with none of our four artefacts is useless to this page; the
-  // pinned fallback is strictly better than four dead cards.
-  const hasAnyAsset = TARGET_IDS.some((target) => assets[target] !== null);
+  // A release with none of our macOS/Linux artefacts is useless to this page
+  // (Windows comes from the Microsoft Store); the pinned fallback is strictly
+  // better than dead cards.
+  const hasAnyAsset = RELEASE_TARGET_IDS.some(
+    (target) => assets[target] !== null,
+  );
   if (!hasAnyAsset) return null;
 
   return {

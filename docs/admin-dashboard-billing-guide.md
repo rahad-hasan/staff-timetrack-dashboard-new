@@ -158,6 +158,12 @@ gives one path for every state instead.
 - A discount code is **refused for a company that already has a live subscription**
   (`"Discount codes apply to new subscriptions only."`) — that purchase resolves to a prorated
   switch, which carries no coupon, so accepting one would promise a saving the charge never applies.
+- A company can use a discount code **once**. Any invoice it paid with the code counts, including
+  one later refunded; an abandoned checkout (voided, never paid) does not. Cancelling and buying
+  again with the same code is refused.
+- A code's uses are limited: each company's first paid purchase with it takes one use off the
+  code's remaining count, and at 0 the code is refused for everyone. The use is counted when the
+  payment succeeds, not at quote time.
 - A discount code belongs to **one plan** (marketing picks it in the console; the same code can
   be created again for another plan). A refused code returns a 400 whose `message` says why, and
   the panel shows it under the code field as received (the same messages come back from
@@ -168,7 +174,8 @@ gives one path for every state instead.
   | `This discount code is only valid for the Pro plan.` (or `…for the Pro or Max plans.`) | Code is running on other plans, not this one |
   | `This discount code has expired.` | This plan's code is past its end date |
   | `This discount code is not active yet.` | This plan's code has a start date in the future |
-  | `This discount code is no longer available.` | The code's `redeem_limit` is 0 |
+  | `This discount code is no longer available.` | The code has no uses left (`redeem_limit` is 0) |
+  | `This discount code has already been used by your company.` | This company already paid with this code |
   | `Invalid or inactive discount code` | Unknown, switched off or deleted |
 
 ### `POST /packages/subscription/subscribe`

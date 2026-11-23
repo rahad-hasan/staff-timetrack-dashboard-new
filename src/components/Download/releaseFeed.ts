@@ -13,9 +13,9 @@ import type {
   IReleaseAsset,
   IReleaseError,
   IReleaseInfo,
-  TDownloadTargetId,
   TReleaseAssets,
   TReleaseErrorKind,
+  TReleaseTargetId,
 } from "@/types/releases";
 
 export const RELEASE_REPO = "staff-time-tracker/desktop-app-releases";
@@ -26,7 +26,9 @@ export const RELEASES_PAGE_URL = `https://github.com/${RELEASE_REPO}/releases`;
 export const RELEASE_FEED_PATH = "/api/releases";
 
 /**
- * Filename patterns for the four artefacts the page offers. electron-builder
+ * Filename patterns for the artefacts the page serves from GitHub. Windows is
+ * not among them: it installs from the Microsoft Store (`downloadSources.ts`),
+ * so the release's `.exe` is left for the in-app auto-updater. electron-builder
  * uploads `.blockmap`, `.zip`, `.deb`, `.rpm` and `latest*.yml` auto-updater
  * files to the same release, so every pattern is anchored at `$` to keep those
  * out — a `.dmg.blockmap` matching the macOS slot would hand users a 110 KB
@@ -37,14 +39,15 @@ export const RELEASE_FEED_PATH = "/api/releases";
  * `.AppImage`. The name prefix is load-bearing: the release also carries a
  * bare `install.sh`, which is only the ~16 KB bootstrap header.
  */
-export const ASSET_PATTERNS: Record<TDownloadTargetId, RegExp> = {
-  win: /^StaffTimeTracker-Setup-.*\.exe$/i,
+export const ASSET_PATTERNS: Record<TReleaseTargetId, RegExp> = {
   macArm: /-arm64\.dmg$/i,
   macX64: /-x64\.dmg$/i,
   linux: /^StaffTimeTracker-.*\.sh$/i,
 };
 
-export const TARGET_IDS = Object.keys(ASSET_PATTERNS) as TDownloadTargetId[];
+export const RELEASE_TARGET_IDS = Object.keys(
+  ASSET_PATTERNS,
+) as TReleaseTargetId[];
 
 const BYTES_PER_MB = 1024 * 1024;
 
@@ -114,11 +117,6 @@ export const FALLBACK_RELEASE: IReleaseInfo = {
   releaseUrl: `${RELEASES_PAGE_URL}/tag/v${FALLBACK_VERSION}`,
   publishedAt: null,
   assets: {
-    win: buildFallbackAsset(
-      FALLBACK_VERSION,
-      `StaffTimeTracker-Setup-${FALLBACK_VERSION}.exe`,
-      83_966_083,
-    ),
     macArm: buildFallbackAsset(
       FALLBACK_VERSION,
       `StaffTimeTracker-${FALLBACK_VERSION}-arm64.dmg`,
@@ -159,7 +157,7 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
  */
 const sanitizeAsset = (
   value: unknown,
-  target: TDownloadTargetId,
+  target: TReleaseTargetId,
 ): IReleaseAsset | null => {
   if (!isRecord(value)) return null;
   const { name, url, sizeLabel } = value;
@@ -186,12 +184,17 @@ export const sanitizeReleaseInfo = (value: unknown): IReleaseInfo | null => {
   if (!isRecord(value.assets)) return null;
 
   const rawAssets = value.assets;
-  const assets = TARGET_IDS.reduce((accumulator, target) => {
+  // Iterating our own target list (not the payload's keys) means anything
+  // extra the payload carries — e.g. a `win` slot from an older deploy — is
+  // ignored rather than rendered.
+  const assets = RELEASE_TARGET_IDS.reduce((accumulator, target) => {
     accumulator[target] = sanitizeAsset(rawAssets[target], target);
     return accumulator;
   }, {} as TReleaseAssets);
 
-  if (!TARGET_IDS.some((target) => assets[target] !== null)) return null;
+  if (!RELEASE_TARGET_IDS.some((target) => assets[target] !== null)) {
+    return null;
+  }
 
   return {
     tag: value.tag,

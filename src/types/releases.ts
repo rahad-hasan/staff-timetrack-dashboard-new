@@ -1,11 +1,19 @@
 /**
- * Types for the desktop-app download page. Its data comes from the public
- * GitHub Releases API of `staff-time-tracker/desktop-app-releases`, read
- * server-side and shared by every user through GET /api/releases.
+ * Types for the desktop-app download page. The macOS and Linux installers come
+ * from the public GitHub Releases API of
+ * `staff-time-tracker/desktop-app-releases`, read server-side and shared by
+ * every user through GET /api/releases. Windows is distributed through the
+ * Microsoft Store instead, so it never touches that feed.
  */
 
-/** The four artefacts the download page is allowed to hand a user. */
-export type TDownloadTargetId = "win" | "macArm" | "macX64" | "linux";
+/** Builds served as files from our GitHub release. */
+export type TReleaseTargetId = "macArm" | "macX64" | "linux";
+
+/** Builds installed from a store listing rather than downloaded as a file. */
+export type TStoreTargetId = "win";
+
+/** Every build the download page is allowed to hand a user. */
+export type TDownloadTargetId = TReleaseTargetId | TStoreTargetId;
 
 /** OS families we can act on. Everything else (mobile, ChromeOS) is "unknown". */
 export type TDetectedOs = "windows" | "mac" | "linux" | "unknown";
@@ -22,7 +30,7 @@ export interface IDetectedPlatform {
 
 /** One release asset, already parsed down to what the UI renders. */
 export interface IReleaseAsset {
-  /** Asset filename, e.g. `StaffTimeTracker-Setup-1.0.4.exe`. */
+  /** Asset filename, e.g. `StaffTimeTracker-1.0.4-arm64.dmg`. */
   name: string;
   /** Direct `browser_download_url` from GitHub. */
   url: string;
@@ -30,8 +38,30 @@ export interface IReleaseAsset {
   sizeLabel: string;
 }
 
-/** Every target resolved for one release; `null` where the asset is missing. */
-export type TReleaseAssets = Record<TDownloadTargetId, IReleaseAsset | null>;
+/** Every release target resolved for one release; `null` where the asset is missing. */
+export type TReleaseAssets = Record<TReleaseTargetId, IReleaseAsset | null>;
+
+/**
+ * A build resolved to the one link the page may render for it, after its
+ * source's allowlist has passed. Tagged by source so a component can never
+ * show a store listing as a file (or the reverse), and so the final link
+ * check knows which allowlist the URL must satisfy.
+ */
+export type TResolvedDownload =
+  | {
+      source: "github-release";
+      url: string;
+      /** Asset filename, shown so the user can recognise the file. */
+      name: string;
+      sizeLabel: string;
+    }
+  | {
+      source: "microsoft-store";
+      /** Microsoft's direct installer download for our Store product. */
+      url: string;
+      /** Filename Microsoft serves it under. */
+      name: string;
+    };
 
 export interface IReleaseInfo {
   /** Raw tag as published, e.g. `v1.0.4`. */

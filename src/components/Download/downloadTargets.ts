@@ -58,7 +58,8 @@ export const PLATFORM_GROUPS: Record<TPlatformGroupId, IPlatformGroup> = {
     id: "windows",
     osLabel: "Windows",
     title: "Windows app",
-    description: "Full-featured desktop app for Windows 10 and 11.",
+    description:
+      "Full-featured desktop app for Windows 10 and 11, installed through the Microsoft Store.",
     fileType: ".exe",
     icon: windowsIcon,
     alt: "Windows logo",

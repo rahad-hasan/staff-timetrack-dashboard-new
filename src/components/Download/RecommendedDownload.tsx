@@ -5,6 +5,7 @@ import type { IDetectedPlatform, IReleaseInfo, TDownloadTargetId } from "@/types
 import DownloadButton from "./DownloadButton";
 import RecommendedCard from "./RecommendedCard";
 import VariantChoiceCard from "./VariantChoiceCard";
+import { resolveDownload } from "./downloadSources";
 import { PLATFORM_GROUPS, VARIANTS, getTargetLabel } from "./downloadTargets";
 
 interface IRecommendedDownloadProps {
@@ -50,8 +51,8 @@ const RecommendedDownload = ({
     );
   }
 
-  const asset = release.assets[chosenTarget];
-  if (!asset?.url) return null;
+  const download = resolveDownload(chosenTarget, release.assets);
+  if (!download) return null;
 
   return (
     <RecommendedCard
@@ -59,7 +60,7 @@ const RecommendedDownload = ({
       title={getTargetLabel(chosenTarget)}
       action={
         <DownloadButton
-          href={asset.url}
+          download={download}
           accessibleName={
             group.variants.length > 1
               ? `Download for ${group.osLabel} ${VARIANTS[chosenTarget].label}`
@@ -71,9 +72,16 @@ const RecommendedDownload = ({
         </DownloadButton>
       }
     >
-      <p className="mt-0.5 truncate text-xs text-subTextColor dark:text-darkTextSecondary">
-        {asset.name}
-        {asset.sizeLabel ? ` · ${asset.sizeLabel}` : ""}
+      {/* Truncates only in the side-by-side layout. In the stacked phone
+          layout the column is centred and sized to its content, so a nowrap
+          line widens the whole page instead of ellipsing — it wraps there. */}
+      <p className="mt-0.5 text-xs text-subTextColor sm:truncate dark:text-darkTextSecondary">
+        {download.name}
+        {download.source === "microsoft-store"
+          ? " · installs through the Microsoft Store"
+          : download.sizeLabel
+            ? ` · ${download.sizeLabel}`
+            : ""}
       </p>
     </RecommendedCard>
   );
