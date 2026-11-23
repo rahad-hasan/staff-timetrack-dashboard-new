@@ -63,7 +63,7 @@ export const detectPlatformSync = (): IDetectedPlatform => {
   if (/CrOS/.test(ua) || uaPlatform === "Chrome OS") return UNKNOWN_PLATFORM;
 
   if (uaPlatform === "Windows" || /Win/i.test(plat) || /Windows NT/i.test(ua)) {
-    // Windows has a single target — the Microsoft Store installer, which works
+    // Windows has a single target — the Microsoft Store listing, which works
     // out per device what it can install — so it needs no architecture split.
     return { os: "windows", recommendedTarget: "win" };
   }

@@ -233,7 +233,7 @@ const ORIENTATION_STEPS: readonly ITourStep[] = [
     target: "download-app",
     route: "/download",
     title: "One last thing — get the desktop tracker",
-    body: "Time, apps and screenshots are all captured by the desktop app; the dashboard only reports what it records. Grab the build for your machine — every installer comes from the Microsoft Store or our official GitHub release — then press Finish. You're all set.",
+    body: "Time, apps and screenshots are all captured by the desktop app; the dashboard only reports what it records. Grab the build for your machine — every link goes to our official Microsoft Store listing or GitHub release — then press Finish. You're all set.",
     placement: "bottom",
     padding: 10,
     radius: 12,

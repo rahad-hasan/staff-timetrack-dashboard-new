@@ -3,7 +3,11 @@ import type { StaticImageData } from "next/image";
 import appleIcon from "@/assets/download/download-apple-remove.png";
 import linuxIcon from "@/assets/download/download-linux-remove-bg.png";
 import windowsIcon from "@/assets/download/download-windows-remove.png";
-import type { TDetectedOs, TDownloadTargetId } from "@/types/releases";
+import type {
+  TDetectedOs,
+  TDownloadTargetId,
+  TResolvedDownload,
+} from "@/types/releases";
 
 /** One card per OS. Reuses the detected-OS names so the two line up directly. */
 export type TPlatformGroupId = Exclude<TDetectedOs, "unknown">;
@@ -24,8 +28,11 @@ export interface IPlatformGroup {
   /** Card title, e.g. "macOS app". */
   title: string;
   description: string;
-  /** File-type chip used until a real asset name is known, e.g. ".dmg". */
-  fileType: string;
+  /**
+   * File-type chip used until a real asset name is known, e.g. ".dmg". Absent
+   * for a group installed from a store, which has no file to describe.
+   */
+  fileType?: string;
   icon: StaticImageData;
   /** `dark:invert` for the black Apple glyph, which vanishes on dark cards. */
   iconClassName?: string;
@@ -39,8 +46,8 @@ export interface IPlatformGroup {
 /**
  * Every build, keyed by id. Declaring them here rather than inline in the
  * groups makes this a `Record` over `TDownloadTargetId`, so a new target is a
- * compile error until it is described — and it makes `getVariant` a total
- * lookup instead of a search that has to invent a fallback.
+ * compile error until it is described — and it makes every `VARIANTS[id]` a
+ * total lookup instead of a search that has to invent a fallback.
  */
 export const VARIANTS: Record<TDownloadTargetId, IPlatformVariant> = {
   win: { id: "win", label: "64-bit", hint: "x64" },
@@ -59,8 +66,7 @@ export const PLATFORM_GROUPS: Record<TPlatformGroupId, IPlatformGroup> = {
     osLabel: "Windows",
     title: "Windows app",
     description:
-      "Full-featured desktop app for Windows 10 and 11, installed through the Microsoft Store.",
-    fileType: ".exe",
+      "Full-featured desktop app for Windows 10 and 11, installed from the Microsoft Store.",
     icon: windowsIcon,
     alt: "Windows logo",
     variants: [VARIANTS.win],
@@ -106,11 +112,8 @@ const GROUP_OF_TARGET: Record<TDownloadTargetId, TPlatformGroupId> = {
   linux: "linux",
 };
 
-export const getGroupOfTarget = (id: TDownloadTargetId): IPlatformGroup =>
+const getGroupOfTarget = (id: TDownloadTargetId): IPlatformGroup =>
   PLATFORM_GROUPS[GROUP_OF_TARGET[id]];
-
-export const getVariant = (id: TDownloadTargetId): IPlatformVariant =>
-  VARIANTS[id];
 
 /**
  * One-line label for the recommended banner: "Windows", or
@@ -132,5 +135,18 @@ export const getFileType = (
   assetName: string | undefined,
 ): string => {
   const match = assetName?.match(/(\.[A-Za-z0-9]+)$/);
-  return match ? match[1] : group.fileType;
+  return match ? match[1] : (group.fileType ?? "");
 };
+
+/**
+ * Visible button text. A Store listing gets the Store's own verb ("Get"), so
+ * the label says what the click actually does: open a web page rather than
+ * save a file.
+ */
+export const getDownloadLabel = (
+  group: IPlatformGroup,
+  download: TResolvedDownload,
+): string =>
+  download.source === "microsoft-store"
+    ? "Get from Microsoft Store"
+    : `Download for ${group.osLabel}`;

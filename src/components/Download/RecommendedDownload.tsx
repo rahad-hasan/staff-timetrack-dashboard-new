@@ -5,8 +5,13 @@ import type { IDetectedPlatform, IReleaseInfo, TDownloadTargetId } from "@/types
 import DownloadButton from "./DownloadButton";
 import RecommendedCard from "./RecommendedCard";
 import VariantChoiceCard from "./VariantChoiceCard";
-import { resolveDownload } from "./downloadSources";
-import { PLATFORM_GROUPS, VARIANTS, getTargetLabel } from "./downloadTargets";
+import { getDownloadHost, resolveDownload } from "./downloadSources";
+import {
+  PLATFORM_GROUPS,
+  VARIANTS,
+  getDownloadLabel,
+  getTargetLabel,
+} from "./downloadTargets";
 
 interface IRecommendedDownloadProps {
   platform: IDetectedPlatform;
@@ -54,6 +59,8 @@ const RecommendedDownload = ({
   const download = resolveDownload(chosenTarget, release.assets);
   if (!download) return null;
 
+  const label = getDownloadLabel(group, download);
+
   return (
     <RecommendedCard
       group={group}
@@ -63,25 +70,27 @@ const RecommendedDownload = ({
           download={download}
           accessibleName={
             group.variants.length > 1
-              ? `Download for ${group.osLabel} ${VARIANTS[chosenTarget].label}`
+              ? `${label} ${VARIANTS[chosenTarget].label}`
               : undefined
           }
           className="w-full sm:w-auto"
         >
-          Download for {group.osLabel}
+          {label}
         </DownloadButton>
       }
     >
-      {/* Truncates only in the side-by-side layout. In the stacked phone
-          layout the column is centred and sized to its content, so a nowrap
-          line widens the whole page instead of ellipsing — it wraps there. */}
-      <p className="mt-0.5 text-xs text-subTextColor sm:truncate dark:text-darkTextSecondary">
-        {download.name}
-        {download.source === "microsoft-store"
-          ? " · installs through the Microsoft Store"
-          : download.sizeLabel
-            ? ` · ${download.sizeLabel}`
-            : ""}
+      <p className="mt-0.5 truncate text-xs text-subTextColor dark:text-darkTextSecondary">
+        {download.source === "microsoft-store" ? (
+          <>
+            Official Microsoft Store listing ·{" "}
+            <span className="font-mono">{getDownloadHost(download)}</span>
+          </>
+        ) : (
+          <>
+            {download.name}
+            {download.sizeLabel ? ` · ${download.sizeLabel}` : ""}
+          </>
+        )}
       </p>
     </RecommendedCard>
   );

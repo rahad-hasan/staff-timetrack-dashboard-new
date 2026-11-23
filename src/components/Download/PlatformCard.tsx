@@ -9,8 +9,8 @@ import type { TDownloadTargetId, TReleaseAssets } from "@/types/releases";
 import ArchitectureToggle from "./ArchitectureToggle";
 import DownloadButton from "./DownloadButton";
 import TargetIcon from "./TargetIcon";
-import { resolveDownload } from "./downloadSources";
-import { VARIANTS, getFileType } from "./downloadTargets";
+import { getDownloadHost, resolveDownload } from "./downloadSources";
+import { VARIANTS, getDownloadLabel, getFileType } from "./downloadTargets";
 import type { IPlatformGroup } from "./downloadTargets";
 
 interface IPlatformCardProps {
@@ -87,13 +87,13 @@ const PlatformCard = ({
             // visible label already names the platform uniquely.
             accessibleName={
               hasChoice
-                ? `Download for ${group.osLabel} ${variant.label}`
+                ? `${getDownloadLabel(group, download)} ${variant.label}`
                 : undefined
             }
             variant={isRecommended ? "default" : "download"}
             className="w-full"
           >
-            Download for {group.osLabel}
+            {getDownloadLabel(group, download)}
           </DownloadButton>
         ) : (
           <Button size="lg" variant="download" className="w-full" disabled>
@@ -102,15 +102,22 @@ const PlatformCard = ({
         )}
 
         <p className="mt-2.5 text-center text-xs text-subTextColor dark:text-darkTextSecondary">
-          <span className="font-mono">
-            {getFileType(group, download?.name)}
-          </span>
-          {download?.source === "microsoft-store"
-            ? " · Microsoft Store installer"
-            : download?.sizeLabel
-              ? ` · ${download.sizeLabel}`
-              : ""}
-          {hasChoice ? ` · ${variant.label}` : ""}
+          {download?.source === "microsoft-store" ? (
+            // Names the destination before the click: this card opens a
+            // listing on Microsoft's site, where the others save a file.
+            <>
+              Opens{" "}
+              <span className="font-mono">{getDownloadHost(download)}</span>
+            </>
+          ) : (
+            <>
+              <span className="font-mono">
+                {getFileType(group, download?.name)}
+              </span>
+              {download?.sizeLabel ? ` · ${download.sizeLabel}` : ""}
+              {hasChoice ? ` · ${variant.label}` : ""}
+            </>
+          )}
         </p>
       </div>
     </div>

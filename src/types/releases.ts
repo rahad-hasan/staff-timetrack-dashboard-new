@@ -57,10 +57,7 @@ export type TResolvedDownload =
     }
   | {
       source: "microsoft-store";
-      /** Microsoft's direct installer download for our Store product. */
       url: string;
-      /** Filename Microsoft serves it under. */
-      name: string;
     };
 
 export interface IReleaseInfo {

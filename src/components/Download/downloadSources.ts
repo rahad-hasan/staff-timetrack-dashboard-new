@@ -3,12 +3,8 @@
  * before they can become an `href`.
  *
  * Two sources:
- * - **Microsoft Store** for Windows. The button downloads Microsoft's own
- *   Store installer for our product — the file the official "Get it from
- *   Microsoft" badge serves in its default "direct" mode — so one click saves
- *   an `.exe` instead of detouring through the Store web page. That stub is
- *   signed by Microsoft Corporation (Microsoft Marketplace CA → Microsoft Root
- *   CA 2011) and installs, then keeps updating, the Store build.
+ * - **Microsoft Store** for Windows: one fixed listing, which replaced the
+ *   GitHub `.exe` download.
  * - **GitHub release** for macOS and Linux: the live feed from
  *   `/api/releases` (see `releaseFeed.ts`).
  *
@@ -29,59 +25,31 @@ import { isTrustedReleaseUrl } from "./releaseFeed";
 /** Staff Time Tracker's product id in Partner Center. */
 const MICROSOFT_STORE_PRODUCT_ID = "9NDFHLP3L7LV";
 
+const MICROSOFT_STORE_HOST = "apps.microsoft.com";
+
+const MICROSOFT_STORE_LISTING_PATH = `/detail/${MICROSOFT_STORE_PRODUCT_ID}`;
+
 /**
- * The two Microsoft endpoints this page may link to, each pinned to one host
- * and to our product's exact path.
- * - `installer`: the direct download (`Content-Disposition: attachment`).
- * - `listing`: the public product page, linked as a secondary "see it in the
- *   Store" reference.
+ * The public listing. Lowercase id, as Microsoft's own share link writes it;
+ * the Store resolves either case. The share link's `?ocid=webpdpshare` is
+ * left off: it tags traffic as coming from the Store's own Share button, which
+ * would misattribute every click from this page. The Store adds the visitor's
+ * `hl` / `gl` locale itself on arrival.
  */
-const MICROSOFT_STORE_ENDPOINTS = {
-  installer: {
-    host: "get.microsoft.com",
-    path: `/installer/download/${MICROSOFT_STORE_PRODUCT_ID}`,
-  },
-  listing: {
-    host: "apps.microsoft.com",
-    path: `/detail/${MICROSOFT_STORE_PRODUCT_ID}`,
-  },
-} as const;
-
-type TStoreEndpoint = keyof typeof MICROSOFT_STORE_ENDPOINTS;
-
-const buildStoreUrl = (endpoint: TStoreEndpoint): string => {
-  const { host, path } = MICROSOFT_STORE_ENDPOINTS[endpoint];
-  return `https://${host}${path}`;
-};
-
-/** One click → `Staff Time Tracker Installer.exe` (~0.8 MB, Microsoft-signed). */
-export const MICROSOFT_STORE_INSTALLER_URL = buildStoreUrl("installer");
-
-/** The filename Microsoft serves the installer under, shown beside the button. */
-const MICROSOFT_STORE_INSTALLER_NAME = "Staff Time Tracker Installer.exe";
+const MICROSOFT_STORE_URL = `https://${MICROSOFT_STORE_HOST}${MICROSOFT_STORE_LISTING_PATH.toLowerCase()}`;
 
 /**
- * Bare listing URL. The share link's `?ocid=webpdpshare` is left off: it tags
- * traffic as coming from the Store's own Share button, which would misattribute
- * every click from this page. The Store adds the visitor's locale itself.
- */
-export const MICROSOFT_STORE_LISTING_URL = buildStoreUrl("listing");
-
-/**
- * A Microsoft Store link is trusted only if it points at OUR product on the
- * one Microsoft host that endpoint lives on: `https:`, the exact hostname (so
- * not a look-alike or a sibling subdomain), no port or `user@` prefix, and the
- * exact product path. Any other app — even on the real host — fails.
+ * A Microsoft Store link is trusted only if it opens OUR listing on
+ * Microsoft's own host: `https:`, exactly `apps.microsoft.com` (so not a
+ * look-alike or a subdomain someone else controls), no port or `user@` prefix,
+ * and the exact `/detail/<our product id>` path. Any other app's listing,
+ * even on the real host, fails.
  *
  * Runs on the WHATWG-parsed URL, so `..` segments are already resolved and
- * cannot step out of the path. The product id is compared case-insensitively
- * because Microsoft routes it that way; a trailing slash is the only other
- * accepted variant.
+ * cannot step out of the path. The id is compared case-insensitively because
+ * the Store routes it that way. A trailing slash is the only accepted variant.
  */
-export const isTrustedStoreUrl = (
-  value: string,
-  endpoint: TStoreEndpoint,
-): boolean => {
+const isTrustedStoreUrl = (value: string): boolean => {
   let parsed: URL;
   try {
     parsed = new URL(value);
@@ -89,28 +57,26 @@ export const isTrustedStoreUrl = (
     return false;
   }
 
-  const { host, path } = MICROSOFT_STORE_ENDPOINTS[endpoint];
   const pathname = parsed.pathname.toLowerCase().replace(/\/$/, "");
 
   return (
     parsed.protocol === "https:" &&
-    parsed.hostname === host &&
+    parsed.hostname === MICROSOFT_STORE_HOST &&
     parsed.port === "" &&
     parsed.username === "" &&
     parsed.password === "" &&
-    pathname === path.toLowerCase()
+    pathname === MICROSOFT_STORE_LISTING_PATH.toLowerCase()
   );
 };
 
 /**
- * The last check before a download link is rendered. A URL must pass the
- * allowlist of the source it claims to be from, so a GitHub URL cannot be
- * presented as the Store installer or the reverse — and the Store listing
- * page, being a web page, never passes as a download.
+ * The last check before a link is rendered. A URL must pass the allowlist of
+ * the source it claims to be from, so a GitHub URL cannot be presented as the
+ * Store listing or the reverse.
  */
 export const isTrustedDownload = (download: TResolvedDownload): boolean =>
   download.source === "microsoft-store"
-    ? isTrustedStoreUrl(download.url, "installer")
+    ? isTrustedStoreUrl(download.url)
     : isTrustedReleaseUrl(download.url, "download");
 
 const isStoreTarget = (id: TDownloadTargetId): id is TStoreTargetId =>
@@ -129,11 +95,7 @@ export const resolveDownload = (
   let download: TResolvedDownload;
 
   if (isStoreTarget(id)) {
-    download = {
-      source: "microsoft-store",
-      url: MICROSOFT_STORE_INSTALLER_URL,
-      name: MICROSOFT_STORE_INSTALLER_NAME,
-    };
+    download = { source: "microsoft-store", url: MICROSOFT_STORE_URL };
   } else {
     const asset = assets[id];
     if (!asset) return null;
@@ -147,3 +109,11 @@ export const resolveDownload = (
 
   return isTrustedDownload(download) ? download : null;
 };
+
+/**
+ * Hostname shown beside a Store button, so the user sees where the click goes
+ * before making it. Read from the URL itself rather than hardcoded, so the
+ * label can never disagree with the link.
+ */
+export const getDownloadHost = (download: TResolvedDownload): string =>
+  new URL(download.url).hostname;
