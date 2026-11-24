@@ -330,6 +330,28 @@ export interface ISubscriptionConversion {
   currency: "USD" | "GBP" | "EUR";
 }
 
+/**
+ * Awin's browser conversion tag + fall-back pixel for a just-confirmed sale.
+ * Issued only by the confirm endpoints, for a qualifying sale the API
+ * recorded from Stripe; the server-to-server order carries the same orderRef,
+ * which is how Awin de-duplicates the two. Never a Stripe identifier.
+ */
+export interface IAwinConversion {
+  advertiser_id: number;
+  /** `STT-` + 32 hex. */
+  order_ref: string;
+  /** Net sale, after discounts, excluding tax — Awin's `amount` ("12.34"). */
+  amount: string;
+  currency: string;
+  commission_group: string;
+  customer_acquisition: "NEW" | "RETURNING";
+  /** Discount code used, or "". */
+  voucher: string;
+  channel: string;
+  /** Stripe test mode / AWIN_TEST_MODE: Awin records nothing. */
+  test: boolean;
+}
+
 export interface ICheckoutConfirmResult {
   activated: boolean;
   checkout_status: "open" | "complete" | "expired" | null;
@@ -337,6 +359,8 @@ export interface ICheckoutConfirmResult {
   subscription_status: BillingStatusValue | null;
   /** Present only for an authoritative live, paid and active subscription. */
   subscription_conversion?: ISubscriptionConversion;
+  /** Present only for a qualifying Awin sale paid within the last 24 h. */
+  awin_conversion?: IAwinConversion;
 }
 
 /* ---------------- seats (§3) ---------------- */
@@ -637,6 +661,8 @@ export interface ISubscribeResult {
 
 export interface IConfirmSubscriptionResult extends ISubscribeResult {
   activated: boolean;
+  /** Present only for a qualifying Awin sale paid within the last 24 h. */
+  awin_conversion?: IAwinConversion;
 }
 
 /* ---------------- invoice retry ---------------- */

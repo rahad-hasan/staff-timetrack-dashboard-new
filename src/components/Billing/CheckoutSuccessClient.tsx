@@ -13,6 +13,7 @@ import {
 import { checkBeforeRefresh } from "@/hooks/useLiveRefresh";
 import { BILLING_URL } from "@/lib/billing";
 import { storeVerifiedSubscriptionTransition } from "@/lib/verifiedSubscriptionTransition";
+import { storeVerifiedAwinTransition } from "@/lib/verifiedAwinConversion";
 import { useBillingStore } from "@/store/billingStore";
 import type { IBillingEntitlements, IBillingStatus } from "@/types/billing";
 import { Button } from "@/components/ui/button";
@@ -170,8 +171,12 @@ const shareWithBillingStore = (status: IBillingStatus | null | undefined) => {
  * sees a param-bearing URL. A reference-less visit is therefore not an error:
  * it reads billing/status for a short, bounded window and celebrates an active
  * purchase; only a company that is not subscribed gets the "missing reference"
- * failure. The custom-checkout confirm carries no conversion payload today, so
- * that path never detours.
+ * failure.
+ *
+ * Purchase conversion (Awin): BOTH confirm endpoints may also carry
+ * `awin_conversion` (a qualifying sale the API recorded from Stripe), which
+ * rides the same detour on its own sessionStorage key — so the custom
+ * Payment Element path detours too when Awin has a sale to report.
  */
 export default function CheckoutSuccessClient({
   sessionId,
@@ -324,7 +329,10 @@ export default function CheckoutSuccessClient({
      */
     function handOffForConversion(confirmed: unknown): boolean {
       if (finished || leavingRef.current) return false;
-      if (!storeVerifiedSubscriptionTransition(confirmed)) return false;
+      // Both stores run (no short-circuit): each tag keeps its own transition.
+      const google = storeVerifiedSubscriptionTransition(confirmed);
+      const awin = storeVerifiedAwinTransition(confirmed);
+      if (!google && !awin) return false;
       finish("active", true);
       window.location.replace(CONVERSION_URL);
       return true;

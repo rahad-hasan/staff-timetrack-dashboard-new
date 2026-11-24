@@ -1,6 +1,7 @@
 "use server";
 
 import { baseApi } from "../baseApi";
+import { bindAwinClickAfterResponse } from "@/lib/server/awinAttribution";
 import { IResponse } from "@/types/type";
 import {
   BillingCycle,
@@ -318,12 +319,18 @@ export const getCheckoutQuote = async (payload: {
  */
 export const subscribeToPlan = async (
   payload: ISubscribePayload,
-): Promise<IResponse<ISubscribeResult>> =>
-  await baseApi(`${BASE}/subscription/subscribe`, {
+): Promise<IResponse<ISubscribeResult>> => {
+  // An admin already signed in when they followed an Awin publisher link
+  // binds the click here. It runs after this response — before anything is
+  // paid, since payment is confirmed in the browser afterwards — and its
+  // outcome is ignored: it can never delay or change the purchase itself.
+  await bindAwinClickAfterResponse("checkout");
+  return await baseApi(`${BASE}/subscription/subscribe`, {
     method: "POST",
     body: payload,
     ...PAYMENT_OPTS,
   });
+};
 
 /**
  * Post-confirmation activation — the analogue of `confirmCheckout` for the

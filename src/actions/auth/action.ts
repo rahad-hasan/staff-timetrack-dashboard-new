@@ -11,6 +11,7 @@ import {
   writeSignupProof,
 } from "@/lib/sessionCookies";
 import { withoutSessionTokens } from "@/lib/authSession";
+import { bindAwinClickAfterResponse } from "@/lib/server/awinAttribution";
 
 export const logIn = async (data: any) => {
   const res = await baseApi("/auth/signin", {
@@ -31,6 +32,15 @@ export const logIn = async (data: any) => {
     // password just matched the pending sign-up. Written AFTER `startSession`,
     // which clears the session cookies for this answer.
     if (!hasSession) await writeSignupProof(res.data?.signup_token);
+
+    // An existing customer arriving through an Awin publisher link: bind the
+    // click to their company. Admins only (they buy; the API enforces it
+    // too). Runs after the response, best-effort — it can never delay or
+    // change this sign-in. The token is passed because the session cookie
+    // is not on this request yet.
+    if (hasSession && res.data?.role === "admin") {
+      await bindAwinClickAfterResponse("login", res.data?.accessToken);
+    }
 
     // The tokens are for the httpOnly cookies only. The client is told which
     // of the two answers this was instead of reading it off them.
@@ -203,6 +213,11 @@ export const resetPassword = async ({ data }: {
     // go with the tokens. Without them every server-side role gate read an
     // undefined role (or a previous session's) until the next sign-in.
     const hasSession = await startSession(res.data);
+
+    // Same as `logIn`: a reset is a sign-in, so an admin's Awin click binds.
+    if (hasSession && res.data?.role === "admin") {
+      await bindAwinClickAfterResponse("login", res.data?.accessToken);
+    }
 
     return { ...res, data: { ...withoutSessionTokens(res.data), hasSession } };
   }

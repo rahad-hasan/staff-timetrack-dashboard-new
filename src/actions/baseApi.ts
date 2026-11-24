@@ -108,6 +108,13 @@ export interface BaseApiOptions {
    * first frame crashes the whole route with a server-side exception.
    */
   skipRevalidate?: boolean;
+  /**
+   * Aborts the request (e.g. `AbortSignal.timeout(ms)`). An aborted call
+   * resolves like a network failure (`SERVER_NOT_ACTIVE`), never throws. For
+   * best-effort side calls that must not hang on a stalled API; ordinary
+   * calls leave it unset and wait as before.
+   */
+  signal?: AbortSignal;
 }
 
 /* ---------------- helpers ---------------- */
@@ -197,6 +204,7 @@ export async function baseApi<T = any>(
     providerAuthPrefix,
     skipPaymentRedirect = false,
     skipRevalidate = false,
+    signal,
   } = options;
 
   const { url: fullUrl, pathWithQuery } = resolveUrl(url, query);
@@ -211,6 +219,7 @@ export async function baseApi<T = any>(
       method,
       headers: await buildHeaders(isFormData, customHeaders, cacheable),
       body: body ? (isFormData ? body : JSON.stringify(body)) : undefined,
+      ...(signal ? { signal } : {}),
       // Live unless explicitly cached (see the module comment). The two
       // shapes never mix: `cache` together with `next.revalidate` is a
       // conflicting config Next warns about and resolves on its own.

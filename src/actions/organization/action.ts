@@ -4,6 +4,7 @@ import { revalidateTag } from "next/cache";
 import { unstable_rethrow } from "next/navigation";
 
 import { baseApi } from "../baseApi";
+import { readAwinClick } from "@/lib/server/awinAttribution";
 import {
   clearSignupProof,
   readSignupProof,
@@ -154,6 +155,11 @@ export const createOrganization = async (
   // answers with how to get a new one, and that message is shown as it is.
   const signupProof = await readSignupProof();
 
+  // The browser's Awin publisher click (HttpOnly cookie, never seen by the
+  // page), bound to the company the API is about to create. The API drops a
+  // value it cannot use and never fails a signup over it.
+  const awinClick = await readAwinClick();
+
   const response = await baseApi<IResponse<ICreateOrganizationResponse>>(
     "/company",
     {
@@ -187,6 +193,8 @@ export const createOrganization = async (
         // Same reasoning for the key: absent rather than empty when there is
         // no proof to send. An API that predates it strips the unknown key.
         ...(signupProof ? { signup_token: signupProof } : {}),
+        // Absent without a click, for the same reasons.
+        ...(awinClick ? { awin: awinClick } : {}),
       },
     },
   );
